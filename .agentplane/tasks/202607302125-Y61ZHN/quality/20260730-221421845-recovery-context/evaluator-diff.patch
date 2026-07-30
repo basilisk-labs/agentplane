@@ -1,0 +1,2068 @@
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/README.md b/.agentplane/tasks/202607302125-Y61ZHN/README.md
+new file mode 100644
+index 000000000..7e12a70cb
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/README.md
+@@ -0,0 +1,220 @@
++---
++id: "202607302125-Y61ZHN"
++title: "Record superseded provider-conflict outcomes without false integration"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 10
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "workflow"
++  - "v0.7"
++verify:
++  - "bun test packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
++  - "bun run typecheck"
++  - "bun run test:critical"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T21:27:24.959Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-30T22:05:59.806Z"
++  updated_by: "TESTER"
++  note: "Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-30T22:07:09.209Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 2 typed finding(s)."
++  evaluated_sha: "9840fe49865ee220d7185e65b1d7a73d60d379a5"
++  blueprint_digest: "6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185"
++  evidence_refs:
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607302125-Y61ZHN/README.md"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The release handler reads current-base task state and provider observation, then requires BLOCKED legacy state, DONE successor, and a currently observed CLOSED PR before any queue write."
++    - "Queue state accepts supersession only from rework, preserves a named successor, and route projection stops reopening, enqueueing, or integrating the closed PR."
++commit:
++  hash: "9840fe49865ee220d7185e65b1d7a73d60d379a5"
++  message: "🧩 Y61ZHN task: record superseded conflict outcomes"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implemented: record semantic supersession only for a closed provider PR, current-base BLOCKED task, and DONE successor; queue/route projections now terminate without false integration. Local focused, critical, type, format, lint, and compatibility checks pass."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T21:28:12.818Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-30T22:04:46.954Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented: record semantic supersession only for a closed provider PR, current-base BLOCKED task, and DONE successor; queue/route projections now terminate without false integration. Local focused, critical, type, format, lint, and compatibility checks pass."
++  -
++    type: "verify"
++    at: "2026-07-30T22:05:59.806Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498."
++  -
++    type: "status"
++    at: "2026-07-30T22:08:05.932Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++doc_version: 3
++doc_updated_at: "2026-07-30T22:08:05.933Z"
++doc_updated_by: "CODER"
++description: "Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue."
++sections:
++  Summary: |-
++    Record superseded provider-conflict outcomes without false integration
++
++    Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.
++  Scope: |-
++    - In scope: Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.
++    - Out of scope: unrelated refactors not required for "Record superseded provider-conflict outcomes without false integration".
++  Plan: "1. Inspect the integration-queue state model, provider-conflict route projection, and existing close commands to define a terminal superseded outcome that is distinct from successful integration. 2. Add a CLI-owned recording path that accepts the agent's semantic decision plus a completed successor task, validates identities and refuses stale or non-terminal inputs, then records the queue outcome without selecting conflict hunks or rewriting branches. 3. Project the outcome through queue listing, PR flow status, and next-action so a closed superseded PR cannot keep the merge lane in rework or appear merged. 4. Cover the stale-PR and successor validation cases with focused unit/CLI tests, including a regression for an updated PR head. 5. Run focused tests, typecheck, critical CLI tests, formatting, and lint; record verification, quality review, PR and hosted checks before integration."
++  Verify Steps: "1. Run the focused provider-conflict and PR-flow CLI tests. Expected: a semantic supersession can be recorded only against a current closed/conflicting PR and an existing completed successor; stale head, missing successor, and integrated-success substitution are rejected. 2. Inspect the queue and flow projections after the recorded outcome. Expected: the queue is terminally superseded rather than done/rework, the legacy task is not presented as merged, and later queued integration is not blocked. 3. Run bun run typecheck and bun run test:critical. Expected: the typed state model and critical CLI surface remain green. 4. Run format and lint checks. Expected: no formatting or lint regression in the CLI workflow surface."
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-30T22:05:59.806Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T22:04:46.954Z, excerpt_hash=sha256:f59337e69984d4b0449a152c8be08ec1ed925dcd850944da505d0cbc3d5b2aa0
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302125-Y61ZHN-record-superseded-provider-conflict-outcomes-wit/.agentplane/tasks/202607302125-Y61ZHN/blueprint/resolved-snapshot.json
++    - old_digest: 6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185
++    - current_digest: 6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607302125-Y61ZHN
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607302125-Y61ZHN
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: Focused queue and route suites: 4 files, 56 tests passed; test:critical: 12/12 chunks passed; typecheck, Prettier, ESLint, and compatibility baseline passed.
++      Impact: Closed stale provider conflicts can be terminally superseded without being represented as integrated or blocking active queue work.
++      Resolution: Current-base BLOCKED task, current closed provider PR, DONE successor, and rework queue entry are all required before the terminal outcome is recorded.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "ac63ebe31bf54d8bb088669beb0dabb79fc31ad4"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Record superseded provider-conflict outcomes without false integration
++
++Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.
++
++## Scope
++
++- In scope: Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.
++- Out of scope: unrelated refactors not required for "Record superseded provider-conflict outcomes without false integration".
++
++## Plan
++
++1. Inspect the integration-queue state model, provider-conflict route projection, and existing close commands to define a terminal superseded outcome that is distinct from successful integration. 2. Add a CLI-owned recording path that accepts the agent's semantic decision plus a completed successor task, validates identities and refuses stale or non-terminal inputs, then records the queue outcome without selecting conflict hunks or rewriting branches. 3. Project the outcome through queue listing, PR flow status, and next-action so a closed superseded PR cannot keep the merge lane in rework or appear merged. 4. Cover the stale-PR and successor validation cases with focused unit/CLI tests, including a regression for an updated PR head. 5. Run focused tests, typecheck, critical CLI tests, formatting, and lint; record verification, quality review, PR and hosted checks before integration.
++
++## Verify Steps
++
++1. Run the focused provider-conflict and PR-flow CLI tests. Expected: a semantic supersession can be recorded only against a current closed/conflicting PR and an existing completed successor; stale head, missing successor, and integrated-success substitution are rejected. 2. Inspect the queue and flow projections after the recorded outcome. Expected: the queue is terminally superseded rather than done/rework, the legacy task is not presented as merged, and later queued integration is not blocked. 3. Run bun run typecheck and bun run test:critical. Expected: the typed state model and critical CLI surface remain green. 4. Run format and lint checks. Expected: no formatting or lint regression in the CLI workflow surface.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-30T22:05:59.806Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T22:04:46.954Z, excerpt_hash=sha256:f59337e69984d4b0449a152c8be08ec1ed925dcd850944da505d0cbc3d5b2aa0
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302125-Y61ZHN-record-superseded-provider-conflict-outcomes-wit/.agentplane/tasks/202607302125-Y61ZHN/blueprint/resolved-snapshot.json
++- old_digest: 6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185
++- current_digest: 6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607302125-Y61ZHN
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607302125-Y61ZHN
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: Focused queue and route suites: 4 files, 56 tests passed; test:critical: 12/12 chunks passed; typecheck, Prettier, ESLint, and compatibility baseline passed.
++  Impact: Closed stale provider conflicts can be terminally superseded without being represented as integrated or blocking active queue work.
++  Resolution: Current-base BLOCKED task, current closed provider PR, DONE successor, and rework queue entry are all required before the terminal outcome is recorded.
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607302125-Y61ZHN/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..07741d40e
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/blueprint/resolved-snapshot.json
+@@ -0,0 +1,572 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607302125-Y61ZHN",
++    "title": "Record superseded provider-conflict outcomes without false integration",
++    "description": "Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.",
++    "tags": [
++      "code",
++      "workflow",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607302125-Y61ZHN",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185"
++  }
++}
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/pr/diffstat.txt b/.agentplane/tasks/202607302125-Y61ZHN/pr/diffstat.txt
+new file mode 100644
+index 000000000..62c10e8b9
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/pr/diffstat.txt
+@@ -0,0 +1,19 @@
++ docs/user/cli-reference.generated.mdx              |   5 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/commands/integrate-queue-doctor-command.ts |   2 +-
++ .../src/commands/integrate-queue-lane.ts           |   3 +-
++ .../src/commands/integrate-queue.command.test.ts   |  93 +++++++++++++++++++
++ .../src/commands/integrate-queue.command.ts        | 100 ++++++++++++++++++++-
++ .../src/commands/integrate-queue.spec.test.ts      |  39 ++++++++
++ .../src/commands/integrate-queue.spec.ts           |  45 ++++++++--
++ .../src/commands/pr/flow-status.render.ts          |   3 +-
++ packages/agentplane/src/commands/pr/flow-status.ts |   7 ++
++ .../src/commands/pr/integrate/queue-state.test.ts  |  50 +++++++++++
++ .../src/commands/pr/integrate/queue-state.ts       |  86 +++++++++++++++++-
++ .../src/commands/shared/route-decision-blockers.ts |   7 ++
++ .../src/commands/shared/workflow-step-branch.ts    |  18 ++++
++ ...rkflow-step-projections.conflict-rework.test.ts |  56 ++++++++++++
++ .../src/commands/shared/workflow-step.ts           |   3 +-
++ .../baselines/v0.7-compatibility-candidate.json    |  50 +++++++++--
++ .../check-compatibility-contract-baseline.mjs      |  38 +++++++-
++ 18 files changed, 585 insertions(+), 27 deletions(-)
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/pr/github-body.md b/.agentplane/tasks/202607302125-Y61ZHN/pr/github-body.md
+new file mode 100644
+index 000000000..96fa9342c
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/pr/github-body.md
+@@ -0,0 +1,51 @@
++Task: `202607302125-Y61ZHN`
++Title: Record superseded provider-conflict outcomes without false integration
++Canonical task record: `.agentplane/tasks/202607302125-Y61ZHN/README.md`
++
++## Summary
++
++Record superseded provider-conflict outcomes without false integration
++
++Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.
++
++## Scope
++
++- In scope: Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.
++- Out of scope: unrelated refactors not required for "Record superseded provider-conflict outcomes without false integration".
++
++## Verification
++
++- State: ok
++- Note: Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T21:28:59.552Z
++- Branch: task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ docs/user/cli-reference.generated.mdx              |   5 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/commands/integrate-queue-doctor-command.ts |   2 +-
++ .../src/commands/integrate-queue-lane.ts           |   3 +-
++ .../src/commands/integrate-queue.command.test.ts   |  93 +++++++++++++++++++
++ .../src/commands/integrate-queue.command.ts        | 100 ++++++++++++++++++++-
++ .../src/commands/integrate-queue.spec.test.ts      |  39 ++++++++
++ .../src/commands/integrate-queue.spec.ts           |  45 ++++++++--
++ .../src/commands/pr/flow-status.render.ts          |   3 +-
++ packages/agentplane/src/commands/pr/flow-status.ts |   7 ++
++ .../src/commands/pr/integrate/queue-state.test.ts  |  50 +++++++++++
++ .../src/commands/pr/integrate/queue-state.ts       |  86 +++++++++++++++++-
++ .../src/commands/shared/route-decision-blockers.ts |   7 ++
++ .../src/commands/shared/workflow-step-branch.ts    |  18 ++++
++ ...rkflow-step-projections.conflict-rework.test.ts |  56 ++++++++++++
++ .../src/commands/shared/workflow-step.ts           |   3 +-
++ .../baselines/v0.7-compatibility-candidate.json    |  50 +++++++++--
++ .../check-compatibility-contract-baseline.mjs      |  38 +++++++-
++ 18 files changed, 585 insertions(+), 27 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/pr/github-title.txt b/.agentplane/tasks/202607302125-Y61ZHN/pr/github-title.txt
+new file mode 100644
+index 000000000..23a3eab0e
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ Y61ZHN task: Record superseded provider-conflict outcomes without false integration [202607302125-Y61ZHN]
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/pr/meta.json b/.agentplane/tasks/202607302125-Y61ZHN/pr/meta.json
+new file mode 100644
+index 000000000..b4ee6a8cd
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit",
++  "created_at": "2026-07-30T21:28:13.122Z",
++  "diffstat_sha256": "sha256:d608d79d0b109ef668fb62d9a08c58c2f2e150f124681825c8a38f8dc332607d",
++  "last_verified_at": "2026-07-30T22:05:59.806Z",
++  "last_verified_diffstat_sha256": "sha256:c4b15a21ba94abca976037d786139e79110110fb214be9dbc0ec4ff391ee703c",
++  "pr_number": 4696,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4696",
++  "pre_merge_closure": {
++    "basis_commit": "9840fe49865ee220d7185e65b1d7a73d60d379a5",
++    "branch": "task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit",
++    "pr_number": 4696,
++    "recorded_at": "2026-07-30T22:08:06.025Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607302125-Y61ZHN",
++  "updated_at": "2026-07-30T21:28:59.552Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/pr/review.md b/.agentplane/tasks/202607302125-Y61ZHN/pr/review.md
+new file mode 100644
+index 000000000..ca950e53a
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/pr/review.md
+@@ -0,0 +1,54 @@
++# PR Review
++
++Created: 2026-07-30T21:28:13.122Z
++
++## Task
++
++- Task: `202607302125-Y61ZHN`
++- Title: Record superseded provider-conflict outcomes without false integration
++- Status: DONE
++- Branch: `task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit`
++- Canonical task record: `.agentplane/tasks/202607302125-Y61ZHN/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T21:28:59.552Z
++- Branch: task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ docs/user/cli-reference.generated.mdx              |   5 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/commands/integrate-queue-doctor-command.ts |   2 +-
++ .../src/commands/integrate-queue-lane.ts           |   3 +-
++ .../src/commands/integrate-queue.command.test.ts   |  93 +++++++++++++++++++
++ .../src/commands/integrate-queue.command.ts        | 100 ++++++++++++++++++++-
++ .../src/commands/integrate-queue.spec.test.ts      |  39 ++++++++
++ .../src/commands/integrate-queue.spec.ts           |  45 ++++++++--
++ .../src/commands/pr/flow-status.render.ts          |   3 +-
++ packages/agentplane/src/commands/pr/flow-status.ts |   7 ++
++ .../src/commands/pr/integrate/queue-state.test.ts  |  50 +++++++++++
++ .../src/commands/pr/integrate/queue-state.ts       |  86 +++++++++++++++++-
++ .../src/commands/shared/route-decision-blockers.ts |   7 ++
++ .../src/commands/shared/workflow-step-branch.ts    |  18 ++++
++ ...rkflow-step-projections.conflict-rework.test.ts |  56 ++++++++++++
++ .../src/commands/shared/workflow-step.ts           |   3 +-
++ .../baselines/v0.7-compatibility-candidate.json    |  50 +++++++++--
++ .../check-compatibility-contract-baseline.mjs      |  38 +++++++-
++ 18 files changed, 585 insertions(+), 27 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607302125-Y61ZHN/verification/20260730220559806-5e9192e0bef38cb8.json b/.agentplane/tasks/202607302125-Y61ZHN/verification/20260730220559806-5e9192e0bef38cb8.json
+new file mode 100644
+index 000000000..99b280bb1
+--- /dev/null
++++ b/.agentplane/tasks/202607302125-Y61ZHN/verification/20260730220559806-5e9192e0bef38cb8.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:5e9192e0bef38cb8285e32c6eb490f9e105ebe23f7ed7da5002be5d880db58c0",
++  "implementation_sha": "9840fe49865ee220d7185e65b1d7a73d60d379a5",
++  "kind": "task_verification_record",
++  "note": "Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.",
++  "recorded_at": "2026-07-30T22:05:59.806Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Run the focused provider-conflict and PR-flow CLI tests. Expected: a semantic supersession can be recorded only against a current closed/conflicting PR and an existing completed successor; stale head, missing successor, and integrated-success substitution are rejected. 2. Inspect the queue and flow projections after the recorded outcome. Expected: the queue is terminally superseded rather than done/rework, the legacy task is not presented as merged, and later queued integration is not blocked. 3. Run bun run typecheck and bun run test:critical. Expected: the typed state model and critical CLI surface remain green. 4. Run format and lint checks. Expected: no formatting or lint regression in the CLI workflow surface.",
++  "scope_digest": "sha256:f59337e69984d4b0449a152c8be08ec1ed925dcd850944da505d0cbc3d5b2aa0",
++  "task_id": "202607302125-Y61ZHN",
++  "verification_command": "agentplane verify 202607302125-Y61ZHN --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 793b03157..90be9eaf6 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -1490,7 +1490,7 @@ Options:
+ 
+ ### integrate queue release
+ 
+-Release or complete a queue entry.
++Release, complete, or record a superseded queue entry.
+ 
+ Usage:
+ 
+@@ -1500,8 +1500,9 @@ agentplane integrate queue release <task-id> [options]
+ 
+ Options:
+ 
+-- `--status <queued|done|rework>`: Next queue status. (choices=queued|done|rework, default=queued)
++- `--status <queued|done|rework|superseded>`: Next queue status. (choices=queued|done|rework|superseded, default=queued)
+ - `--reason <text>`: Release reason.
++- `--superseded-by <task-id>`: Completed successor task required when --status superseded.
+ 
+ ### integrate queue run-next
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 2a22a1cb5..e7d456705 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("254commands/175args/821options");
++      expect(compatibility.stdout).toContain("254commands/175args/822options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -184,13 +184,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607291449-FTHNAR",
+           "202607300150-MGCHE6",
+           "202607221852-YP9QCH",
++          "202607302125-Y61ZHN",
+         ],
+         candidate: {
+-          surface_sha256: "c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6",
++          surface_sha256: "57836414138578d277eebd4bc6d69bb9837c638afb6cda7ea60b9ba95760d481",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
++            cli_topology: "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+diff --git a/packages/agentplane/src/commands/integrate-queue-doctor-command.ts b/packages/agentplane/src/commands/integrate-queue-doctor-command.ts
+index d4e9b4196..cff8f2c1e 100644
+--- a/packages/agentplane/src/commands/integrate-queue-doctor-command.ts
++++ b/packages/agentplane/src/commands/integrate-queue-doctor-command.ts
+@@ -38,7 +38,7 @@ export async function runIntegrationQueueDoctor(opts: {
+   const repairs: IntegrationQueueDoctorRepair[] = [];
+ 
+   for (const entry of before.entries) {
+-    if (entry.status === "done") continue;
++    if (entry.status === "done" || entry.status === "superseded") continue;
+     const loaded = await loadBackendTask({
+       ctx: opts.commandCtx,
+       cwd: opts.ctx.cwd,
+diff --git a/packages/agentplane/src/commands/integrate-queue-lane.ts b/packages/agentplane/src/commands/integrate-queue-lane.ts
+index d6690d52f..da46c0029 100644
+--- a/packages/agentplane/src/commands/integrate-queue-lane.ts
++++ b/packages/agentplane/src/commands/integrate-queue-lane.ts
+@@ -226,7 +226,8 @@ export async function normalizeTerminalQueueEntries(opts: {
+ }): Promise<void> {
+   const snapshot = await readIntegrationQueue(opts.gitRoot);
+   const candidates = snapshot.entries.filter(
+-    (entry) => entry.status !== "done" && entry.status !== "claimed",
++    (entry) =>
++      entry.status !== "done" && entry.status !== "superseded" && entry.status !== "claimed",
+   );
+   const decisions: {
+     taskId: string;
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.test.ts b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+index 8ee501607..05c0d466d 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
+   writeIntegrationQueue: vi.fn(),
+   createLegacyProtectedConflictAdoptionReceipt: vi.fn(),
+   recordLegacyProtectedConflictAdoption: vi.fn(),
++  recordSupersededQueueEntry: vi.fn(),
++  loadBackendTask: vi.fn(),
+   claimNextQueuedEntry: vi.fn(),
+   markQueueEntry: vi.fn(),
+   rejectIfQueuedEntryIsStale: vi.fn(),
+@@ -35,6 +37,7 @@ vi.mock("./pr/integrate/queue-state.js", () => ({
+   writeIntegrationQueue: mocks.writeIntegrationQueue,
+   createLegacyProtectedConflictAdoptionReceipt: mocks.createLegacyProtectedConflictAdoptionReceipt,
+   recordLegacyProtectedConflictAdoption: mocks.recordLegacyProtectedConflictAdoption,
++  recordSupersededQueueEntry: mocks.recordSupersededQueueEntry,
+   claimNextQueuedEntry: mocks.claimNextQueuedEntry,
+   markQueueEntry: mocks.markQueueEntry,
+   upsertQueuedEntry: mocks.upsertQueuedEntry,
+@@ -78,6 +81,7 @@ vi.mock("./pr/conflict-rework.js", () => ({
+ vi.mock("./shared/task-worktree-cleanliness.js", () => ({
+   inspectTaskWorktreeCleanliness: mocks.inspectTaskWorktreeCleanliness,
+ }));
++vi.mock("./shared/task-backend.js", () => ({ loadBackendTask: mocks.loadBackendTask }));
+ vi.mock("./shared/git-ops.js", () => ({ gitRevParse: mocks.gitRevParse }));
+ vi.mock("../cli/output.js", () => ({
+   createCliEmitter: () => mocks.output,
+@@ -88,6 +92,7 @@ import {
+   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler,
+   makeRunIntegrateQueueClaimHandler,
+   makeRunIntegrateQueueEnqueueHandler,
++  makeRunIntegrateQueueReleaseHandler,
+   makeRunIntegrateQueueRunNextHandler,
+ } from "./integrate-queue.command.js";
+ 
+@@ -197,6 +202,14 @@ describe("integrate queue claim publication guard", () => {
+     mocks.cmdIntegrate.mockResolvedValue(0);
+     mocks.waitForHostedChecks.mockResolvedValue(undefined);
+     mocks.resolvePrFlowStatus.mockResolvedValue({ branch: { name: entry.branch } });
++    mocks.loadBackendTask.mockImplementation(({ taskId }: { taskId: string }) =>
++      Promise.resolve({
++        task:
++          taskId === "T-successor"
++            ? { id: taskId, status: "DONE" }
++            : { id: taskId, status: "BLOCKED" },
++      }),
++    );
+     mocks.inspectTaskWorktreeCleanliness.mockResolvedValue({
+       state: "clean",
+       branch: entry.branch,
+@@ -215,6 +228,21 @@ describe("integrate queue claim publication guard", () => {
+       evidence_token: adoptionToken,
+     });
+     mocks.recordLegacyProtectedConflictAdoption.mockImplementation((queue: unknown) => queue);
++    mocks.recordSupersededQueueEntry.mockImplementation(
++      (queue: unknown, opts: { taskId: string; supersededByTaskId: string; reason: string }) => ({
++        ...(queue as object),
++        entries: ((queue as { entries?: (typeof entry)[] }).entries ?? []).map((current) =>
++          current.task_id === opts.taskId
++            ? {
++                ...current,
++                status: "superseded",
++                reason: opts.reason,
++                superseded_by_task_id: opts.supersededByTaskId,
++              }
++            : current,
++        ),
++      }),
++    );
+     mocks.markQueueEntry.mockImplementation(
+       (queue: unknown, _taskId: string, status: string, reason?: string) => ({
+         ...(queue as object),
+@@ -278,6 +306,71 @@ describe("integrate queue claim publication guard", () => {
+     );
+   });
+ 
++  it("records a closed stale PR as superseded by a completed successor even when its queued head is older", async () => {
++    const staleRework = { ...entry, status: "rework" as const, head_sha: "queued-head" };
++    mocks.queueState = { schema_version: 1, entries: [staleRework] };
++    mocks.resolvePrFlowStatus.mockResolvedValue({
++      pr: { source: "lookup", state: "CLOSED", headSha: "audited-head" },
++      providerObservation: { state: "found", pr: { status: "CLOSED", headSha: "audited-head" } },
++    });
++    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
++
++    await expect(
++      handler({ cwd: "/repo", rootOverride: null } as never, {
++        taskId: "T-1",
++        status: "superseded",
++        reason: "successor owns the current-main decision",
++        supersededByTaskId: "T-successor",
++      }),
++    ).resolves.toBe(0);
++
++    expect(mocks.recordSupersededQueueEntry).toHaveBeenCalledWith(
++      expect.objectContaining({ entries: [expect.objectContaining({ head_sha: "queued-head" })] }),
++      {
++        taskId: "T-1",
++        supersededByTaskId: "T-successor",
++        reason: "successor owns the current-main decision",
++      },
++    );
++    expect(mocks.output.success).toHaveBeenCalledWith(
++      "queue entry",
++      "T-1",
++      "status=superseded successor=T-successor",
++    );
++  });
++
++  it("refuses semantic supersession when the named successor is not completed", async () => {
++    mocks.queueState = { schema_version: 1, entries: [{ ...entry, status: "rework" as const }] };
++    mocks.loadBackendTask.mockImplementation(({ taskId }: { taskId: string }) =>
++      Promise.resolve({
++        task:
++          taskId === "T-successor"
++            ? { id: taskId, status: "DOING" }
++            : { id: taskId, status: "BLOCKED" },
++      }),
++    );
++    mocks.resolvePrFlowStatus.mockResolvedValue({
++      pr: { source: "lookup", state: "CLOSED" },
++      providerObservation: { state: "found", pr: { status: "CLOSED" } },
++    });
++    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
++
++    await expect(
++      handler({ cwd: "/repo", rootOverride: null } as never, {
++        taskId: "T-1",
++        status: "superseded",
++        reason: "successor owns the current-main decision",
++        supersededByTaskId: "T-successor",
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: { reason_code: "superseded_queue_successor_not_done" },
++    });
++
++    expect(mocks.recordSupersededQueueEntry).not.toHaveBeenCalled();
++    expect(mocks.writeIntegrationQueue).not.toHaveBeenCalled();
++  });
++
+   it("rejects a stale legacy adoption token without recording queue evidence", async () => {
+     const handler = makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(commandContext);
+ 
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 10db48519..95d4d01db 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -8,6 +8,7 @@ import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
+ import { CliError } from "../shared/errors.js";
+ import { sleep } from "../backends/task-backend/shared/concurrency.js";
+ import type { CommandContext } from "./shared/task-backend.js";
++import { loadBackendTask } from "./shared/task-backend.js";
+ import { gitRevParse } from "./shared/git-ops.js";
+ import { isExternalStateUnavailableError } from "./shared/external-unavailability.js";
+ import { cmdIntegrate } from "./pr/integrate/cmd.js";
+@@ -18,6 +19,7 @@ import {
+   markQueueEntry,
+   readIntegrationQueue,
+   recordLegacyProtectedConflictAdoption,
++  recordSupersededQueueEntry,
+   upsertQueuedEntry,
+   withIntegrationQueueMutex,
+   writeIntegrationQueue,
+@@ -162,7 +164,9 @@ export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promis
+       output.json(queue);
+       return 0;
+     }
+-    const active = queue.entries.filter((entry) => entry.status !== "done");
++    const active = queue.entries.filter(
++      (entry) => entry.status !== "done" && entry.status !== "superseded",
++    );
+     if (active.length === 0) {
+       output.line(emptyStateMessage("integration queue entries"));
+       return 0;
+@@ -231,6 +235,100 @@ export function makeRunIntegrateQueueReleaseHandler(
+   return async (_ctx: CommandCtx, p: IntegrateQueueReleaseParsed): Promise<number> => {
+     const commandCtx = await getCtx("integrate queue release");
+     const gitRoot = commandCtx.resolvedProject.gitRoot;
++    if (p.status === "superseded") {
++      const [legacy, successor, report] = await Promise.all([
++        loadBackendTask({
++          ctx: commandCtx,
++          cwd: _ctx.cwd,
++          rootOverride: _ctx.rootOverride ?? null,
++          taskId: p.taskId,
++          preferBranchSnapshot: false,
++        }),
++        loadBackendTask({
++          ctx: commandCtx,
++          cwd: _ctx.cwd,
++          rootOverride: _ctx.rootOverride ?? null,
++          taskId: p.supersededByTaskId ?? "",
++          preferBranchSnapshot: false,
++        }),
++        resolvePrFlowStatus({
++          ctx: commandCtx,
++          cwd: _ctx.cwd,
++          rootOverride: _ctx.rootOverride ?? undefined,
++          taskId: p.taskId,
++        }),
++      ]);
++      if (p.supersededByTaskId === p.taskId) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: "A task cannot supersede its own provider-conflict outcome.",
++          context: { reason_code: "superseded_queue_self_reference", task_id: p.taskId },
++        });
++      }
++      if (String(legacy.task.status).toUpperCase() !== "BLOCKED") {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            `Task ${p.taskId} must be BLOCKED on the current base before recording ` +
++            "a superseded provider-conflict outcome.",
++          context: {
++            reason_code: "superseded_queue_requires_blocked_task",
++            task_id: p.taskId,
++            task_status: legacy.task.status,
++          },
++        });
++      }
++      if (String(successor.task.status).toUpperCase() !== "DONE") {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            `Successor task ${successor.task.id} must be DONE before it can supersede ` +
++            `${p.taskId}.`,
++          context: {
++            reason_code: "superseded_queue_successor_not_done",
++            task_id: p.taskId,
++            successor_task_id: successor.task.id,
++            successor_status: successor.task.status,
++          },
++        });
++      }
++      if (
++        report.pr.source !== "lookup" ||
++        report.pr.state !== "CLOSED" ||
++        report.providerObservation?.state !== "found" ||
++        report.providerObservation.pr.status !== "CLOSED"
++      ) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            `Task ${p.taskId} requires a currently observed closed provider PR before ` +
++            "recording semantic supersession.",
++          context: {
++            reason_code: "superseded_queue_requires_closed_provider_pr",
++            task_id: p.taskId,
++            provider_state: report.pr.state,
++            provider_source: report.pr.source,
++          },
++        });
++      }
++      await withIntegrationQueueMutex(gitRoot, async () => {
++        const queue = await readIntegrationQueue(gitRoot);
++        await writeIntegrationQueue(
++          gitRoot,
++          recordSupersededQueueEntry(queue, {
++            taskId: p.taskId,
++            supersededByTaskId: successor.task.id,
++            reason: p.reason ?? "",
++          }),
++        );
++      });
++      createCliEmitter().success(
++        "queue entry",
++        p.taskId,
++        `status=superseded successor=${successor.task.id}`,
++      );
++      return 0;
++    }
+     await withIntegrationQueueMutex(gitRoot, async () => {
+       const queue = await readIntegrationQueue(gitRoot);
+       await writeIntegrationQueue(
+diff --git a/packages/agentplane/src/commands/integrate-queue.spec.test.ts b/packages/agentplane/src/commands/integrate-queue.spec.test.ts
+index b21b52db0..ac3798350 100644
+--- a/packages/agentplane/src/commands/integrate-queue.spec.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue.spec.test.ts
+@@ -4,6 +4,7 @@ import { parseCommandArgv } from "../cli/spec/parse.js";
+ import { applyIntegrationQueueDoctorRepairs } from "./integrate-queue-doctor.js";
+ import {
+   integrateQueueAdoptLegacyProtectedConflictSpec,
++  integrateQueueReleaseSpec,
+   integrateQueueRunNextSpec,
+ } from "./integrate-queue.spec.js";
+ import {
+@@ -86,6 +87,44 @@ describe("integrate queue spec parsing/validation", () => {
+     ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
+   });
+ 
++  it("requires a reason and completed successor reference for semantic supersession", () => {
++    expect(
++      parseCommandArgv(integrateQueueReleaseSpec, [
++        "202607221908-MR9EA9",
++        "--status",
++        "superseded",
++        "--superseded-by",
++        "202607300553-CR9VTJ",
++        "--reason",
++        "current-base qualification replaced stale provider conflict",
++      ]).parsed,
++    ).toEqual({
++      taskId: "202607221908-MR9EA9",
++      status: "superseded",
++      supersededByTaskId: "202607300553-CR9VTJ",
++      reason: "current-base qualification replaced stale provider conflict",
++    });
++
++    expect(() =>
++      parseCommandArgv(integrateQueueReleaseSpec, [
++        "202607221908-MR9EA9",
++        "--status",
++        "superseded",
++        "--superseded-by",
++        "202607300553-CR9VTJ",
++      ]),
++    ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
++    expect(() =>
++      parseCommandArgv(integrateQueueReleaseSpec, [
++        "202607221908-MR9EA9",
++        "--status",
++        "rework",
++        "--superseded-by",
++        "202607300553-CR9VTJ",
++      ]),
++    ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
++  });
++
+   it("applies doctor repairs to a fresh queue snapshot without dropping concurrent entries", () => {
+     const staleSnapshotFinding = {
+       task_id: "T-1",
+diff --git a/packages/agentplane/src/commands/integrate-queue.spec.ts b/packages/agentplane/src/commands/integrate-queue.spec.ts
+index 043165ed8..956d9acac 100644
+--- a/packages/agentplane/src/commands/integrate-queue.spec.ts
++++ b/packages/agentplane/src/commands/integrate-queue.spec.ts
+@@ -144,31 +144,66 @@ export const integrateQueueClaimSpec: CommandSpec<IntegrateQueueClaimParsed> = {
+ 
+ export type IntegrateQueueReleaseParsed = {
+   taskId: string;
+-  status: "queued" | "done" | "rework";
++  status: "queued" | "done" | "rework" | "superseded";
+   reason: string | null;
++  supersededByTaskId: string | null;
+ };
+ 
+ export const integrateQueueReleaseSpec: CommandSpec<IntegrateQueueReleaseParsed> = {
+   id: ["integrate", "queue", "release"],
+   group: "PR",
+-  summary: "Release or complete a queue entry.",
++  summary: "Release, complete, or record a superseded queue entry.",
+   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+   options: [
+     {
+       kind: "string",
+       name: "status",
+-      valueHint: "<queued|done|rework>",
+-      choices: ["queued", "done", "rework"],
++      valueHint: "<queued|done|rework|superseded>",
++      choices: ["queued", "done", "rework", "superseded"],
+       default: "queued",
+       description: "Next queue status.",
+     },
+     { kind: "string", name: "reason", valueHint: "<text>", description: "Release reason." },
++    {
++      kind: "string",
++      name: "superseded-by",
++      valueHint: "<task-id>",
++      description: "Completed successor task required when --status superseded.",
++    },
+   ],
+   parse: (raw) => ({
+     taskId: String(raw.args["task-id"]),
+-    status: (raw.opts.status ?? "queued") as IntegrateQueueReleaseParsed["status"],
++    status: (typeof raw.opts.status === "string"
++      ? raw.opts.status
++      : "queued") as IntegrateQueueReleaseParsed["status"],
+     reason: typeof raw.opts.reason === "string" ? raw.opts.reason : null,
++    supersededByTaskId:
++      typeof raw.opts["superseded-by"] === "string" ? raw.opts["superseded-by"].trim() : null,
+   }),
++  validateRaw: (raw) => {
++    const status = typeof raw.opts.status === "string" ? raw.opts.status.trim() : "queued";
++    const reason = typeof raw.opts.reason === "string" ? raw.opts.reason.trim() : "";
++    const supersededBy =
++      typeof raw.opts["superseded-by"] === "string" ? raw.opts["superseded-by"].trim() : "";
++    if (status === "superseded" && !supersededBy) {
++      throw usageError({
++        spec: integrateQueueReleaseSpec,
++        message: "Missing required --superseded-by when --status superseded.",
++      });
++    }
++    if (status === "superseded" && !reason) {
++      throw usageError({
++        spec: integrateQueueReleaseSpec,
++        message: "Missing required --reason when --status superseded.",
++      });
++    }
++    if (status !== "superseded" && supersededBy) {
++      throw usageError({
++        spec: integrateQueueReleaseSpec,
++        message: "--superseded-by is only valid when --status superseded.",
++      });
++    }
++  },
+ };
+ 
+ export type IntegrateQueueAdoptLegacyProtectedConflictParsed = {
+diff --git a/packages/agentplane/src/commands/pr/flow-status.render.ts b/packages/agentplane/src/commands/pr/flow-status.render.ts
+index 3d85cc12f..2a6ca54ac 100644
+--- a/packages/agentplane/src/commands/pr/flow-status.render.ts
++++ b/packages/agentplane/src/commands/pr/flow-status.render.ts
+@@ -25,7 +25,8 @@ function renderReviewThreadsLine(status: ReviewThreadsStatus): string {
+ 
+ function renderQueueLine(status: QueueStatus): string {
+   if (!status.present) return "not_queued";
+-  return `${status.status}${status.reason ? `: ${status.reason}` : ""}`;
++  const successor = status.supersededByTaskId ? ` successor=${status.supersededByTaskId}` : "";
++  return `${status.status}${successor}${status.reason ? `: ${status.reason}` : ""}`;
+ }
+ 
+ function renderHandoffLine(status: HandoffStatus): string {
+diff --git a/packages/agentplane/src/commands/pr/flow-status.ts b/packages/agentplane/src/commands/pr/flow-status.ts
+index b06664545..fbb0311a7 100644
+--- a/packages/agentplane/src/commands/pr/flow-status.ts
++++ b/packages/agentplane/src/commands/pr/flow-status.ts
+@@ -108,6 +108,7 @@ type QueueStatus =
+       prNumber?: number | null;
+       leaseExpiresAt?: string | null;
+       legacyProtectedConflictAdoption?: LegacyProtectedConflictAdoptionReceipt | null;
++      supersededByTaskId?: string | null;
+     };
+ 
+ type HandoffStatus =
+@@ -367,6 +368,11 @@ async function resolveCloseTailStatus(opts: {
+ }
+ 
+ function deriveNextAction(report: PrFlowStatusReport): string {
++  if (report.queue.present && report.queue.status === "superseded") {
++    return `semantic conflict outcome is superseded by ${
++      report.queue.supersededByTaskId ?? "a recorded successor"
++    }; do not reopen or integrate the closed PR`;
++  }
+   if (!report.branch.name) return `agentplane pr open ${report.task.id} --author <ROLE>`;
+   if (report.pr.state === "not_found")
+     return `agentplane pr open ${report.task.id} --author <ROLE>`;
+@@ -536,6 +542,7 @@ export async function resolvePrFlowStatus(opts: {
+           prNumber: queueEntry.pr_number,
+           leaseExpiresAt: queueEntry.lease_expires_at ?? null,
+           legacyProtectedConflictAdoption: queueEntry.legacy_protected_conflict_adoption ?? null,
++          supersededByTaskId: queueEntry.superseded_by_task_id ?? null,
+         }
+       : { present: false },
+     handoff,
+diff --git a/packages/agentplane/src/commands/pr/integrate/queue-state.test.ts b/packages/agentplane/src/commands/pr/integrate/queue-state.test.ts
+index 526ef6b3b..5959209d7 100644
+--- a/packages/agentplane/src/commands/pr/integrate/queue-state.test.ts
++++ b/packages/agentplane/src/commands/pr/integrate/queue-state.test.ts
+@@ -15,6 +15,7 @@ import {
+   inspectIntegrationQueueMutex,
+   readIntegrationQueue,
+   recordLegacyProtectedConflictAdoption,
++  recordSupersededQueueEntry,
+   reserveQueueEntryForIntegration,
+   withIntegrationQueueMutex,
+   upsertQueuedEntry,
+@@ -339,6 +340,55 @@ describe("integration queue state", () => {
+     expect(requeued.entries[0]?.legacy_protected_conflict_adoption).toBeUndefined();
+   });
+ 
++  it("records a terminal semantic supersession only from rework and clears it when requeued", () => {
++    const rework = markQueueEntry(
++      upsertQueuedEntry(
++        emptyIntegrationQueue(),
++        enqueue("T-legacy"),
++        clock("2026-07-30T00:00:00Z"),
++      ),
++      "T-legacy",
++      "rework",
++      "provider conflict requires semantic resolution",
++      clock("2026-07-30T00:01:00Z"),
++    );
++    const superseded = recordSupersededQueueEntry(rework, {
++      taskId: "T-legacy",
++      supersededByTaskId: "T-successor",
++      reason: "successor owns the current-main decision",
++      clock: clock("2026-07-30T00:02:00Z"),
++    });
++
++    expect(superseded.entries[0]).toMatchObject({
++      status: "superseded",
++      superseded_by_task_id: "T-successor",
++      reason: "successor owns the current-main decision",
++    });
++    expect(() => markQueueEntry(superseded, "T-legacy", "superseded")).toThrowError(
++      expect.objectContaining({ code: "E_VALIDATION" }),
++    );
++    expect(() =>
++      recordSupersededQueueEntry(
++        upsertQueuedEntry(
++          emptyIntegrationQueue(),
++          enqueue("T-queued"),
++          clock("2026-07-30T00:00:00Z"),
++        ),
++        {
++          taskId: "T-queued",
++          supersededByTaskId: "T-successor",
++          reason: "must not skip semantic rework",
++        },
++      ),
++    ).toThrowError(expect.objectContaining({ code: "E_HANDOFF" }));
++    const requeued = upsertQueuedEntry(
++      superseded,
++      enqueue("T-legacy"),
++      clock("2026-07-30T00:03:00Z"),
++    );
++    expect(requeued.entries[0]?.superseded_by_task_id).toBeUndefined();
++  });
++
+   it("fails closed when an adoption receipt does not match the live queue snapshot", () => {
+     const entry = legacyReworkEntry();
+     const receipt = legacyAdoptionReceipt(entry);
+diff --git a/packages/agentplane/src/commands/pr/integrate/queue-state.ts b/packages/agentplane/src/commands/pr/integrate/queue-state.ts
+index c570fb0d6..b7b701d83 100644
+--- a/packages/agentplane/src/commands/pr/integrate/queue-state.ts
++++ b/packages/agentplane/src/commands/pr/integrate/queue-state.ts
+@@ -26,7 +26,13 @@ export type {
+ export { integrationQueueEntryMatchesSnapshot } from "./queue-state-snapshot.js";
+ export type { IntegrationQueueMutexContext } from "./queue-state-paths.js";
+ 
+-export type IntegrationQueueStatus = "queued" | "claimed" | "handoff" | "done" | "rework";
++export type IntegrationQueueStatus =
++  | "queued"
++  | "claimed"
++  | "handoff"
++  | "done"
++  | "rework"
++  | "superseded";
+ 
+ export type IntegrationQueueEntry = {
+   task_id: string;
+@@ -47,6 +53,7 @@ export type IntegrationQueueEntry = {
+   claim_token?: string;
+   active_operation?: "integration";
+   reason?: string;
++  superseded_by_task_id?: string;
+   legacy_protected_conflict_adoption?: LegacyProtectedConflictAdoptionReceipt;
+ };
+ 
+@@ -74,6 +81,7 @@ const INTEGRATION_QUEUE_STATUSES = new Set<IntegrationQueueStatus>([
+   "handoff",
+   "done",
+   "rework",
++  "superseded",
+ ]);
+ 
+ export function emptyIntegrationQueue(): IntegrationQueueState {
+@@ -149,6 +157,14 @@ function parseQueueState(text: string): IntegrationQueueState {
+         `entry ${index} has a legacy protected-conflict adoption outside its matching rework entry`,
+       );
+     }
++    const supersededByTaskId =
++      typeof maybe.superseded_by_task_id === "string" ? maybe.superseded_by_task_id.trim() : "";
++    if (status === "superseded" && !supersededByTaskId) {
++      throw invalidQueueState(`superseded entry ${index} is missing superseded_by_task_id`);
++    }
++    if (status !== "superseded" && maybe.superseded_by_task_id !== undefined) {
++      throw invalidQueueState(`non-superseded entry ${index} has superseded_by_task_id`);
++    }
+     if (taskIds.has(maybe.task_id!)) {
+       throw invalidQueueState(`duplicate task_id ${maybe.task_id}`);
+     }
+@@ -156,6 +172,7 @@ function parseQueueState(text: string): IntegrationQueueState {
+     if (status === "claimed" || status === "handoff") activeLanes += 1;
+     entries.push({
+       ...maybe,
++      ...(supersededByTaskId ? { superseded_by_task_id: supersededByTaskId } : {}),
+       ...(legacyProtectedConflictAdoption
+         ? { legacy_protected_conflict_adoption: legacyProtectedConflictAdoption }
+         : {}),
+@@ -435,6 +452,12 @@ export function markQueueEntry(
+   reason?: string,
+   clock?: QueueClock,
+ ): IntegrationQueueState {
++  if (status === "superseded") {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Use recordSupersededQueueEntry to record a superseded integration outcome.",
++    });
++  }
+   const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
+   return {
+     schema_version: 1,
+@@ -444,6 +467,58 @@ export function markQueueEntry(
+   };
+ }
+ 
++export function recordSupersededQueueEntry(
++  state: IntegrationQueueState,
++  opts: {
++    taskId: string;
++    supersededByTaskId: string;
++    reason: string;
++    clock?: QueueClock;
++  },
++): IntegrationQueueState {
++  const supersededByTaskId = opts.supersededByTaskId.trim();
++  const reason = opts.reason.trim();
++  if (!supersededByTaskId || !reason) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Superseded integration outcomes require a successor task and a reason.",
++    });
++  }
++  let found = false;
++  const clock = opts.clock ?? DEFAULT_QUEUE_CLOCK;
++  const entries = state.entries.map((entry) => {
++    if (entry.task_id !== opts.taskId) return entry;
++    found = true;
++    if (entry.status !== "rework") {
++      throw new CliError({
++        code: "E_HANDOFF",
++        message:
++          `Integration queue entry ${opts.taskId} must be in rework before recording ` +
++          "a semantic supersession outcome.",
++        context: {
++          reason_code: "superseded_queue_requires_rework",
++          task_id: opts.taskId,
++          queue_status: entry.status,
++        },
++      });
++    }
++    const released = markEntryStatus(entry, "done", reason, clock);
++    return {
++      ...released,
++      status: "superseded" as const,
++      superseded_by_task_id: supersededByTaskId,
++    };
++  });
++  if (!found) {
++    throw new CliError({
++      code: "E_HANDOFF",
++      message: `Integration queue entry not found for semantic supersession: ${opts.taskId}`,
++      context: { reason_code: "superseded_queue_entry_missing", task_id: opts.taskId },
++    });
++  }
++  return { schema_version: 1, entries };
++}
++
+ function adoptionReceiptMatchesQueueEntry(
+   entry: IntegrationQueueEntry,
+   receipt: LegacyProtectedConflictAdoptionReceipt,
+@@ -572,10 +647,15 @@ function markEntryStatus(
+   reason: string | undefined,
+   clock: QueueClock,
+ ): IntegrationQueueEntry {
+-  const { active_operation, legacy_protected_conflict_adoption, ...entryWithoutActiveOperation } =
+-    entry;
++  const {
++    active_operation,
++    legacy_protected_conflict_adoption,
++    superseded_by_task_id,
++    ...entryWithoutActiveOperation
++  } = entry;
+   void active_operation;
+   void legacy_protected_conflict_adoption;
++  void superseded_by_task_id;
+   const next = {
+     ...entryWithoutActiveOperation,
+     status,
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 1df8a7797..b97de4c79 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -296,6 +296,13 @@ export async function deriveBlockers(opts: {
+   conflictRework: ConflictReworkPreparation | null;
+ }): Promise<RouteBlocker[]> {
+   const blockers: RouteBlocker[] = [];
++  if (
++    opts.workflowMode === "branch_pr" &&
++    opts.prFlow?.queue.present &&
++    opts.prFlow.queue.status === "superseded"
++  ) {
++    return blockers;
++  }
+   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
+   if (
+     opts.workflowMode === "branch_pr" &&
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index ef94b06e0..83b58d97c 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -360,6 +360,24 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
+ 
+ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+   const id = state.task.id;
++  if (state.prFlow?.queue.present && state.prFlow.queue.status === "superseded") {
++    const successor = state.prFlow.queue.supersededByTaskId ?? "a recorded successor";
++    return terminalStep({
++      state,
++      id: "terminal.provider_conflict_superseded",
++      code: "provider_conflict_superseded",
++      phase: "provider_conflict_superseded",
++      checkout: "base_checkout",
++      role: "INTEGRATOR",
++      outcome: "superseded",
++      summary:
++        `semantic provider-conflict outcome is superseded by ${successor}; ` +
++        "the closed PR must not be reopened, queued, or integrated",
++      mustNot: [
++        "do not reopen, merge, queue, or clean up the closed superseded PR as though it integrated",
++      ],
++    });
++  }
+   const worktreeBlocker = taskWorktreeBlocker(state);
+   const status = String(state.task.status).toUpperCase();
+   if (status === "TODO") {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+index dde7c47a9..b83314a75 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+@@ -654,4 +654,60 @@ describe("WorkflowStep conflict rework projections", () => {
+       exactArgv: null,
+     });
+   });
++
++  it("stops a closed provider conflict that has a recorded completed successor", () => {
++    const supersededPrFlow = {
++      task: { id: task.id, status: "BLOCKED", verification: null },
++      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
++      pr: {
++        provider: "github",
++        state: "CLOSED",
++        source: "lookup",
++        prNumber: 4626,
++        prUrl: "https://github.example/acme/agentplane/pull/4626",
++        base: "main",
++        headSha: resume.head_sha,
++        mergeCommit: null,
++      },
++      closeTail: { state: "not_applicable", reason: "closed without integration" },
++      hostedChecks: {
++        checked: true,
++        total: 1,
++        pending: 0,
++        failing: 0,
++        passing: 1,
++        missingRequired: [],
++        rows: [],
++      },
++      reviewThreads: { checked: true, unresolved: 0 },
++      queue: {
++        present: true,
++        status: "superseded",
++        reason: "current-base qualification replaced stale conflict",
++        updatedAt: "2026-07-30T00:00:00.000Z",
++        supersededByTaskId: "202607300553-CR9VTJ",
++      },
++      handoff: { present: false },
++      nextAction: "semantic conflict outcome is superseded",
++    } satisfies PrFlowStatusReport;
++    const state = routeState({ prFlow: supersededPrFlow, conflictRework: null });
++    const step = reduceRouteState(state);
++    const { oracle, packet } = executionPacket({
++      state,
++      step,
++      paths: { baseCheckoutPath: "/repo" },
++    });
++
++    expect(step).toMatchObject({
++      kind: "terminal",
++      id: "terminal.provider_conflict_superseded",
++      phase: "provider_conflict_superseded",
++      outcome: { type: "superseded", taskId: task.id },
++    });
++    expect(oracle).toMatchObject({
++      authoritativeCheckout: "base_checkout",
++      nextCommand: null,
++    });
++    expect(packet).toMatchObject({ actionKind: "stop", safeToMutate: false, exactArgv: null });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 80ebb7d46..f117008f5 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -513,7 +513,8 @@ export type WorkflowStep =
+           | "cleanup_blocked"
+           | "done"
+           | "input_required"
+-          | "repair_required";
++          | "repair_required"
++          | "superseded";
+         taskId: string;
+       };
+     });
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 31ca5ccb8..75abfe43e 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -22,7 +22,8 @@
+     "202607281655-YMPY8Y",
+     "202607291449-FTHNAR",
+     "202607300150-MGCHE6",
+-    "202607221852-YP9QCH"
++    "202607221852-YP9QCH",
++    "202607302125-Y61ZHN"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -31,9 +32,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6",
++    "surface_sha256": "57836414138578d277eebd4bc6d69bb9837c638afb6cda7ea60b9ba95760d481",
+     "section_digests": {
+-      "cli_topology": "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
++      "cli_topology": "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -370,12 +371,13 @@
+         "202607260007-DQM6AW",
+         "202607260532-9M7RNH",
+         "202607281655-YMPY8Y",
+-        "202607300150-MGCHE6"
++        "202607300150-MGCHE6",
++        "202607302125-Y61ZHN"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
++      "to_sha256": "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
+       "classification": "additive",
+-      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, and an exact-SHA recovery route for diverged task PR heads; no command or option is removed or mutated.",
++      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, and a backward-compatible semantic-supersession release outcome; no command or option is removed.",
+       "evidence": {
+         "command_count": {
+           "from": 243,
+@@ -387,7 +389,7 @@
+         },
+         "option_count": {
+           "from": 767,
+-          "to": 821
++          "to": 822
+         },
+         "added_commands": [
+           "context supervise-task",
+@@ -943,6 +945,12 @@
+             "kind": "string",
+             "valueHint": "<sha256:...>"
+           },
++          {
++            "command": "integrate queue release",
++            "name": "superseded-by",
++            "kind": "string",
++            "valueHint": "<task-id>"
++          },
+           {
+             "command": "pr conflict-rework",
+             "name": "expect-freshness-token",
+@@ -1192,7 +1200,27 @@
+           }
+         ],
+         "removed_options": [],
+-        "mutated_options": [],
++        "mutated_options": [
++          {
++            "identity": "integrate queue release --status",
++            "before": {
++              "command": "integrate queue release",
++              "name": "status",
++              "kind": "string",
++              "valueHint": "<queued|done|rework>",
++              "default": "queued",
++              "choices": ["queued", "done", "rework"]
++            },
++            "after": {
++              "command": "integrate queue release",
++              "name": "status",
++              "kind": "string",
++              "valueHint": "<queued|done|rework|superseded>",
++              "default": "queued",
++              "choices": ["queued", "done", "rework", "superseded"]
++            }
++          }
++        ],
+         "addition_sources": [
+           {
+             "kind": "command",
+@@ -1357,6 +1385,12 @@
+             "name": "expect-adoption-token",
+             "source_task": "202607260532-9M7RNH"
+           },
++          {
++            "kind": "option",
++            "command": "integrate queue release",
++            "name": "superseded-by",
++            "source_task": "202607302125-Y61ZHN"
++          },
+           {
+             "kind": "option",
+             "command": "pr conflict-rework",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 8b4763f40..ed0a4a897 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -325,6 +325,7 @@ function validateReviewedCandidate({
+     "202607260532-9M7RNH",
+     "202607281655-YMPY8Y",
+     "202607300150-MGCHE6",
++    "202607302125-Y61ZHN",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -348,6 +349,7 @@ function validateReviewedCandidate({
+     "202607291449-FTHNAR",
+     "202607300150-MGCHE6",
+     "202607221852-YP9QCH",
++    "202607302125-Y61ZHN",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -1328,6 +1330,12 @@ function validateReviewedCandidate({
+       kind: "string",
+       valueHint: "<sha256:...>",
+     },
++    {
++      command: "integrate queue release",
++      name: "superseded-by",
++      kind: "string",
++      valueHint: "<task-id>",
++    },
+     {
+       command: "pr conflict-rework",
+       name: "expect-freshness-token",
+@@ -1600,6 +1608,12 @@ function validateReviewedCandidate({
+       name: "expect-adoption-token",
+       source_task: "202607260532-9M7RNH",
+     },
++    {
++      kind: "option",
++      command: "integrate queue release",
++      name: "superseded-by",
++      source_task: "202607302125-Y61ZHN",
++    },
+     {
+       kind: "option",
+       command: "pr conflict-rework",
+@@ -1790,7 +1804,29 @@ function validateReviewedCandidate({
+     "candidate mutates an existing CLI command shell",
+   );
+   assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
+-  assert(cliTopologyDelta.mutated_options.length === 0, "candidate mutates an existing CLI option");
++  const supersededQueueReleaseStatusMutation = {
++    identity: "integrate queue release --status",
++    before: {
++      command: "integrate queue release",
++      name: "status",
++      kind: "string",
++      valueHint: "<queued|done|rework>",
++      default: "queued",
++      choices: ["queued", "done", "rework"],
++    },
++    after: {
++      command: "integrate queue release",
++      name: "status",
++      kind: "string",
++      valueHint: "<queued|done|rework|superseded>",
++      default: "queued",
++      choices: ["queued", "done", "rework", "superseded"],
++    },
++  };
++  assert(
++    hashJson(cliTopologyDelta.mutated_options) === hashJson([supersededQueueReleaseStatusMutation]),
++    "CLI option mutation is not the approved semantic-supersession extension",
++  );
+ 
+   const machineOutputDelta = candidate.deltas.find(
+     (delta) => delta.section === "machine_output_contract",
