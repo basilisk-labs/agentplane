@@ -11,7 +11,6 @@ import { approximateTokens, compactQuery, requestDigest } from "./task-knowledge
 import {
   createTaskKnowledgeRequestResponse,
   TASK_KNOWLEDGE_REQUEST_POLICY,
-  validateTaskKnowledgeRequestResponse,
   type TaskKnowledgeRequestAudit,
   type TaskKnowledgeRequestResponse,
 } from "./task-knowledge-request-response.js";

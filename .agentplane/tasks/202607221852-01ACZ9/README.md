@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -89,6 +89,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted verify-static lint failure identified an unused local validator import left after moving response validation to the neutral response module. Removed the unused import. Local format, lint:core, schemas, architecture, type, and focused request/lifecycle/lock checks pass."
 events:
   -
     type: "status"
@@ -159,8 +162,13 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "comment"
+    at: "2026-07-30T15:37:07.271Z"
+    author: "CODER"
+    body: "Hosted verify-static lint failure identified an unused local validator import left after moving response validation to the neutral response module. Removed the unused import. Local format, lint:core, schemas, architecture, type, and focused request/lifecycle/lock checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T15:30:41.416Z"
+doc_updated_at: "2026-07-30T15:37:07.271Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
