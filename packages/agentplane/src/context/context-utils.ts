@@ -130,7 +130,7 @@ export function normalizeScopeList(scopeValue: string): ScopeName[] {
   return [...new Set(scopes)];
 }
 
-export function pathMatchesScopes(rowPath: string, scopes: ScopeName[]): boolean {
+function pathMatchesScopes(rowPath: string, scopes: ScopeName[]): boolean {
   return scopes.some((scope) => {
     switch (scope) {
       case "wiki": {

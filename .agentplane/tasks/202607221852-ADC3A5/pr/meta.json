@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b",
   "created_at": "2026-07-30T07:51:18.809Z",
-  "diffstat_sha256": "sha256:1b31e79dbbb2fa08e883250b6616eb3a59e637e7c2412a774b27ea353466bceb",
+  "diffstat_sha256": "sha256:b8602311a8330a4136033719abfc06595ddcb30c3386dd95b2a76b31dc4f0cd4",
   "last_verified_at": "2026-07-30T08:15:01.897Z",
   "last_verified_diffstat_sha256": "sha256:13896516b434f21138402747a72a9df89d9ec7a4f88a9aab3ea2e73a3c396bb7",
   "pr_number": 4686,
