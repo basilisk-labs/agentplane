@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-WF8A0X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T18:28:19.079Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "40297e561f4ab4aaf9779bc08f63c7fa2ffefba5",
+  "blueprint_digest": "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01",
+  "findings": [
+    "An interruption after writing the source-task selection marker but before writing the selection receipt leaves an unrecoverable partial handoff: retry exits because the source already has a current CURATOR owner and never completes the missing receipt."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221852-WF8A0X/README.md"
+  ],
+  "missing_tests": [
+    "Interrupt or fail immediately after the source task receives context_task_extraction but before the proposal selection receipt is written; retry must adopt the same CURATOR task and complete the missing receipt.",
+    "Force selection-receipt persistence to fail after the source marker write and verify that a later retry converges without creating another CURATOR task."
+  ],
+  "hidden_assumptions": [
+    "Writing the source-task selection marker and the selection receipt will complete without interruption once CURATOR task adoption has succeeded.",
+    "A source marker always implies that the corresponding durable selection receipt already exists and is complete."
+  ],
+  "residual_risks": [
+    "Make retry recovery distinguish a complete existing selection from a partial marker-only handoff. When the exact CURATOR task and selection intent match but the receipt is absent, resume receipt creation instead of rejecting the selection; add interruption coverage at that boundary."
+  ]
+}

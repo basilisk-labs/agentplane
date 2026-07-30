@@ -36,8 +36,8 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
  .../src/commands/context/context-runner.ts         |    4 +-
  .../src/commands/context/context.learn.spec.ts     |   24 +-
  .../src/commands/context/context.spec.ts           |   32 +-
- .../src/commands/context/harvest-tasks.test.ts     | 1309 +++++++++++--------
- .../src/commands/context/harvest-tasks.ts          | 1358 ++++++++++++++++++--
+ .../src/commands/context/harvest-tasks.test.ts     | 1372 +++++++++++--------
+ .../src/commands/context/harvest-tasks.ts          | 1379 ++++++++++++++++++--
  packages/agentplane/src/context/doctor.ts          |    8 +-
  .../src/context/harvest-tasks-artifacts.ts         |   80 +-
  .../src/context/harvest-tasks-builders.ts          |  372 +++---
@@ -45,7 +45,7 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
  .../src/context/harvest-tasks-markers.ts           |   50 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |   72 +-
  .../src/context/ingest-task-pack.test.ts           |   14 +-
- 18 files changed, 2479 insertions(+), 1126 deletions(-)
+ 18 files changed, 2567 insertions(+), 1122 deletions(-)
 ```
 
 </details>

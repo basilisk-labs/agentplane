@@ -1109,4 +1109,75 @@ describe("context harvest tasks", () => {
       '"state": "created"',
     );
   });
+
+  it("completes the receipt after an interruption immediately after the source marker", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-MARKER",
+      title: "Recover a marker-only CURATOR handoff",
+      description: "Decision: a partial CURATOR handoff must converge to one durable receipt.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+    const interruptedContext = ctx(root, tasks);
+    const writeTask = interruptedContext.taskBackend.writeTask.bind(interruptedContext.taskBackend);
+    interruptedContext.taskBackend.writeTask = async (updated) => {
+      await writeTask(updated);
+      const extensions = updated.extensions as Record<string, unknown> | undefined;
+      if (updated.id === source.id && extensions?.context_task_extraction) {
+        throw new Error("interrupted after source selection marker");
+      }
+    };
+
+    await expect(
+      cmdContextHarvestTasks({
+        ctx: interruptedContext,
+        cwd: root,
+        parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+        createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+          await commandCtx.taskBackend.writeTask({
+            id: "202604040900-CURAT1",
+            title: taskParsed.title,
+            status: "TODO",
+            owner: taskParsed.owner,
+            priority: taskParsed.priority,
+            tags: taskParsed.tags,
+            description: taskParsed.description,
+            extensions: taskParsed.extensions,
+          } as TaskData);
+          return taskCreationResult("202604040900-CURAT1");
+        },
+      }),
+    ).rejects.toThrow("interrupted after source selection marker");
+
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const filesBeforeRecovery = await readdir(proposalDir);
+    expect(filesBeforeRecovery.some((name) => name.endsWith(".selection.json"))).toBe(false);
+    expect(tasks.find((candidate) => candidate.id === source.id)?.extensions).toMatchObject({
+      context_task_extraction: { extraction_task_id: "202604040900-CURAT1" },
+    });
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: () => Promise.reject(new Error("retry must adopt the marker-owned CURATOR task")),
+    });
+
+    expect(tasks.filter((candidate) => candidate.owner === "CURATOR")).toHaveLength(1);
+    const filesAfterRecovery = await readdir(proposalDir);
+    const receiptName = filesAfterRecovery.find((name) => name.endsWith(".selection.json"));
+    await expect(readFile(path.join(proposalDir, receiptName ?? ""), "utf8")).resolves.toContain(
+      '"curator_task_id": "202604040900-CURAT1"',
+    );
+    await expect(
+      cmdContextHarvestTasks({
+        ctx: ctx(root, tasks),
+        cwd: root,
+        parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+        createTask: () => Promise.reject(new Error("completed selections must not create a second task")),
+      }),
+    ).rejects.toThrow(/already owned by CURATOR task 202604040900-CURAT1/u);
+  });
 });
