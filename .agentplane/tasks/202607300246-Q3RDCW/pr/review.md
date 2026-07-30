@@ -12,8 +12,8 @@ Created: 2026-07-30T02:49:39.908Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified recovery upstream binding against a main-only remote fetch configuration: focused recovery and conflict packet tests passed 29/29, and bun run ci:contract passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-07-30T02:49:39.908Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/pr/conflict-rework-recovery.test.ts   | 49 +++++++++++++++++-----
- .../src/commands/pr/conflict-rework-recovery.ts    |  8 +++-
- 2 files changed, 45 insertions(+), 12 deletions(-)
+ .../commands/pr/conflict-rework-recovery.test.ts   | 58 +++++++++++++++++-----
+ .../src/commands/pr/conflict-rework-recovery.ts    |  8 ++-
+ 2 files changed, 52 insertions(+), 14 deletions(-)
 ```
 
 </details>

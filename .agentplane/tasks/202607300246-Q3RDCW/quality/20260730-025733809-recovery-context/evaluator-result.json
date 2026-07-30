@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The test proves archive and reset calls occur, yet a future reorder could reset before archive while the archive still records the supplied SHA.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Assert archive update precedes upstream configuration and hard reset in the mocked Git operation sequence."
+  ],
+  "hidden_assumptions": [
+    "Presence checks imply sequencing of the irreversible recovery steps."
+  ],
+  "recovery_context": "Add a focused ordering assertion only; preserve the current implementation scope and rerun the focused suite plus contract gate."
+}

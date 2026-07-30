@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607300246-Q3RDCW-e747011c477572071b560858",
+  "task_id": "202607300246-Q3RDCW",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add a focused ordering assertion only; preserve the current implementation scope and rerun the focused suite plus contract gate.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "The test proves archive and reset calls occur, yet a future reorder could reset before archive while the archive still records the supplied SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-result.json"
+}

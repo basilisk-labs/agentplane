@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:70dd7ca286ed1cef575358c04121521bcb3315cc0df77295e16f7b30b099c4ef",
+  "implementation_sha": "f2dafbab579ab4256da715fcd7504bb42560bd61",
+  "kind": "task_verification_record",
+  "note": "Verified recovery upstream binding against a main-only remote fetch configuration: focused recovery and conflict packet tests passed 29/29, and bun run ci:contract passed.",
+  "recorded_at": "2026-07-30T02:56:58.673Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.\n3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.",
+  "scope_digest": "sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6",
+  "task_id": "202607300246-Q3RDCW",
+  "verification_command": "agentplane verify 202607300246-Q3RDCW --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,3 +1,3 @@
- .../commands/pr/conflict-rework-recovery.test.ts   | 49 +++++++++++++++++-----
- .../src/commands/pr/conflict-rework-recovery.ts    |  8 +++-
- 2 files changed, 45 insertions(+), 12 deletions(-)
+ .../commands/pr/conflict-rework-recovery.test.ts   | 58 +++++++++++++++++-----
+ .../src/commands/pr/conflict-rework-recovery.ts    |  8 ++-
+ 2 files changed, 52 insertions(+), 14 deletions(-)

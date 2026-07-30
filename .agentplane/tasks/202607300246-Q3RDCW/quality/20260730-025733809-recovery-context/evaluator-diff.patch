@@ -1,0 +1,964 @@
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/README.md b/.agentplane/tasks/202607300246-Q3RDCW/README.md
+new file mode 100644
+index 000000000..1b69319c8
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/README.md
+@@ -0,0 +1,107 @@
++---
++id: "202607300246-Q3RDCW"
++title: "Fix diverged-head recovery upstream binding"
++status: "DOING"
++priority: "med"
++owner: "CODER"
++revision: 4
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "branch-pr"
++  - "code"
++  - "followup"
++  - "recovery"
++  - "v0.7"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T02:48:57.625Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "ORCHESTRATOR"
++    body: "Start: reproduce the unbound remote-tracking recovery path, apply only the bounded upstream fix, and preserve all fail-closed recovery guarantees."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T02:49:03.365Z"
++    author: "ORCHESTRATOR"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: reproduce the unbound remote-tracking recovery path, apply only the bounded upstream fix, and preserve all fail-closed recovery guarantees."
++doc_version: 3
++doc_updated_at: "2026-07-30T02:49:03.365Z"
++doc_updated_by: "ORCHESTRATOR"
++description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
++sections:
++  Summary: |-
++    Fix diverged-head recovery upstream binding
++
++    Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.
++  Scope: |-
++    - In scope: Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.
++    - Out of scope: unrelated refactors not required for "Fix diverged-head recovery upstream binding".
++  Plan: "1. Reproduce recovery from a branch with no configured upstream and only a raw fetched provider tracking ref. 2. Bind the recovery worktree to the exact refs/remotes/origin provider ref before the bounded reset; preserve archive-first validation and all fail-closed checks. 3. Add regression coverage for the exact binding form and retain stale-head/collision guarantees. 4. Run focused recovery tests, declared verification review, and the contract gate; publish through the branch_pr lifecycle."
++  Verify Steps: |-
++    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
++    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
++    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "ee5ea7178ba961f1e17ae3a925cb6b81469c41d7"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Fix diverged-head recovery upstream binding
++
++Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.
++
++## Scope
++
++- In scope: Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.
++- Out of scope: unrelated refactors not required for "Fix diverged-head recovery upstream binding".
++
++## Plan
++
++1. Reproduce recovery from a branch with no configured upstream and only a raw fetched provider tracking ref. 2. Bind the recovery worktree to the exact refs/remotes/origin provider ref before the bounded reset; preserve archive-first validation and all fail-closed checks. 3. Add regression coverage for the exact binding form and retain stale-head/collision guarantees. 4. Run focused recovery tests, declared verification review, and the contract gate; publish through the branch_pr lifecycle.
++
++## Verify Steps
++
++PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
++2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
++3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300246-Q3RDCW/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..13fc00669
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/blueprint/resolved-snapshot.json
+@@ -0,0 +1,600 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300246-Q3RDCW",
++    "title": "Fix diverged-head recovery upstream binding",
++    "description": "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.",
++    "tags": [
++      "branch-pr",
++      "code",
++      "followup",
++      "recovery",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "quality.regression",
++    "version": 1,
++    "title": "Quality regression",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "quality.regression",
++    "blueprintVersion": 1,
++    "title": "Quality regression",
++    "taskId": "202607300246-Q3RDCW",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "specialized code domain resolved to quality.regression",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest",
++          "artifact"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "check_result"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "weak_links"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "regression.original_failure",
++        "kind": "artifact",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Original failure log or check output."
++      },
++      {
++        "id": "regression.reproduction",
++        "kind": "check_result",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Local reproduction or explicit non-reproduction result."
++      },
++      {
++        "id": "regression.focused_check",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Focused regression check."
++      },
++      {
++        "id": "regression.matrix_or_scope",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Affected test/check matrix or bounded scope."
++      },
++      {
++        "id": "regression.full_gate",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Full relevant gate or hosted check evidence."
++      },
++      {
++        "id": "regression.flake_classification",
++        "kind": "weak_links",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Flake classification or residual risk."
++      },
++      {
++        "id": "regression.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "regression.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "affected matrix or full relevant gate",
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "failure reproduction command",
++      "focused regression check",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest",
++        "artifact"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "check_result"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "weak_links"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "regression.original_failure",
++      "kind": "artifact",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Original failure log or check output."
++    },
++    {
++      "id": "regression.reproduction",
++      "kind": "check_result",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Local reproduction or explicit non-reproduction result."
++    },
++    {
++      "id": "regression.focused_check",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Focused regression check."
++    },
++    {
++      "id": "regression.matrix_or_scope",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Affected test/check matrix or bounded scope."
++    },
++    {
++      "id": "regression.full_gate",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Full relevant gate or hosted check evidence."
++    },
++    {
++      "id": "regression.flake_classification",
++      "kind": "weak_links",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Flake classification or residual risk."
++    },
++    {
++      "id": "regression.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "regression.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "affected matrix or full relevant gate",
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "failure reproduction command",
++    "focused regression check",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "specialized code domain resolved to quality.regression",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e"
++  }
++}
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/pr/diffstat.txt b/.agentplane/tasks/202607300246-Q3RDCW/pr/diffstat.txt
+new file mode 100644
+index 000000000..474aa2c8f
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .../commands/pr/conflict-rework-recovery.test.ts   | 49 +++++++++++++++++-----
++ .../src/commands/pr/conflict-rework-recovery.ts    |  8 +++-
++ 2 files changed, 45 insertions(+), 12 deletions(-)
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/pr/github-body.md b/.agentplane/tasks/202607300246-Q3RDCW/pr/github-body.md
+new file mode 100644
+index 000000000..e62fdac4f
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/pr/github-body.md
+@@ -0,0 +1,35 @@
++Task: `202607300246-Q3RDCW`
++Title: Fix diverged-head recovery upstream binding
++Canonical task record: `.agentplane/tasks/202607300246-Q3RDCW/README.md`
++
++## Summary
++
++Fix diverged-head recovery upstream binding
++
++Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.
++
++## Scope
++
++- In scope: Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.
++- Out of scope: unrelated refactors not required for "Fix diverged-head recovery upstream binding".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T02:49:44.325Z
++- Branch: task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/pr/conflict-rework-recovery.test.ts   | 49 +++++++++++++++++-----
++ .../src/commands/pr/conflict-rework-recovery.ts    |  8 +++-
++ 2 files changed, 45 insertions(+), 12 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/pr/github-title.txt b/.agentplane/tasks/202607300246-Q3RDCW/pr/github-title.txt
+new file mode 100644
+index 000000000..5d8e7952b
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 Q3RDCW task: Fix diverged-head recovery upstream binding [202607300246-Q3RDCW]
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/pr/meta.json b/.agentplane/tasks/202607300246-Q3RDCW/pr/meta.json
+new file mode 100644
+index 000000000..7ba0fcd8f
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding",
++  "created_at": "2026-07-30T02:49:39.908Z",
++  "diffstat_sha256": "sha256:ebb24f27be5b9ab701553c7efe3c3490ac7f534073b7a37bce47cde1b623ed3a",
++  "last_verified_at": null,
++  "pr_number": 4678,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4678",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300246-Q3RDCW",
++  "updated_at": "2026-07-30T02:49:44.325Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300246-Q3RDCW/pr/review.md b/.agentplane/tasks/202607300246-Q3RDCW/pr/review.md
+new file mode 100644
+index 000000000..41316d369
+--- /dev/null
++++ b/.agentplane/tasks/202607300246-Q3RDCW/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-07-30T02:49:39.908Z
++
++## Task
++
++- Task: `202607300246-Q3RDCW`
++- Title: Fix diverged-head recovery upstream binding
++- Status: DOING
++- Branch: `task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding`
++- Canonical task record: `.agentplane/tasks/202607300246-Q3RDCW/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T02:49:44.325Z
++- Branch: task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/pr/conflict-rework-recovery.test.ts   | 49 +++++++++++++++++-----
++ .../src/commands/pr/conflict-rework-recovery.ts    |  8 +++-
++ 2 files changed, 45 insertions(+), 12 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts b/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
+index af53c7695..2b8a5c8c4 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
+@@ -79,8 +79,8 @@ function createGit(opts: { fetchedHead?: string; archiveHead?: string | null } =
+       calls.push(`reset:${ref}`);
+       return Promise.resolve();
+     },
+-    setUpstream: (_worktree, upstream) => {
+-      calls.push(`upstream:${upstream}`);
++    setUpstream: (_worktree, upstreamBranch) => {
++      calls.push(`upstream:${upstreamBranch}`);
+       return Promise.resolve();
+     },
+     updateRef: (_root, ref, sha) => {
+@@ -129,7 +129,7 @@ describe("diverged conflict head recovery", () => {
+     });
+     expect(calls).toContain(`archive:refs/agentplane/recovery/${taskId}/${localHead}:${localHead}`);
+     expect(calls).toContain(`reset:refs/remotes/origin/${branch}`);
+-    expect(calls).toContain(`upstream:origin/${branch}`);
++    expect(calls).toContain(`upstream:${branch}`);
+     expect(calls.some((call) => /(?:merge|rebase|push)/u.test(call))).toBe(false);
+   });
+ 
+@@ -172,12 +172,17 @@ describe("diverged conflict head recovery", () => {
+       await runGit(repo, ["add", "seed.txt"]);
+       await runGit(repo, ["commit", "-m", "seed"]);
+       await runGit(repo, ["remote", "add", "origin", remote]);
++      await runGit(repo, [
++        "config",
++        "remote.origin.fetch",
++        "+refs/heads/main:refs/remotes/origin/main",
++      ]);
+       await runGit(repo, ["push", "-u", "origin", "main"]);
+       await runGit(repo, ["checkout", "-b", branch]);
+       await writeFile(path.join(repo, "remote.txt"), "provider head\n", "utf8");
+       await runGit(repo, ["add", "remote.txt"]);
+       await runGit(repo, ["commit", "-m", "provider head"]);
+-      await runGit(repo, ["push", "-u", "origin", branch]);
++      await runGit(repo, ["push", "origin", `HEAD:${branch}`]);
+       const { stdout: providerRaw } = await runGit(repo, ["rev-parse", "HEAD"]);
+       const realProviderHead = providerRaw.trim();
+       await writeFile(path.join(repo, "local.txt"), "unpublished local head\n", "utf8");
+@@ -185,6 +190,21 @@ describe("diverged conflict head recovery", () => {
+       await runGit(repo, ["commit", "-m", "unpublished local head"]);
+       const { stdout: localRaw } = await runGit(repo, ["rev-parse", "HEAD"]);
+       const realLocalHead = localRaw.trim();
++      await expect(runGit(repo, ["config", "--get", `branch.${branch}.remote`])).rejects.toThrow();
++      const providerTrackingRef = `refs/remotes/origin/${branch}`;
++      await runGit(repo, ["update-ref", "-d", providerTrackingRef]);
++      await expect(
++        runGit(repo, ["show-ref", "--verify", "--quiet", providerTrackingRef]),
++      ).rejects.toThrow();
++      await runGit(repo, [
++        "fetch",
++        "--no-tags",
++        "origin",
++        `refs/heads/${branch}:${providerTrackingRef}`,
++      ]);
++      await expect(
++        runGit(repo, ["branch", "--set-upstream-to", `origin/${branch}`]),
++      ).rejects.toThrow();
+       const result = await recoverDivergedConflictHead({
+         gitRoot: repo,
+         taskId,
+@@ -205,15 +225,24 @@ describe("diverged conflict head recovery", () => {
+         expectedProviderHead: realProviderHead,
+       });
+ 
+-      const [{ stdout: adoptedRaw }, { stdout: archivedRaw }, { stdout: statusRaw }] =
+-        await Promise.all([
+-          runGit(repo, ["rev-parse", "HEAD"]),
+-          runGit(repo, ["rev-parse", result.archive_ref]),
+-          runGit(repo, ["status", "--porcelain"]),
+-        ]);
++      const [
++        { stdout: adoptedRaw },
++        { stdout: archivedRaw },
++        { stdout: statusRaw },
++        { stdout: upstreamRemote },
++        { stdout: upstreamMerge },
++      ] = await Promise.all([
++        runGit(repo, ["rev-parse", "HEAD"]),
++        runGit(repo, ["rev-parse", result.archive_ref]),
++        runGit(repo, ["status", "--porcelain"]),
++        runGit(repo, ["config", "--get", `branch.${branch}.remote`]),
++        runGit(repo, ["config", "--get", `branch.${branch}.merge`]),
++      ]);
+       expect(adoptedRaw.trim()).toBe(realProviderHead);
+       expect(archivedRaw.trim()).toBe(realLocalHead);
+       expect(statusRaw).toBe("");
++      expect(upstreamRemote.trim()).toBe("origin");
++      expect(upstreamMerge.trim()).toBe(`refs/heads/${branch}`);
+     } finally {
+       await rm(fixtureRoot, { recursive: true, force: true });
+     }
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts b/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts
+index 536bc0d6c..bbe9ff474 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts
+@@ -64,7 +64,11 @@ const defaultGitOps: DivergedConflictHeadRecoveryGitOps = {
+     await execFileAsync("git", ["reset", "--hard", ref], { cwd: worktreePath, env: gitEnv() });
+   },
+   setUpstream: async (worktreePath, branch) => {
+-    await execFileAsync("git", ["branch", "--set-upstream-to", branch], {
++    await execFileAsync("git", ["config", `branch.${branch}.remote`, "origin"], {
++      cwd: worktreePath,
++      env: gitEnv(),
++    });
++    await execFileAsync("git", ["config", `branch.${branch}.merge`, `refs/heads/${branch}`], {
+       cwd: worktreePath,
+       env: gitEnv(),
+     });
+@@ -168,7 +172,7 @@ export async function recoverDivergedConflictHead(opts: {
+     if (!(await git.refExists(opts.gitRoot, archiveRef))) {
+       await git.updateRef(opts.gitRoot, archiveRef, expectedLocalHead);
+     }
+-    await git.setUpstream(worktreePath, `origin/${branch}`);
++    await git.setUpstream(worktreePath, branch);
+     await git.resetHard(worktreePath, providerTrackingRef);
+   } catch (err) {
+     if (err instanceof CliError) throw err;

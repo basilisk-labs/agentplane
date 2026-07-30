@@ -127,9 +127,14 @@ describe("diverged conflict head recovery", () => {
       provider_tracking_ref: `refs/remotes/origin/${branch}`,
       next_command: `agentplane pr conflict-rework ${taskId} --json`,
     });
-    expect(calls).toContain(`archive:refs/agentplane/recovery/${taskId}/${localHead}:${localHead}`);
-    expect(calls).toContain(`reset:refs/remotes/origin/${branch}`);
-    expect(calls).toContain(`upstream:${branch}`);
+    const archiveCall = `archive:refs/agentplane/recovery/${taskId}/${localHead}:${localHead}`;
+    const upstreamCall = `upstream:${branch}`;
+    const resetCall = `reset:refs/remotes/origin/${branch}`;
+    expect(calls).toContain(archiveCall);
+    expect(calls).toContain(upstreamCall);
+    expect(calls).toContain(resetCall);
+    expect(calls.indexOf(archiveCall)).toBeLessThan(calls.indexOf(upstreamCall));
+    expect(calls.indexOf(upstreamCall)).toBeLessThan(calls.indexOf(resetCall));
     expect(calls.some((call) => /(?:merge|rebase|push)/u.test(call))).toBe(false);
   });
 
