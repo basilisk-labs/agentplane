@@ -4,7 +4,7 @@ title: "Repair beta.2 guard and clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,32 @@ verification:
   updated_by: "TESTER"
   note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T23:43:29.813Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
+  blueprint_digest: "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b"
+  evidence_refs:
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/README.md"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The clone baseline was refreshed, but the frozen evidence does not substantively review or classify the three absolute clone-metric increases."
 commit:
   hash: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
   message: "🧩 3C8V0X code: repair guard and clone baseline"
