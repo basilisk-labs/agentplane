@@ -5,7 +5,7 @@ result_summary: "Prepared and verified v0.6.25 maintenance release candidate wit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -32,25 +32,29 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T12:34:35.453Z"
+  updated_at: "2026-07-30T13:10:07.941Z"
   updated_by: "CODER"
-  note: "Verified: raised integration verify output capacity from 10 MiB to 50 MiB; focused pr-meta 19/19, typecheck, formatting, fast prepublish, the preceding full release:prepublish 82/82 plus coverage suites, and hosted PR checks all pass."
+  note: "Verified: streamed integration verification keeps a bounded 1 MiB tail per stream without a fixed subprocess output ceiling; focused pr-meta 21/21, executable allowlist, failure-tail reporting, lint, typecheck, bootstrap, fast prepublish, prior exact-SHA full prepublish, and hosted checks pass."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-30T12:37:11.266Z"
+  updated_at: "2026-07-30T13:07:57.133Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed."
-  evaluated_sha: "a4cd47e91dba00b796943936121e988b4bf4b979"
+  note: "Streaming verification removes the fixed output ceiling while preserving argv and executable safety."
+  evaluated_sha: "cc001a9ee172a1cba9312ad49de33f21221c5707"
   blueprint_digest: "505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8"
   evidence_refs:
     - ".agentplane/tasks/202607301059-SWF2VC/README.md"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123711266-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123711266-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123711266-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-130757133-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-130757133-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-130757133-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607301059-SWF2VC/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+    - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+    - "packages/agentplane/src/commands/pr/integrate/verify.ts"
+    - "docs/releases/v0.6.25.md"
   findings:
-    - "No blocking findings."
+    - "Focused pr-meta 21/21, lint, typecheck, fast prepublish, bootstrap, the preceding exact-SHA full prepublish, and hosted checks pass; queue rerun is required to prove the streamed path end to end."
 commit:
   hash: "f905f72296101e08eacee1c0acd47b732c126a84"
   message: "🎨 SWF2VC release: format versioned ACR example"
@@ -104,8 +108,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: raised integration verify output capacity from 10 MiB to 50 MiB; focused pr-meta 19/19, typecheck, formatting, fast prepublish, the preceding full release:prepublish 82/82 plus coverage suites, and hosted PR checks all pass."
+  -
+    type: "verify"
+    at: "2026-07-30T13:10:07.941Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: streamed integration verification keeps a bounded 1 MiB tail per stream without a fixed subprocess output ceiling; focused pr-meta 21/21, executable allowlist, failure-tail reporting, lint, typecheck, bootstrap, fast prepublish, prior exact-SHA full prepublish, and hosted checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T13:05:53.439Z"
+doc_updated_at: "2026-07-30T13:10:08.083Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.25 from codex/fix-v0.6.24-closeout-route only, including release notes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub release verification, and proof that main does not contain the maintenance commits."
 sections:
@@ -215,6 +225,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T13:10:07.941Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: streamed integration verification keeps a bounded 1 MiB tail per stream without a fixed subprocess output ceiling; focused pr-meta 21/21, executable allowlist, failure-tail reporting, lint, typecheck, bootstrap, fast prepublish, prior exact-SHA full prepublish, and hosted checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T13:05:53.439Z, excerpt_hash=sha256:88df50bc76184647e26fdaac50e820fd3647ddac19217c34bc5b2e40859ef60d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/.agentplane/tasks/202607301059-SWF2VC/blueprint/resolved-snapshot.json
+    - old_digest: 505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8
+    - current_digest: 505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607301059-SWF2VC
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607301059-SWF2VC --branch task/202607301059-SWF2VC/release-v0-6-25
+    - diagnostic_command: agentplane pr check 202607301059-SWF2VC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -227,6 +267,10 @@ sections:
     - Observation: Integration verification buffered the full release command and failed after captured output exceeded the old 10 MiB ceiling.
       Impact: A passing release gate was misreported as failed, preventing safe queue integration and withholding the real command output.
       Resolution: Raised the verify-command buffer to 50 MiB and pinned the release-sized limit in the pr-meta regression test.
+
+    - Observation: Fixed-size verification buffers failed release:prepublish at both 10 MiB and 50 MiB while the same exact-SHA command passed directly.
+      Impact: Integration could misreport a passing release gate as failed and hide the useful failure tail.
+      Resolution: Stream subprocess output, retain a bounded diagnostic tail, preserve the executable allowlist, and emit the tail on real failures.
 id_source: "generated"
 ---
 ## Summary
@@ -345,6 +389,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T13:10:07.941Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: streamed integration verification keeps a bounded 1 MiB tail per stream without a fixed subprocess output ceiling; focused pr-meta 21/21, executable allowlist, failure-tail reporting, lint, typecheck, bootstrap, fast prepublish, prior exact-SHA full prepublish, and hosted checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T13:05:53.439Z, excerpt_hash=sha256:88df50bc76184647e26fdaac50e820fd3647ddac19217c34bc5b2e40859ef60d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/.agentplane/tasks/202607301059-SWF2VC/blueprint/resolved-snapshot.json
+- old_digest: 505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8
+- current_digest: 505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607301059-SWF2VC
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607301059-SWF2VC --branch task/202607301059-SWF2VC/release-v0-6-25
+- diagnostic_command: agentplane pr check 202607301059-SWF2VC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -361,3 +435,7 @@ DecisionContextRef:
 - Observation: Integration verification buffered the full release command and failed after captured output exceeded the old 10 MiB ceiling.
   Impact: A passing release gate was misreported as failed, preventing safe queue integration and withholding the real command output.
   Resolution: Raised the verify-command buffer to 50 MiB and pinned the release-sized limit in the pr-meta regression test.
+
+- Observation: Fixed-size verification buffers failed release:prepublish at both 10 MiB and 50 MiB while the same exact-SHA command passed directly.
+  Impact: Integration could misreport a passing release gate as failed and hide the useful failure tail.
+  Resolution: Stream subprocess output, retain a bounded diagnostic tail, preserve the executable allowlist, and emit the tail on real failures.

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607301059-SWF2VC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T13:07:57.133Z",
+  "verdict": "pass",
+  "summary": "Streaming verification removes the fixed output ceiling while preserving argv and executable safety.",
+  "evaluated_sha": "cc001a9ee172a1cba9312ad49de33f21221c5707",
+  "blueprint_digest": "505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8",
+  "findings": [
+    "Focused pr-meta 21/21, lint, typecheck, fast prepublish, bootstrap, the preceding exact-SHA full prepublish, and hosted checks pass; queue rerun is required to prove the streamed path end to end."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607301059-SWF2VC/README.md",
+    "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts",
+    "packages/agentplane/src/commands/shared/pr-meta.test.ts",
+    "packages/agentplane/src/commands/pr/integrate/verify.ts",
+    "docs/releases/v0.6.25.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
