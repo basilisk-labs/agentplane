@@ -6,14 +6,14 @@ Created: 2026-07-30T06:29:16.369Z
 
 - Task: `202607300627-SFQ30G`
 - Title: Repair the active beta.2 dependency path after beta.1 non-publication
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300627-SFQ30G/repair-the-active-beta-2-dependency-path-after-b`
 - Canonical task record: `.agentplane/tasks/202607300627-SFQ30G/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Active beta.2 graph no longer depends on the blocked legacy beta.1 gate; successor linkage and docs workflow checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

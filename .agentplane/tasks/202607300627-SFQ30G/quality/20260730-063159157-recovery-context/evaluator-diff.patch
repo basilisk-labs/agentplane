@@ -1,0 +1,662 @@
+diff --git a/.agentplane/tasks/202607221852-J910P6/README.md b/.agentplane/tasks/202607221852-J910P6/README.md
+index ca11ee6b8..c73ef7c7b 100644
+--- a/.agentplane/tasks/202607221852-J910P6/README.md
++++ b/.agentplane/tasks/202607221852-J910P6/README.md
+@@ -8,7 +8,7 @@ revision: 5
+ origin:
+   system: "manual"
+ depends_on:
+-  - "202607221908-MR9EA9"
++  - "202607300553-CR9VTJ"
+ tags:
+   - "context"
+   - "milestone-beta2"
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/README.md b/.agentplane/tasks/202607300627-SFQ30G/README.md
+new file mode 100644
+index 000000000..87822f0b8
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/README.md
+@@ -0,0 +1,112 @@
++---
++id: "202607300627-SFQ30G"
++title: "Repair the active beta.2 dependency path after beta.1 non-publication"
++status: "DOING"
++priority: "high"
++owner: "PLANNER"
++revision: 6
++origin:
++  system: "manual"
++depends_on:
++  - "202607300553-CR9VTJ"
++tags:
++  - "docs"
++  - "graph"
++  - "milestone-beta2"
++  - "v0.7"
++task_kind: "docs"
++mutation_scope: "docs"
++blueprint_request: "docs.change"
++verify:
++  - "agentplane doctor"
++  - "node .agentplane/policy/check-routing.mjs"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T06:28:36.144Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Re-approved after replacing the generated fallback with concrete graph-closure checks."
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "PLANNER"
++    body: "Start: repair the remaining active beta.2 dependency edge while preserving the blocked legacy beta.1 history and successor decision."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T06:28:03.609Z"
++    author: "PLANNER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: repair the remaining active beta.2 dependency edge while preserving the blocked legacy beta.1 history and successor decision."
++doc_version: 3
++doc_updated_at: "2026-07-30T06:28:35.862Z"
++doc_updated_by: "PLANNER"
++description: "Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it."
++sections:
++  Summary: |-
++    Repair the active beta.2 dependency path after beta.1 non-publication
++
++    Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.
++  Scope: |-
++    - In scope: Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.
++    - Out of scope: unrelated refactors not required for "Repair the active beta.2 dependency path after beta.1 non-publication".
++  Plan: "1. Audit active v0.7 task dependencies for references to the blocked legacy beta.1 gate. 2. Replace only the active beta.2 implementation edge in 202607221852-J910P6 from 202607221908-MR9EA9 to the merged successor 202607300553-CR9VTJ. 3. Keep 202607221908-MR9EA9 BLOCKED and do not alter historical evidence. 4. Verify that no active beta.2 task still depends on the legacy gate, then run routing and doctor checks. 5. Record task-local verification, evaluator review, PR checks, and merge through the normal branch_pr route."
++  Verify Steps: |-
++    1. Inspect .agentplane/tasks/202607221852-J910P6/README.md. Expected: its only beta.1 qualification dependency is 202607300553-CR9VTJ, not 202607221908-MR9EA9.
++    2. Search active v0.7 task READMEs for 202607221908-MR9EA9. Expected: no active beta.2 task lists it in depends_on; the legacy task README alone records status BLOCKED.
++    3. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing passes after the task-graph documentation change.
++    4. Run agentplane doctor. Expected: workflow health passes; any documented historical warnings are outside this task.
++    5. Record the dependency audit and both command results through agentplane verify. Expected: the successor decision is the only live beta.2 prerequisite and no provider action or product code change occurred.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "bc873942fc1487a828cdc2705bc1220b2bda14ce"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Repair the active beta.2 dependency path after beta.1 non-publication
++
++Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.
++
++## Scope
++
++- In scope: Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.
++- Out of scope: unrelated refactors not required for "Repair the active beta.2 dependency path after beta.1 non-publication".
++
++## Plan
++
++1. Audit active v0.7 task dependencies for references to the blocked legacy beta.1 gate. 2. Replace only the active beta.2 implementation edge in 202607221852-J910P6 from 202607221908-MR9EA9 to the merged successor 202607300553-CR9VTJ. 3. Keep 202607221908-MR9EA9 BLOCKED and do not alter historical evidence. 4. Verify that no active beta.2 task still depends on the legacy gate, then run routing and doctor checks. 5. Record task-local verification, evaluator review, PR checks, and merge through the normal branch_pr route.
++
++## Verify Steps
++
++1. Inspect .agentplane/tasks/202607221852-J910P6/README.md. Expected: its only beta.1 qualification dependency is 202607300553-CR9VTJ, not 202607221908-MR9EA9.
++2. Search active v0.7 task READMEs for 202607221908-MR9EA9. Expected: no active beta.2 task lists it in depends_on; the legacy task README alone records status BLOCKED.
++3. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing passes after the task-graph documentation change.
++4. Run agentplane doctor. Expected: workflow health passes; any documented historical warnings are outside this task.
++5. Record the dependency audit and both command results through agentplane verify. Expected: the successor decision is the only live beta.2 prerequisite and no provider action or product code change occurred.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300627-SFQ30G/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..a123cce29
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/blueprint/resolved-snapshot.json
+@@ -0,0 +1,405 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300627-SFQ30G",
++    "title": "Repair the active beta.2 dependency path after beta.1 non-publication",
++    "description": "Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.",
++    "tags": [
++      "docs",
++      "graph",
++      "milestone-beta2",
++      "v0.7"
++    ],
++    "owner": "PLANNER",
++    "taskKind": "docs",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "docs",
++    "mutationScope": "docs",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "docs.change"
++  },
++  "selectedBlueprint": {
++    "id": "docs.change",
++    "version": 1,
++    "title": "Documentation change",
++    "taskKinds": [
++      "docs"
++    ],
++    "workflowModes": [
++      "direct",
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "docs.change",
++    "blueprintVersion": 1,
++    "title": "Documentation change",
++    "taskId": "202607300627-SFQ30G",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "docs",
++      "mutationScope": "docs",
++      "blueprintRequest": "docs.change"
++    },
++    "whySelected": [
++      "explicit blueprint requested: docs.change",
++      "task intent kind: docs",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: docs"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.docs.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "docs.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed documentation paths."
++      },
++      {
++        "id": "docs.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Documentation checks."
++      },
++      {
++        "id": "docs.artifact",
++        "kind": "artifact",
++        "producedBy": "artifact_write",
++        "required": true,
++        "description": "Updated documentation artifact."
++      },
++      {
++        "id": "docs.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/dod.docs.md",
++      ".agentplane/policy/security.must.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "documentation checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 3,
++      "maxPromptBlocks": 10,
++      "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.docs.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "docs.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed documentation paths."
++    },
++    {
++      "id": "docs.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Documentation checks."
++    },
++    {
++      "id": "docs.artifact",
++      "kind": "artifact",
++      "producedBy": "artifact_write",
++      "required": true,
++      "description": "Updated documentation artifact."
++    },
++    {
++      "id": "docs.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/dod.docs.md",
++    ".agentplane/policy/security.must.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "documentation checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 3,
++    "maxPromptBlocks": 10,
++    "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: docs.change",
++    "task intent kind: docs",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: docs"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "09c0046e65506af836f91fd4090b9185d6eeddba67cb04a9acc94f13009bc0a5"
++  }
++}
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/pr/diffstat.txt b/.agentplane/tasks/202607300627-SFQ30G/pr/diffstat.txt
+new file mode 100644
+index 000000000..af41a921f
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/pr/diffstat.txt
+@@ -0,0 +1,2 @@
++ .agentplane/tasks/202607221852-J910P6/README.md | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/pr/github-body.md b/.agentplane/tasks/202607300627-SFQ30G/pr/github-body.md
+new file mode 100644
+index 000000000..77f694efa
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/pr/github-body.md
+@@ -0,0 +1,34 @@
++Task: `202607300627-SFQ30G`
++Title: Repair the active beta.2 dependency path after beta.1 non-publication
++Canonical task record: `.agentplane/tasks/202607300627-SFQ30G/README.md`
++
++## Summary
++
++Repair the active beta.2 dependency path after beta.1 non-publication
++
++Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.
++
++## Scope
++
++- In scope: Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.
++- Out of scope: unrelated refactors not required for "Repair the active beta.2 dependency path after beta.1 non-publication".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T06:29:20.783Z
++- Branch: task/202607300627-SFQ30G/repair-the-active-beta-2-dependency-path-after-b
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/tasks/202607221852-J910P6/README.md | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/pr/github-title.txt b/.agentplane/tasks/202607300627-SFQ30G/pr/github-title.txt
+new file mode 100644
+index 000000000..71efddacb
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 SFQ30G task: Repair the active beta.2 dependency path after beta.1 non-publication [202607300627-SFQ30G]
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/pr/meta.json b/.agentplane/tasks/202607300627-SFQ30G/pr/meta.json
+new file mode 100644
+index 000000000..a7f8c5e19
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607300627-SFQ30G/repair-the-active-beta-2-dependency-path-after-b",
++  "created_at": "2026-07-30T06:29:16.369Z",
++  "diffstat_sha256": "sha256:8f09914ffa099f90e37a85c3f3354322271578ebad6fc0b8c8772a5b6e362ec1",
++  "last_verified_at": null,
++  "pr_number": 4682,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4682",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300627-SFQ30G",
++  "updated_at": "2026-07-30T06:29:20.783Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300627-SFQ30G/pr/review.md b/.agentplane/tasks/202607300627-SFQ30G/pr/review.md
+new file mode 100644
+index 000000000..03b3e1a2f
+--- /dev/null
++++ b/.agentplane/tasks/202607300627-SFQ30G/pr/review.md
+@@ -0,0 +1,37 @@
++# PR Review
++
++Created: 2026-07-30T06:29:16.369Z
++
++## Task
++
++- Task: `202607300627-SFQ30G`
++- Title: Repair the active beta.2 dependency path after beta.1 non-publication
++- Status: DOING
++- Branch: `task/202607300627-SFQ30G/repair-the-active-beta-2-dependency-path-after-b`
++- Canonical task record: `.agentplane/tasks/202607300627-SFQ30G/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T06:29:20.783Z
++- Branch: task/202607300627-SFQ30G/repair-the-active-beta-2-dependency-path-after-b
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/tasks/202607221852-J910P6/README.md | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->

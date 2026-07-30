@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300627-SFQ30G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T06:31:59.252Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "7dcc7fb5afe5e39c7bf611da1d0e363827b68bec",
+  "blueprint_digest": "09c0046e65506af836f91fd4090b9185d6eeddba67cb04a9acc94f13009bc0a5",
+  "findings": [
+    "J910P6 now depends on merged CR9VTJ; the eight-task active beta.2 audit reports no legacy MR9EA9 dependency offenders.",
+    "MR9EA9 remains BLOCKED and historical qualification evidence is preserved; no provider run, release, or product-code edit occurred."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300627-SFQ30G/quality/20260730-063159157-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The successor CR9VTJ remains the intended completed non-publication decision for beta.2; its DONE state was checked through task active."
+  ],
+  "residual_risks": []
+}

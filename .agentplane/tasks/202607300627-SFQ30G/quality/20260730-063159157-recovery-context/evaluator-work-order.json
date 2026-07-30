@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300627-SFQ30G-d4c93d8af4d5350b39283545",
+  "prepared_at": "2026-07-30T06:31:59.157Z",
+  "task": {
+    "id": "202607300627-SFQ30G",
+    "revision": 8,
+    "objective": "Repair the active beta.2 dependency path after beta.1 non-publication\n\nReplace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.",
+    "acceptance_criteria": [
+      "agentplane doctor",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Replace the only active beta.2 implementation dependency that still points to the blocked legacy beta.1 gate with the merged successor decision task; preserve the legacy gate as BLOCKED and prove no remaining active beta.2 task depends on it.\n- Out of scope: unrelated refactors not required for \"Repair the active beta.2 dependency path after beta.1 non-publication\".",
+      "1. Audit active v0.7 task dependencies for references to the blocked legacy beta.1 gate. 2. Replace only the active beta.2 implementation edge in 202607221852-J910P6 from 202607221908-MR9EA9 to the merged successor 202607300553-CR9VTJ. 3. Keep 202607221908-MR9EA9 BLOCKED and do not alter historical evidence. 4. Verify that no active beta.2 task still depends on the legacy gate, then run routing and doctor checks. 5. Record task-local verification, evaluator review, PR checks, and merge through the normal branch_pr route.",
+      "1. Inspect .agentplane/tasks/202607221852-J910P6/README.md. Expected: its only beta.1 qualification dependency is 202607300553-CR9VTJ, not 202607221908-MR9EA9.\n2. Search active v0.7 task READMEs for 202607221908-MR9EA9. Expected: no active beta.2 task lists it in depends_on; the legacy task README alone records status BLOCKED.\n3. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing passes after the task-graph documentation change.\n4. Run agentplane doctor. Expected: workflow health passes; any documented historical warnings are outside this task.\n5. Record the dependency audit and both command results through agentplane verify. Expected: the successor decision is the only live beta.2 prerequisite and no provider action or product code change occurred."
+    ]
+  },
+  "evaluated_sha": "7dcc7fb5afe5e39c7bf611da1d0e363827b68bec",
+  "diff_base_sha": "bc873942fc1487a828cdc2705bc1220b2bda14ce",
+  "blueprint_digest": "09c0046e65506af836f91fd4090b9185d6eeddba67cb04a9acc94f13009bc0a5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300627-SFQ30G/README.md",
+      "sha256": "sha256:d8e2b99a29378b19f227df34458f15249b6969e9f00aa11a394c4e48c83f6626",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300627-SFQ30G/quality/20260730-063159157-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:ee38ddd677515196cd995cff08b3cf779b1e890e95d903bf8ccef5262b8bf0cb",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300627-SFQ30G/quality/20260730-063159157-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:0c5a57dbe7022c6714629c8cd1d38189af115ad0f9e686be70c72a95e0b7a47d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300627-SFQ30G/quality/20260730-063159157-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:b486e7ba81a860af683c88060b054223fd9a562b724304ba2b46b4f3a59c0d32",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

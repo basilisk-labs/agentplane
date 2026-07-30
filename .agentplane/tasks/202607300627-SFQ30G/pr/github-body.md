@@ -15,8 +15,13 @@ Replace the only active beta.2 implementation dependency that still points to th
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Active beta.2 graph no longer depends on the blocked legacy beta.1 gate; successor linkage and docs
+workflow checks pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -1,0 +1,15 @@
+{
+  "details": "Command: node inline dependency audit; ap task active; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check.\nResult: pass.\nEvidence: checked_beta2_tasks=8, legacy_dependency_offenders=[], J910P6 depends on 202607300553-CR9VTJ, MR9EA9 remains BLOCKED, routing passed, doctor OK (three historical warnings only), and diff check was clean.\nScope: only .agentplane/tasks/202607221852-J910P6/README.md and this task evidence; no provider action and no product-code change.",
+  "digest": "sha256:5a25ba99642ac623eb9fee18efb13a58b4e7aacac9477255627808918e9d0f1b",
+  "implementation_sha": "7dcc7fb5afe5e39c7bf611da1d0e363827b68bec",
+  "kind": "task_verification_record",
+  "note": "Active beta.2 graph no longer depends on the blocked legacy beta.1 gate; successor linkage and docs workflow checks pass.",
+  "recorded_at": "2026-07-30T06:31:33.252Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Inspect .agentplane/tasks/202607221852-J910P6/README.md. Expected: its only beta.1 qualification dependency is 202607300553-CR9VTJ, not 202607221908-MR9EA9.\n2. Search active v0.7 task READMEs for 202607221908-MR9EA9. Expected: no active beta.2 task lists it in depends_on; the legacy task README alone records status BLOCKED.\n3. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing passes after the task-graph documentation change.\n4. Run agentplane doctor. Expected: workflow health passes; any documented historical warnings are outside this task.\n5. Record the dependency audit and both command results through agentplane verify. Expected: the successor decision is the only live beta.2 prerequisite and no provider action or product code change occurred.",
+  "scope_digest": "sha256:80530bff6a87fca281679bc911b22ea34d3bd366b9cc608ba72afd9827c63a55",
+  "task_id": "202607300627-SFQ30G",
+  "verification_command": "agentplane verify 202607300627-SFQ30G --ok --by TESTER",
+  "verifier": "TESTER"
+}
