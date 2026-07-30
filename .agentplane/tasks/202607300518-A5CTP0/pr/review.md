@@ -6,7 +6,7 @@ Created: 2026-07-30T05:26:25.323Z
 
 - Task: `202607300518-A5CTP0`
 - Title: Attribute RF-04 harness latency without provider retries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider`
 - Canonical task record: `.agentplane/tasks/202607300518-A5CTP0/README.md`
 
