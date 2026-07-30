@@ -1,10 +1,11 @@
 ---
 id: "202607300246-Q3RDCW"
 title: "Fix diverged-head recovery upstream binding"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -27,33 +28,33 @@ verification:
   note: "Verified recovery upstream binding against a main-only remote fetch configuration: focused recovery and conflict packet tests passed 29/29, and bun run ci:contract passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T02:57:33.930Z"
+  updated_at: "2026-07-30T02:59:19.714Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "f2dafbab579ab4256da715fcd7504bb42560bd61"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "2b237b623595d7f9dec2a6d700879a29009cde9b"
   blueprint_digest: "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e"
   evidence_refs:
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300246-Q3RDCW/README.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The test proves archive and reset calls occur, yet a future reorder could reset before archive while the archive still records the supplied SHA."
+    - "Recovery validates exact heads, fetches the provider ref explicitly, writes standard branch upstream fields without relying on fetch refspec discovery, and asserts archive < upstream configuration < hard reset."
+    - "The real Git fixture limits origin fetch to main, demonstrates shorthand upstream binding fails, then verifies recovery preserves the local archive, adopts the provider head, remains clean, and writes remote and merge configuration."
 commit:
-  hash: "f2dafbab579ab4256da715fcd7504bb42560bd61"
-  message: "🐛 Q3RDCW code: bind recovered task upstream safely"
+  hash: "2b237b623595d7f9dec2a6d700879a29009cde9b"
+  message: "🐛 Q3RDCW code: enforce recovery archive ordering"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -61,6 +62,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation: configured the recovered task branch upstream without assuming the repository fetches every remote branch; focused recovery regression checks pass."
+  -
+    author: "CODER"
+    body: "Implementation rework: added deterministic ordering assertions for archive, upstream configuration, and reset; verification will repeat against commit 2b237b623595d7f9dec2a6d700879a29009cde9b."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -82,8 +89,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified recovery upstream binding against a main-only remote fetch configuration: focused recovery and conflict packet tests passed 29/29, and bun run ci:contract passed."
+  -
+    type: "status"
+    at: "2026-07-30T02:58:57.786Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: added deterministic ordering assertions for archive, upstream configuration, and reset; verification will repeat against commit 2b237b623595d7f9dec2a6d700879a29009cde9b."
+  -
+    type: "status"
+    at: "2026-07-30T02:59:44.834Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T02:56:59.406Z"
+doc_updated_at: "2026-07-30T02:59:44.835Z"
 doc_updated_by: "CODER"
 description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
 sections:
