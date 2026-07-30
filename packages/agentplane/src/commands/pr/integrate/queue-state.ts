@@ -14,6 +14,7 @@ import {
   resolveIntegrationQueueMutexContext,
   type IntegrationQueueMutexContext,
 } from "./queue-state-paths.js";
+import { markQueueEntryStatus } from "./queue-state-transition.js";
 
 export {
   createLegacyProtectedConflictAdoptionReceipt,
@@ -24,6 +25,7 @@ export type {
   LegacyProtectedConflictAdoptionReceipt,
 } from "./queue-state-legacy-adoption.js";
 export { integrationQueueEntryMatchesSnapshot } from "./queue-state-snapshot.js";
+export { recordSupersededQueueEntry } from "./queue-state-superseded.js";
 export type { IntegrationQueueMutexContext } from "./queue-state-paths.js";
 
 export type IntegrationQueueStatus =
@@ -57,7 +59,7 @@ export type IntegrationQueueEntry = {
   legacy_protected_conflict_adoption?: LegacyProtectedConflictAdoptionReceipt;
 };
 
-type IntegrationQueueState = {
+export type IntegrationQueueState = {
   schema_version: 1;
   entries: IntegrationQueueEntry[];
 };
@@ -462,61 +464,9 @@ export function markQueueEntry(
   return {
     schema_version: 1,
     entries: state.entries.map((entry) =>
-      entry.task_id === taskId ? markEntryStatus(entry, status, reason, resolvedClock) : entry,
+      entry.task_id === taskId ? markQueueEntryStatus(entry, status, reason, resolvedClock) : entry,
     ),
   };
-}
-
-export function recordSupersededQueueEntry(
-  state: IntegrationQueueState,
-  opts: {
-    taskId: string;
-    supersededByTaskId: string;
-    reason: string;
-    clock?: QueueClock;
-  },
-): IntegrationQueueState {
-  const supersededByTaskId = opts.supersededByTaskId.trim();
-  const reason = opts.reason.trim();
-  if (!supersededByTaskId || !reason) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Superseded integration outcomes require a successor task and a reason.",
-    });
-  }
-  let found = false;
-  const clock = opts.clock ?? DEFAULT_QUEUE_CLOCK;
-  const entries = state.entries.map((entry) => {
-    if (entry.task_id !== opts.taskId) return entry;
-    found = true;
-    if (entry.status !== "rework") {
-      throw new CliError({
-        code: "E_HANDOFF",
-        message:
-          `Integration queue entry ${opts.taskId} must be in rework before recording ` +
-          "a semantic supersession outcome.",
-        context: {
-          reason_code: "superseded_queue_requires_rework",
-          task_id: opts.taskId,
-          queue_status: entry.status,
-        },
-      });
-    }
-    const released = markEntryStatus(entry, "done", reason, clock);
-    return {
-      ...released,
-      status: "superseded" as const,
-      superseded_by_task_id: supersededByTaskId,
-    };
-  });
-  if (!found) {
-    throw new CliError({
-      code: "E_HANDOFF",
-      message: `Integration queue entry not found for semantic supersession: ${opts.taskId}`,
-      context: { reason_code: "superseded_queue_entry_missing", task_id: opts.taskId },
-    });
-  }
-  return { schema_version: 1, entries };
 }
 
 function adoptionReceiptMatchesQueueEntry(
@@ -639,34 +589,4 @@ export function queueBaseConflictReason(opts: {
   return overlappingPaths.length > 0
     ? `${reason}; overlapping paths: ${overlappingPaths.join(", ")}`
     : reason;
-}
-
-function markEntryStatus(
-  entry: IntegrationQueueEntry,
-  status: IntegrationQueueStatus,
-  reason: string | undefined,
-  clock: QueueClock,
-): IntegrationQueueEntry {
-  const {
-    active_operation,
-    legacy_protected_conflict_adoption,
-    superseded_by_task_id,
-    ...entryWithoutActiveOperation
-  } = entry;
-  void active_operation;
-  void legacy_protected_conflict_adoption;
-  void superseded_by_task_id;
-  const next = {
-    ...entryWithoutActiveOperation,
-    status,
-    updated_at: clock.now().toISOString(),
-    reason,
-  };
-  if (status === "claimed" || status === "handoff") return next;
-  const { claimed_by, claimed_at, lease_expires_at, claim_token, ...released } = next;
-  void claimed_by;
-  void claimed_at;
-  void lease_expires_at;
-  void claim_token;
-  return released;
 }
