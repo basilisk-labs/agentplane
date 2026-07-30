@@ -1490,7 +1490,7 @@ Options:
 
 ### integrate queue release
 
-Release or complete a queue entry.
+Release, complete, or record a superseded queue entry.
 
 Usage:
 
@@ -1500,8 +1500,9 @@ agentplane integrate queue release <task-id> [options]
 
 Options:
 
-- `--status <queued|done|rework>`: Next queue status. (choices=queued|done|rework, default=queued)
+- `--status <queued|done|rework|superseded>`: Next queue status. (choices=queued|done|rework|superseded, default=queued)
 - `--reason <text>`: Release reason.
+- `--superseded-by <task-id>`: Completed successor task required when --status superseded.
 
 ### integrate queue run-next
 

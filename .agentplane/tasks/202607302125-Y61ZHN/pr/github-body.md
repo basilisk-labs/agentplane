@@ -27,6 +27,7 @@ Add a terminal superseded outcome for a semantic provider-conflict resolution. A
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |   5 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/integrate-queue-doctor-command.ts |   2 +-
  .../src/commands/integrate-queue-lane.ts           |   3 +-
@@ -44,7 +45,7 @@ Add a terminal superseded outcome for a semantic provider-conflict resolution. A
  .../src/commands/shared/workflow-step.ts           |   3 +-
  .../baselines/v0.7-compatibility-candidate.json    |  50 +++++++++--
  .../check-compatibility-contract-baseline.mjs      |  38 +++++++-
- 17 files changed, 582 insertions(+), 25 deletions(-)
+ 18 files changed, 585 insertions(+), 27 deletions(-)
 ```
 
 </details>
