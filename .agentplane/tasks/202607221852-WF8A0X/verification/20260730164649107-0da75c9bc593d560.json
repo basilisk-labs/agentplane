@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:0da75c9bc593d56022e523026dd5f469c4186ce9094c356e6c1708566657ca3c",
+  "implementation_sha": "5dec70046e5b4006ffa4b78593154ad3409ad764",
+  "kind": "task_verification_record",
+  "note": "Verified RF-20: proposal collection writes no wiki/fact/graph artifacts; duplicate/consolidation evidence is recorded before exact CURATOR selection; CLI builds the bounded source/canonical/SGR work pack and retains apply ownership. Checks: typecheck; focused harvest tasks 9/9; Knip baseline; CLI docs freshness; targeted ESLint; diff check.",
+  "recorded_at": "2026-07-30T16:46:49.107Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Complete fixtures containing durable and transient changes. Expected: only source-backed durable candidates are proposed; no wiki file changes automatically.\n2. Submit duplicate and conflicting proposals. Expected: dedupe/consolidation evidence precedes CURATOR selection.\n3. Select a proposal. Expected: a separate exact-id CURATOR task/work order owns semantic publication.\n4. Trace a published item. Expected: source refs, task/PR decision, CURATOR result, and apply receipt are complete.\n5. Run proposal/context/task-state tests.",
+  "scope_digest": "sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444",
+  "task_id": "202607221852-WF8A0X",
+  "verification_command": "agentplane verify 202607221852-WF8A0X --ok --by TESTER",
+  "verifier": "TESTER"
+}

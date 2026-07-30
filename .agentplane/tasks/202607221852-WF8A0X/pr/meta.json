@@ -3,7 +3,8 @@
   "branch": "task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa",
   "created_at": "2026-07-30T16:07:19.966Z",
   "diffstat_sha256": "sha256:1c473330a52207efd7f5bbea45a7d97ee36c5ca34d675202abb5d3b4ac8b2f5d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-30T16:46:49.107Z",
+  "last_verified_diffstat_sha256": "sha256:1c473330a52207efd7f5bbea45a7d97ee36c5ca34d675202abb5d3b4ac8b2f5d",
   "pr_number": 4694,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4694",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607221852-WF8A0X",
   "updated_at": "2026-07-30T16:07:48.548Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
