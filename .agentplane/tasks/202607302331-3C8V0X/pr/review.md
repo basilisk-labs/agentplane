@@ -12,8 +12,8 @@ Created: 2026-07-30T23:32:41.818Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-07-30T23:32:41.818Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T23:32:41.818Z
+- Updated: 2026-07-30T23:35:43.550Z
 - Branch: task/202607302331-3C8V0X/repair-beta-2-guard-and-clone-baseline-drift
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
