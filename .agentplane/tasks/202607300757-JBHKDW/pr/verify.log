@@ -1,0 +1,32 @@
+[2026-07-30T10:57:45.538Z] sha=1fb4ba86ee0828415db6546db36b47f73ea20ff1 $ bun run typecheck
+$ node scripts/checks/run-typescript-build.mjs
+
+[2026-07-30T10:57:45.653Z] sha=1fb4ba86ee0828415db6546db36b47f73ea20ff1 $ bun run test:project -- agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607300757-JBHKDW-fix-direct-verified-task-closeout-route
+
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  13:57:45
+   Duration  100ms (transform 21ms, setup 0ms, import 27ms, tests 3ms, environment 0ms)
+
+$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts
+
+[2026-07-30T10:57:46.041Z] sha=1fb4ba86ee0828415db6546db36b47f73ea20ff1 $ bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607300757-JBHKDW-fix-direct-verified-task-closeout-route
+
+
+ Test Files  3 passed (3)
+      Tests  16 passed (16)
+   Start at  13:57:46
+   Duration  4.60s (transform 4.15s, setup 0ms, import 5.34s, tests 4.39s, environment 0ms)
+
+$ vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts
+
+[2026-07-30T10:57:50.847Z] sha=1fb4ba86ee0828415db6546db36b47f73ea20ff1 $ node .agentplane/policy/check-routing.mjs
+policy routing OK
+
+[2026-07-30T10:57:50.886Z] ✅ verified_sha=1fb4ba86ee0828415db6546db36b47f73ea20ff1
+
