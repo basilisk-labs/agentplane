@@ -183,6 +183,31 @@ function projectMarkdownRows(
   return rows;
 }
 
+function appendWindowRows(
+  rows: ProjectionSourceRow[],
+  filePath: string,
+  rel: string,
+  lines: string[],
+  kind: "text-window" | "json-window",
+): void {
+  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
+    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
+    if (!body.trim()) continue;
+    const startLine = start + 1;
+    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
+    const ref = lineWindowRef(rel, startLine, endLine);
+    rows.push({
+      path: ref,
+      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
+      content_type: deriveContentType(filePath),
+      kind,
+      source_refs: [ref],
+      ...projectionTextFields(body),
+      size_bytes: byteLength(body),
+    });
+  }
+}
+
 function projectPlainTextRows(
   filePath: string,
   content: string,
@@ -201,21 +226,7 @@ function projectPlainTextRows(
       size_bytes: byteLength(content),
     },
   ];
-  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
-    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
-    if (!body.trim()) continue;
-    const startLine = start + 1;
-    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
-    rows.push({
-      path: lineWindowRef(rel, startLine, endLine),
-      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
-      content_type: deriveContentType(filePath),
-      kind: "text-window",
-      source_refs: [lineWindowRef(rel, startLine, endLine)],
-      ...projectionTextFields(body),
-      size_bytes: byteLength(body),
-    });
-  }
+  appendWindowRows(rows, filePath, rel, lines, "text-window");
   return rows;
 }
 
@@ -238,21 +249,7 @@ function projectStructuredJsonRows(
       size_bytes: byteLength(content),
     },
   ];
-  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
-    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
-    if (!body.trim()) continue;
-    const startLine = start + 1;
-    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
-    rows.push({
-      path: lineWindowRef(rel, startLine, endLine),
-      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
-      content_type: deriveContentType(filePath),
-      kind: "json-window",
-      source_refs: [lineWindowRef(rel, startLine, endLine)],
-      ...projectionTextFields(body),
-      size_bytes: byteLength(body),
-    });
-  }
+  appendWindowRows(rows, filePath, rel, lines, "json-window");
   return rows;
 }
 

@@ -40,7 +40,7 @@ export function taskContextReferences(
   return workOrder.knowledge_refs;
 }
 
-function kindForRef(ref: string): KnowledgeRef["kind"] | null {
+export function canonicalKnowledgeKind(ref: string): KnowledgeRef["kind"] | null {
   try {
     const parsed = parseCanonicalKnowledgeRef(ref);
     if (parsed.path.startsWith("context/wiki/")) return "wiki";
@@ -68,7 +68,7 @@ export function matchTaskContextReferences(opts: {
         (opts.desired_kind === "any" || knowledge.kind === opts.desired_kind),
     );
     if (matchingContext.length > 0) return matchingContext;
-    const candidateKind = kindForRef(candidateRef);
+    const candidateKind = canonicalKnowledgeKind(candidateRef);
     if (!candidateKind || opts.desired_kind === "any" || candidateKind === opts.desired_kind) {
       outOfScopeCandidateCount += 1;
     }

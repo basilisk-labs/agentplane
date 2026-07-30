@@ -133,6 +133,31 @@ function parseRefs(raw: unknown): string[] {
   }
 }
 
+function projectionRowFields(
+  row: SqliteProjectionRowRecord,
+): Pick<
+  SqliteProjectionRow,
+  | "path"
+  | "sha256"
+  | "content_type"
+  | "projection_version"
+  | "indexed_at"
+  | "size_bytes"
+  | "kind"
+  | "source_refs"
+> {
+  return {
+    path: String(row.path ?? ""),
+    sha256: String(row.sha256 ?? ""),
+    content_type: String(row.content_type ?? ""),
+    projection_version: Number(row.projection_version ?? 0),
+    indexed_at: String(row.indexed_at ?? ""),
+    size_bytes: Number(row.size_bytes ?? 0),
+    kind: String(row.kind ?? ""),
+    source_refs: parseRefs(row.source_refs),
+  };
+}
+
 function ftsTokens(query: string): string[] {
   return query.match(/[\p{L}\p{N}_]+/gu)?.filter(Boolean) ?? [];
 }
@@ -468,16 +493,9 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
     return {
       metadata: metadataFromRow(metadata),
       rows: rows.map((row) => ({
-        path: String(row.path ?? ""),
-        sha256: String(row.sha256 ?? ""),
-        content_type: String(row.content_type ?? ""),
-        projection_version: Number(row.projection_version ?? 0),
-        indexed_at: String(row.indexed_at ?? ""),
-        size_bytes: Number(row.size_bytes ?? 0),
-        kind: String(row.kind ?? ""),
+        ...projectionRowFields(row),
         search_text: String(row.search_text ?? ""),
         preview_text: String(row.preview_text ?? ""),
-        source_refs: parseRefs(row.source_refs),
       })),
     };
   } catch {
@@ -523,15 +541,8 @@ export async function searchSqliteProjection(
     return {
       metadata: metadataFromRow(metadata),
       rows: records.map((row) => ({
-        path: String(row.path ?? ""),
-        sha256: String(row.sha256 ?? ""),
-        content_type: String(row.content_type ?? ""),
-        projection_version: Number(row.projection_version ?? 0),
-        indexed_at: String(row.indexed_at ?? ""),
-        size_bytes: Number(row.size_bytes ?? 0),
-        kind: String(row.kind ?? ""),
+        ...projectionRowFields(row),
         preview_text: String(row.preview_text ?? ""),
-        source_refs: parseRefs(row.source_refs),
         rank: Number(row.rank ?? 0),
         highlight: String(row.highlight ?? ""),
       })),

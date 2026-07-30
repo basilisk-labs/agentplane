@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { parseCanonicalKnowledgeRef, type KnowledgeRef } from "@agentplaneorg/core/schemas";
+import { type KnowledgeRef } from "@agentplaneorg/core/schemas";
 
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
@@ -23,6 +23,7 @@ import {
   selectSemanticRetrievalCandidates,
   type SemanticRetrievalSelector,
 } from "./task-knowledge-semantic-escalation.js";
+import { canonicalKnowledgeKind } from "./task-knowledge-request-scope.js";
 
 export type {
   TaskKnowledgeRetrieval,
@@ -141,20 +142,6 @@ function encoded(value: string): string {
   return encodeURIComponent(value).replaceAll("%3A", ":");
 }
 
-function canonicalKind(ref: string): KnowledgeRef["kind"] | null {
-  try {
-    const parsed = parseCanonicalKnowledgeRef(ref);
-    if (parsed.path.startsWith("context/wiki/")) return "wiki";
-    if (parsed.path.startsWith("context/raw/")) return "source";
-    if (parsed.selector?.key === "fact") return "fact";
-    if (parsed.selector?.key === "entity") return "entity";
-    if (parsed.selector?.key === "edge") return "edge";
-    return null;
-  } catch {
-    return null;
-  }
-}
-
 function addCandidate(candidates: Map<string, Candidate>, candidate: Candidate): void {
   const current = candidates.get(candidate.ref);
   if (!current) {
@@ -180,7 +167,7 @@ function candidateFromRef(opts: {
   score: number;
   reason: string;
 }): Candidate | null {
-  const kind = canonicalKind(opts.ref);
+  const kind = canonicalKnowledgeKind(opts.ref);
   return kind
     ? { ref: opts.ref, kind, retrieval: opts.retrieval, score: opts.score, reasons: [opts.reason] }
     : null;
