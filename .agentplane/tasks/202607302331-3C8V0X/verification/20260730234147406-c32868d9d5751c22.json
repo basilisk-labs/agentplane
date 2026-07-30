@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts\nResult: pass\nEvidence: 9 tests passed, 0 failed, 35 expectations at 2f127f86086217e2b984f7c8c2fa94506a54bdc6\nScope: shared record-guard behavior and semantic retrieval fallback paths\n\nCommand: bun run guards:check && bun run clone:check\nResult: pass\nEvidence: shared guards passed; clone baseline is current at sources=1274, clones=93, duplicatedLines=1462, duplicatedTokens=10292, percentage=0.6321670097030285\nScope: canonical guard ownership and reviewed clone-drift boundary\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0 at 2f127f86086217e2b984f7c8c2fa94506a54bdc6\nScope: repository type contract\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: format, schemas, compatibility, RF-04 replay, hotspots, lifecycle, guard, lint, architecture, clone, Knip, and coverage gates passed\nScope: full repository contract for the bounded repair",
+  "digest": "sha256:c32868d9d5751c2277b77e9ca76d031f093b013826d91fb8059ebeeeee38ea76",
+  "implementation_sha": "2f127f86086217e2b984f7c8c2fa94506a54bdc6",
+  "kind": "task_verification_record",
+  "note": "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.",
+  "recorded_at": "2026-07-30T23:41:47.406Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6",
+  "task_id": "202607302331-3C8V0X",
+  "verification_command": "agentplane verify 202607302331-3C8V0X --ok --by TESTER",
+  "verifier": "TESTER"
+}

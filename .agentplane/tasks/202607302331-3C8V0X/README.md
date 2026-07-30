@@ -4,7 +4,7 @@ title: "Repair beta.2 guard and clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T23:41:47.406Z"
+  updated_by: "TESTER"
+  note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
   attempts: 0
 commit:
   hash: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
@@ -57,8 +57,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implemented: moved the shared record-guard repair and measured clone-baseline refresh into this bounded task; beta.2 qualification remains a separate evidence-only gate."
+  -
+    type: "verify"
+    at: "2026-07-30T23:41:47.406Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T23:35:56.474Z"
+doc_updated_at: "2026-07-30T23:41:49.014Z"
 doc_updated_by: "CODER"
 description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
 sections:
@@ -81,11 +87,64 @@ sections:
     6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T23:41:47.406Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T23:35:56.474Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
+
+    Details:
+
+    Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts
+    Result: pass
+    Evidence: 9 tests passed, 0 failed, 35 expectations at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
+    Scope: shared record-guard behavior and semantic retrieval fallback paths
+
+    Command: bun run guards:check && bun run clone:check
+    Result: pass
+    Evidence: shared guards passed; clone baseline is current at sources=1274, clones=93, duplicatedLines=1462, duplicatedTokens=10292, percentage=0.6321670097030285
+    Scope: canonical guard ownership and reviewed clone-drift boundary
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0 at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
+    Scope: repository type contract
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: format, schemas, compatibility, RF-04 replay, hotspots, lifecycle, guard, lint, architecture, clone, Knip, and coverage gates passed
+    Scope: full repository contract for the bounded repair
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+    - old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+    - current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607302331-3C8V0X
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Beta.2 qualification detected a local isRecord duplicate and an absolute clone-baseline drift after repository source growth.
+      Impact: The guard blocked ci:contract and qualification could not proceed without a separately traceable repair.
+      Resolution: This task isolates the two-file repair; beta.2 remains a separate qualification gate and must consume the merged repair through dependency closure.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9b299bedb15d2efdbf92b83567660e65aa3451a9"
@@ -121,6 +180,56 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T23:41:47.406Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T23:35:56.474Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
+
+Details:
+
+Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts
+Result: pass
+Evidence: 9 tests passed, 0 failed, 35 expectations at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
+Scope: shared record-guard behavior and semantic retrieval fallback paths
+
+Command: bun run guards:check && bun run clone:check
+Result: pass
+Evidence: shared guards passed; clone baseline is current at sources=1274, clones=93, duplicatedLines=1462, duplicatedTokens=10292, percentage=0.6321670097030285
+Scope: canonical guard ownership and reviewed clone-drift boundary
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0 at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
+Scope: repository type contract
+
+Command: bun run ci:contract
+Result: pass
+Evidence: format, schemas, compatibility, RF-04 replay, hotspots, lifecycle, guard, lint, architecture, clone, Knip, and coverage gates passed
+Scope: full repository contract for the bounded repair
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+- old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+- current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607302331-3C8V0X
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -129,3 +238,7 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Beta.2 qualification detected a local isRecord duplicate and an absolute clone-baseline drift after repository source growth.
+  Impact: The guard blocked ci:contract and qualification could not proceed without a separately traceable repair.
+  Resolution: This task isolates the two-file repair; beta.2 remains a separate qualification gate and must consume the merged repair through dependency closure.
