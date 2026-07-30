@@ -8,10 +8,10 @@
   "pr_number": 4692,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4692",
   "pre_merge_closure": {
-    "basis_commit": "ae57f3af8a46637818d16bcca69519bb77041aab",
+    "basis_commit": "6efbeffea66bdd94a350232793a655c2c9551fc1",
     "branch": "task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation",
     "pr_number": 4692,
-    "recorded_at": "2026-07-30T12:54:35.667Z",
+    "recorded_at": "2026-07-30T13:10:15.139Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

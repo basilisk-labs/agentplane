@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Hosted failure was isolated to nine static lint violations; the corrected runner files pass the routed ESLint command, focused semantic/integration tests, and typecheck.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The selector contract and high-confidence no-episode invariant remain unchanged; test assertions now observe the typed receipt work order instead of untyped mock-call data.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The hosted routed CI must rerun on the corrected head before integration; local lint and focused behavior checks are not a substitute for its branch-protection gate."
+  ]
+}
