@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607300411-6QF79Y/stabilize-effect-resolution-test",
   "created_at": "2026-07-30T04:12:14.054Z",
-  "diffstat_sha256": "sha256:f5962e8687ef87791c450e46232e50f59ea14051f177109d599041b6dd236d23",
+  "diffstat_sha256": "sha256:95c7186601f1879821ec29436c4d6284c85ec1260da111991ebcab13d42554c5",
   "last_verified_at": "2026-07-30T04:26:33.358Z",
   "last_verified_diffstat_sha256": "sha256:f5962e8687ef87791c450e46232e50f59ea14051f177109d599041b6dd236d23",
   "pr_number": 4679,

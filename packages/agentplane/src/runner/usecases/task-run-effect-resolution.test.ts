@@ -19,11 +19,14 @@ import {
   staleClaim,
   writeActiveClaim,
 } from "./task-run-active-claim.testkit.js";
+import {
+  acquireTaskRunnerActiveClaimRecoveryLease,
+  releaseTaskRunnerActiveClaimRecoveryLease,
+} from "./task-run-active-claim-recovery-lease.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
 import {
   acceptLegacyTaskRunnerEffect,
   resolveTaskRunnerEffect,
-  waitForConcurrentResolutionRetirement,
 } from "./task-run-effect-resolution.js";
 import { resumeTaskRunnerEffectExecution } from "./task-run-lifecycle.js";
 import { recordFailedExternalRunnerAnchor } from "./task-run-lifecycle.testkit.js";
@@ -218,48 +221,60 @@ describe("task runner effect resolution", () => {
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
-  it("retries an unstable active-claim observation after concurrent retirement", async () => {
+  it("waits through a concurrent active-claim retirement", async () => {
     const fixture = await uncertainEffectFixture();
-    const resolved = await resolveTaskRunnerEffect(resolutionInput(fixture));
-    await writeActiveClaim(fixture.root, fixture.claim);
-    const repository = await RunnerRunRepository.openExistingTaskRun({
+    const input = resolutionInput(fixture);
+    const acquisition = await acquireTaskRunnerActiveClaimRecoveryLease({
       git_root: fixture.root,
       workflow_dir: fixture.ctx.config.paths.workflow_dir,
       task_id: fixture.taskId,
-      run_id: fixture.prepared.invocation.run_id,
-      storage: "supervisor",
+      target_generation: fixture.claim.generation,
     });
+    expect(acquisition.status).toBe("acquired");
+    if (acquisition.status !== "acquired") {
+      throw new Error("Expected to hold the active-claim recovery lease.");
+    }
     const originalRead = stableFile.readStableRegularTextNoFollow;
-    let collisionInjected = false;
-    let retirementWaitReads = 0;
+    let activeClaimReads = 0;
+    let signalWaitStarted!: () => void;
+    const waitStarted = new Promise<void>((resolve) => {
+      signalWaitStarted = resolve;
+    });
     const readSpy = vi
       .spyOn(stableFile, "readStableRegularTextNoFollow")
       .mockImplementation(async (...args) => {
         const isRetirementWaitRead = args[1] === "runner active claim";
         if (isRetirementWaitRead) {
-          retirementWaitReads += 1;
-          if (!collisionInjected) {
-            collisionInjected = true;
-            await rm(args[0], { force: true });
-            throw new Error(`runner active claim path changed before it could be read: ${args[0]}`);
-          }
+          activeClaimReads += 1;
+          if (activeClaimReads === 2) signalWaitStarted();
         }
         return await originalRead(...args);
       });
 
     try {
+      const waitingResolution = resolveTaskRunnerEffect(input);
+      await waitStarted;
+      await releaseTaskRunnerActiveClaimRecoveryLease({
+        lease: acquisition.lease,
+        succeeded: false,
+      });
+      const [waiting, completing] = await Promise.all([
+        waitingResolution,
+        resolveTaskRunnerEffect(input),
+      ]);
+
+      expect(activeClaimReads).toBeGreaterThanOrEqual(2);
+      expect(waiting.resolution.digest).toBe(completing.resolution.digest);
+      expect(waiting.claim_retirement).toBe("absent");
+      expect(completing.claim_retirement).toBe("retired");
       await expect(
-        waitForConcurrentResolutionRetirement({
-          repository,
+        readTaskRunnerActiveClaim({
           git_root: fixture.root,
           workflow_dir: fixture.ctx.config.paths.workflow_dir,
           task_id: fixture.taskId,
           run_id: fixture.prepared.invocation.run_id,
-          resolution: resolved.resolution,
         }),
-      ).resolves.toBe(true);
-      expect(collisionInjected).toBe(true);
-      expect(retirementWaitReads).toBe(1);
+      ).resolves.toBeNull();
     } finally {
       readSpy.mockRestore();
     }

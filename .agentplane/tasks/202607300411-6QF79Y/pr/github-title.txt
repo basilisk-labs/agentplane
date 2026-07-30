@@ -1,1 +1,1 @@
-✅ 6QF79Y task: Stabilize concurrent effect-resolution retirement test [202607300411-6QF79Y]
+🚧 6QF79Y task: Stabilize concurrent effect-resolution retirement test [202607300411-6QF79Y]
