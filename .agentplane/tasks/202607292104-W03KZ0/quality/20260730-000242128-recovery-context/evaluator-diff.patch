@@ -1,0 +1,3560 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 6371b1a79..0ed2f6e74 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,5 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-
+-No active incidents.
++- id: INC-20260730-01 | date: 2026-07-30 | scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | match: benchmark, milestone-beta1, performance, quality, rf-04, v0.7, implement, candidate, sha, measurement, route, that, records, actual, token, latency | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition. | advice: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify. | rule: Analogous Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607292104-W03KZ0; commit c6a10db56506 | enforcement: manual | fixability: external | state: open
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/README.md b/.agentplane/tasks/202607292104-W03KZ0/README.md
+new file mode 100644
+index 000000000..4495b855c
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/README.md
+@@ -0,0 +1,475 @@
++---
++id: "202607292104-W03KZ0"
++title: "Measure SHA-bound RF-04 candidate performance"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 13
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "benchmark"
++  - "milestone-beta1"
++  - "performance"
++  - "quality"
++  - "rf-04"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "performance.benchmark"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-29T21:05:22.597Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-29T23:59:58.908Z"
++  updated_by: "CODER"
++  note: "The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "human_supplied"
++  updated_at: "2026-07-30T00:01:07.561Z"
++  updated_by: "HUMAN"
++  note: "W03 correctly delivers a SHA-bound, matched-runtime RF-04 measurement route. The immutable candidate comparison is valid and intentionally reports a beta.1 quality failure rather than hiding it."
++  evaluated_sha: "2790e0b0e485adf0505d9d3899d4c74b922a2e3d"
++  blueprint_digest: "a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc"
++  evidence_refs:
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607292104-W03KZ0/README.md"
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++    - "scripts/bench/capture-agent-efficiency-runtime-bridge.mjs --check (50 runs, 55 episodes)"
++    - ".agentplane/cache/rf04-candidate/b58705432c46df612a89348ef28ea268fdcc2b04/measurement.runtime-bridge-codex-0.146.0-alpha.3.1.json"
++    - "bun run ci:contract (pass)"
++  findings:
++    - "The historical anchor and candidate were compared under the same 0.6.24/0.146.0-alpha.3.1 runtime profile with complete 50-run raw envelope/evidence sets; the recorded failure is limited to the two declared latency gates."
++    - "Historical candidate harness identity is reconstructed from the reviewed candidate SHA and must match the raw harness digest before bridge measurement materialization."
++commit:
++  hash: "c6a10db56506a3e38cba675cc2923569daa7e45e"
++  message: "🧪 W03KZ0 task: record matched-runtime RF-04 rework"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implementation committed: ac7bd6a2a0febfd5ee927eb217c8d8f66bde5384. Focused candidate comparator test and scripts catalog check pass. The authorized capture preflight for 64fd6cd8a2cff4da0cbff5a8db44ef2a7992d097 stopped before any provider episode because the installed Codex CLI reports 0.146.0-alpha.3.1 while the RF-04 driver pins 0.145.0-alpha.18; failed-capture receipt is retained under the ignored candidate cache. No retry was performed."
++  -
++    author: "CODER"
++    body: "Implementation rework committed: candidate captures now require an explicit Codex CLI version, bind it to every driver envelope and measurement, and keep historical RF-04 validation anchored to its frozen harness. Offline RF-04 replay check, focused critical tests, current 0.146.0-alpha.3.1 preflight, formatting, and scripts catalog check pass."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-29T21:06:49.461Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-29T21:28:54.763Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: ac7bd6a2a0febfd5ee927eb217c8d8f66bde5384. Focused candidate comparator test and scripts catalog check pass. The authorized capture preflight for 64fd6cd8a2cff4da0cbff5a8db44ef2a7992d097 stopped before any provider episode because the installed Codex CLI reports 0.146.0-alpha.3.1 while the RF-04 driver pins 0.145.0-alpha.18; failed-capture receipt is retained under the ignored candidate cache. No retry was performed."
++  -
++    type: "verify"
++    at: "2026-07-29T21:31:37.014Z"
++    author: "TESTER"
++    state: "needs_rework"
++    note: "Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent."
++  -
++    type: "status"
++    at: "2026-07-29T21:44:58.343Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation rework committed: candidate captures now require an explicit Codex CLI version, bind it to every driver envelope and measurement, and keep historical RF-04 validation anchored to its frozen harness. Offline RF-04 replay check, focused critical tests, current 0.146.0-alpha.3.1 preflight, formatting, and scripts catalog check pass."
++  -
++    type: "verify"
++    at: "2026-07-29T22:54:11.502Z"
++    author: "TESTER"
++    state: "needs_rework"
++    note: "RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly."
++  -
++    type: "verify"
++    at: "2026-07-29T23:57:01.227Z"
++    author: "CODER"
++    state: "needs_rework"
++    note: "RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed."
++  -
++    type: "verify"
++    at: "2026-07-29T23:59:58.908Z"
++    author: "CODER"
++    state: "ok"
++    note: "The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry."
++  -
++    type: "status"
++    at: "2026-07-30T00:01:52.983Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++doc_version: 3
++doc_updated_at: "2026-07-30T00:01:52.984Z"
++doc_updated_by: "CODER"
++description: "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria."
++sections:
++  Summary: |-
++    Measure SHA-bound RF-04 candidate performance
++
++    Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.
++  Scope: |-
++    - In scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.
++    - Out of scope: unrelated refactors not required for "Measure SHA-bound RF-04 candidate performance".
++  Plan: "1. Inspect the historical RF-04 capture, the frozen baseline artifacts, and the beta.1 evaluator finding RCI-002; preserve the historical anchor as baseline-only. 2. Implement a candidate capture contract that binds every recorded run to an explicit reviewed product SHA and rejects a baseline-only capture as candidate evidence. 3. Capture actual per-run token, latency, success, rework, and safety values for the ten scenarios/fifty runs (and their provider episodes), then compare them with frozen baseline values through declared regression thresholds; timing cannot be silently disabled. 4. Emit bounded frozen evidence that an EVALUATOR can consume, including run records, summaries, comparison values/deltas/thresholds, the reviewed SHA, and the verdict. 5. Add focused deterministic tests for SHA binding, threshold failure, count-only rejection, and evidence materialization; run the provider capture only after the deterministic route passes. 6. Keep beta.1 publication blocked until the candidate comparison and a fresh semantic qualification are both complete."
++  Verify Steps: |-
++    1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.
++    2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.
++    3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.
++    4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.
++    5. Run bun run ci:contract. Expected: the full repository contract passes.
++    6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-29T21:31:37.014Z — VERIFY — needs_rework
++
++    By: TESTER
++
++    Note: Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent.
++    Attempts: 1
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T21:28:54.763Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++    - old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607292104-W03KZ0
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T22:54:11.502Z — VERIFY — needs_rework
++
++    By: TESTER
++
++    Note: RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.
++    Attempts: 2
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T21:44:58.343Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++    - old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T23:57:01.227Z — VERIFY — needs_rework
++
++    By: CODER
++
++    Note: RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed.
++    Attempts: 3
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T22:54:12.293Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++    - old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T23:59:58.908Z — VERIFY — ok
++
++    By: CODER
++
++    Note: The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T23:57:01.934Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++    - old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition.
++      Impact: The beta.1 gate cannot truthfully compare SHA-bound token, latency, success, rework, and safety metrics; counts alone remain insufficient.
++      Resolution: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify.
++      Promotion: incident-candidate
++      Fixability: external
++
++    - Observation: Candidate raw records are complete (50 envelopes and 50 evidence files) for b58705432c46df612a89348ef28ea268fdcc2b04; runtime profiles differ from the immutable baseline.
++      Impact: Beta.1 cannot use the observed token and outcome improvements as a causal comparison or materialize a passing qualification packet.
++      Resolution: Create a versioned runtime-bridge baseline for the historical SHA under the currently pinned ChatGPT-bundled Codex 0.146.0-alpha.3.1, preserve the frozen baseline unchanged, then compare the existing candidate evidence only against the matched runtime profile.
++
++    - Observation: Against Codex 0.146.0-alpha.3.1 on both sides, candidate setup latency is 17522.82ms vs 7605.46ms baseline (maximum 8366.006ms) and time-to-verified-result is 63020.05ms vs 56439.625ms (maximum 62083.5875ms).
++      Impact: The candidate cannot qualify beta.1 despite lower tokens and better outcomes, because two required latency comparisons fail.
++      Resolution: Preserve the failed immutable measurement, do not retry the candidate capture, and require an approved remediation or revised statistically justified benchmark design before a new candidate run.
++
++    - Observation: Both profiles are 0.6.24/0.146.0-alpha.3.1; 50 runs and 55 provider episodes are present on each side, raw evidence is deterministic, and the candidate verdict is fail only for the two declared latency comparisons.
++      Impact: The implementation task has delivered evaluator-reviewable evidence; the failed product-quality result must block beta.1 qualification rather than invalidate this measurement task.
++      Resolution: Integrate W03 measurement support, then let the beta.1 qualification task consume the immutable failed measurement and remain blocked until remediation is approved.
++extensions:
++  implementation_commit:
++    hash: "2790e0b0e485adf0505d9d3899d4c74b922a2e3d"
++    message: "📊 W03KZ0 task: validate historical RF-04 harness"
++  workflow_route_baseline:
++    start_head_sha: "8ae0a51a8684db03a0a9401f6c6b8f5b763850bd"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Measure SHA-bound RF-04 candidate performance
++
++Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.
++
++## Scope
++
++- In scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.
++- Out of scope: unrelated refactors not required for "Measure SHA-bound RF-04 candidate performance".
++
++## Plan
++
++1. Inspect the historical RF-04 capture, the frozen baseline artifacts, and the beta.1 evaluator finding RCI-002; preserve the historical anchor as baseline-only. 2. Implement a candidate capture contract that binds every recorded run to an explicit reviewed product SHA and rejects a baseline-only capture as candidate evidence. 3. Capture actual per-run token, latency, success, rework, and safety values for the ten scenarios/fifty runs (and their provider episodes), then compare them with frozen baseline values through declared regression thresholds; timing cannot be silently disabled. 4. Emit bounded frozen evidence that an EVALUATOR can consume, including run records, summaries, comparison values/deltas/thresholds, the reviewed SHA, and the verdict. 5. Add focused deterministic tests for SHA binding, threshold failure, count-only rejection, and evidence materialization; run the provider capture only after the deterministic route passes. 6. Keep beta.1 publication blocked until the candidate comparison and a fresh semantic qualification are both complete.
++
++## Verify Steps
++
++1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.
++2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.
++3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.
++4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.
++5. Run bun run ci:contract. Expected: the full repository contract passes.
++6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-29T21:31:37.014Z — VERIFY — needs_rework
++
++By: TESTER
++
++Note: Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent.
++Attempts: 1
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T21:28:54.763Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++- old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607292104-W03KZ0
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T22:54:11.502Z — VERIFY — needs_rework
++
++By: TESTER
++
++Note: RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.
++Attempts: 2
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T21:44:58.343Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++- old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T23:57:01.227Z — VERIFY — needs_rework
++
++By: CODER
++
++Note: RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed.
++Attempts: 3
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T22:54:12.293Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++- old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T23:59:58.908Z — VERIFY — ok
++
++By: CODER
++
++Note: The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T23:57:01.934Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
++- old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition.
++  Impact: The beta.1 gate cannot truthfully compare SHA-bound token, latency, success, rework, and safety metrics; counts alone remain insufficient.
++  Resolution: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify.
++  Promotion: incident-candidate
++  Fixability: external
++
++- Observation: Candidate raw records are complete (50 envelopes and 50 evidence files) for b58705432c46df612a89348ef28ea268fdcc2b04; runtime profiles differ from the immutable baseline.
++  Impact: Beta.1 cannot use the observed token and outcome improvements as a causal comparison or materialize a passing qualification packet.
++  Resolution: Create a versioned runtime-bridge baseline for the historical SHA under the currently pinned ChatGPT-bundled Codex 0.146.0-alpha.3.1, preserve the frozen baseline unchanged, then compare the existing candidate evidence only against the matched runtime profile.
++
++- Observation: Against Codex 0.146.0-alpha.3.1 on both sides, candidate setup latency is 17522.82ms vs 7605.46ms baseline (maximum 8366.006ms) and time-to-verified-result is 63020.05ms vs 56439.625ms (maximum 62083.5875ms).
++  Impact: The candidate cannot qualify beta.1 despite lower tokens and better outcomes, because two required latency comparisons fail.
++  Resolution: Preserve the failed immutable measurement, do not retry the candidate capture, and require an approved remediation or revised statistically justified benchmark design before a new candidate run.
++
++- Observation: Both profiles are 0.6.24/0.146.0-alpha.3.1; 50 runs and 55 provider episodes are present on each side, raw evidence is deterministic, and the candidate verdict is fail only for the two declared latency comparisons.
++  Impact: The implementation task has delivered evaluator-reviewable evidence; the failed product-quality result must block beta.1 qualification rather than invalidate this measurement task.
++  Resolution: Integrate W03 measurement support, then let the beta.1 qualification task consume the immutable failed measurement and remain blocked until remediation is approved.
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..15b8ef31b
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
+@@ -0,0 +1,604 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607292104-W03KZ0",
++    "title": "Measure SHA-bound RF-04 candidate performance",
++    "description": "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.",
++    "tags": [
++      "benchmark",
++      "milestone-beta1",
++      "performance",
++      "quality",
++      "rf-04",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "performance.benchmark"
++  },
++  "selectedBlueprint": {
++    "id": "performance.benchmark",
++    "version": 1,
++    "title": "Performance benchmark",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "performance.benchmark",
++    "blueprintVersion": 1,
++    "title": "Performance benchmark",
++    "taskId": "202607292104-W03KZ0",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "performance.benchmark"
++    },
++    "whySelected": [
++      "explicit blueprint requested: performance.benchmark",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "final_output"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "benchmark.baseline",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Baseline measurement artifact."
++      },
++      {
++        "id": "benchmark.method",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Benchmark method, environment, and warm/cold mode."
++      },
++      {
++        "id": "benchmark.runs",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Run count and raw measurement results."
++      },
++      {
++        "id": "benchmark.threshold",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Accepted threshold or noise tolerance."
++      },
++      {
++        "id": "benchmark.comparison",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Before/after comparison result."
++      },
++      {
++        "id": "benchmark.verdict",
++        "kind": "final_output",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Faster, slower, unchanged, or noisy verdict."
++      },
++      {
++        "id": "benchmark.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "benchmark.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "benchmark baseline command",
++      "benchmark comparison command",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "final_output"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "benchmark.baseline",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Baseline measurement artifact."
++    },
++    {
++      "id": "benchmark.method",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Benchmark method, environment, and warm/cold mode."
++    },
++    {
++      "id": "benchmark.runs",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Run count and raw measurement results."
++    },
++    {
++      "id": "benchmark.threshold",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Accepted threshold or noise tolerance."
++    },
++    {
++      "id": "benchmark.comparison",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Before/after comparison result."
++    },
++    {
++      "id": "benchmark.verdict",
++      "kind": "final_output",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Faster, slower, unchanged, or noisy verdict."
++    },
++    {
++      "id": "benchmark.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "benchmark.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "benchmark baseline command",
++    "benchmark comparison command",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: performance.benchmark",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc"
++  }
++}
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/pr/diffstat.txt b/.agentplane/tasks/202607292104-W03KZ0/pr/diffstat.txt
+new file mode 100644
+index 000000000..3fd0aacc4
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/pr/diffstat.txt
+@@ -0,0 +1,16 @@
++ package.json                                       |    2 +
++ ...cli.critical.agent-efficiency-candidate.test.ts |  214 ++++
++ ...critical.agent-efficiency-replay-driver.test.ts |   12 +
++ ...tical.agent-efficiency-replay-hardening.test.ts |   27 +
++ ...un-cli.critical.agent-efficiency-replay.test.ts |    6 +-
++ scripts/README.md                                  |   32 +-
++ .../bench/capture-agent-efficiency-candidate.mjs   | 1162 ++++++++++++++++++++
++ scripts/bench/capture-agent-efficiency-replay.mjs  |   65 +-
++ .../capture-agent-efficiency-runtime-bridge.mjs    |  165 +++
++ .../agent-efficiency-anchor-supervisor.mjs         |    5 +-
++ .../internal/agent-efficiency-codex-runtime.mjs    |   16 +-
++ .../bench/run-agent-efficiency-codex-replay.mjs    |    8 +-
++ scripts/checks/check-agent-efficiency-replay.mjs   |   30 +-
++ scripts/lib/agent-efficiency-replay-safety.mjs     |   20 +-
++ scripts/lib/agent-efficiency-replay.mjs            |   58 +
++ 15 files changed, 1761 insertions(+), 61 deletions(-)
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/pr/github-body.md b/.agentplane/tasks/202607292104-W03KZ0/pr/github-body.md
+new file mode 100644
+index 000000000..478f9fee2
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/pr/github-body.md
+@@ -0,0 +1,54 @@
++Task: `202607292104-W03KZ0`
++Title: Measure SHA-bound RF-04 candidate performance
++Canonical task record: `.agentplane/tasks/202607292104-W03KZ0/README.md`
++
++## Summary
++
++Measure SHA-bound RF-04 candidate performance
++
++Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.
++
++## Scope
++
++- In scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.
++- Out of scope: unrelated refactors not required for "Measure SHA-bound RF-04 candidate performance".
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime
++bridge, materialized the exact candidate comparison, and recorded the required failing beta.1
++latency verdict without a provider retry.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T21:07:30.628Z
++- Branch: task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ package.json                                       |    2 +
++ ...cli.critical.agent-efficiency-candidate.test.ts |  214 ++++
++ ...critical.agent-efficiency-replay-driver.test.ts |   12 +
++ ...tical.agent-efficiency-replay-hardening.test.ts |   27 +
++ ...un-cli.critical.agent-efficiency-replay.test.ts |    6 +-
++ scripts/README.md                                  |   32 +-
++ .../bench/capture-agent-efficiency-candidate.mjs   | 1162 ++++++++++++++++++++
++ scripts/bench/capture-agent-efficiency-replay.mjs  |   65 +-
++ .../capture-agent-efficiency-runtime-bridge.mjs    |  165 +++
++ .../agent-efficiency-anchor-supervisor.mjs         |    5 +-
++ .../internal/agent-efficiency-codex-runtime.mjs    |   16 +-
++ .../bench/run-agent-efficiency-codex-replay.mjs    |    8 +-
++ scripts/checks/check-agent-efficiency-replay.mjs   |   30 +-
++ scripts/lib/agent-efficiency-replay-safety.mjs     |   20 +-
++ scripts/lib/agent-efficiency-replay.mjs            |   58 +
++ 15 files changed, 1761 insertions(+), 61 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/pr/github-title.txt b/.agentplane/tasks/202607292104-W03KZ0/pr/github-title.txt
+new file mode 100644
+index 000000000..76172587d
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 W03KZ0 task: Measure SHA-bound RF-04 candidate performance [202607292104-W03KZ0]
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/pr/meta.json b/.agentplane/tasks/202607292104-W03KZ0/pr/meta.json
+new file mode 100644
+index 000000000..82f151e10
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance",
++  "created_at": "2026-07-29T21:06:49.643Z",
++  "diffstat_sha256": "sha256:09217d394c2d7d732bccef3aa2808192ab7bd8a3373fb1ccb299274d83cf4892",
++  "last_verified_at": "2026-07-29T23:59:58.908Z",
++  "last_verified_diffstat_sha256": "sha256:09217d394c2d7d732bccef3aa2808192ab7bd8a3373fb1ccb299274d83cf4892",
++  "pr_number": 4674,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4674",
++  "pre_merge_closure": {
++    "basis_commit": "c6a10db56506a3e38cba675cc2923569daa7e45e",
++    "branch": "task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance",
++    "pr_number": 4674,
++    "recorded_at": "2026-07-30T00:01:53.056Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607292104-W03KZ0",
++  "updated_at": "2026-07-29T21:07:30.628Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/pr/review.md b/.agentplane/tasks/202607292104-W03KZ0/pr/review.md
+new file mode 100644
+index 000000000..700472592
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/pr/review.md
+@@ -0,0 +1,51 @@
++# PR Review
++
++Created: 2026-07-29T21:06:49.643Z
++
++## Task
++
++- Task: `202607292104-W03KZ0`
++- Title: Measure SHA-bound RF-04 candidate performance
++- Status: DOING
++- Branch: `task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance`
++- Canonical task record: `.agentplane/tasks/202607292104-W03KZ0/README.md`
++
++## Verification
++
++- State: ok
++- Note: The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T21:07:30.628Z
++- Branch: task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ package.json                                       |    2 +
++ ...cli.critical.agent-efficiency-candidate.test.ts |  214 ++++
++ ...critical.agent-efficiency-replay-driver.test.ts |   12 +
++ ...tical.agent-efficiency-replay-hardening.test.ts |   27 +
++ ...un-cli.critical.agent-efficiency-replay.test.ts |    6 +-
++ scripts/README.md                                  |   32 +-
++ .../bench/capture-agent-efficiency-candidate.mjs   | 1162 ++++++++++++++++++++
++ scripts/bench/capture-agent-efficiency-replay.mjs  |   65 +-
++ .../capture-agent-efficiency-runtime-bridge.mjs    |  165 +++
++ .../agent-efficiency-anchor-supervisor.mjs         |    5 +-
++ .../internal/agent-efficiency-codex-runtime.mjs    |   16 +-
++ .../bench/run-agent-efficiency-codex-replay.mjs    |    8 +-
++ scripts/checks/check-agent-efficiency-replay.mjs   |   30 +-
++ scripts/lib/agent-efficiency-replay-safety.mjs     |   20 +-
++ scripts/lib/agent-efficiency-replay.mjs            |   58 +
++ 15 files changed, 1761 insertions(+), 61 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/verification/20260729213137014-fa37f61b8a63005a.json b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729213137014-fa37f61b8a63005a.json
+new file mode 100644
+index 000000000..e803a09ad
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729213137014-fa37f61b8a63005a.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:fa37f61b8a63005a2d03ae980a06a8d78a4728c82ae2dccc2b43b2b6c659c471",
++  "implementation_sha": "212a165227922b2e83afe5001babf620ec269951",
++  "kind": "task_verification_record",
++  "note": "Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent.",
++  "recorded_at": "2026-07-29T21:31:37.014Z",
++  "result": "needs_rework",
++  "schema_version": 1,
++  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
++  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
++  "task_id": "202607292104-W03KZ0",
++  "verification_command": "agentplane verify 202607292104-W03KZ0 --rework --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/verification/20260729225411502-0f0bc48b8dc3c309.json b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729225411502-0f0bc48b8dc3c309.json
+new file mode 100644
+index 000000000..63df7a44a
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729225411502-0f0bc48b8dc3c309.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:0f0bc48b8dc3c309d0fc299f07ab8b772e8067f84008674e98168a8c65ea5f70",
++  "implementation_sha": "9fe7779d56af15a26be64bfc3d6e92e785555012",
++  "kind": "task_verification_record",
++  "note": "RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.",
++  "recorded_at": "2026-07-29T22:54:11.502Z",
++  "result": "needs_rework",
++  "schema_version": 1,
++  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
++  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
++  "task_id": "202607292104-W03KZ0",
++  "verification_command": "agentplane verify 202607292104-W03KZ0 --rework --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/verification/20260729235701227-b28270dc5d732228.json b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729235701227-b28270dc5d732228.json
+new file mode 100644
+index 000000000..0cf122d85
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729235701227-b28270dc5d732228.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:b28270dc5d732228729cdfb87774397ed16751c966030c474b0bd45066e46c8b",
++  "implementation_sha": "2790e0b0e485adf0505d9d3899d4c74b922a2e3d",
++  "kind": "task_verification_record",
++  "note": "RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed.",
++  "recorded_at": "2026-07-29T23:57:01.227Z",
++  "result": "needs_rework",
++  "schema_version": 1,
++  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
++  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
++  "task_id": "202607292104-W03KZ0",
++  "verification_command": "agentplane verify 202607292104-W03KZ0 --rework --by CODER",
++  "verifier": "CODER"
++}
+diff --git a/.agentplane/tasks/202607292104-W03KZ0/verification/20260729235958908-f6ddf60b76ce427f.json b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729235958908-f6ddf60b76ce427f.json
+new file mode 100644
+index 000000000..0b4ab3641
+--- /dev/null
++++ b/.agentplane/tasks/202607292104-W03KZ0/verification/20260729235958908-f6ddf60b76ce427f.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:f6ddf60b76ce427f1646dc7f41c538cd5de1a659e7fadbc965469a5966d2df35",
++  "implementation_sha": "c6a10db56506a3e38cba675cc2923569daa7e45e",
++  "kind": "task_verification_record",
++  "note": "The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.",
++  "recorded_at": "2026-07-29T23:59:58.908Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
++  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
++  "task_id": "202607292104-W03KZ0",
++  "verification_command": "agentplane verify 202607292104-W03KZ0 --ok --by CODER",
++  "verifier": "CODER"
++}
+diff --git a/package.json b/package.json
+index 43ff7e7a7..3b4cd8776 100644
+--- a/package.json
++++ b/package.json
+@@ -131,6 +131,8 @@
+     "bench:compatibility:capture": "node scripts/bench/capture-compatibility-contract.mjs",
+     "bench:compatibility:check": "node scripts/checks/check-compatibility-contract-baseline.mjs",
+     "bench:agent-efficiency": "node scripts/bench/measure-agent-efficiency.mjs",
++    "bench:agent-efficiency:candidate": "node scripts/bench/capture-agent-efficiency-candidate.mjs",
++    "bench:agent-efficiency:candidate:check": "node scripts/bench/capture-agent-efficiency-candidate.mjs --check",
+     "bench:agent-efficiency:check": "node scripts/checks/check-agent-efficiency-baseline.mjs",
+     "bench:agent-efficiency:replay:capture": "node scripts/bench/capture-agent-efficiency-replay.mjs",
+     "bench:agent-efficiency:replay:check": "node scripts/checks/check-agent-efficiency-replay.mjs",
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 6371b1a79..0ed2f6e74 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,5 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-
+-No active incidents.
++- id: INC-20260730-01 | date: 2026-07-30 | scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | match: benchmark, milestone-beta1, performance, quality, rf-04, v0.7, implement, candidate, sha, measurement, route, that, records, actual, token, latency | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition. | advice: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify. | rule: Analogous Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607292104-W03KZ0; commit c6a10db56506 | enforcement: manual | fixability: external | state: open
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+new file mode 100644
+index 000000000..b1e6422a7
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts
+@@ -0,0 +1,214 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { pathToFileURL } from "node:url";
++
++import { expect, it } from "vitest";
++
++import { describeCritical } from "@agentplane/testkit";
++
++const REPO_ROOT = process.cwd();
++const CANDIDATE_SHA = "b".repeat(40);
++const CANDIDATE_URL = pathToFileURL(
++  path.join(REPO_ROOT, "scripts/bench/capture-agent-efficiency-candidate.mjs"),
++).href;
++const REPLAY_URL = pathToFileURL(
++  path.join(REPO_ROOT, "scripts/lib/agent-efficiency-replay.mjs"),
++).href;
++
++type Json = Record<string, unknown>;
++
++function clone<T>(value: T): T {
++  return structuredClone(value);
++}
++
++function canonical(value: unknown): string {
++  const stabilize = (entry: unknown): unknown => {
++    if (Array.isArray(entry)) return entry.map((child) => stabilize(child));
++    if (entry === null || typeof entry !== "object") return entry;
++    return Object.fromEntries(
++      Object.entries(entry as Json)
++        .toSorted(([left], [right]) => left.localeCompare(right))
++        .map(([key, child]) => [key, stabilize(child)]),
++    );
++  };
++  return `${JSON.stringify(stabilize(value), null, 2)}\n`;
++}
++
++async function loadCandidateFixture() {
++  const candidate = (await import(CANDIDATE_URL)) as {
++    buildCandidateMeasurement(input: Json): Json;
++    createCandidateHarnessManifest(driver: Json, dependency: Json): Json;
++  };
++  const replay = (await import(REPLAY_URL)) as {
++    createReplayDriverIdentity(root: string, path: string): Json;
++  };
++  const baseline = (await import(REPLAY_URL)) as {
++    fixtureRegistrySha256(registry: Json): string;
++  };
++  const registry = JSON.parse(
++    await readFile(path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"), "utf8"),
++  ) as Json;
++  const candidateRegistry = clone(registry);
++  (candidateRegistry.provenance as Json).efficiency_anchor_commit = CANDIDATE_SHA;
++  const envelopePaths = ["scripts/bench/agent-efficiency-replay-envelopes"];
++  const evidenceRoot = path.join(REPO_ROOT, "scripts/bench/agent-efficiency-replay-evidence");
++  const envelopeRoot = path.join(REPO_ROOT, envelopePaths[0]);
++  const scenarioIds = (registry.scenarios as Json[]).map((scenario) => scenario.id as string);
++  const envelopes: Json[] = [];
++  const evidence: Json[] = [];
++  for (const scenarioId of scenarioIds) {
++    for (let run = 1; run <= 5; run += 1) {
++      const file = `run-${String(run).padStart(2, "0")}.json`;
++      const envelopePath = path.join(envelopeRoot, scenarioId, file);
++      const evidencePath = path.join(evidenceRoot, scenarioId, file);
++      envelopes.push({
++        bytes: "",
++        path: `candidate/envelopes/${scenarioId}/${file}`,
++        value: JSON.parse(await readFile(envelopePath, "utf8")) as Json,
++      });
++      evidence.push({
++        bytes: await readFile(evidencePath, "utf8"),
++        path: `candidate/evidence/${scenarioId}/${file}`,
++        value: JSON.parse(await readFile(evidencePath, "utf8")) as Json,
++      });
++    }
++  }
++  const driver = replay.createReplayDriverIdentity(
++    REPO_ROOT,
++    "scripts/bench/run-agent-efficiency-codex-replay.mjs",
++  );
++  const firstAnchor = (envelopes[0].value as Json).anchor as Json;
++  const dependency = {
++    capture_executable_sha256: firstAnchor.dependency_capture_executable_sha256,
++    capture_platform: firstAnchor.capture_platform,
++    capture_receipt_sha256: firstAnchor.dependency_capture_receipt_sha256,
++    portable_sha256: firstAnchor.dependency_portable_sha256,
++  };
++  const harness = candidate.createCandidateHarnessManifest(driver, dependency);
++  for (const envelope of envelopes) {
++    const value = envelope.value as Json;
++    const anchor = value.anchor as Json;
++    anchor.driver = clone(driver);
++    anchor.subject_sha = CANDIDATE_SHA;
++    anchor.fixture_registry_sha256 = baseline.fixtureRegistrySha256(candidateRegistry);
++    anchor.harness_sha256 = harness.sha256;
++    const evidencePath = (value.evidence_bundle as Json).path as string;
++    const suffix = evidencePath.split("/").slice(-2).join("/");
++    (value.evidence_bundle as Json).path = `candidate/evidence/${suffix}`;
++    envelope.bytes = canonical(value);
++  }
++  return { candidate, candidateRegistry, dependency, driver, envelopes, evidence, harness };
++}
++
++describeCritical("critical: RF-04 candidate measurement", () => {
++  it("compares actual candidate values to the frozen baseline for the reviewed SHA", async () => {
++    const fixture = await loadCandidateFixture();
++    const measurement = fixture.candidate.buildCandidateMeasurement({
++      candidateAnchor: CANDIDATE_SHA,
++      candidateDependencyClaim: fixture.dependency,
++      candidateDriverIdentity: fixture.driver,
++      candidateEnvelopeRecords: fixture.envelopes,
++      candidateEvidenceRecords: fixture.evidence,
++      candidateHarnessManifest: fixture.harness,
++      candidateRegistry: fixture.candidateRegistry,
++    }) as Json;
++
++    expect(measurement.verdict).toBe("pass");
++    expect((measurement.candidate as Json).subject_sha).toBe(CANDIDATE_SHA);
++    expect(((measurement.candidate as Json).actual_values as Json).provider_episodes).toBe(55);
++    expect(((measurement.candidate as Json).coverage as Json).replay_runs).toBe(50);
++    expect(((measurement.candidate as Json).runtime_profile as Json).runtime_version).toBe(
++      "0.6.24/0.145.0-alpha.18",
++    );
++    expect((measurement.runtime_comparison as Json).profile_match).toBe(true);
++    expect(
++      (measurement.comparisons as Json[]).some(
++        (entry) => entry.id === "provider_tokens.total_tokens",
++      ),
++    ).toBe(true);
++    expect(
++      (measurement.comparisons as Json[]).some(
++        (entry) => entry.id === "latency.time_to_first_scoped_mutation_ms.mean_ms",
++      ),
++    ).toBe(true);
++  });
++
++  it("rejects the historical anchor as a candidate and fails a count-only latency comparison", async () => {
++    const fixture = await loadCandidateFixture();
++    expect(() =>
++      fixture.candidate.buildCandidateMeasurement({
++        candidateAnchor: "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
++        candidateDependencyClaim: fixture.dependency,
++        candidateDriverIdentity: fixture.driver,
++        candidateEnvelopeRecords: fixture.envelopes,
++        candidateEvidenceRecords: fixture.evidence,
++        candidateHarnessManifest: fixture.harness,
++        candidateRegistry: fixture.candidateRegistry,
++      }),
++    ).toThrow("baseline-only");
++
++    const incomplete = clone(fixture.envelopes);
++    const first = incomplete[0].value as Json;
++    ((first.diagnostics as Json).latency_ms as Json).time_to_first_scoped_mutation_ms = {
++      provenance: { category: "applicability_rule", source: "test.count_only" },
++      reason_code: "not_applicable_time_to_first_scoped_mutation_ms",
++      resolution: "not_applicable",
++    };
++    incomplete[0].bytes = canonical(first);
++    const measurement = fixture.candidate.buildCandidateMeasurement({
++      candidateAnchor: CANDIDATE_SHA,
++      candidateDependencyClaim: fixture.dependency,
++      candidateDriverIdentity: fixture.driver,
++      candidateEnvelopeRecords: incomplete,
++      candidateEvidenceRecords: fixture.evidence,
++      candidateHarnessManifest: fixture.harness,
++      candidateRegistry: fixture.candidateRegistry,
++    }) as Json;
++    expect(measurement.verdict).toBe("fail");
++    expect(measurement.failure_ids as string[]).toContain(
++      "latency.time_to_first_scoped_mutation_ms.sample_count",
++    );
++  });
++
++  it("binds an explicitly declared candidate Codex version to every envelope profile", async () => {
++    const fixture = await loadCandidateFixture();
++    expect(() =>
++      fixture.candidate.buildCandidateMeasurement({
++        candidateAnchor: CANDIDATE_SHA,
++        candidateCodexCliVersion: "0.146.0-alpha.3.1",
++        candidateDependencyClaim: fixture.dependency,
++        candidateDriverIdentity: fixture.driver,
++        candidateEnvelopeRecords: fixture.envelopes,
++        candidateEvidenceRecords: fixture.evidence,
++        candidateHarnessManifest: fixture.harness,
++        candidateRegistry: fixture.candidateRegistry,
++      }),
++    ).toThrow("runtime profile does not bind declared Codex CLI version");
++  });
++
++  it("rejects a candidate measurement when its runtime profile differs from the baseline", async () => {
++    const fixture = await loadCandidateFixture();
++    const candidateVersion = "0.146.0-alpha.3.1";
++    const crossRuntime = clone(fixture.envelopes);
++    for (const record of crossRuntime) {
++      const envelope = record.value as Json;
++      (envelope.profile as Json).runtime_version = `0.6.24/${candidateVersion}`;
++      record.bytes = canonical(envelope);
++    }
++
++    const measurement = fixture.candidate.buildCandidateMeasurement({
++      candidateAnchor: CANDIDATE_SHA,
++      candidateCodexCliVersion: candidateVersion,
++      candidateDependencyClaim: fixture.dependency,
++      candidateDriverIdentity: fixture.driver,
++      candidateEnvelopeRecords: crossRuntime,
++      candidateEvidenceRecords: fixture.evidence,
++      candidateHarnessManifest: fixture.harness,
++      candidateRegistry: fixture.candidateRegistry,
++    }) as Json;
++
++    expect(measurement.verdict).toBe("fail");
++    expect(measurement.failure_ids as string[]).toEqual(["runtime.profile"]);
++    expect((measurement.runtime_comparison as Json).profile_match).toBe(false);
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+index 061c46a13..c3bfc8d58 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+@@ -32,6 +32,7 @@ type DriverModule = {
+   anchorTaskOwner(role: string): string;
+   CODEX_REPLAY_BINARY: string;
+   CODEX_REPLAY_CLI_VERSION: string;
++  CODEX_REPLAY_CLI_VERSION_ENV: string;
+   CODEX_REPLAY_MODEL: string;
+   CODEX_REPLAY_REASONING_EFFORT: string;
+   CODEX_REPLAY_TURN_TIMEOUT_MS: number;
+@@ -83,6 +84,7 @@ type DriverModule = {
+     time_to_first_scoped_mutation_ms: number | null;
+     time_to_verified_result_ms: number;
+   };
++  resolveCodexReplayCliVersion(source: Record<string, string>): string;
+ };
+ 
+ type CaptureModule = {
+@@ -125,6 +127,16 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
+       "/Applications/ChatGPT.app/Contents/Resources/codex",
+     );
+     expect(replayDriver.CODEX_REPLAY_CLI_VERSION).toBe("0.145.0-alpha.18");
++    expect(
++      replayDriver.resolveCodexReplayCliVersion({
++        [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1",
++      }),
++    ).toBe("0.146.0-alpha.3.1");
++    expect(() =>
++      replayDriver.resolveCodexReplayCliVersion({
++        [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "not-a-version",
++      }),
++    ).toThrow("CODEX_VERSION_CONTRACT");
+     expect(replayDriver.CODEX_REPLAY_MODEL).toBe("gpt-5.6-terra");
+     expect(replayDriver.CODEX_REPLAY_REASONING_EFFORT).toBe("low");
+     expect(replayDriver.ANCHOR_CONTEXT_TELEMETRY).toEqual({
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
+index ee67f97c9..26067c8c4 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
+@@ -339,6 +339,32 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
+         testTargetRoot: path.join(repository, ".agentplane/cache/rf04-test-targets"),
+       }),
+     ).toThrow("pairwise disjoint");
++
++    const runtimeBridgeRoot = path.join(repository, ".agentplane/cache/rf04-runtime-bridge");
++    const bridgeTarget = path.join(runtimeBridgeRoot, "codex-0.146.0-alpha.3.1");
++    mkdirSync(bridgeTarget, { recursive: true });
++    expect(() =>
++      safety.assertReplayCaptureTargets({
++        driverPath: path.join(repository, "scripts/bench/driver.mjs"),
++        evidenceDirectory: path.join(bridgeTarget, "evidence"),
++        outputPath: path.join(bridgeTarget, "baseline.json"),
++        registryPath: path.join(repository, "scripts/bench/agent-efficiency-fixtures.json"),
++        repoRoot: repository,
++        runtimeBridgeTargetRoot: runtimeBridgeRoot,
++        sourceDirectory: path.join(bridgeTarget, "envelopes"),
++      }),
++    ).not.toThrow();
++    expect(() =>
++      safety.assertReplayCaptureTargets({
++        driverPath: path.join(repository, "scripts/bench/driver.mjs"),
++        evidenceDirectory: path.join(bridgeTarget, "evidence"),
++        outputPath: path.join(bridgeTarget, "baseline.json"),
++        registryPath: path.join(repository, "scripts/bench/agent-efficiency-fixtures.json"),
++        repoRoot: repository,
++        runtimeBridgeTargetRoot: path.join(repository, ".agentplane/cache/untrusted-bridge"),
++        sourceDirectory: path.join(bridgeTarget, "envelopes"),
++      }),
++    ).toThrow("runtime bridge capture root is not authorized");
+   });
+ 
+   it("publishes all three artifacts together and restores every prior byte on validation failure", async () => {
+@@ -799,6 +825,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
+       AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harness.sha256,
+       AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
+       AGENTPLANE_RF04_REPLAY_RUN_ID: "adapter_failure/run-01",
++      AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: "0.145.0-alpha.18",
+     };
+     const previousDirectory = process.cwd();
+     let observedFixtureRoot = "";
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts
+index 1b19536c4..9566671c1 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts
+@@ -306,7 +306,11 @@ function testContractEnvironment(): Record<string, string> {
+       "HARNESS_SHA256",
+       "OUTPUT",
+       "RUN_ID",
+-    ].map((suffix) => [`AGENTPLANE_RF04_REPLAY_${suffix}`, `fixture-${suffix}`]),
++      "CODEX_CLI_VERSION",
++    ].map((suffix) => [
++      `AGENTPLANE_RF04_REPLAY_${suffix}`,
++      suffix === "CODEX_CLI_VERSION" ? "0.145.0-alpha.18" : `fixture-${suffix}`,
++    ]),
+   );
+ }
+ 
+diff --git a/scripts/README.md b/scripts/README.md
+index dc20a7e37..9a19e0179 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -131,21 +131,23 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## Bench
+ 
+-| Script                                  | Command                                                                                                                                                                            | Purpose                                              |
+-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+-| `bench:agent-efficiency`                | `node scripts/bench/measure-agent-efficiency.mjs`                                                                                                                                  | Run bench workflow: agent-efficiency.                |
+-| `bench:agent-efficiency:check`          | `node scripts/checks/check-agent-efficiency-baseline.mjs`                                                                                                                          | Run bench workflow: agent-efficiency check.          |
+-| `bench:agent-efficiency:replay:capture` | `node scripts/bench/capture-agent-efficiency-replay.mjs`                                                                                                                           | Run bench workflow: agent-efficiency replay capture. |
+-| `bench:agent-efficiency:replay:check`   | `node scripts/checks/check-agent-efficiency-replay.mjs`                                                                                                                            | Run bench workflow: agent-efficiency replay check.   |
+-| `bench:cli:cold`                        | `node scripts/bench/measure-cli-cold-path.mjs`                                                                                                                                     | Run bench workflow: cli cold.                        |
+-| `bench:cli:cold:check`                  | `node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000` | Run bench workflow: cli cold check.                  |
+-| `bench:cli:diff`                        | `node scripts/bench/compare-cli-perf.mjs`                                                                                                                                          | Run bench workflow: cli diff.                        |
+-| `bench:cli:perf`                        | `node scripts/bench/measure-cli-perf.mjs`                                                                                                                                          | Run bench workflow: cli perf.                        |
+-| `bench:cli:time`                        | `node scripts/bench/measure-cli-walltime.mjs`                                                                                                                                      | Run bench workflow: cli time.                        |
+-| `bench:cli:time:check`                  | `node scripts/checks/check-cli-walltime-baseline.mjs --warmups 1 --attempts 3`                                                                                                     | Run bench workflow: cli time check.                  |
+-| `bench:cli:time:diff`                   | `node scripts/bench/compare-cli-walltime.mjs`                                                                                                                                      | Run bench workflow: cli time diff.                   |
+-| `bench:compatibility:capture`           | `node scripts/bench/capture-compatibility-contract.mjs`                                                                                                                            | Run bench workflow: compatibility capture.           |
+-| `bench:compatibility:check`             | `node scripts/checks/check-compatibility-contract-baseline.mjs`                                                                                                                    | Run bench workflow: compatibility check.             |
++| Script                                   | Command                                                                                                                                                                            | Purpose                                               |
++| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
++| `bench:agent-efficiency`                 | `node scripts/bench/measure-agent-efficiency.mjs`                                                                                                                                  | Run bench workflow: agent-efficiency.                 |
++| `bench:agent-efficiency:candidate`       | `node scripts/bench/capture-agent-efficiency-candidate.mjs`                                                                                                                        | Run bench workflow: agent-efficiency candidate.       |
++| `bench:agent-efficiency:candidate:check` | `node scripts/bench/capture-agent-efficiency-candidate.mjs --check`                                                                                                                | Run bench workflow: agent-efficiency candidate check. |
++| `bench:agent-efficiency:check`           | `node scripts/checks/check-agent-efficiency-baseline.mjs`                                                                                                                          | Run bench workflow: agent-efficiency check.           |
++| `bench:agent-efficiency:replay:capture`  | `node scripts/bench/capture-agent-efficiency-replay.mjs`                                                                                                                           | Run bench workflow: agent-efficiency replay capture.  |
++| `bench:agent-efficiency:replay:check`    | `node scripts/checks/check-agent-efficiency-replay.mjs`                                                                                                                            | Run bench workflow: agent-efficiency replay check.    |
++| `bench:cli:cold`                         | `node scripts/bench/measure-cli-cold-path.mjs`                                                                                                                                     | Run bench workflow: cli cold.                         |
++| `bench:cli:cold:check`                   | `node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000` | Run bench workflow: cli cold check.                   |
++| `bench:cli:diff`                         | `node scripts/bench/compare-cli-perf.mjs`                                                                                                                                          | Run bench workflow: cli diff.                         |
++| `bench:cli:perf`                         | `node scripts/bench/measure-cli-perf.mjs`                                                                                                                                          | Run bench workflow: cli perf.                         |
++| `bench:cli:time`                         | `node scripts/bench/measure-cli-walltime.mjs`                                                                                                                                      | Run bench workflow: cli time.                         |
++| `bench:cli:time:check`                   | `node scripts/checks/check-cli-walltime-baseline.mjs --warmups 1 --attempts 3`                                                                                                     | Run bench workflow: cli time check.                   |
++| `bench:cli:time:diff`                    | `node scripts/bench/compare-cli-walltime.mjs`                                                                                                                                      | Run bench workflow: cli time diff.                    |
++| `bench:compatibility:capture`            | `node scripts/bench/capture-compatibility-contract.mjs`                                                                                                                            | Run bench workflow: compatibility capture.            |
++| `bench:compatibility:check`              | `node scripts/checks/check-compatibility-contract-baseline.mjs`                                                                                                                    | Run bench workflow: compatibility check.              |
+ 
+ ## Clone Detection
+ 
+diff --git a/scripts/bench/capture-agent-efficiency-candidate.mjs b/scripts/bench/capture-agent-efficiency-candidate.mjs
+new file mode 100644
+index 000000000..566cb1093
+--- /dev/null
++++ b/scripts/bench/capture-agent-efficiency-candidate.mjs
+@@ -0,0 +1,1162 @@
++import { spawnSync } from "node:child_process";
++import { createHash } from "node:crypto";
++import {
++  existsSync,
++  lstatSync,
++  mkdirSync,
++  mkdtempSync,
++  readFileSync,
++  rmSync,
++  writeFileSync,
++} from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++import {
++  OUTCOME_FIELDS,
++  RF04_SCENARIO_IDS,
++  assertFixtureRegistry,
++  readFixtureRegistry,
++  relativeRepoPath,
++  stableJson,
++} from "../lib/agent-efficiency-baseline.mjs";
++import {
++  MINIMUM_REPLAY_RUNS,
++  REPLAY_ANCHOR_COMMIT,
++  TOKEN_FIELDS,
++  assertFrozenReplayBaseline,
++  assertReplayEnvelope,
++  buildReplayBaseline,
++  buildReplayDriverEnvironment,
++  createReplayDriverContractEnvironment,
++  createReplayDriverIdentity,
++  createReplayHarnessManifest,
++  fixtureRegistrySha256,
++  readReplayEvidenceRecords,
++  readReplayEnvelopeRecords,
++  replayDependencyClaimFromEnvelopeRecords,
++  runtimeBridgePaths,
++} from "../lib/agent-efficiency-replay.mjs";
++import {
++  assertGitCommitAvailable,
++  assertRepoPathNoSymlinkEscape,
++  installReplayArtifactTransaction,
++  replayDriverDiagnosticCode,
++} from "../lib/agent-efficiency-replay-safety.mjs";
++import {
++  defineCheck,
++  isDirectRun,
++  parseScriptArgs,
++  runScriptMain,
++} from "../lib/script-runtime.mjs";
++import {
++  createReplayDependencyManifest,
++  replayDependencyClaimFromManifest,
++} from "./internal/agent-efficiency-dependency-manifest.mjs";
++import {
++  initializeAnchorCheckout,
++  installFixtureRegistryOverlay,
++} from "./internal/agent-efficiency-capture-runtime.mjs";
++import {
++  CODEX_REPLAY_CLI_VERSION_ENV,
++  resolveCodexReplayCliVersion,
++} from "./internal/agent-efficiency-codex-runtime.mjs";
++
++const SCRIPT_NAME = "capture-agent-efficiency-candidate.mjs";
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const scriptsPath = (...segments) => path.join(repoRoot, "scripts", ...segments);
++const DEFAULT_DRIVER_PATH = scriptsPath("bench", "run-agent-efficiency-codex-replay.mjs");
++const DEFAULT_BASELINE_PATH = scriptsPath("baselines", "agent-efficiency-pre-v0.7-replay.json");
++const DEFAULT_BASELINE_REGISTRY_PATH = scriptsPath("bench", "agent-efficiency-fixtures.json");
++const DEFAULT_BASELINE_ENVELOPES = scriptsPath("bench", "agent-efficiency-replay-envelopes");
++const DEFAULT_BASELINE_EVIDENCE = scriptsPath("bench", "agent-efficiency-replay-evidence");
++const CANDIDATE_CACHE_ROOT = path.join(repoRoot, ".agentplane", "cache", "rf04-candidate");
++const CANDIDATE_CAPTURE_SCRIPT = "scripts/bench/capture-agent-efficiency-candidate.mjs";
++const REPLAY_DRIVER_TURN_TIMEOUT_MS = 240_000;
++const REPLAY_DRIVER_SETUP_TIMEOUT_MS = 5 * 60 * 1000;
++const REPLAY_DRIVER_EXIT_GRACE_MS = 60_000;
++const REPLAY_DRIVER_MAX_TIMEOUT_MS = 25 * 60 * 1000;
++const MAX_INCREASE_RATIO = 0.1;
++
++function sha256(value) {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function canonicalBytes(value) {
++  return `${stableJson(value, 2)}\n`;
++}
++
++function helpText() {
++  return [
++    `Usage: node scripts/bench/${SCRIPT_NAME} --subject <sha> [options]`,
++    "",
++    "Capture and validate RF-04 telemetry for one reviewed candidate SHA.",
++    "The historical pre-v0.7 anchor is baseline-only and is rejected as a candidate subject.",
++    "",
++    "Options:",
++    "  --subject <sha>   Required full reviewed candidate commit SHA.",
++    "  --codex-version <version>  Required exact Codex CLI version for every candidate episode.",
++    `  --runs <count>   Runs per scenario. Minimum/default: ${MINIMUM_REPLAY_RUNS}.`,
++    "  --driver <path>   Reviewed local RF-04 provider driver.",
++    "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
++    "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
++    "                              historical runtime bridge for this exact Codex CLI version.",
++    "  --replace         Replace one complete previous candidate capture generation.",
++    "  --check           Rebuild and validate an existing capture without provider calls.",
++    "  --help            Show this help text.",
++    "",
++    "The capture writes 10 scenarios x 5 runs, raw provider evidence, actual metric values,",
++    "baseline/candidate deltas, declared thresholds, and a pass/fail verdict. A failed comparison",
++    "is persisted and exits non-zero; it must not be retried as a successful result.",
++  ].join("\n");
++}
++
++function parseArgs(argv) {
++  const { flags, positionals } = parseScriptArgs(argv, {
++    valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
++    booleanFlags: ["check", "help", "replace"],
++    aliases: { h: "help" },
++  });
++  if (positionals.length > 0) {
++    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
++  }
++  return {
++    check: flags.check === true,
++    codexCliVersion: flags["codex-version"] ?? "",
++    driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
++    help: flags.help === true,
++    outputRoot: flags.root ? path.resolve(flags.root) : null,
++    replace: flags.replace === true,
++    runs: Number.parseInt(flags.runs ?? String(MINIMUM_REPLAY_RUNS), 10),
++    runtimeBridgeVersion: flags["runtime-bridge"] ?? null,
++    subject: flags.subject ?? "",
++  };
++}
++
++function assertCandidateSubject(subject) {
++  if (!/^[a-f0-9]{40}$/u.test(subject)) {
++    throw new Error("--subject must be a full 40-character Git commit SHA");
++  }
++  if (subject === REPLAY_ANCHOR_COMMIT) {
++    throw new Error(
++      "the historical RF-04 anchor is baseline-only and cannot be a candidate subject",
++    );
++  }
++  return subject;
++}
++
++function assertRuns(runs) {
++  if (!Number.isInteger(runs) || runs < MINIMUM_REPLAY_RUNS) {
++    throw new Error(`--runs must be an integer >= ${MINIMUM_REPLAY_RUNS}`);
++  }
++  return runs;
++}
++
++function assertCandidateCodexCliVersion(value) {
++  if (typeof value !== "string" || value.length === 0) {
++    throw new Error("--codex-version must declare the exact reviewed Codex CLI version");
++  }
++  return resolveCodexReplayCliVersion({ [CODEX_REPLAY_CLI_VERSION_ENV]: value });
++}
++
++function isInside(root, candidate) {
++  const relative = path.relative(root, candidate);
++  return relative !== "" && !relative.startsWith(`..${path.sep}`) && relative !== "..";
++}
++
++function resolveCandidatePaths(subject, outputRoot) {
++  const root = path.resolve(outputRoot ?? path.join(CANDIDATE_CACHE_ROOT, subject));
++  const allowedRoot = path.resolve(CANDIDATE_CACHE_ROOT);
++  if (!isInside(allowedRoot, root)) {
++    throw new Error(
++      "candidate evidence root must be nested under .agentplane/cache/rf04-candidate",
++    );
++  }
++  assertRepoPathNoSymlinkEscape(repoRoot, root, "candidate evidence root");
++  return {
++    evidenceDirectory: path.join(root, "evidence"),
++    envelopeDirectory: path.join(root, "envelopes"),
++    failurePath: path.join(root, "failed-capture.json"),
++    markerPath: path.join(root, "capture-transaction.json"),
++    measurementPath: path.join(root, "measurement.json"),
++    registryPath: path.join(root, "fixture-registry.json"),
++    root,
++  };
++}
++
++function assertCandidatePaths(paths) {
++  for (const [label, value, kind] of [
++    ["candidate registry", paths.registryPath, "file"],
++    ["candidate envelopes", paths.envelopeDirectory, "directory"],
++    ["candidate evidence", paths.evidenceDirectory, "directory"],
++    ["candidate measurement", paths.measurementPath, "file"],
++  ]) {
++    assertRepoPathNoSymlinkEscape(repoRoot, value, label, { kind });
++  }
++  const mutable = [paths.envelopeDirectory, paths.evidenceDirectory, paths.measurementPath].map(
++    (value) => path.resolve(value),
++  );
++  for (let index = 0; index < mutable.length; index += 1) {
++    for (let other = index + 1; other < mutable.length; other += 1) {
++      if (
++        mutable[index] === mutable[other] ||
++        isInside(mutable[index], mutable[other]) ||
++        isInside(mutable[other], mutable[index])
++      ) {
++        throw new Error("candidate capture targets must be pairwise disjoint");
++      }
++    }
++  }
++}
++
++function expectedRoles(scenario) {
++  return [...new Set(scenario.expected_episode_trace)];
++}
++
++function replayDriverTimeoutMs(scenario) {
++  const episodeCount = scenario?.expected_episode_trace?.length;
++  if (!Number.isInteger(episodeCount) || episodeCount < 0) {
++    throw new Error("replay scenario must declare a non-negative expected episode trace");
++  }
++  const timeout =
++    REPLAY_DRIVER_SETUP_TIMEOUT_MS +
++    episodeCount * REPLAY_DRIVER_TURN_TIMEOUT_MS +
++    REPLAY_DRIVER_EXIT_GRACE_MS;
++  if (timeout > REPLAY_DRIVER_MAX_TIMEOUT_MS) {
++    throw new Error("replay scenario exceeds the bounded parent driver timeout contract");
++  }
++  return timeout;
++}
++
++function runChecked(command, args, options, label) {
++  const result = spawnSync(command, args, {
++    ...options,
++    encoding: null,
++    maxBuffer: 128 * 1024 * 1024,
++  });
++  if (result.error) {
++    throw new Error(`${label} failed to start or exceeded its fixed timeout`);
++  }
++  if (result.status !== 0) {
++    const diagnostic = replayDriverDiagnosticCode(result.stderr);
++    throw new Error(
++      `${label} failed with exit ${result.status}` +
++        (diagnostic ? ` (RF04_DRIVER_ERROR:${diagnostic})` : ""),
++    );
++  }
++}
++
++function targetExists(target) {
++  return lstatSync(target, { throwIfNoEntry: false }) !== undefined;
++}
++
++function writeCandidateRegistry(subject, registryPath) {
++  const historical = readFixtureRegistry(DEFAULT_BASELINE_REGISTRY_PATH, {
++    historicalBaseline: true,
++  });
++  const candidate = JSON.parse(stableJson(historical));
++  candidate.provenance.efficiency_anchor_commit = subject;
++  assertFixtureRegistry(candidate);
++  mkdirSync(path.dirname(registryPath), { recursive: true });
++  writeFileSync(registryPath, canonicalBytes(candidate), { encoding: "utf8", mode: 0o600 });
++  return candidate;
++}
++
++function readCandidateRegistry(subject, registryPath) {
++  const registry = readFixtureRegistry(registryPath);
++  if (registry.provenance.efficiency_anchor_commit !== subject) {
++    throw new Error("candidate fixture registry is not bound to the reviewed subject SHA");
++  }
++  return registry;
++}
++
++export function createCandidateHarnessManifest(
++  driverIdentity,
++  dependencyClaim,
++  manifestRepoRoot = repoRoot,
++) {
++  const base = createReplayHarnessManifest(manifestRepoRoot, driverIdentity, { dependencyClaim });
++  const capturePath = path.join(manifestRepoRoot, CANDIDATE_CAPTURE_SCRIPT);
++  const captureStats = lstatSync(capturePath, { throwIfNoEntry: false });
++  if (!captureStats?.isFile() || captureStats.isSymbolicLink()) {
++    throw new Error("candidate replay harness capture script must be a regular non-symlink file");
++  }
++  const files = [
++    ...base.files,
++    {
++      path: CANDIDATE_CAPTURE_SCRIPT,
++      sha256: sha256(readFileSync(capturePath)),
++    },
++  ]
++    .filter(
++      (entry, index, all) => all.findIndex((candidate) => candidate.path === entry.path) === index,
++    )
++    .toSorted((left, right) => left.path.localeCompare(right.path));
++  const payload = {
++    dependency_claim: dependencyClaim,
++    driver_contract_version: driverIdentity.contract_version,
++    files,
++  };
++  return { ...payload, sha256: sha256(canonicalBytes(payload)) };
++}
++
++function historicalCandidateHarnessSnapshot(subject) {
++  assertGitCommitAvailable(repoRoot, subject);
++  const temporaryParent = path.join(repoRoot, ".agentplane", "tmp");
++  assertRepoPathNoSymlinkEscape(repoRoot, temporaryParent, "historical candidate harness root", {
++    kind: "directory",
++  });
++  mkdirSync(temporaryParent, { recursive: true });
++  const snapshotRoot = mkdtempSync(path.join(temporaryParent, "rf04-historical-harness-"));
++  const archivePath = path.join(snapshotRoot, "candidate-source.tar");
++  try {
++    const archive = spawnSync(
++      "git",
++      ["archive", "--format=tar", `--output=${archivePath}`, subject],
++      {
++        cwd: repoRoot,
++        encoding: null,
++      },
++    );
++    if (archive.error || archive.status !== 0) {
++      throw new Error("candidate historical harness archive could not be read");
++    }
++    const extraction = spawnSync("tar", ["-xf", archivePath, "-C", snapshotRoot], {
++      encoding: null,
++    });
++    if (extraction.error || extraction.status !== 0) {
++      throw new Error("candidate historical harness archive could not be extracted");
++    }
++    rmSync(archivePath, { force: true });
++    return snapshotRoot;
++  } catch (error) {
++    rmSync(snapshotRoot, { force: true, recursive: true });
++    throw error;
++  }
++}
++
++function reconstructCandidateHarnessManifest({ dependencyClaim, driverIdentity, subject }) {
++  const snapshotRoot = historicalCandidateHarnessSnapshot(subject);
++  try {
++    return createCandidateHarnessManifest(driverIdentity, dependencyClaim, snapshotRoot);
++  } finally {
++    rmSync(snapshotRoot, { force: true, recursive: true });
++  }
++}
++
++function candidateInputFingerprint({
++  codexCliVersion,
++  dependencyClaim,
++  driverIdentity,
++  harnessManifest,
++  registry,
++}) {
++  return {
++    codex_cli_version: codexCliVersion,
++    dependency_claim: dependencyClaim,
++    driver: driverIdentity,
++    fixture_registry_sha256: fixtureRegistrySha256(registry),
++    harness_sha256: harnessManifest.sha256,
++  };
++}
++
++function assertCandidateInputsUnchanged(expected, registryPath, driverPath) {
++  const registry = readCandidateRegistry(expected.subject, registryPath);
++  const driverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
++  const dependencyManifest = createReplayDependencyManifest(repoRoot);
++  const dependencyClaim = replayDependencyClaimFromManifest(dependencyManifest);
++  const harnessManifest = createCandidateHarnessManifest(driverIdentity, dependencyClaim);
++  const actual = candidateInputFingerprint({
++    codexCliVersion: expected.codexCliVersion,
++    dependencyClaim,
++    driverIdentity,
++    harnessManifest,
++    registry,
++  });
++  if (stableJson(actual) !== stableJson(expected.fingerprint)) {
++    throw new Error("candidate RF-04 capture inputs changed during capture");
++  }
++}
++
++function fixedRuntimeProfile(envelopeRecords, codexCliVersion, label) {
++  const profiles = envelopeRecords.map((record) => record.value?.profile);
++  const distinct = [...new Set(profiles.map((profile) => stableJson(profile)))];
++  if (distinct.length !== 1 || profiles.length === 0) {
++    throw new Error(`${label} must use one fixed provider runtime profile`);
++  }
++  const profile = profiles[0];
++  if (
++    typeof profile?.runtime_version !== "string" ||
++    !profile.runtime_version.endsWith(`/${codexCliVersion}`)
++  ) {
++    throw new Error(`${label} runtime profile does not bind declared Codex CLI version`);
++  }
++  return profile;
++}
++
++function canonicalRecord(value, label) {
++  const bytes = canonicalBytes(value);
++  if (typeof value !== "object" || value === null) {
++    throw new Error(`${label} must be a JSON object`);
++  }
++  return bytes;
++}
++
++function assertRecords({
++  anchor,
++  dependencyClaim,
++  driverIdentity,
++  envelopeRecords,
++  evidenceRecords,
++  harnessManifest,
++  registry,
++  runs,
++}) {
++  const scenarioById = new Map(registry.scenarios.map((scenario) => [scenario.id, scenario]));
++  const evidenceByPath = new Map(evidenceRecords.map((record) => [record.path, record]));
++  if (evidenceByPath.size !== evidenceRecords.length) {
++    throw new Error("candidate evidence contains duplicate paths");
++  }
++  const grouped = new Map();
++  const seenRunIds = new Set();
++  for (const record of envelopeRecords) {
++    if (record.bytes !== canonicalRecord(record.value, record.path)) {
++      throw new Error(`${record.path} must use canonical stable JSON with one trailing newline`);
++    }
++    assertReplayEnvelope(record.value, {
++      allowTestControls: false,
++      anchor,
++      dependencyClaim,
++      driverIdentity,
++      evidenceByPath,
++      fixtureRegistrySha256: fixtureRegistrySha256(registry),
++      harnessSha256: harnessManifest.sha256,
++      runs,
++      scenarioById,
++    });
++    if (seenRunIds.has(record.value.run_id)) {
++      throw new Error(`candidate capture contains duplicate run ${record.value.run_id}`);
++    }
++    seenRunIds.add(record.value.run_id);
++    const scenarioRuns = grouped.get(record.value.scenario_id) ?? [];
++    scenarioRuns.push(record.value);
++    grouped.set(record.value.scenario_id, scenarioRuns);
++  }
++  if (
++    stableJson([...grouped.keys()].toSorted()) !== stableJson([...RF04_SCENARIO_IDS].toSorted())
++  ) {
++    throw new Error("candidate capture must contain exactly the ten RF-04 scenarios");
++  }
++  for (const scenario of registry.scenarios) {
++    const scenarioRuns = (grouped.get(scenario.id) ?? []).toSorted(
++      (left, right) => left.run_index - right.run_index,
++    );
++    const indices = scenarioRuns.map((entry) => entry.run_index);
++    const expected = Array.from({ length: runs }, (_, index) => index + 1);
++    if (scenarioRuns.length !== runs || stableJson(indices) !== stableJson(expected)) {
++      throw new Error(`${scenario.id} must contain exactly ${runs} candidate runs`);
++    }
++    grouped.set(scenario.id, scenarioRuns);
++  }
++  return grouped;
++}
++
++function observedNumber(cell, label) {
++  if (cell?.resolution !== "observed" || !Number.isFinite(cell.value)) {
++    throw new Error(`${label} must contain an observed numeric value`);
++  }
++  return cell.value;
++}
++
++function observedBoolean(cell, label) {
++  if (cell?.resolution !== "observed" || typeof cell.value !== "boolean") {
++    throw new Error(`${label} must contain an observed boolean value`);
++  }
++  return cell.value;
++}
++
++function mean(values, label) {
++  if (values.length === 0) throw new Error(`${label} has no comparable observations`);
++  return values.reduce((total, value) => total + value, 0) / values.length;
++}
++
++function summarizeActualValues(grouped, registry) {
++  const totals = { input_tokens: 0, output_tokens: 0, reasoning_tokens: 0 };
++  const latency = {
++    harness_setup_latency_ms: [],
++    time_to_first_scoped_mutation_ms: [],
++    time_to_verified_result_ms: [],
++  };
++  const outcomes = Object.fromEntries(OUTCOME_FIELDS.map((field) => [field, 0]));
++  let goldenMismatchCount = 0;
++  let providerEpisodes = 0;
++  for (const scenario of registry.scenarios) {
++    for (const envelope of grouped.get(scenario.id) ?? []) {
++      providerEpisodes += observedNumber(
++        envelope.metrics.llm_episodes,
++        `${envelope.run_id}.llm_episodes`,
++      );
++      for (const roleUsage of Object.values(envelope.token_usage_by_role)) {
++        for (const field of TOKEN_FIELDS) {
++          totals[field] += observedNumber(roleUsage[field], `${envelope.run_id}.${field}`);
++        }
++      }
++      for (const [field, samples] of Object.entries(latency)) {
++        const cell = envelope.diagnostics.latency_ms[field];
++        if (cell?.resolution === "observed")
++          samples.push(observedNumber(cell, `${envelope.run_id}.${field}`));
++      }
++      for (const field of OUTCOME_FIELDS) {
++        const value = observedBoolean(
++          envelope.resolved_outcomes[field],
++          `${envelope.run_id}.${field}`,
++        );
++        outcomes[field] += value ? 1 : 0;
++        if (value !== scenario.expected_outcomes[field]) goldenMismatchCount += 1;
++      }
++    }
++  }
++  return {
++    golden_mismatch_count: goldenMismatchCount,
++    latency_ms: Object.fromEntries(
++      Object.entries(latency).map(([field, samples]) => [
++        field,
++        { mean: mean(samples, field), sample_count: samples.length },
++      ]),
++    ),
++    outcomes,
++    provider_episodes: providerEpisodes,
++    provider_tokens: {
++      ...totals,
++      total_tokens: totals.input_tokens + totals.output_tokens + totals.reasoning_tokens,
++    },
++  };
++}
++
++function atMostComparison(id, baseline, candidate, maximumIncreaseRatio = MAX_INCREASE_RATIO) {
++  if (!Number.isFinite(baseline) || !Number.isFinite(candidate) || baseline < 0 || candidate < 0) {
++    throw new Error(`${id} requires finite non-negative baseline and candidate values`);
++  }
++  const ceiling = baseline * (1 + maximumIncreaseRatio);
++  return {
++    baseline,
++    candidate,
++    delta: candidate - baseline,
++    delta_ratio: baseline === 0 ? null : (candidate - baseline) / baseline,
++    id,
++    maximum: ceiling,
++    threshold: { kind: "max_increase_ratio", value: maximumIncreaseRatio },
++    verdict: candidate <= ceiling ? "pass" : "fail",
++  };
++}
++
++function atLeastComparison(id, baseline, candidate) {
++  return {
++    baseline,
++    candidate,
++    delta: candidate - baseline,
++    id,
++    minimum: baseline,
++    threshold: { kind: "no_regression", value: 0 },
++    verdict: candidate >= baseline ? "pass" : "fail",
++  };
++}
++
++function exactComparison(id, baseline, candidate) {
++  return {
++    baseline,
++    candidate,
++    delta: candidate - baseline,
++    id,
++    threshold: { kind: "exact", value: baseline },
++    verdict: candidate === baseline ? "pass" : "fail",
++  };
++}
++
++function identityComparison(id, baseline, candidate) {
++  return {
++    baseline,
++    candidate,
++    id,
++    threshold: { kind: "exact", value: baseline },
++    verdict: stableJson(candidate) === stableJson(baseline) ? "pass" : "fail",
++  };
++}
++
++function comparisonBaselineSource(runtimeBridgeVersion = null) {
++  if (runtimeBridgeVersion === null) {
++    return {
++      baselinePath: DEFAULT_BASELINE_PATH,
++      evidenceDirectory: DEFAULT_BASELINE_EVIDENCE,
++      envelopeDirectory: DEFAULT_BASELINE_ENVELOPES,
++      kind: "frozen_replay",
++      registryPath: DEFAULT_BASELINE_REGISTRY_PATH,
++    };
++  }
++  const paths = runtimeBridgePaths(repoRoot, runtimeBridgeVersion);
++  return {
++    baselinePath: paths.baselinePath,
++    evidenceDirectory: paths.evidenceDirectory,
++    envelopeDirectory: paths.envelopeDirectory,
++    kind: "runtime_bridge",
++    registryPath: DEFAULT_BASELINE_REGISTRY_PATH,
++  };
++}
++
++function readComparisonBaseline({ baselineSource, runs }) {
++  const baselineRegistry = readFixtureRegistry(baselineSource.registryPath, {
++    historicalBaseline: true,
++  });
++  const baselineEnvelopeRecords = readReplayEnvelopeRecords(
++    repoRoot,
++    baselineSource.envelopeDirectory,
++  );
++  const baselineEvidenceRecords = readReplayEvidenceRecords(
++    repoRoot,
++    baselineSource.evidenceDirectory,
++  );
++  const frozenBaseline = JSON.parse(readFileSync(baselineSource.baselinePath, "utf8"));
++  const baselineDriverIdentity = frozenBaseline?.anchor?.driver;
++  const baselineHarnessManifest = frozenBaseline?.anchor?.harness;
++  const baselineDependencyClaim = baselineHarnessManifest?.dependency_claim;
++  if (
++    frozenBaseline?.anchor?.subject_sha !== REPLAY_ANCHOR_COMMIT ||
++    !baselineDriverIdentity ||
++    !baselineHarnessManifest ||
++    !baselineDependencyClaim
++  ) {
++    throw new Error(`${baselineSource.kind} RF-04 baseline anchor metadata is incomplete`);
++  }
++  const baseline = buildReplayBaseline({
++    driverIdentity: baselineDriverIdentity,
++    envelopeRecords: baselineEnvelopeRecords,
++    evidenceRecords: baselineEvidenceRecords,
++    harnessManifest: baselineHarnessManifest,
++    registry: baselineRegistry,
++    runs,
++  });
++  assertFrozenReplayBaseline(frozenBaseline, baseline, `${baselineSource.kind} RF-04 baseline`);
++  const baselineRuntimeProfile = fixedRuntimeProfile(
++    baselineEnvelopeRecords,
++    frozenBaseline.capture_profile.runtime_version.split("/").at(-1),
++    `${baselineSource.kind} RF-04 baseline`,
++  );
++  const baselineGrouped = assertRecords({
++    anchor: REPLAY_ANCHOR_COMMIT,
++    dependencyClaim: baselineDependencyClaim,
++    driverIdentity: baselineDriverIdentity,
++    envelopeRecords: baselineEnvelopeRecords,
++    evidenceRecords: baselineEvidenceRecords,
++    harnessManifest: baselineHarnessManifest,
++    registry: baselineRegistry,
++    runs,
++  });
++  return {
++    baseline,
++    baselineGrouped,
++    baselineRegistry,
++    baselineRuntimeProfile,
++    replayBaselineSha256: sha256(readFileSync(baselineSource.baselinePath)),
++  };
++}
++
++export function buildCandidateMeasurement({
++  candidateAnchor,
++  candidateCodexCliVersion,
++  candidateDependencyClaim,
++  candidateDriverIdentity,
++  candidateEnvelopeRecords,
++  candidateEvidenceRecords,
++  candidateHarnessManifest,
++  candidateRegistry,
++  baselineSource = comparisonBaselineSource(),
++  runs = MINIMUM_REPLAY_RUNS,
++}) {
++  const subject = assertCandidateSubject(candidateAnchor);
++  const codexCliVersion = resolveCodexReplayCliVersion({
++    [CODEX_REPLAY_CLI_VERSION_ENV]: candidateCodexCliVersion,
++  });
++  assertRuns(runs);
++  assertFixtureRegistry(candidateRegistry);
++  if (candidateRegistry.provenance.efficiency_anchor_commit !== subject) {
++    throw new Error("candidate registry subject SHA does not match the requested candidate");
++  }
++  const candidateGrouped = assertRecords({
++    anchor: subject,
++    dependencyClaim: candidateDependencyClaim,
++    driverIdentity: candidateDriverIdentity,
++    envelopeRecords: candidateEnvelopeRecords,
++    evidenceRecords: candidateEvidenceRecords,
++    harnessManifest: candidateHarnessManifest,
++    registry: candidateRegistry,
++    runs,
++  });
++  const candidateRuntimeProfile = fixedRuntimeProfile(
++    candidateEnvelopeRecords,
++    codexCliVersion,
++    "candidate RF-04 capture",
++  );
++
++  const { baselineGrouped, baselineRegistry, baselineRuntimeProfile, replayBaselineSha256 } =
++    readComparisonBaseline({ baselineSource, runs });
++  const baselineValues = summarizeActualValues(baselineGrouped, baselineRegistry);
++  const candidateValues = summarizeActualValues(candidateGrouped, candidateRegistry);
++  const runtimeComparison = {
++    baseline: baselineRuntimeProfile.runtime_version,
++    candidate: candidateRuntimeProfile.runtime_version,
++    profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
++  };
++  const comparisons = [
++    ...Object.entries(candidateValues.provider_tokens).map(([field, candidate]) =>
++      atMostComparison(
++        `provider_tokens.${field}`,
++        baselineValues.provider_tokens[field],
++        candidate,
++      ),
++    ),
++    ...Object.keys(candidateValues.latency_ms).flatMap((field) => {
++      const baselineLatency = baselineValues.latency_ms[field];
++      const candidateLatency = candidateValues.latency_ms[field];
++      return [
++        atLeastComparison(
++          `latency.${field}.sample_count`,
++          baselineLatency.sample_count,
++          candidateLatency.sample_count,
++        ),
++        atMostComparison(`latency.${field}.mean_ms`, baselineLatency.mean, candidateLatency.mean),
++      ];
++    }),
++    atLeastComparison(
++      "outcomes.verified_success",
++      baselineValues.outcomes.verified_success,
++      candidateValues.outcomes.verified_success,
++    ),
++    atMostComparison(
++      "outcomes.rework_required",
++      baselineValues.outcomes.rework_required,
++      candidateValues.outcomes.rework_required,
++      0,
++    ),
++    atMostComparison(
++      "outcomes.golden_mismatch_count",
++      baselineValues.golden_mismatch_count,
++      candidateValues.golden_mismatch_count,
++      0,
++    ),
++    exactComparison(
++      "provider_episodes",
++      baselineValues.provider_episodes,
++      candidateValues.provider_episodes,
++    ),
++    identityComparison("runtime.profile", baselineRuntimeProfile, candidateRuntimeProfile),
++  ];
++  const failures = comparisons.filter((comparison) => comparison.verdict !== "pass");
++  return {
++    baseline: {
++      actual_values: baselineValues,
++      replay_baseline_sha256: replayBaselineSha256,
++      runtime_profile: baselineRuntimeProfile,
++      source: baselineSource.kind,
++      subject_sha: REPLAY_ANCHOR_COMMIT,
++    },
++    candidate: {
++      actual_values: candidateValues,
++      coverage: {
++        replay_runs: candidateEnvelopeRecords.length,
++        scenarios: candidateGrouped.size,
++      },
++      driver: candidateDriverIdentity,
++      fixture_registry_sha256: fixtureRegistrySha256(candidateRegistry),
++      harness_sha256: candidateHarnessManifest.sha256,
++      runtime_profile: candidateRuntimeProfile,
++      subject_sha: subject,
++    },
++    comparisons,
++    failure_ids: failures.map((comparison) => comparison.id),
++    kind: "agent_efficiency_candidate_measurement_v1",
++    runtime_comparison: runtimeComparison,
++    schema_version: 1,
++    verdict: failures.length === 0 ? "pass" : "fail",
++  };
++}
++
++function captureCandidate(options) {
++  const subject = assertCandidateSubject(options.subject);
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  const runs = assertRuns(options.runs);
++  assertGitCommitAvailable(repoRoot, subject);
++  const paths = resolveCandidatePaths(subject, options.outputRoot);
++  const publicationTargets = [
++    paths.envelopeDirectory,
++    paths.evidenceDirectory,
++    paths.measurementPath,
++  ];
++  const existingTargetCount = publicationTargets.filter((target) => targetExists(target)).length;
++  if (existingTargetCount > 0 && !options.replace) {
++    throw new Error(
++      "candidate envelopes, evidence, or measurement already exist; refusing a retry without --replace",
++    );
++  }
++  if (options.replace && existingTargetCount !== 0 && existingTargetCount !== 3) {
++    throw new Error("candidate replacement requires a complete previous three-artifact generation");
++  }
++  if (targetExists(paths.markerPath)) {
++    throw new Error("an unfinished candidate capture transaction requires manual recovery");
++  }
++
++  const registry = writeCandidateRegistry(subject, paths.registryPath);
++  const driverIdentity = createReplayDriverIdentity(repoRoot, options.driverPath);
++  const dependencyManifest = createReplayDependencyManifest(repoRoot);
++  const dependencyClaim = replayDependencyClaimFromManifest(dependencyManifest);
++  const harnessManifest = createCandidateHarnessManifest(driverIdentity, dependencyClaim);
++  const expectedInputs = {
++    fingerprint: candidateInputFingerprint({
++      codexCliVersion,
++      dependencyClaim,
++      driverIdentity,
++      harnessManifest,
++      registry,
++    }),
++    codexCliVersion,
++    subject,
++  };
++  const cacheRoot = path.join(repoRoot, ".agentplane", "cache");
++  mkdirSync(cacheRoot, { recursive: true });
++  const captureRoot = mkdtempSync(path.join(cacheRoot, "rf04-candidate-staging-"));
++  const stagingEnvelopes = path.join(captureRoot, "envelopes");
++  const stagingEvidence = path.join(captureRoot, "evidence");
++  const stagingMeasurement = path.join(captureRoot, "measurement.json");
++  const isolatedRepository = path.join(captureRoot, "subject");
++  const completedRuns = [];
++  mkdirSync(stagingEnvelopes, { recursive: true });
++  mkdirSync(stagingEvidence, { recursive: true });
++  const evidenceLogicalRoot = relativeRepoPath(
++    repoRoot,
++    paths.evidenceDirectory,
++    "candidate evidence directory",
++  );
++
++  try {
++    for (const scenario of registry.scenarios) {
++      for (let runIndex = 1; runIndex <= runs; runIndex += 1) {
++        rmSync(isolatedRepository, { force: true, recursive: true });
++        mkdirSync(isolatedRepository, { recursive: true });
++        initializeAnchorCheckout(repoRoot, isolatedRepository, subject);
++        const registryOverlay = installFixtureRegistryOverlay(
++          isolatedRepository,
++          registry,
++          fixtureRegistrySha256(registry),
++        );
++        const scenarioDirectory = path.join(stagingEnvelopes, scenario.id);
++        const evidenceScenarioDirectory = path.join(stagingEvidence, scenario.id);
++        mkdirSync(scenarioDirectory, { recursive: true });
++        mkdirSync(evidenceScenarioDirectory, { recursive: true });
++        const fileName = `run-${String(runIndex).padStart(2, "0")}.json`;
++        const outputPath = path.join(scenarioDirectory, fileName);
++        const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
++        const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
++        const contractEnvironment = createReplayDriverContractEnvironment({
++          anchor: subject,
++          codexCliVersion,
++          dependencyClaim,
++          driverIdentity,
++          evidenceOutputPath,
++          evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
++          expectedRolesJson: stableJson(expectedRoles(scenario)),
++          fixtureRegistryPath: registryOverlay,
++          fixtureRegistrySha256: fixtureRegistrySha256(registry),
++          harnessSha256: harnessManifest.sha256,
++          outputPath,
++          runId,
++        });
++        runChecked(
++          process.execPath,
++          [
++            options.driverPath,
++            "--scenario",
++            scenario.id,
++            "--run-index",
++            String(runIndex),
++            "--output",
++            outputPath,
++            "--evidence-output",
++            evidenceOutputPath,
++          ],
++          {
++            cwd: isolatedRepository,
++            env: buildReplayDriverEnvironment(process.env, contractEnvironment),
++            timeout: replayDriverTimeoutMs(scenario),
++          },
++          `${runId} candidate driver`,
++        );
++        if (!existsSync(outputPath) || !existsSync(evidenceOutputPath)) {
++          throw new Error(`${runId} driver did not write its complete candidate evidence`);
++        }
++        const envelope = JSON.parse(readFileSync(outputPath, "utf8"));
++        const evidence = JSON.parse(readFileSync(evidenceOutputPath, "utf8"));
++        if (
++          readFileSync(outputPath, "utf8") !== canonicalBytes(envelope) ||
++          readFileSync(evidenceOutputPath, "utf8") !== canonicalBytes(evidence)
++        ) {
++          throw new Error(`${runId} candidate driver output must be canonical stable JSON`);
++        }
++        completedRuns.push(runId);
++        assertCandidateInputsUnchanged(expectedInputs, paths.registryPath, options.driverPath);
++      }
++    }
++    const envelopes = readReplayEnvelopeRecords(repoRoot, stagingEnvelopes, {
++      logicalRoot: relativeRepoPath(
++        repoRoot,
++        paths.envelopeDirectory,
++        "candidate envelope directory",
++      ),
++    });
++    const evidence = readReplayEvidenceRecords(repoRoot, stagingEvidence, {
++      logicalRoot: evidenceLogicalRoot,
++    });
++    const measurement = buildCandidateMeasurement({
++      candidateAnchor: subject,
++      candidateCodexCliVersion: codexCliVersion,
++      candidateDependencyClaim: dependencyClaim,
++      candidateDriverIdentity: driverIdentity,
++      candidateEnvelopeRecords: envelopes,
++      candidateEvidenceRecords: evidence,
++      candidateHarnessManifest: harnessManifest,
++      candidateRegistry: registry,
++      runs,
++    });
++    writeFileSync(stagingMeasurement, canonicalBytes(measurement), {
++      encoding: "utf8",
++      mode: 0o600,
++    });
++    installReplayArtifactTransaction(
++      [
++        { staging: stagingEnvelopes, target: paths.envelopeDirectory },
++        { staging: stagingEvidence, target: paths.evidenceDirectory },
++        { staging: stagingMeasurement, target: paths.measurementPath },
++      ],
++      captureRoot,
++      {
++        markerPath: paths.markerPath,
++        validateInstalled() {
++          assertCandidateInputsUnchanged(expectedInputs, paths.registryPath, options.driverPath);
++          const installed = rebuildCandidateMeasurement({
++            codexCliVersion,
++            driverPath: options.driverPath,
++            paths,
++            runs,
++            subject,
++          });
++          if (readFileSync(paths.measurementPath, "utf8") !== canonicalBytes(installed)) {
++            throw new Error(
++              "installed candidate measurement differs from its raw capture evidence",
++            );
++          }
++        },
++      },
++    );
++    return measurement;
++  } catch (error) {
++    mkdirSync(paths.root, { recursive: true });
++    writeFileSync(
++      paths.failurePath,
++      canonicalBytes({
++        completed_runs: completedRuns,
++        failed_at: new Date().toISOString(),
++        kind: "agent_efficiency_candidate_capture_failure_v1",
++        message: error instanceof Error ? error.message : String(error),
++        subject_sha: subject,
++      }),
++      { encoding: "utf8", mode: 0o600 },
++    );
++    throw error;
++  } finally {
++    if (!targetExists(paths.markerPath)) {
++      rmSync(captureRoot, { force: true, recursive: true });
++    }
++  }
++}
++
++function recordedCandidateInputs({ candidateEnvelopeRecords, driverPath, subject }) {
++  const firstEnvelope = candidateEnvelopeRecords[0]?.value;
++  const driverIdentity = firstEnvelope?.anchor?.driver;
++  const harnessSha256 = firstEnvelope?.anchor?.harness_sha256;
++  if (!driverIdentity || !harnessSha256) {
++    throw new Error("candidate raw evidence is missing its reviewed driver or harness digest");
++  }
++  if (firstEnvelope.anchor.subject_sha !== subject) {
++    throw new Error("candidate raw evidence is not bound to the reviewed candidate subject");
++  }
++  const currentDriverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
++  if (stableJson(currentDriverIdentity) !== stableJson(driverIdentity)) {
++    throw new Error("runtime bridge requires the exact reviewed candidate driver bytes");
++  }
++  const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(candidateEnvelopeRecords);
++  const harnessManifest = reconstructCandidateHarnessManifest({
++    dependencyClaim,
++    driverIdentity,
++    subject,
++  });
++  if (harnessManifest.sha256 !== harnessSha256) {
++    throw new Error(
++      "candidate raw evidence harness digest does not match the reviewed candidate source",
++    );
++  }
++  return {
++    dependencyClaim,
++    driverIdentity,
++    harnessManifest,
++  };
++}
++
++function rebuildCandidateMeasurement({
++  baselineSource = comparisonBaselineSource(),
++  codexCliVersion,
++  driverPath,
++  paths,
++  runs,
++  subject,
++  useRecordedCandidateInputs = false,
++}) {
++  const registry = readCandidateRegistry(subject, paths.registryPath);
++  const candidateEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, paths.envelopeDirectory);
++  const candidateEvidenceRecords = readReplayEvidenceRecords(repoRoot, paths.evidenceDirectory);
++  const inputs = useRecordedCandidateInputs
++    ? recordedCandidateInputs({ candidateEnvelopeRecords, driverPath, subject })
++    : (() => {
++        const driverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
++        const dependencyClaim = replayDependencyClaimFromManifest(
++          createReplayDependencyManifest(repoRoot),
++        );
++        return {
++          dependencyClaim,
++          driverIdentity,
++          harnessManifest: createCandidateHarnessManifest(driverIdentity, dependencyClaim),
++        };
++      })();
++  return buildCandidateMeasurement({
++    baselineSource,
++    candidateAnchor: subject,
++    candidateCodexCliVersion: codexCliVersion,
++    candidateDependencyClaim: inputs.dependencyClaim,
++    candidateDriverIdentity: inputs.driverIdentity,
++    candidateEnvelopeRecords,
++    candidateEvidenceRecords,
++    candidateHarnessManifest: inputs.harnessManifest,
++    candidateRegistry: registry,
++    runs,
++  });
++}
++
++function runtimeBridgeMeasurementPath(paths, runtimeBridgeVersion) {
++  runtimeBridgePaths(repoRoot, runtimeBridgeVersion);
++  return path.join(paths.root, `measurement.runtime-bridge-codex-${runtimeBridgeVersion}.json`);
++}
++
++export function materializeRuntimeBridgeMeasurement(options) {
++  const subject = assertCandidateSubject(options.subject);
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  const runs = assertRuns(options.runs);
++  if (options.runtimeBridgeVersion === null) {
++    throw new Error("runtime bridge version is required for runtime bridge materialization");
++  }
++  if (codexCliVersion !== options.runtimeBridgeVersion) {
++    throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
++  }
++  const paths = resolveCandidatePaths(subject, options.outputRoot);
++  assertCandidatePaths(paths);
++  const measurementPath = runtimeBridgeMeasurementPath(paths, codexCliVersion);
++  assertRepoPathNoSymlinkEscape(repoRoot, measurementPath, "runtime bridge measurement", {
++    kind: "file",
++  });
++  const measurement = rebuildCandidateMeasurement({
++    baselineSource: comparisonBaselineSource(codexCliVersion),
++    codexCliVersion,
++    driverPath: options.driverPath,
++    paths,
++    runs,
++    subject,
++    useRecordedCandidateInputs: true,
++  });
++  const bytes = canonicalBytes(measurement);
++  if (targetExists(measurementPath) && readFileSync(measurementPath, "utf8") !== bytes) {
++    throw new Error("runtime bridge measurement already exists with different immutable bytes");
++  }
++  if (!targetExists(measurementPath)) {
++    writeFileSync(measurementPath, bytes, { encoding: "utf8", mode: 0o600 });
++  }
++  return measurement;
++}
++
++export function checkRuntimeBridgeMeasurement(options) {
++  const subject = assertCandidateSubject(options.subject);
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  if (options.runtimeBridgeVersion === null || codexCliVersion !== options.runtimeBridgeVersion) {
++    throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
++  }
++  const paths = resolveCandidatePaths(subject, options.outputRoot);
++  const measurementPath = runtimeBridgeMeasurementPath(paths, codexCliVersion);
++  if (!targetExists(measurementPath)) {
++    throw new Error("runtime bridge measurement is absent; materialize it after bridge capture");
++  }
++  const rebuilt = materializeRuntimeBridgeMeasurement(options);
++  if (readFileSync(measurementPath, "utf8") !== canonicalBytes(rebuilt)) {
++    throw new Error("runtime bridge measurement is not the deterministic rebuild of raw evidence");
++  }
++  return rebuilt;
++}
++
++export function checkCandidateCapture(options) {
++  const subject = assertCandidateSubject(options.subject);
++  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
++  const runs = assertRuns(options.runs);
++  const paths = resolveCandidatePaths(subject, options.outputRoot);
++  assertCandidatePaths(paths);
++  if (!targetExists(paths.measurementPath)) {
++    throw new Error("candidate measurement is absent; run the candidate capture first");
++  }
++  const rebuilt = rebuildCandidateMeasurement({
++    codexCliVersion,
++    driverPath: options.driverPath,
++    paths,
++    runs,
++    subject,
++  });
++  if (readFileSync(paths.measurementPath, "utf8") !== canonicalBytes(rebuilt)) {
++    throw new Error("candidate measurement is not the deterministic rebuild of its raw evidence");
++  }
++  return rebuilt;
++}
++
++const main = defineCheck({
++  name: SCRIPT_NAME,
++  parseArgs,
++  async check({ options, stdout }) {
++    if (options.help) {
++      stdout.write(`${helpText()}\n`);
++      return;
++    }
++    const runtimeBridge = options.runtimeBridgeVersion !== null;
++    const measurement = runtimeBridge
++      ? options.check
++        ? checkRuntimeBridgeMeasurement(options)
++        : materializeRuntimeBridgeMeasurement(options)
++      : options.check
++        ? checkCandidateCapture(options)
++        : captureCandidate(options);
++    stdout.write(
++      `RF-04 candidate ${runtimeBridge ? "runtime bridge measurement" : "measurement"} ` +
++        `${options.check ? "validated" : runtimeBridge ? "materialized" : "captured"} ` +
++        `(subject=${measurement.candidate.subject_sha}; runs=${measurement.candidate.coverage.replay_runs}; ` +
++        `episodes=${measurement.candidate.actual_values.provider_episodes}; verdict=${measurement.verdict})\n`,
++    );
++    if (measurement.verdict !== "pass") {
++      throw new Error(`RF-04 candidate comparison failed: ${measurement.failure_ids.join(", ")}`);
++    }
++  },
++});
++
++if (isDirectRun(import.meta.url)) {
++  runScriptMain(main);
++}
+diff --git a/scripts/bench/capture-agent-efficiency-replay.mjs b/scripts/bench/capture-agent-efficiency-replay.mjs
+index 089165e74..661fa61a6 100644
+--- a/scripts/bench/capture-agent-efficiency-replay.mjs
++++ b/scripts/bench/capture-agent-efficiency-replay.mjs
+@@ -24,6 +24,7 @@ import {
+   assertReplayEnvelope,
+   buildReplayBaseline,
+   buildReplayDriverEnvironment,
++  createReplayDriverContractEnvironment,
+   createReplayDriverIdentity,
+   createReplayHarnessManifest,
+   fixtureRegistrySha256,
+@@ -40,7 +41,12 @@ import {
+   installReplayArtifactTransaction,
+   replayDriverDiagnosticCode,
+ } from "../lib/agent-efficiency-replay-safety.mjs";
+-import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
++import {
++  defineCheck,
++  isDirectRun,
++  parseScriptArgs,
++  runScriptMain,
++} from "../lib/script-runtime.mjs";
+ import {
+   assertReplayDependencyClaim,
+   createReplayDependencyManifest,
+@@ -51,6 +57,11 @@ import {
+   initializeAnchorCheckout,
+   installFixtureRegistryOverlay,
+ } from "./internal/agent-efficiency-capture-runtime.mjs";
++import {
++  CODEX_REPLAY_CLI_VERSION,
++  CODEX_REPLAY_CLI_VERSION_ENV,
++  resolveCodexReplayCliVersion,
++} from "./internal/agent-efficiency-codex-runtime.mjs";
+ 
+ export { buildReplayGitEnvironment } from "../lib/agent-efficiency-replay-safety.mjs";
+ export { replayAnchorCloneArgs } from "./internal/agent-efficiency-capture-runtime.mjs";
+@@ -183,6 +194,7 @@ function targetExists(target) {
+ 
+ function captureWithDriver({
+   anchor,
++  codexCliVersion,
+   dependencyManifest,
+   driverIdentity,
+   driverPath,
+@@ -307,33 +319,20 @@ function captureWithDriver({
+           "--evidence-output",
+           evidenceOutputPath,
+         ];
+-        const contractEnvironment = {
+-          AGENTPLANE_RF04_REPLAY_ANCHOR: anchor,
+-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
+-            dependencyClaim.capture_executable_sha256,
+-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: stableJson(
+-            dependencyClaim.capture_platform,
+-          ),
+-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_RECEIPT_SHA256:
+-            dependencyClaim.capture_receipt_sha256,
+-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_PORTABLE_SHA256: dependencyClaim.portable_sha256,
+-          AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION: String(driverIdentity.contract_version),
+-          AGENTPLANE_RF04_REPLAY_DRIVER_PATH: driverIdentity.path,
+-          AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
+-          AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT: evidenceOutputPath,
+-          AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH: path.posix.join(
+-            evidenceLogicalRoot,
+-            scenario.id,
+-            fileName,
+-          ),
+-          AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: stableJson(expectedRoles(scenario)),
+-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: fixtureDigest,
+-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
+-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: registryOverlay,
+-          AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessManifest.sha256,
+-          AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
+-          AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
+-        };
++        const contractEnvironment = createReplayDriverContractEnvironment({
++          anchor,
++          codexCliVersion,
++          dependencyClaim,
++          driverIdentity,
++          evidenceOutputPath,
++          evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
++          expectedRolesJson: stableJson(expectedRoles(scenario)),
++          fixtureRegistryPath: registryOverlay,
++          fixtureRegistrySha256: fixtureDigest,
++          harnessSha256: harnessManifest.sha256,
++          outputPath,
++          runId,
++        });
+         runChecked(
+           process.execPath,
+           driverArgs,
+@@ -488,6 +487,9 @@ export function captureAgentEfficiencyReplay(options) {
+     throw new Error(`--runs must be an integer >= ${MINIMUM_REPLAY_RUNS}`);
+   }
+   assertGitCommitAvailable(repoRoot, options.anchor);
++  const codexCliVersion = resolveCodexReplayCliVersion({
++    [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexCliVersion ?? CODEX_REPLAY_CLI_VERSION,
++  });
+   const registry = readFixtureRegistry(options.registryPath, { historicalBaseline: true });
+   const fixtureDigest = fixtureRegistrySha256(registry);
+   let requestedDriverIdentity = null;
+@@ -501,6 +503,7 @@ export function captureAgentEfficiencyReplay(options) {
+     outputPath: options.outputPath,
+     registryPath: options.registryPath,
+     repoRoot,
++    runtimeBridgeTargetRoot: options.runtimeBridgeTargetRoot ?? null,
+     sourceDirectory: options.sourceDirectory,
+     testTargetRoot,
+   });
+@@ -519,11 +522,13 @@ export function captureAgentEfficiencyReplay(options) {
+       outputPath: options.outputPath,
+       registryPath: options.registryPath,
+       repoRoot,
++      runtimeBridgeTargetRoot: options.runtimeBridgeTargetRoot ?? null,
+       sourceDirectory: options.sourceDirectory,
+       testTargetRoot,
+     });
+     const captureResult = captureWithDriver({
+       anchor: options.anchor,
++      codexCliVersion,
+       dependencyManifest,
+       driverIdentity: requestedDriverIdentity,
+       driverPath: options.driverPath,
+@@ -592,4 +597,6 @@ const main = defineCheck({
+   },
+ });
+ 
+-runScriptMain(main);
++if (isDirectRun(import.meta.url)) {
++  runScriptMain(main);
++}
+diff --git a/scripts/bench/capture-agent-efficiency-runtime-bridge.mjs b/scripts/bench/capture-agent-efficiency-runtime-bridge.mjs
+new file mode 100644
+index 000000000..ecce9ca67
+--- /dev/null
++++ b/scripts/bench/capture-agent-efficiency-runtime-bridge.mjs
+@@ -0,0 +1,165 @@
++import { readFileSync } from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++import {
++  REPLAY_ANCHOR_COMMIT,
++  assertFrozenReplayBaseline,
++  buildReplayBaseline,
++  createReplayDriverIdentity,
++  createReplayHarnessManifest,
++  readReplayEvidenceRecords,
++  readReplayEnvelopeRecords,
++  replayBaselineBytes,
++  replayDependencyClaimFromEnvelopeRecords,
++  runtimeBridgePaths,
++  runtimeBridgeTargetRoot,
++} from "../lib/agent-efficiency-replay.mjs";
++import {
++  defineCheck,
++  isDirectRun,
++  parseScriptArgs,
++  runScriptMain,
++} from "../lib/script-runtime.mjs";
++import { captureAgentEfficiencyReplay } from "./capture-agent-efficiency-replay.mjs";
++import {
++  CODEX_REPLAY_CLI_VERSION_ENV,
++  assertCodexBinary,
++  resolveCodexReplayCliVersion,
++} from "./internal/agent-efficiency-codex-runtime.mjs";
++
++const SCRIPT_NAME = "capture-agent-efficiency-runtime-bridge.mjs";
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const driverPath = path.join(repoRoot, "scripts", "bench", "run-agent-efficiency-codex-replay.mjs");
++const registryPath = path.join(repoRoot, "scripts", "bench", "agent-efficiency-fixtures.json");
++
++function helpText() {
++  return [
++    `Usage: node scripts/bench/${SCRIPT_NAME} --codex-version <version> [options]`,
++    "",
++    "Capture an additive historical RF-04 baseline under one explicitly declared current Codex runtime.",
++    "The frozen pre-v0.7 baseline remains unchanged; bridge artifacts are written only below",
++    ".agentplane/cache/rf04-runtime-bridge/ and can qualify only a candidate with the same profile.",
++    "",
++    "Options:",
++    "  --codex-version <version>  Required exact Codex CLI version.",
++    "  --check                    Rebuild and validate an existing bridge without provider calls.",
++    "  --replace                  Replace one complete unpublished bridge capture generation.",
++    "  --help                     Show this help.",
++  ].join("\n");
++}
++
++function parseArgs(argv) {
++  const { flags, positionals } = parseScriptArgs(argv, {
++    valueFlags: ["codex-version"],
++    booleanFlags: ["check", "help", "replace"],
++    aliases: { h: "help" },
++  });
++  if (positionals.length > 0) {
++    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
++  }
++  return {
++    check: flags.check === true,
++    codexCliVersion: flags["codex-version"] ?? "",
++    help: flags.help === true,
++    replace: flags.replace === true,
++  };
++}
++
++function resolveCodexCliVersion(value) {
++  return resolveCodexReplayCliVersion({ [CODEX_REPLAY_CLI_VERSION_ENV]: value });
++}
++
++function assertRuntimeProfile(baseline, codexCliVersion) {
++  if (baseline.capture_profile?.runtime_version !== `0.6.24/${codexCliVersion}`) {
++    throw new Error("runtime bridge baseline does not bind the declared Codex runtime profile");
++  }
++}
++
++function providerEpisodes(baseline) {
++  let total = 0;
++  for (const scenario of baseline.diagnostics.scenarios) {
++    const episodes = scenario.metrics?.llm_episodes;
++    if (
++      !Number.isInteger(episodes?.count) ||
++      !Number.isInteger(episodes?.mean) ||
++      episodes.count < 0 ||
++      episodes.mean < 0
++    ) {
++      throw new Error("runtime bridge baseline has no exact provider-episode telemetry");
++    }
++    total += episodes.count * episodes.mean;
++  }
++  return total;
++}
++
++export function checkRuntimeBridge({ codexCliVersion }) {
++  const paths = runtimeBridgePaths(repoRoot, codexCliVersion);
++  const frozenBytes = readFileSync(paths.baselinePath, "utf8");
++  const frozen = JSON.parse(frozenBytes);
++  const envelopeRecords = readReplayEnvelopeRecords(repoRoot, paths.envelopeDirectory);
++  const evidenceRecords = readReplayEvidenceRecords(repoRoot, paths.evidenceDirectory);
++  const driverIdentity = createReplayDriverIdentity(repoRoot, frozen.anchor.driver.path);
++  const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(envelopeRecords);
++  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity, {
++    dependencyClaim,
++  });
++  const baseline = buildReplayBaseline({
++    anchor: REPLAY_ANCHOR_COMMIT,
++    driverIdentity,
++    envelopeRecords,
++    evidenceRecords,
++    harnessManifest,
++    registry: JSON.parse(readFileSync(registryPath, "utf8")),
++  });
++  if (frozenBytes !== replayBaselineBytes(frozen)) {
++    throw new Error("runtime bridge baseline is not canonical JSON");
++  }
++  assertFrozenReplayBaseline(frozen, baseline, "runtime bridge baseline");
++  assertRuntimeProfile(baseline, codexCliVersion);
++  return baseline;
++}
++
++export function captureRuntimeBridge({ codexCliVersion, replace }) {
++  const paths = runtimeBridgePaths(repoRoot, codexCliVersion);
++  assertCodexBinary({ [CODEX_REPLAY_CLI_VERSION_ENV]: codexCliVersion });
++  const baseline = captureAgentEfficiencyReplay({
++    anchor: REPLAY_ANCHOR_COMMIT,
++    codexCliVersion,
++    driverPath,
++    evidenceDirectory: paths.evidenceDirectory,
++    outputPath: paths.baselinePath,
++    registryPath,
++    replace,
++    runtimeBridgeTargetRoot: runtimeBridgeTargetRoot(repoRoot),
++    runs: 5,
++    sourceDirectory: paths.envelopeDirectory,
++  });
++  assertRuntimeProfile(baseline, codexCliVersion);
++  return baseline;
++}
++
++const main = defineCheck({
++  name: SCRIPT_NAME,
++  parseArgs,
++  async check({ options, stdout }) {
++    if (options.help) {
++      stdout.write(`${helpText()}\n`);
++      return;
++    }
++    const codexCliVersion = resolveCodexCliVersion(options.codexCliVersion);
++    const baseline = options.check
++      ? checkRuntimeBridge({ codexCliVersion })
++      : captureRuntimeBridge({ codexCliVersion, replace: options.replace });
++    stdout.write(
++      `RF-04 runtime bridge ${options.check ? "validated" : "captured"} ` +
++        `(runtime=${baseline.capture_profile.runtime_version}; runs=${baseline.coverage.replay_runs.actual}; ` +
++        `episodes=${providerEpisodes(baseline)})\n`,
++    );
++  },
++});
++
++if (isDirectRun(import.meta.url)) {
++  runScriptMain(main);
++}
+diff --git a/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs b/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs
+index 87ed9de25..c22edcd84 100644
+--- a/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs
++++ b/scripts/bench/internal/agent-efficiency-anchor-supervisor.mjs
+@@ -23,10 +23,10 @@ import {
+   AGENT_EFFICIENCY_REPLAY_SCHEMA_VERSION,
+ } from "../../lib/agent-efficiency-replay.mjs";
+ import {
+-  CODEX_REPLAY_CLI_VERSION,
+   CODEX_REPLAY_MODEL,
+   CODEX_REPLAY_REASONING_EFFORT,
+   fail,
++  resolveCodexReplayCliVersion,
+   runSanitizedCommand,
+ } from "./agent-efficiency-codex-runtime.mjs";
+ import {
+@@ -401,6 +401,7 @@ export function buildReplayOutput({
+   scenarioId,
+   supervisorReceipt,
+   anchor,
++  runtimeCliVersion = resolveCodexReplayCliVersion(),
+ }) {
+   const metricPayload = Object.fromEntries(
+     Object.entries(counters.metrics).filter(([, value]) => value !== null),
+@@ -540,7 +541,7 @@ export function buildReplayOutput({
+       provider_id: "openai-chatgpt",
+       reasoning_effort: CODEX_REPLAY_REASONING_EFFORT,
+       runtime_id: "agentplane-anchor-cli-preparation/codex-cli-execution",
+-      runtime_version: `0.6.24/${CODEX_REPLAY_CLI_VERSION}`,
++      runtime_version: `0.6.24/${runtimeCliVersion}`,
+       sandbox_mode: "workspace-write-network-disabled",
+     },
+     run_id: runId,
+diff --git a/scripts/bench/internal/agent-efficiency-codex-runtime.mjs b/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
+index 6dd8f4f1d..def8ecca6 100644
+--- a/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
++++ b/scripts/bench/internal/agent-efficiency-codex-runtime.mjs
+@@ -4,6 +4,7 @@ import path from "node:path";
+ 
+ export const CODEX_REPLAY_BINARY = "/Applications/ChatGPT.app/Contents/Resources/codex";
+ export const CODEX_REPLAY_CLI_VERSION = "0.145.0-alpha.18";
++export const CODEX_REPLAY_CLI_VERSION_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION";
+ export const CODEX_REPLAY_MODEL = "gpt-5.6-terra";
+ export const CODEX_REPLAY_REASONING_EFFORT = "low";
+ export const CODEX_REPLAY_TURN_TIMEOUT_MS = 240_000;
+@@ -14,6 +15,7 @@ const MAX_JSONL_TOTAL_BYTES = 16 * 1024 * 1024;
+ const MAX_STDERR_BYTES = 1024 * 1024;
+ const SUPERVISOR_COMMAND_TIMEOUT_MS = 120_000;
+ const PROVIDER_FIELDS = ["input_tokens", "output_tokens", "reasoning_output_tokens"];
++const CODEX_CLI_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u;
+ 
+ export class ReplayDriverError extends Error {
+   constructor(code) {
+@@ -66,7 +68,15 @@ export function runSanitizedCommand(command, args, options = {}) {
+   return result.stdout;
+ }
+ 
+-export function assertCodexBinary() {
++export function resolveCodexReplayCliVersion(source = process.env) {
++  const version = source[CODEX_REPLAY_CLI_VERSION_ENV] ?? CODEX_REPLAY_CLI_VERSION;
++  if (typeof version !== "string" || !CODEX_CLI_VERSION_PATTERN.test(version)) {
++    fail("CODEX_VERSION_CONTRACT");
++  }
++  return version;
++}
++
++export function assertCodexBinary(source = process.env) {
+   const stats = lstatSync(CODEX_REPLAY_BINARY, { throwIfNoEntry: false });
+   if (!stats?.isFile() || stats.isSymbolicLink()) fail("CODEX_BINARY");
+   if (path.resolve(realpathSync(CODEX_REPLAY_BINARY)) !== path.resolve(CODEX_REPLAY_BINARY)) {
+@@ -75,7 +85,9 @@ export function assertCodexBinary() {
+   const version = runSanitizedCommand(CODEX_REPLAY_BINARY, ["--version"], {
+     code: "CODEX_VERSION_COMMAND",
+   }).trim();
+-  if (version !== `codex-cli ${CODEX_REPLAY_CLI_VERSION}`) fail("CODEX_VERSION_MISMATCH");
++  const expected = resolveCodexReplayCliVersion(source);
++  if (version !== `codex-cli ${expected}`) fail("CODEX_VERSION_MISMATCH");
++  return expected;
+ }
+ 
+ export function createCodexJsonlCollector() {
+diff --git a/scripts/bench/run-agent-efficiency-codex-replay.mjs b/scripts/bench/run-agent-efficiency-codex-replay.mjs
+index e45b84e93..1635f74ca 100644
+--- a/scripts/bench/run-agent-efficiency-codex-replay.mjs
++++ b/scripts/bench/run-agent-efficiency-codex-replay.mjs
+@@ -23,10 +23,10 @@ import {
+ } from "./internal/agent-efficiency-anchor-supervisor.mjs";
+ import { buildAnchorRuntime } from "./internal/agent-efficiency-anchor-runtime.mjs";
+ import {
+-  CODEX_REPLAY_CLI_VERSION,
+   ReplayDriverError,
+   assertCodexBinary,
+   fail,
++  resolveCodexReplayCliVersion,
+   runCodexEpisode,
+ } from "./internal/agent-efficiency-codex-runtime.mjs";
+ import {
+@@ -46,6 +46,7 @@ export { buildAnchorProcessEnvironment } from "./internal/agent-efficiency-ancho
+ export {
+   CODEX_REPLAY_BINARY,
+   CODEX_REPLAY_CLI_VERSION,
++  CODEX_REPLAY_CLI_VERSION_ENV,
+   CODEX_REPLAY_MODEL,
+   CODEX_REPLAY_REASONING_EFFORT,
+   CODEX_REPLAY_TURN_TIMEOUT_MS,
+@@ -53,6 +54,7 @@ export {
+   buildCodexReplayEnvironment,
+   createCodexJsonlCollector,
+   finalizeCodexJsonlCollector,
++  resolveCodexReplayCliVersion,
+ } from "./internal/agent-efficiency-codex-runtime.mjs";
+ 
+ const PROVIDER_FIELDS = ["input_tokens", "output_tokens", "reasoning_output_tokens"];
+@@ -239,6 +241,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+   const assertRuntime = dependencies.assertCodexBinary ?? assertCodexBinary;
+   const executeEpisode = dependencies.runCodexEpisode ?? runCodexEpisode;
+   assertRuntime();
++  const runtimeCliVersion = resolveCodexReplayCliVersion();
+   const harnessStartedAt = performance.now();
+   const anchorRuntime = buildAnchorRuntime(subjectRoot, anchor, dependencyClaim);
+   const cliPath = anchorRuntime.cliPath;
+@@ -496,7 +499,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+     host_fingerprint: sha256(
+       canonicalBytes({
+         arch: process.arch,
+-        codex_cli_version: CODEX_REPLAY_CLI_VERSION,
++        codex_cli_version: runtimeCliVersion,
+         node: process.versions.node,
+         platform: process.platform,
+       }),
+@@ -573,6 +576,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+     runIndex: options.runIndex,
+     scenarioId: options.scenarioId,
+     supervisorReceipt,
++    runtimeCliVersion,
+   });
+   writeCanonicalAtomic(options.evidenceOutputPath, evidenceBundle);
+   writeCanonicalAtomic(options.outputPath, envelope);
+diff --git a/scripts/checks/check-agent-efficiency-replay.mjs b/scripts/checks/check-agent-efficiency-replay.mjs
+index 79cda4c45..36b704826 100644
+--- a/scripts/checks/check-agent-efficiency-replay.mjs
++++ b/scripts/checks/check-agent-efficiency-replay.mjs
+@@ -8,11 +8,9 @@ import {
+   REPLAY_ANCHOR_COMMIT,
+   assertFrozenReplayBaseline,
+   buildReplayBaseline,
+-  createReplayHarnessManifest,
+   readReplayEvidenceRecords,
+   readReplayEnvelopeRecords,
+   replayDependencyClaimFromEnvelopeRecords,
+-  replayDriverIdentityFromEnvelopeRecords,
+   replayBaselineBytes,
+ } from "../lib/agent-efficiency-replay.mjs";
+ import {
+@@ -20,7 +18,6 @@ import {
+   assertRepoPathNoSymlinkEscape,
+ } from "../lib/agent-efficiency-replay-safety.mjs";
+ import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+-import { assertReplayDependencyClaim } from "../bench/internal/agent-efficiency-dependency-manifest.mjs";
+ 
+ const SCRIPT_NAME = "check-agent-efficiency-replay.mjs";
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -124,12 +121,28 @@ export function checkAgentEfficiencyReplay(options) {
+   const registry = readFixtureRegistry(options.registryPath, { historicalBaseline: true });
+   const records = readReplayEnvelopeRecords(repoRoot, options.sourceDirectory);
+   const evidenceRecords = readReplayEvidenceRecords(repoRoot, options.evidenceDirectory);
+-  const driverIdentity = replayDriverIdentityFromEnvelopeRecords(repoRoot, records);
++  const frozen = readFrozenBaseline(options.baselinePath);
++  const driverIdentity = records[0]?.value?.anchor?.driver;
++  if (
++    !driverIdentity ||
++    records.some(
++      (record) => stableJson(record.value?.anchor?.driver) !== stableJson(driverIdentity),
++    )
++  ) {
++    throw new Error("RF-04 replay envelopes use inconsistent declared driver identities");
++  }
+   const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(records);
+-  assertReplayDependencyClaim(repoRoot, dependencyClaim);
+-  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity, {
+-    dependencyClaim,
+-  });
++  const frozenDriverIdentity = frozen?.anchor?.driver;
++  const harnessManifest = frozen?.anchor?.harness;
++  if (
++    frozen?.anchor?.subject_sha !== REPLAY_ANCHOR_COMMIT ||
++    !frozenDriverIdentity ||
++    !harnessManifest ||
++    stableJson(driverIdentity) !== stableJson(frozenDriverIdentity) ||
++    stableJson(dependencyClaim) !== stableJson(harnessManifest.dependency_claim)
++  ) {
++    throw new Error("frozen RF-04 replay anchor metadata differs from its raw capture evidence");
++  }
+   const first = buildReplayBaseline({
+     driverIdentity,
+     envelopeRecords: records,
+@@ -152,7 +165,6 @@ export function checkAgentEfficiencyReplay(options) {
+   if (first.structural_projection_sha256 !== second.structural_projection_sha256) {
+     throw new Error("RF-04 structural projection digest is not deterministic");
+   }
+-  const frozen = readFrozenBaseline(options.baselinePath);
+   assertFrozenReplayBaseline(frozen, first, "frozen RF-04 replay baseline");
+   return first;
+ }
+diff --git a/scripts/lib/agent-efficiency-replay-safety.mjs b/scripts/lib/agent-efficiency-replay-safety.mjs
+index 512c80054..f44c38228 100644
+--- a/scripts/lib/agent-efficiency-replay-safety.mjs
++++ b/scripts/lib/agent-efficiency-replay-safety.mjs
+@@ -42,6 +42,7 @@ export const REPLAY_CONTRACT_ENV_KEYS = Object.freeze([
+   "AGENTPLANE_RF04_REPLAY_HARNESS_SHA256",
+   "AGENTPLANE_RF04_REPLAY_OUTPUT",
+   "AGENTPLANE_RF04_REPLAY_RUN_ID",
++  "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION",
+ ]);
+ 
+ export function replayDriverDiagnosticCode(stderrBytes) {
+@@ -147,6 +148,7 @@ export function assertReplayCaptureTargets({
+   outputPath,
+   registryPath,
+   repoRoot,
++  runtimeBridgeTargetRoot = null,
+   sourceDirectory,
+   testTargetRoot = null,
+ }) {
+@@ -157,6 +159,18 @@ export function assertReplayCaptureTargets({
+     sourceDirectory: path.join(repoRoot, "scripts/bench/agent-efficiency-replay-envelopes"),
+   };
+   const targets = { evidenceDirectory, outputPath, registryPath, sourceDirectory };
++  const expectedRuntimeBridgeTargetRoot = path.join(
++    repoRoot,
++    ".agentplane",
++    "cache",
++    "rf04-runtime-bridge",
++  );
++  if (
++    runtimeBridgeTargetRoot !== null &&
++    path.resolve(runtimeBridgeTargetRoot) !== path.resolve(expectedRuntimeBridgeTargetRoot)
++  ) {
++    throw new Error("runtime bridge capture root is not authorized");
++  }
+   for (const [name, value] of Object.entries(targets)) {
+     const resolved = path.resolve(value);
+     const canonicalPath = path.resolve(canonical[name]);
+@@ -164,7 +178,11 @@ export function assertReplayCaptureTargets({
+       testTargetRoot !== null &&
+       isInside(path.resolve(testTargetRoot), resolved) &&
+       resolved !== path.resolve(testTargetRoot);
+-    if (resolved !== canonicalPath && !allowedTestPath) {
++    const allowedRuntimeBridgePath =
++      runtimeBridgeTargetRoot !== null &&
++      isInside(path.resolve(runtimeBridgeTargetRoot), resolved) &&
++      resolved !== path.resolve(runtimeBridgeTargetRoot);
++    if (resolved !== canonicalPath && !allowedTestPath && !allowedRuntimeBridgePath) {
+       throw new Error(`${name} is not an authorized RF-04 capture target`);
+     }
+   }
+diff --git a/scripts/lib/agent-efficiency-replay.mjs b/scripts/lib/agent-efficiency-replay.mjs
+index b0b77e01f..ae0e15c5e 100644
+--- a/scripts/lib/agent-efficiency-replay.mjs
++++ b/scripts/lib/agent-efficiency-replay.mjs
+@@ -73,6 +73,7 @@ const FORBIDDEN_PAYLOAD_KEYS = new Set([
+   "reasoning_text",
+ ]);
+ const NO_EXPECTED_SOURCE_VALUE = Symbol("no-expected-source-value");
++const CODEX_CLI_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u;
+ 
+ function isObject(value) {
+   return value !== null && typeof value === "object" && !Array.isArray(value);
+@@ -102,6 +103,23 @@ export function sha256(value) {
+   return createHash("sha256").update(value).digest("hex");
+ }
+ 
++export function runtimeBridgeTargetRoot(repoRoot) {
++  return path.join(path.resolve(repoRoot), ".agentplane", "cache", "rf04-runtime-bridge");
++}
++
++export function runtimeBridgePaths(repoRoot, codexCliVersion) {
++  if (typeof codexCliVersion !== "string" || !CODEX_CLI_VERSION_PATTERN.test(codexCliVersion)) {
++    throw new Error("runtime bridge requires an exact Codex CLI version");
++  }
++  const root = path.join(runtimeBridgeTargetRoot(repoRoot), `codex-${codexCliVersion}`);
++  return {
++    baselinePath: path.join(root, "baseline.json"),
++    evidenceDirectory: path.join(root, "evidence"),
++    envelopeDirectory: path.join(root, "envelopes"),
++    root,
++  };
++}
++
+ function prefixedSha256(value) {
+   return `sha256:${sha256(value)}`;
+ }
+@@ -843,6 +861,46 @@ export function buildReplayDriverEnvironment(sourceEnv, contractEnv) {
+   return result;
+ }
+ 
++export function createReplayDriverContractEnvironment({
++  anchor,
++  codexCliVersion,
++  dependencyClaim,
++  driverIdentity,
++  evidenceOutputPath,
++  evidencePath,
++  expectedRolesJson,
++  fixtureRegistryPath,
++  fixtureRegistrySha256,
++  harnessSha256,
++  outputPath,
++  runId,
++}) {
++  return {
++    AGENTPLANE_RF04_REPLAY_ANCHOR: anchor,
++    AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: codexCliVersion,
++    AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
++      dependencyClaim.capture_executable_sha256,
++    AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: stableJson(
++      dependencyClaim.capture_platform,
++    ),
++    AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_RECEIPT_SHA256:
++      dependencyClaim.capture_receipt_sha256,
++    AGENTPLANE_RF04_REPLAY_DEPENDENCY_PORTABLE_SHA256: dependencyClaim.portable_sha256,
++    AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION: String(driverIdentity.contract_version),
++    AGENTPLANE_RF04_REPLAY_DRIVER_PATH: driverIdentity.path,
++    AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
++    AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT: evidenceOutputPath,
++    AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH: evidencePath,
++    AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: expectedRolesJson,
++    AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
++    AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: fixtureRegistryPath,
++    AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: fixtureRegistrySha256,
++    AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessSha256,
++    AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
++    AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
++  };
++}
++
+ export function assertReplayEnvelope(envelope, context) {
+   assertSanitized(envelope);
+   const value = object(envelope, "replay envelope");
