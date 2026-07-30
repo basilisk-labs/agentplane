@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300553-CR9VTJ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T06:22:23.213Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "3f89a57d470f860f0e8bf542f4b57422a7db2b33",
+  "blueprint_digest": "de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df",
+  "findings": [
+    "The gate records a negative release decision rather than an inferred performance cause; causal attribution remains deferred to separately authorized remediation work."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

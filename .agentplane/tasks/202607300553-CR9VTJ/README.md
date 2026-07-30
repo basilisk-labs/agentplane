@@ -2,10 +2,10 @@
 id: "202607300553-CR9VTJ"
 title: "Requalify the AgentPlane 0.7.0-beta.1 decision on current main"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -46,29 +46,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T06:04:27.301Z"
+  updated_at: "2026-07-30T06:22:23.213Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "89981c27eb9c9b652a17127de8cd3a5b482babd2"
+  evaluated_sha: "3f89a57d470f860f0e8bf542f4b57422a7db2b33"
   blueprint_digest: "de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df"
   evidence_refs:
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300553-CR9VTJ/README.md"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-observed-checks.json"
     - ".agentplane/tasks/202607300553-CR9VTJ/evidence/qualification-packet.v1.json"
-    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-062222671-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Residual risk is causal, not contractual: the frozen samples are non-interleaved and differ in verified-success subsets, so they block beta.1 publication but cannot prove which setup component caused the latency change."
-commit: null
+    - "The gate records a negative release decision rather than an inferred performance cause; causal attribution remains deferred to separately authorized remediation work."
+commit:
+  hash: "3f89a57d470f860f0e8bf542f4b57422a7db2b33"
+  message: "📝 CR9VTJ task: verify concrete beta1 gate"
 comments:
   -
     author: "TESTER"
@@ -85,6 +87,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: replace the fallback Verify Steps with the concrete beta.1 gate checks already executed, then re-record verification and quality review."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -137,9 +142,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results."
+  -
+    type: "status"
+    at: "2026-07-30T06:25:09.144Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T06:21:40.389Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-30T06:25:09.145Z"
+doc_updated_by: "TESTER"
 description: "Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency."
 sections:
   Summary: |-
