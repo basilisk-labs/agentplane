@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "Reviewed commit c48ce0be: the new response module preserves digest sealing, full serialized response-budget validation, and the typed reservation-unavailable outcome; arch:check, typecheck, and focused request/lifecycle/lock tests passed."
 commit:
-  hash: "321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a"
-  message: "🚧 01ACZ9 task: harden knowledge request reservation"
+  hash: "e8e65c95ae9c7915b6f9d6cdc07f9b90c83f473c"
+  message: "🧪 01ACZ9 task: record cycle-fix quality review"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Investigated hosted verify-static failure on PR #4693: dependency-cruiser found a circular import between task-knowledge-request and task-knowledge-request-audit. Moved the shared response contract, sealing, and validation into a neutral module; the request handler and audit adapter now depend on that module without importing each other. Local architecture, type, and focused lifecycle checks pass."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -131,8 +134,15 @@ events:
     at: "2026-07-30T15:23:19.484Z"
     author: "CODER"
     body: "Investigated hosted verify-static failure on PR #4693: dependency-cruiser found a circular import between task-knowledge-request and task-knowledge-request-audit. Moved the shared response contract, sealing, and validation into a neutral module; the request handler and audit adapter now depend on that module without importing each other. Local architecture, type, and focused lifecycle checks pass."
+  -
+    type: "status"
+    at: "2026-07-30T15:25:17.412Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T15:23:19.484Z"
+doc_updated_at: "2026-07-30T15:25:17.413Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
@@ -368,6 +378,9 @@ sections:
       Impact: A second process could enter the same critical section or surface an untyped storage error on reservation contention.
       Resolution: Reuse an owner-verified cross-process lock without time-based eviction, retain dead-owner recovery, and return a bounded round-0 escalation when the reservation wait expires.
 extensions:
+  implementation_commit:
+    hash: "c48ce0be61a7ff0b35fa3d6d4cad352a88da5c2e"
+    message: "🐛 01ACZ9 task: break knowledge request import cycle"
   workflow_route_baseline:
     start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
     version: 1
