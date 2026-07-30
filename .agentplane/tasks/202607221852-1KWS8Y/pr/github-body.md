@@ -15,8 +15,13 @@ RF-15: compute freshness once per source/query, dedupe canonical refs, upsert ch
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+RF-15 verification passed: source-query cache, no-op, delta equivalence, FTS continuity,
+version/corruption recovery, and benchmark threshold are covered.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
