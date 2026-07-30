@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-01ACZ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T15:29:46.484Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "33887675818a9d372fdab802499a82320eb6290f",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "findings": [
+    "Reviewed commit 33887675: Prettier-normalized the only rejected import without changing behavior. Local format, schema, architecture, type, and focused request/lifecycle/lock checks pass; no new dependency edge or contract change was introduced."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-152946255-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
