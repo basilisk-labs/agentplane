@@ -65,6 +65,10 @@ function taskKnowledgeSelectionCheckPath(proposalId: string): string {
   return `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.canonical-check.json`;
 }
 
+function taskKnowledgeSelectionIntentPath(proposalId: string): string {
+  return `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.selection.intent.json`;
+}
+
 type CanonicalKnowledgeSource = {
   path: string;
   sha256: string;
@@ -100,14 +104,16 @@ type TaskKnowledgeCanonicalCheck = {
 
 const TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS = 10 * 60 * 1000;
 
+type TaskKnowledgeLockOwner = {
+  token: string;
+  pid: number;
+  hostname: string;
+};
+
 type TaskKnowledgeSelectionLock = {
   schema_version: 1;
   kind: "task_knowledge_proposal_selection_lock";
-  owner: {
-    token: string;
-    pid: number;
-    hostname: string;
-  };
+  owner: TaskKnowledgeLockOwner;
   acquired_at: string;
   expires_at: string;
 };
@@ -115,8 +121,23 @@ type TaskKnowledgeSelectionLock = {
 type TaskKnowledgeSelectionReclaimGuard = {
   schema_version: 1;
   kind: "task_knowledge_proposal_selection_reclaim_guard";
-  owner: { token: string };
+  owner: TaskKnowledgeLockOwner;
   acquired_at: string;
+  expires_at: string;
+};
+
+type TaskKnowledgeSelectionIntent = {
+  schema_version: 1;
+  kind: "task_knowledge_proposal_selection_intent";
+  proposal_id: string;
+  source_task_id: string;
+  source_digest: string;
+  source_fingerprint_version: 1 | 2;
+  batch_fingerprint: string;
+  canonical_check: { path: string; sha256: string };
+  state: "creating" | "created";
+  curator_task_id: string | null;
+  recorded_at: string;
 };
 
 type TaskKnowledgeSelectionLockTestHooks = {
@@ -300,6 +321,43 @@ async function writeTaskKnowledgeCanonicalCheck(opts: {
   return { path: rel, check };
 }
 
+async function readFrozenTaskKnowledgeCanonicalCheck(opts: {
+  root: string;
+  proposal: ReturnType<typeof buildOutput>["proposals"][number];
+  intent: TaskKnowledgeSelectionIntent;
+}): Promise<{ path: string; check: TaskKnowledgeCanonicalCheck }> {
+  const content = await readFile(path.join(opts.root, opts.intent.canonical_check.path));
+  const sha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
+  if (sha256 !== opts.intent.canonical_check.sha256) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `Frozen canonical check changed for task knowledge proposal ${opts.proposal.id}. ` +
+        "Stop and reconcile the interrupted selection before retrying.",
+    });
+  }
+  let check: unknown;
+  try {
+    check = JSON.parse(content.toString("utf8"));
+  } catch {
+    check = null;
+  }
+  if (
+    !isRecord(check) ||
+    check.kind !== "task_knowledge_proposal_canonical_check" ||
+    check.proposal_id !== opts.proposal.id ||
+    check.source_task_id !== opts.proposal.source_task_id
+  ) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Frozen canonical check is invalid for task knowledge proposal ${opts.proposal.id}.`,
+    });
+  }
+  return { path: opts.intent.canonical_check.path, check: check as TaskKnowledgeCanonicalCheck };
+}
+
 function optionalTaskArtifactPaths(taskId: string): string[] {
   return [
     `.agentplane/tasks/${taskId}/pr/meta.json`,
@@ -455,7 +513,10 @@ function parseTaskKnowledgeSelectionReclaimGuard(
       parsed.kind !== "task_knowledge_proposal_selection_reclaim_guard" ||
       !isRecord(parsed.owner) ||
       typeof parsed.owner.token !== "string" ||
-      typeof parsed.acquired_at !== "string"
+      typeof parsed.owner.pid !== "number" ||
+      typeof parsed.owner.hostname !== "string" ||
+      typeof parsed.acquired_at !== "string" ||
+      typeof parsed.expires_at !== "string"
     ) {
       return null;
     }
@@ -469,19 +530,27 @@ async function acquireTaskKnowledgeSelectionReclaimGuard(
   target: string,
 ): Promise<(() => Promise<void>) | null> {
   const guardPath = taskKnowledgeSelectionReclaimGuardPath(target);
-  const ownerToken = randomUUID();
-  let handle: Awaited<ReturnType<typeof open>>;
-  try {
-    handle = await open(guardPath, "wx");
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "EEXIST") return null;
-    throw error;
+  const owner: TaskKnowledgeLockOwner = {
+    token: randomUUID(),
+    pid: process.pid,
+    hostname: hostname(),
+  };
+  let handle: Awaited<ReturnType<typeof open>> | null = null;
+  while (!handle) {
+    try {
+      handle = await open(guardPath, "wx");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      if (!(await reclaimStaleTaskKnowledgeSelectionReclaimGuard(guardPath))) return null;
+    }
   }
+  const acquiredAt = new Date();
   const guard: TaskKnowledgeSelectionReclaimGuard = {
     schema_version: 1,
     kind: "task_knowledge_proposal_selection_reclaim_guard",
-    owner: { token: ownerToken },
-    acquired_at: new Date().toISOString(),
+    owner,
+    acquired_at: acquiredAt.toISOString(),
+    expires_at: new Date(acquiredAt.getTime() + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS).toISOString(),
   };
   await handle.writeFile(`${JSON.stringify(guard)}\n`, "utf8");
   await handle.sync();
@@ -492,7 +561,7 @@ async function acquireTaskKnowledgeSelectionReclaimGuard(
       throw error;
     });
     if (!current) return;
-    if (parseTaskKnowledgeSelectionReclaimGuard(current)?.owner.token !== ownerToken) return;
+    if (parseTaskKnowledgeSelectionReclaimGuard(current)?.owner.token !== owner.token) return;
     await unlink(guardPath).catch((error: NodeJS.ErrnoException) => {
       if (error.code !== "ENOENT") throw error;
     });
@@ -521,18 +590,47 @@ function parseTaskKnowledgeSelectionLock(value: string): TaskKnowledgeSelectionL
   }
 }
 
-function taskKnowledgeSelectionLockLiveness(
-  lock: TaskKnowledgeSelectionLock,
+function taskKnowledgeLockOwnerLiveness(
+  owner: TaskKnowledgeLockOwner,
 ): "alive" | "dead" | "unknown" {
-  if (lock.owner.hostname !== hostname()) return "unknown";
+  if (owner.hostname !== hostname()) return "unknown";
   try {
-    process.kill(lock.owner.pid, 0);
+    process.kill(owner.pid, 0);
     return "alive";
   } catch (error) {
     const code = (error as NodeJS.ErrnoException).code;
     if (code === "EPERM") return "alive";
     return code === "ESRCH" ? "dead" : "unknown";
   }
+}
+
+async function reclaimStaleTaskKnowledgeSelectionReclaimGuard(guardPath: string): Promise<boolean> {
+  let content: string;
+  let metadata: Stats;
+  try {
+    [content, metadata] = await Promise.all([readFile(guardPath, "utf8"), stat(guardPath)]);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+    throw error;
+  }
+  const guard = parseTaskKnowledgeSelectionReclaimGuard(content);
+  const expiresAt = guard ? Date.parse(guard.expires_at) : Number.NaN;
+  const expired = Number.isFinite(expiresAt)
+    ? expiresAt <= Date.now()
+    : metadata.mtimeMs + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS <= Date.now();
+  const liveness = guard ? taskKnowledgeLockOwnerLiveness(guard.owner) : "unknown";
+  if (liveness === "alive" || (!expired && liveness !== "dead")) return false;
+  const recoveryPath = `${guardPath}.recovered-${randomUUID()}`;
+  try {
+    await rename(guardPath, recoveryPath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+    throw error;
+  }
+  await unlink(recoveryPath).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+  return true;
 }
 
 async function reclaimStaleTaskKnowledgeSelectionLock(opts: {
@@ -596,8 +694,220 @@ function isReclaimableTaskKnowledgeSelectionLock(lockFile: {
   const expired = Number.isFinite(expiresAt)
     ? expiresAt <= Date.now()
     : lockFile.metadata.mtimeMs + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS <= Date.now();
-  const liveness = lockFile.lock ? taskKnowledgeSelectionLockLiveness(lockFile.lock) : "unknown";
+  const liveness = lockFile.lock
+    ? taskKnowledgeLockOwnerLiveness(lockFile.lock.owner)
+    : "unknown";
   return liveness !== "alive" && (expired || liveness === "dead");
+}
+
+function parseTaskKnowledgeSelectionIntent(value: string): TaskKnowledgeSelectionIntent | null {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (
+      !isRecord(parsed) ||
+      parsed.schema_version !== 1 ||
+      parsed.kind !== "task_knowledge_proposal_selection_intent" ||
+      typeof parsed.proposal_id !== "string" ||
+      typeof parsed.source_task_id !== "string" ||
+      typeof parsed.source_digest !== "string" ||
+      (parsed.source_fingerprint_version !== 1 && parsed.source_fingerprint_version !== 2) ||
+      typeof parsed.batch_fingerprint !== "string" ||
+      !isRecord(parsed.canonical_check) ||
+      typeof parsed.canonical_check.path !== "string" ||
+      typeof parsed.canonical_check.sha256 !== "string" ||
+      (parsed.state !== "creating" && parsed.state !== "created") ||
+      (typeof parsed.curator_task_id !== "string" && parsed.curator_task_id !== null) ||
+      typeof parsed.recorded_at !== "string"
+    ) {
+      return null;
+    }
+    return parsed as TaskKnowledgeSelectionIntent;
+  } catch {
+    return null;
+  }
+}
+
+async function readTaskKnowledgeSelectionIntent(opts: {
+  root: string;
+  proposalId: string;
+}): Promise<{ path: string; intent: TaskKnowledgeSelectionIntent } | null> {
+  const intentPath = taskKnowledgeSelectionIntentPath(opts.proposalId);
+  const content = await readFile(path.join(opts.root, intentPath), "utf8").catch(
+    (error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") return null;
+      throw error;
+    },
+  );
+  if (!content) return null;
+  const intent = parseTaskKnowledgeSelectionIntent(content);
+  if (!intent) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Task knowledge selection intent is invalid: ${intentPath}`,
+    });
+  }
+  return { path: intentPath, intent };
+}
+
+function assertTaskKnowledgeSelectionIntentMatches(opts: {
+  intent: TaskKnowledgeSelectionIntent;
+  proposal: ReturnType<typeof buildOutput>["proposals"][number];
+  fingerprint: TaskSourceFingerprint | undefined;
+  batchFingerprint: string;
+  canonicalCheckPath: string;
+  canonicalCheckSha256: string;
+}): void {
+  const { intent, proposal, fingerprint } = opts;
+  if (
+    intent.proposal_id !== proposal.id ||
+    intent.source_task_id !== proposal.source_task_id ||
+    intent.source_digest !== proposal.source_digest ||
+    intent.source_fingerprint_version !== (fingerprint?.version ?? 1) ||
+    intent.batch_fingerprint !== opts.batchFingerprint ||
+    intent.canonical_check.path !== opts.canonicalCheckPath ||
+    intent.canonical_check.sha256 !== opts.canonicalCheckSha256
+  ) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `Task knowledge selection intent for ${proposal.id} does not match the current bounded source set. ` +
+        "Do not create another CURATOR task; inspect and reconcile the interrupted selection first.",
+    });
+  }
+}
+
+async function ensureTaskKnowledgeSelectionIntent(opts: {
+  root: string;
+  proposal: ReturnType<typeof buildOutput>["proposals"][number];
+  fingerprint: TaskSourceFingerprint | undefined;
+  batchFingerprint: string;
+  canonicalCheckPath: string;
+  canonicalCheckSha256: string;
+}): Promise<{ path: string; intent: TaskKnowledgeSelectionIntent }> {
+  const existing = await readTaskKnowledgeSelectionIntent({
+    root: opts.root,
+    proposalId: opts.proposal.id,
+  });
+  if (existing) {
+    assertTaskKnowledgeSelectionIntentMatches({ ...opts, intent: existing.intent });
+    return existing;
+  }
+  const intent: TaskKnowledgeSelectionIntent = {
+    schema_version: 1,
+    kind: "task_knowledge_proposal_selection_intent",
+    proposal_id: opts.proposal.id,
+    source_task_id: opts.proposal.source_task_id,
+    source_digest: opts.proposal.source_digest,
+    source_fingerprint_version: opts.fingerprint?.version ?? 1,
+    batch_fingerprint: opts.batchFingerprint,
+    canonical_check: { path: opts.canonicalCheckPath, sha256: opts.canonicalCheckSha256 },
+    state: "creating",
+    curator_task_id: null,
+    recorded_at: new Date().toISOString(),
+  };
+  const intentPath = taskKnowledgeSelectionIntentPath(opts.proposal.id);
+  await writeJsonStableIfChanged(path.join(opts.root, intentPath), intent);
+  return { path: intentPath, intent };
+}
+
+async function markTaskKnowledgeSelectionIntentCreated(opts: {
+  root: string;
+  path: string;
+  intent: TaskKnowledgeSelectionIntent;
+  curatorTaskId: string;
+}): Promise<TaskKnowledgeSelectionIntent> {
+  if (opts.intent.state === "created" && opts.intent.curator_task_id === opts.curatorTaskId) {
+    return opts.intent;
+  }
+  if (opts.intent.state === "created" && opts.intent.curator_task_id !== opts.curatorTaskId) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `Task knowledge selection intent ${opts.intent.proposal_id} already records CURATOR task ${opts.intent.curator_task_id}.`,
+    });
+  }
+  const created: TaskKnowledgeSelectionIntent = {
+    ...opts.intent,
+    state: "created",
+    curator_task_id: opts.curatorTaskId,
+  };
+  await writeJsonStableIfChanged(path.join(opts.root, opts.path), created);
+  return created;
+}
+
+function selectionIdentityForTask(intent: TaskKnowledgeSelectionIntent): Record<string, unknown> {
+  return {
+    schema_version: 1,
+    pipeline: "context.harvest.tasks",
+    proposal_id: intent.proposal_id,
+    source_task_id: intent.source_task_id,
+    source_digest: intent.source_digest,
+    source_fingerprint_version: intent.source_fingerprint_version,
+    batch_fingerprint: intent.batch_fingerprint,
+    canonical_check: intent.canonical_check,
+    intent_path: taskKnowledgeSelectionIntentPath(intent.proposal_id),
+  };
+}
+
+function isCuratorTaskForSelectionIntent(
+  task: TaskData,
+  intent: TaskKnowledgeSelectionIntent,
+): boolean {
+  const extensions = isRecord(task.extensions) ? task.extensions : {};
+  const identity = extensions.context_task_knowledge_selection;
+  return (
+    task.owner === "CURATOR" &&
+    isRecord(identity) &&
+    identity.schema_version === 1 &&
+    identity.pipeline === "context.harvest.tasks" &&
+    identity.proposal_id === intent.proposal_id &&
+    identity.source_task_id === intent.source_task_id &&
+    identity.source_digest === intent.source_digest &&
+    identity.source_fingerprint_version === intent.source_fingerprint_version &&
+    identity.batch_fingerprint === intent.batch_fingerprint &&
+    isRecord(identity.canonical_check) &&
+    identity.canonical_check.path === intent.canonical_check.path &&
+    identity.canonical_check.sha256 === intent.canonical_check.sha256
+  );
+}
+
+function findCuratorTaskForSelectionIntent(opts: {
+  tasks: readonly TaskData[];
+  intent: TaskKnowledgeSelectionIntent;
+}): TaskData | null {
+  const matches = opts.tasks.filter((task) => isCuratorTaskForSelectionIntent(task, opts.intent));
+  if (matches.length > 1) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `Task knowledge selection intent ${opts.intent.proposal_id} matches multiple CURATOR tasks. ` +
+        "Stop and reconcile the duplicate ownership before retrying.",
+    });
+  }
+  return matches[0] ?? null;
+}
+
+function taskCreationResultForAdoptedCuratorTask(opts: {
+  ctx: CommandContext;
+  task: TaskData;
+}): TaskCreationResult {
+  if (typeof opts.task.id !== "string" || !opts.task.id.trim()) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: "Cannot adopt CURATOR task without a stable task id.",
+    });
+  }
+  return {
+    task_id: opts.task.id,
+    revision: typeof opts.task.revision === "number" ? opts.task.revision : null,
+    backend_id: opts.ctx.backendId,
+    artifact_paths: [`.agentplane/tasks/${opts.task.id}/README.md`],
+  };
 }
 
 async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof buildOutput>) {
@@ -743,13 +1053,23 @@ async function createExtractionTasks(opts: {
           message: `Task knowledge proposal evidence is missing: ${task.id}`,
         });
       }
+      const existingIntent = await readTaskKnowledgeSelectionIntent({
+        root: opts.ctx.resolvedProject.gitRoot,
+        proposalId: proposal.id,
+      });
       canonicalChecksByTask.set(
         task.id,
-        await writeTaskKnowledgeCanonicalCheck({
-          root: opts.ctx.resolvedProject.gitRoot,
-          proposal,
-          evidence,
-        }),
+        existingIntent
+          ? await readFrozenTaskKnowledgeCanonicalCheck({
+              root: opts.ctx.resolvedProject.gitRoot,
+              proposal,
+              intent: existingIntent.intent,
+            })
+          : await writeTaskKnowledgeCanonicalCheck({
+              root: opts.ctx.resolvedProject.gitRoot,
+              proposal,
+              evidence,
+            }),
       );
     }
     const sourceRowsByTask = new Map(
@@ -769,15 +1089,87 @@ async function createExtractionTasks(opts: {
     );
     const createdTaskIds: string[] = [];
     const taskPackPaths: string[] = [];
+    const selectionIntentsByTask = new Map<
+      string,
+      { path: string; intent: TaskKnowledgeSelectionIntent }
+    >();
     for (const plan of plans) {
-      const created: TaskCreationResult = await createTask({
-        ctx: opts.ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        parsed: plan.parsed,
-        printTaskId: false,
+      for (const sourceTaskId of plan.source_task_ids) {
+        const proposal = proposalByTaskId.get(sourceTaskId);
+        const canonicalCheck = canonicalChecksByTask.get(sourceTaskId);
+        const canonicalCheckSource = sourceRowsByTask
+          .get(sourceTaskId)
+          ?.find((source) => source.path === canonicalCheck?.path);
+        if (!proposal || !canonicalCheck || !canonicalCheckSource) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Cannot prepare durable CURATOR selection intent for ${sourceTaskId}.`,
+          });
+        }
+        selectionIntentsByTask.set(
+          sourceTaskId,
+          await ensureTaskKnowledgeSelectionIntent({
+            root: opts.ctx.resolvedProject.gitRoot,
+            proposal,
+            fingerprint: opts.sourceFingerprints.get(sourceTaskId),
+            batchFingerprint: plan.batch_fingerprint,
+            canonicalCheckPath: canonicalCheck.path,
+            canonicalCheckSha256: canonicalCheckSource.sha256,
+          }),
+        );
+      }
+    }
+    for (const plan of plans) {
+      const sourceTaskId = plan.source_task_ids[0];
+      const selectionIntent = sourceTaskId
+        ? selectionIntentsByTask.get(sourceTaskId)
+        : undefined;
+      if (!sourceTaskId || !selectionIntent) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "CURATOR selection intent is missing for the explicit task proposal.",
+        });
+      }
+      const existingCuratorTask = findCuratorTaskForSelectionIntent({
+        tasks: await opts.ctx.taskBackend.listTasks(),
+        intent: selectionIntent.intent,
       });
+      if (
+        selectionIntent.intent.state === "created" &&
+        selectionIntent.intent.curator_task_id !== existingCuratorTask?.id
+      ) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            `Task knowledge selection intent ${selectionIntent.intent.proposal_id} records CURATOR task ${selectionIntent.intent.curator_task_id}, ` +
+            "but that exact task cannot be adopted.",
+        });
+      }
+      const created: TaskCreationResult = existingCuratorTask
+        ? taskCreationResultForAdoptedCuratorTask({ ctx: opts.ctx, task: existingCuratorTask })
+        : await createTask({
+            ctx: opts.ctx,
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride,
+            parsed: {
+              ...plan.parsed,
+              extensions: {
+                ...(plan.parsed.extensions ?? {}),
+                context_task_knowledge_selection: selectionIdentityForTask(selectionIntent.intent),
+              },
+            },
+            printTaskId: false,
+          });
       const createdTaskId = created.task_id;
+      await markTaskKnowledgeSelectionIntentCreated({
+        root: opts.ctx.resolvedProject.gitRoot,
+        path: selectionIntent.path,
+        intent: selectionIntent.intent,
+        curatorTaskId: createdTaskId,
+      });
       await writeContextTaskPack({
         root: opts.ctx.resolvedProject.gitRoot,
         taskId: createdTaskId,
@@ -912,6 +1304,7 @@ async function createExtractionTasks(opts: {
       taskIds: createdTaskIds,
       changedPaths: [
         ...[...canonicalChecksByTask.values()].map((entry) => entry.path),
+        ...[...selectionIntentsByTask.values()].map((entry) => entry.path),
         ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
         ...taskPackPaths,
         ...sourceChangedPaths,
