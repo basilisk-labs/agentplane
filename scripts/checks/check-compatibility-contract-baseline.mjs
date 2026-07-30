@@ -347,6 +347,7 @@ function validateReviewedCandidate({
     "202607281655-YMPY8Y",
     "202607291449-FTHNAR",
     "202607300150-MGCHE6",
+    "202607221852-YP9QCH",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -671,6 +672,7 @@ function validateReviewedCandidate({
       "202607221848-1HWR0R",
       "202607221849-8YYZ9X",
       "202607291449-FTHNAR",
+      "202607221852-YP9QCH",
     ],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
@@ -788,7 +790,8 @@ function validateReviewedCandidate({
           normalized_bytes: afterContextSource.normalized_bytes,
           normalized_sha256: afterContextSource.normalized_sha256,
         },
-        change: "adds the CLI-owned immutable task-creation receipt",
+        change:
+          "adds the CLI-owned immutable task-creation receipt and source-driven canonical reconciliation candidates",
       },
     ],
     task_creation_receipt: {
@@ -797,6 +800,20 @@ function validateReviewedCandidate({
       required_fields: ["task_id", "revision", "backend_id", "artifact_paths"],
       written_before_task_pack: true,
       agent_mutability: "cli_owned_read_only",
+    },
+    reconciliation_candidates: {
+      path: ".agentplane/tasks/<task-id>/canonical-reconciliation-candidates.json",
+      version: 1,
+      required_fields: [
+        "index",
+        "query_terms",
+        "candidate_groups",
+        "additional_search",
+        "candidate_digest",
+        "semantic_decision_owner",
+      ],
+      source_term_origins: ["markdown_heading", "path_basename", "structured_field"],
+      semantic_decision_owner: "CURATOR",
     },
   };
   assert(
@@ -819,6 +836,12 @@ function validateReviewedCandidate({
     /const CONTEXT_TASK_PACK_FILES = \[[\s\S]*?"task-creation\.json",/u.test(taskPackSource),
     "task-creation receipt is not part of the generated task-pack file set",
   );
+  assert(
+    /const CONTEXT_TASK_PACK_FILES = \[[\s\S]*?"canonical-reconciliation-candidates\.json",/u.test(
+      taskPackSource,
+    ),
+    "canonical reconciliation candidates are not part of the generated task-pack file set",
+  );
   for (const requiredField of [
     "version: 1,",
     "task_id: opts.result.task_id",
@@ -840,6 +863,20 @@ function validateReviewedCandidate({
     taskPackSource.indexOf(receiptWrite) < taskPackSource.indexOf(sourceSpanBuild),
     "task-creation receipt must be written before task-pack generation",
   );
+  assert(
+    taskPackSource.includes("await buildCanonicalReconciliationCandidates({"),
+    "canonical reconciliation candidate build is missing from the task pack",
+  );
+  const reconciliationCandidateSource = readFileSync(
+    path.join(repoRoot, "packages/agentplane/src/context/reconciliation-candidates.ts"),
+    "utf8",
+  );
+  for (const candidateInvariant of ['semantic_decision_owner: "CURATOR"', "candidate_digest"]) {
+    assert(
+      reconciliationCandidateSource.includes(candidateInvariant),
+      `canonical reconciliation candidate invariant missing: ${candidateInvariant}`,
+    );
+  }
   const ingestTaskSource = readFileSync(
     path.join(repoRoot, "packages/agentplane/src/context/ingest-task.ts"),
     "utf8",

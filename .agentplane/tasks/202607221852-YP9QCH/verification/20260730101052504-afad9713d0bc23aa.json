@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:afad9713d0bc23aabe98ce2783b30c45b163e709bc874828f6dbef6c8d28ca2f",
+  "implementation_sha": "504f447745b95fd2de0083a207de7d72ad75b55b",
+  "kind": "task_verification_record",
+  "note": "Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test.",
+  "recorded_at": "2026-07-30T10:10:52.504Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Rebuild candidates twice from the same source/index. Expected: identical ordering, reasons, scores, refs, and digest.\n2. Use fixtures whose correct entity is beyond the old first-50 slice. Expected: the source-driven candidate set includes it without scanning an arbitrary alphabetical prefix.\n3. Inspect semantic application. Expected: CLI supplies candidates/evidence only; CURATOR supplies the identity decision and rationale.\n4. Run reconciliation/context tests and report fixture accuracy.",
+  "scope_digest": "sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d",
+  "task_id": "202607221852-YP9QCH",
+  "verification_command": "agentplane verify 202607221852-YP9QCH --rework --by TESTER",
+  "verifier": "TESTER"
+}

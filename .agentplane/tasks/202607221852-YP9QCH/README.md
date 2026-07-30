@@ -2,10 +2,10 @@
 id: "202607221852-YP9QCH"
 title: "Build source-driven canonical reconciliation candidates"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-30T10:00:51.850Z"
+  state: "needs_rework"
+  updated_at: "2026-07-30T10:10:52.504Z"
   updated_by: "TESTER"
-  note: "Pass: deterministic task-bound candidates cover a canonical entity after the prior first-50 range; fixture proves exact label, alias, FTS graph/page, graph-neighbour evidence, stable ordering, refs, and digest. CURATOR remains the only identity decision owner. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check."
-  attempts: 0
+  note: "Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -61,9 +61,7 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "All four Verify Steps are covered: deterministic double build; canonical entity beyond the former first-50 range; lexical/structural evidence only with CURATOR as semantic owner; focused context regression suite."
-commit:
-  hash: "f5b153ccdfdac3a7b9621d7ed84f080b986918e6"
-  message: "🚧 YP9QCH task: reject unreadable source candidates"
+commit: null
 comments:
   -
     author: "CODER"
@@ -80,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted compatibility ratchet failed because the approved v0.7 candidate predates this task-bound context contract. Reopening RF-17 only to record its reviewed candidate delta; immutable v0.6.24 baseline remains unchanged."
 events:
   -
     type: "status"
@@ -122,8 +123,27 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-30T10:07:32.880Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Fresh final-head pass at 504f447745b9: deterministic candidates, post-first-50 fixture, CURATOR-only identity authority, deleted/unreadable-source suppression, exact digest, FTS/alias/page/graph evidence. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check."
+  -
+    type: "status"
+    at: "2026-07-30T10:10:37.527Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Hosted compatibility ratchet failed because the approved v0.7 candidate predates this task-bound context contract. Reopening RF-17 only to record its reviewed candidate delta; immutable v0.6.24 baseline remains unchanged."
+  -
+    type: "verify"
+    at: "2026-07-30T10:10:52.504Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:05:22.883Z"
+doc_updated_at: "2026-07-30T10:10:53.385Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
@@ -171,6 +191,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607221852-YP9QCH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T10:07:32.880Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh final-head pass at 504f447745b9: deterministic candidates, post-first-50 fixture, CURATOR-only identity authority, deleted/unreadable-source suppression, exact digest, FTS/alias/page/graph evidence. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:05:22.883Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+    - old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T10:10:52.504Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:10:37.527Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+    - old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -242,6 +322,66 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607221852-YP9QCH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T10:07:32.880Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh final-head pass at 504f447745b9: deterministic candidates, post-first-50 fixture, CURATOR-only identity authority, deleted/unreadable-source suppression, exact digest, FTS/alias/page/graph evidence. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:05:22.883Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+- old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T10:10:52.504Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:10:37.527Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+- old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
