@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300150-MGCHE6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T02:31:23.613Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "b58491cd78a310e0e007f36cec35cc90db834d51",
+  "blueprint_digest": "5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e",
+  "findings": [
+    "The direct critical test passes under Node/Vitest (7/7), the generated CLI reference passes freshness validation, compatibility and full contract gates pass, and no recovery behavior changed.",
+    "The correction is limited to test/doc contract artifacts that had become stale when the recovery CLI flags were introduced."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-023123386-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
