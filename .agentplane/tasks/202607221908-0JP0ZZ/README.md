@@ -1,10 +1,10 @@
 ---
 id: "202607221908-0JP0ZZ"
 title: "Qualify the AgentPlane 0.7.0-beta.2 milestone"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -30,9 +30,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-30T22:55:50.695Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -41,11 +41,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "TESTER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T22:56:15.151Z"
+    author: "TESTER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:08:07.124Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-30T22:56:15.151Z"
+doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-beta.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
   Summary: |-
@@ -74,6 +84,10 @@ sections:
     - If a prerelease was not published, revert only the gate evidence through its task branch.
     - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "9b299bedb15d2efdbf92b83567660e65aa3451a9"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
