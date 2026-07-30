@@ -31,14 +31,15 @@ Created: 2026-07-30T07:51:18.809Z
 ```text
  .../src/commands/context/issue-gates.unit.test.ts  |  10 +
  .../agentplane/src/commands/context/reindex.ts     |   6 +-
- .../src/commands/context/release-readiness.test.ts |  39 ++++
+ .../src/commands/context/release-readiness.test.ts |   6 +
+ .../src/commands/context/search.fts5.unit.test.ts  |  62 ++++++
  packages/agentplane/src/commands/context/search.ts | 212 ++++++++++++++-------
  packages/agentplane/src/commands/context/sqlite.ts |   1 +
  .../src/commands/context/sqlite.unit.test.ts       |  89 ++++++++-
  packages/agentplane/src/context/reindex.ts         |  31 ++-
  packages/agentplane/src/context/sqlite.ts          | 140 ++++++++++++++
  scripts/bench/context-fts5-bm25.mts                | 130 +++++++++++++
- 9 files changed, 590 insertions(+), 68 deletions(-)
+ 10 files changed, 619 insertions(+), 68 deletions(-)
 ```
 
 </details>

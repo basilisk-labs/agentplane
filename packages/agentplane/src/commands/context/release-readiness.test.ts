@@ -425,39 +425,6 @@ describe("context release readiness guards", () => {
     expect(section?.snippet).not.toContain(tail);
   });
 
-  it("paginates FTS results by stable canonical ref without a live fallback", async () => {
-    const root = await tempRoot();
-    await write(root, "context/wiki/a.md", "# A\n\npaged needle\n");
-    await write(root, "context/wiki/b.md", "# B\n\npaged needle\n");
-    await write(root, "context/wiki/c.md", "# C\n\npaged needle\n");
-    await cmdContextReindex({
-      cwd: root,
-      parsed: { includeTasks: false, includeRaw: false, reset: false },
-    });
-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-
-    await cmdContextSearch({
-      cwd: root,
-      parsed: {
-        query: "paged needle",
-        scope: "wiki",
-        format: "json",
-        explain: false,
-        topK: "1",
-        page: "2",
-      },
-    });
-
-    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
-      pagination: { top_k: number; page: number };
-      fallback: { used: boolean };
-      results: { ref: string }[];
-    };
-    expect(payload.pagination).toEqual({ top_k: 1, page: 2 });
-    expect(payload.fallback.used).toBe(false);
-    expect(payload.results.map((result) => result.ref)).toEqual(["context/wiki/b.md"]);
-  });
-
   it("keeps task history out of default context search unless tasks scope is explicit", async () => {
     const root = await tempRoot();
     await write(root, "context/wiki/release.md", "# Release\n\nCurated release checklist.\n");
