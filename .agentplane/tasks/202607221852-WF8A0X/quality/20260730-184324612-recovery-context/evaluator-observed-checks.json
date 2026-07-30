@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run task-state:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T18:43:05.515Z",
+    "updated_by": "TESTER",
+    "note": "Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221852-WF8A0X/verification/20260730184305515-0c5535a2ed9aea25.json",
+      "sha256": "sha256:968e37148954fd98e44cb1cfc38e2acad12286eb74d3844dc480c84dd21407d4"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

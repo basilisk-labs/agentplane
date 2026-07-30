@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221852-WF8A0X-1d0108c2ce36f24324439d97",
+  "task_id": "202607221852-WF8A0X",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Rebuild the frozen evaluator packet with deterministic verification records tied to SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f, including the focused marker-only interrupted-handoff recovery test and the three declared checks.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains no deterministic check results for evaluated SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f, so the recovery change cannot be qualified.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184105645-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:a6052dc00b662b14fe95095341c083fdc06b88496f6ef29b43024279c2cb9659",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/README.md",
+          "sha256": "sha256:8f8f0e94b51cc6b84679a83fc8c11a54fa9a1001c2bfee342732c7b534db09ca",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184105645-recovery-context/evaluator-result.json"
+}

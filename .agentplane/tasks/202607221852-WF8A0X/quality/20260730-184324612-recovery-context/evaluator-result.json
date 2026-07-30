@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The interrupted marker-only CURATOR handoff now converges to the existing CURATOR task and completes the missing selection receipt without creating a second owner.",
+      "broken_invariant": "Recovery must preserve exactly one CURATOR owner and complete durable selection evidence after interruption between source-marker and receipt writes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:70ea2c505c4d54a84c6ceb1e6ac29e5fbd2653020ffa3f6115ea891ec8946b38",
+          "lines": "3354-3492",
+          "section": "Marker-only CURATOR handoff recovery implementation and tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/verification/20260730184305515-0c5535a2ed9aea25.json",
+          "sha256": "sha256:968e37148954fd98e44cb1cfc38e2acad12286eb74d3844dc480c84dd21407d4",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Selection recovery assumes the task backend exposes newly created CURATOR tasks and persisted source-task markers consistently to subsequent listTasks calls."
+  ]
+}

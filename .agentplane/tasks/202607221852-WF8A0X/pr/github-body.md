@@ -16,7 +16,7 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
 ## Verification
 
 - State: ok
-- Note: Verified stale-lock fencing and CURATOR selection evidence.
+- Note: Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.
 - Canonical workflow state lives in the task README.
 
 <details>

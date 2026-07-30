@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet contains no deterministic check results for the evaluated SHA, so the recovery fix cannot be qualified despite the patch adding the intended interrupted-handoff path and test.",
+      "broken_invariant": "Pass requires verification evidence covering positive, negative, and concurrency-sensitive paths at the evaluated implementation revision.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-183747387-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:e6423fb331a590c2233ddc1d2df3beb96f4e2939c21f12b3717a83bc3bf15aa5",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/README.md",
+          "sha256": "sha256:548cdd59c47d98c2049959dda5aa8e84177f4c6dcf7290a34c3324fb07ef63d1",
+          "section": "quality_review and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-183747387-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:70ea2c505c4d54a84c6ceb1e6ac29e5fbd2653020ffa3f6115ea891ec8946b38",
+          "section": "harvest-tasks recovery implementation and interruption tests"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record successful execution at evaluated SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f of the focused harvest test covering interruption immediately after the source selection marker and receipt completion on retry.",
+    "Record successful execution at the evaluated SHA of bun run task-state:check, bun run test:critical, and bun run typecheck."
+  ],
+  "hidden_assumptions": [
+    "The newly added recovery branch and interruption test pass at the evaluated SHA; the frozen packet provides no runtime evidence proving this.",
+    "Adopting the intent-matched CURATOR task and rewriting the missing receipt remains idempotent under the same concurrency conditions covered by the selection lease."
+  ],
+  "recovery_context": "The patch appears to address the prior partial-handoff defect by adopting the intent-matched CURATOR task when the source marker exists but the receipt is absent. Re-run the focused recovery/concurrency tests and all declared checks at evaluated SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f, then freeze those results before reevaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
