@@ -1,0 +1,688 @@
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/README.md b/.agentplane/tasks/202607300411-6QF79Y/README.md
+new file mode 100644
+index 000000000..1690449a4
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/README.md
+@@ -0,0 +1,108 @@
++---
++id: "202607300411-6QF79Y"
++title: "Stabilize concurrent effect-resolution retirement test"
++status: "DOING"
++priority: "med"
++owner: "CODER"
++revision: 4
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "test"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T04:12:00.251Z"
++  updated_by: "USER"
++  note: "User pre-authorized continuation and CI reliability repairs for the v0.7 program."
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "CODER"
++    body: "Start: make the concurrent retirement retry test deterministic without changing production runner semantics."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T04:12:13.942Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: make the concurrent retirement retry test deterministic without changing production runner semantics."
++doc_version: 3
++doc_updated_at: "2026-07-30T04:12:13.942Z"
++doc_updated_by: "CODER"
++description: "Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing."
++sections:
++  Summary: |-
++    Stabilize concurrent effect-resolution retirement test
++
++    Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.
++  Scope: |-
++    - In scope: Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.
++    - Out of scope: unrelated refactors not required for "Stabilize concurrent effect-resolution retirement test".
++  Plan: |-
++    1. Reproduce the unstable runner effect-resolution test and identify the missing synchronization boundary.
++    2. Make the test hold the recovery lease, observe the retry path, release it, and let a concurrent resolver complete retirement.
++    3. Run the focused regression repeatedly plus the exact hosted unit command (bun run test:fast); publish through the normal branch_pr PR route.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Stabilize concurrent effect-resolution retirement test". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Stabilize concurrent effect-resolution retirement test". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "ee5ea7178ba961f1e17ae3a925cb6b81469c41d7"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Stabilize concurrent effect-resolution retirement test
++
++Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.
++
++## Scope
++
++- In scope: Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.
++- Out of scope: unrelated refactors not required for "Stabilize concurrent effect-resolution retirement test".
++
++## Plan
++
++1. Reproduce the unstable runner effect-resolution test and identify the missing synchronization boundary.
++2. Make the test hold the recovery lease, observe the retry path, release it, and let a concurrent resolver complete retirement.
++3. Run the focused regression repeatedly plus the exact hosted unit command (bun run test:fast); publish through the normal branch_pr PR route.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Stabilize concurrent effect-resolution retirement test". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Stabilize concurrent effect-resolution retirement test". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300411-6QF79Y/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..e61f372b7
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/blueprint/resolved-snapshot.json
+@@ -0,0 +1,360 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300411-6QF79Y",
++    "title": "Stabilize concurrent effect-resolution retirement test",
++    "description": "Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.",
++    "tags": [
++      "test"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "none",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "analysis.light",
++    "version": 1,
++    "title": "Lightweight analysis",
++    "taskKinds": [
++      "analysis"
++    ],
++    "workflowModes": []
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "analysis.light",
++    "blueprintVersion": 1,
++    "title": "Lightweight analysis",
++    "taskId": "202607300411-6QF79Y",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "none"
++    },
++    "whySelected": [
++      "task kind resolved to analysis",
++      "workflow mode: branch_pr",
++      "mutation scope: none"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "context_manifest",
++          "sources"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "weak_links",
++          "final_output"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "final_output"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "final_output"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "analysis.sources",
++        "kind": "sources",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Sources used for analysis."
++      },
++      {
++        "id": "analysis.assumptions",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Assumptions and constraints."
++      },
++      {
++        "id": "analysis.weak_links",
++        "kind": "weak_links",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Weak links or uncertainty."
++      },
++      {
++        "id": "analysis.final",
++        "kind": "final_output",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Final answer or report."
++      },
++      {
++        "id": "analysis.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [],
++    "allowedCommands": [],
++    "contextBudget": {
++      "maxPolicyModules": 0,
++      "maxPromptBlocks": 6,
++      "rationale": "Lightweight analysis should load sources and task context without policy modules."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "context_manifest",
++        "sources"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "weak_links",
++        "final_output"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "final_output"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "final_output"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "analysis.sources",
++      "kind": "sources",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Sources used for analysis."
++    },
++    {
++      "id": "analysis.assumptions",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Assumptions and constraints."
++    },
++    {
++      "id": "analysis.weak_links",
++      "kind": "weak_links",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Weak links or uncertainty."
++    },
++    {
++      "id": "analysis.final",
++      "kind": "final_output",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Final answer or report."
++    },
++    {
++      "id": "analysis.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [],
++  "allowedCommands": [],
++  "contextBudget": {
++    "maxPolicyModules": 0,
++    "maxPromptBlocks": 6,
++    "rationale": "Lightweight analysis should load sources and task context without policy modules."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to analysis",
++    "workflow mode: branch_pr",
++    "mutation scope: none"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "693f8dc16204766e2de8ef776db68fa09206cb6501a985a05e4878a858103bbc"
++  }
++}
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/pr/diffstat.txt b/.agentplane/tasks/202607300411-6QF79Y/pr/diffstat.txt
+new file mode 100644
+index 000000000..d9a4956b9
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .../usecases/task-run-effect-resolution.test.ts    | 38 ++++++++++++++--------
++ .../runner/usecases/task-run-effect-resolution.ts  |  2 +-
++ 2 files changed, 25 insertions(+), 15 deletions(-)
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/pr/github-body.md b/.agentplane/tasks/202607300411-6QF79Y/pr/github-body.md
+new file mode 100644
+index 000000000..eb45a409e
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/pr/github-body.md
+@@ -0,0 +1,35 @@
++Task: `202607300411-6QF79Y`
++Title: Stabilize concurrent effect-resolution retirement test
++Canonical task record: `.agentplane/tasks/202607300411-6QF79Y/README.md`
++
++## Summary
++
++Stabilize concurrent effect-resolution retirement test
++
++Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.
++
++## Scope
++
++- In scope: Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.
++- Out of scope: unrelated refactors not required for "Stabilize concurrent effect-resolution retirement test".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T04:12:14.054Z
++- Branch: task/202607300411-6QF79Y/stabilize-effect-resolution-test
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../usecases/task-run-effect-resolution.test.ts    | 38 ++++++++++++++--------
++ .../runner/usecases/task-run-effect-resolution.ts  |  2 +-
++ 2 files changed, 25 insertions(+), 15 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/pr/github-title.txt b/.agentplane/tasks/202607300411-6QF79Y/pr/github-title.txt
+new file mode 100644
+index 000000000..56cdbbe87
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 6QF79Y task: Stabilize concurrent effect-resolution retirement test [202607300411-6QF79Y]
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/pr/meta.json b/.agentplane/tasks/202607300411-6QF79Y/pr/meta.json
+new file mode 100644
+index 000000000..f181af5ac
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/pr/meta.json
+@@ -0,0 +1,13 @@
++{
++  "base": "main",
++  "branch": "task/202607300411-6QF79Y/stabilize-effect-resolution-test",
++  "created_at": "2026-07-30T04:12:14.054Z",
++  "diffstat_sha256": "sha256:f5962e8687ef87791c450e46232e50f59ea14051f177109d599041b6dd236d23",
++  "last_verified_at": null,
++  "schema_version": 1,
++  "task_id": "202607300411-6QF79Y",
++  "updated_at": "2026-07-30T04:12:14.054Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300411-6QF79Y/pr/review.md b/.agentplane/tasks/202607300411-6QF79Y/pr/review.md
+new file mode 100644
+index 000000000..18543021a
+--- /dev/null
++++ b/.agentplane/tasks/202607300411-6QF79Y/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-07-30T04:12:14.054Z
++
++## Task
++
++- Task: `202607300411-6QF79Y`
++- Title: Stabilize concurrent effect-resolution retirement test
++- Status: DOING
++- Branch: `task/202607300411-6QF79Y/stabilize-effect-resolution-test`
++- Canonical task record: `.agentplane/tasks/202607300411-6QF79Y/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T04:12:14.054Z
++- Branch: task/202607300411-6QF79Y/stabilize-effect-resolution-test
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../usecases/task-run-effect-resolution.test.ts    | 38 ++++++++++++++--------
++ .../runner/usecases/task-run-effect-resolution.ts  |  2 +-
++ 2 files changed, 25 insertions(+), 15 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+index e0079ff81..d76252a6c 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+@@ -23,6 +23,7 @@ import { prepareTaskRunnerExecution } from "./task-run.js";
+ import {
+   acceptLegacyTaskRunnerEffect,
+   resolveTaskRunnerEffect,
++  waitForConcurrentResolutionRetirement,
+ } from "./task-run-effect-resolution.js";
+ import { resumeTaskRunnerEffectExecution } from "./task-run-lifecycle.js";
+ import { recordFailedExternalRunnerAnchor } from "./task-run-lifecycle.testkit.js";
+@@ -217,23 +218,29 @@ describe("task runner effect resolution", () => {
+     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
+   });
+ 
+-  it("retries an unstable active-claim observation while a concurrent resolution retires it", async () => {
++  it("retries an unstable active-claim observation after concurrent retirement", async () => {
+     const fixture = await uncertainEffectFixture();
++    const resolved = await resolveTaskRunnerEffect(resolutionInput(fixture));
++    await writeActiveClaim(fixture.root, fixture.claim);
++    const repository = await RunnerRunRepository.openExistingTaskRun({
++      git_root: fixture.root,
++      workflow_dir: fixture.ctx.config.paths.workflow_dir,
++      task_id: fixture.taskId,
++      run_id: fixture.prepared.invocation.run_id,
++      storage: "supervisor",
++    });
+     const originalRead = stableFile.readStableRegularTextNoFollow;
+     let collisionInjected = false;
+     let retirementWaitReads = 0;
+     const readSpy = vi
+       .spyOn(stableFile, "readStableRegularTextNoFollow")
+       .mockImplementation(async (...args) => {
+-        const isRetirementWaitRead =
+-          args[1] === "runner active claim" &&
+-          new Error("capture retirement wait stack").stack?.includes(
+-            "waitForConcurrentResolutionRetirement",
+-          );
++        const isRetirementWaitRead = args[1] === "runner active claim";
+         if (isRetirementWaitRead) {
+           retirementWaitReads += 1;
+           if (!collisionInjected) {
+             collisionInjected = true;
++            await rm(args[0], { force: true });
+             throw new Error(`runner active claim path changed before it could be read: ${args[0]}`);
+           }
+         }
+@@ -241,15 +248,18 @@ describe("task runner effect resolution", () => {
+       });
+ 
+     try {
+-      const input = resolutionInput(fixture);
+-      const resolutions = await Promise.all([
+-        resolveTaskRunnerEffect(input),
+-        resolveTaskRunnerEffect(input),
+-      ]);
+-
+-      expect(resolutions[0].resolution.digest).toBe(resolutions[1].resolution.digest);
++      await expect(
++        waitForConcurrentResolutionRetirement({
++          repository,
++          git_root: fixture.root,
++          workflow_dir: fixture.ctx.config.paths.workflow_dir,
++          task_id: fixture.taskId,
++          run_id: fixture.prepared.invocation.run_id,
++          resolution: resolved.resolution,
++        }),
++      ).resolves.toBe(true);
+       expect(collisionInjected).toBe(true);
+-      expect(retirementWaitReads).toBeGreaterThanOrEqual(2);
++      expect(retirementWaitReads).toBe(1);
+     } finally {
+       readSpy.mockRestore();
+     }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+index 3a32e79d4..b3daa1442 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+@@ -106,7 +106,7 @@ function isConcurrentRetirementError(error: unknown): boolean {
+   );
+ }
+ 
+-async function waitForConcurrentResolutionRetirement(opts: {
++export async function waitForConcurrentResolutionRetirement(opts: {
+   repository: RunnerRunRepository;
+   git_root: string;
+   workflow_dir: string;

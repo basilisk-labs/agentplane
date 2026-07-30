@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The direct helper test removes scheduler and stack-trace dependence while retaining durable runner repository state; the exported helper remains internal to the source module and does not alter its runtime behavior.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The runner active-claim label remains the stable collision boundary used by readTaskRunnerActiveClaim."
+  ]
+}

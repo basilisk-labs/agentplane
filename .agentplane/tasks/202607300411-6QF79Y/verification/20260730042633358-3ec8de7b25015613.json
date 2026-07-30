@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:3ec8de7b250156138efdc15cd2cf2f858c556a4ed60e55c7adc52f2481df4da3",
+  "implementation_sha": "78484117b66db9bfea82d2b447a02ee0ef0b1c50",
+  "kind": "task_verification_record",
+  "note": "Deterministic retry test covers active-claim read collision followed by concurrent retirement.",
+  "recorded_at": "2026-07-30T04:26:33.358Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Stabilize concurrent effect-resolution retirement test\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Stabilize concurrent effect-resolution retirement test\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:c89f8463be20d7ba4da62ed68a7c366bef835dd60686abf273851a48f0bea27c",
+  "task_id": "202607300411-6QF79Y",
+  "verification_command": "agentplane verify 202607300411-6QF79Y --ok --by TESTER",
+  "verifier": "TESTER"
+}
