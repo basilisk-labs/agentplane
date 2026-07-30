@@ -4,7 +4,7 @@ title: "Add policy-gated semantic retrieval escalation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -36,11 +36,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "c4348a3212b497f8f0de032751defa1c9edc8916"
+  message: "🚧 ABP0EX task: gate semantic retrieval selection"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: added a policy-gated, adapter-injected semantic retrieval selector with a one-episode authority budget, deterministic fallback, provenance and comparison receipts; calibrated high-confidence and conflict fixtures."
 events:
   -
     type: "status"
@@ -49,8 +54,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-30T12:51:16.925Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: added a policy-gated, adapter-injected semantic retrieval selector with a one-episode authority budget, deterministic fallback, provenance and comparison receipts; calibrated high-confidence and conflict fixtures."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:36:18.265Z"
+doc_updated_at: "2026-07-30T12:51:16.925Z"
 doc_updated_by: "CODER"
 description: "RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default."
 sections:
