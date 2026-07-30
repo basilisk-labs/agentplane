@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The release handler reads current-base task state and provider observation, then requires BLOCKED legacy state, DONE successor, and a currently observed CLOSED PR before any queue write.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Queue state accepts supersession only from rework, preserves a named successor, and route projection stops reopening, enqueueing, or integrating the closed PR.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "GitHub provider lookup remains the authoritative current observation of a PR closed outside the task worktree."
+  ]
+}

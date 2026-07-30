@@ -3,14 +3,22 @@
   "branch": "task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit",
   "created_at": "2026-07-30T21:28:13.122Z",
   "diffstat_sha256": "sha256:c4b15a21ba94abca976037d786139e79110110fb214be9dbc0ec4ff391ee703c",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-30T22:05:59.806Z",
+  "last_verified_diffstat_sha256": "sha256:c4b15a21ba94abca976037d786139e79110110fb214be9dbc0ec4ff391ee703c",
   "pr_number": 4696,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4696",
+  "pre_merge_closure": {
+    "basis_commit": "9840fe49865ee220d7185e65b1d7a73d60d379a5",
+    "branch": "task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit",
+    "pr_number": 4696,
+    "recorded_at": "2026-07-30T22:08:06.025Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607302125-Y61ZHN",
   "updated_at": "2026-07-30T21:28:59.552Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

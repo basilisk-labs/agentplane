@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:5e9192e0bef38cb8285e32c6eb490f9e105ebe23f7ed7da5002be5d880db58c0",
+  "implementation_sha": "9840fe49865ee220d7185e65b1d7a73d60d379a5",
+  "kind": "task_verification_record",
+  "note": "Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.",
+  "recorded_at": "2026-07-30T22:05:59.806Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused provider-conflict and PR-flow CLI tests. Expected: a semantic supersession can be recorded only against a current closed/conflicting PR and an existing completed successor; stale head, missing successor, and integrated-success substitution are rejected. 2. Inspect the queue and flow projections after the recorded outcome. Expected: the queue is terminally superseded rather than done/rework, the legacy task is not presented as merged, and later queued integration is not blocked. 3. Run bun run typecheck and bun run test:critical. Expected: the typed state model and critical CLI surface remain green. 4. Run format and lint checks. Expected: no formatting or lint regression in the CLI workflow surface.",
+  "scope_digest": "sha256:f59337e69984d4b0449a152c8be08ec1ed925dcd850944da505d0cbc3d5b2aa0",
+  "task_id": "202607302125-Y61ZHN",
+  "verification_command": "agentplane verify 202607302125-Y61ZHN --ok --by TESTER",
+  "verifier": "TESTER"
+}
