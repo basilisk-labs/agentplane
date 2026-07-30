@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:bb6c551673148e97c8b87c8286d0bbee192e4dabbe2003a400c01fc56273ca45",
+  "implementation_sha": "ef8cb2045717b5de24f352e257f6a9386e18662a",
+  "kind": "task_verification_record",
+  "note": "Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.",
+  "recorded_at": "2026-07-30T06:16:29.508Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:de9be7b79d4ce8d2289484169d468746949ff267d509c0604fa35f16025d9a7e",
+  "task_id": "202607300553-CR9VTJ",
+  "verification_command": "agentplane verify 202607300553-CR9VTJ --rework --by TESTER",
+  "verifier": "TESTER"
+}
