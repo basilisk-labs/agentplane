@@ -47,6 +47,12 @@ type LegacyAdoptedConflictRouteEvidence = {
   adoption: LegacyProtectedConflictAdoptionReceipt;
 };
 
+type CurrentProtectedBaseReworkRouteEvidence = {
+  kind: "current_protected_base_rework";
+  queue: ConflictRouteEvidenceQueue;
+  handoff: ConflictRouteEvidenceHandoff;
+};
+
 export type ConflictRouteEvidence =
   | {
       kind: "current_queue";
@@ -58,6 +64,7 @@ export type ConflictRouteEvidence =
       queue: null;
       handoff: ConflictRouteEvidenceHandoff;
     }
+  | CurrentProtectedBaseReworkRouteEvidence
   | LegacyAdoptedConflictRouteEvidence
   | LegacyUnadoptedConflictRouteEvidence;
 
@@ -245,6 +252,25 @@ export function resolveConflictRouteEligibility(opts: {
 
   const handoff = matchingProtectedBaseHandoff(opts.report, opts.identity);
   const handoffEvidenceValue = handoff ? handoffEvidence(handoff) : null;
+  if (
+    queue?.status === "rework" &&
+    handoffEvidenceValue?.provider_base_sha_state === "present" &&
+    handoffEvidenceValue.provider_base_sha === opts.identity.providerBase &&
+    handoffEvidenceValue.created_at !== null &&
+    handoffEvidenceValue.from_role === "INTEGRATOR"
+  ) {
+    const evidence = queueEvidence({ queue, status: "rework" });
+    if (evidence) {
+      return {
+        state: "eligible",
+        evidence: {
+          kind: "current_protected_base_rework",
+          queue: evidence,
+          handoff: handoffEvidenceValue,
+        },
+      };
+    }
+  }
   if (
     handoffEvidenceValue?.provider_base_sha_state === "present" &&
     handoffEvidenceValue.provider_base_sha === opts.identity.providerBase

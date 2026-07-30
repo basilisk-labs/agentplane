@@ -214,6 +214,42 @@ function prepare(opts: { report?: PrFlowStatusReport; git?: ReturnType<typeof le
 }
 
 describe("legacy protected conflict-base reconciliation", () => {
+  it("prepares a bounded packet when a current protected handoff records the provider base", async () => {
+    const current = report();
+    if (!current.queue.present || !current.handoff.present) throw new Error("fixture error");
+    current.queue.legacyProtectedConflictAdoption = null;
+    current.handoff = {
+      ...current.handoff,
+      routeProviderBaseSha: providerBaseSha,
+      routeProviderBaseShaState: "present",
+    };
+    const git = legacyGit();
+
+    const prepared = await prepare({ git, report: current });
+
+    expect(prepared).toMatchObject({
+      state: "ready",
+      packet: {
+        route_evidence: {
+          kind: "current_protected_base_rework",
+          queue: { status: "rework", base_sha: queueBaseSha },
+          handoff: { provider_base_sha: providerBaseSha, provider_base_sha_state: "present" },
+        },
+        base_context: {
+          provider_conflict_base_sha: providerBaseSha,
+          current_base_sha: currentBaseSha,
+          legacy_queue_base_sha: queueBaseSha,
+          relation: "provider_base_ancestor_of_current_base",
+        },
+      },
+    });
+    expect(git.calls.mergeBase).toEqual([
+      [providerBaseSha, queueBaseSha],
+      [queueBaseSha, currentBaseSha],
+      [currentBaseSha, headSha],
+    ]);
+  });
+
   it("prepares a read-only packet only for the proven provider-to-queue-to-current topology", async () => {
     const git = legacyGit();
     const prepared = await prepare({ git });
