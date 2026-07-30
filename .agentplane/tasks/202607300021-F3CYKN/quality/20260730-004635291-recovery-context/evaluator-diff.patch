@@ -1,0 +1,1710 @@
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/README.md b/.agentplane/tasks/202607300021-F3CYKN/README.md
+new file mode 100644
+index 000000000..357272ebe
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/README.md
+@@ -0,0 +1,131 @@
++---
++id: "202607300021-F3CYKN"
++title: "Bind RF-04 candidate evidence to the beta.1 qualification packet"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 6
++origin:
++  system: "manual"
++depends_on:
++  - "202607292104-W03KZ0"
++tags:
++  - "benchmark"
++  - "milestone-beta1"
++  - "qualification-packet"
++  - "quality"
++  - "rf-04"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run ci:contract"
++  - "bun run test:critical"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T00:22:28.031Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit:
++  hash: "6b842a4a8dda9f93a24cba29ff2149e899ab2353"
++  message: "🧩 F3CYKN task: bind RF-04 candidate evidence to beta.1 qualification"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Checkpoint: implemented the commit-owned RF-04 candidate evidence contract and preserved the failed latency verdict as do-not-publish."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T00:24:17.862Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-30T00:35:18.473Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Checkpoint: implemented the commit-owned RF-04 candidate evidence contract and preserved the failed latency verdict as do-not-publish."
++doc_version: 3
++doc_updated_at: "2026-07-30T00:35:18.473Z"
++doc_updated_by: "CODER"
++description: "Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds."
++sections:
++  Summary: |-
++    Bind RF-04 candidate evidence to the beta.1 qualification packet
++
++    Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.
++  Scope: |-
++    - In scope: Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.
++    - Out of scope: unrelated refactors not required for "Bind RF-04 candidate evidence to the beta.1 qualification packet".
++  Plan: |-
++    1. Inspect the completed W03 immutable measurement and define the minimal commit-owned candidate evidence contract: reviewed product SHA, candidate runtime profile, matched bridge identity, 50-run/55-episode coverage, normalized metric values, comparison thresholds/failure IDs, verdict, and stable digests. Preserve a failed candidate as evidence, not as an error to erase.
++    2. Extend the beta.1 qualification packet and evaluator-facing lineage so it consumes only that committed evidence and rejects missing, tampered, cross-runtime, or unreviewed-SHA inputs. A failed candidate must produce an explicit do-not-publish/rework decision; it must never be represented as a passing beta.1 gate.
++    3. Add focused tests with a committed fixture covering valid failed evidence, missing evidence, digest tampering, runtime mismatch, and a candidate SHA mismatch. Do not issue provider calls, change frozen thresholds, or retry W03.
++    4. Run focused qualification/RF-04 tests, the deterministic no-provider evidence validation, and bun run ci:contract. Record residual limitations: the existing latency samples are non-interleaved and success subsets differ, so the comparison blocks beta.1 but is not causal attribution.
++  Verify Steps: |-
++    1. Run focused qualification-packet and RF-04 candidate tests. Expected: a packet requires commit-owned evidence and rejects absent, tampered, cross-runtime, or candidate-SHA-mismatched data.
++    2. Run the deterministic no-provider candidate evidence check against W03 subject b58705432c46df612a89348ef28ea268fdcc2b04 and Codex 0.146.0-alpha.3.1. Expected: it validates 50 runs and 55 episodes, then retains the two declared latency failures without retrying any provider call.
++    3. Build a beta.1 qualification packet from the committed failed evidence. Expected: it exposes exact failure IDs and a do-not-publish/rework decision; it cannot claim beta.1 pass.
++    4. Run bun run ci:contract. Expected: the repository contract passes with the new packet lineage and tests.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "3a15147b76962e5547061a519d0ad51d79a74d7f"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Bind RF-04 candidate evidence to the beta.1 qualification packet
++
++Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.
++
++## Scope
++
++- In scope: Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.
++- Out of scope: unrelated refactors not required for "Bind RF-04 candidate evidence to the beta.1 qualification packet".
++
++## Plan
++
++1. Inspect the completed W03 immutable measurement and define the minimal commit-owned candidate evidence contract: reviewed product SHA, candidate runtime profile, matched bridge identity, 50-run/55-episode coverage, normalized metric values, comparison thresholds/failure IDs, verdict, and stable digests. Preserve a failed candidate as evidence, not as an error to erase.
++2. Extend the beta.1 qualification packet and evaluator-facing lineage so it consumes only that committed evidence and rejects missing, tampered, cross-runtime, or unreviewed-SHA inputs. A failed candidate must produce an explicit do-not-publish/rework decision; it must never be represented as a passing beta.1 gate.
++3. Add focused tests with a committed fixture covering valid failed evidence, missing evidence, digest tampering, runtime mismatch, and a candidate SHA mismatch. Do not issue provider calls, change frozen thresholds, or retry W03.
++4. Run focused qualification/RF-04 tests, the deterministic no-provider evidence validation, and bun run ci:contract. Record residual limitations: the existing latency samples are non-interleaved and success subsets differ, so the comparison blocks beta.1 but is not causal attribution.
++
++## Verify Steps
++
++1. Run focused qualification-packet and RF-04 candidate tests. Expected: a packet requires commit-owned evidence and rejects absent, tampered, cross-runtime, or candidate-SHA-mismatched data.
++2. Run the deterministic no-provider candidate evidence check against W03 subject b58705432c46df612a89348ef28ea268fdcc2b04 and Codex 0.146.0-alpha.3.1. Expected: it validates 50 runs and 55 episodes, then retains the two declared latency failures without retrying any provider call.
++3. Build a beta.1 qualification packet from the committed failed evidence. Expected: it exposes exact failure IDs and a do-not-publish/rework decision; it cannot claim beta.1 pass.
++4. Run bun run ci:contract. Expected: the repository contract passes with the new packet lineage and tests.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300021-F3CYKN/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..2c16502c3
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/blueprint/resolved-snapshot.json
+@@ -0,0 +1,582 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300021-F3CYKN",
++    "title": "Bind RF-04 candidate evidence to the beta.1 qualification packet",
++    "description": "Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.",
++    "tags": [
++      "benchmark",
++      "milestone-beta1",
++      "qualification-packet",
++      "quality",
++      "rf-04",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607300021-F3CYKN",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "c921e86bb24deb9a98bc1866c9d98819f4085a1e79a57ea0b5553576c07ef2f1"
++  }
++}
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/pr/diffstat.txt b/.agentplane/tasks/202607300021-F3CYKN/pr/diffstat.txt
+new file mode 100644
+index 000000000..512d60c47
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/pr/diffstat.txt
+@@ -0,0 +1,5 @@
++ .../evaluator-qualification-packet.test.ts         | 145 +++++++++-
++ .../src/commands/task/qualification-packet-rf04.ts | 274 ++++++++++++++++++-
++ .../src/commands/task/qualification-packet.ts      |   6 +
++ .../agent-efficiency-v0.7-beta1-candidate.json     | 304 +++++++++++++++++++++
++ 4 files changed, 727 insertions(+), 2 deletions(-)
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/pr/github-body.md b/.agentplane/tasks/202607300021-F3CYKN/pr/github-body.md
+new file mode 100644
+index 000000000..904ed70eb
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/pr/github-body.md
+@@ -0,0 +1,37 @@
++Task: `202607300021-F3CYKN`
++Title: Bind RF-04 candidate evidence to the beta.1 qualification packet
++Canonical task record: `.agentplane/tasks/202607300021-F3CYKN/README.md`
++
++## Summary
++
++Bind RF-04 candidate evidence to the beta.1 qualification packet
++
++Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.
++
++## Scope
++
++- In scope: Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.
++- Out of scope: unrelated refactors not required for "Bind RF-04 candidate evidence to the beta.1 qualification packet".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T00:25:08.421Z
++- Branch: task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../evaluator-qualification-packet.test.ts         | 145 +++++++++-
++ .../src/commands/task/qualification-packet-rf04.ts | 274 ++++++++++++++++++-
++ .../src/commands/task/qualification-packet.ts      |   6 +
++ .../agent-efficiency-v0.7-beta1-candidate.json     | 304 +++++++++++++++++++++
++ 4 files changed, 727 insertions(+), 2 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/pr/github-title.txt b/.agentplane/tasks/202607300021-F3CYKN/pr/github-title.txt
+new file mode 100644
+index 000000000..be95fe775
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 F3CYKN task: Bind RF-04 candidate evidence to the beta.1 qualification packet [202607300021-F3CYKN]
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/pr/meta.json b/.agentplane/tasks/202607300021-F3CYKN/pr/meta.json
+new file mode 100644
+index 000000000..2689299ec
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual",
++  "created_at": "2026-07-30T00:24:17.976Z",
++  "diffstat_sha256": "sha256:95669f747d5ce55ef7eccd13611e7a3b63347ee4294726b3ebf9ba75b8962bf6",
++  "last_verified_at": null,
++  "pr_number": 4675,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4675",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300021-F3CYKN",
++  "updated_at": "2026-07-30T00:25:08.421Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300021-F3CYKN/pr/review.md b/.agentplane/tasks/202607300021-F3CYKN/pr/review.md
+new file mode 100644
+index 000000000..dbe2ebd2a
+--- /dev/null
++++ b/.agentplane/tasks/202607300021-F3CYKN/pr/review.md
+@@ -0,0 +1,40 @@
++# PR Review
++
++Created: 2026-07-30T00:24:17.976Z
++
++## Task
++
++- Task: `202607300021-F3CYKN`
++- Title: Bind RF-04 candidate evidence to the beta.1 qualification packet
++- Status: DOING
++- Branch: `task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual`
++- Canonical task record: `.agentplane/tasks/202607300021-F3CYKN/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T00:25:08.421Z
++- Branch: task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../evaluator-qualification-packet.test.ts         | 145 +++++++++-
++ .../src/commands/task/qualification-packet-rf04.ts | 274 ++++++++++++++++++-
++ .../src/commands/task/qualification-packet.ts      |   6 +
++ .../agent-efficiency-v0.7-beta1-candidate.json     | 304 +++++++++++++++++++++
++ 4 files changed, 727 insertions(+), 2 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+index 19b675bd6..42c3f84df 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+@@ -1,6 +1,8 @@
+-import { mkdir, readFile, writeFile } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ import { describe, expect, it } from "vitest";
+ 
+@@ -13,6 +15,7 @@ import {
+   isQualificationTask,
+ } from "../task/qualification-packet.js";
+ import { resolveQualificationDependencyLeaves } from "../task/qualification-packet-dependencies.js";
++import { readQualificationRf04CandidateMeasurement } from "../task/qualification-packet-rf04.js";
+ import { cmdVerifyParsed } from "../task/verify-record.js";
+ 
+ import {
+@@ -22,6 +25,79 @@ import {
+   prepareTypedReview,
+ } from "./evaluator-test-helpers.js";
+ 
++const CANDIDATE_EVIDENCE_PATH = "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
++
++function canonicalSha256(value: unknown): `sha256:${string}` {
++  return `sha256:${createHash("sha256")
++    .update(JSON.stringify(canonicalizeJson(value)))
++    .digest("hex")}`;
++}
++
++function rf04RuntimeProfile(runtimeVersion: string) {
++  return {
++    adapter_id: "codex-exec-jsonl-supervisor",
++    cache_mode: "ephemeral-provider-default",
++    model_id: "gpt-5.6-terra",
++    provider_id: "openai-chatgpt",
++    reasoning_effort: "low",
++    runtime_id: "agentplane-anchor-cli-preparation/codex-cli-execution",
++    runtime_version: runtimeVersion,
++    sandbox_mode: "workspace-write-network-disabled",
++  };
++}
++
++function candidateEvidenceDocument(opts?: {
++  candidateRuntimeVersion?: string;
++  candidateSubjectSha?: string;
++}) {
++  const baselineRuntimeVersion = "0.6.24/codex-0.146.0-alpha.3.1";
++  const candidateRuntimeVersion = opts?.candidateRuntimeVersion ?? baselineRuntimeVersion;
++  const measurement = {
++    schema_version: 1,
++    kind: "agent_efficiency_candidate_measurement_v1",
++    baseline: {
++      source: "runtime_bridge",
++      subject_sha: "a".repeat(40),
++      runtime_profile: rf04RuntimeProfile(baselineRuntimeVersion),
++    },
++    candidate: {
++      subject_sha: opts?.candidateSubjectSha ?? "b".repeat(40),
++      runtime_profile: rf04RuntimeProfile(candidateRuntimeVersion),
++      coverage: { replay_runs: 50, scenarios: 10 },
++      actual_values: { provider_episodes: 55 },
++    },
++    runtime_comparison: {
++      baseline: baselineRuntimeVersion,
++      candidate: candidateRuntimeVersion,
++      profile_match: true,
++    },
++    comparisons: [
++      { id: "runtime.profile", verdict: "pass" },
++      { id: "latency.harness_setup_latency_ms.mean_ms", verdict: "fail" },
++    ],
++    failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
++    verdict: "fail",
++  };
++  return {
++    schema_version: 1,
++    kind: "agentplane.rf04.qualification_candidate_evidence",
++    source: {
++      task_id: "202607292104-W03KZ0",
++      task_artifact_commit: "c".repeat(40),
++      measurement_source_sha256: `sha256:${"d".repeat(64)}`,
++      measurement_canonical_sha256: canonicalSha256(measurement),
++    },
++    measurement,
++  };
++}
++
++async function writeCandidateEvidence(root: string, document = candidateEvidenceDocument()) {
++  const filePath = path.join(root, CANDIDATE_EVIDENCE_PATH);
++  await mkdir(path.dirname(filePath), { recursive: true });
++  await writeFile(filePath, `${JSON.stringify(document, null, 2)}\n`, "utf8");
++  return filePath;
++}
++
+ describe("evaluator qualification packet", () => {
+   it("classifies the beta milestone taxonomy without promoting technical support tasks", () => {
+     expect(
+@@ -62,6 +138,68 @@ describe("evaluator qualification packet", () => {
+     ).rejects.toThrow("Qualification dependency cycle detected");
+   });
+ 
++  it("requires sealed, matched-runtime RF-04 candidate evidence and preserves a failed verdict", async () => {
++    const root = await mkGitRepoRoot();
++    const evidencePath = await writeCandidateEvidence(root);
++    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: add RF-04 candidate evidence"], {
++      cwd: root,
++    });
++    const { stdout: validShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const validSha = validShaOutput.trim();
++    await expect(
++      readQualificationRf04CandidateMeasurement({ gitRoot: root, reviewedSha: validSha }),
++    ).resolves.toMatchObject({
++      coverage: { replay_runs: 50, scenarios: 10, provider_episodes: 55 },
++      verdict: "fail",
++      failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
++      qualification_decision: "do_not_publish",
++    });
++
++    await writeCandidateEvidence(
++      root,
++      candidateEvidenceDocument({ candidateRuntimeVersion: "0.6.24/codex-0.146.0-alpha.3.2" }),
++    );
++    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: cross-runtime RF-04 evidence"], {
++      cwd: root,
++    });
++    const { stdout: crossRuntimeShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await expect(
++      readQualificationRf04CandidateMeasurement({
++        gitRoot: root,
++        reviewedSha: crossRuntimeShaOutput.trim(),
++      }),
++    ).rejects.toThrow("requires an exact matched runtime profile");
++
++    await writeCandidateEvidence(
++      root,
++      candidateEvidenceDocument({ candidateSubjectSha: "invalid" }),
++    );
++    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: invalid RF-04 candidate SHA"], {
++      cwd: root,
++    });
++    const { stdout: invalidShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await expect(
++      readQualificationRf04CandidateMeasurement({
++        gitRoot: root,
++        reviewedSha: invalidShaOutput.trim(),
++      }),
++    ).rejects.toThrow("invalid candidate.subject_sha");
++
++    await rm(evidencePath);
++    await expect(
++      readQualificationRf04CandidateMeasurement({ gitRoot: root, reviewedSha: validSha }),
++    ).rejects.toThrow("no such file or directory");
++  });
++
+   it("makes non-qualification explicit in frozen evaluator checks", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+@@ -413,6 +551,11 @@ describe("evaluator qualification packet", () => {
+     await execFileAsync("git", ["commit", "-m", "test: restore leaf evaluator state"], {
+       cwd: root,
+     });
++    await writeCandidateEvidence(root);
++    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: pin RF-04 candidate evidence"], {
++      cwd: root,
++    });
+     const reviewedSha = await commitPath(
+       root,
+       "src/qualified.ts",
+diff --git a/packages/agentplane/src/commands/task/qualification-packet-rf04.ts b/packages/agentplane/src/commands/task/qualification-packet-rf04.ts
+index 218813f16..c1d82f73f 100644
+--- a/packages/agentplane/src/commands/task/qualification-packet-rf04.ts
++++ b/packages/agentplane/src/commands/task/qualification-packet-rf04.ts
+@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
+ import { mkdir } from "node:fs/promises";
+ import path from "node:path";
+ 
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+ import { CliError } from "../../shared/errors.js";
+@@ -14,6 +15,7 @@ import {
+   recordValue,
+   type JsonRecord,
+ } from "./qualification-packet-json.js";
++import { readArtifactAtReviewedSha } from "./qualification-packet-artifacts.js";
+ 
+ export type QualificationRf04Comparison = {
+   main_baseline: {
+@@ -31,6 +33,31 @@ export type QualificationRf04Comparison = {
+     verified_by_checks: string[];
+     live_provider_measurement: "not_run_by_packet_builder";
+   };
++  candidate_measurement: QualificationRf04CandidateMeasurement;
++};
++
++export type QualificationRf04CandidateMeasurement = {
++  path: string;
++  sha256: `sha256:${string}`;
++  source: {
++    task_id: string;
++    task_artifact_commit: string;
++    measurement_source_sha256: `sha256:${string}`;
++    measurement_canonical_sha256: `sha256:${string}`;
++  };
++  subject_sha: string;
++  baseline_subject_sha: string;
++  runtime_profile: JsonRecord;
++  baseline_runtime_profile: JsonRecord;
++  coverage: {
++    replay_runs: number;
++    scenarios: number;
++    provider_episodes: number;
++  };
++  verdict: "pass" | "fail";
++  failure_ids: string[];
++  comparisons: JsonRecord[];
++  qualification_decision: "eligible" | "do_not_publish";
+ };
+ 
+ type ReplayMetricSnapshot = {
+@@ -66,11 +93,19 @@ type ReplayMetricSnapshot = {
+ 
+ const RF04_CURRENT_REBUILD_FILE = "rf04-current-rebuild.v1.json";
+ const RF04_CAPTURE_SCRIPT = "scripts/bench/capture-agent-efficiency-replay.mjs";
++const RF04_CANDIDATE_EVIDENCE_FILE = "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
++const RF04_CANDIDATE_EVIDENCE_KIND = "agentplane.rf04.qualification_candidate_evidence";
++const SHA1_PATTERN = /^[a-f0-9]{40}$/u;
++const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
+ 
+ function sha256(value: string | Buffer): `sha256:${string}` {
+   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+ }
+ 
++function canonicalSha256(value: unknown): `sha256:${string}` {
++  return sha256(JSON.stringify(canonicalizeJson(value)));
++}
++
+ function relative(gitRoot: string, filePath: string): string {
+   return path.relative(gitRoot, filePath).replaceAll("\\\\", "/");
+ }
+@@ -89,6 +124,237 @@ function countObservedScalarCells(value: JsonRecord): number {
+   return count;
+ }
+ 
++function requiredRecord(value: unknown, label: string): JsonRecord {
++  if (!isRecord(value)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `RF-04 candidate evidence requires ${label} to be an object.`,
++    });
++  }
++  return value;
++}
++
++function requiredString(value: unknown, label: string): string {
++  const text = asString(value);
++  if (!text) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `RF-04 candidate evidence requires ${label}.`,
++    });
++  }
++  return text;
++}
++
++function requiredSha1(value: unknown, label: string): string {
++  const text = requiredString(value, label);
++  if (!SHA1_PATTERN.test(text)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `RF-04 candidate evidence has an invalid ${label}.`,
++    });
++  }
++  return text;
++}
++
++function requiredSha256(value: unknown, label: string): `sha256:${string}` {
++  const text = requiredString(value, label);
++  if (!SHA256_PATTERN.test(text)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `RF-04 candidate evidence has an invalid ${label}.`,
++    });
++  }
++  return text as `sha256:${string}`;
++}
++
++function requiredNumber(value: unknown, label: string): number {
++  const number = asNumber(value);
++  if (number === null) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `RF-04 candidate evidence requires numeric ${label}.`,
++    });
++  }
++  return number;
++}
++
++function requiredStringArray(value: unknown, label: string): string[] {
++  if (!Array.isArray(value) || value.some((entry) => !asString(entry))) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `RF-04 candidate evidence requires ${label} to be a string array.`,
++    });
++  }
++  return value.map(String).toSorted();
++}
++
++function sameJson(left: unknown, right: unknown): boolean {
++  return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
++}
++
++function sameStrings(left: readonly string[], right: readonly string[]): boolean {
++  return left.length === right.length && left.every((entry, index) => entry === right[index]);
++}
++
++function parseCandidateEvidence(raw: string): JsonRecord {
++  try {
++    const value: unknown = JSON.parse(raw);
++    return requiredRecord(value, "the evidence document");
++  } catch (error) {
++    if (error instanceof CliError) throw error;
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "RF-04 candidate evidence is invalid JSON" +
++        ` (${error instanceof Error ? error.message : String(error)}).`,
++    });
++  }
++}
++
++export async function readQualificationRf04CandidateMeasurement(opts: {
++  gitRoot: string;
++  reviewedSha: string;
++}): Promise<QualificationRf04CandidateMeasurement> {
++  const evidencePath = path.join(opts.gitRoot, RF04_CANDIDATE_EVIDENCE_FILE);
++  const evidence = await readArtifactAtReviewedSha({
++    gitRoot: opts.gitRoot,
++    reviewedSha: opts.reviewedSha,
++    filePath: evidencePath,
++    label: "RF-04 candidate evidence",
++  });
++  const document = parseCandidateEvidence(evidence.raw);
++  if (document.schema_version !== 1 || document.kind !== RF04_CANDIDATE_EVIDENCE_KIND) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence has an unsupported schema or kind.",
++    });
++  }
++  const source = requiredRecord(document.source, "source");
++  const measurement = requiredRecord(document.measurement, "measurement");
++  const sourceTaskId = requiredString(source.task_id, "source.task_id");
++  const sourceTaskArtifactCommit = requiredSha1(
++    source.task_artifact_commit,
++    "source.task_artifact_commit",
++  );
++  const measurementSourceSha256 = requiredSha256(
++    source.measurement_source_sha256,
++    "source.measurement_source_sha256",
++  );
++  const measurementCanonicalSha256 = requiredSha256(
++    source.measurement_canonical_sha256,
++    "source.measurement_canonical_sha256",
++  );
++  if (canonicalSha256(measurement) !== measurementCanonicalSha256) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence canonical measurement digest does not match.",
++    });
++  }
++  if (
++    measurement.schema_version !== 1 ||
++    measurement.kind !== "agent_efficiency_candidate_measurement_v1"
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence measurement has an unsupported schema or kind.",
++    });
++  }
++  const candidate = requiredRecord(measurement.candidate, "measurement.candidate");
++  const baseline = requiredRecord(measurement.baseline, "measurement.baseline");
++  const candidateActual = requiredRecord(candidate.actual_values, "candidate actual values");
++  const candidateCoverage = requiredRecord(candidate.coverage, "candidate coverage");
++  const candidateProfile = requiredRecord(candidate.runtime_profile, "candidate runtime profile");
++  const baselineProfile = requiredRecord(baseline.runtime_profile, "baseline runtime profile");
++  const runtimeComparison = requiredRecord(measurement.runtime_comparison, "runtime comparison");
++  const subjectSha = requiredSha1(candidate.subject_sha, "candidate.subject_sha");
++  const baselineSubjectSha = requiredSha1(baseline.subject_sha, "baseline.subject_sha");
++  const replayRuns = requiredNumber(
++    candidateCoverage.replay_runs,
++    "candidate coverage replay_runs",
++  );
++  const scenarios = requiredNumber(candidateCoverage.scenarios, "candidate coverage scenarios");
++  const providerEpisodes = requiredNumber(
++    candidateActual.provider_episodes,
++    "candidate actual provider_episodes",
++  );
++  if (replayRuns !== 50 || scenarios !== 10 || providerEpisodes !== 55) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "RF-04 candidate evidence must preserve the approved 50-run, 10-scenario, 55-episode coverage.",
++    });
++  }
++  if (
++    runtimeComparison.profile_match !== true ||
++    runtimeComparison.candidate !== candidateProfile.runtime_version ||
++    runtimeComparison.baseline !== baselineProfile.runtime_version ||
++    !sameJson(candidateProfile, baselineProfile)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence requires an exact matched runtime profile.",
++    });
++  }
++  if (baseline.source !== "runtime_bridge") {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence requires a matched runtime-bridge baseline.",
++    });
++  }
++  if (!Array.isArray(measurement.comparisons)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence requires comparison results.",
++    });
++  }
++  const comparisons = measurement.comparisons.map((value) => requiredRecord(value, "comparison"));
++  const comparisonFailures = comparisons
++    .filter((comparison) => comparison.verdict === "fail")
++    .map((comparison) => requiredString(comparison.id, "comparison.id"))
++    .toSorted();
++  const failureIds = requiredStringArray(measurement.failure_ids, "measurement.failure_ids");
++  if (!sameStrings(failureIds, comparisonFailures)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence failure IDs do not match failed comparisons.",
++    });
++  }
++  const verdict = requiredString(measurement.verdict, "measurement.verdict");
++  if (
++    (verdict !== "pass" && verdict !== "fail") ||
++    (verdict === "pass" && failureIds.length > 0) ||
++    (verdict === "fail" && failureIds.length === 0)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "RF-04 candidate evidence verdict is inconsistent with failed comparisons.",
++    });
++  }
++  return {
++    path: evidence.path,
++    sha256: sha256(evidence.raw),
++    source: {
++      task_id: sourceTaskId,
++      task_artifact_commit: sourceTaskArtifactCommit,
++      measurement_source_sha256: measurementSourceSha256,
++      measurement_canonical_sha256: measurementCanonicalSha256,
++    },
++    subject_sha: subjectSha,
++    baseline_subject_sha: baselineSubjectSha,
++    runtime_profile: candidateProfile,
++    baseline_runtime_profile: baselineProfile,
++    coverage: {
++      replay_runs: replayRuns,
++      scenarios,
++      provider_episodes: providerEpisodes,
++    },
++    verdict,
++    failure_ids: failureIds,
++    comparisons,
++    qualification_decision: verdict === "pass" ? "eligible" : "do_not_publish",
++  };
++}
++
+ function buildReplayMetricSnapshot(opts: {
+   path: string;
+   raw: string;
+@@ -196,15 +462,20 @@ export async function buildQualificationRf04Comparison(opts: {
+   checks: readonly VerificationCheckDetail[];
+   taskId: string;
+   workflowDir: string;
++  reviewedSha: string;
+ }): Promise<QualificationRf04Comparison> {
+   const mainPath = path.join(opts.gitRoot, "scripts/baselines/agent-efficiency-pre-v0.7-main.json");
+   const replayPath = path.join(
+     opts.gitRoot,
+     "scripts/baselines/agent-efficiency-pre-v0.7-replay.json",
+   );
+-  const [main, replay] = await Promise.all([
++  const [main, replay, candidateMeasurement] = await Promise.all([
+     readJson(mainPath, "RF-04 main baseline"),
+     readJson(replayPath, "RF-04 replay baseline"),
++    readQualificationRf04CandidateMeasurement({
++      gitRoot: opts.gitRoot,
++      reviewedSha: opts.reviewedSha,
++    }),
+   ]);
+   const replaySnapshot = buildReplayMetricSnapshot({
+     path: relative(opts.gitRoot, replayPath),
+@@ -252,5 +523,6 @@ export async function buildQualificationRf04Comparison(opts: {
+       verified_by_checks: verifiedByChecks,
+       live_provider_measurement: "not_run_by_packet_builder",
+     },
++    candidate_measurement: candidateMeasurement,
+   };
+ }
+diff --git a/packages/agentplane/src/commands/task/qualification-packet.ts b/packages/agentplane/src/commands/task/qualification-packet.ts
+index 0c224d723..11e451253 100644
+--- a/packages/agentplane/src/commands/task/qualification-packet.ts
++++ b/packages/agentplane/src/commands/task/qualification-packet.ts
+@@ -345,6 +345,7 @@ export async function writeQualificationPacket(opts: {
+       checks,
+       taskId: opts.task.id,
+       workflowDir: opts.ctx.config.paths.workflow_dir,
++      reviewedSha: implementationSha,
+     }),
+   };
+   const packet: QualificationPacket = {
+@@ -446,6 +447,11 @@ function qualificationPinnedArtifacts(
+       path: packet.rf04.replay_comparison.current_rebuild.path,
+       sha256: packet.rf04.replay_comparison.current_rebuild.sha256,
+     },
++    {
++      label: "RF-04 candidate measurement",
++      path: packet.rf04.candidate_measurement.path,
++      sha256: packet.rf04.candidate_measurement.sha256,
++    },
+   ];
+   for (const leaf of packet.dependency_closure.leaves) {
+     artifacts.push(
+diff --git a/scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json b/scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json
+new file mode 100644
+index 000000000..7c0a99214
+--- /dev/null
++++ b/scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json
+@@ -0,0 +1,304 @@
++{
++  "schema_version": 1,
++  "kind": "agentplane.rf04.qualification_candidate_evidence",
++  "source": {
++    "task_id": "202607292104-W03KZ0",
++    "task_artifact_commit": "3a15147b76962e5547061a519d0ad51d79a74d7f",
++    "task_pr_number": 4674,
++    "measurement_source_path": ".agentplane/cache/rf04-candidate/b58705432c46df612a89348ef28ea268fdcc2b04/measurement.runtime-bridge-codex-0.146.0-alpha.3.1.json",
++    "measurement_source_sha256": "sha256:0b2b9f75cf537862aac14aa229a557e2b4e274d6b200dc7dad76ebe1e15631b4",
++    "measurement_canonical_sha256": "sha256:1b670db01a5ea336d96d29642a29fac3b2da93638c5a5474fb69775174c1fad7"
++  },
++  "measurement": {
++    "baseline": {
++      "actual_values": {
++        "golden_mismatch_count": 33,
++        "latency_ms": {
++          "harness_setup_latency_ms": {
++            "mean": 7605.46,
++            "sample_count": 50
++          },
++          "time_to_first_scoped_mutation_ms": {
++            "mean": 43642.64,
++            "sample_count": 25
++          },
++          "time_to_verified_result_ms": {
++            "mean": 56439.625,
++            "sample_count": 8
++          }
++        },
++        "outcomes": {
++          "adapter_failure": 5,
++          "approval_respected": 50,
++          "blocked": 20,
++          "context_gap": 5,
++          "rework_required": 32,
++          "scope_violation": 17,
++          "verified_success": 8
++        },
++        "provider_episodes": 55,
++        "provider_tokens": {
++          "input_tokens": 9097432,
++          "output_tokens": 66728,
++          "reasoning_tokens": 22587,
++          "total_tokens": 9186747
++        }
++      },
++      "replay_baseline_sha256": "sha256:cb39d8981b509a54573d076d6323d495324ce2ed9e60c71d21dfa084fdb2d1ab",
++      "runtime_profile": {
++        "adapter_id": "codex-exec-jsonl-supervisor",
++        "cache_mode": "ephemeral-provider-default",
++        "model_id": "gpt-5.6-terra",
++        "provider_id": "openai-chatgpt",
++        "reasoning_effort": "low",
++        "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
++        "runtime_version": "0.6.24/0.146.0-alpha.3.1",
++        "sandbox_mode": "workspace-write-network-disabled"
++      },
++      "source": "runtime_bridge",
++      "subject_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb"
++    },
++    "candidate": {
++      "actual_values": {
++        "golden_mismatch_count": 10,
++        "latency_ms": {
++          "harness_setup_latency_ms": {
++            "mean": 17522.82,
++            "sample_count": 50
++          },
++          "time_to_first_scoped_mutation_ms": {
++            "mean": 34077.04,
++            "sample_count": 25
++          },
++          "time_to_verified_result_ms": {
++            "mean": 63020.05,
++            "sample_count": 20
++          }
++        },
++        "outcomes": {
++          "adapter_failure": 5,
++          "approval_respected": 50,
++          "blocked": 20,
++          "context_gap": 5,
++          "rework_required": 25,
++          "scope_violation": 5,
++          "verified_success": 20
++        },
++        "provider_episodes": 55,
++        "provider_tokens": {
++          "input_tokens": 5588006,
++          "output_tokens": 44415,
++          "reasoning_tokens": 17196,
++          "total_tokens": 5649617
++        }
++      },
++      "coverage": {
++        "replay_runs": 50,
++        "scenarios": 10
++      },
++      "driver": {
++        "contract_version": 1,
++        "path": "scripts/bench/run-agent-efficiency-codex-replay.mjs",
++        "sha256": "sha256:f535c8f7e746051916319e7a391b66de1cb78cabc27857ad5ebc5604e122389b"
++      },
++      "fixture_registry_sha256": "sha256:b4c340907d8167cc6d141609b988f37f104e58d368cb935b0fd95ee0e00b70ca",
++      "harness_sha256": "sha256:d90d2f86d443da38aa0a49daeb265cfbcefe10c04fe11aaf604883e4029e54a9",
++      "runtime_profile": {
++        "adapter_id": "codex-exec-jsonl-supervisor",
++        "cache_mode": "ephemeral-provider-default",
++        "model_id": "gpt-5.6-terra",
++        "provider_id": "openai-chatgpt",
++        "reasoning_effort": "low",
++        "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
++        "runtime_version": "0.6.24/0.146.0-alpha.3.1",
++        "sandbox_mode": "workspace-write-network-disabled"
++      },
++      "subject_sha": "b58705432c46df612a89348ef28ea268fdcc2b04"
++    },
++    "comparisons": [
++      {
++        "baseline": 9097432,
++        "candidate": 5588006,
++        "delta": -3509426,
++        "delta_ratio": -0.38576006943497904,
++        "id": "provider_tokens.input_tokens",
++        "maximum": 10007175.200000001,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 66728,
++        "candidate": 44415,
++        "delta": -22313,
++        "delta_ratio": -0.33438736362546456,
++        "id": "provider_tokens.output_tokens",
++        "maximum": 73400.8,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 22587,
++        "candidate": 17196,
++        "delta": -5391,
++        "delta_ratio": -0.23867711515473503,
++        "id": "provider_tokens.reasoning_tokens",
++        "maximum": 24845.7,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 9186747,
++        "candidate": 5649617,
++        "delta": -3537130,
++        "delta_ratio": -0.38502529785570455,
++        "id": "provider_tokens.total_tokens",
++        "maximum": 10105421.700000001,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 50,
++        "candidate": 50,
++        "delta": 0,
++        "id": "latency.harness_setup_latency_ms.sample_count",
++        "minimum": 50,
++        "threshold": { "kind": "no_regression", "value": 0 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 7605.46,
++        "candidate": 17522.82,
++        "delta": 9917.36,
++        "delta_ratio": 1.3039789835197346,
++        "id": "latency.harness_setup_latency_ms.mean_ms",
++        "maximum": 8366.006000000001,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "fail"
++      },
++      {
++        "baseline": 25,
++        "candidate": 25,
++        "delta": 0,
++        "id": "latency.time_to_first_scoped_mutation_ms.sample_count",
++        "minimum": 25,
++        "threshold": { "kind": "no_regression", "value": 0 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 43642.64,
++        "candidate": 34077.04,
++        "delta": -9565.599999999999,
++        "delta_ratio": -0.21918014125634927,
++        "id": "latency.time_to_first_scoped_mutation_ms.mean_ms",
++        "maximum": 48006.904,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 8,
++        "candidate": 20,
++        "delta": 12,
++        "id": "latency.time_to_verified_result_ms.sample_count",
++        "minimum": 8,
++        "threshold": { "kind": "no_regression", "value": 0 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 56439.625,
++        "candidate": 63020.05,
++        "delta": 6580.425000000003,
++        "delta_ratio": 0.11659228777654003,
++        "id": "latency.time_to_verified_result_ms.mean_ms",
++        "maximum": 62083.5875,
++        "threshold": { "kind": "max_increase_ratio", "value": 0.1 },
++        "verdict": "fail"
++      },
++      {
++        "baseline": 8,
++        "candidate": 20,
++        "delta": 12,
++        "id": "outcomes.verified_success",
++        "minimum": 8,
++        "threshold": { "kind": "no_regression", "value": 0 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 32,
++        "candidate": 25,
++        "delta": -7,
++        "delta_ratio": -0.21875,
++        "id": "outcomes.rework_required",
++        "maximum": 32,
++        "threshold": { "kind": "max_increase_ratio", "value": 0 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 33,
++        "candidate": 10,
++        "delta": -23,
++        "delta_ratio": -0.696969696969697,
++        "id": "outcomes.golden_mismatch_count",
++        "maximum": 33,
++        "threshold": { "kind": "max_increase_ratio", "value": 0 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": 55,
++        "candidate": 55,
++        "delta": 0,
++        "id": "provider_episodes",
++        "threshold": { "kind": "exact", "value": 55 },
++        "verdict": "pass"
++      },
++      {
++        "baseline": {
++          "adapter_id": "codex-exec-jsonl-supervisor",
++          "cache_mode": "ephemeral-provider-default",
++          "model_id": "gpt-5.6-terra",
++          "provider_id": "openai-chatgpt",
++          "reasoning_effort": "low",
++          "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
++          "runtime_version": "0.6.24/0.146.0-alpha.3.1",
++          "sandbox_mode": "workspace-write-network-disabled"
++        },
++        "candidate": {
++          "adapter_id": "codex-exec-jsonl-supervisor",
++          "cache_mode": "ephemeral-provider-default",
++          "model_id": "gpt-5.6-terra",
++          "provider_id": "openai-chatgpt",
++          "reasoning_effort": "low",
++          "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
++          "runtime_version": "0.6.24/0.146.0-alpha.3.1",
++          "sandbox_mode": "workspace-write-network-disabled"
++        },
++        "id": "runtime.profile",
++        "threshold": {
++          "kind": "exact",
++          "value": {
++            "adapter_id": "codex-exec-jsonl-supervisor",
++            "cache_mode": "ephemeral-provider-default",
++            "model_id": "gpt-5.6-terra",
++            "provider_id": "openai-chatgpt",
++            "reasoning_effort": "low",
++            "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
++            "runtime_version": "0.6.24/0.146.0-alpha.3.1",
++            "sandbox_mode": "workspace-write-network-disabled"
++          }
++        },
++        "verdict": "pass"
++      }
++    ],
++    "failure_ids": [
++      "latency.harness_setup_latency_ms.mean_ms",
++      "latency.time_to_verified_result_ms.mean_ms"
++    ],
++    "kind": "agent_efficiency_candidate_measurement_v1",
++    "runtime_comparison": {
++      "baseline": "0.6.24/0.146.0-alpha.3.1",
++      "candidate": "0.6.24/0.146.0-alpha.3.1",
++      "profile_match": true
++    },
++    "schema_version": 1,
++    "verdict": "fail"
++  }
++}

@@ -15,8 +15,13 @@ Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candi
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+F3 binds immutable RF-04 candidate evidence to qualification packets and records the failed
+matched-runtime result as do_not_publish.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

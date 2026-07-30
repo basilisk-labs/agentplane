@@ -6,14 +6,14 @@ Created: 2026-07-30T00:24:17.976Z
 
 - Task: `202607300021-F3CYKN`
 - Title: Bind RF-04 candidate evidence to the beta.1 qualification packet
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual`
 - Canonical task record: `.agentplane/tasks/202607300021-F3CYKN/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: F3 binds immutable RF-04 candidate evidence to qualification packets and records the failed matched-runtime result as do_not_publish.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
