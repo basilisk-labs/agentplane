@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
     - "Current closure commit cba65ef28653 contains task-lifecycle artifacts only after the reviewed implementation commit 2790e0b0e485; it does not alter RF-04 measurement behavior or the preserved candidate verdict."
     - "The W03 comparison continues to reject the candidate through the two declared latency gates while retaining complete SHA-bound raw evidence under an exact matched runtime profile."
 commit:
-  hash: "c6a10db56506a3e38cba675cc2923569daa7e45e"
-  message: "🧪 W03KZ0 task: record matched-runtime RF-04 rework"
+  hash: "948e59112375a8eefa894155523fd40bc6f84684"
+  message: "🧪 W03KZ0 task: refresh evaluator review"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -128,8 +131,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T00:03:39.256Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T00:01:52.984Z"
+doc_updated_at: "2026-07-30T00:03:39.256Z"
 doc_updated_by: "CODER"
 description: "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria."
 sections:
@@ -294,8 +304,8 @@ sections:
       Resolution: Integrate W03 measurement support, then let the beta.1 qualification task consume the immutable failed measurement and remain blocked until remediation is approved.
 extensions:
   implementation_commit:
-    hash: "2790e0b0e485adf0505d9d3899d4c74b922a2e3d"
-    message: "📊 W03KZ0 task: validate historical RF-04 harness"
+    hash: "cba65ef2865382d2a26278a57b10942e3286e3d7"
+    message: "🧪 W03KZ0 task: pre-merge closure"
   workflow_route_baseline:
     start_head_sha: "8ae0a51a8684db03a0a9401f6c6b8f5b763850bd"
     version: 1
