@@ -5,7 +5,8 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-import { defaultConfig, saveConfig } from "@agentplaneorg/core/config";
+import { defaultConfig, loadConfig, saveConfig } from "@agentplaneorg/core/config";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import { readTask } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./agentplane-internal.js";
@@ -20,6 +21,39 @@ export * from "./cli-harness/stdio.js";
 export * from "./runtime-env.js";
 
 const execFileAsync = promisify(execFile);
+
+const EVALUATOR_FIXTURE_POLICY_PATHS = [
+  ".agentplane/policy/context.must.md",
+  ".agentplane/policy/security.must.md",
+  ".agentplane/policy/dod.core.md",
+  ".agentplane/policy/dod.code.md",
+  ".agentplane/policy/dod.docs.md",
+  ".agentplane/policy/framework.dev.md",
+  ".agentplane/policy/governance.md",
+  ".agentplane/policy/incidents.md",
+  ".agentplane/policy/workflow.md",
+  ".agentplane/policy/workflow.direct.md",
+  ".agentplane/policy/workflow.branch_pr.md",
+  ".agentplane/policy/workflow.release.md",
+  ".agentplane/policy/workflow.upgrade.md",
+] as const;
+
+async function ensureEvaluatorPolicyFixture(root: string): Promise<string[]> {
+  const createdPaths = await Promise.all(
+    EVALUATOR_FIXTURE_POLICY_PATHS.map(async (relativePath) => {
+      const filePath = path.join(root, relativePath);
+      try {
+        await access(filePath);
+        return null;
+      } catch {
+        await mkdir(path.dirname(filePath), { recursive: true });
+        await writeFile(filePath, `# Test evaluator policy fixture: ${relativePath}\n`, "utf8");
+        return filePath;
+      }
+    }),
+  );
+  return createdPaths.filter((filePath): filePath is string => filePath !== null);
+}
 
 let agentplaneHome: string | null = null;
 const testRoots = new Set<string>();
@@ -262,6 +296,25 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
 }
 
 export async function recordQualityReviewPass(root: string, taskId: string): Promise<void> {
+  const { config } = await loadConfig(path.join(root, ".agentplane"));
+  if (config.workflow_mode === "branch_pr") {
+    const baseBranch = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: config.workflow_mode,
+    });
+    if (!baseBranch) return;
+    try {
+      await execFileAsync("git", ["rev-parse", "--verify", `${baseBranch}^{commit}`], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+    } catch {
+      return;
+    }
+  }
+  const policyFixturePaths = await ensureEvaluatorPolicyFixture(root);
   const io = captureStdIO();
   let code: number;
   try {
@@ -284,6 +337,7 @@ export async function recordQualityReviewPass(root: string, taskId: string): Pro
     ]);
   } finally {
     io.restore();
+    await Promise.all(policyFixturePaths.map((filePath) => rm(filePath, { force: true })));
   }
   if (code !== 0) {
     throw new Error(

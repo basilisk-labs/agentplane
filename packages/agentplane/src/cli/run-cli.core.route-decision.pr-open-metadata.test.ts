@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { recordQualityReviewPass } from "@agentplane/testkit";
 
 import {
   captureStdIO,
@@ -102,7 +103,10 @@ describe("runCli route decision open PR metadata", () => {
       const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
       expect(code).toBe(0);
       const parsed = JSON.parse(startRouteIo.stdout) as {
-        workflow_step: {
+        workflow_step?: {
+          operation: { id: string };
+        };
+        workflowStep?: {
           operation: { id: string };
         };
         next_action: { code: string; command: string };
@@ -111,7 +115,7 @@ describe("runCli route decision open PR metadata", () => {
           authoritativeCheckoutPath: string | null;
         };
       };
-      expect(parsed.workflow_step.operation.id).toBe("task.branch.start");
+      expect((parsed.workflow_step ?? parsed.workflowStep)?.operation.id).toBe("task.branch.start");
       expect(parsed.next_action).toMatchObject({
         code: "start_branch",
       });
@@ -193,24 +197,61 @@ describe("runCli route decision open PR metadata", () => {
       const code = await runCli(["task", "next-action", taskId, "--json", "--root", worktreePath]);
       expect(code).toBe(0);
       const parsed = JSON.parse(openPrRouteIo.stdout) as {
-        workflow_step: {
-          operation: { id: string };
+        workflow_step?: {
+          id: string;
+          kind: string;
+          operation?: { id: string };
+        };
+        workflowStep?: {
+          id: string;
+          kind: string;
+          operation?: { id: string };
         };
         next_action: { code: string; command: string };
         route_oracle: {
           authoritativeCheckout: string;
           authoritativeCheckoutPath: string | null;
+          nextCommand: string;
         };
       };
-      expect(parsed.workflow_step.operation.id).toBe("pr.open");
-      expect(parsed.next_action).toMatchObject({
-        code: "open_pr",
-        command: `agentplane pr open ${taskId} --author CODER`,
-      });
+      const workflowStep = parsed.workflow_step ?? parsed.workflowStep;
+      if (workflowStep?.kind === "approval") {
+        expect(workflowStep.id).toBe("approval.pr.open");
+        expect(parsed.next_action.command).toContain("task authority grant");
+        await runCliSilent([
+          ...parsed.route_oracle.nextCommand.split(" ").slice(1),
+          "--root",
+          worktreePath,
+        ]);
+      } else {
+        expect(workflowStep?.operation?.id).toBe("pr.open");
+        expect(parsed.next_action).toMatchObject({
+          code: "open_pr",
+          command: `agentplane pr open ${taskId} --author CODER`,
+        });
+      }
       expect(parsed.route_oracle.authoritativeCheckout).toBe("task_worktree");
       expect(parsed.route_oracle.authoritativeCheckoutPath).toContain(taskId);
     } finally {
       openPrRouteIo.restore();
+    }
+
+    const authorizedOpenPrRouteIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", worktreePath]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(authorizedOpenPrRouteIo.stdout) as {
+        workflow_step?: { operation?: { id: string } };
+        workflowStep?: { operation?: { id: string } };
+        next_action: { code: string; command: string };
+      };
+      expect((parsed.workflow_step ?? parsed.workflowStep)?.operation?.id).toBe("pr.open");
+      expect(parsed.next_action).toMatchObject({
+        code: "open_pr",
+        command: `agentplane pr open ${taskId} --author CODER`,
+      });
+    } finally {
+      authorizedOpenPrRouteIo.restore();
     }
 
     const { stdout: worktreesAfterStart } = await execFileAsync(
@@ -279,23 +320,7 @@ describe("runCli route decision open PR metadata", () => {
       "--root",
       root,
     ]);
-    await runCliSilent([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "pass",
-      "--summary",
-      "Quality review passed.",
-      "--finding",
-      "No blocking findings.",
-      "--evidence",
-      `.agentplane/tasks/${taskId}/README.md`,
-      "--root",
-      root,
-    ]);
+    await recordQualityReviewPass(root, taskId);
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });
@@ -324,13 +349,35 @@ describe("runCli route decision open PR metadata", () => {
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         next_action: { code: string; command: string };
+        route_oracle: { nextCommand: string };
         blockers: { code: string }[];
       };
       expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pre_merge_closure_missing");
       expect(parsed.next_action.code).toBe("record_pre_merge_closure");
-      expect(parsed.next_action.command).toContain("--pre-merge-closure");
+      if (parsed.next_action.command.includes("task authority grant")) {
+        await runCliSilent([
+          ...parsed.route_oracle.nextCommand.split(" ").slice(1),
+          "--root",
+          root,
+        ]);
+      } else {
+        expect(parsed.next_action.command).toContain("--pre-merge-closure");
+      }
     } finally {
       nextIo.restore();
+    }
+
+    const authorizedRouteIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(authorizedRouteIo.stdout) as {
+        next_action: { code: string; command: string };
+      };
+      expect(parsed.next_action).toMatchObject({ code: "record_pre_merge_closure" });
+      expect(parsed.next_action.command).toContain("--pre-merge-closure");
+    } finally {
+      authorizedRouteIo.restore();
     }
   });
 });

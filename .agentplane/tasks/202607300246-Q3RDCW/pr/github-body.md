@@ -32,9 +32,13 @@ and conflict packet tests passed 29/29, and bun run ci:contract passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/pr/conflict-rework-recovery.test.ts   | 58 +++++++++++++++++-----
- .../src/commands/pr/conflict-rework-recovery.ts    |  8 ++-
- 2 files changed, 52 insertions(+), 14 deletions(-)
+ ...run-cli.core.lifecycle.finish-branch-pr.test.ts | 23 +----
+ ...li.core.route-decision.pr-open-metadata.test.ts | 99 ++++++++++++++++------
+ .../src/cli/run-cli.core.route-decision.test.ts    | 78 +++++++++++++----
+ .../commands/pr/conflict-rework-recovery.test.ts   | 58 ++++++++++---
+ .../src/commands/pr/conflict-rework-recovery.ts    |  8 +-
+ packages/testkit/src/cli-harness.ts                | 56 +++++++++++-
+ 6 files changed, 247 insertions(+), 75 deletions(-)
 ```
 
 </details>
