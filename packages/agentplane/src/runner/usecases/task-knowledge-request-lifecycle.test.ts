@@ -85,9 +85,14 @@ describe("runner knowledge-request lifecycle", () => {
     expect(executed.result.knowledge_response).toMatchObject({
       outcome: "served",
       run: { run_id: "run-knowledge-lifecycle-001" },
-      knowledge_refs: [expect.objectContaining({ ref: "context/wiki/retrieval.md" })],
     });
-    const auditPath = executed.result.evidence?.knowledge_request?.audit_path;
+    expect(executed.result.knowledge_response?.knowledge_refs).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ref: "context/wiki/retrieval.md" })]),
+    );
+    const auditPath =
+      typeof executed.result.evidence?.knowledge_request?.audit_path === "string"
+        ? executed.result.evidence.knowledge_request.audit_path
+        : null;
     expect(auditPath).toBeTruthy();
     expect(JSON.parse(await readFile(auditPath!, "utf8"))).toEqual(
       executed.result.knowledge_response,

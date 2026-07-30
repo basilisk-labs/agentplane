@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-01ACZ9-c6e1e97bd6017a5ac701293c",
+  "task_id": "202607221852-01ACZ9",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Constrain retrieval before result limiting, or continue deterministic pagination until the authorized-result budget is satisfied or the projection is exhausted. Preserve and validate the work-order KnowledgeRef digest when materializing evidence, add adversarial ranking and post-work-order drift tests, then attach deterministic check records.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Retrieval applies the six-result limit before enforcing the work-order task-context allowlist. If higher-ranked repository-wide matches are out of scope, an authorized lower-ranked match is never examined and the request is incorrectly denied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:039da429dbc94faeebcf8fee7d6bc864661d69579d46d347bbaa4dcb5d98000a",
+          "section": "task-knowledge-request.ts"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "The implementation reduces authorized task context to canonical paths and then rematerializes matching files with fresh digests, without proving that returned content still matches the digest-bound KnowledgeRef supplied by the work order.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:039da429dbc94faeebcf8fee7d6bc864661d69579d46d347bbaa4dcb5d98000a",
+          "section": "task-knowledge-request-scope.ts and task-knowledge-request.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-result.json"
+}

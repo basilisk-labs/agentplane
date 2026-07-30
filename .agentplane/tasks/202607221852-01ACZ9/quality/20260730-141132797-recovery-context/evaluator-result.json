@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Retrieval applies the six-result limit before enforcing the work-order task-context allowlist. If higher-ranked repository-wide matches are out of scope, an authorized lower-ranked match is never examined and the request is incorrectly denied.",
+      "broken_invariant": "Deterministic retrieval must search the digest-bound task context and return scoped refs when they exist; repository-wide ranking must not suppress authorized results.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:039da429dbc94faeebcf8fee7d6bc864661d69579d46d347bbaa4dcb5d98000a",
+          "section": "task-knowledge-request.ts"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "summary": "The implementation reduces authorized task context to canonical paths and then rematerializes matching files with fresh digests, without proving that returned content still matches the digest-bound KnowledgeRef supplied by the work order.",
+      "broken_invariant": "Requests and responses must remain bound to the work-order authority and return verified digest-valid evidence from that frozen task context, rejecting drift rather than silently authorizing new content at the same path.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:039da429dbc94faeebcf8fee7d6bc864661d69579d46d347bbaa4dcb5d98000a",
+          "section": "task-knowledge-request-scope.ts and task-knowledge-request.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A retrieval test where more than six higher-ranked repository matches are outside task_context but a lower-ranked authorized match exists; the authorized match must still be served.",
+    "A drift test that changes an authorized file after work-order creation and verifies that retrieval rejects the stale work-order digest instead of returning the changed content with a new digest.",
+    "Deterministic check records for the declared schema, critical, and typecheck commands; the frozen observed-checks artifact contains only a summary note and no verification records or runtime evidence."
+  ],
+  "hidden_assumptions": [
+    "Repository-wide search ranking is assumed to place an authorized task-context result within the first six rows.",
+    "Canonical path membership is assumed to be equivalent to membership in the work order's digest-bound context.",
+    "The verification summary is assumed to accurately represent completed checks despite the absence of frozen per-check records."
+  ],
+  "recovery_context": "Constrain retrieval before result limiting, or continue deterministic pagination until the authorized-result budget is satisfied or the projection is exhausted. Preserve and validate the work-order KnowledgeRef digest when materializing evidence, add adversarial ranking and post-work-order drift tests, then attach deterministic check records."
+}

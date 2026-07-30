@@ -4,7 +4,7 @@ title: "Serve bounded knowledge requests during agent episodes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -42,29 +42,29 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T13:50:36.814Z"
+  updated_at: "2026-07-30T14:13:17.385Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "35758465c6432d0503e12e56c6f31eb49cfb7604"
+  evaluated_sha: "d93914f8fb14eab41d962cd0cdc02cb05ac0ceb7"
   blueprint_digest: "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221852-01ACZ9/README.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-141132797-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The bounded knowledge-request handler is exported but never invoked by a CLI or runner episode path, so an EXECUTOR/EVALUATOR request cannot receive the promised response or durable run audit."
-    - "The declared task_context scope constrains only projection kind, not task identity or authorized paths; retrieval searches the repository-wide context projection and may return unrelated context."
+    - "Retrieval applies the six-result limit before enforcing the work-order task-context allowlist. If higher-ranked repository-wide matches are out of scope, an authorized lower-ranked match is never examined and the request is incorrectly denied."
+    - "The implementation reduces authorized task context to canonical paths and then rematerializes matching files with fresh digests, without proving that returned content still matches the digest-bound KnowledgeRef supplied by the work order."
 commit:
   hash: "35758465c6432d0503e12e56c6f31eb49cfb7604"
   message: "🚧 01ACZ9 task: serve bounded knowledge requests"
@@ -240,3 +240,6 @@ DecisionContextRef:
 - Observation: Bounded knowledge handler remains below the enforced 600-line runtime limit (578 lines); hotspot warning only.
   Impact: No current correctness gate is violated; future extraction may split the handler if its policy surface grows.
   Resolution: Keep RF-23 limited to provider-tool transport; do not widen this handler without a separate refactoring task.
+- Observation: EVALUATOR found that global FTS ranking could hide an authorized lower-ranked result and that path-only matching could return content after a work-order digest had drifted.
+  Impact: The CLI could deny available task context or silently widen the work order to changed content.
+  Resolution: Page deterministic FTS results until the bounded response is filled or exhausted, then prepare only the original digest-bound KnowledgeRefs; adversarial ranking and drift tests cover both cases.
