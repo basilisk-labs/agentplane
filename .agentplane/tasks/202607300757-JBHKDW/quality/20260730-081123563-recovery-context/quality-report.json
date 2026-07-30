@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300757-JBHKDW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T08:11:23.563Z",
+  "verdict": "pass",
+  "summary": "v0.6.24 direct verified-task closeout is argv-safe and covered by regression tests.",
+  "evaluated_sha": "aef3a0651787130e839d949ce4f9edbb4ff3e6c6",
+  "blueprint_digest": "f46f992a26c22cb3a11cc073c1e371e5b58b0c03db398f719af23da0857ad2b6",
+  "findings": [
+    "complete_direct no longer emits placeholder arguments; it resolves a concrete commit and produces exactArgv with safe_to_mutate=true."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300757-JBHKDW/README.md",
+    "packages/agentplane/src/commands/shared/route-decision-next-action.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Shared-clone base pin remains main, so maintenance PR lifecycle needs a separate clone or coordinated repin."
+  ]
+}
