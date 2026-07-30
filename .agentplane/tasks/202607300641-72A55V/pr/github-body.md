@@ -22,12 +22,14 @@ Perform the dedicated incident review required by the release gate: preserve INC
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T06:42:26.205Z
+- Updated: 2026-07-30T06:42:31.242Z
 - Branch: task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md     | 1 -
+ docs/developer/incident-archive.mdx | 4 ++++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 ```
 
 </details>
