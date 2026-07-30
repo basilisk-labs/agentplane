@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:b1eed4d193816b9b7b9ad58ff24d204e783dd8e2daa7924805f99415b463d7ff",
   "last_verified_at": "2026-07-30T20:22:00.707Z",
   "last_verified_diffstat_sha256": "sha256:b1eed4d193816b9b7b9ad58ff24d204e783dd8e2daa7924805f99415b463d7ff",
+  "pr_number": 4695,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4695",
+  "pre_merge_closure": {
+    "basis_commit": "17fabaecde3a1258062d8a28d92c72f56bb5fde9",
+    "branch": "task/202607302012-FCYR88/protected-base-conflict-rework",
+    "pr_number": 4695,
+    "recorded_at": "2026-07-30T20:24:17.440Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607302012-FCYR88",
-  "updated_at": "2026-07-30T20:13:04.252Z",
+  "updated_at": "2026-07-30T20:23:18.010Z",
   "verify": {
     "status": "pass"
   }
