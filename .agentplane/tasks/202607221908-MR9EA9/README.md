@@ -1,10 +1,11 @@
 ---
 id: "202607221908-MR9EA9"
 title: "Qualify the AgentPlane 0.7.0-beta.1 milestone"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -66,11 +67,16 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The completed gate has current verification and a frozen blueprint snapshot; provider conflict must be resolved through the bounded route rather than inferred from local history."
-commit: null
+commit:
+  hash: "99ed9f4ee998d2381e66d43e55e3e2e355d618e1"
+  message: "🧪 MR9EA9 task: refresh beta.1 quality review"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -91,8 +97,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed."
+  -
+    type: "status"
+    at: "2026-07-30T20:02:18.535Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T20:01:17.387Z"
+doc_updated_at: "2026-07-30T20:02:18.536Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -186,6 +199,9 @@ sections:
       Impact: Pre-merge closure can bind the qualification evidence to the resolved blueprint.
       Resolution: Submit the snapshot and current verification for independent evaluation.
 extensions:
+  implementation_commit:
+    hash: "460440ac1e36b1261bd1077295f4a50bdf9fc91c"
+    message: "🧪 MR9EA9 task: record beta.1 qualification"
   workflow_route_baseline:
     start_head_sha: "b90a9e6df9ae35a1a518e1ffa73903d6e5784d35"
     version: 1
