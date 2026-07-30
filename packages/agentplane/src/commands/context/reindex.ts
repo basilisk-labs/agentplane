@@ -1,1 +1,5 @@
-export { cmdContextReindex, readContextProjection } from "../../context/reindex.js";
+export {
+  cmdContextReindex,
+  readContextProjection,
+  searchContextProjection,
+} from "../../context/reindex.js";

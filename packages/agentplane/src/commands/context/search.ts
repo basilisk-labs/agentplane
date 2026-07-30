@@ -9,19 +9,23 @@ import {
   buildSnippet,
   fileExists,
   normalizeScopeList,
-  pathMatchesScopes,
   parseJsonlLines,
   readText,
   scoreMatch,
   walkScopeFiles,
 } from "./context-utils.js";
 import { projectRowsForFile } from "../../context/reindex-projection.js";
-import { readContextProjection } from "./reindex.js";
+import { searchContextProjection } from "./reindex.js";
+
+const MAX_FALLBACK_FILES = 200;
+const DEFAULT_TOP_K = 20;
+const MAX_TOP_K = 100;
 
 type SearchResult = {
   path: string;
   score: number;
   snippet: string;
+  highlight?: string;
   line?: number;
   refs?: string[];
   freshness: {
@@ -38,6 +42,8 @@ export async function cmdContextSearch(opts: {
     scope: string;
     format: "text" | "json";
     explain: boolean;
+    topK?: string;
+    page?: string;
     projectRoot?: string;
   };
   rootOverride?: string;
@@ -49,29 +55,141 @@ export async function cmdContextSearch(opts: {
 
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const scopes = normalizeScopeList(opts.parsed.scope);
+  const pagination = parsePagination(opts.parsed);
+  const indexed = await searchContextProjection(root, {
+    query,
+    scopes,
+    limit: pagination.topK * pagination.page,
+    offset: 0,
+  });
   const results: SearchResult[] = [];
-  let usedSQLite = false;
-  const projection = await readContextProjection(root);
-  if (projection) {
-    usedSQLite = true;
-    for (const row of projection.rows) {
-      if (!pathMatchesScopes(row.path, scopes)) continue;
-      if (matchesQuery(row.search_text, query)) {
-        const freshness = await buildFreshness(root, row.path, row.sha256);
-        if (freshness.stale) continue;
-        results.push({
-          path: row.path,
-          score: scoreSearchText(row.search_text, query),
-          snippet: row.preview_text,
-          refs: row.source_refs?.length ? row.source_refs : [row.path],
-          freshness,
-        });
+  let fallbackReason: string | null = indexed ? null : "missing_or_unreadable_index";
+
+  if (indexed) {
+    for (const row of indexed.rows) {
+      const freshness = await buildFreshness(root, row.path, row.sha256);
+      if (freshness.stale) {
+        fallbackReason ??= "stale_projection_row";
+        continue;
       }
+      results.push({
+        path: row.path,
+        score: Number.isFinite(row.rank) ? -row.rank : 0,
+        snippet: row.preview_text,
+        highlight: row.highlight,
+        refs: row.source_refs?.length ? row.source_refs : [row.path],
+        freshness,
+      });
+    }
+    if (requiresUnindexedFallback(indexed.metadata, scopes)) {
+      fallbackReason ??= "unindexed_scope";
     }
   }
 
-  const files = await walkScopeFiles(root, scopes);
+  if (fallbackReason) {
+    results.push(
+      ...(await searchLiveFallback(root, scopes, query, pagination.topK * pagination.page)),
+    );
+  }
 
+  const ordered = dedupeAndSort(results).slice(
+    pagination.offset,
+    pagination.offset + pagination.topK,
+  );
+
+  if (opts.parsed.format === "json") {
+    process.stdout.write(
+      JSON.stringify(
+        {
+          query,
+          scope: scopes,
+          adapter: indexed ? "sqlite" : "local-stub",
+          strategy: indexed
+            ? fallbackReason
+              ? "fts5-bm25+bounded-live-fallback"
+              : "fts5-bm25"
+            : "bounded-live-fallback",
+          index_digest: indexed?.metadata.workspace_hash ?? null,
+          fallback: {
+            used: fallbackReason !== null,
+            reason: fallbackReason,
+            max_files: fallbackReason ? MAX_FALLBACK_FILES : 0,
+          },
+          pagination: { top_k: pagination.topK, page: pagination.page },
+          explain: opts.parsed.explain,
+          count: ordered.length,
+          results: ordered.map((item) => ({
+            ref: item.path,
+            title: item.path.split("/").at(-1),
+            kind: item.path.endsWith(".jsonl") ? "jsonl" : "document",
+            score: item.score,
+            snippet: item.snippet,
+            highlight: item.highlight ?? null,
+            line: item.line,
+            source_refs: item.refs ?? [],
+            freshness: item.freshness,
+          })),
+        },
+        null,
+        2,
+      ),
+    );
+    process.stdout.write("\n");
+    return 0;
+  }
+
+  if (ordered.length === 0) {
+    process.stdout.write("No matches\n");
+    return 0;
+  }
+
+  for (const result of ordered) {
+    const score = result.score.toFixed(2);
+    process.stdout.write(`${score} ${result.path}\n`);
+    if (result.line) process.stdout.write(`  line: ${result.line}\n`);
+    if (result.freshness.stale) {
+      process.stdout.write(
+        `  stale_projection=true (projection=${result.freshness.projection_sha256 ?? "n/a"})\n`,
+      );
+    }
+    process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
+  }
+  return 0;
+}
+
+function parsePagination(parsed: { topK?: string; page?: string }): {
+  topK: number;
+  page: number;
+  offset: number;
+} {
+  const requestedTopK = Number(parsed.topK ?? DEFAULT_TOP_K);
+  const requestedPage = Number(parsed.page ?? 1);
+  const topK = Number.isInteger(requestedTopK)
+    ? Math.min(MAX_TOP_K, Math.max(1, requestedTopK))
+    : DEFAULT_TOP_K;
+  const page = Number.isInteger(requestedPage) ? Math.max(1, requestedPage) : 1;
+  return { topK, page, offset: (page - 1) * topK };
+}
+
+function requiresUnindexedFallback(
+  metadata: { include_tasks: boolean; include_raw: boolean },
+  scopes: ReturnType<typeof normalizeScopeList>,
+): boolean {
+  return (
+    (scopes.includes("raw") && !metadata.include_raw) ||
+    (scopes.some((scope) => scope === "tasks" || scope === "tasks-acr") && !metadata.include_tasks)
+  );
+}
+
+async function searchLiveFallback(
+  root: string,
+  scopes: ReturnType<typeof normalizeScopeList>,
+  query: string,
+  resultLimit: number,
+): Promise<SearchResult[]> {
+  const results: SearchResult[] = [];
+  const scopedFiles = await walkScopeFiles(root, scopes);
+  const files = scopedFiles.slice(0, MAX_FALLBACK_FILES);
   for (const relative of files) {
     const abs = path.join(root, relative);
     if (!(await fileExists(abs))) continue;
@@ -119,54 +237,18 @@ export async function cmdContextSearch(opts: {
       freshness: { projection_sha256: null, file_sha256: null, stale: false },
     });
   }
+  return dedupeAndSort(results).slice(0, resultLimit);
+}
 
-  if (opts.parsed.format === "json") {
-    process.stdout.write(
-      JSON.stringify(
-        {
-          query,
-          scope: scopes,
-          adapter: usedSQLite ? "sqlite" : "local-stub",
-          explain: opts.parsed.explain,
-          count: results.length,
-          results: results
-            .map((item) => ({
-              ref: item.path,
-              title: item.path.split("/").at(-1),
-              kind: item.path.endsWith(".jsonl") ? "jsonl" : "document",
-              score: item.score,
-              snippet: item.snippet,
-              line: item.line,
-              source_refs: item.refs ?? [],
-              freshness: item.freshness,
-            }))
-            .sort((left, right) => right.score - left.score),
-        },
-        null,
-        2,
-      ),
-    );
-    process.stdout.write("\n");
-    return 0;
+function dedupeAndSort(results: SearchResult[]): SearchResult[] {
+  const byPath = new Map<string, SearchResult>();
+  for (const result of results) {
+    const existing = byPath.get(result.path);
+    if (!existing || result.score > existing.score) byPath.set(result.path, result);
   }
-
-  if (results.length === 0) {
-    process.stdout.write("No matches\n");
-    return 0;
-  }
-
-  for (const result of results.sort((left, right) => right.score - left.score)) {
-    const score = result.score.toFixed(2);
-    process.stdout.write(`${score} ${result.path}\n`);
-    if (result.line) process.stdout.write(`  line: ${result.line}\n`);
-    if (result.freshness.stale) {
-      process.stdout.write(
-        `  stale_projection=true (projection=${result.freshness.projection_sha256 ?? "n/a"})\n`,
-      );
-    }
-    process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
-  }
-  return 0;
+  return [...byPath.values()].sort(
+    (left, right) => right.score - left.score || left.path.localeCompare(right.path),
+  );
 }
 
 function queryTokens(query: string): string[] {

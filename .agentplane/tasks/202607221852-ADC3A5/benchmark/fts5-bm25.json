@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-ADC3A5",
+  "measured_at": "2026-07-30T11:00:00.000Z",
+  "method": {
+    "command": "bun scripts/bench/context-fts5-bm25.mts",
+    "corpus": "3,000 materialized context rows; each row has 1,536 filler bytes and every 125th row contains the two-token target query.",
+    "warmup_runs_per_strategy": 5,
+    "measured_runs_per_strategy": 31,
+    "recall_contract": "Both strategies must return all 24 target rows before latency is recorded.",
+    "baseline_scope": "The v0.6.24 indexed branch materializes every projection row and filters it in JavaScript. The harness reproduces that indexed algorithm only; filesystem fallback is intentionally excluded from both sides."
+  },
+  "baseline": {
+    "version": "v0.6.24",
+    "commit": "30f62b82dff28909dcb3ccc2ace2bf3e356203bb",
+    "implementation": "linear materialized-projection scan",
+    "p50_ms": 5.306,
+    "p95_ms": 6.615
+  },
+  "candidate": {
+    "implementation": "SQLite FTS5/BM25",
+    "p50_ms": 0.343,
+    "p95_ms": 0.433
+  },
+  "comparison": {
+    "expected_recall": 24,
+    "baseline_recall": 24,
+    "candidate_recall": 24,
+    "p95_improvement_percent": 93.5,
+    "verdict": "pass"
+  },
+  "threshold": {
+    "recall_regression_allowed": 0,
+    "p95_must_not_regress": true
+  }
+}

@@ -32,6 +32,21 @@ type SqliteProjection = {
   rows: SqliteProjectionRow[];
 };
 
+export type SqliteProjectionSearchOptions = {
+  query: string;
+  scopes: ("wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw")[];
+  limit: number;
+  offset: number;
+};
+
+export type SqliteProjectionSearchResult = {
+  metadata: SqliteProjection["metadata"];
+  rows: (Omit<SqliteProjectionRow, "search_text"> & {
+    rank: number;
+    highlight: string;
+  })[];
+};
+
 type SqliteProjectionMetadataRow = {
   projection_version?: unknown;
   generated_at?: unknown;
@@ -85,6 +100,65 @@ function parseRefs(raw: unknown): string[] {
   } catch {
     return [];
   }
+}
+
+function ftsTokens(query: string): string[] {
+  return query.match(/[\p{L}\p{N}_]+/gu)?.filter(Boolean) ?? [];
+}
+
+function toFtsMatchQuery(query: string): string | null {
+  const tokens = ftsTokens(query);
+  return tokens.length > 0 ? tokens.map((token) => `${token}*`).join(" AND ") : null;
+}
+
+function scopeWhereClause(scopes: SqliteProjectionSearchOptions["scopes"]): {
+  sql: string;
+  params: string[];
+} {
+  const clauses: string[] = [];
+  const params: string[] = [];
+  for (const scope of scopes) {
+    switch (scope) {
+      case "wiki": {
+        clauses.push("rows.path LIKE ?");
+        params.push("context/wiki/%");
+        break;
+      }
+      case "facts": {
+        clauses.push("rows.path LIKE ?");
+        params.push(".agentplane/context/derived/facts/%");
+        break;
+      }
+      case "graph": {
+        clauses.push("rows.path LIKE ?");
+        params.push(".agentplane/context/derived/graph/%");
+        break;
+      }
+      case "tasks": {
+        clauses.push("rows.path LIKE ?");
+        params.push(".agentplane/tasks/%");
+        break;
+      }
+      case "tasks-acr": {
+        clauses.push("(rows.path LIKE ? AND rows.path LIKE ?)");
+        params.push(".agentplane/tasks/%", "%/acr.json%");
+        break;
+      }
+      case "capabilities": {
+        clauses.push("(rows.path LIKE ? OR rows.path LIKE ?)");
+        params.push("context/capabilities/%", ".agentplane/context/derived/capabilities/%");
+        break;
+      }
+      case "raw": {
+        clauses.push("(rows.path LIKE ? AND rows.path NOT LIKE ?)");
+        params.push("context/raw/%", "context/raw/private/%");
+        break;
+      }
+    }
+  }
+  return clauses.length > 0
+    ? { sql: ` AND (${clauses.join(" OR ")})`, params }
+    : { sql: "", params };
 }
 
 function resetContextProjectionSchema(db: SqliteDatabase): void {
@@ -214,6 +288,72 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
         search_text: String(row.search_text ?? ""),
         preview_text: String(row.preview_text ?? ""),
         source_refs: parseRefs(row.source_refs),
+      })),
+    };
+  } catch {
+    return null;
+  } finally {
+    db.close();
+  }
+}
+
+export async function searchSqliteProjection(
+  dbPath: string,
+  opts: SqliteProjectionSearchOptions,
+): Promise<SqliteProjectionSearchResult | null> {
+  const matchQuery = toFtsMatchQuery(opts.query);
+  if (!matchQuery) return null;
+  const db = await openSqliteDatabase(dbPath, { readonly: true, fileMustExist: true });
+  if (!db) return null;
+  try {
+    const metadata = db
+      .prepare(
+        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms FROM projection_metadata LIMIT 1",
+      )
+      .get() as SqliteProjectionMetadataRow | undefined;
+    if (!metadata) return null;
+
+    const scope = scopeWhereClause(opts.scopes);
+    const records = db
+      .prepare(
+        `SELECT rows.path, rows.sha256, rows.content_type, rows.projection_version, rows.indexed_at, rows.size_bytes, rows.kind, rows.preview_text, rows.source_refs,
+                bm25(projection_fts) AS rank,
+                snippet(projection_fts, 1, '[', ']', ' … ', 12) AS highlight
+           FROM projection_fts
+           JOIN projection_rows AS rows ON rows.rowid = projection_fts.rowid
+          WHERE projection_fts MATCH ?${scope.sql}
+          ORDER BY rank ASC, rows.path ASC
+          LIMIT ? OFFSET ?`,
+      )
+      .all(matchQuery, ...scope.params, opts.limit, opts.offset) as (SqliteProjectionRowRecord & {
+      rank?: unknown;
+      highlight?: unknown;
+    })[];
+
+    return {
+      metadata: {
+        projection_version: Number(metadata.projection_version ?? 0),
+        generated_at: String(metadata.generated_at ?? ""),
+        workspace_hash: String(metadata.workspace_hash ?? ""),
+        include_tasks: Number(metadata.include_tasks ?? 0) === 1,
+        include_raw: Number(metadata.include_raw ?? 0) === 1,
+        source_bytes: Number(metadata.source_bytes ?? 0),
+        search_text_bytes: Number(metadata.search_text_bytes ?? 0),
+        preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
+        projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
+      },
+      rows: records.map((row) => ({
+        path: String(row.path ?? ""),
+        sha256: String(row.sha256 ?? ""),
+        content_type: String(row.content_type ?? ""),
+        projection_version: Number(row.projection_version ?? 0),
+        indexed_at: String(row.indexed_at ?? ""),
+        size_bytes: Number(row.size_bytes ?? 0),
+        kind: String(row.kind ?? ""),
+        preview_text: String(row.preview_text ?? ""),
+        source_refs: parseRefs(row.source_refs),
+        rank: Number(row.rank ?? 0),
+        highlight: String(row.highlight ?? ""),
       })),
     };
   } catch {
