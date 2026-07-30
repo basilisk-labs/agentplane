@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
   findings:
     - "The CURATOR handoff preserves one exact owner across both interruption windows and completes the receipt without automatic knowledge publication."
 commit:
-  hash: "f80c562d0abc3d3f2932dd8350a3a504c0ec034f"
-  message: "🐛 WF8A0X task: recover marker-only CURATOR selections"
+  hash: "365e2f5a784338f0d6e584f855b0010f4ed76a0d"
+  message: "🧪 WF8A0X task: record current CURATOR recovery review"
 comments:
   -
     author: "CODER"
@@ -76,6 +76,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -134,8 +137,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T18:58:39.873Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T18:45:24.967Z"
+doc_updated_at: "2026-07-30T18:58:39.874Z"
 doc_updated_by: "CODER"
 description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
 sections:
@@ -474,6 +484,9 @@ sections:
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "f73a9d4713af26770eb5fd88852800058dca5d29"
+    message: "🧹 WF8A0X task: format CURATOR recovery"
   workflow_route_baseline:
     start_head_sha: "12115a42325bb38de85f15df89b96b2675b595cb"
     version: 1
