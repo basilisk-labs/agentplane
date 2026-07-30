@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The receipt now attributes harness setup to anchor runtime build and fixture initialization without changing the immutable candidate, thresholds, or provider behavior.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen candidate cannot establish a causal component split because its 50 runs are non-interleaved and no provider retry is authorized; this task adds only future-capture attribution."
+  ]
+}
