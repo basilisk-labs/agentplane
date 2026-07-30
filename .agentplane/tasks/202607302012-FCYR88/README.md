@@ -1,10 +1,11 @@
 ---
 id: "202607302012-FCYR88"
 title: "Unblock protected-base conflict rework after main advancement"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -57,11 +58,16 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The change adds no automatic rebase, merge, force-push, or semantic hunk selection; it only restores packet eligibility from already-persisted provider, queue, and handoff identities."
-commit: null
+commit:
+  hash: "17fabaecde3a1258062d8a28d92c72f56bb5fde9"
+  message: "🧪 FCYR88 task: record conflict route review"
 comments:
   -
     author: "CODER"
     body: "Start: repair protected-base conflict rework routing after main advanced."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -76,8 +82,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green."
+  -
+    type: "status"
+    at: "2026-07-30T20:24:17.364Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T20:22:02.738Z"
+doc_updated_at: "2026-07-30T20:24:17.365Z"
 doc_updated_by: "CODER"
 description: "Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668."
 sections:
@@ -138,6 +151,9 @@ sections:
       Impact: A main advancement no longer deadlocks semantic conflict routing; the CLI still leaves rebase, merge, and hunk decisions to the executing agent.
       Resolution: Continue with independent evaluator review and normal PR lifecycle.
 extensions:
+  implementation_commit:
+    hash: "3f61098fd12e2a8359ed90d3aae50f8282ecce4f"
+    message: "🐛 FCYR88 code: route protected-base conflict rework"
   workflow_route_baseline:
     start_head_sha: "ce7af971c0609eed73710cd239a3f2897ae3bd7e"
     version: 1
