@@ -5,7 +5,7 @@ result_summary: "Prepared and verified v0.6.25 maintenance release candidate wit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,7 @@ verify:
   - "bun run test:project -- agentplane packages/agentplane/src/commands/shared/pr-meta.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-30T12:27:54.039Z"
+  updated_at: "2026-07-30T13:05:57.939Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -105,7 +105,7 @@ events:
     state: "ok"
     note: "Verified: raised integration verify output capacity from 10 MiB to 50 MiB; focused pr-meta 19/19, typecheck, formatting, fast prepublish, the preceding full release:prepublish 82/82 plus coverage suites, and hosted PR checks all pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:34:35.601Z"
+doc_updated_at: "2026-07-30T13:05:53.439Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.25 from codex/fix-v0.6.24-closeout-route only, including release notes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub release verification, and proof that main does not contain the maintenance commits."
 sections:
@@ -116,7 +116,7 @@ sections:
   Scope: |-
     - In scope: Prepare and publish v0.6.25 from codex/fix-v0.6.24-closeout-route only, including release notes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub release verification, and proof that main does not contain the maintenance commits.
     - Out of scope: unrelated refactors not required for "Release AgentPlane v0.6.25 from maintenance branch".
-  Plan: "1. Preserve the verified v0.6.25 maintenance candidate and reproduce the integration-only failure boundary. 2. Raise the AgentPlane integration verify output buffer above the full release-prepublish volume and add a regression that captures more than 10 MiB without failure. 3. Update release notes, rerun focused tests, full release:prepublish, hosted checks, evaluator, and pre-merge closure. 4. Integrate only into codex/fix-v0.6.24-closeout-route. 5. Run exact-SHA Core CI, publish that SHA, and verify npm, tag, GitHub Release, maintenance ancestry, and exclusion from main."
+  Plan: "1. Preserve the verified v0.6.25 maintenance candidate and reproduce the integration-only failure boundary. 2. Replace fixed-size integration verification buffering with streamed execution and a bounded diagnostic tail; surface the tail on real failures and add focused regressions. 3. Update release notes, rerun focused tests, full release:prepublish, hosted checks, evaluator, and pre-merge closure. 4. Integrate only into codex/fix-v0.6.24-closeout-route. 5. Run exact-SHA Core CI, publish that SHA, and verify npm, tag, GitHub Release, maintenance ancestry, and exclusion from main."
   Verify Steps: |-
     PLANNER fallback scaffold for "Release AgentPlane v0.6.25 from maintenance branch". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -242,7 +242,7 @@ Prepare and publish v0.6.25 from codex/fix-v0.6.24-closeout-route only, includin
 
 ## Plan
 
-1. Preserve the verified v0.6.25 maintenance candidate and reproduce the integration-only failure boundary. 2. Raise the AgentPlane integration verify output buffer above the full release-prepublish volume and add a regression that captures more than 10 MiB without failure. 3. Update release notes, rerun focused tests, full release:prepublish, hosted checks, evaluator, and pre-merge closure. 4. Integrate only into codex/fix-v0.6.24-closeout-route. 5. Run exact-SHA Core CI, publish that SHA, and verify npm, tag, GitHub Release, maintenance ancestry, and exclusion from main.
+1. Preserve the verified v0.6.25 maintenance candidate and reproduce the integration-only failure boundary. 2. Replace fixed-size integration verification buffering with streamed execution and a bounded diagnostic tail; surface the tail on real failures and add focused regressions. 3. Update release notes, rerun focused tests, full release:prepublish, hosted checks, evaluator, and pre-merge closure. 4. Integrate only into codex/fix-v0.6.24-closeout-route. 5. Run exact-SHA Core CI, publish that SHA, and verify npm, tag, GitHub Release, maintenance ancestry, and exclusion from main.
 
 ## Verify Steps
 
