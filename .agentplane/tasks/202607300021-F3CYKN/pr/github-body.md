@@ -27,11 +27,11 @@ Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator-qualification-packet.test.ts         | 142 +++++++++-
+ .../evaluator-qualification-packet.test.ts         | 145 +++++++++-
  .../src/commands/task/qualification-packet-rf04.ts | 274 ++++++++++++++++++-
  .../src/commands/task/qualification-packet.ts      |   6 +
  .../agent-efficiency-v0.7-beta1-candidate.json     | 304 +++++++++++++++++++++
- 4 files changed, 724 insertions(+), 2 deletions(-)
+ 4 files changed, 727 insertions(+), 2 deletions(-)
 ```
 
 </details>
