@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "Symbol extraction now scans bounded identifier tokens linearly, eliminating the CodeQL-reported exponential-backtracking path."
     - "Focused retrieval fixture, typecheck, and lint pass after the security remediation."
 commit:
-  hash: "a53a24b50edf52a22ee3884d3c7062980113b33d"
-  message: "🚧 9T0RT3 task: preserve structured retrieval signals"
+  hash: "e62d54b69678593111b632d6d0b04e10873559c8"
+  message: "🚧 9T0RT3 task: refresh quality review"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -105,8 +108,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T12:00:26.131Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T11:53:48.456Z"
+doc_updated_at: "2026-07-30T12:00:26.131Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:
@@ -168,6 +178,9 @@ sections:
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "728699402f64ee6381f474f68106aaecf8873b11"
+    message: "🚧 9T0RT3 task: harden symbol extraction"
   workflow_route_baseline:
     start_head_sha: "2872d82ce71ecfa658dc9686ed1d36bb101f9278"
     version: 1
