@@ -3,6 +3,10 @@ import {
   AGENT_SEMANTIC_RESULT_KIND,
   AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
+  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
+  KNOWLEDGE_REQUEST_KIND,
+  KNOWLEDGE_REQUEST_SCHEMA_VERSION,
+  KNOWLEDGE_REQUEST_SCOPE_VALUES,
   validateAgentSemanticResult,
   type AgentSemanticResult,
 } from "@agentplaneorg/core/schemas";
@@ -85,10 +89,27 @@ const CODEX_RESULT_OUTPUT_SCHEMA = {
       type: ["object", "null"],
       additionalProperties: false,
       properties: {
+        schema_version: {
+          type: "integer",
+          enum: [KNOWLEDGE_REQUEST_SCHEMA_VERSION],
+        },
+        kind: {
+          type: "string",
+          enum: [KNOWLEDGE_REQUEST_KIND],
+        },
         query: NON_EMPTY_STRING_SCHEMA,
         reason: NON_EMPTY_STRING_SCHEMA,
+        desired_kind: {
+          type: "string",
+          enum: KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
+        },
+        scope: {
+          type: "string",
+          enum: KNOWLEDGE_REQUEST_SCOPE_VALUES,
+        },
+        blocking: { type: "boolean" },
       },
-      required: ["query", "reason"],
+      required: ["schema_version", "kind", "query", "reason", "desired_kind", "scope", "blocking"],
     },
   },
   required: [
@@ -119,7 +140,15 @@ const CODEX_RESULT_TRANSPORT_KEYS = [
 ] as const;
 const CODEX_CLAIMED_CHECK_TRANSPORT_KEYS = ["check", "claimed_status", "details"] as const;
 const CODEX_BLOCKER_TRANSPORT_KEYS = ["summary", "recommended_action"] as const;
-const CODEX_KNOWLEDGE_REQUEST_TRANSPORT_KEYS = ["query", "reason"] as const;
+const CODEX_KNOWLEDGE_REQUEST_TRANSPORT_KEYS = [
+  "schema_version",
+  "kind",
+  "query",
+  "reason",
+  "desired_kind",
+  "scope",
+  "blocking",
+] as const;
 
 function assertExactKeys(
   value: Record<string, unknown>,
@@ -373,8 +402,13 @@ export async function materializeCodexResultTransport(opts: {
     ...(knowledgeRequest
       ? {
           knowledge_request: {
+            schema_version: knowledgeRequest.schema_version,
+            kind: knowledgeRequest.kind,
             query: knowledgeRequest.query,
             reason: knowledgeRequest.reason,
+            desired_kind: knowledgeRequest.desired_kind,
+            scope: knowledgeRequest.scope,
+            blocking: knowledgeRequest.blocking,
           },
         }
       : {}),

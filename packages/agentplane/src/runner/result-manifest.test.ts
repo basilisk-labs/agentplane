@@ -90,8 +90,13 @@ describe("runner result manifest", () => {
         recommended_action: "Provide the canonical schema.",
       },
       knowledge_request: {
+        schema_version: 1,
+        kind: "knowledge_request",
         query: "canonical identifier schema",
         reason: "The implementation cannot safely invent the identifier.",
+        desired_kind: "source",
+        scope: "task_context",
+        blocking: true,
       },
       claimed_checks: [
         {
@@ -119,8 +124,13 @@ describe("runner result manifest", () => {
             recommended_action: "Provide the canonical schema.",
           },
           knowledge_request: {
+            schema_version: 1,
+            kind: "knowledge_request",
             query: "canonical identifier schema",
             reason: "The implementation cannot safely invent the identifier.",
+            desired_kind: "source",
+            scope: "task_context",
+            blocking: true,
           },
           claimed_checks: [
             {

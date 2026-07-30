@@ -87,6 +87,7 @@ export function buildAgentWorkOrderV2ValidFixture(): AgentWorkOrderV2 {
         "git_read",
         "run_checks",
         "knowledge_read",
+        "knowledge_request",
         "report_result",
         "report_blocker",
       ],

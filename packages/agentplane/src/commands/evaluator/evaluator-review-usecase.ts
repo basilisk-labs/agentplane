@@ -64,6 +64,13 @@ const EVALUATOR_RESULT_FILE = "evaluator-result.json";
 const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
 const EVALUATOR_OBSERVED_CHECKS_FILE = "evaluator-observed-checks.json";
 const EVALUATOR_BLUEPRINT_FILE = "evaluator-blueprint.json";
+const EVALUATOR_ALLOWED_TOOL_CLASSES = [
+  "repository_read",
+  "git_read",
+  "run_checks",
+  "knowledge_request",
+  "report_result",
+] as const;
 
 const EVALUATOR_WORK_ORDER_SCHEMA = z
   .object({
@@ -93,9 +100,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
       .object({
         sandbox: z.literal("read-only"),
         writable_roots: z.array(z.string()).length(0),
-        allowed_tool_classes: z.array(
-          z.enum(["repository_read", "git_read", "run_checks", "report_result"]),
-        ),
+        allowed_tool_classes: z.array(z.enum(EVALUATOR_ALLOWED_TOOL_CLASSES)),
         external_side_effects: z.array(z.string()).length(0),
       })
       .strict(),
@@ -404,7 +409,7 @@ export async function prepareEvaluatorReview(opts: {
     authority: {
       sandbox: "read-only",
       writable_roots: [],
-      allowed_tool_classes: ["repository_read", "git_read", "run_checks", "report_result"],
+      allowed_tool_classes: EVALUATOR_ALLOWED_TOOL_CLASSES,
       external_side_effects: [],
     },
     result_contract: "sgr.evaluator_result.v1",

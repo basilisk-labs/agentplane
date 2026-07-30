@@ -34,6 +34,17 @@ export type {
   SemanticRetrievalSelectorResponse,
   SemanticRetrievalSelectionWorkOrder,
 } from "./task-knowledge-semantic-escalation.js";
+export {
+  persistTaskKnowledgeRequestAudit,
+  serveTaskKnowledgeRequest,
+  validateTaskKnowledgeRequestResponse,
+  TASK_KNOWLEDGE_REQUEST_POLICY,
+} from "./task-knowledge-request.js";
+export type {
+  TaskKnowledgeRequestAudit,
+  TaskKnowledgeRequestAuditOutcome,
+  TaskKnowledgeRequestResponse,
+} from "./task-knowledge-request.js";
 
 const MAX_STRUCTURED_FILE_BYTES = 2 * 1024 * 1024;
 

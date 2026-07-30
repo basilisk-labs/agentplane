@@ -79,6 +79,14 @@
         "knowledge_request": {
           "type": "object",
           "properties": {
+            "schema_version": {
+              "type": "number",
+              "const": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "knowledge_request"
+            },
             "query": {
               "type": "string",
               "minLength": 1
@@ -86,9 +94,28 @@
             "reason": {
               "type": "string",
               "minLength": 1
+            },
+            "desired_kind": {
+              "type": "string",
+              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
+            },
+            "scope": {
+              "type": "string",
+              "enum": ["task_context"]
+            },
+            "blocking": {
+              "type": "boolean"
             }
           },
-          "required": ["query", "reason"],
+          "required": [
+            "schema_version",
+            "kind",
+            "query",
+            "reason",
+            "desired_kind",
+            "scope",
+            "blocking"
+          ],
           "additionalProperties": false
         }
       },
@@ -179,6 +206,14 @@
         "knowledge_request": {
           "type": "object",
           "properties": {
+            "schema_version": {
+              "type": "number",
+              "const": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "knowledge_request"
+            },
             "query": {
               "type": "string",
               "minLength": 1
@@ -186,9 +221,28 @@
             "reason": {
               "type": "string",
               "minLength": 1
+            },
+            "desired_kind": {
+              "type": "string",
+              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
+            },
+            "scope": {
+              "type": "string",
+              "enum": ["task_context"]
+            },
+            "blocking": {
+              "type": "boolean"
             }
           },
-          "required": ["query", "reason"],
+          "required": [
+            "schema_version",
+            "kind",
+            "query",
+            "reason",
+            "desired_kind",
+            "scope",
+            "blocking"
+          ],
           "additionalProperties": false
         }
       },
@@ -279,6 +333,14 @@
         "knowledge_request": {
           "type": "object",
           "properties": {
+            "schema_version": {
+              "type": "number",
+              "const": 1
+            },
+            "kind": {
+              "type": "string",
+              "const": "knowledge_request"
+            },
             "query": {
               "type": "string",
               "minLength": 1
@@ -286,9 +348,28 @@
             "reason": {
               "type": "string",
               "minLength": 1
+            },
+            "desired_kind": {
+              "type": "string",
+              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
+            },
+            "scope": {
+              "type": "string",
+              "enum": ["task_context"]
+            },
+            "blocking": {
+              "type": "boolean"
             }
           },
-          "required": ["query", "reason"],
+          "required": [
+            "schema_version",
+            "kind",
+            "query",
+            "reason",
+            "desired_kind",
+            "scope",
+            "blocking"
+          ],
           "additionalProperties": false
         }
       },

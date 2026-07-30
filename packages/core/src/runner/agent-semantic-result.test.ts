@@ -87,8 +87,13 @@ describe("agent semantic result contract", () => {
         ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
         status: "needs_context",
         knowledge_request: {
+          schema_version: 1,
+          kind: "knowledge_request",
           query: "Where is the provider contract defined?",
           reason: "The current work order does not include that contract.",
+          desired_kind: "source",
+          scope: "task_context",
+          blocking: true,
         },
       }),
     ).toEqual([]);

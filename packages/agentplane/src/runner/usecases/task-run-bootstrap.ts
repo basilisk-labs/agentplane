@@ -88,6 +88,8 @@ export function renderTaskRunnerBootstrap(
     route?.workflowStep.kind === "cli_operation" ? route.workflowStep.operation : undefined;
   const routeMustNot = route?.executionPacket.mustNot ?? [];
   const sandboxPolicy = bundle.execution.sandbox_policy;
+  const knowledgeRequestAuthorized =
+    bundle.work_order?.authority.allowed_tool_classes.includes("knowledge_request");
   // Codex emits the typed result through its final structured response. The
   // supervisor persists that response because runner artifacts live under
   // `.git`, which is intentionally outside every Codex write sandbox.
@@ -144,6 +146,13 @@ export function renderTaskRunnerBootstrap(
     "Treat protected_paths as forbidden even when the native sandbox permits them. The supervisor evaluates actual writes after the run.",
     ...(routeMustNot.length > 0
       ? ["Route must-not rules:", ...routeMustNot.map((rule) => `- ${rule}`)]
+      : []),
+    ...(knowledgeRequestAuthorized
+      ? [
+          "When bounded task context is missing, return status=needs_context with a KnowledgeRequest v1 in the semantic result.",
+          "KnowledgeRequest is limited to scope=task_context, a declared desired_kind, and blocking=true only when work cannot proceed without it.",
+          "Do not use repository search or lifecycle commands to fill that gap; the parent CLI validates the request, retrieves digest-valid references, and records its audit.",
+        ]
       : []),
     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked semantic result with blocker.summary and blocker.recommended_action; the supervisor owns path and conflict observation.",
     "",
