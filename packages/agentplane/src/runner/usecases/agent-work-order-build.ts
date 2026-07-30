@@ -343,6 +343,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
   if (opts.knowledge_retrieval.knowledge_refs.length > 0) {
     allowedToolClasses.push("knowledge_read");
   }
+  if (role === "EXECUTOR" || role === "EVALUATOR") {
+    allowedToolClasses.push("knowledge_request");
+  }
   const summary =
     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
     task.narrative.description;

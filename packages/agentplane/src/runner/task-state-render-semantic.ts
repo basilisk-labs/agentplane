@@ -48,7 +48,7 @@ export function renderAgentSemanticResult(
     lines.push(
       `AgentKnowledgeRequest[${report.provenance}]: ${encodeRunnerManagedText(
         semantic.knowledge_request.query,
-      )}; reason=${encodeRunnerManagedText(semantic.knowledge_request.reason)}`,
+      )}; reason=${encodeRunnerManagedText(semantic.knowledge_request.reason)}; kind=${semantic.knowledge_request.desired_kind}; scope=${semantic.knowledge_request.scope}; blocking=${String(semantic.knowledge_request.blocking)}`,
     );
   }
   if ("claimed_checks" in semantic && semantic.claimed_checks?.length) {

@@ -20,6 +20,17 @@ export const AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_STATUS_VALUES = [
   "failed",
   "not_run",
 ] as const;
+export const KNOWLEDGE_REQUEST_SCHEMA_VERSION = 1 as const;
+export const KNOWLEDGE_REQUEST_KIND = "knowledge_request" as const;
+export const KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES = [
+  "any",
+  "wiki",
+  "source",
+  "fact",
+  "entity",
+  "edge",
+] as const;
+export const KNOWLEDGE_REQUEST_SCOPE_VALUES = ["task_context"] as const;
 
 const AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA = z
   .object({
@@ -30,8 +41,13 @@ const AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA = z
 
 const AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA = z
   .object({
+    schema_version: z.literal(KNOWLEDGE_REQUEST_SCHEMA_VERSION),
+    kind: z.literal(KNOWLEDGE_REQUEST_KIND),
     query: NON_EMPTY_STRING,
     reason: NON_EMPTY_STRING,
+    desired_kind: z.enum(KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES),
+    scope: z.enum(KNOWLEDGE_REQUEST_SCOPE_VALUES),
+    blocking: z.boolean(),
   })
   .strict();
 
@@ -141,8 +157,13 @@ export function buildAgentSemanticResultV2ValidFixtures(
       findings: ["The current work order does not contain the required contract."],
       uncertainty: ["Inventing the missing contract could widen task scope."],
       knowledge_request: {
+        schema_version: KNOWLEDGE_REQUEST_SCHEMA_VERSION,
+        kind: KNOWLEDGE_REQUEST_KIND,
         query: "Provide the canonical contract required by this work order.",
         reason: "The runner cannot safely infer the missing semantic input.",
+        desired_kind: "any",
+        scope: "task_context",
+        blocking: true,
       },
     },
     failed: {

@@ -49,7 +49,11 @@ describe("runner bootstrap result examples", () => {
         expect(rawObject).not.toHaveProperty(supervisorOwnedField);
       }
     }
-    expect(bootstrap).not.toContain('"schema_version":1');
+    expect(
+      [...examples.values()].map(
+        (raw) => (JSON.parse(raw) as { schema_version: number }).schema_version,
+      ),
+    ).toEqual(AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(() => 2));
   });
 
   it("binds examples to the prepared invocation and renders deterministically", () => {

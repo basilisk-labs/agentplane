@@ -7,7 +7,12 @@
   "findings": ["The current work order does not contain the required contract."],
   "uncertainty": ["Inventing the missing contract could widen task scope."],
   "knowledge_request": {
+    "schema_version": 1,
+    "kind": "knowledge_request",
     "query": "Provide the canonical contract required by this work order.",
-    "reason": "The runner cannot safely infer the missing semantic input."
+    "reason": "The runner cannot safely infer the missing semantic input.",
+    "desired_kind": "any",
+    "scope": "task_context",
+    "blocking": true
   }
 }

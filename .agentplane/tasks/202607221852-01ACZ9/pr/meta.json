@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep",
   "created_at": "2026-07-30T13:20:41.795Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:b353a7afb2b40c403f4ec25dd58cebd92a3fd590d6e03df23f74541e9550e870",
   "last_verified_at": null,
+  "pr_number": 4693,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4693",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221852-01ACZ9",
-  "updated_at": "2026-07-30T13:20:41.795Z",
+  "updated_at": "2026-07-30T13:21:04.341Z",
   "verify": {
     "status": "skipped"
   }

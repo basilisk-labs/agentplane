@@ -342,8 +342,13 @@ describe("Codex supervisor semantic result transport", () => {
         ...validTransportResult("run-read-only"),
         status: "needs_context",
         knowledge_request: {
+          schema_version: 1,
+          kind: "knowledge_request",
           query: "Provide the contract.",
           reason: "The contract is required.",
+          desired_kind: "source",
+          scope: "task_context",
+          blocking: true,
           artifacts: ["contract.md"],
         },
       },

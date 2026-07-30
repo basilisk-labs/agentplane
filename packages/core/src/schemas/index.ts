@@ -36,6 +36,10 @@ export {
   type AgentSemanticResultClaimedCheck,
   type AgentSemanticResultKnowledgeRequest,
   type AgentSemanticResultStatus,
+  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
+  KNOWLEDGE_REQUEST_KIND,
+  KNOWLEDGE_REQUEST_SCHEMA_VERSION,
+  KNOWLEDGE_REQUEST_SCOPE_VALUES,
 } from "../runner/agent-semantic-result.js";
 
 export {
