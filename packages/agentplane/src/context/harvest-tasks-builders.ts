@@ -20,9 +20,21 @@ import {
   type TaskKnowledgeSignal,
 } from "./harvest-tasks-model.js";
 
-function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
+function rawEvidencePath(taskId: string): string {
+  return `context/raw/tasks/${taskId}.json`;
+}
+
+function sourceLineRef(taskId: string, line: number): string {
+  return `${rawEvidencePath(taskId)}#source_text_lines=${line}`;
+}
+
+function buildEvidence(
+  task: HarvestTask,
+  now: string,
+  provenanceRefs: readonly string[],
+): TaskEvidence {
   const text = taskText(task);
-  const refs = [`.agentplane/tasks/${task.id}/README.md#lines=1-80`];
+  const sourceTextLines = text.split(/\r?\n/u);
   return {
     id: task.id,
     title: task.title,
@@ -34,71 +46,72 @@ function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
     mutation_scope: typeof task.mutation_scope === "string" ? task.mutation_scope : null,
     blueprint_request: typeof task.blueprint_request === "string" ? task.blueprint_request : null,
     commit: task.commit && isRecord(task.commit) ? task.commit : null,
-    source_refs: refs,
+    source_refs: sourceTextLines.map((_, index) => sourceLineRef(task.id, index + 1)),
+    provenance_refs: [...new Set(provenanceRefs)].toSorted(),
     extracted_at: now,
     text_digest: taskTextDigest(task),
-    excerpts: text
-      .split(/\r?\n/u)
+    source_text_lines: sourceTextLines,
+    excerpts: sourceTextLines
       .map((line) => line.trim())
       .filter((line) => line.length >= 24)
       .slice(0, 6),
   };
 }
 
-function sourceText(row: TaskEvidence): string {
-  return [row.title, ...row.excerpts, row.tags.join(" ")].join("\n").toLowerCase();
+function signalRefs(row: TaskEvidence, pattern: RegExp): string[] {
+  return row.source_text_lines.flatMap((line, index) =>
+    pattern.test(line) ? [sourceLineRef(row.id, index + 1)] : [],
+  );
+}
+
+function candidateSignal(opts: {
+  row: TaskEvidence;
+  kind: TaskKnowledgeSignal["kind"];
+  pattern: RegExp;
+  evidence: string;
+}): TaskKnowledgeSignal | null {
+  const refs = signalRefs(opts.row, opts.pattern);
+  if (refs.length === 0) return null;
+  return {
+    kind: opts.kind,
+    source_refs: refs,
+    evidence: opts.evidence,
+  };
 }
 
 function buildSignals(row: TaskEvidence): TaskKnowledgeSignal[] {
-  const text = sourceText(row);
-  const signals: TaskKnowledgeSignal[] = [
-    {
+  return [
+    candidateSignal({
+      row,
       kind: "task_pr_decision",
-      source_refs: row.source_refs,
-      evidence:
-        "Completed task record and its task/PR decision evidence are available for CURATOR review.",
-    },
-  ];
-  if (
-    row.tags.some((tag) => ["adr", "api", "public-api"].includes(tag)) ||
-    /\badr\b|public api|public interface/u.test(text)
-  ) {
-    signals.push({
+      pattern: /^(?:#{1,6}\s*)?decision(?:\s*:|\s*$)/iu,
+      evidence: "An explicit task decision is captured at the cited source line.",
+    }),
+    candidateSignal({
+      row,
       kind: "adr_or_public_api_candidate",
-      source_refs: row.source_refs,
-      evidence:
-        "Task metadata contains an ADR or public-interface signal; this is not an asserted API or decision.",
-    });
-  }
-  if (
-    row.tags.includes("workflow") ||
-    row.mutation_scope === "workflow" ||
-    /workflow rule|workflow contract|lifecycle rule/u.test(text)
-  ) {
-    signals.push({
+      pattern: /\badr\b|\bpublic (?:api|interface)\b/iu,
+      evidence: "An explicit ADR or public-interface marker is captured at the cited source line.",
+    }),
+    candidateSignal({
+      row,
       kind: "stable_workflow_rule_candidate",
-      source_refs: row.source_refs,
-      evidence:
-        "Task metadata contains a workflow signal; CURATOR must decide whether it is durable and reusable.",
-    });
-  }
-  if (/recurring evaluator finding|recurring finding/u.test(text)) {
-    signals.push({
+      pattern: /\b(?:stable\s+)?workflow (?:rule|contract)\b|\blifecycle rule\b/iu,
+      evidence: "An explicit reusable workflow-rule marker is captured at the cited source line.",
+    }),
+    candidateSignal({
+      row,
       kind: "recurring_evaluator_finding_candidate",
-      source_refs: row.source_refs,
-      evidence:
-        "Task evidence mentions a recurring evaluator finding; no recurrence is inferred by the CLI.",
-    });
-  }
-  if (/resolved conflict|conflict resolved/u.test(text)) {
-    signals.push({
+      pattern: /\brecurring (?:evaluator )?finding\b/iu,
+      evidence: "An explicit recurring-finding marker is captured at the cited source line.",
+    }),
+    candidateSignal({
+      row,
       kind: "resolved_conflict_candidate",
-      source_refs: row.source_refs,
-      evidence:
-        "Task evidence mentions a resolved conflict; CURATOR must preserve uncertainty or competing evidence when present.",
-    });
-  }
-  return signals;
+      pattern: /\b(?:resolved conflict|conflict resolved)\b/iu,
+      evidence: "An explicit resolved-conflict marker is captured at the cited source line.",
+    }),
+  ].flatMap((signal) => (signal ? [signal] : []));
 }
 
 export function taskKnowledgeProposalId(row: Pick<TaskEvidence, "id" | "text_digest">): string {
@@ -106,19 +119,22 @@ export function taskKnowledgeProposalId(row: Pick<TaskEvidence, "id" | "text_dig
 }
 
 function buildProposals(evidence: TaskEvidence[], now: string): TaskKnowledgeProposal[] {
-  const candidates = evidence.map((row) => {
+  const candidates = evidence.flatMap((row) => {
     const signals = buildSignals(row);
-    return {
-      row,
-      id: taskKnowledgeProposalId(row),
-      identityKey: stableHash(
-        JSON.stringify({
-          title: normalizeClaim(row.title),
-          signals: signals.map((signal) => signal.kind),
-        }),
-      ),
-      signals,
-    };
+    if (signals.length === 0) return [];
+    return [
+      {
+        row,
+        id: taskKnowledgeProposalId(row),
+        identityKey: stableHash(
+          JSON.stringify({
+            title: normalizeClaim(row.title),
+            signals: signals.map((signal) => signal.kind),
+          }),
+        ),
+        signals,
+      },
+    ];
   });
   const byIdentity = new Map<string, string[]>();
   for (const candidate of candidates) {
@@ -155,7 +171,9 @@ function buildProposals(evidence: TaskEvidence[], now: string): TaskKnowledgePro
       source_digest: row.text_digest,
       source_fingerprint_version: 1,
       title: row.title,
-      source_refs: row.source_refs,
+      source_refs: [
+        ...new Set([...signals.flatMap((signal) => signal.source_refs), ...row.provenance_refs]),
+      ].toSorted(),
       signals,
       dedupe: {
         identity_key: identityKey,
@@ -218,7 +236,7 @@ function buildReport(opts: {
       blockers,
       requires_explicit_task_selection: true,
     },
-    source_refs: [...new Set(opts.evidence.flatMap((row) => row.source_refs))],
+    source_refs: [...new Set(opts.proposals.flatMap((proposal) => proposal.source_refs))],
   };
 }
 
@@ -229,9 +247,12 @@ function reportPathFor(parsed: ContextHarvestTasksParsed): string {
 export function buildOutput(
   parsed: ContextHarvestTasksParsed,
   selected: HarvestTask[],
+  provenanceRefsByTask: ReadonlyMap<string, readonly string[]> = new Map(),
 ): HarvestOutput {
   const now = new Date().toISOString();
-  const evidence = selected.map((task) => buildEvidence(task, now));
+  const evidence = selected.map((task) =>
+    buildEvidence(task, now, provenanceRefsByTask.get(task.id) ?? []),
+  );
   const proposals = buildProposals(evidence, now);
   const reportPath = reportPathFor(parsed);
   const report = buildReport({ parsed, proposals, evidence, now });

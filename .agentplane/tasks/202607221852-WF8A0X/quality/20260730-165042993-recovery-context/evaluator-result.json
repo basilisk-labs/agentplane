@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "high",
+      "summary": "Every completed task becomes a proposal because task_pr_decision is added unconditionally, so transient and noisy tasks are not filtered before proposal creation.",
+      "broken_invariant": "Only source-backed durable-knowledge candidates may be proposed; transient implementation details and noisy task records must be filtered out.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:128e947b0ad06683b077d1865e1ab3f22f06b26525bbdadb5088e76a5a2383f8",
+          "section": "packages/agentplane/src/context/harvest-tasks-builders.ts"
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "severity": "high",
+      "summary": "Proposal signals are derived from the full task text, but every proposal cites only README lines 1-80; signals originating later in the task record can therefore lack exact supporting evidence, and no PR, diff, or evaluator reference is attached.",
+      "broken_invariant": "Each candidate and durable signal must carry exact source-backed task, PR, diff, or evaluator references that actually cover the evidence used to produce it.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:128e947b0ad06683b077d1865e1ab3f22f06b26525bbdadb5088e76a5a2383f8",
+          "section": "packages/agentplane/src/context/harvest-tasks-builders.ts"
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "severity": "medium",
+      "summary": "The frozen check record contains no verification records, runner history, or runtime evidence, and its note lists focused checks rather than the three declared acceptance commands.",
+      "broken_invariant": "Verification evidence must demonstrate the declared task-state, critical-test, and typecheck gates and cover positive, negative, and concurrency-sensitive behavior before a pass verdict.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:bfe30a5c4d4f0e1c35f72b1afa2706fc15c35db9a3c027820a9b77168cd305c1",
+          "section": "declared_checks and verification evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A completed task containing only transient implementation details produces no knowledge proposal.",
+    "A durable signal located after README line 80 receives an exact source reference covering that signal, or is rejected.",
+    "Proposal provenance includes available PR, diff, decision, and evaluator references and rejects unsupported signals.",
+    "Recorded execution of bun run task-state:check, bun run test:critical, and bun run typecheck at the evaluated SHA.",
+    "Concurrent or repeated harvest and selection attempts preserve one proposal identity, one selection receipt, and one CURATOR owner without overwriting active work."
+  ],
+  "hidden_assumptions": [
+    "Every completed task or task/PR decision is inherently a durable-knowledge candidate.",
+    "README lines 1-80 always contain the evidence used by full-record signal detection.",
+    "An explicit task ID is sufficient semantic selection even when the generated proposal has not demonstrated durable content.",
+    "A verification note without runner or runtime records proves the declared acceptance commands passed at the evaluated SHA."
+  ],
+  "recovery_context": "Filter proposal creation to explicit durable signals, bind each signal to the exact evidence span and available task/PR/diff/evaluator provenance, add transient and concurrency-sensitive negative tests, and provide deterministic records for all declared acceptance commands."
+}

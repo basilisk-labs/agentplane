@@ -1,0 +1,3544 @@
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/README.md b/.agentplane/tasks/202607221852-WF8A0X/README.md
+index 487474e02..f0c8f745a 100644
+--- a/.agentplane/tasks/202607221852-WF8A0X/README.md
++++ b/.agentplane/tasks/202607221852-WF8A0X/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-WF8A0X"
+ title: "Create CURATOR-gated post-task knowledge proposals"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 7
+ origin:
+   system: "manual"
+ depends_on:
+@@ -28,9 +28,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-30T16:06:55.177Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -39,11 +39,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T16:07:19.854Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:25.915Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T16:07:19.854Z"
++doc_updated_by: "CODER"
+ description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
+ sections:
+   Summary: |-
+@@ -73,6 +83,10 @@ sections:
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "12115a42325bb38de85f15df89b96b2675b595cb"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..1829a8d2c
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-WF8A0X",
++    "title": "Create CURATOR-gated post-task knowledge proposals",
++    "description": "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks.",
++    "tags": [
++      "context",
++      "curator",
++      "knowledge",
++      "milestone-beta2",
++      "refactor",
++      "rf-20",
++      "v0.7",
++      "wave-retrieval"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-WF8A0X",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/pr/diffstat.txt b/.agentplane/tasks/202607221852-WF8A0X/pr/diffstat.txt
+new file mode 100644
+index 000000000..29c16368c
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-WF8A0X/pr/diffstat.txt
+@@ -0,0 +1,19 @@
++ docs/context/ingest.mdx                            |  25 +-
++ docs/developer/local-context.mdx                   |  22 +-
++ docs/user/agents.mdx                               |   6 +-
++ docs/user/cli-reference.generated.mdx              |  22 +-
++ docs/user/commands.mdx                             |  20 +-
++ docs/user/local-context.mdx                        |  60 +-
++ .../src/commands/context/context-runner.ts         |   4 +-
++ .../src/commands/context/context.learn.spec.ts     |  24 +-
++ .../src/commands/context/context.spec.ts           |  32 +-
++ .../src/commands/context/harvest-tasks.test.ts     | 817 ++++++---------------
++ .../src/commands/context/harvest-tasks.ts          | 166 ++++-
++ packages/agentplane/src/context/doctor.ts          |   8 +-
++ .../src/context/harvest-tasks-artifacts.ts         |  80 +-
++ .../src/context/harvest-tasks-builders.ts          | 331 ++++-----
++ .../src/context/harvest-tasks-extraction.ts        | 117 +--
++ .../src/context/harvest-tasks-markers.ts           |  49 +-
++ .../agentplane/src/context/harvest-tasks-model.ts  |  70 +-
++ .../agentplane/src/context/ingest-task-pack.ts     |   2 +-
++ 18 files changed, 736 insertions(+), 1119 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/pr/github-body.md b/.agentplane/tasks/202607221852-WF8A0X/pr/github-body.md
+new file mode 100644
+index 000000000..5c647e7c1
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-WF8A0X/pr/github-body.md
+@@ -0,0 +1,51 @@
++Task: `202607221852-WF8A0X`
++Title: Create CURATOR-gated post-task knowledge proposals
++Canonical task record: `.agentplane/tasks/202607221852-WF8A0X/README.md`
++
++## Summary
++
++Create CURATOR-gated post-task knowledge proposals
++
++RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks.
++
++## Scope
++
++- In scope: deterministic proposal signals for ADR/public API/stable rule/recurring finding/resolved conflict/task decision, source refs, selection gate, duplicate/consolidation checks, CURATOR task creation, and publication audit.
++- Out of scope: automatic wiki writes or publishing transient implementation details.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T16:07:48.548Z
++- Branch: task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ docs/context/ingest.mdx                            |  25 +-
++ docs/developer/local-context.mdx                   |  22 +-
++ docs/user/agents.mdx                               |   6 +-
++ docs/user/cli-reference.generated.mdx              |  22 +-
++ docs/user/commands.mdx                             |  20 +-
++ docs/user/local-context.mdx                        |  60 +-
++ .../src/commands/context/context-runner.ts         |   4 +-
++ .../src/commands/context/context.learn.spec.ts     |  24 +-
++ .../src/commands/context/context.spec.ts           |  32 +-
++ .../src/commands/context/harvest-tasks.test.ts     | 817 ++++++---------------
++ .../src/commands/context/harvest-tasks.ts          | 166 ++++-
++ packages/agentplane/src/context/doctor.ts          |   8 +-
++ .../src/context/harvest-tasks-artifacts.ts         |  80 +-
++ .../src/context/harvest-tasks-builders.ts          | 331 ++++-----
++ .../src/context/harvest-tasks-extraction.ts        | 117 +--
++ .../src/context/harvest-tasks-markers.ts           |  49 +-
++ .../agentplane/src/context/harvest-tasks-model.ts  |  70 +-
++ .../agentplane/src/context/ingest-task-pack.ts     |   2 +-
++ 18 files changed, 736 insertions(+), 1119 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/pr/github-title.txt b/.agentplane/tasks/202607221852-WF8A0X/pr/github-title.txt
+new file mode 100644
+index 000000000..8bc4edd80
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-WF8A0X/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 WF8A0X task: Create CURATOR-gated post-task knowledge proposals [202607221852-WF8A0X]
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/pr/meta.json b/.agentplane/tasks/202607221852-WF8A0X/pr/meta.json
+new file mode 100644
+index 000000000..f4fdc5110
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-WF8A0X/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa",
++  "created_at": "2026-07-30T16:07:19.966Z",
++  "diffstat_sha256": "sha256:1c473330a52207efd7f5bbea45a7d97ee36c5ca34d675202abb5d3b4ac8b2f5d",
++  "last_verified_at": null,
++  "pr_number": 4694,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4694",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-WF8A0X",
++  "updated_at": "2026-07-30T16:07:48.548Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-WF8A0X/pr/review.md b/.agentplane/tasks/202607221852-WF8A0X/pr/review.md
+new file mode 100644
+index 000000000..d42912a21
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-WF8A0X/pr/review.md
+@@ -0,0 +1,54 @@
++# PR Review
++
++Created: 2026-07-30T16:07:19.966Z
++
++## Task
++
++- Task: `202607221852-WF8A0X`
++- Title: Create CURATOR-gated post-task knowledge proposals
++- Status: DOING
++- Branch: `task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa`
++- Canonical task record: `.agentplane/tasks/202607221852-WF8A0X/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T16:07:48.548Z
++- Branch: task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ docs/context/ingest.mdx                            |  25 +-
++ docs/developer/local-context.mdx                   |  22 +-
++ docs/user/agents.mdx                               |   6 +-
++ docs/user/cli-reference.generated.mdx              |  22 +-
++ docs/user/commands.mdx                             |  20 +-
++ docs/user/local-context.mdx                        |  60 +-
++ .../src/commands/context/context-runner.ts         |   4 +-
++ .../src/commands/context/context.learn.spec.ts     |  24 +-
++ .../src/commands/context/context.spec.ts           |  32 +-
++ .../src/commands/context/harvest-tasks.test.ts     | 817 ++++++---------------
++ .../src/commands/context/harvest-tasks.ts          | 166 ++++-
++ packages/agentplane/src/context/doctor.ts          |   8 +-
++ .../src/context/harvest-tasks-artifacts.ts         |  80 +-
++ .../src/context/harvest-tasks-builders.ts          | 331 ++++-----
++ .../src/context/harvest-tasks-extraction.ts        | 117 +--
++ .../src/context/harvest-tasks-markers.ts           |  49 +-
++ .../agentplane/src/context/harvest-tasks-model.ts  |  70 +-
++ .../agentplane/src/context/ingest-task-pack.ts     |   2 +-
++ 18 files changed, 736 insertions(+), 1119 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/docs/context/ingest.mdx b/docs/context/ingest.mdx
+index 953cec021..dcc6471ec 100644
+--- a/docs/context/ingest.mdx
++++ b/docs/context/ingest.mdx
+@@ -29,24 +29,23 @@ Use this after editing `context/**` by hand.
+ 
+ ```bash
+ agentplane context learn tasks --tag release --limit 20 --dry-run
+-agentplane context learn tasks --tag branch_pr --batch-size 25
++agentplane context learn tasks --tag branch_pr --limit 25
++agentplane context learn tasks --task 202605100837-PJZW2E
+ ```
+ 
+-This turns completed task history into extraction tasks. It is useful when repeated fixes, release
+-rules, or workflow lessons should become durable context.
++This first turns completed task history into source-backed, unpublished knowledge proposals. A
++single explicit `--task` selection creates one CURATOR semantic work order. It is useful when
++repeated fixes, release rules, or workflow lessons may become durable context, but the CLI must not
++guess their meaning or publish them automatically.
+ 
+ ## Agent write order
+ 
+-1. Lock the source set and hashes.
+-2. Search existing wiki, facts, graph, and glossary.
+-3. Reuse canonical names and record source-local aliases.
+-4. Write wiki pages or sections only where they improve reuse.
+-5. Add fact and graph rows for claims and relationships that should be machine-readable.
+-6. Reindex and run checks.
+-7. Record coverage, conflicts, and review notes.
++1. CLI records the selected source set, hashes, candidate signals, and duplicate/consolidation evidence.
++2. CURATOR searches canonical wiki, facts, graph, and glossary, then returns one semantic SGR.
++3. CLI validates and materializes an accepted result, reindexes, runs checks, evaluates it, and records the apply receipt.
+ 
+ ## Avoid duplicates
+ 
+-If a source mentions something that probably already exists, update the existing page or section.
+-Create a new page only when the concept, entity, decision, risk, workflow, or module is likely to be
+-reused independently.
++If a source mentions something that probably already exists, CURATOR records duplicate or
++consolidation reasoning in the semantic result. The CLI records only mechanical source duplication;
++it never selects a canonical page or merges knowledge by itself.
+diff --git a/docs/developer/local-context.mdx b/docs/developer/local-context.mdx
+index 7bddf17a9..805b5477f 100644
+--- a/docs/developer/local-context.mdx
++++ b/docs/developer/local-context.mdx
+@@ -31,23 +31,23 @@ it no longer owns the SQLite file.
+ 
+ ## Task-history extraction
+ 
+-`context harvest tasks` uses `CURATOR` extraction tasks as the default non-write semantic layer for
+-completed task history. `--create-extraction-tasks` remains an explicit compatibility flag for
+-scripts that want to name the action.
+-It does not treat the deterministic `context/raw/tasks/*.json` snapshot as the semantic source.
+-Instead, it creates standard `CURATOR` tasks whose context extension names the source task READMEs,
+-ACR files, source digests, allowed outputs, and a replaceable prompt module.
++`context harvest tasks` first produces source-backed, unpublished proposal records for completed
++task history. It does not infer facts, graph edges, wiki content, or semantic identity from task
++text. A CURATOR work order is created only after exactly one explicit `--task` selection; its context
++extension names the proposal, task README, ACR file, source digest, allowed outputs, and a
++replaceable prompt module.
+ 
+ The generated prompt module uses the normal prompt-module schema with a stable address:
+ 
+ ```text
+-framework/template/generated.artifact/context_task_extraction/v1
++framework/template/generated.artifact/context_task_knowledge_proposal/v2
+ ```
+ 
+-This keeps task-history extraction improvable through the same module/mutation model as other
+-Agentplane prompts. The generated task remains the execution boundary: a CURATOR agent reads the
+-source pack, searches existing wiki/facts/graph rows, writes sourced updates, records stale/conflict
+-markers, and verifies through context gates before promotion.
++This keeps task-history assimilation improvable through the same module/mutation model as other
++Agentplane prompts. CURATOR is the semantic execution boundary: it reads the bounded source pack,
++reconciles the candidate, and returns one SGR. The CLI supervisor remains the mechanical boundary:
++it validates and materializes an accepted SGR, reindexes, evaluates, records ACR, and writes the
++apply receipt. A CURATOR task must not edit wiki/facts/graph artifacts or perform lifecycle gates.
+ 
+ ## Assimilation blueprint contract
+ 
+diff --git a/docs/user/agents.mdx b/docs/user/agents.mdx
+index a80767dc8..fe3b4ed32 100644
+--- a/docs/user/agents.mdx
++++ b/docs/user/agents.mdx
+@@ -96,8 +96,10 @@ Use this order when an agent enters a repository:
+ 
+ ## CURATOR
+ 
+-- Owns semantic context harvest extraction for wiki, facts, graph, capability proposals, and reusable incident advice.
+-- Treats raw harvest outputs and incident score matches as scaffolds, not semantic truth.
++- Owns semantic decisions for selected context proposals, including durable knowledge, duplicates,
++  consolidation, conflicts, capability proposals, and reusable incident advice.
++- Returns the bounded semantic result only; CLI supervision owns application, indexes, validation,
++  evaluation, ACR, and task finalization.
+ 
+ ## EXTRACTOR
+ 
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 0552214be..f5507f990 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -3817,9 +3817,9 @@ agentplane context learn files docs/research.md context/raw/customer-notes.md
+ 
+ ### context learn tasks
+ 
+-Create CURATOR extraction tasks from completed task history.
++Collect completed-task knowledge proposals; select one task to create a CURATOR work order.
+ 
+-Selects completed tasks oldest-first and creates standard CURATOR tasks for semantic extraction from task README/ACR sources. It does not write wiki proposals or promote pages directly.
++Collects source-backed, unpublished knowledge proposals from completed task README/ACR evidence. An exact single --task selection also creates one CURATOR semantic work order. This command never writes wiki, facts, or graph artifacts directly.
+ 
+ Usage:
+ 
+@@ -3831,14 +3831,14 @@ Options:
+ 
+ - `--status <status>`: Repeatable task status filter. Defaults to DONE. (repeatable)
+ - `--tag <tag>`: Repeatable tag filter. Matches tasks with any listed tag. (repeatable)
+-- `--task <task-id>`: Repeatable explicit task id filter. (repeatable)
++- `--task <task-id>`: Explicit task id filter. Exactly one id selects that proposal for a CURATOR semantic work order. (repeatable)
+ - `--since <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or after this task-id timestamp prefix.
+ - `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
+-- `--after-task <task-id>`: Continue after a previously queued task id.
+-- `--limit <n>`: Maximum number of oldest matching tasks to queue.
+-- `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
+-- `--batch-bytes <bytes>`: Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated. (default=131072)
+-- `--dry-run`: Preview batches without creating tasks. (default=false)
++- `--after-task <task-id>`: Continue after a previously proposed task id.
++- `--limit <n>`: Maximum number of oldest matching proposals to collect.
++- `--batch-size <n>`: Legacy compatibility option. A selected work order always contains one task. (default=25)
++- `--batch-bytes <bytes>`: Maximum UTF-8 bytes of the selected task source pack. An oversized source remains isolated. (default=131072)
++- `--dry-run`: Preview candidate proposals without writing records or creating a work order. (default=false)
+ - `--format <text|json>`: Output format. (choices=text|json, default=text)
+ 
+ Examples:
+@@ -3847,13 +3847,13 @@ Examples:
+ agentplane context learn tasks --tag release --limit 25
+ ```
+ 
+-- Create bounded CURATOR tasks from the oldest completed release tasks.
++- Collect source-backed, unpublished proposals from the oldest completed release tasks.
+ 
+ ```sh
+-agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run
++agentplane context learn tasks --task 202605100837-PJZW2E
+ ```
+ 
+-- Preview task-history extraction batches without mutating task state.
++- Select one proposal and create its CURATOR semantic work order.
+ 
+ ### context search
+ 
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index 6c42c0efc..67f317b6d 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -211,23 +211,21 @@ agentplane context wiki link context/wiki/decisions/context-storage.md
+ agentplane context ingest --changed
+ agentplane context ingest ./notes.md
+ agentplane context harvest tasks --tag release --limit 20 --dry-run
+-agentplane context harvest tasks --tag branch_pr --batch-size 25
+ agentplane context harvest tasks --tag branch_pr --write-proposals
++agentplane context harvest tasks --task 202605100837-PJZW2E --create-extraction-tasks
+ agentplane context verify-task <task-id>
+ ```
+ 
+ Source artifacts live under `context/**`. Derived context artifacts live under
+ `.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
+-database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to convert completed task
+-history into raw evidence scaffolds or default `CURATOR` extraction tasks before promoting reusable
+-knowledge. Semantic extraction is agent-owned by default for non-write broad harvest runs: standard
+-`CURATOR` tasks read task READMEs and ACR evidence in bounded oldest-first batches, then update
+-wiki/facts/graph outputs through the normal task lifecycle. `--write-proposals` is the deterministic
+-raw/proposal scaffold path, not the semantic truth path. Write modes also mark harvested task
+-READMEs with `extensions.context_harvest` for raw ingestion and
+-`extensions.context_task_extraction` for queued semantic extraction, so later broad runs can skip
+-unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
+-require `agentplane context init` first.
++database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to collect completed task history
++into source-backed, unpublished knowledge proposals. The CLI writes evidence, proposal records,
++duplicate/consolidation signals, and selection receipts; it never writes wiki, facts, or graph
++knowledge from task text. Select exactly one task with `--create-extraction-tasks` to create a
++CURATOR work order. CURATOR returns one semantic SGR; CLI supervision owns validation,
++materialization, indexing, evaluation, and the apply receipt. Write modes mark source task READMEs
++with `extensions.context_harvest` and `extensions.context_task_extraction` so unchanged sources do
++not create duplicate work. Write modes require `agentplane context init` first.
+ 
+ During the v0.7 supervisor migration, a persisted execution receipt is diagnostic evidence, not an
+ authentication channel. `context verify-task` and `context finalize-task` therefore fail closed with
+diff --git a/docs/user/local-context.mdx b/docs/user/local-context.mdx
+index a96fe128e..30b28600c 100644
+--- a/docs/user/local-context.mdx
++++ b/docs/user/local-context.mdx
+@@ -262,50 +262,41 @@ new pages are discoverable without treating the index as a competing source of t
+ 
+ ```bash
+ agentplane context learn tasks --tag release --limit 20 --dry-run
+-agentplane context learn tasks --tag branch_pr --batch-size 25
++agentplane context learn tasks --tag branch_pr --limit 25
+ ap context harvest tasks --tag branch_pr --write-proposals
+-ap context harvest tasks --task 202605100837-PJZW2E --write-proposals
++ap context harvest tasks --task 202605100837-PJZW2E --create-extraction-tasks
+ ```
+ 
+-`context learn tasks` turns completed task history into standard `CURATOR` extraction tasks. It
+-scans matching tasks oldest-first and creates bounded batches controlled by `--batch-size`. Each
+-generated task uses the task README and ACR as semantic sources and carries provenance, allowed
+-outputs, stale-marker, conflict-marker, and prompt-module requirements.
++`context learn tasks` scans completed task history oldest-first and writes source-backed,
++unpublished knowledge proposal records. Supplying exactly one `--task` selects that proposal and
++creates one `CURATOR` semantic work order. A dry run only previews candidates.
+ 
+ The advanced `ap context harvest tasks` command exposes the full context pipeline and keeps its
+ stages separate:
+ 
+ - source indexing: task README, comments, and commit metadata become raw evidence under
+   `context/raw/tasks/**`
+-- raw scaffold extraction: deterministic task-backed claims are written as proposal fact rows with
+-  `source_refs`, confidence, status, stale markers, and conflict markers
+-- semantic extraction: default non-write harvest runs create `CURATOR` tasks that extract wiki,
+-  facts, and graph updates through the normal task lifecycle
+-- wiki synthesis: a human-readable proposal is written under `context/wiki/proposals/task-harvest/**`
+-- promotion: `--promote` writes a semi-canonical page only when the promotion gate has no blockers
++- proposal collection: CLI writes typed candidate records with exact source refs and mechanical
++  duplicate/consolidation evidence under `.agentplane/context/derived/proposals/task-knowledge/**`
++- explicit selection: one `--task` creates one CURATOR work order and a selection receipt; broad
++  collection never creates semantic work automatically
++- semantic decision: CURATOR reads the bounded source pack and returns one SGR describing durable,
++  duplicate, transient, conflicting, or rejected knowledge
++- supervised publication: CLI validates and applies an accepted SGR, then owns indexes, checks,
++  evaluator, ACR, finalization, and the apply receipt
+ 
+ Use `--tag`, `--task`, `--since`, `--until`, `--after-task`, and `--limit` to advance gradually from
+-older completed work toward newer changes. Human `learn tasks` never promotes or writes wiki
+-proposals directly; it creates extraction tasks. Advanced `ap context harvest tasks
+---write-proposals` writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
+-`extensions.context_harvest` markers back into the harvested task READMEs. Those markers include the
+-source digest, raw evidence path, report path, proposal path, promotion state, fact IDs, and source
+-refs. Later broad runs skip tasks whose marker digest still matches the README evidence; explicit
+-`--task` selection and `--promote` can still revisit a marked task when needed. `learn tasks` and
+-advanced write modes require an initialized context workspace from `agentplane context init`;
+-dry-run mode can be used before initialization.
+-
+-Use `learn tasks`, the default advanced non-write mode, or explicit `--create-extraction-tasks` for
+-older scripts when completed task history needs agentic semantic extraction rather than deterministic
+-one-claim-per-task proposals. Each generated task carries an
+-`extensions.agentplane.context` source pack with the selected task README paths, ACR paths, source
+-digests, allowed outputs, provenance requirements, and a replaceable prompt module for extracting
+-wiki pages, facts, entities, relations, stale markers, and conflict markers. This mode does not write
+-`context/raw/tasks/*.json` by itself; the source of semantic truth is the task README and ACR
+-evidence named in the generated task. It also marks source tasks with
+-`extensions.context_task_extraction` so later broad runs do not create duplicate extraction tasks
+-while the README digest is unchanged. Raw-ingestion markers from `--write-proposals` do not count as
+-semantic extraction completion.
++older completed work toward newer changes. `--promote` is rejected: task harvesting cannot publish
++semantic knowledge. Proposal and selection markers include the source digest, proposal path, source
++refs, work-order id, and publication state. Later broad runs skip unchanged source digests; an
++explicit `--task` can intentionally revisit a changed source. `learn tasks` and advanced write modes
++require an initialized context workspace from `agentplane context init`; dry-run mode can be used
++before initialization.
++
++Each selected work order carries an `extensions.agentplane.context` source pack with the exact task
++README and ACR paths, source digest, proposal id, allowed outputs, provenance requirements, and a
++replaceable prompt module. CURATOR may write its task-local SGR result only. It must not write
++`context/wiki/**`, facts, graph rows, indexes, evaluator output, ACR, or finalization artifacts.
+ 
+ ## Verify task context
+ 
+@@ -354,7 +345,8 @@ summaries. The local context layer is repository-owned; it is not a secrets vaul
+ agentplane context init
+ agentplane context learn changes
+ agentplane context learn files <path>
+-agentplane context learn tasks --tag <tag> --batch-size 25
++agentplane context learn tasks --tag <tag> --limit 25
++agentplane context learn tasks --task <task-id>
+ agentplane context doctor
+ agentplane context search "<query>"
+ agentplane context show <ref>
+diff --git a/packages/agentplane/src/commands/context/context-runner.ts b/packages/agentplane/src/commands/context/context-runner.ts
+index 3d039a8ce..424e91ab3 100644
+--- a/packages/agentplane/src/commands/context/context-runner.ts
++++ b/packages/agentplane/src/commands/context/context-runner.ts
+@@ -122,8 +122,8 @@ export async function runContextLearnTasks(
+       until: p.until,
+       afterTask: p.afterTask,
+       limit: p.limit,
+-      writeProposals: false,
+-      createExtractionTasks: true,
++      writeProposals: !p.dryRun,
++      createExtractionTasks: p.task.length === 1,
+       batchSize: p.batchSize,
+       batchBytes: p.batchBytes,
+       promote: false,
+diff --git a/packages/agentplane/src/commands/context/context.learn.spec.ts b/packages/agentplane/src/commands/context/context.learn.spec.ts
+index 6e04d6360..5f766022b 100644
+--- a/packages/agentplane/src/commands/context/context.learn.spec.ts
++++ b/packages/agentplane/src/commands/context/context.learn.spec.ts
+@@ -95,9 +95,10 @@ export const contextLearnTasksSpec: CommandSpec<{
+ }> = {
+   id: ["context", "learn", "tasks"],
+   group: "Context",
+-  summary: "Create CURATOR extraction tasks from completed task history.",
++  summary:
++    "Collect completed-task knowledge proposals; select one task to create a CURATOR work order.",
+   description:
+-    "Selects completed tasks oldest-first and creates standard CURATOR tasks for semantic extraction from task README/ACR sources. It does not write wiki proposals or promote pages directly.",
++    "Collects source-backed, unpublished knowledge proposals from completed task README/ACR evidence. An exact single --task selection also creates one CURATOR semantic work order. This command never writes wiki, facts, or graph artifacts directly.",
+   options: [
+     {
+       kind: "string",
+@@ -118,7 +119,8 @@ export const contextLearnTasksSpec: CommandSpec<{
+       name: "task",
+       repeatable: true,
+       valueHint: "<task-id>",
+-      description: "Repeatable explicit task id filter.",
++      description:
++        "Explicit task id filter. Exactly one id selects that proposal for a CURATOR semantic work order.",
+     },
+     {
+       kind: "string",
+@@ -136,20 +138,20 @@ export const contextLearnTasksSpec: CommandSpec<{
+       kind: "string",
+       name: "after-task",
+       valueHint: "<task-id>",
+-      description: "Continue after a previously queued task id.",
++      description: "Continue after a previously proposed task id.",
+     },
+     {
+       kind: "string",
+       name: "limit",
+       valueHint: "<n>",
+-      description: "Maximum number of oldest matching tasks to queue.",
++      description: "Maximum number of oldest matching proposals to collect.",
+     },
+     {
+       kind: "string",
+       name: "batch-size",
+       default: "25",
+       valueHint: "<n>",
+-      description: "Number of selected completed tasks per generated extraction task.",
++      description: "Legacy compatibility option. A selected work order always contains one task.",
+     },
+     {
+       kind: "string",
+@@ -157,13 +159,13 @@ export const contextLearnTasksSpec: CommandSpec<{
+       default: "131072",
+       valueHint: "<bytes>",
+       description:
+-        "Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated.",
++        "Maximum UTF-8 bytes of the selected task source pack. An oversized source remains isolated.",
+     },
+     {
+       kind: "boolean",
+       name: "dry-run",
+       default: false,
+-      description: "Preview batches without creating tasks.",
++      description: "Preview candidate proposals without writing records or creating a work order.",
+     },
+     {
+       kind: "string",
+@@ -177,11 +179,11 @@ export const contextLearnTasksSpec: CommandSpec<{
+   examples: [
+     {
+       cmd: "agentplane context learn tasks --tag release --limit 25",
+-      why: "Create bounded CURATOR tasks from the oldest completed release tasks.",
++      why: "Collect source-backed, unpublished proposals from the oldest completed release tasks.",
+     },
+     {
+-      cmd: "agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run",
+-      why: "Preview task-history extraction batches without mutating task state.",
++      cmd: "agentplane context learn tasks --task 202605100837-PJZW2E",
++      why: "Select one proposal and create its CURATOR semantic work order.",
+     },
+   ],
+   parse: (raw) => ({
+diff --git a/packages/agentplane/src/commands/context/context.spec.ts b/packages/agentplane/src/commands/context/context.spec.ts
+index 6116f7716..77af7c997 100644
+--- a/packages/agentplane/src/commands/context/context.spec.ts
++++ b/packages/agentplane/src/commands/context/context.spec.ts
+@@ -407,9 +407,10 @@ export const contextHarvestTasksSpec: CommandSpec<{
+ }> = {
+   id: ["context", "harvest", "tasks"],
+   group: "Context",
+-  summary: "Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.",
++  summary:
++    "Collect source-backed task knowledge proposals and create selected CURATOR work orders.",
+   description:
+-    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates raw scaffold writing, default CURATOR extraction task creation, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
++    "Collects completed-task evidence into non-semantic proposal records, records mechanical duplicate/consolidation signals, and creates one CURATOR semantic work order only for an explicit task selection. The command never writes wiki, fact, or graph knowledge. Write modes require an initialized context workspace.",
+   options: [
+     {
+       kind: "string",
+@@ -461,21 +462,22 @@ export const contextHarvestTasksSpec: CommandSpec<{
+       name: "write-proposals",
+       default: false,
+       description:
+-        "Write raw evidence and proposal scaffold artifacts only; semantic wiki/facts/graph extraction belongs to CURATOR tasks.",
++        "Write source-backed, unpublished task knowledge proposal records only; this never writes semantic wiki, fact, or graph artifacts.",
+     },
+     {
+       kind: "boolean",
+       name: "create-extraction-tasks",
+       default: false,
+       description:
+-        "Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. This is the default non-write action.",
++        "Create one CURATOR semantic work order for exactly one explicit --task proposal selection.",
+     },
+     {
+       kind: "string",
+       name: "batch-size",
+       default: "25",
+       valueHint: "<n>",
+-      description: "Number of selected completed tasks per generated extraction task.",
++      description:
++        "Legacy compatibility option. Selected proposal work orders always contain one task.",
+     },
+     {
+       kind: "string",
+@@ -483,13 +485,14 @@ export const contextHarvestTasksSpec: CommandSpec<{
+       default: "131072",
+       valueHint: "<bytes>",
+       description:
+-        "Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated.",
++        "Maximum UTF-8 bytes of the selected task source pack. An oversized source remains isolated.",
+     },
+     {
+       kind: "boolean",
+       name: "promote",
+       default: false,
+-      description: "Promote the wiki proposal to semi-canonical only if the promotion gate passes.",
++      description:
++        "Deprecated and rejected: task harvest never promotes semantic knowledge directly.",
+     },
+     {
+       kind: "boolean",
+@@ -509,19 +512,15 @@ export const contextHarvestTasksSpec: CommandSpec<{
+   examples: [
+     {
+       cmd: "agentplane context harvest tasks --tag release --limit 20 --dry-run",
+-      why: "Preview the oldest completed release tasks before creating extraction tasks or writing raw scaffolds.",
+-    },
+-    {
+-      cmd: "agentplane context harvest tasks --tag branch_pr --batch-size 25",
+-      why: "Create default CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.",
++      why: "Preview the oldest completed release-task candidates without creating proposal records or CURATOR work orders.",
+     },
+     {
+       cmd: "agentplane context harvest tasks --tag branch_pr --write-proposals",
+-      why: "Write raw source-backed proposal scaffolds from completed branch_pr tasks.",
++      why: "Collect source-backed, unpublished knowledge proposal records for completed branch_pr tasks.",
+     },
+     {
+-      cmd: "agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25",
+-      why: "Explicitly request CURATOR extraction tasks for older scripts.",
++      cmd: "agentplane context harvest tasks --task 202605100837-PJZW2E --create-extraction-tasks",
++      why: "Select exactly one proposal and create one CURATOR semantic work order; the CLI retains apply and verification ownership.",
+     },
+   ],
+   parse: (raw) => {
+@@ -537,8 +536,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
+       afterTask: typeof raw.opts["after-task"] === "string" ? raw.opts["after-task"] : "",
+       limit: typeof raw.opts.limit === "string" ? raw.opts.limit : "",
+       writeProposals,
+-      createExtractionTasks:
+-        raw.opts["create-extraction-tasks"] === true || (!writeProposals && !promote && !dryRun),
++      createExtractionTasks: raw.opts["create-extraction-tasks"] === true,
+       batchSize: typeof raw.opts["batch-size"] === "string" ? raw.opts["batch-size"] : "25",
+       batchBytes: typeof raw.opts["batch-bytes"] === "string" ? raw.opts["batch-bytes"] : "131072",
+       promote,
+diff --git a/packages/agentplane/src/commands/context/harvest-tasks.test.ts b/packages/agentplane/src/commands/context/harvest-tasks.test.ts
+index 4c2f1e9f9..6180d0205 100644
+--- a/packages/agentplane/src/commands/context/harvest-tasks.test.ts
++++ b/packages/agentplane/src/commands/context/harvest-tasks.test.ts
+@@ -1,10 +1,9 @@
+-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+-import { taskExtractionSourceFingerprints } from "../../context/harvest-tasks-markers.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import {
+   cmdContextHarvestTasks,
+@@ -36,9 +35,7 @@ async function initContextWorkspace(root: string): Promise<void> {
+ 
+ afterEach(async () => {
+   vi.restoreAllMocks();
+-  for (const root of tempRoots) {
+-    await rm(root, { recursive: true, force: true });
+-  }
++  for (const root of tempRoots) await rm(root, { recursive: true, force: true });
+   tempRoots = [];
+ });
+ 
+@@ -111,7 +108,7 @@ function taskCreationResult(taskId: string) {
+ }
+ 
+ describe("context harvest tasks", () => {
+-  it("previews oldest completed tasks without writing proposal artifacts", async () => {
++  it("previews the oldest candidates without writing proposal artifacts", async () => {
+     const root = await tempRoot();
+     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+     const tasks = [
+@@ -138,18 +135,18 @@ describe("context harvest tasks", () => {
+     expect(payload.selected_task_ids).toEqual(["202604010900-OLDER1"]);
+     expect(payload.changed_paths).toEqual([]);
+     await expect(
+-      readFile(path.join(root, "context/wiki/proposals/task-harvest/done-release.md")),
++      readdir(path.join(root, ".agentplane/context/derived/proposals/task-knowledge")),
+     ).rejects.toThrow();
+   });
+ 
+-  it("writes raw evidence, facts, graph rows, report, and a wiki proposal", async () => {
++  it("writes sourced unpublished proposals but never writes facts, graph rows, or wiki pages", async () => {
+     const root = await tempRoot();
+     await initContextWorkspace(root);
+     const tasks = [
+       task({
+         id: "202604010900-REL001",
+-        title: "Release gate hardening",
+-        tags: ["release", "code"],
++        title: "Harden the release workflow",
++        tags: ["release", "workflow"],
+       }),
+     ];
+ 
+@@ -159,371 +156,268 @@ describe("context harvest tasks", () => {
+       parsed: parsed({ tag: ["release"], writeProposals: true }),
+     });
+ 
+-    const evidence = await readFile(
+-      path.join(root, "context/raw/tasks/202604010900-REL001.json"),
+-      "utf8",
+-    );
+-    const facts = await readFile(
+-      path.join(root, ".agentplane/context/derived/facts/facts.jsonl"),
+-      "utf8",
+-    );
+-    const graph = await readFile(
+-      path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
+-      "utf8",
+-    );
+-    const edges = await readFile(
+-      path.join(root, ".agentplane/context/derived/graph/edges.jsonl"),
+-      "utf8",
+-    );
+-    const provenance = await readFile(
+-      path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
+-      "utf8",
+-    );
+-    const proposal = await readFile(
+-      path.join(root, "context/wiki/proposals/task-harvest/done-release.md"),
+-      "utf8",
+-    );
+-    expect(evidence).toContain("202604010900-REL001");
+-    expect(facts).toContain('"generated_by":"context.harvest.tasks"');
+-    expect(facts).toContain('"source_refs"');
+-    expect(facts).toContain(".agentplane/tasks/202604010900-REL001/README.md#lines=1-80");
+-    expect(facts).not.toContain("commit:");
+-    expect(graph).toContain('"task:202604010900-REL001"');
+-    expect(graph).toContain('"kind":"task"');
+-    expect(graph).not.toContain('"type":"task"');
+-    expect(edges).toContain('"relation":"mentions"');
+-    expect(provenance).toContain(
+-      '"source":".agentplane/tasks/202604010900-REL001/README.md#lines=1-80"',
++    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
++    const proposalFiles = await readdir(proposalDir);
++    const proposalName = proposalFiles.find((name) => name.endsWith(".json"));
++    expect(proposalName).toBeDefined();
++    const proposal = JSON.parse(
++      await readFile(path.join(proposalDir, proposalName ?? ""), "utf8"),
++    ) as {
++      kind: string;
++      publication_state: string;
++      source_task_id: string;
++      source_refs: string[];
++      signals: { kind: string }[];
++    };
++    expect(proposal).toMatchObject({
++      kind: "task_knowledge_proposal",
++      publication_state: "not_published",
++      source_task_id: "202604010900-REL001",
++    });
++    expect(proposal.source_refs).toEqual([
++      ".agentplane/tasks/202604010900-REL001/README.md#lines=1-80",
++    ]);
++    expect(proposal.signals.map((signal) => signal.kind)).toEqual(
++      expect.arrayContaining(["task_pr_decision", "stable_workflow_rule_candidate"]),
+     );
+-    expect(proposal).toContain("promotion_state: proposal");
+-    expect(proposal).toContain("agentplane_context:");
+-    expect(proposal).toContain("source_refs:");
+-    expect(proposal).toContain("[[Context glossary]]");
++    await expect(
++      readFile(path.join(root, "context/wiki/proposals/task-harvest/done-release.md")),
++    ).rejects.toThrow();
++    await expect(
++      readFile(path.join(root, ".agentplane/context/derived/facts/facts.jsonl")),
++    ).rejects.toThrow();
++    await expect(
++      readFile(path.join(root, ".agentplane/context/derived/graph/entities.jsonl")),
++    ).rejects.toThrow();
+     expect(tasks[0]?.extensions?.context_harvest).toMatchObject({
+       pipeline: "context.harvest.tasks",
+-      state: "ingested",
+-      source_fingerprint_version: 1,
+-      raw_evidence_path: "context/raw/tasks/202604010900-REL001.json",
+-      wiki_proposal_path: "context/wiki/proposals/task-harvest/done-release.md",
+-      promotion_state: "proposal",
++      state: "proposed",
++      publication_state: "not_published",
++      proposal_path: `.agentplane/context/derived/proposals/task-knowledge/${proposalName?.replace(/\.json$/u, "")}.json`,
+     });
+-    const ledger = await readFile(
+-      path.join(root, ".agentplane/context/derived/ingestion/tasks.jsonl"),
+-      "utf8",
+-    );
+-    expect(ledger).toContain('"task_id":"202604010900-REL001"');
+   });
+ 
+-  it("skips unchanged tasks with matching ingestion markers unless their evidence changes", async () => {
++  it("records consolidation evidence instead of deduplicating similar durable claims", async () => {
+     const root = await tempRoot();
+     await initContextWorkspace(root);
+     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+     const tasks = [
+       task({
+-        id: "202604010900-REL001",
+-        title: "Release gate hardening",
+-        tags: ["release", "code"],
++        id: "202604010900-DUP001",
++        title: "Harden branch_pr close flow",
++        description: "First independently recorded workflow decision.",
++        tags: ["workflow"],
++      }),
++      task({
++        id: "202604020900-DUP002",
++        title: "Harden branch_pr close flow",
++        description: "Second independently recorded workflow decision.",
++        tags: ["workflow"],
+       }),
+     ];
+ 
+     await cmdContextHarvestTasks({
+       ctx: ctx(root, tasks),
+       cwd: root,
+-      parsed: parsed({ tag: ["release"], writeProposals: true }),
+-    });
+-
+-    out.mockClear();
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks),
+-      cwd: root,
+-      parsed: parsed({ tag: ["release"], dryRun: true, format: "json" }),
++      parsed: parsed({ tag: ["workflow"], writeProposals: true, format: "json" }),
+     });
+-    const unchanged = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      selected_task_ids: string[];
+-    };
+-    expect(unchanged.selected_task_ids).toEqual([]);
+ 
+-    const harvested = tasks[0];
+-    if (!harvested) throw new Error("expected harvested task");
+-    tasks[0] = {
+-      ...harvested,
+-      sections: { ...harvested.sections, Summary: "Release gate hardening updated summary" },
+-    };
+-    out.mockClear();
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks),
+-      cwd: root,
+-      parsed: parsed({ tag: ["release"], dryRun: true, format: "json" }),
+-    });
+-    const changed = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      selected_task_ids: string[];
++    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
++      counts: { consolidation_required: number };
+     };
+-    expect(changed.selected_task_ids).toEqual(["202604010900-REL001"]);
++    expect(payload.counts.consolidation_required).toBe(2);
++    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
++    const proposalFiles = await readdir(proposalDir);
++    const proposals = await Promise.all(
++      proposalFiles.map(
++        async (name) =>
++          JSON.parse(await readFile(path.join(proposalDir, name), "utf8")) as {
++            state: string;
++            dedupe: { consolidation_with: string[] };
++          },
++      ),
++    );
++    expect(proposals).toHaveLength(2);
++    expect(proposals.every((proposal) => proposal.state === "consolidation_required")).toBe(true);
++    expect(proposals.every((proposal) => proposal.dedupe.consolidation_with.length > 0)).toBe(true);
+   });
+ 
+-  it("blocks promotion when duplicate task claims need manual conflict review", async () => {
++  it("requires an initialized context workspace before persisting proposals", async () => {
+     const root = await tempRoot();
+-    await initContextWorkspace(root);
+-    const tasks = [
+-      task({ id: "202604010900-DUP001", title: "Harden branch_pr close flow", tags: ["workflow"] }),
+-      task({ id: "202604020900-DUP002", title: "Harden branch_pr close flow", tags: ["workflow"] }),
+-    ];
+-
+     await expect(
+       cmdContextHarvestTasks({
+-        ctx: ctx(root, tasks),
++        ctx: ctx(root, [
++          task({ id: "202604010900-REL001", title: "Release gate", tags: ["release"] }),
++        ]),
+         cwd: root,
+-        parsed: parsed({ tag: ["workflow"], writeProposals: true, promote: true }),
++        parsed: parsed({ tag: ["release"], writeProposals: true }),
+       }),
+-    ).rejects.toThrow(/promotion blocked/u);
++    ).rejects.toThrow(/context init/u);
++  });
+ 
+-    const proposal = await readFile(
+-      path.join(root, "context/wiki/proposals/task-harvest/done-workflow.md"),
+-      "utf8",
+-    );
+-    expect(proposal).toContain("Conflict marker:");
++  it("requires one explicit task selection before creating a CURATOR work order", async () => {
++    const root = await tempRoot();
++    await initContextWorkspace(root);
+     await expect(
+-      readFile(path.join(root, "context/wiki/task-harvest/done-workflow.md")),
+-    ).rejects.toThrow();
++      cmdContextHarvestTasks({
++        ctx: ctx(root, [
++          task({ id: "202604010900-REL001", title: "Release gate", tags: ["release"] }),
++        ]),
++        cwd: root,
++        parsed: parsed({ tag: ["release"], createExtractionTasks: true }),
++      }),
++    ).rejects.toThrow(/exactly one explicit --task/u);
+   });
+ 
+-  it("requires context init artifacts before writing proposals", async () => {
++  it("rejects an explicit selection that is not an eligible completed proposal", async () => {
+     const root = await tempRoot();
+-
+     await expect(
+       cmdContextHarvestTasks({
+         ctx: ctx(root, [
+-          task({ id: "202604010900-REL001", title: "Release gate hardening", tags: ["release"] }),
++          task({
++            id: "202604010900-TODO01",
++            title: "Incomplete release gate",
++            status: "TODO",
++            tags: ["release"],
++          }),
+         ]),
+         cwd: root,
+-        parsed: parsed({ tag: ["release"], writeProposals: true }),
++        parsed: parsed({ task: ["202604010900-TODO01"], createExtractionTasks: true }),
+       }),
+-    ).rejects.toThrow(/context init/u);
++    ).rejects.toThrow(/could not resolve the explicit task selection/u);
+   });
+ 
+-  it("creates CURATOR extraction tasks in oldest-first batches without writing raw evidence", async () => {
++  it("creates one exact CURATOR semantic work order and records the selection receipt", async () => {
+     const root = await tempRoot();
+     await initContextWorkspace(root);
++    const source = task({
++      id: "202604010900-FIRST1",
++      title: "Harden task lifecycle workflow",
++      tags: ["workflow"],
++    });
++    const tasks = [source];
+     const createdParsed: unknown[] = [];
+-    const tasks = [
+-      task({ id: "202604030900-THIRD3", title: "Third context task", tags: ["workflow"] }),
+-      task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
+-      task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
+-    ];
+-    const commandCtx = ctx(root, tasks);
+-    const listTasks = vi.spyOn(commandCtx.taskBackend, "listTasks");
+-    let createdCount = 0;
++    await write(
++      root,
++      `.agentplane/tasks/${source.id}/README.md`,
++      "# Source task\n\n## Summary\n\nHarden task lifecycle workflow.\n",
++    );
++    await write(root, `.agentplane/tasks/${source.id}/acr.json`, '{"result":"verified"}\n');
+ 
+     await cmdContextHarvestTasks({
+-      ctx: commandCtx,
++      ctx: ctx(root, tasks),
+       cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        batchSize: "2",
+-        format: "json",
+-      }),
+-      createTask: async ({ ctx, parsed }) => {
+-        createdCount += 1;
+-        createdParsed.push(parsed);
+-        await ctx.taskBackend.writeTask({
+-          id: `202604040900-CURAT${createdCount}`,
+-          title: parsed.title,
++      parsed: parsed({ task: [source.id], createExtractionTasks: true, batchSize: "25" }),
++      createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
++        createdParsed.push(taskParsed);
++        await commandCtx.taskBackend.writeTask({
++          id: "202604040900-CURAT1",
++          title: taskParsed.title,
+           status: "TODO",
+-          owner: parsed.owner,
+-          priority: parsed.priority,
+-          tags: parsed.tags,
+-          description: parsed.description,
+-          extensions: parsed.extensions,
++          owner: taskParsed.owner,
++          priority: taskParsed.priority,
++          tags: taskParsed.tags,
++          description: taskParsed.description,
++          extensions: taskParsed.extensions,
+         } as TaskData);
+-        return taskCreationResult(`202604040900-CURAT${createdCount}`);
++        return taskCreationResult("202604040900-CURAT1");
+       },
+     });
+ 
+-    expect(createdParsed).toHaveLength(2);
+-    expect(listTasks).toHaveBeenCalledTimes(2);
+-    expect(createdParsed[0]).toMatchObject({
+-      owner: "CURATOR",
+-      tags: ["context", "assimilation", "task-harvest"],
+-      taskKind: "context",
+-      mutationScope: "context",
+-      blueprintRequest: "context.assimilation",
+-    });
+-    const first = createdParsed[0] as {
++    expect(createdParsed).toHaveLength(1);
++    const created = createdParsed[0] as {
++      owner: string;
++      tags: string[];
++      blueprintRequest: string;
++      verify: string[];
+       extensions: {
+         "agentplane.context": {
+-          batch: {
+-            source_bytes: number;
+-            byte_budget: number;
+-            oversized_source_ids: string[];
+-            fingerprint: string;
+-          };
+-          source_set: {
+-            sources: {
+-              id: string;
+-              readme_path: string;
+-              acr_path: string;
+-              source_bytes: number;
+-              source_fingerprint_version: number;
+-            }[];
+-          };
++          proposal: { ids: string[]; paths: string[]; publication_state: string };
++          source_set: { sources: { id: string; readme_path: string; acr_path: string }[] };
+           prompt_modules: { address: { value: string }; content: string }[];
+-          extraction_contract_path: string;
++          allowed_outputs: string[];
++          agent_allowed_outputs: string[];
++          cli_owned_operations: string[];
+         };
+       };
+     };
+-    expect(first.extensions["agentplane.context"].source_set.sources).toMatchObject([
++    expect(created.owner).toBe("CURATOR");
++    expect(created.tags).toEqual(expect.arrayContaining(["knowledge-proposal"]));
++    expect(created.blueprintRequest).toBe("context.maximum_assimilation");
++    expect(created.extensions["agentplane.context"].proposal.ids).toHaveLength(1);
++    expect(created.extensions["agentplane.context"].proposal.publication_state).toBe(
++      "not_published",
++    );
++    expect(created.extensions["agentplane.context"].source_set.sources).toMatchObject([
+       {
+-        id: "202604010900-FIRST1",
+-        title: "First context task",
+-        status: "DONE",
+-        tags: ["workflow"],
+-        readme_path: ".agentplane/tasks/202604010900-FIRST1/README.md",
+-        acr_path: ".agentplane/tasks/202604010900-FIRST1/acr.json",
+-        existing_harvest_marker: null,
+-        source_fingerprint_version: 2,
+-      },
+-      {
+-        id: "202604020900-SECOND",
+-        title: "Second context task",
+-        status: "DONE",
+-        tags: ["workflow"],
+-        readme_path: ".agentplane/tasks/202604020900-SECOND/README.md",
+-        acr_path: ".agentplane/tasks/202604020900-SECOND/acr.json",
+-        existing_harvest_marker: null,
+-        source_fingerprint_version: 2,
++        id: source.id,
++        readme_path: `.agentplane/tasks/${source.id}/README.md`,
++        acr_path: `.agentplane/tasks/${source.id}/acr.json`,
+       },
+     ]);
+-    expect(
+-      first.extensions["agentplane.context"].source_set.sources[0]?.source_bytes,
+-    ).toBeGreaterThan(0);
+-    expect(
+-      first.extensions["agentplane.context"].source_set.sources[1]?.source_bytes,
+-    ).toBeGreaterThan(0);
+-    expect(first.extensions["agentplane.context"].source_set.sources[0]?.source_digest).toMatch(
+-      /^sha256:/,
+-    );
+-    expect(first.extensions["agentplane.context"].source_set.sources[1]?.source_digest).toMatch(
+-      /^sha256:/,
++    expect(created.extensions["agentplane.context"].allowed_outputs).toContain(
++      ".agentplane/tasks/${taskId}/semantic-results/**",
+     );
+-    expect(first.extensions["agentplane.context"].batch).toMatchObject({
+-      byte_budget: 131_072,
+-      oversized_source_ids: [],
+-    });
+-    expect(first.extensions["agentplane.context"].batch.source_bytes).toBeGreaterThan(0);
+-    expect(first.extensions["agentplane.context"].batch.fingerprint).toMatch(/^sha256:/u);
+-    expect(first.extensions["agentplane.context"].prompt_modules[0]?.address.value).toBe(
+-      "framework/template/generated.artifact/context_task_extraction/v1",
+-    );
+-    expect(first.extensions["agentplane.context"].prompt_modules[0]?.content).toContain(
+-      "Read every source README and available ACR",
+-    );
+-    expect(first.extensions["agentplane.context"].prompt_modules[0]?.content.length).toBeLessThan(
+-      3500,
++    expect(created.extensions["agentplane.context"].allowed_outputs).toContain("context/wiki/**");
++    expect(created.extensions["agentplane.context"].agent_allowed_outputs).toEqual([
++      ".agentplane/tasks/${taskId}/semantic-results/**",
++    ]);
++    expect(created.extensions["agentplane.context"].cli_owned_operations).toEqual(
++      expect.arrayContaining(["apply_semantic_result", "reindex", "finalize"]),
+     );
+-    expect(first.extensions["agentplane.context"].extraction_contract_path).toBe(
+-      ".agentplane/tasks/${taskId}/extraction-contract.json",
++    expect(created.verify.join("\n")).toContain("Do not apply or materialize");
++    const prompt = created.extensions["agentplane.context"].prompt_modules[0];
++    expect(prompt?.address.value).toBe(
++      "framework/template/generated.artifact/context_task_knowledge_proposal/v2",
+     );
+-    const extractionContract = JSON.parse(
+-      await readFile(
++    expect(prompt?.content).toContain("Return one schema-valid SGR v2");
++    expect(prompt?.content).toContain("Do not apply the SGR");
++    expect(prompt?.content).not.toContain("Reindex, refresh");
++    const proposalId = created.extensions["agentplane.context"].proposal.ids[0];
++    await expect(
++      readFile(
++        path.join(
++          root,
++          ".agentplane/context/derived/proposals/task-knowledge",
++          `${proposalId}.selection.json`,
++        ),
++        "utf8",
++      ),
++    ).resolves.toContain('"curator_task_id": "202604040900-CURAT1"');
++    await expect(
++      readFile(
+         path.join(root, ".agentplane/tasks/202604040900-CURAT1/extraction-contract.json"),
+         "utf8",
+       ),
+-    ) as {
+-      sgr_schema_version: number;
+-      example: { extracted_items: { kind: string }[] };
+-    };
+-    expect(extractionContract.sgr_schema_version).toBe(2);
+-    expect(extractionContract.example.extracted_items.map((item) => item.kind)).toEqual(
+-      expect.arrayContaining([
+-        "entity_resolution",
+-        "page_creation",
+-        "topology_decision",
+-        "coverage",
+-      ]),
+-    );
++    ).resolves.toContain('"sgr_schema_version": 2');
+     await expect(
+-      readFile(path.join(root, ".agentplane/tasks/202604040900-CURAT1/task-creation.json"), "utf8"),
+-    ).resolves.toContain("202604040900-CURAT1");
+-    expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
+-      context_task_extraction: {
+-        pipeline: "context.harvest.tasks",
+-        state: "queued",
+-        source_fingerprint_version: 2,
+-        extraction_task_id: "202604040900-CURAT1",
+-        prompt_module_ref: "framework/template/generated.artifact/context_task_extraction/v1",
+-      },
+-    });
+-    const extractionMarker = tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions
+-      ?.context_task_extraction as { source_bytes?: unknown } | undefined;
+-    expect(typeof extractionMarker?.source_bytes).toBe("number");
++      readFile(
++        path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"),
++        "utf8",
++      ),
++    ).resolves.toContain(`"path": ".agentplane/tasks/${source.id}/README.md"`);
+     await expect(
+-      readFile(path.join(root, "context/raw/tasks/202604010900-FIRST1.json")),
+-    ).rejects.toThrow();
+-  });
+-
+-  it("preserves harvest markers when proposal writing and extraction task creation are combined", async () => {
+-    const root = await tempRoot();
+-    await initContextWorkspace(root);
+-    const tasks = [
+-      task({
+-        id: "202604010900-FIRST1",
+-        title: "First context task",
+-        tags: ["workflow"],
+-      }),
+-    ];
+-    const commandCtx = ctx(root, tasks);
+-
+-    await cmdContextHarvestTasks({
+-      ctx: commandCtx,
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        writeProposals: true,
+-        createExtractionTasks: true,
+-        format: "json",
+-      }),
+-      createTask: async ({ ctx, parsed }) => {
+-        await ctx.taskBackend.writeTask({
+-          id: "202604040900-CURAT1",
+-          title: parsed.title,
+-          status: "TODO",
+-          owner: parsed.owner,
+-          priority: parsed.priority,
+-          tags: parsed.tags,
+-          description: parsed.description,
+-          extensions: parsed.extensions,
+-        } as TaskData);
+-        return taskCreationResult("202604040900-CURAT1");
+-      },
+-    });
+-
+-    expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
+-      context_harvest: {
+-        pipeline: "context.harvest.tasks",
+-        state: "ingested",
+-        raw_evidence_path: "context/raw/tasks/202604010900-FIRST1.json",
+-        wiki_proposal_path: "context/wiki/proposals/task-harvest/done-workflow.md",
+-      },
++      readFile(
++        path.join(root, ".agentplane/tasks/202604040900-CURAT1/canonical-snapshot.json"),
++        "utf8",
++      ),
++    ).resolves.toContain('"version": 3');
++    await expect(
++      readFile(path.join(root, ".agentplane/tasks/202604040900-CURAT1/context-pack.md"), "utf8"),
++    ).resolves.toContain("Required Inputs");
++    expect(tasks.find((row) => row.id === source.id)?.extensions).toMatchObject({
+       context_task_extraction: {
+-        pipeline: "context.harvest.tasks",
+-        state: "queued",
++        state: "selected",
+         extraction_task_id: "202604040900-CURAT1",
+       },
+     });
+   });
+ 
+-  it("does not treat raw harvest markers as semantic extraction completion", async () => {
++  it("skips unchanged proposal sources and offers a changed source again", async () => {
+     const root = await tempRoot();
+     await initContextWorkspace(root);
+     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+-    const tasks = [
+-      task({
+-        id: "202604010900-REL001",
+-        title: "Release gate hardening",
+-        tags: ["release", "code"],
+-      }),
+-    ];
++    const tasks = [task({ id: "202604010900-REL001", title: "Release gate", tags: ["release"] })];
+ 
+     await cmdContextHarvestTasks({
+       ctx: ctx(root, tasks),
+@@ -534,331 +428,54 @@ describe("context harvest tasks", () => {
+     await cmdContextHarvestTasks({
+       ctx: ctx(root, tasks),
+       cwd: root,
+-      parsed: parsed({
+-        tag: ["release"],
+-        createExtractionTasks: true,
+-        dryRun: true,
+-        format: "json",
+-      }),
+-    });
+-
+-    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      selected_task_ids: string[];
+-      extraction_task_batches: { source_task_ids: string[] }[];
+-    };
+-    expect(payload.selected_task_ids).toEqual(["202604010900-REL001"]);
+-    expect(payload.extraction_task_batches[0]?.source_task_ids).toEqual(["202604010900-REL001"]);
+-  });
+-
+-  it("does not queue unchanged extraction sources twice and accepts legacy queued markers", async () => {
+-    const root = await tempRoot();
+-    await initContextWorkspace(root);
+-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+-    const tasks = [
+-      task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
+-    ];
+-    await write(
+-      root,
+-      ".agentplane/tasks/202604010900-FIRST1/README.md",
+-      "## Summary\n\nStable source.\n",
+-    );
+-    await write(root, ".agentplane/tasks/202604010900-FIRST1/acr.json", '{"evidence":"v1"}\n');
+-
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks),
+-      cwd: root,
+-      parsed: parsed({ tag: ["workflow"], createExtractionTasks: true, format: "json" }),
+-      createTask: async ({ ctx, parsed }) => {
+-        await ctx.taskBackend.writeTask({
+-          id: "202604040900-CURAT1",
+-          title: parsed.title,
+-          status: "TODO",
+-          owner: parsed.owner,
+-          priority: parsed.priority,
+-          tags: parsed.tags,
+-          description: parsed.description,
+-          extensions: parsed.extensions,
+-        } as TaskData);
+-        return taskCreationResult("202604040900-CURAT1");
+-      },
+-    });
+-
+-    const source = tasks.find((row) => row.id === "202604010900-FIRST1");
+-    const marker = source?.extensions?.context_task_extraction as
+-      | Record<string, unknown>
+-      | undefined;
+-    if (!marker) throw new Error("expected queued extraction marker");
+-    delete marker.source_fingerprint_version;
+-    delete marker.source_bytes;
+-
+-    out.mockClear();
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks),
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        dryRun: true,
+-        format: "json",
+-      }),
+-    });
+-    const unchanged = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      selected_task_ids: string[];
+-    };
+-    expect(unchanged.selected_task_ids).toEqual([]);
+-
+-    await write(root, ".agentplane/tasks/202604010900-FIRST1/acr.json", '{"evidence":"v2"}\n');
+-    out.mockClear();
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks),
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        dryRun: true,
+-        format: "json",
+-      }),
++      parsed: parsed({ tag: ["release"], dryRun: true, format: "json" }),
+     });
+-    const changedAcr = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      selected_task_ids: string[];
+-    };
+-    expect(changedAcr.selected_task_ids).toEqual(["202604010900-FIRST1"]);
++    expect(
++      (
++        JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
++          selected_task_ids: string[];
++        }
++      ).selected_task_ids,
++    ).toEqual([]);
+ 
++    tasks[0] = {
++      ...tasks[0],
++      sections: { ...tasks[0]?.sections, Summary: "Release gate changed source evidence" },
++    } as TaskData;
+     out.mockClear();
+     await cmdContextHarvestTasks({
+       ctx: ctx(root, tasks),
+       cwd: root,
+-      parsed: parsed({
+-        task: ["202604010900-FIRST1"],
+-        createExtractionTasks: true,
+-        dryRun: true,
+-        format: "json",
+-      }),
+-    });
+-    const forced = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      selected_task_ids: string[];
+-    };
+-    expect(forced.selected_task_ids).toEqual(["202604010900-FIRST1"]);
+-  });
+-
+-  it("bounds extraction batches by normalized source bytes and isolates oversized sources", async () => {
+-    const root = await tempRoot();
+-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+-    const tasks = [
+-      task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
+-      task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
+-      task({ id: "202604030900-THIRD3", title: "Third context task", tags: ["workflow"] }),
+-    ];
+-    const sourceFingerprints = await taskExtractionSourceFingerprints(
+-      root,
+-      tasks as (TaskData & { id: string; title: string; status: string })[],
+-    );
+-    const byteBudget = Math.max(
+-      ...tasks.map((row) => sourceFingerprints.get(row.id)?.size_bytes ?? 0),
+-    );
+-
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks),
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        batchSize: "25",
+-        batchBytes: String(byteBudget),
+-        dryRun: true,
+-        format: "json",
+-      }),
++      parsed: parsed({ tag: ["release"], dryRun: true, format: "json" }),
+     });
+-
+-    const bounded = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      extraction_task_batches: {
+-        source_task_ids: string[];
+-        source_bytes: number;
+-        byte_budget: number;
+-        oversized_source_ids: string[];
+-        batch_fingerprint: string;
+-      }[];
+-    };
+-    expect(bounded.extraction_task_batches).toHaveLength(3);
+-    expect(bounded.extraction_task_batches.every((batch) => batch.source_bytes <= byteBudget)).toBe(
+-      true,
+-    );
+-    expect(bounded.extraction_task_batches.every((batch) => batch.byte_budget === byteBudget)).toBe(
+-      true,
+-    );
+-    expect(
+-      bounded.extraction_task_batches.every((batch) => batch.oversized_source_ids.length === 0),
+-    ).toBe(true);
+     expect(
+-      new Set(bounded.extraction_task_batches.map((batch) => batch.batch_fingerprint)).size,
+-    ).toBe(3);
+-
+-    out.mockClear();
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, tasks.slice(0, 2)),
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        batchBytes: "1",
+-        dryRun: true,
+-        format: "json",
+-      }),
+-    });
+-    const oversized = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      extraction_task_batches: {
+-        source_task_ids: string[];
+-        oversized_source_ids: string[];
+-      }[];
+-    };
+-    expect(oversized.extraction_task_batches).toMatchObject([
+-      {
+-        source_task_ids: ["202604010900-FIRST1"],
+-        oversized_source_ids: ["202604010900-FIRST1"],
+-      },
+-      {
+-        source_task_ids: ["202604020900-SECOND"],
+-        oversized_source_ids: ["202604020900-SECOND"],
+-      },
+-    ]);
++      (
++        JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
++          selected_task_ids: string[];
++        }
++      ).selected_task_ids,
++    ).toEqual(["202604010900-REL001"]);
+   });
+ 
+-  it("counts complete README and ACR bytes when planning extraction batches", async () => {
+-    const root = await tempRoot();
+-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+-    const sourceTask = task({
+-      id: "202604010900-SOURCE",
+-      title: "Full extraction source",
+-      tags: ["workflow"],
+-    });
+-    const readme = `---\nid: "${sourceTask.id}"\n---\n## Summary\n\nShort.\n\n## Custom evidence\n\n${"x".repeat(2048)}\n`;
+-    const acr = `${JSON.stringify({ evidence: "y".repeat(1024) })}\n`;
+-    await write(root, `.agentplane/tasks/${sourceTask.id}/README.md`, readme);
+-    await write(root, `.agentplane/tasks/${sourceTask.id}/acr.json`, acr);
+-    const actualSourceBytes = Buffer.byteLength(readme, "utf8") + Buffer.byteLength(acr, "utf8");
+-
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, [sourceTask]),
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        batchBytes: String(actualSourceBytes - 1),
+-        dryRun: true,
+-        format: "json",
+-      }),
+-    });
+-
+-    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      extraction_task_batches: {
+-        batch_count: number;
+-        batch_fingerprint: string;
+-        batch_index: number;
+-        byte_budget: number;
+-        created_task_id: string | null;
+-        source_task_ids: string[];
+-        source_bytes: number;
+-        oversized_source_ids: string[];
+-      }[];
+-    };
+-    expect(payload.extraction_task_batches).toHaveLength(1);
+-    expect(payload.extraction_task_batches[0]).toMatchObject({
+-      source_bytes: actualSourceBytes,
+-      oversized_source_ids: [sourceTask.id],
+-      batch_index: 1,
+-      batch_count: 1,
+-      source_task_ids: [sourceTask.id],
+-      byte_budget: actualSourceBytes - 1,
+-      created_task_id: null,
+-    });
+-    expect(payload.extraction_task_batches[0]?.batch_fingerprint).toMatch(/^sha256:/u);
+-  });
+-
+-  it("rejects invalid extraction byte budgets", async () => {
++  it("rejects direct promotion and treats malformed proposal reports as invalid", async () => {
+     const root = await tempRoot();
+     await expect(
+       cmdContextHarvestTasks({
+         ctx: ctx(root, [
+-          task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
++          task({ id: "202604010900-REL001", title: "Release gate", tags: ["release"] }),
+         ]),
+         cwd: root,
+-        parsed: parsed({
+-          createExtractionTasks: true,
+-          batchBytes: "0",
+-          dryRun: true,
+-        }),
+-      }),
+-    ).rejects.toThrow(/Invalid --batch-bytes/u);
+-  });
+-
+-  it("previews extraction task batches on dry-run without creating tasks", async () => {
+-    const root = await tempRoot();
+-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+-
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, [
+-        task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
+-        task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
+-      ]),
+-      cwd: root,
+-      parsed: parsed({
+-        tag: ["workflow"],
+-        createExtractionTasks: true,
+-        batchSize: "1",
+-        dryRun: true,
+-        format: "json",
++        parsed: parsed({ promote: true }),
+       }),
+-      createTask: () => Promise.reject(new Error("dry-run must not create tasks")),
+-    });
+-
+-    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+-      extraction_task_batches: { source_task_ids: string[]; created_task_id: string | null }[];
+-      created_extraction_task_ids: string[];
+-    };
+-    expect(payload.extraction_task_batches).toMatchObject([
+-      {
+-        batch_index: 1,
+-        batch_count: 2,
+-        source_task_ids: ["202604010900-FIRST1"],
+-        created_task_id: null,
+-      },
+-      {
+-        batch_index: 2,
+-        batch_count: 2,
+-        source_task_ids: ["202604020900-SECOND"],
+-        created_task_id: null,
+-      },
+-    ]);
+-    expect(payload.created_extraction_task_ids).toEqual([]);
+-  });
+-
+-  it("sanitizes explicit task filters before deriving proposal paths", async () => {
+-    const root = await tempRoot();
+-    await initContextWorkspace(root);
+-
+-    await cmdContextHarvestTasks({
+-      ctx: ctx(root, []),
+-      cwd: root,
+-      parsed: parsed({ task: ["foo/../../../../tmp/pwn"], writeProposals: true }),
+-    });
+-
+-    await expect(
+-      readFile(path.join(root, "context/wiki/proposals/task-harvest/task-foo-tmp-pwn.md"), "utf8"),
+-    ).resolves.toContain("promotion_state: proposal");
+-    await expect(readFile(path.join(root, "tmp/pwn.md"))).rejects.toThrow();
+-  });
+-
+-  it("treats malformed harvest reports as invalid", async () => {
+-    const root = await tempRoot();
++    ).rejects.toThrow(/never promotes task knowledge directly/u);
+     await write(
+       root,
+-      ".agentplane/context/derived/reports/task-harvest-bad.json",
++      ".agentplane/context/derived/reports/task-knowledge-proposals-bad.json",
+       JSON.stringify({ generated_by: "context.harvest.tasks" }),
+     );
+-
+     await expect(
+       readHarvestReport(
+-        path.join(root, ".agentplane/context/derived/reports/task-harvest-bad.json"),
++        path.join(root, ".agentplane/context/derived/reports/task-knowledge-proposals-bad.json"),
+       ),
+     ).resolves.toBeNull();
+   });
+diff --git a/packages/agentplane/src/commands/context/harvest-tasks.ts b/packages/agentplane/src/commands/context/harvest-tasks.ts
+index fae423368..d98a0c6f5 100644
+--- a/packages/agentplane/src/commands/context/harvest-tasks.ts
++++ b/packages/agentplane/src/commands/context/harvest-tasks.ts
+@@ -1,3 +1,5 @@
++import { createHash } from "node:crypto";
++import { mkdir, readFile, stat } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+@@ -5,10 +7,9 @@ import { CliError } from "../../shared/errors.js";
+ import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+ import { runTaskNewParsed, type TaskCreationResult } from "../task/new.js";
+ import { fileExists, isRecord } from "./context-utils.js";
+-import {
+-  writeContextExtractionContract,
+-  writeContextTaskCreationReceipt,
+-} from "../../context/ingest-task-pack.js";
++import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
++import { writeContextTaskPack } from "../../context/ingest-task-pack.js";
++import { contentTypeForPath, type ManifestEntry } from "../../context/ingest-manifest.js";
+ import {
+   buildOutput,
+   renderText,
+@@ -73,6 +74,43 @@ async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof b
+   return changed;
+ }
+ 
++async function buildTaskProposalSourceRows(
++  root: string,
++  taskIds: readonly string[],
++): Promise<ManifestEntry[]> {
++  const rows: ManifestEntry[] = [];
++  for (const taskId of taskIds) {
++    const candidates = [
++      { path: `.agentplane/tasks/${taskId}/README.md`, required: true },
++      { path: `.agentplane/tasks/${taskId}/acr.json`, required: false },
++    ];
++    for (const candidate of candidates) {
++      const absolute = path.join(root, candidate.path);
++      let content: Buffer;
++      let metadata: Awaited<ReturnType<typeof stat>>;
++      try {
++        [content, metadata] = await Promise.all([readFile(absolute), stat(absolute)]);
++      } catch (error) {
++        if ((error as NodeJS.ErrnoException).code === "ENOENT" && !candidate.required) continue;
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message: `Task knowledge proposal source is missing: ${candidate.path}`,
++        });
++      }
++      rows.push({
++        path: candidate.path,
++        sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
++        size_bytes: content.byteLength,
++        mtime: metadata.mtime.toISOString(),
++        content_type: contentTypeForPath(candidate.path),
++        status: "new",
++      });
++    }
++  }
++  return rows;
++}
++
+ async function createExtractionTasks(opts: {
+   ctx: CommandContext;
+   cwd: string;
+@@ -80,6 +118,7 @@ async function createExtractionTasks(opts: {
+   output: ReturnType<typeof buildOutput>;
+   parsed: ContextHarvestTasksParsed;
+   sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
++  sourceRowsByTask: ReadonlyMap<string, ManifestEntry[]>;
+   createTask?: typeof runTaskNewParsed;
+ }) {
+   const plans = buildExtractionTaskPlans(
+@@ -89,7 +128,7 @@ async function createExtractionTasks(opts: {
+   );
+   const createTask = opts.createTask ?? runTaskNewParsed;
+   const createdTaskIds: string[] = [];
+-  const recoveryPaths: string[] = [];
++  const taskPackPaths: string[] = [];
+   for (const plan of plans) {
+     const created: TaskCreationResult = await createTask({
+       ctx: opts.ctx,
+@@ -99,19 +138,36 @@ async function createExtractionTasks(opts: {
+       printTaskId: false,
+     });
+     const createdTaskId = created.task_id;
+-    recoveryPaths.push(
+-      await writeContextTaskCreationReceipt({
+-        root: opts.ctx.resolvedProject.gitRoot,
+-        result: created,
+-      }),
+-    );
+-    await writeContextExtractionContract({
++    await writeContextTaskPack({
+       root: opts.ctx.resolvedProject.gitRoot,
+       taskId: createdTaskId,
++      sources: plan.source_task_ids.flatMap((sourceTaskId) => {
++        const rows = opts.sourceRowsByTask.get(sourceTaskId);
++        if (rows) return rows;
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message: `Task knowledge proposal source set is missing: ${sourceTaskId}`,
++        });
++      }),
++      creation: created,
+     });
++    const taskRoot = `.agentplane/tasks/${createdTaskId}`;
++    taskPackPaths.push(
++      `${taskRoot}/task-creation.json`,
++      `${taskRoot}/context-pack.md`,
++      `${taskRoot}/extraction-contract.json`,
++      `${taskRoot}/canonical-snapshot.json`,
++      `${taskRoot}/canonical-entity-catalog.json`,
++      `${taskRoot}/canonical-reconciliation-candidates.json`,
++      `${taskRoot}/source-set.lock.json`,
++      `${taskRoot}/source-spans.skeleton.jsonl`,
++      `${taskRoot}/expected-artifacts.json`,
++    );
+     createdTaskIds.push(createdTaskId);
+   }
+   const sourceChangedPaths: string[] = [];
++  const selectionReceiptPaths: string[] = [];
+   const queuedAt = new Date().toISOString();
+   const latestTasks = await opts.ctx.taskBackend.listTasks();
+   const latestById = new Map(
+@@ -154,6 +210,36 @@ async function createExtractionTasks(opts: {
+         },
+       });
+       sourceChangedPaths.push(`.agentplane/tasks/${task.id}/README.md`);
++      const proposal = opts.output.proposals.find(
++        (candidate) => candidate.source_task_id === sourceTaskId,
++      );
++      if (!proposal) {
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message: `Cannot select task knowledge proposal for ${sourceTaskId}: proposal record is missing.`,
++        });
++      }
++      const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
++      await mkdir(path.dirname(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath)), {
++        recursive: true,
++      });
++      if (
++        await writeJsonStableIfChanged(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath), {
++          schema_version: 1,
++          kind: "task_knowledge_proposal_selection",
++          proposal_id: proposal.id,
++          source_task_id: proposal.source_task_id,
++          source_digest: proposal.source_digest,
++          source_refs: proposal.source_refs,
++          curator_task_id: extractionTaskId,
++          selected_at: queuedAt,
++          selected_by: "context.harvest.tasks",
++          publication_state: "not_published",
++        })
++      ) {
++        selectionReceiptPaths.push(receiptPath);
++      }
+     }
+   }
+   return {
+@@ -161,9 +247,9 @@ async function createExtractionTasks(opts: {
+     taskIds: createdTaskIds,
+     changedPaths: [
+       ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
+-      ...recoveryPaths,
+-      ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/extraction-contract.json`),
++      ...taskPackPaths,
+       ...sourceChangedPaths,
++      ...selectionReceiptPaths,
+     ],
+   };
+ }
+@@ -180,28 +266,60 @@ export async function cmdContextHarvestTasks(opts: {
+     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+   const root = ctx.resolvedProject.gitRoot;
+   const allTasks = await readAllTasks(ctx);
++  if (opts.parsed.promote) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        "context harvest never promotes task knowledge directly. Create a CURATOR work order for one explicit --task selection and let CLI supervision materialize an accepted semantic result.",
++    });
++  }
++  if (opts.parsed.createExtractionTasks && opts.parsed.task.length !== 1) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        "context harvest CURATOR work orders require exactly one explicit --task selection. First write or preview proposals, then select one task id.",
++    });
++  }
+   const extractionCandidates = opts.parsed.createExtractionTasks
+     ? selectTaskCandidates(allTasks, opts.parsed)
+     : [];
+   const sourceFingerprints = opts.parsed.createExtractionTasks
+     ? await taskExtractionSourceFingerprints(root, extractionCandidates)
+     : new Map<string, TaskSourceFingerprint>();
+-  const selected = selectTasks(allTasks, opts.parsed, sourceFingerprints);
++  const selected = selectTasks(allTasks, opts.parsed);
++  if (opts.parsed.createExtractionTasks && selected.length !== 1) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        "context harvest could not resolve the explicit task selection to one eligible knowledge proposal.",
++    });
++  }
+   const output = buildOutput(opts.parsed, selected);
+-  const shouldWrite = opts.parsed.writeProposals || opts.parsed.promote;
++  const shouldWrite = opts.parsed.writeProposals || opts.parsed.createExtractionTasks;
+   const shouldCreateExtractionTasks = opts.parsed.createExtractionTasks;
+ 
+   if (!opts.parsed.dryRun && (shouldWrite || shouldCreateExtractionTasks)) {
+     await assertContextWorkspaceReady(root);
+   }
++  const sourceRowsByTask =
++    opts.parsed.dryRun || !shouldCreateExtractionTasks
++      ? new Map<string, ManifestEntry[]>()
++      : new Map(
++          await Promise.all(
++            output.selected.map(
++              async (task) =>
++                [task.id, await buildTaskProposalSourceRows(root, [task.id])] as const,
++            ),
++          ),
++        );
+ 
+   const written =
+     opts.parsed.dryRun || !shouldWrite
+       ? []
+-      : [
+-          ...(await writeOutputs(root, output, opts.parsed.promote)),
+-          ...(await writeTaskMarkers(ctx, output)),
+-        ];
++      : [...(await writeOutputs(root, output)), ...(await writeTaskMarkers(ctx, output))];
+   const extraction =
+     opts.parsed.dryRun || !shouldCreateExtractionTasks
+       ? {
+@@ -218,6 +336,7 @@ export async function cmdContextHarvestTasks(opts: {
+           output,
+           parsed: opts.parsed,
+           sourceFingerprints,
++          sourceRowsByTask,
+           createTask: opts.createTask,
+         });
+   const changed = [...new Set([...written, ...extraction.changedPaths])];
+@@ -249,12 +368,5 @@ export async function cmdContextHarvestTasks(opts: {
+     );
+   }
+ 
+-  if (opts.parsed.promote && output.report.promotion_gate.state === "blocked") {
+-    throw new CliError({
+-      exitCode: 3,
+-      code: "E_VALIDATION",
+-      message: `context harvest promotion blocked: ${output.report.promotion_gate.blockers.join("; ")}`,
+-    });
+-  }
+   return 0;
+ }
+diff --git a/packages/agentplane/src/context/doctor.ts b/packages/agentplane/src/context/doctor.ts
+index 1e3e8db8d..1021a08f5 100644
+--- a/packages/agentplane/src/context/doctor.ts
++++ b/packages/agentplane/src/context/doctor.ts
+@@ -357,15 +357,17 @@ async function checkHarvestReports(
+   } catch {
+     return;
+   }
+-  for (const entry of entries.filter((name) => name.startsWith("task-harvest-"))) {
++  for (const entry of entries.filter(
++    (name) => name.startsWith("task-harvest-") || name.startsWith("task-knowledge-proposals-"),
++  )) {
+     const rel = `.agentplane/context/derived/reports/${entry}`;
+     const report = await readHarvestReport(path.join(root, rel));
+     if (!report) {
+       issues.push(`invalid task harvest report: ${rel}`);
+       continue;
+     }
+-    if (report.promotion_gate.state === "promoted" && report.promotion_gate.blockers.length > 0) {
+-      issues.push(`promoted task harvest report has blockers: ${rel}`);
++    if (report.selection_gate.state === "ready" && report.selection_gate.blockers.length > 0) {
++      issues.push(`ready task knowledge proposal report has blockers: ${rel}`);
+     }
+     if (report.source_refs.length === 0) {
+       warnings.push(`task harvest report has no source refs: ${rel}`);
+diff --git a/packages/agentplane/src/context/harvest-tasks-artifacts.ts b/packages/agentplane/src/context/harvest-tasks-artifacts.ts
+index c6103b06a..c757bc931 100644
+--- a/packages/agentplane/src/context/harvest-tasks-artifacts.ts
++++ b/packages/agentplane/src/context/harvest-tasks-artifacts.ts
+@@ -4,9 +4,7 @@ import path from "node:path";
+ import type { TaskData } from "../backends/task-backend.js";
+ import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
+ import { fileExists, isRecord, parseJsonlLines, readText } from "./context-utils.js";
+-import { alreadyQueuedForExtractionUnchanged } from "./harvest-tasks-extraction.js";
+ import { alreadyHarvestedUnchanged } from "./harvest-tasks-markers.js";
+-import type { TaskSourceFingerprint } from "./harvest-tasks-markers.js";
+ import {
+   normalizeDateKey,
+   normalizeTags,
+@@ -73,27 +71,15 @@ export function selectTaskCandidates(
+   return asTaskList(tasks).filter((task) => taskMatches(task, parsed));
+ }
+ 
+-export function selectTasks(
+-  tasks: TaskData[],
+-  parsed: ContextHarvestTasksParsed,
+-  extractionFingerprints: ReadonlyMap<string, TaskSourceFingerprint> = new Map(),
+-): HarvestTask[] {
++export function selectTasks(tasks: TaskData[], parsed: ContextHarvestTasksParsed): HarvestTask[] {
+   const limit = parseLimit(parsed.limit);
+   const selected = selectTaskCandidates(tasks, parsed)
+-    .filter((task) =>
+-      parsed.createExtractionTasks
+-        ? !alreadyQueuedForExtractionUnchanged(task, parsed, extractionFingerprints.get(task.id))
+-        : !alreadyHarvestedUnchanged(task, parsed),
+-    )
++    .filter((task) => !alreadyHarvestedUnchanged(task, parsed))
+     .toSorted((a, b) => a.id.localeCompare(b.id));
+   return limit === null ? selected : selected.slice(0, limit);
+ }
+ 
+-export async function writeOutputs(
+-  root: string,
+-  output: HarvestOutput,
+-  promote: boolean,
+-): Promise<string[]> {
++export async function writeOutputs(root: string, output: HarvestOutput): Promise<string[]> {
+   const changed: string[] = [];
+   await mkdir(path.join(root, "context/raw/tasks"), { recursive: true });
+   for (const row of output.evidence) {
+@@ -105,6 +91,10 @@ export async function writeOutputs(
+   if (await writeJsonStableIfChanged(path.join(root, output.reportPath), output.report)) {
+     changed.push(output.reportPath);
+   }
++  for (const proposal of output.proposals) {
++    const rel = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.json`;
++    if (await writeJsonStableIfChanged(path.join(root, rel), proposal)) changed.push(rel);
++  }
+   if (
+     await mergeJsonl(
+       path.join(root, ".agentplane/context/derived/ingestion/tasks.jsonl"),
+@@ -113,46 +103,6 @@ export async function writeOutputs(
+   ) {
+     changed.push(".agentplane/context/derived/ingestion/tasks.jsonl");
+   }
+-  if (
+-    await mergeJsonl(path.join(root, ".agentplane/context/derived/facts/facts.jsonl"), output.facts)
+-  ) {
+-    changed.push(".agentplane/context/derived/facts/facts.jsonl");
+-  }
+-  if (
+-    await mergeJsonl(
+-      path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
+-      output.entities,
+-    )
+-  ) {
+-    changed.push(".agentplane/context/derived/graph/entities.jsonl");
+-  }
+-  if (
+-    await mergeJsonl(path.join(root, ".agentplane/context/derived/graph/edges.jsonl"), output.edges)
+-  ) {
+-    changed.push(".agentplane/context/derived/graph/edges.jsonl");
+-  }
+-  if (
+-    await mergeJsonl(
+-      path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
+-      output.provenance,
+-    )
+-  ) {
+-    changed.push(".agentplane/context/derived/graph/provenance_edges.jsonl");
+-  }
+-  await mkdir(path.dirname(path.join(root, output.wikiPath)), { recursive: true });
+-  if (await writeTextIfChanged(path.join(root, output.wikiPath), output.wikiProposal)) {
+-    changed.push(output.wikiPath);
+-  }
+-  if (promote && output.report.promotion_gate.state === "promoted") {
+-    await mkdir(path.dirname(path.join(root, output.promotedPath)), { recursive: true });
+-    const promoted = output.wikiProposal.replace(
+-      "promotion_state: proposal",
+-      "promotion_state: semi-canonical",
+-    );
+-    if (await writeTextIfChanged(path.join(root, output.promotedPath), promoted)) {
+-      changed.push(output.promotedPath);
+-    }
+-  }
+   return changed;
+ }
+ 
+@@ -164,17 +114,13 @@ export function renderText(
+   return [
+     "context harvest tasks",
+     `- selected tasks: ${output.report.counts.selected_tasks}`,
+-    `- facts: ${output.report.counts.facts}`,
+-    `- entities: ${output.report.counts.entities}`,
+-    `- edges: ${output.report.counts.edges}`,
+-    `- stale candidates: ${output.report.counts.stale_candidates}`,
+-    `- conflict candidates: ${output.report.counts.conflict_candidates}`,
+-    `- promotion gate: ${output.report.promotion_gate.state}`,
+-    `- extraction task batches: ${extraction?.planned ?? 0}`,
++    `- knowledge proposals: ${output.report.counts.proposals}`,
++    `- consolidation required: ${output.report.counts.consolidation_required}`,
++    `- selection gate: ${output.report.selection_gate.state}`,
++    `- CURATOR work orders: ${extraction?.planned ?? 0}`,
+     `- created extraction tasks: ${extraction?.created.length ?? 0}`,
+     ...(extraction?.created ?? []).map((item) => `  - ${item}`),
+-    `- proposal: ${output.wikiPath}`,
+-    `- promoted: ${output.report.promotion_gate.promoted_path ?? "not promoted"}`,
++    "- publication: CURATOR semantic result followed by CLI supervision only",
+     `- changed paths: ${changed.length}`,
+     ...changed.map((item) => `  - ${item}`),
+   ].join("\n");
+@@ -184,7 +130,7 @@ export async function readHarvestReport(filePath: string): Promise<HarvestReport
+   try {
+     const parsed = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+     if (!isRecord(parsed) || parsed.generated_by !== "context.harvest.tasks") return null;
+-    if (!isRecord(parsed.promotion_gate) || !Array.isArray(parsed.source_refs)) return null;
++    if (!isRecord(parsed.selection_gate) || !Array.isArray(parsed.source_refs)) return null;
+     return parsed as HarvestReport;
+   } catch {
+     return null;
+diff --git a/packages/agentplane/src/context/harvest-tasks-builders.ts b/packages/agentplane/src/context/harvest-tasks-builders.ts
+index 6e54cedac..4f30a9814 100644
+--- a/packages/agentplane/src/context/harvest-tasks-builders.ts
++++ b/packages/agentplane/src/context/harvest-tasks-builders.ts
+@@ -12,12 +12,12 @@ import {
+   slug,
+   stableHash,
+   type ContextHarvestTasksParsed,
+-  type GraphRow,
+-  type HarvestFact,
+   type HarvestOutput,
+   type HarvestReport,
+   type HarvestTask,
+   type TaskEvidence,
++  type TaskKnowledgeProposal,
++  type TaskKnowledgeSignal,
+ } from "./harvest-tasks-model.js";
+ 
+ function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
+@@ -45,156 +45,129 @@ function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
+   };
+ }
+ 
+-function buildFact(row: TaskEvidence, conflicts: Map<string, string[]>): HarvestFact {
+-  const duplicateIds = conflicts.get(normalizeClaim(row.title)) ?? [];
+-  const staleMarker =
+-    row.commit?.hash || row.excerpts.length > 0
+-      ? undefined
+-      : "Task lacks commit hash and extracted body evidence; review before promotion.";
+-  const conflictMarkers =
+-    duplicateIds.length > 1
+-      ? [`Similar completed task title found in: ${duplicateIds.join(", ")}`]
+-      : undefined;
+-  return {
+-    id: `task_fact_${row.id}`,
+-    kind: "completed_task_claim",
+-    subject: `task:${row.id}`,
+-    predicate: "recorded_outcome",
+-    object: row.title,
+-    claim: `${row.id} recorded completed work: ${row.title}`,
+-    status: conflictMarkers ? "conflict_candidate" : staleMarker ? "stale_candidate" : "active",
+-    confidence: conflictMarkers ? 0.55 : staleMarker ? 0.6 : 0.82,
+-    source_refs: row.source_refs,
+-    task_id: row.id,
+-    tags: row.tags,
+-    generated_by: "context.harvest.tasks",
+-    promotion_state: "proposal",
+-    stale_marker: staleMarker,
+-    conflict_markers: conflictMarkers,
+-  };
++function sourceText(row: TaskEvidence): string {
++  return [row.title, ...row.excerpts, row.tags.join(" ")].join("\n").toLowerCase();
+ }
+ 
+-function buildGraph(evidence: TaskEvidence[], facts: HarvestFact[]) {
+-  const entityRows = new Map<string, GraphRow>();
+-  const edges: GraphRow[] = [];
+-  const provenance: GraphRow[] = [];
+-  for (const row of evidence) {
+-    entityRows.set(`task:${row.id}`, {
+-      id: `task:${row.id}`,
+-      kind: "task",
+-      label: row.title,
+-      status: "active",
+-      task_id: row.id,
++function buildSignals(row: TaskEvidence): TaskKnowledgeSignal[] {
++  const text = sourceText(row);
++  const signals: TaskKnowledgeSignal[] = [
++    {
++      kind: "task_pr_decision",
+       source_refs: row.source_refs,
+-      generated_by: "context.harvest.tasks",
++      evidence:
++        "Completed task record and its task/PR decision evidence are available for CURATOR review.",
++    },
++  ];
++  if (
++    row.tags.some((tag) => ["adr", "api", "public-api"].includes(tag)) ||
++    /\badr\b|public api|public interface/u.test(text)
++  ) {
++    signals.push({
++      kind: "adr_or_public_api_candidate",
++      source_refs: row.source_refs,
++      evidence:
++        "Task metadata contains an ADR or public-interface signal; this is not an asserted API or decision.",
+     });
+-    for (const tag of row.tags) {
+-      entityRows.set(`tag:${tag}`, {
+-        id: `tag:${tag}`,
+-        kind: "concept",
+-        label: tag,
+-        status: "active",
+-        source_refs: row.source_refs,
+-        generated_by: "context.harvest.tasks",
+-      });
+-      edges.push({
+-        id: `edge_${stableHash(`${row.id}:tag:${tag}`)}`,
+-        relation: "mentions",
+-        from: `task:${row.id}`,
+-        to: `tag:${tag}`,
+-        status: "active",
+-        source_refs: row.source_refs,
+-        generated_by: "context.harvest.tasks",
+-      });
+-    }
+   }
+-  for (const fact of facts) {
+-    provenance.push({
+-      id: `prov_${stableHash(fact.id)}`,
+-      relation: "supports",
+-      target: fact.id,
+-      source: fact.source_refs[0] ?? "",
+-      source_refs: fact.source_refs,
+-      generated_by: "context.harvest.tasks",
++  if (
++    row.tags.includes("workflow") ||
++    row.mutation_scope === "workflow" ||
++    /workflow rule|workflow contract|lifecycle rule/u.test(text)
++  ) {
++    signals.push({
++      kind: "stable_workflow_rule_candidate",
++      source_refs: row.source_refs,
++      evidence:
++        "Task metadata contains a workflow signal; CURATOR must decide whether it is durable and reusable.",
++    });
++  }
++  if (/recurring evaluator finding|recurring finding/u.test(text)) {
++    signals.push({
++      kind: "recurring_evaluator_finding_candidate",
++      source_refs: row.source_refs,
++      evidence:
++        "Task evidence mentions a recurring evaluator finding; no recurrence is inferred by the CLI.",
+     });
+   }
+-  return { entities: [...entityRows.values()], edges, provenance };
++  if (/resolved conflict|conflict resolved/u.test(text)) {
++    signals.push({
++      kind: "resolved_conflict_candidate",
++      source_refs: row.source_refs,
++      evidence:
++        "Task evidence mentions a resolved conflict; CURATOR must preserve uncertainty or competing evidence when present.",
++    });
++  }
++  return signals;
+ }
+ 
+-function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], report: HarvestReport) {
+-  const sourceRefs = [...new Set(evidence.flatMap((row) => row.source_refs))].slice(0, 40);
+-  const lines = [
+-    "---",
+-    "aliases:",
+-    '  - "Completed task history harvest"',
+-    "tags:",
+-    "  - agentplane/context",
+-    "  - agentplane/task-history",
+-    "cssclasses:",
+-    "  - agentplane-context",
+-    "agentplane_context:",
+-    "  schema_version: 1",
+-    "  artifact_type: wiki_page",
+-    `  canonical_id: "wiki.task_harvest.${stableHash(report.promotion_gate.proposal_path)}"`,
+-    '  title: "Completed task history harvest"',
+-    "  modality: observation",
+-    "  epistemic_status: sourced_claim",
+-    "  visibility: project",
+-    "  source_refs:",
+-    ...sourceRefs.map((ref) => `    - ${JSON.stringify(ref)}`),
+-    "  claims: []",
+-    "  graph_refs:",
+-    "    entities: []",
+-    "    edges: []",
+-    "  conflicts: []",
+-    "  updated_by: context.harvest.tasks",
+-    "generated_by: context.harvest.tasks",
+-    "promotion_state: proposal",
+-    "source_refs:",
+-    ...sourceRefs.map((ref) => `  - ${JSON.stringify(ref)}`),
+-    "---",
+-    "",
+-    "# Completed task raw proposal scaffold",
+-    "",
+-    "This page is a raw proposal scaffold generated from completed task evidence. Semantic wiki,",
+-    "fact, and graph extraction belongs to CURATOR tasks by default. Promote only after reviewing",
+-    "the gate report, conflict markers, stale markers, and source references.",
+-    "Use [[Context glossary]] for canonical task-history terms when a maximum-assimilation",
+-    "workspace provides the glossary page.",
+-    "",
+-    "## Promotion gate",
+-    "",
+-    `- State: ${report.promotion_gate.state}`,
+-    `- Blockers: ${report.promotion_gate.blockers.length}`,
+-    `- Warnings: ${report.promotion_gate.warnings.length}`,
+-    "",
+-    "## Scaffold claims",
+-    "",
+-  ];
+-  for (const fact of facts) {
+-    lines.push(
+-      `### ${fact.task_id}`,
+-      "",
+-      `- Claim: ${fact.claim}`,
+-      `- Status: ${fact.status}`,
+-      `- Confidence: ${fact.confidence}`,
+-      `- Tags: ${fact.tags.join(", ") || "none"}`,
+-      `- source_refs: ${fact.source_refs.join(", ")}`,
+-      "",
+-    );
+-    if (fact.stale_marker) lines.push(`- Stale marker: ${fact.stale_marker}`, "");
+-    if (fact.conflict_markers) {
+-      for (const marker of fact.conflict_markers) lines.push(`- Conflict marker: ${marker}`);
+-      lines.push("");
+-    }
++export function taskKnowledgeProposalId(row: Pick<TaskEvidence, "id" | "text_digest">): string {
++  return `task-knowledge-${slug(row.id)}-${stableHash(row.text_digest)}`;
++}
++
++function buildProposals(evidence: TaskEvidence[], now: string): TaskKnowledgeProposal[] {
++  const candidates = evidence.map((row) => {
++    const signals = buildSignals(row);
++    return {
++      row,
++      id: taskKnowledgeProposalId(row),
++      identityKey: stableHash(
++        JSON.stringify({
++          title: normalizeClaim(row.title),
++          signals: signals.map((signal) => signal.kind),
++        }),
++      ),
++      signals,
++    };
++  });
++  const byIdentity = new Map<string, string[]>();
++  for (const candidate of candidates) {
++    byIdentity.set(candidate.identityKey, [
++      ...(byIdentity.get(candidate.identityKey) ?? []),
++      candidate.id,
++    ]);
++  }
++  const bySourceDigest = new Map<string, string[]>();
++  for (const candidate of candidates) {
++    bySourceDigest.set(candidate.row.text_digest, [
++      ...(bySourceDigest.get(candidate.row.text_digest) ?? []),
++      candidate.id,
++    ]);
+   }
+-  lines.push(
+-    "## Sources",
+-    "",
+-    ...sourceRefs.map((ref, index) => `${index + 1}. [${ref}](${ref})`),
+-    "",
+-  );
+-  return `${lines.join("\n").trim()}\n`;
++  return candidates.map(({ row, id, identityKey, signals }) => {
++    const related = (byIdentity.get(identityKey) ?? []).filter((candidateId) => candidateId !== id);
++    const sourceDuplicates = (bySourceDigest.get(row.text_digest) ?? []).filter(
++      (candidateId) => candidateId !== id,
++    );
++    const duplicateOf = sourceDuplicates.filter((candidateId) => candidateId < id);
++    return {
++      schema_version: 1,
++      id,
++      kind: "task_knowledge_proposal",
++      state:
++        duplicateOf.length > 0
++          ? "duplicate"
++          : related.length > 0
++            ? "consolidation_required"
++            : "candidate",
++      publication_state: "not_published",
++      source_task_id: row.id,
++      source_digest: row.text_digest,
++      source_fingerprint_version: 1,
++      title: row.title,
++      source_refs: row.source_refs,
++      signals,
++      dedupe: {
++        identity_key: identityKey,
++        duplicate_of: duplicateOf,
++        consolidation_with: related.filter(
++          (candidateId) => !sourceDuplicates.includes(candidateId),
++        ),
++      },
++      generated_at: now,
++      generated_by: "context.harvest.tasks",
++    };
++  });
+ }
+ 
+ function reportSlug(opts: ContextHarvestTasksParsed): string {
+@@ -208,33 +181,15 @@ function reportSlug(opts: ContextHarvestTasksParsed): string {
+ 
+ function buildReport(opts: {
+   parsed: ContextHarvestTasksParsed;
+-  facts: HarvestFact[];
++  proposals: TaskKnowledgeProposal[];
+   evidence: TaskEvidence[];
+-  entities: GraphRow[];
+-  edges: GraphRow[];
+-  provenance: GraphRow[];
+-  wikiPath: string;
+-  promotedPath: string;
+   now: string;
+ }): HarvestReport {
+-  const warnings: string[] = [];
+   const blockers: string[] = [];
+-  if (opts.evidence.length === 0) blockers.push("No completed tasks matched the harvest filters.");
+-  for (const fact of opts.facts) {
+-    if (fact.source_refs.length === 0) blockers.push(`${fact.id}: missing source refs`);
+-    if (fact.status === "conflict_candidate") {
+-      blockers.push(`${fact.id}: conflict marker requires manual review before promotion`);
+-    }
+-    if (fact.status === "stale_candidate")
+-      warnings.push(`${fact.id}: stale marker requires review`);
++  if (opts.proposals.length === 0) blockers.push("No completed tasks matched the harvest filters.");
++  for (const proposal of opts.proposals) {
++    if (proposal.source_refs.length === 0) blockers.push(`${proposal.id}: missing source refs`);
+   }
+-  const state = opts.parsed.promote
+-    ? blockers.length > 0
+-      ? "blocked"
+-      : "promoted"
+-    : blockers.length > 0
+-      ? "blocked"
+-      : "proposal";
+   return {
+     schema_version: 1,
+     generated_by: "context.harvest.tasks",
+@@ -251,27 +206,24 @@ function buildReport(opts: {
+     },
+     counts: {
+       selected_tasks: opts.evidence.length,
+-      facts: opts.facts.length,
+-      entities: opts.entities.length,
+-      edges: opts.edges.length,
+-      provenance_edges: opts.provenance.length,
+-      stale_candidates: opts.facts.filter((fact) => fact.status === "stale_candidate").length,
+-      conflict_candidates: opts.facts.filter((fact) => fact.status === "conflict_candidate").length,
+-      promotion_blockers: blockers.length,
++      proposals: opts.proposals.length,
++      duplicate_proposals: opts.proposals.filter((proposal) => proposal.state === "duplicate")
++        .length,
++      consolidation_required: opts.proposals.filter(
++        (proposal) => proposal.state === "consolidation_required",
++      ).length,
+     },
+-    promotion_gate: {
+-      state,
++    selection_gate: {
++      state: blockers.length > 0 ? "blocked" : "ready",
+       blockers,
+-      warnings,
+-      proposal_path: opts.wikiPath,
+-      promoted_path: state === "promoted" ? opts.promotedPath : null,
++      requires_explicit_task_selection: true,
+     },
+     source_refs: [...new Set(opts.evidence.flatMap((row) => row.source_refs))],
+   };
+ }
+ 
+-function reportPathForWiki(wikiPath: string): string {
+-  return `.agentplane/context/derived/reports/task-harvest-${stableHash(wikiPath)}.json`;
++function reportPathFor(parsed: ContextHarvestTasksParsed): string {
++  return `.agentplane/context/derived/reports/task-knowledge-proposals-${stableHash(reportSlug(parsed))}.json`;
+ }
+ 
+ export function buildOutput(
+@@ -280,27 +232,14 @@ export function buildOutput(
+ ): HarvestOutput {
+   const now = new Date().toISOString();
+   const evidence = selected.map((task) => buildEvidence(task, now));
+-  const claims = new Map<string, string[]>();
+-  for (const row of evidence) {
+-    const key = normalizeClaim(row.title);
+-    claims.set(key, [...(claims.get(key) ?? []), row.id]);
+-  }
+-  const conflicts = new Map([...claims].filter(([, ids]) => ids.length > 1));
+-  const facts = evidence.map((row) => buildFact(row, conflicts));
+-  const graph = buildGraph(evidence, facts);
+-  const wikiPath = `context/wiki/proposals/task-harvest/${reportSlug(parsed)}.md`;
+-  const promotedPath = `context/wiki/task-harvest/${reportSlug(parsed)}.md`;
+-  const report = buildReport({ parsed, facts, evidence, ...graph, wikiPath, promotedPath, now });
+-  const reportPath = reportPathForWiki(wikiPath);
+-  const markers = buildTaskHarvestMarkers({ evidence, facts, reportPath, wikiPath, report });
++  const proposals = buildProposals(evidence, now);
++  const reportPath = reportPathFor(parsed);
++  const report = buildReport({ parsed, proposals, evidence, now });
++  const markers = buildTaskHarvestMarkers({ evidence, proposals, reportPath, report });
+   return {
+     selected,
+     evidence,
+-    facts,
+-    ...graph,
+-    wikiProposal: buildWikiProposal(evidence, facts, report),
+-    wikiPath,
+-    promotedPath,
++    proposals,
+     reportPath,
+     report,
+     markers,
+diff --git a/packages/agentplane/src/context/harvest-tasks-extraction.ts b/packages/agentplane/src/context/harvest-tasks-extraction.ts
+index f30788c73..f98814188 100644
+--- a/packages/agentplane/src/context/harvest-tasks-extraction.ts
++++ b/packages/agentplane/src/context/harvest-tasks-extraction.ts
+@@ -8,6 +8,8 @@ import { CONTEXT_EXTRACTION_SGR_EXAMPLE } from "../runtime/sgr/index.js";
+ import { CliError } from "../shared/errors.js";
+ import { isRecord } from "./context-utils.js";
+ import { taskSourceFingerprint, type TaskSourceFingerprint } from "./harvest-tasks-markers.js";
++import { taskKnowledgeProposalId } from "./harvest-tasks-builders.js";
++import { taskTextDigest } from "./harvest-tasks-markers.js";
+ import type { ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
+ import { parsePositiveIntegerOption } from "./harvest-tasks-model.js";
+ import { validateContextExtractionSgrResult } from "./sgr-extraction.js";
+@@ -36,12 +38,12 @@ type ExtractionBatch = {
+ };
+ 
+ const CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS =
+-  "framework/template/generated.artifact/context_task_extraction/v1";
++  "framework/template/generated.artifact/context_task_knowledge_proposal/v2";
+ 
+ type TaskExtractionMarker = {
+   schema_version: 1;
+   pipeline: "context.harvest.tasks";
+-  state: "queued";
++  state: "selected";
+   queued_at: string;
+   source_digest: string;
+   source_fingerprint_version: 1 | 2;
+@@ -83,33 +85,16 @@ function sourceTaskRef(task: ExtractionTask, fingerprint: TaskSourceFingerprint)
+             typeof marker.source_digest === "string" ? marker.source_digest : undefined,
+           raw_evidence_path:
+             typeof marker.raw_evidence_path === "string" ? marker.raw_evidence_path : undefined,
+-          wiki_proposal_path:
+-            typeof marker.wiki_proposal_path === "string" ? marker.wiki_proposal_path : undefined,
+-          promotion_state:
+-            typeof marker.promotion_state === "string" ? marker.promotion_state : undefined,
++          proposal_id: typeof marker.proposal_id === "string" ? marker.proposal_id : undefined,
++          proposal_path:
++            typeof marker.proposal_path === "string" ? marker.proposal_path : undefined,
++          publication_state:
++            typeof marker.publication_state === "string" ? marker.publication_state : undefined,
+         }
+       : null,
+   };
+ }
+ 
+-function existingExtractionMarker(task: ExtractionTask): TaskExtractionMarker | null {
+-  const extensions = isRecord(task.extensions) ? task.extensions : {};
+-  const marker = extensions.context_task_extraction;
+-  if (!isRecord(marker) || marker.pipeline !== "context.harvest.tasks") return null;
+-  return marker as TaskExtractionMarker;
+-}
+-
+-export function alreadyQueuedForExtractionUnchanged(
+-  task: ExtractionTask,
+-  parsed: Pick<ContextHarvestTasksParsed, "task">,
+-  fingerprint = taskSourceFingerprint(task),
+-): boolean {
+-  const marker = existingExtractionMarker(task);
+-  if (marker?.source_digest !== fingerprint.digest) return false;
+-  if (parsed.task.includes(task.id)) return false;
+-  return true;
+-}
+-
+ export function buildTaskExtractionMarker(opts: {
+   task: ExtractionTask;
+   queuedAt: string;
+@@ -122,7 +107,7 @@ export function buildTaskExtractionMarker(opts: {
+   return {
+     schema_version: 1,
+     pipeline: "context.harvest.tasks",
+-    state: "queued",
++    state: "selected",
+     queued_at: opts.queuedAt,
+     source_digest: fingerprint.digest,
+     source_fingerprint_version: fingerprint.version,
+@@ -197,23 +182,21 @@ function buildExtractionPromptModule(): PromptModule {
+       kind: "framework",
+       package_name: "agentplane",
+     },
+-    title: "Context task-history extraction prompt",
++    title: "Task knowledge proposal semantic prompt",
+     summary:
+-      "Default CURATOR prompt module for extracting sourced wiki, facts, and graph updates from completed task READMEs and ACR evidence.",
++      "CURATOR prompt for deciding one selected task-history knowledge proposal from bounded README and ACR evidence.",
+     content_kind: "markdown",
+     content: [
+-      "# Context Task Extraction",
++      "# Task Knowledge Proposal",
+       "",
+-      "Goal: convert a bounded batch of completed task READMEs/ACRs into reusable typed context and linked wiki updates; do not restate task summaries as knowledge.",
++      "Goal: decide the semantic content of exactly one selected source-backed task knowledge proposal. Do not restate task summaries as durable knowledge.",
+       "",
+-      "1. Read every source README and available ACR. Reconcile candidate terms against existing wiki/facts/graph before creating entities or pages.",
+-      "2. Extract precise source-backed entities, decisions, requirements, invariants, risks, failures, mitigations, relations, conflicts, open questions, and coverage using the task-bound `extraction-contract.json`.",
+-      "3. Save one SGR v2 `context_extraction` result and run `agentplane context extraction apply <sgr-json> --task-id <task-id>` before narrative wiki edits.",
+-      "4. Update canonical reusable pages; keep local details under headings. Add useful first-mention wikilinks and keep the glossary a thin alias/navigation layer.",
+-      "5. Preserve exact README/ACR source refs, validity/supersession, stale/conflict state, and explicit coverage reasons. Raw proposal artifacts and caches are indexes, not semantic truth.",
+-      "6. Reindex, refresh wiki reports, validate graph/task context, and smoke-search exact task terminology.",
++      "1. Read the task-bound proposal record, source README, available ACR, canonical snapshot, and `extraction-contract.json`.",
++      "2. Reconcile candidate terms against existing canonical context. Decide whether the proposal yields durable knowledge, is duplicate, needs consolidation, is transient, conflicts with existing knowledge, or should be rejected.",
++      "3. Return one schema-valid SGR v2 `context_extraction` result with source refs, semantic resolution evidence, durable claims only when justified, and explicit coverage/rejection reasons.",
++      "4. Do not apply the SGR, edit wiki/facts/graph files, reindex, validate, invoke evaluators, write ACR, or finalize the task. CLI supervision owns every mechanical operation and records the apply receipt.",
+       "",
+-      "Stop rather than promote when identity, source precision, private-data safety, topology rationale, or conflict resolution is insufficient. Legacy SGR v1 remains readable, but new tasks must emit schema v2.",
++      "Stop rather than promote when identity, source precision, private-data safety, topology rationale, or conflict resolution is insufficient. New tasks must emit schema v2.",
+     ].join("\n"),
+     mutability: "replaceable",
+     merge: {
+@@ -245,18 +228,16 @@ function buildDescription(opts: {
+   oversizedCount: number;
+ }): string {
+   return [
+-    `Semantically extract reusable context from completed task history batch ${opts.batchIndex}/${opts.batchCount}.`,
+-    `Source range: ${opts.first.id} -> ${opts.last.id}; source tasks: ${opts.count}; source bytes: ${opts.sourceBytes}/${opts.byteBudget}; oversized sources: ${opts.oversizedCount}.`,
+-    "Read task READMEs and ACR evidence, then update sourced wiki proposals, facts, graph rows, stale markers, and conflict markers with provenance.",
++    `Semantically decide the selected task-history knowledge proposal ${opts.batchIndex}/${opts.batchCount}.`,
++    `Source task: ${opts.first.id}; source bytes: ${opts.sourceBytes}/${opts.byteBudget}; oversized sources: ${opts.oversizedCount}.`,
++    "Return one source-backed SGR only. CLI supervision validates and materializes any accepted formal context and wiki updates.",
+   ].join(" ");
+ }
+ 
+ function buildVerifySteps(): string[] {
+   return [
+-    "agentplane context doctor",
+-    "agentplane context graph summary",
+-    "agentplane context graph validate",
+-    "agentplane context verify-task <task-id>",
++    "Return one schema-valid context_extraction SGR under semantic-results/.",
++    "Do not apply or materialize semantic output; CLI supervision owns the apply receipt and all deterministic checks.",
+   ];
+ }
+ 
+@@ -286,6 +267,9 @@ export function buildExtractionTaskPlans(
+       .map((entry) => entry.task.id);
+     const sourceTasks = batch.entries.map((entry) => sourceTaskRef(entry.task, entry.fingerprint));
+     const fingerprint = batchFingerprint(batch.entries);
++    const proposalIds = batch.entries.map((entry) =>
++      taskKnowledgeProposalId({ id: entry.task.id, text_digest: taskTextDigest(entry.task) }),
++    );
+     return {
+       batch_index: batchIndex,
+       batch_count: batchCount,
+@@ -295,7 +279,7 @@ export function buildExtractionTaskPlans(
+       oversized_source_ids: oversizedSourceIds,
+       batch_fingerprint: fingerprint,
+       parsed: {
+-        title: `Extract task-history context ${first.id}..${last.id}`,
++        title: `Curate task knowledge proposal ${proposalIds.join(", ")}`,
+         description: buildDescription({
+           batchIndex,
+           batchCount,
+@@ -308,18 +292,27 @@ export function buildExtractionTaskPlans(
+         }),
+         owner: "CURATOR",
+         priority: "med",
+-        tags: ["context", "assimilation", "task-harvest"],
++        tags: ["context", "assimilation", "task-harvest", "knowledge-proposal"],
+         taskKind: "context",
+         mutationScope: "context",
+-        blueprintRequest: "context.assimilation",
++        blueprintRequest: "context.maximum_assimilation",
+         extensions: {
+           "agentplane.context": {
+             schema_version: 1,
+-            task_type: "context_task_extraction",
++            task_type: "task_knowledge_proposal",
+             pipeline: "context.harvest.tasks",
+             workspace: "context",
+-            mode: "task_history_batch",
+-            order: "oldest_first",
++            mode: "selected_task_knowledge_proposal",
++            order: "explicit_selection",
++            proposal: {
++              ids: proposalIds,
++              paths: proposalIds.map(
++                (proposalId) =>
++                  `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.json`,
++              ),
++              selected_by: "context.harvest.tasks --create-extraction-tasks --task <task-id>",
++              publication_state: "not_published",
++            },
+             batch: {
+               index: batchIndex,
+               count: batchCount,
+@@ -349,12 +342,36 @@ export function buildExtractionTaskPlans(
+             extraction_contract_path: ".agentplane/tasks/${taskId}/extraction-contract.json",
+             allowed_outputs: [
+               "context/wiki/**",
++              ".agentplane/context/derived/claims/**",
+               ".agentplane/context/derived/facts/**",
+               ".agentplane/context/derived/graph/**",
++              ".agentplane/context/derived/ontology/**",
+               ".agentplane/context/derived/reports/**",
++              ".agentplane/context/derived/sources/**",
++              ".agentplane/context/derived/wiki/**",
+               ".agentplane/tasks/${taskId}/README.md",
+               ".agentplane/tasks/${taskId}/acr.json",
++              ".agentplane/tasks/${taskId}/context-pack.md",
+               ".agentplane/tasks/${taskId}/extraction-contract.json",
++              ".agentplane/tasks/${taskId}/canonical-snapshot.json",
++              ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
++              ".agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json",
++              ".agentplane/tasks/${taskId}/source-set.lock.json",
++              ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
++              ".agentplane/tasks/${taskId}/expected-artifacts.json",
++              ".agentplane/tasks/${taskId}/semantic-results/**",
++              ".agentplane/tasks/${taskId}/context-rework/**",
++            ],
++            agent_allowed_outputs: [".agentplane/tasks/${taskId}/semantic-results/**"],
++            cli_owned_operations: [
++              "validate_semantic_result",
++              "apply_semantic_result",
++              "materialize_context",
++              "reindex",
++              "verify",
++              "evaluate",
++              "acr",
++              "finalize",
+             ],
+             forbidden_outputs: [
+               "context/raw/**",
+@@ -367,7 +384,7 @@ export function buildExtractionTaskPlans(
+               extract_entities: true,
+               extract_facts: true,
+               extract_relations: true,
+-              update_wiki: true,
++              update_wiki: false,
+               detect_contradictions: true,
+               detect_stale_claims: true,
+               detect_open_questions: true,
+diff --git a/packages/agentplane/src/context/harvest-tasks-markers.ts b/packages/agentplane/src/context/harvest-tasks-markers.ts
+index dcf68552b..81ce54be7 100644
+--- a/packages/agentplane/src/context/harvest-tasks-markers.ts
++++ b/packages/agentplane/src/context/harvest-tasks-markers.ts
+@@ -4,20 +4,21 @@ import path from "node:path";
+ 
+ import type { TaskData } from "../backends/task-backend.js";
+ import { isRecord } from "./context-utils.js";
++import type { TaskKnowledgeProposal } from "./harvest-tasks-model.js";
+ 
+ export type TaskHarvestMarker = {
+   schema_version: 1;
+   pipeline: "context.harvest.tasks";
+-  state: "ingested";
++  state: "proposed";
+   harvested_at: string;
+   source_digest: string;
+   source_fingerprint_version: 1;
+   raw_evidence_path: string;
+   report_path: string;
+-  wiki_proposal_path: string;
+-  promoted_path: string | null;
+-  promotion_state: "proposal" | "promoted" | "blocked";
+-  fact_ids: string[];
++  proposal_id: string;
++  proposal_path: string;
++  proposal_state: TaskKnowledgeProposal["state"];
++  publication_state: "not_published";
+   source_refs: string[];
+ };
+ 
+@@ -34,11 +35,6 @@ type MarkerEvidence = {
+   source_refs: string[];
+ };
+ 
+-type MarkerFact = {
+-  id: string;
+-  task_id: string;
+-};
+-
+ export type TaskSourceFingerprint = {
+   version: 1 | 2;
+   digest: string;
+@@ -166,50 +162,45 @@ function existingHarvestMarker(task: HarvestMarkerTask): TaskHarvestMarker | nul
+ 
+ export function alreadyHarvestedUnchanged(
+   task: HarvestMarkerTask,
+-  opts: { task: string[]; promote: boolean },
++  opts: { task: string[] },
+ ): boolean {
+   const marker = existingHarvestMarker(task);
+   if (marker?.source_digest !== taskTextDigest(task)) return false;
+   if (opts.task.includes(task.id)) return false;
+-  if (opts.promote && marker.promotion_state !== "promoted") return false;
+   return true;
+ }
+ 
+ export function buildTaskHarvestMarkers(opts: {
+   evidence: MarkerEvidence[];
+-  facts: MarkerFact[];
++  proposals: TaskKnowledgeProposal[];
+   reportPath: string;
+-  wikiPath: string;
+   report: {
+     generated_at: string;
+-    promotion_gate: {
+-      state: "proposal" | "promoted" | "blocked";
+-      promoted_path: string | null;
+-    };
+   };
+ }): Record<string, TaskHarvestMarker> {
+-  const factsByTask = new Map<string, MarkerFact[]>();
+-  for (const fact of opts.facts) {
+-    factsByTask.set(fact.task_id, [...(factsByTask.get(fact.task_id) ?? []), fact]);
+-  }
++  const proposalByTask = new Map(
++    opts.proposals.map((proposal) => [proposal.source_task_id, proposal]),
++  );
+   return Object.fromEntries(
+-    opts.evidence.map((row) => {
++    opts.evidence.flatMap((row) => {
++      const proposal = proposalByTask.get(row.id);
++      if (!proposal) return [];
+       const marker: TaskHarvestMarker = {
+         schema_version: 1,
+         pipeline: "context.harvest.tasks",
+-        state: "ingested",
++        state: "proposed",
+         harvested_at: opts.report.generated_at,
+         source_digest: row.text_digest,
+         source_fingerprint_version: 1,
+         raw_evidence_path: `context/raw/tasks/${row.id}.json`,
+         report_path: opts.reportPath,
+-        wiki_proposal_path: opts.wikiPath,
+-        promoted_path: opts.report.promotion_gate.promoted_path,
+-        promotion_state: opts.report.promotion_gate.state,
+-        fact_ids: (factsByTask.get(row.id) ?? []).map((fact) => fact.id),
++        proposal_id: proposal.id,
++        proposal_path: `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.json`,
++        proposal_state: proposal.state,
++        publication_state: "not_published",
+         source_refs: row.source_refs,
+       };
+-      return [row.id, marker];
++      return [[row.id, marker]];
+     }),
+   );
+ }
+diff --git a/packages/agentplane/src/context/harvest-tasks-model.ts b/packages/agentplane/src/context/harvest-tasks-model.ts
+index 851ad08c8..c2860824d 100644
+--- a/packages/agentplane/src/context/harvest-tasks-model.ts
++++ b/packages/agentplane/src/context/harvest-tasks-model.ts
+@@ -40,36 +40,44 @@ export type TaskEvidence = {
+   excerpts: string[];
+ };
+ 
+-export type HarvestFact = {
++type TaskKnowledgeSignalKind =
++  | "task_pr_decision"
++  | "adr_or_public_api_candidate"
++  | "stable_workflow_rule_candidate"
++  | "recurring_evaluator_finding_candidate"
++  | "resolved_conflict_candidate";
++
++export type TaskKnowledgeSignal = {
++  kind: TaskKnowledgeSignalKind;
++  source_refs: string[];
++  evidence: string;
++};
++
++export type TaskKnowledgeProposal = {
++  schema_version: 1;
+   id: string;
+-  kind: "completed_task_claim";
+-  subject: string;
+-  predicate: "recorded_outcome";
+-  object: string;
+-  claim: string;
+-  status: "active" | "stale_candidate" | "conflict_candidate";
+-  confidence: number;
++  kind: "task_knowledge_proposal";
++  state: "candidate" | "duplicate" | "consolidation_required";
++  publication_state: "not_published";
++  source_task_id: string;
++  source_digest: string;
++  source_fingerprint_version: 1;
++  title: string;
+   source_refs: string[];
+-  task_id: string;
+-  tags: string[];
++  signals: TaskKnowledgeSignal[];
++  dedupe: {
++    identity_key: string;
++    duplicate_of: string[];
++    consolidation_with: string[];
++  };
++  generated_at: string;
+   generated_by: "context.harvest.tasks";
+-  promotion_state: "proposal";
+-  stale_marker?: string;
+-  conflict_markers?: string[];
+ };
+ 
+-export type GraphRow = Record<string, unknown> & { id: string; source_refs: string[] };
+-
+ export type HarvestOutput = {
+   selected: HarvestTask[];
+   evidence: TaskEvidence[];
+-  facts: HarvestFact[];
+-  entities: GraphRow[];
+-  edges: GraphRow[];
+-  provenance: GraphRow[];
+-  wikiProposal: string;
+-  wikiPath: string;
+-  promotedPath: string;
++  proposals: TaskKnowledgeProposal[];
+   reportPath: string;
+   report: HarvestReport;
+   markers: Record<string, TaskHarvestMarker>;
+@@ -92,20 +100,14 @@ export type HarvestReport = {
+   };
+   counts: {
+     selected_tasks: number;
+-    facts: number;
+-    entities: number;
+-    edges: number;
+-    provenance_edges: number;
+-    stale_candidates: number;
+-    conflict_candidates: number;
+-    promotion_blockers: number;
++    proposals: number;
++    duplicate_proposals: number;
++    consolidation_required: number;
+   };
+-  promotion_gate: {
+-    state: "proposal" | "promoted" | "blocked";
++  selection_gate: {
++    state: "ready" | "blocked";
+     blockers: string[];
+-    warnings: string[];
+-    proposal_path: string;
+-    promoted_path: string | null;
++    requires_explicit_task_selection: true;
+   };
+   source_refs: string[];
+ };
+diff --git a/packages/agentplane/src/context/ingest-task-pack.ts b/packages/agentplane/src/context/ingest-task-pack.ts
+index e9771ca56..042f493b5 100644
+--- a/packages/agentplane/src/context/ingest-task-pack.ts
++++ b/packages/agentplane/src/context/ingest-task-pack.ts
+@@ -341,7 +341,7 @@ export async function writeContextTaskCreationReceipt(opts: {
+   return relativePath;
+ }
+ 
+-export async function writeContextExtractionContract(opts: {
++async function writeContextExtractionContract(opts: {
+   root: string;
+   taskId: string;
+ }): Promise<string> {

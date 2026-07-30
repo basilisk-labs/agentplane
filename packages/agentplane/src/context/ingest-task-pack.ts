@@ -341,7 +341,7 @@ export async function writeContextTaskCreationReceipt(opts: {
   return relativePath;
 }
 
-async function writeContextExtractionContract(opts: {
+export async function writeContextExtractionContract(opts: {
   root: string;
   taskId: string;
 }): Promise<string> {

@@ -219,8 +219,9 @@ agentplane context verify-task <task-id>
 Source artifacts live under `context/**`. Derived context artifacts live under
 `.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
 database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to collect completed task history
-into source-backed, unpublished knowledge proposals. The CLI writes evidence, proposal records,
-duplicate/consolidation signals, and selection receipts; it never writes wiki, facts, or graph
+into source-backed, unpublished knowledge proposals only when the task contains an explicit durable
+marker. The CLI writes exact source evidence, proposal records, duplicate/consolidation signals, and
+selection receipts; it never writes wiki, facts, or graph
 knowledge from task text. Select exactly one task with `--create-extraction-tasks` to create a
 CURATOR work order. CURATOR returns one semantic SGR; CLI supervision owns validation,
 materialization, indexing, evaluation, and the apply receipt. Write modes mark source task READMEs

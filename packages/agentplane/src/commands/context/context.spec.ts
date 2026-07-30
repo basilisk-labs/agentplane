@@ -410,7 +410,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
   summary:
     "Collect source-backed task knowledge proposals and create selected CURATOR work orders.",
   description:
-    "Collects completed-task evidence into non-semantic proposal records, records mechanical duplicate/consolidation signals, and creates one CURATOR semantic work order only for an explicit task selection. The command never writes wiki, fact, or graph knowledge. Write modes require an initialized context workspace.",
+    "Collects only explicitly marked durable task evidence into non-semantic proposal records with exact captured source lines and available PR, diff, or evaluator references. It records mechanical duplicate/consolidation signals and creates one CURATOR semantic work order only for an explicit task selection. The command never writes wiki, fact, or graph knowledge. Write modes require an initialized context workspace.",
   options: [
     {
       kind: "string",
