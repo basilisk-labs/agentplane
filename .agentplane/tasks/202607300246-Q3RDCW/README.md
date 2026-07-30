@@ -2,10 +2,10 @@
 id: "202607300246-Q3RDCW"
 title: "Fix diverged-head recovery upstream binding"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -30,31 +30,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T02:59:19.714Z"
+  updated_at: "2026-07-30T04:03:23.942Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "2b237b623595d7f9dec2a6d700879a29009cde9b"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "2b28a0da150a21de744c620d294ae4bbedddccd5"
   blueprint_digest: "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e"
   evidence_refs:
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300246-Q3RDCW/README.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Recovery validates exact heads, fetches the provider ref explicitly, writes standard branch upstream fields without relying on fetch refspec discovery, and asserts archive < upstream configuration < hard reset."
-    - "The real Git fixture limits origin fetch to main, demonstrates shorthand upstream binding fails, then verifies recovery preserves the local archive, adopts the provider head, remains clean, and writes remote and merge configuration."
+    - "No semantic merge, rebase, or push is introduced; the added coverage proves raw-refspec upstream binding and prevents evaluator fixture leakage into later lifecycle checks."
 commit:
-  hash: "9c1f4f33da9e87fb67f96de2ef437c8e4bb1341d"
-  message: "🐛 Q3RDCW task: pre-merge closure"
+  hash: "2b28a0da150a21de744c620d294ae4bbedddccd5"
+  message: "🐛 Q3RDCW code: isolate evaluator policy fixtures"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -77,6 +76,9 @@ comments:
   -
     author: "CODER"
     body: "Start: repair the temporary integration fixture so the mandatory quality-review contract is exercised only after its branch_pr context and required policy inputs exist."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -133,8 +135,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Start: repair the temporary integration fixture so the mandatory quality-review contract is exercised only after its branch_pr context and required policy inputs exist."
+  -
+    type: "status"
+    at: "2026-07-30T04:03:55.446Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T03:14:31.438Z"
+doc_updated_at: "2026-07-30T04:03:55.447Z"
 doc_updated_by: "CODER"
 description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
 sections:
