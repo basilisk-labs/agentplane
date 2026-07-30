@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-WF8A0X-ad1d6f47e8116a488f6deb93",
+  "prepared_at": "2026-07-30T19:24:02.597Z",
+  "task": {
+    "id": "202607221852-WF8A0X",
+    "revision": 26,
+    "objective": "Create CURATOR-gated post-task knowledge proposals\n\nRF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks.",
+    "acceptance_criteria": [
+      "bun run task-state:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: deterministic proposal signals for ADR/public API/stable rule/recurring finding/resolved conflict/task decision, source refs, selection gate, duplicate/consolidation checks, CURATOR task creation, and publication audit.\n- Out of scope: automatic wiki writes or publishing transient implementation details.",
+      "1. Define proposal schema and source-backed deterministic candidate signals.\n2. Filter transient/noisy items and attach exact task/PR/diff/evaluator refs.\n3. Run duplicate and consolidation checks against current knowledge.\n4. Create a separate CURATOR work order/task only for selected proposals.\n5. Apply durable updates through the existing transactional context path and record provenance.",
+      "1. Complete fixtures containing durable and transient changes. Expected: only source-backed durable candidates are proposed; no wiki file changes automatically.\n2. Submit duplicate and conflicting proposals. Expected: dedupe/consolidation evidence precedes CURATOR selection.\n3. Select a proposal. Expected: a separate exact-id CURATOR task/work order owns semantic publication.\n4. Trace a published item. Expected: source refs, task/PR decision, CURATOR result, and apply receipt are complete.\n5. Run proposal/context/task-state tests."
+    ]
+  },
+  "evaluated_sha": "574f417af6a49d1e37150a4166d857a1423198bb",
+  "diff_base_sha": "12115a42325bb38de85f15df89b96b2675b595cb",
+  "blueprint_digest": "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-WF8A0X/README.md",
+      "sha256": "sha256:44150deae6ce86961c521fd22bcca387850f38b20e3c6954b647f7622a3d8f3f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-192402597-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:7f6ad9c1a866220a0a7287e1a1482f316dd1a4a076e7a2697cd38d16aa6e2e6f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-192402597-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:51aced777573ac4685aad58eca06fbcddac77c30ed073a55090cd04cba9a6a5b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-192402597-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:f8b5dd90dd2734bacf356dc726e4f4d815536380066691ff4b8173dd4eb6f94a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

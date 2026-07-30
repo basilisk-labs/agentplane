@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-WF8A0X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T19:24:03.070Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "574f417af6a49d1e37150a4166d857a1423198bb",
+  "blueprint_digest": "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01",
+  "findings": [
+    "The split keeps one semantic owner and durable selection receipt across normal, concurrent, stale-lock, pre-marker, and marker-only recovery paths; no automatic knowledge publication was introduced."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-192402597-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Selection recovery requires read-after-write visibility of CURATOR tasks and source markers from the configured task backend."
+  ],
+  "residual_risks": []
+}
