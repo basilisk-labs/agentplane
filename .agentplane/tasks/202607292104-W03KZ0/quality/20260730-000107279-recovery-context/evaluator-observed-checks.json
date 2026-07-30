@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T23:59:58.908Z",
+    "updated_by": "CODER",
+    "note": "The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

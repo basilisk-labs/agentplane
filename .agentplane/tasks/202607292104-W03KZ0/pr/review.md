@@ -12,8 +12,8 @@ Created: 2026-07-29T21:06:49.643Z
 
 ## Verification
 
-- State: needs_rework
-- Note: RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed.
+- State: ok
+- Note: The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

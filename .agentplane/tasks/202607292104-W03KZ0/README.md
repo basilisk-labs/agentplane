@@ -1,10 +1,11 @@
 ---
 id: "202607292104-W03KZ0"
 title: "Measure SHA-bound RF-04 candidate performance"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -25,12 +26,41 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-29T23:57:01.227Z"
+  state: "ok"
+  updated_at: "2026-07-29T23:59:58.908Z"
   updated_by: "CODER"
-  note: "RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed."
-  attempts: 3
-commit: null
+  note: "The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-07-30T00:01:07.561Z"
+  updated_by: "HUMAN"
+  note: "W03 correctly delivers a SHA-bound, matched-runtime RF-04 measurement route. The immutable candidate comparison is valid and intentionally reports a beta.1 quality failure rather than hiding it."
+  evaluated_sha: "2790e0b0e485adf0505d9d3899d4c74b922a2e3d"
+  blueprint_digest: "a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc"
+  evidence_refs:
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607292104-W03KZ0/README.md"
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "scripts/bench/capture-agent-efficiency-runtime-bridge.mjs --check (50 runs, 55 episodes)"
+    - ".agentplane/cache/rf04-candidate/b58705432c46df612a89348ef28ea268fdcc2b04/measurement.runtime-bridge-codex-0.146.0-alpha.3.1.json"
+    - "bun run ci:contract (pass)"
+  findings:
+    - "The historical anchor and candidate were compared under the same 0.6.24/0.146.0-alpha.3.1 runtime profile with complete 50-run raw envelope/evidence sets; the recorded failure is limited to the two declared latency gates."
+    - "Historical candidate harness identity is reconstructed from the reviewed candidate SHA and must match the raw harness digest before bridge measurement materialization."
+commit:
+  hash: "c6a10db56506a3e38cba675cc2923569daa7e45e"
+  message: "🧪 W03KZ0 task: record matched-runtime RF-04 rework"
 comments:
   -
     author: "CODER"
@@ -41,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: candidate captures now require an explicit Codex CLI version, bind it to every driver envelope and measurement, and keep historical RF-04 validation anchored to its frozen harness. Offline RF-04 replay check, focused critical tests, current 0.146.0-alpha.3.1 preflight, formatting, and scripts catalog check pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -81,8 +114,21 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed."
+  -
+    type: "verify"
+    at: "2026-07-29T23:59:58.908Z"
+    author: "CODER"
+    state: "ok"
+    note: "The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry."
+  -
+    type: "status"
+    at: "2026-07-30T00:01:52.983Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T23:57:01.934Z"
+doc_updated_at: "2026-07-30T00:01:52.984Z"
 doc_updated_by: "CODER"
 description: "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria."
 sections:
@@ -193,6 +239,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T23:59:58.908Z — VERIFY — ok
+
+    By: CODER
+
+    Note: The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T23:57:01.934Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
+    - old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+    - current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -211,7 +287,14 @@ sections:
     - Observation: Against Codex 0.146.0-alpha.3.1 on both sides, candidate setup latency is 17522.82ms vs 7605.46ms baseline (maximum 8366.006ms) and time-to-verified-result is 63020.05ms vs 56439.625ms (maximum 62083.5875ms).
       Impact: The candidate cannot qualify beta.1 despite lower tokens and better outcomes, because two required latency comparisons fail.
       Resolution: Preserve the failed immutable measurement, do not retry the candidate capture, and require an approved remediation or revised statistically justified benchmark design before a new candidate run.
+
+    - Observation: Both profiles are 0.6.24/0.146.0-alpha.3.1; 50 runs and 55 provider episodes are present on each side, raw evidence is deterministic, and the candidate verdict is fail only for the two declared latency comparisons.
+      Impact: The implementation task has delivered evaluator-reviewable evidence; the failed product-quality result must block beta.1 qualification rather than invalidate this measurement task.
+      Resolution: Integrate W03 measurement support, then let the beta.1 qualification task consume the immutable failed measurement and remain blocked until remediation is approved.
 extensions:
+  implementation_commit:
+    hash: "2790e0b0e485adf0505d9d3899d4c74b922a2e3d"
+    message: "📊 W03KZ0 task: validate historical RF-04 harness"
   workflow_route_baseline:
     start_head_sha: "8ae0a51a8684db03a0a9401f6c6b8f5b763850bd"
     version: 1
@@ -334,6 +417,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T23:59:58.908Z — VERIFY — ok
+
+By: CODER
+
+Note: The W03 measurement route is complete: it preserved the frozen baseline, created a matched-runtime bridge, materialized the exact candidate comparison, and recorded the required failing beta.1 latency verdict without a provider retry.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T23:57:01.934Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
+- old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+- current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -356,3 +469,7 @@ DecisionContextRef:
 - Observation: Against Codex 0.146.0-alpha.3.1 on both sides, candidate setup latency is 17522.82ms vs 7605.46ms baseline (maximum 8366.006ms) and time-to-verified-result is 63020.05ms vs 56439.625ms (maximum 62083.5875ms).
   Impact: The candidate cannot qualify beta.1 despite lower tokens and better outcomes, because two required latency comparisons fail.
   Resolution: Preserve the failed immutable measurement, do not retry the candidate capture, and require an approved remediation or revised statistically justified benchmark design before a new candidate run.
+
+- Observation: Both profiles are 0.6.24/0.146.0-alpha.3.1; 50 runs and 55 provider episodes are present on each side, raw evidence is deterministic, and the candidate verdict is fail only for the two declared latency comparisons.
+  Impact: The implementation task has delivered evaluator-reviewable evidence; the failed product-quality result must block beta.1 qualification rather than invalidate this measurement task.
+  Resolution: Integrate W03 measurement support, then let the beta.1 qualification task consume the immutable failed measurement and remain blocked until remediation is approved.
