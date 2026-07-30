@@ -324,9 +324,19 @@ describe("context GitHub issue regression gates", () => {
       parsed: { query: "staleonly", scope: "wiki", format: "json", explain: false },
     });
     const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      adapter: string;
+      strategy: string;
+      fallback: { used: boolean; reason: string | null; max_files: number };
       results: { ref: string }[];
     };
     expect(payload.results).toEqual([]);
+    expect(payload.adapter).toBe("sqlite");
+    expect(payload.strategy).toBe("fts5-bm25+bounded-live-fallback");
+    expect(payload.fallback).toEqual({
+      used: true,
+      reason: "stale_projection_row",
+      max_files: 200,
+    });
   });
 
   it("uses SQLite projection and token matching for all-scope search", async () => {

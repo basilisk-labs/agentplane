@@ -5,7 +5,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mkTempDir } from "@agentplane/testkit";
 
 import { PROJECTION_VERSION, readContextProjection } from "../../context/reindex.js";
-import { checkSqliteProjection, readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
+import {
+  checkSqliteProjection,
+  readSqliteProjection,
+  searchSqliteProjection,
+  writeSqliteProjection,
+} from "./sqlite.js";
 
 describe("context SQLite projection", () => {
   let tempDir = "";
@@ -114,5 +119,87 @@ describe("context SQLite projection", () => {
     const legacyProjection = await readSqliteProjection(dbPath);
     expect(legacyProjection?.metadata.projection_version).toBe(PROJECTION_VERSION - 1);
     expect(await readContextProjection(tempDir)).toBeNull();
+  });
+
+  it("uses FTS5/BM25 with stable scope filtering and pagination", async () => {
+    const dbPath = path.join(tempDir, ".agentplane", "cache.sqlite");
+    await writeSqliteProjection(dbPath, {
+      metadata: {
+        projection_version: PROJECTION_VERSION,
+        generated_at: "2026-01-01T00:00:00.000Z",
+        workspace_hash: "digest-fts",
+        include_tasks: false,
+        include_raw: true,
+        source_bytes: 90,
+        search_text_bytes: 90,
+        preview_text_bytes: 30,
+        projection_elapsed_ms: 3,
+      },
+      rows: [
+        {
+          path: "context/wiki/a.md#section=alpha",
+          sha256: "hash-a",
+          content_type: "text/markdown",
+          projection_version: PROJECTION_VERSION,
+          indexed_at: "2026-01-01T00:00:00.000Z",
+          size_bytes: 30,
+          kind: "markdown-section",
+          search_text: "shared fts sentinel alpha",
+          preview_text: "shared sentinel alpha",
+          source_refs: ["context/wiki/a.md#section=alpha"],
+        },
+        {
+          path: "context/wiki/b.md#section=beta",
+          sha256: "hash-b",
+          content_type: "text/markdown",
+          projection_version: PROJECTION_VERSION,
+          indexed_at: "2026-01-01T00:00:00.000Z",
+          size_bytes: 30,
+          kind: "markdown-section",
+          search_text: "shared fts sentinel beta",
+          preview_text: "shared sentinel beta",
+          source_refs: ["context/wiki/b.md#section=beta"],
+        },
+        {
+          path: "context/raw/private/hidden.md",
+          sha256: "hash-private",
+          content_type: "text/markdown",
+          projection_version: PROJECTION_VERSION,
+          indexed_at: "2026-01-01T00:00:00.000Z",
+          size_bytes: 30,
+          kind: "markdown",
+          search_text: "shared fts sentinel private",
+          preview_text: "shared sentinel private",
+          source_refs: ["context/raw/private/hidden.md"],
+        },
+      ],
+    });
+
+    const first = await searchSqliteProjection(dbPath, {
+      query: "fts sentinel",
+      scopes: ["wiki"],
+      limit: 1,
+      offset: 0,
+    });
+    const second = await searchSqliteProjection(dbPath, {
+      query: "fts sentinel",
+      scopes: ["wiki"],
+      limit: 1,
+      offset: 1,
+    });
+    const raw = await searchSqliteProjection(dbPath, {
+      query: "fts sentinel",
+      scopes: ["raw"],
+      limit: 10,
+      offset: 0,
+    });
+
+    expect(first?.metadata.workspace_hash).toBe("digest-fts");
+    expect(first?.rows).toHaveLength(1);
+    expect(second?.rows).toHaveLength(1);
+    expect(first?.rows[0]?.path).toBe("context/wiki/a.md#section=alpha");
+    expect(second?.rows[0]?.path).toBe("context/wiki/b.md#section=beta");
+    expect(first?.rows[0]?.highlight).toContain("[fts]");
+    expect(raw?.rows).toEqual([]);
   });
 });

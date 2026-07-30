@@ -17,7 +17,13 @@ import {
   projectRowsForFile,
   type ProjectionSourceRow,
 } from "./reindex-projection.js";
-import { readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
+import {
+  readSqliteProjection,
+  searchSqliteProjection,
+  writeSqliteProjection,
+  type SqliteProjectionSearchOptions,
+  type SqliteProjectionSearchResult,
+} from "./sqlite.js";
 
 export const PROJECTION_VERSION = 2;
 const MAX_LEGACY_JSON_PROJECTION_BYTES = 256 * 1024 * 1024;
@@ -234,4 +240,27 @@ export async function readContextProjection(root: string): Promise<ProjectionInd
     }
     return null;
   }
+}
+
+export async function searchContextProjection(
+  root: string,
+  opts: SqliteProjectionSearchOptions,
+): Promise<SqliteProjectionSearchResult | null> {
+  const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
+  let pathIdentity;
+  try {
+    pathIdentity = await captureContainedPathChainIdentity({
+      repository_root: root,
+      file_path: sqlitePath,
+      label: "context projection cache",
+    });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+    throw error;
+  }
+  if (!pathIdentity.target_exists) return null;
+
+  const result = await searchSqliteProjection(pathIdentity.file_path, opts).catch(() => null);
+  await assertContainedPathChainIdentityUnchanged(pathIdentity, "context projection cache");
+  return result?.metadata.projection_version === PROJECTION_VERSION ? result : null;
 }
