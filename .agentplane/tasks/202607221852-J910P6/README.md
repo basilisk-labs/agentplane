@@ -8,7 +8,7 @@ revision: 5
 origin:
   system: "manual"
 depends_on:
-  - "202607221908-MR9EA9"
+  - "202607300553-CR9VTJ"
 tags:
   - "context"
   - "milestone-beta2"
