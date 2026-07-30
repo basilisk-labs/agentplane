@@ -6,7 +6,7 @@ Created: 2026-07-30T05:53:55.797Z
 
 - Task: `202607300553-CR9VTJ`
 - Title: Requalify the AgentPlane 0.7.0-beta.1 decision on current main
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300553-CR9VTJ/requalify-the-agentplane-0-7-0-beta-1-decision-o`
 - Canonical task record: `.agentplane/tasks/202607300553-CR9VTJ/README.md`
 

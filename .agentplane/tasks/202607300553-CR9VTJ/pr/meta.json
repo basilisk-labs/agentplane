@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a9a9a6ffc206ce81d09812d758fcd93251dd65f7a4cb5685bad4f078b65b25f7",
   "pr_number": 4681,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4681",
+  "pre_merge_closure": {
+    "basis_commit": "3f89a57d470f860f0e8bf542f4b57422a7db2b33",
+    "branch": "task/202607300553-CR9VTJ/requalify-the-agentplane-0-7-0-beta-1-decision-o",
+    "pr_number": 4681,
+    "recorded_at": "2026-07-30T06:25:09.199Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607300553-CR9VTJ",
