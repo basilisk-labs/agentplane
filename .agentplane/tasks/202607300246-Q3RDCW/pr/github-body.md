@@ -22,12 +22,14 @@ Correct the recovery command so its fetched provider tracking ref is bound as a 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T02:49:39.908Z
+- Updated: 2026-07-30T02:49:44.325Z
 - Branch: task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/pr/conflict-rework-recovery.test.ts   | 49 +++++++++++++++++-----
+ .../src/commands/pr/conflict-rework-recovery.ts    |  8 +++-
+ 2 files changed, 45 insertions(+), 12 deletions(-)
 ```
 
 </details>

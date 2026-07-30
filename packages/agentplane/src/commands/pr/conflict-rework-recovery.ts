@@ -64,7 +64,11 @@ const defaultGitOps: DivergedConflictHeadRecoveryGitOps = {
     await execFileAsync("git", ["reset", "--hard", ref], { cwd: worktreePath, env: gitEnv() });
   },
   setUpstream: async (worktreePath, branch) => {
-    await execFileAsync("git", ["branch", "--set-upstream-to", branch], {
+    await execFileAsync("git", ["config", `branch.${branch}.remote`, "origin"], {
+      cwd: worktreePath,
+      env: gitEnv(),
+    });
+    await execFileAsync("git", ["config", `branch.${branch}.merge`, `refs/heads/${branch}`], {
       cwd: worktreePath,
       env: gitEnv(),
     });
@@ -168,7 +172,7 @@ export async function recoverDivergedConflictHead(opts: {
     if (!(await git.refExists(opts.gitRoot, archiveRef))) {
       await git.updateRef(opts.gitRoot, archiveRef, expectedLocalHead);
     }
-    await git.setUpstream(worktreePath, `origin/${branch}`);
+    await git.setUpstream(worktreePath, branch);
     await git.resetHard(worktreePath, providerTrackingRef);
   } catch (err) {
     if (err instanceof CliError) throw err;
