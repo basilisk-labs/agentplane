@@ -353,7 +353,11 @@ export async function prepareConflictReworkPacket(opts: {
   if (!localBase.ok) return localBase.preparation;
 
   const routeEvidence = routeEligibility.evidence;
-  const baseContext = isBaseAdvancedProtectedConflictRoute(routeEvidence)
+  const baseContext = isBaseAdvancedProtectedConflictRoute(
+    routeEvidence,
+    localBase.value,
+    providerBase,
+  )
     ? await (async () => {
         const legacyQueueBase = routeEvidence.queue.base_sha;
         if (localBase.value === providerBase) {

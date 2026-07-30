@@ -33,10 +33,12 @@ export function isLegacyProtectedConflictRoute(
 
 export function isBaseAdvancedProtectedConflictRoute(
   routeEvidence: ConflictRouteEvidence,
+  localBaseSha: string,
+  providerBaseSha: string,
 ): routeEvidence is BaseAdvancedProtectedConflictRouteEvidence {
   return (
-    routeEvidence.kind === "current_protected_base_rework" ||
-    isLegacyProtectedConflictRoute(routeEvidence)
+    isLegacyProtectedConflictRoute(routeEvidence) ||
+    (routeEvidence.kind === "current_protected_base_rework" && localBaseSha !== providerBaseSha)
   );
 }
 

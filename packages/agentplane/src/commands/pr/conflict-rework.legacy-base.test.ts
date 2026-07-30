@@ -250,6 +250,38 @@ describe("legacy protected conflict-base reconciliation", () => {
     ]);
   });
 
+  it("preserves equal-base current handoff eligibility when a rework queue is present", async () => {
+    const current = report();
+    if (!current.queue.present || !current.handoff.present) throw new Error("fixture error");
+    current.queue.legacyProtectedConflictAdoption = null;
+    current.handoff = {
+      ...current.handoff,
+      routeProviderBaseSha: providerBaseSha,
+      routeProviderBaseShaState: "present",
+    };
+    const git = legacyGit({
+      localBase: providerBaseSha,
+      mergeBases: { [key(providerBaseSha, headSha)]: conflictMergeBaseSha },
+      diffs: { [key(conflictMergeBaseSha, providerBaseSha)]: ["shared.ts"] },
+    });
+
+    const prepared = await prepare({ git, report: current });
+
+    expect(prepared).toMatchObject({
+      state: "ready",
+      packet: {
+        route_evidence: { kind: "current_protected_base_rework" },
+        base_context: {
+          provider_conflict_base_sha: providerBaseSha,
+          current_base_sha: providerBaseSha,
+          relation: "equal",
+          legacy_queue_base_sha: null,
+        },
+      },
+    });
+    expect(git.calls.mergeBase).toEqual([[providerBaseSha, headSha]]);
+  });
+
   it("prepares a read-only packet only for the proven provider-to-queue-to-current topology", async () => {
     const git = legacyGit();
     const prepared = await prepare({ git });

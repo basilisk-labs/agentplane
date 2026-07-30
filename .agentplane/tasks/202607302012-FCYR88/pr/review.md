@@ -29,11 +29,11 @@ Created: 2026-07-30T20:13:04.252Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/conflict-rework-legacy.ts      | 19 ++++++++++++
- .../pr/conflict-rework-route-eligibility.ts        | 26 ++++++++++++++++
- .../pr/conflict-rework.legacy-base.test.ts         | 36 ++++++++++++++++++++++
- .../agentplane/src/commands/pr/conflict-rework.ts  |  3 +-
- 4 files changed, 83 insertions(+), 1 deletion(-)
+ .../src/commands/pr/conflict-rework-legacy.ts      | 21 +++++++
+ .../pr/conflict-rework-route-eligibility.ts        | 26 +++++++++
+ .../pr/conflict-rework.legacy-base.test.ts         | 68 ++++++++++++++++++++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  7 ++-
+ 4 files changed, 121 insertions(+), 1 deletion(-)
 ```
 
 </details>
