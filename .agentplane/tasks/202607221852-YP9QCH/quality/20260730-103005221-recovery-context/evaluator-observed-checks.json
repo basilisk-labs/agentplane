@@ -1,0 +1,22 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T10:19:14.880Z",
+    "updated_by": "TESTER",
+    "note": "Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
