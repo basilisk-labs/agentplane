@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism\nResult: pass\nEvidence: 15 focused harvest scenarios passed, including canonical consolidation before CURATOR creation, stale lease recovery, active-owner exclusion, and concurrent selection ownership.\nScope: RF-20 proposal selection and current-canonical-knowledge gate\n\nCommand: bun run test -- src/commands/context/harvest-tasks.test.ts src/context/ingest-task-pack.test.ts --maxWorkers=1 --no-file-parallelism\nResult: pass\nEvidence: 29 focused context/harvest scenarios passed.\nScope: proposal source pack and extraction-contract compatibility\n\nCommand: bun run test:critical\nResult: pass\nEvidence: critical-cli isolated suite completed after all 12 chunks at implementation commit 28dd4ab93aa1.\nScope: repository-wide CLI compatibility, lifecycle, replay, scope, and trust-boundary invariants\n\nCommand: bun run typecheck; bun run docs:cli:check; bun run bench:compatibility:check; bun run knip:check; bun run task-state:check; git diff --check\nResult: pass\nEvidence: TypeScript, generated CLI docs, approved v0.7 compatibility candidate, unused-code baseline, task-state, and diff-integrity checks all passed.\nScope: declared verification gates at implementation commit 28dd4ab93aa1",
+  "digest": "sha256:22326415fc066664dac5f100c60b3262f579a1591420496879e3c1c082491fdd",
+  "implementation_sha": "28dd4ab93aa18c5aa75c5a3dea2b1e1505905151",
+  "kind": "task_verification_record",
+  "note": "Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff.",
+  "recorded_at": "2026-07-30T17:45:14.790Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Complete fixtures containing durable and transient changes. Expected: only source-backed durable candidates are proposed; no wiki file changes automatically.\n2. Submit duplicate and conflicting proposals. Expected: dedupe/consolidation evidence precedes CURATOR selection.\n3. Select a proposal. Expected: a separate exact-id CURATOR task/work order owns semantic publication.\n4. Trace a published item. Expected: source refs, task/PR decision, CURATOR result, and apply receipt are complete.\n5. Run proposal/context/task-state tests.",
+  "scope_digest": "sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444",
+  "task_id": "202607221852-WF8A0X",
+  "verification_command": "agentplane verify 202607221852-WF8A0X --ok --by TESTER",
+  "verifier": "TESTER"
+}

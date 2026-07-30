@@ -4,7 +4,7 @@ title: "Create CURATOR-gated post-task knowledge proposals"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T17:24:55.174Z"
+  updated_at: "2026-07-30T17:45:14.790Z"
   updated_by: "TESTER"
-  note: "Verified RF-20 rework: only explicit durable task signals produce proposals; every signal has exact captured evidence; PR/diff/evaluator provenance is attached when present; unchanged selections retain one CURATOR owner."
+  note: "Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff."
   attempts: 0
 quality_review:
   state: "rework"
@@ -102,8 +102,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified RF-20 rework: only explicit durable task signals produce proposals; every signal has exact captured evidence; PR/diff/evaluator provenance is attached when present; unchanged selections retain one CURATOR owner."
+  -
+    type: "verify"
+    at: "2026-07-30T17:45:14.790Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff."
 doc_version: 3
-doc_updated_at: "2026-07-30T17:24:58.624Z"
+doc_updated_at: "2026-07-30T17:45:15.541Z"
 doc_updated_by: "CODER"
 description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
 sections:
@@ -208,6 +214,56 @@ sections:
     Result: pass
     Evidence: no whitespace errors before the reviewed implementation commit
     Scope: task branch diff integrity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+    - old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T17:45:14.790Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T17:24:58.624Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+    Details:
+
+    Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism
+    Result: pass
+    Evidence: 15 focused harvest scenarios passed, including canonical consolidation before CURATOR creation, stale lease recovery, active-owner exclusion, and concurrent selection ownership.
+    Scope: RF-20 proposal selection and current-canonical-knowledge gate
+
+    Command: bun run test -- src/commands/context/harvest-tasks.test.ts src/context/ingest-task-pack.test.ts --maxWorkers=1 --no-file-parallelism
+    Result: pass
+    Evidence: 29 focused context/harvest scenarios passed.
+    Scope: proposal source pack and extraction-contract compatibility
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli isolated suite completed after all 12 chunks at implementation commit 28dd4ab93aa1.
+    Scope: repository-wide CLI compatibility, lifecycle, replay, scope, and trust-boundary invariants
+
+    Command: bun run typecheck; bun run docs:cli:check; bun run bench:compatibility:check; bun run knip:check; bun run task-state:check; git diff --check
+    Result: pass
+    Evidence: TypeScript, generated CLI docs, approved v0.7 compatibility candidate, unused-code baseline, task-state, and diff-integrity checks all passed.
+    Scope: declared verification gates at implementation commit 28dd4ab93aa1
 
     BlueprintSnapshotRef:
     - state: current
@@ -350,6 +406,56 @@ Command: git diff --check
 Result: pass
 Evidence: no whitespace errors before the reviewed implementation commit
 Scope: task branch diff integrity
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+- old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T17:45:14.790Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T17:24:58.624Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+Details:
+
+Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism
+Result: pass
+Evidence: 15 focused harvest scenarios passed, including canonical consolidation before CURATOR creation, stale lease recovery, active-owner exclusion, and concurrent selection ownership.
+Scope: RF-20 proposal selection and current-canonical-knowledge gate
+
+Command: bun run test -- src/commands/context/harvest-tasks.test.ts src/context/ingest-task-pack.test.ts --maxWorkers=1 --no-file-parallelism
+Result: pass
+Evidence: 29 focused context/harvest scenarios passed.
+Scope: proposal source pack and extraction-contract compatibility
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli isolated suite completed after all 12 chunks at implementation commit 28dd4ab93aa1.
+Scope: repository-wide CLI compatibility, lifecycle, replay, scope, and trust-boundary invariants
+
+Command: bun run typecheck; bun run docs:cli:check; bun run bench:compatibility:check; bun run knip:check; bun run task-state:check; git diff --check
+Result: pass
+Evidence: TypeScript, generated CLI docs, approved v0.7 compatibility candidate, unused-code baseline, task-state, and diff-integrity checks all passed.
+Scope: declared verification gates at implementation commit 28dd4ab93aa1
 
 BlueprintSnapshotRef:
 - state: current
