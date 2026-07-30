@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -54,8 +54,8 @@ quality_review:
     - "queue-state-superseded retains the same rework-only transition, successor receipt, reason requirement, and released-entry cleanup through the shared transition helper."
     - "workflow-step-provider-conflict-superseded preserves the terminal stop outcome and explicit prohibition on reopening, enqueueing, or integrating the closed PR."
 commit:
-  hash: "8b25b6a2fc417cce9aff9c2575577cd014877d4e"
-  message: "🧪 Y61ZHN task: record refreshed quality review"
+  hash: "a5e04e978ed156de8033a728ab027a400a363d59"
+  message: "🧪 Y61ZHN task: record structural quality review"
 comments:
   -
     author: "CODER"
@@ -66,6 +66,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -104,8 +107,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T22:32:50.803Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T22:15:45.733Z"
+doc_updated_at: "2026-07-30T22:32:50.804Z"
 doc_updated_by: "CODER"
 description: "Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue."
 sections:
@@ -160,8 +170,8 @@ sections:
       Resolution: Current-base BLOCKED task, current closed provider PR, DONE successor, and rework queue entry are all required before the terminal outcome is recorded.
 extensions:
   implementation_commit:
-    hash: "9f7d0fca4b2d79e3247907cae37b4ce935a1ad3e"
-    message: "📚 Y61ZHN task: refresh CLI reference"
+    hash: "5646a4f5034a0267d4ff39d0a181e48e5dae1465"
+    message: "🧩 Y61ZHN task: split provider conflict modules"
   workflow_route_baseline:
     start_head_sha: "ac63ebe31bf54d8bb088669beb0dabb79fc31ad4"
     version: 1
