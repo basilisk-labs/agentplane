@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607221852-WF8A0X-a8c6646c58c6027f08c9af01",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/quality/20260730-183747387-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-30T18:37:48.103Z",
+  "ended_at": "2026-07-30T18:38:57.531Z",
+  "stdout_bytes": 123447,
+  "stderr_bytes": 5970,
+  "provider_usage": {
+    "input_tokens": 251914,
+    "output_tokens": 3183,
+    "total_tokens": 255097
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:d54e8b41d45069eb95265c56c3dba91774d82e1fd7bfea72a865f34a13aea182"
+}

@@ -6,14 +6,14 @@ Created: 2026-07-30T16:07:19.966Z
 
 - Task: `202607221852-WF8A0X`
 - Title: Create CURATOR-gated post-task knowledge proposals
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa`
 - Canonical task record: `.agentplane/tasks/202607221852-WF8A0X/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified stale-lock fencing and CURATOR selection evidence.
+- Note: Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,10 +1,11 @@
 ---
 id: "202607221852-WF8A0X"
 title: "Create CURATOR-gated post-task knowledge proposals"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -34,38 +35,38 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T18:11:02.266Z"
+  updated_at: "2026-07-30T18:43:05.515Z"
   updated_by: "TESTER"
-  note: "Verified stale-lock fencing and CURATOR selection evidence."
+  note: "Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T18:28:19.079Z"
+  updated_at: "2026-07-30T18:44:40.699Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "40297e561f4ab4aaf9779bc08f63c7fa2ffefba5"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "f80c562d0abc3d3f2932dd8350a3a504c0ec034f"
   blueprint_digest: "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221852-WF8A0X/README.md"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-182706625-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/verification/20260730184305515-0c5535a2ed9aea25.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "An interruption after writing the source-task selection marker but before writing the selection receipt leaves an unrecoverable partial handoff: retry exits because the source already has a current CURATOR owner and never completes the missing receipt."
+    - "The interrupted marker-only CURATOR handoff now converges to the existing CURATOR task and completes the missing selection receipt without creating a second owner."
 commit:
-  hash: "5dec70046e5b4006ffa4b78593154ad3409ad764"
-  message: "🚧 WF8A0X task: gate task knowledge proposals"
+  hash: "f80c562d0abc3d3f2932dd8350a3a504c0ec034f"
+  message: "🐛 WF8A0X task: recover marker-only CURATOR selections"
 comments:
   -
     author: "CODER"
@@ -73,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: replaced task-history fact/wiki promotion with source-backed knowledge proposals, exact CURATOR selection receipts, and CLI-built semantic work packs. Local checks: typecheck, focused harvest tests (9 passed), targeted lint, Knip, CLI docs freshness, diff check."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -112,8 +116,27 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified stale-lock fencing and CURATOR selection evidence."
+  -
+    type: "verify"
+    at: "2026-07-30T18:40:33.923Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Fresh deterministic verification recorded for f80c562d0 marker-only CURATOR recovery."
+  -
+    type: "verify"
+    at: "2026-07-30T18:43:05.515Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery."
+  -
+    type: "status"
+    at: "2026-07-30T18:45:24.967Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T18:11:05.876Z"
+doc_updated_at: "2026-07-30T18:45:24.967Z"
 doc_updated_by: "CODER"
 description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
 sections:
@@ -337,6 +360,108 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T18:40:33.923Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T18:11:05.876Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+    Details:
+
+    Evaluated implementation SHA: f80c562d0abc3d3f2932dd8350a3a504c0ec034f
+
+    Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism
+    Result: PASS, 1 test file and 20 tests.
+    Evidence: includes interrupted source-marker recovery, CURATOR adoption without a second task, receipt completion, completed-selection rejection, stale-lock recovery, and concurrent selection coverage.
+    Scope: Verify Steps 2, 3, 4, and 5.
+
+    Command: bun run typecheck
+    Result: PASS, exit 0.
+    Evidence: TypeScript build completed on the evaluated SHA.
+    Scope: Verify Step 5.
+
+    Command: bun run task-state:check
+    Result: PASS, task state OK for 3183 tasks.
+    Evidence: task lifecycle state remains valid on the evaluated SHA.
+    Scope: Verify Step 5.
+
+    Command: bun run test:critical
+    Result: PASS, 12 critical CLI chunks and 76 tests.
+    Evidence: agent efficiency, exit codes, git edges, protected paths, scope leaks, symlink roots, and trust boundaries all passed.
+    Scope: regression guard for Verify Step 5.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+    - old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-WF8A0X
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T18:43:05.515Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T18:40:35.665Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+    Details:
+
+    Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism
+    Result: pass
+    Evidence: 1 test file and 20 tests at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f, including marker-only recovery, CURATOR adoption, receipt completion, completed-selection rejection, stale-lock recovery, and concurrent selection.
+    Scope: Verify Steps 2, 3, 4, and 5.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build exit 0 at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.
+    Scope: Verify Step 5.
+
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: task state OK for 3183 tasks at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.
+    Scope: Verify Step 5.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 critical CLI chunks and 76 tests passed at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.
+    Scope: regression guard for Verify Step 5.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+    - old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-WF8A0X
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -584,6 +709,108 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T18:40:33.923Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T18:11:05.876Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+Details:
+
+Evaluated implementation SHA: f80c562d0abc3d3f2932dd8350a3a504c0ec034f
+
+Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism
+Result: PASS, 1 test file and 20 tests.
+Evidence: includes interrupted source-marker recovery, CURATOR adoption without a second task, receipt completion, completed-selection rejection, stale-lock recovery, and concurrent selection coverage.
+Scope: Verify Steps 2, 3, 4, and 5.
+
+Command: bun run typecheck
+Result: PASS, exit 0.
+Evidence: TypeScript build completed on the evaluated SHA.
+Scope: Verify Step 5.
+
+Command: bun run task-state:check
+Result: PASS, task state OK for 3183 tasks.
+Evidence: task lifecycle state remains valid on the evaluated SHA.
+Scope: Verify Step 5.
+
+Command: bun run test:critical
+Result: PASS, 12 critical CLI chunks and 76 tests.
+Evidence: agent efficiency, exit codes, git edges, protected paths, scope leaks, symlink roots, and trust boundaries all passed.
+Scope: regression guard for Verify Step 5.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+- old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-WF8A0X
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T18:43:05.515Z — VERIFY — ok
+
+By: TESTER
+
+Note: Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T18:40:35.665Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+Details:
+
+Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism
+Result: pass
+Evidence: 1 test file and 20 tests at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f, including marker-only recovery, CURATOR adoption, receipt completion, completed-selection rejection, stale-lock recovery, and concurrent selection.
+Scope: Verify Steps 2, 3, 4, and 5.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build exit 0 at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.
+Scope: Verify Step 5.
+
+Command: bun run task-state:check
+Result: pass
+Evidence: task state OK for 3183 tasks at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.
+Scope: Verify Step 5.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 critical CLI chunks and 76 tests passed at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.
+Scope: regression guard for Verify Step 5.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+- old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-WF8A0X
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

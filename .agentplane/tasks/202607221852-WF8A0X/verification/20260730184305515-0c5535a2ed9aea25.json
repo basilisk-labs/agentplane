@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism\nResult: pass\nEvidence: 1 test file and 20 tests at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f, including marker-only recovery, CURATOR adoption, receipt completion, completed-selection rejection, stale-lock recovery, and concurrent selection.\nScope: Verify Steps 2, 3, 4, and 5.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build exit 0 at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.\nScope: Verify Step 5.\n\nCommand: bun run task-state:check\nResult: pass\nEvidence: task state OK for 3183 tasks at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.\nScope: Verify Step 5.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 critical CLI chunks and 76 tests passed at implementation SHA f80c562d0abc3d3f2932dd8350a3a504c0ec034f.\nScope: regression guard for Verify Step 5.",
+  "digest": "sha256:0c5535a2ed9aea252975a4b297f62a61c0b51551f0c05e0ca248a2273cce479c",
+  "implementation_sha": "f80c562d0abc3d3f2932dd8350a3a504c0ec034f",
+  "kind": "task_verification_record",
+  "note": "Structured deterministic verification recorded for f80c562d0 marker-only CURATOR recovery.",
+  "recorded_at": "2026-07-30T18:43:05.515Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Complete fixtures containing durable and transient changes. Expected: only source-backed durable candidates are proposed; no wiki file changes automatically.\n2. Submit duplicate and conflicting proposals. Expected: dedupe/consolidation evidence precedes CURATOR selection.\n3. Select a proposal. Expected: a separate exact-id CURATOR task/work order owns semantic publication.\n4. Trace a published item. Expected: source refs, task/PR decision, CURATOR result, and apply receipt are complete.\n5. Run proposal/context/task-state tests.",
+  "scope_digest": "sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444",
+  "task_id": "202607221852-WF8A0X",
+  "verification_command": "agentplane verify 202607221852-WF8A0X --ok --by TESTER",
+  "verifier": "TESTER"
+}
