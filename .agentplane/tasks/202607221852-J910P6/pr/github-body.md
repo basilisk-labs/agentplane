@@ -22,12 +22,20 @@ RF-16: index complete section/window/row content while keeping bounded previews 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T07:16:50.265Z
+- Updated: 2026-07-30T07:17:13.019Z
 - Branch: task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/context/capability.ts  |   5 +-
+ .../src/commands/context/release-readiness.test.ts |  48 ++++++++
+ packages/agentplane/src/commands/context/search.ts |  51 ++------
+ .../src/commands/context/sqlite.unit.test.ts       |  58 +++++++++-
+ .../src/context/reindex-projection.test.ts         |  94 +++++++++++++++
+ .../agentplane/src/context/reindex-projection.ts   | 128 +++++++++++++++------
+ packages/agentplane/src/context/reindex.ts         |  33 +++++-
+ packages/agentplane/src/context/sqlite.ts          |  47 ++++++--
+ 8 files changed, 367 insertions(+), 97 deletions(-)
 ```
 
 </details>

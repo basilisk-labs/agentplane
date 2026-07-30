@@ -132,7 +132,8 @@ export async function cmdContextCapabilitySearch(opts: {
     const matches = projection.rows
       .filter((row) => isCapabilityProjectionPath(row.path))
       .filter(
-        (row) => row.body.toLowerCase().includes(query) || row.path.toLowerCase().includes(query),
+        (row) =>
+          row.search_text.toLowerCase().includes(query) || row.path.toLowerCase().includes(query),
       );
     for (const row of matches) {
       process.stdout.write(`match: ${row.path}\n`);
@@ -194,7 +195,7 @@ export async function cmdContextCapabilityDiscover(opts: {
     const scored = projection.rows
       .filter((row) => isCapabilityProjectionPath(row.path))
       .map((row) => {
-        const haystack = `${row.path}\n${row.body}`.toLowerCase();
+        const haystack = `${row.path}\n${row.search_text}`.toLowerCase();
         const support = Math.max(row.source_refs?.length ?? 1, 1);
         return haystack.includes(from) ? { row, support } : { row, support: 0 };
       })

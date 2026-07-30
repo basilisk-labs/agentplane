@@ -19,7 +19,7 @@ import {
 } from "./reindex-projection.js";
 import { readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
 
-const PROJECTION_VERSION = 1;
+export const PROJECTION_VERSION = 2;
 const MAX_LEGACY_JSON_PROJECTION_BYTES = 256 * 1024 * 1024;
 
 type ProjectionIndex = {
@@ -29,6 +29,10 @@ type ProjectionIndex = {
     workspace_hash: string;
     include_tasks: boolean;
     include_raw: boolean;
+    source_bytes: number;
+    search_text_bytes: number;
+    preview_text_bytes: number;
+    projection_elapsed_ms: number;
   };
   rows: {
     path: string;
@@ -38,7 +42,8 @@ type ProjectionIndex = {
     indexed_at: string;
     size_bytes: number;
     kind: string;
-    body: string;
+    search_text: string;
+    preview_text: string;
     source_refs?: string[];
   }[];
 };
@@ -118,7 +123,9 @@ export async function cmdContextReindex(opts: {
   }
 
   const now = new Date().toISOString();
+  const projectionStartedAt = performance.now();
   const rows: ProjectionSourceRow[] = [];
+  let sourceBytes = 0;
   for (const rel of files) {
     const abs = path.join(root, rel);
     if (!(await fileExists(abs))) {
@@ -136,6 +143,7 @@ export async function cmdContextReindex(opts: {
       const text = await readText(abs);
       const nextRows = projectRowsForFile(toPosix(rel), text);
       rows.push(...nextRows);
+      sourceBytes += Buffer.byteLength(text, "utf8");
     } catch {
       // Skip unreadable files from projection to keep reindex resilient.
       continue;
@@ -149,6 +157,16 @@ export async function cmdContextReindex(opts: {
       workspace_hash: defaultWorkspaceHash(root),
       include_tasks: opts.parsed.includeTasks,
       include_raw: opts.parsed.includeRaw,
+      source_bytes: sourceBytes,
+      search_text_bytes: rows.reduce(
+        (total, row) => total + Buffer.byteLength(row.search_text, "utf8"),
+        0,
+      ),
+      preview_text_bytes: rows.reduce(
+        (total, row) => total + Buffer.byteLength(row.preview_text, "utf8"),
+        0,
+      ),
+      projection_elapsed_ms: Math.round(performance.now() - projectionStartedAt),
     },
     rows: rows.map((row) => ({
       ...row,
@@ -162,6 +180,11 @@ export async function cmdContextReindex(opts: {
 
   process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
   process.stdout.write(infoMessage(`rows=${rows.length} files=${files.length}\n`));
+  process.stdout.write(
+    infoMessage(
+      `projection_metrics source_bytes=${payload.metadata.source_bytes} search_text_bytes=${payload.metadata.search_text_bytes} preview_text_bytes=${payload.metadata.preview_text_bytes} elapsed_ms=${payload.metadata.projection_elapsed_ms}`,
+    ) + "\n",
+  );
   return 0;
 }
 
@@ -182,7 +205,11 @@ export async function readContextProjection(root: string): Promise<ProjectionInd
 
   const sqliteProjection = await readSqliteProjection(pathIdentity.file_path).catch(() => null);
   await assertContainedPathChainIdentityUnchanged(pathIdentity, "context projection cache");
-  if (sqliteProjection) return sqliteProjection;
+  if (sqliteProjection) {
+    return sqliteProjection.metadata.projection_version === PROJECTION_VERSION
+      ? sqliteProjection
+      : null;
+  }
 
   const expectedIdentity = pathIdentity.identities.at(-1);
   if (!expectedIdentity) {

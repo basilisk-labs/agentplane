@@ -12,7 +12,8 @@ type SqliteProjectionRow = {
   indexed_at: string;
   size_bytes: number;
   kind: string;
-  body: string;
+  search_text: string;
+  preview_text: string;
   source_refs?: string[];
 };
 
@@ -23,6 +24,10 @@ type SqliteProjection = {
     workspace_hash: string;
     include_tasks: boolean;
     include_raw: boolean;
+    source_bytes: number;
+    search_text_bytes: number;
+    preview_text_bytes: number;
+    projection_elapsed_ms: number;
   };
   rows: SqliteProjectionRow[];
 };
@@ -33,6 +38,10 @@ type SqliteProjectionMetadataRow = {
   workspace_hash?: unknown;
   include_tasks?: unknown;
   include_raw?: unknown;
+  source_bytes?: unknown;
+  search_text_bytes?: unknown;
+  preview_text_bytes?: unknown;
+  projection_elapsed_ms?: unknown;
 };
 
 type SqliteProjectionRowRecord = {
@@ -43,7 +52,8 @@ type SqliteProjectionRowRecord = {
   indexed_at?: unknown;
   size_bytes?: unknown;
   kind?: unknown;
-  body?: unknown;
+  search_text?: unknown;
+  preview_text?: unknown;
   source_refs?: unknown;
 };
 
@@ -87,7 +97,11 @@ function resetContextProjectionSchema(db: SqliteDatabase): void {
       generated_at TEXT NOT NULL,
       workspace_hash TEXT NOT NULL,
       include_tasks INTEGER NOT NULL,
-      include_raw INTEGER NOT NULL
+      include_raw INTEGER NOT NULL,
+      source_bytes INTEGER NOT NULL,
+      search_text_bytes INTEGER NOT NULL,
+      preview_text_bytes INTEGER NOT NULL,
+      projection_elapsed_ms INTEGER NOT NULL
     );
     CREATE TABLE projection_rows (
       path TEXT PRIMARY KEY,
@@ -97,12 +111,13 @@ function resetContextProjectionSchema(db: SqliteDatabase): void {
       indexed_at TEXT NOT NULL,
       size_bytes INTEGER NOT NULL,
       kind TEXT NOT NULL,
-      body TEXT NOT NULL,
+      search_text TEXT NOT NULL,
+      preview_text TEXT NOT NULL,
       source_refs TEXT NOT NULL
     );
     CREATE VIRTUAL TABLE projection_fts USING fts5(
       path,
-      body,
+      search_text,
       content='projection_rows',
       content_rowid='rowid'
     );
@@ -121,17 +136,21 @@ export async function writeSqliteProjection(
     const transaction = db.transaction((payload: SqliteProjection) => {
       resetContextProjectionSchema(db);
       db.prepare(
-        "INSERT INTO projection_metadata (projection_version, generated_at, workspace_hash, include_tasks, include_raw) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO projection_metadata (projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       ).run(
         payload.metadata.projection_version,
         payload.metadata.generated_at,
         payload.metadata.workspace_hash,
         payload.metadata.include_tasks ? 1 : 0,
         payload.metadata.include_raw ? 1 : 0,
+        payload.metadata.source_bytes,
+        payload.metadata.search_text_bytes,
+        payload.metadata.preview_text_bytes,
+        payload.metadata.projection_elapsed_ms,
       );
 
       const insertRow = db.prepare(
-        "INSERT INTO projection_rows (path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, body, source_refs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO projection_rows (path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, search_text, preview_text, source_refs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       );
       for (const row of payload.rows) {
         insertRow.run(
@@ -142,7 +161,8 @@ export async function writeSqliteProjection(
           row.indexed_at,
           row.size_bytes,
           row.kind,
-          row.body,
+          row.search_text,
+          row.preview_text,
           refsToJson(row.source_refs),
         );
       }
@@ -160,14 +180,14 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
   try {
     const metadata = db
       .prepare(
-        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw FROM projection_metadata LIMIT 1",
+        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms FROM projection_metadata LIMIT 1",
       )
       .get() as SqliteProjectionMetadataRow | undefined;
     if (!metadata) return null;
 
     const rows = db
       .prepare(
-        "SELECT path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, body, source_refs FROM projection_rows ORDER BY path",
+        "SELECT path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, search_text, preview_text, source_refs FROM projection_rows ORDER BY path",
       )
       .all() as SqliteProjectionRowRecord[];
 
@@ -178,6 +198,10 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
         workspace_hash: String(metadata.workspace_hash ?? ""),
         include_tasks: Number(metadata.include_tasks ?? 0) === 1,
         include_raw: Number(metadata.include_raw ?? 0) === 1,
+        source_bytes: Number(metadata.source_bytes ?? 0),
+        search_text_bytes: Number(metadata.search_text_bytes ?? 0),
+        preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
+        projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
       },
       rows: rows.map((row) => ({
         path: String(row.path ?? ""),
@@ -187,7 +211,8 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
         indexed_at: String(row.indexed_at ?? ""),
         size_bytes: Number(row.size_bytes ?? 0),
         kind: String(row.kind ?? ""),
-        body: String(row.body ?? ""),
+        search_text: String(row.search_text ?? ""),
+        preview_text: String(row.preview_text ?? ""),
         source_refs: parseRefs(row.source_refs),
       })),
     };

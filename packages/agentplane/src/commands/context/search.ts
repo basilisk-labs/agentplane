@@ -15,6 +15,7 @@ import {
   scoreMatch,
   walkScopeFiles,
 } from "./context-utils.js";
+import { projectRowsForFile } from "../../context/reindex-projection.js";
 import { readContextProjection } from "./reindex.js";
 
 type SearchResult = {
@@ -55,14 +56,14 @@ export async function cmdContextSearch(opts: {
     usedSQLite = true;
     for (const row of projection.rows) {
       if (!pathMatchesScopes(row.path, scopes)) continue;
-      if (matchesQuery(row.body, query)) {
+      if (matchesQuery(row.search_text, query)) {
         const freshness = await buildFreshness(root, row.path, row.sha256);
         if (freshness.stale) continue;
         results.push({
           path: row.path,
-          score: scoreSearchText(row.body, query),
-          snippet: buildSnippet(row.body.split("\n"), 1, Math.min(row.body.split("\n").length, 4)),
-          refs: [row.path],
+          score: scoreSearchText(row.search_text, query),
+          snippet: row.preview_text,
+          refs: row.source_refs?.length ? row.source_refs : [row.path],
           freshness,
         });
       }
@@ -208,45 +209,15 @@ async function buildFreshness(
   } catch {
     return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
   }
-  if (base.endsWith(".jsonl") && rowPath.includes("#")) {
-    return buildJsonlRowFreshness(absolute, rowPath, projectionSha256);
-  }
-  const fileSha256 = await calculateSha256(absolute);
+  const current = projectRowsForFile(
+    rowPath.split("#", 1)[0] ?? rowPath,
+    await readText(absolute),
+  ).find((row) => row.path === rowPath);
   return {
     projection_sha256: projectionSha256,
-    file_sha256: fileSha256,
-    stale: fileSha256 !== projectionSha256,
+    file_sha256: current?.sha256 ?? null,
+    stale: current?.sha256 !== projectionSha256,
   };
-}
-
-async function buildJsonlRowFreshness(
-  filePath: string,
-  rowPath: string,
-  projectionSha256: string,
-): Promise<{ projection_sha256: string; file_sha256: string | null; stale: boolean }> {
-  const marker = rowPath.slice(rowPath.indexOf("#") + 1);
-  const separator = marker.indexOf("=");
-  if (separator === -1) {
-    const fileSha256 = await calculateSha256(filePath);
-    return {
-      projection_sha256: projectionSha256,
-      file_sha256: fileSha256,
-      stale: fileSha256 !== projectionSha256,
-    };
-  }
-  const expectedId = marker.slice(separator + 1);
-  const rows = parseJsonlLines(await readText(filePath));
-  for (const [index, row] of rows.entries()) {
-    const id = String(row.id ?? index + 1);
-    if (id !== expectedId) continue;
-    const rowSha256 = `sha256:${createHash("sha256").update(JSON.stringify(row)).digest("hex")}`;
-    return {
-      projection_sha256: projectionSha256,
-      file_sha256: rowSha256,
-      stale: rowSha256 !== projectionSha256,
-    };
-  }
-  return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
 }
 
 async function calculateSha256(filePath: string): Promise<string> {

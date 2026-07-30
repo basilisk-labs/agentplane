@@ -4,7 +4,7 @@ title: "Separate indexed search text from preview snippets"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -49,7 +49,7 @@ events:
     to: "DOING"
     note: "Start: implement projection schema v2 with full search text, bounded previews, exact source refs, and rebuild compatibility in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-30T07:16:50.145Z"
+doc_updated_at: "2026-07-30T07:25:15.644Z"
 doc_updated_by: "CODER"
 description: "RF-16: index complete section/window/row content while keeping bounded previews and precise source spans for markdown, JSONL, and structured context files."
 sections:
@@ -78,7 +78,12 @@ sections:
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
-  Findings: ""
+  Findings: |-
+    - Implemented projection schema v2: complete `search_text` is independent from UTF-8-bounded `preview_text`; SQLite FTS indexes `search_text`.
+    - Projection units preserve markdown section and line refs, JSONL rows, and structured JSON line windows. Search freshness now recomputes the exact current projection unit.
+    - v1 projections are rebuild-required; `agentplane context reindex` recreates the cache and emits source/search/preview byte metrics plus projection latency.
+    - Explicit budgets verified on a scalable fixture: preview <= 20 lines and <= 2048 UTF-8 bytes per row; projection fixture completes in < 2000 ms.
+    - Local evidence: typecheck, changed-file lint, focused projection/search/SQLite tests (25 tests) passed.
 extensions:
   workflow_route_baseline:
     start_head_sha: "b8dbca7245172f6b85d5431960a90debbc274c9d"
@@ -123,3 +128,9 @@ RF-16: index complete section/window/row content while keeping bounded previews 
 - Re-run equivalence, recall, lifecycle, and type checks.
 
 ## Findings
+
+- Implemented projection schema v2: complete `search_text` is independent from UTF-8-bounded `preview_text`; SQLite FTS indexes `search_text`.
+- Projection units preserve markdown section and line refs, JSONL rows, and structured JSON line windows. Search freshness now recomputes the exact current projection unit.
+- v1 projections are rebuild-required; `agentplane context reindex` recreates the cache and emits source/search/preview byte metrics plus projection latency.
+- Explicit budgets verified on a scalable fixture: preview <= 20 lines and <= 2048 UTF-8 bytes per row; projection fixture completes in < 2000 ms.
+- Local evidence: typecheck, changed-file lint, focused projection/search/SQLite tests (25 tests) passed.
