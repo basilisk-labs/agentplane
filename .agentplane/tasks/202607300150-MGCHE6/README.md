@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +53,8 @@ quality_review:
     - "The direct critical test passes under Node/Vitest (7/7), the generated CLI reference passes freshness validation, compatibility and full contract gates pass, and no recovery behavior changed."
     - "The correction is limited to test/doc contract artifacts that had become stale when the recovery CLI flags were introduced."
 commit:
-  hash: "624cb81fe85c14176778c9f6df10bf7beeaa8013"
-  message: "📝 MGCHE6 task: record CI rework review"
+  hash: "2c8d47c3893919eb97025094a810540e42319249"
+  message: "📝 MGCHE6 task: record final CI rework review"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -65,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -109,8 +112,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T02:32:54.131Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T02:24:34.848Z"
+doc_updated_at: "2026-07-30T02:32:54.132Z"
 doc_updated_by: "CODER"
 description: "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner."
 sections:
@@ -170,8 +180,8 @@ sections:
       Resolution: No rebase, merge, force-push, or provider write is performed; remaining semantic resolution stays on the existing conflict-rework route.
 extensions:
   implementation_commit:
-    hash: "b0a0eb50cfa070ee0b94550f0e7e096aaf805ce4"
-    message: "🐛 MGCHE6 task: align CLI contract artifacts"
+    hash: "b58491cd78a310e0e007f36cec35cc90db834d51"
+    message: "🐛 MGCHE6 task: refresh compatibility candidate assertions"
   workflow_route_baseline:
     start_head_sha: "88c7ead3e32920f31a219880f72651635c41778a"
     version: 1

@@ -8,10 +8,10 @@
   "pr_number": 4677,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4677",
   "pre_merge_closure": {
-    "basis_commit": "624cb81fe85c14176778c9f6df10bf7beeaa8013",
+    "basis_commit": "2c8d47c3893919eb97025094a810540e42319249",
     "branch": "task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely",
     "pr_number": 4677,
-    "recorded_at": "2026-07-30T02:24:34.901Z",
+    "recorded_at": "2026-07-30T02:32:54.184Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
