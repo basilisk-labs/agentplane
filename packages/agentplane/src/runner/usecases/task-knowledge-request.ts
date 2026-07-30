@@ -64,7 +64,8 @@ export type TaskKnowledgeRequestResponse = {
       | "reference_outside_task_context"
       | "reference_not_materializable"
       | "excerpt_not_included"
-      | "repeated_unresolved";
+      | "repeated_unresolved"
+      | "reservation_unavailable";
     detail: string;
   }[];
   usage: {
@@ -157,6 +158,8 @@ function response(opts: {
     blocker: opts.blocker ?? null,
   });
 }
+
+export { response as createTaskKnowledgeRequestResponse };
 
 function responseMatchesBinding(opts: {
   audit: TaskKnowledgeRequestAudit;
@@ -587,6 +590,7 @@ export function validateTaskKnowledgeRequestResponse(
 export {
   loadTaskKnowledgeRequestAudits,
   persistTaskKnowledgeRequestAudit,
+  taskKnowledgeRequestReservationUnavailableResponse,
   taskKnowledgeRequestAuditPath,
   TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY,
   withTaskKnowledgeRequestAuditReservation,

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221852-01ACZ9-c8593ba13c19be3f90566c1a",
+  "task_id": "202607221852-01ACZ9",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Следующему проверяющему нужен свежий детерминированный пакет проверок для SHA 0502c0cfaac823d0f527854b91e83e18dde76adc, включая конкурентные сценарии одного work-order binding; после этого семантическую оценку можно повторить.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Замороженная проверка относится к SHA 18c2c433, а оцениваемая версия имеет SHA 0502c0cf; исправление конкурентного резервирования и соответствующие тесты не подтверждены детерминированным прогоном на оцениваемой версии.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:931d0ec5ca68200fba32d63e320c02b8ab26505c1be3dacc4f25935c48d8a416",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:aa6cd0f7770256fc3eb7a15193604656760b08e0277165de1e8387fca5b289bf",
+          "section": "task-knowledge-request-audit.ts and task-knowledge-request-lifecycle.test.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-result.json"
+}

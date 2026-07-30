@@ -4,7 +4,7 @@ title: "Serve bounded knowledge requests during agent episodes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -35,35 +35,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T14:27:53.900Z"
+  updated_at: "2026-07-30T14:52:08.570Z"
   updated_by: "TESTER"
-  note: "RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 18c2c433; focused adversarial retrieval coverage also passed."
+  note: "RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused concurrent retrieval coverage also passed."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T14:38:55.030Z"
+  updated_at: "2026-07-30T14:53:50.065Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "b05cb41623df33dd5f1883158af057dc808fcf0a"
+  evaluated_sha: "0502c0cfaac823d0f527854b91e83e18dde76adc"
   blueprint_digest: "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221852-01ACZ9/README.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/verification/20260730145208570-679cd95b33ce570e.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-145223975-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Параллельные запросы одного запуска могут получить одинаковый номер раунда и независимо пройти лимит или проверку повторного нерешённого запроса."
+    - "Резервирование раунда теряет взаимное исключение, если обработка запроса длится более 60 секунд: конкурентный процесс удаляет действующую блокировку как устаревшую и входит в ту же критическую секцию."
 commit:
   hash: "35758465c6432d0503e12e56c6f31eb49cfb7604"
   message: "🚧 01ACZ9 task: serve bounded knowledge requests"
@@ -101,8 +102,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 18c2c433; focused adversarial retrieval coverage also passed."
+  -
+    type: "verify"
+    at: "2026-07-30T14:52:08.570Z"
+    author: "TESTER"
+    state: "ok"
+    note: "RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused concurrent retrieval coverage also passed."
 doc_version: 3
-doc_updated_at: "2026-07-30T14:27:54.637Z"
+doc_updated_at: "2026-07-30T14:52:09.285Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
@@ -212,6 +219,61 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T14:52:08.570Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused concurrent retrieval coverage also passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T14:27:54.637Z, excerpt_hash=sha256:71de638d60efec5e2dc8cfe8b2cf6bbd9f5eb77930537d5185b761b29bac9ca7
+
+    Details:
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: schemas OK at HEAD 0502c0cfaac823d0f527854b91e83e18dde76adc.
+    Scope: Generated public schemas and fixture synchronization.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical CLI matrix passed 12/12 chunks and 76 tests at HEAD 0502c0cfaac823d0f527854b91e83e18dde76adc.
+    Scope: Critical CLI trust-boundary and agent-efficiency regressions.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: repository TypeScript build exited 0 at HEAD 0502c0cfaac823d0f527854b91e83e18dde76adc.
+    Scope: Workspace type safety.
+
+    Command: bun run --filter=agentplane test -- task-knowledge-request.test.ts task-knowledge-request-lifecycle.test.ts task-knowledge-semantic-escalation.test.ts agent-work-order.integration.test.ts task-run-bootstrap.result-examples.test.ts result-manifest.test.ts codex-result-transport.test.ts direct-task-supervisor-observation.test.ts task-run-context.integration.test.ts task-run-lifecycle.test.ts
+    Result: pass
+    Evidence: 10 agentplane files and 98 tests passed; includes FTS pagination, digest drift, complete response budget, and concurrent round reservation/escalation across separate run directories.
+    Scope: RF-22 request serving, runner lifecycle, authorization, digest binding, response budget, and concurrency regressions.
+
+    Command: bun run --filter=@agentplaneorg/core test -- agent-semantic-result.test.ts agent-work-order.test.ts
+    Result: pass
+    Evidence: 2 core files and 25 tests passed.
+    Scope: Semantic result and work-order contract compatibility.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-01ACZ9-serve-bounded-knowledge-requests-during-agent-ep/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json
+    - old_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+    - current_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-01ACZ9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-01ACZ9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
@@ -224,6 +286,9 @@ sections:
     - Observation: EVALUATOR found that concurrent requests could read the same audit history before a round was persisted.
       Impact: Two requests could claim the same round, bypass a budget, or miss required escalation.
       Resolution: Serialize audit reload, response calculation, and persistence by immutable work-order binding; concurrent runner coverage asserts rounds 1/2 and unresolved/escalated ordering across separate run directories.
+    - Observation: EVALUATOR found that an age-based lock cleanup could remove a live request during a slow context operation.
+      Impact: A second process could enter the same critical section or surface an untyped storage error on reservation contention.
+      Resolution: Reuse an owner-verified cross-process lock without time-based eviction, retain dead-owner recovery, and return a bounded round-0 escalation when the reservation wait expires.
 extensions:
   workflow_route_baseline:
     start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
@@ -345,6 +410,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T14:52:08.570Z — VERIFY — ok
+
+By: TESTER
+
+Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused concurrent retrieval coverage also passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T14:27:54.637Z, excerpt_hash=sha256:71de638d60efec5e2dc8cfe8b2cf6bbd9f5eb77930537d5185b761b29bac9ca7
+
+Details:
+
+Command: bun run schemas:check
+Result: pass
+Evidence: schemas OK at HEAD 0502c0cfaac823d0f527854b91e83e18dde76adc.
+Scope: Generated public schemas and fixture synchronization.
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical CLI matrix passed 12/12 chunks and 76 tests at HEAD 0502c0cfaac823d0f527854b91e83e18dde76adc.
+Scope: Critical CLI trust-boundary and agent-efficiency regressions.
+
+Command: bun run typecheck
+Result: pass
+Evidence: repository TypeScript build exited 0 at HEAD 0502c0cfaac823d0f527854b91e83e18dde76adc.
+Scope: Workspace type safety.
+
+Command: bun run --filter=agentplane test -- task-knowledge-request.test.ts task-knowledge-request-lifecycle.test.ts task-knowledge-semantic-escalation.test.ts agent-work-order.integration.test.ts task-run-bootstrap.result-examples.test.ts result-manifest.test.ts codex-result-transport.test.ts direct-task-supervisor-observation.test.ts task-run-context.integration.test.ts task-run-lifecycle.test.ts
+Result: pass
+Evidence: 10 agentplane files and 98 tests passed; includes FTS pagination, digest drift, complete response budget, and concurrent round reservation/escalation across separate run directories.
+Scope: RF-22 request serving, runner lifecycle, authorization, digest binding, response budget, and concurrency regressions.
+
+Command: bun run --filter=@agentplaneorg/core test -- agent-semantic-result.test.ts agent-work-order.test.ts
+Result: pass
+Evidence: 2 core files and 25 tests passed.
+Scope: Semantic result and work-order contract compatibility.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-01ACZ9-serve-bounded-knowledge-requests-during-agent-ep/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json
+- old_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+- current_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-01ACZ9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-01ACZ9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -358,3 +478,6 @@ DecisionContextRef:
 - Observation: Bounded knowledge handler remains below the enforced 600-line runtime limit (578 lines); hotspot warning only.
   Impact: No current correctness gate is violated; future extraction may split the handler if its policy surface grows.
   Resolution: Keep RF-23 limited to provider-tool transport; do not widen this handler without a separate refactoring task.
+- Observation: EVALUATOR found that concurrent requests could read the same audit history before a round was persisted.
+  Impact: Two requests could claim the same round, bypass a budget, or miss required escalation.
+  Resolution: Serialize audit reload, response calculation, and persistence by immutable work-order binding; concurrent runner coverage asserts rounds 1/2 and unresolved/escalated ordering across separate run directories.
