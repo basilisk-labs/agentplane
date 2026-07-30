@@ -32,14 +32,14 @@ Created: 2026-07-30T09:44:33.829Z
  ...-cli.critical.agent-efficiency-baseline.test.ts |  37 +-
  .../src/commands/context/release-readiness.test.ts |  38 +-
  .../commands/context/wiki.obsidian.unit.test.ts    |  28 +-
- .../src/context/ingest-task-pack.test.ts           | 239 +++++++++-
+ .../src/context/ingest-task-pack.test.ts           | 242 +++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
  .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
  packages/agentplane/src/context/ingest-task.ts     |   5 +-
  .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |  38 +-
  .../check-compatibility-contract-baseline.mjs      |  39 +-
- 10 files changed, 913 insertions(+), 120 deletions(-)
+ 10 files changed, 916 insertions(+), 120 deletions(-)
 ```
 
 </details>

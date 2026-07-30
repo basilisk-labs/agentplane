@@ -15,7 +15,7 @@ import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { createTaskNewParsed } from "../../context/ingest-task.js";
 import type { ManifestEntry } from "../../context/ingest.js";
-import { cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
+import { cmdContextWikiLint } from "./wiki.js";
 
 let tempRoots: string[] = [];
 
