@@ -84,6 +84,15 @@ type DriverModule = {
     time_to_first_scoped_mutation_ms: number | null;
     time_to_verified_result_ms: number;
   };
+  partitionHarnessSetupClock(clock: {
+    anchorRuntimeReadyAt: number;
+    harnessReadyAt: number;
+    harnessStartedAt: number;
+  }): {
+    anchor_runtime_build_latency_ms: number;
+    fixture_initialization_latency_ms: number;
+    harness_setup_latency_ms: number;
+  };
   resolveCodexReplayCliVersion(source: Record<string, string>): string;
 };
 
@@ -336,8 +345,27 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     ]);
   });
 
-  it("excludes runtime compilation and fixture prerequisites from scenario timing", async () => {
+  it("separates runtime and fixture setup without changing scenario timing", async () => {
     const replayDriver = await driver();
+
+    expect(
+      replayDriver.partitionHarnessSetupClock({
+        anchorRuntimeReadyAt: 650,
+        harnessReadyAt: 800,
+        harnessStartedAt: 100,
+      }),
+    ).toEqual({
+      anchor_runtime_build_latency_ms: 550,
+      fixture_initialization_latency_ms: 150,
+      harness_setup_latency_ms: 700,
+    });
+    expect(() =>
+      replayDriver.partitionHarnessSetupClock({
+        anchorRuntimeReadyAt: 99,
+        harnessReadyAt: 800,
+        harnessStartedAt: 100,
+      }),
+    ).toThrow("REPLAY_HARNESS_CLOCK_ORDER");
 
     expect(
       replayDriver.partitionReplayClock({
