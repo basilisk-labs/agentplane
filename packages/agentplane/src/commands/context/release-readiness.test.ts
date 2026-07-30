@@ -371,6 +371,54 @@ describe("context release readiness guards", () => {
     expect(sectionResult?.freshness.stale).toBe(false);
   });
 
+  it("searches complete projected text while returning a bounded section preview", async () => {
+    const root = await tempRoot();
+    const tail = "rf16-search-tail-sentinel";
+    await write(
+      root,
+      "context/wiki/projection.md",
+      [
+        "# Projection",
+        "",
+        "## Complete section",
+        ...Array.from({ length: 48 }, (_, index) => `detail line ${index + 1}`),
+        tail,
+      ].join("\n"),
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextSearch({
+      cwd: root,
+      parsed: { query: tail, scope: "context", format: "json", explain: false },
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      adapter: string;
+      results: {
+        ref: string;
+        snippet: string;
+        source_refs: string[];
+        freshness: { stale: boolean };
+      }[];
+    };
+    const section = payload.results.find(
+      (result) => result.ref === "context/wiki/projection.md#section=complete-section",
+    );
+    expect(payload.adapter).toBe("sqlite");
+    expect(section).toMatchObject({
+      freshness: { stale: false },
+      source_refs: [
+        "context/wiki/projection.md#section=complete-section",
+        "context/wiki/projection.md#lines=3-52",
+      ],
+    });
+    expect(section?.snippet).not.toContain(tail);
+  });
+
   it("keeps task history out of default context search unless tasks scope is explicit", async () => {
     const root = await tempRoot();
     await write(root, "context/wiki/release.md", "# Release\n\nCurated release checklist.\n");

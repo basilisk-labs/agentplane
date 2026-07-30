@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe",
   "created_at": "2026-07-30T07:16:50.265Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:5105f028e805cd67dfcd03f925e237be425ca34fd910e672916394362652103c",
   "last_verified_at": null,
+  "pr_number": 4685,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4685",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221852-J910P6",
-  "updated_at": "2026-07-30T07:16:50.265Z",
+  "updated_at": "2026-07-30T07:17:13.019Z",
   "verify": {
     "status": "skipped"
   }

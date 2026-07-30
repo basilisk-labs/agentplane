@@ -12,16 +12,52 @@ export type ProjectionSourceRow = {
   sha256: string;
   content_type: string;
   kind: string;
-  body: string;
+  /** Complete unit content used by search and FTS. */
+  search_text: string;
+  /** A UTF-8-bounded, human-readable excerpt used only for result display. */
+  preview_text: string;
   size_bytes: number;
   source_refs?: string[];
 };
 
-function pickProjectionPayload(input: string): string {
-  const text = input.toLowerCase();
-  const lines = text.split(/\r?\n/);
-  if (lines.length <= 40) return text;
-  return lines.slice(0, 36).join("\n");
+export const PROJECTION_PREVIEW_MAX_BYTES = 2 * 1024;
+export const PROJECTION_PREVIEW_MAX_LINES = 20;
+export const PROJECTION_WINDOW_MAX_LINES = 80;
+
+function byteLength(input: string): number {
+  return Buffer.byteLength(input, "utf8");
+}
+
+function truncateUtf8(input: string, maxBytes: number): string {
+  if (byteLength(input) <= maxBytes) return input;
+  const marker = "…";
+  const markerBytes = byteLength(marker);
+  let consumed = 0;
+  let end = 0;
+  for (const character of input) {
+    const next = byteLength(character);
+    if (consumed + next + markerBytes > maxBytes) break;
+    consumed += next;
+    end += character.length;
+  }
+  return `${input.slice(0, end)}${marker}`;
+}
+
+function previewText(input: string): string {
+  const lines = input.split(/\r?\n/);
+  return truncateUtf8(
+    lines.slice(0, PROJECTION_PREVIEW_MAX_LINES).join("\n"),
+    PROJECTION_PREVIEW_MAX_BYTES,
+  );
+}
+
+function projectionTextFields(
+  input: string,
+): Pick<ProjectionSourceRow, "search_text" | "preview_text"> {
+  return {
+    search_text: input,
+    preview_text: previewText(input),
+  };
 }
 
 function lineWindowRef(filePath: string, start: number, end: number): string {
@@ -110,8 +146,8 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
       content_type: deriveContentType(filePath),
       kind: "markdown",
       source_refs: [rel],
-      body: pickProjectionPayload(content),
-      size_bytes: content.length,
+      ...projectionTextFields(content),
+      size_bytes: byteLength(content),
     },
   ];
   for (let index = 0; index < lines.length; index += 1) {
@@ -136,8 +172,8 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
       content_type: deriveContentType(filePath),
       kind: "markdown-section",
       source_refs: [`${rel}#section=${sectionSlug}`, lineWindowRef(rel, startLine, endLine)],
-      body: pickProjectionPayload(body),
-      size_bytes: body.length,
+      ...projectionTextFields(body),
+      size_bytes: byteLength(body),
     });
   }
   return rows;
@@ -153,24 +189,56 @@ function projectPlainTextRows(filePath: string, content: string): ProjectionSour
       content_type: deriveContentType(filePath),
       kind: toProjectionRowKind(filePath),
       source_refs: [rel],
-      body: pickProjectionPayload(content),
-      size_bytes: content.length,
+      ...projectionTextFields(content),
+      size_bytes: byteLength(content),
     },
   ];
-  const windowSize = 80;
-  for (let start = 0; start < lines.length; start += windowSize) {
-    const body = lines.slice(start, start + windowSize).join("\n");
+  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
+    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
     if (!body.trim()) continue;
     const startLine = start + 1;
-    const endLine = Math.min(lines.length, start + windowSize);
+    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
     rows.push({
       path: lineWindowRef(rel, startLine, endLine),
       sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
       content_type: deriveContentType(filePath),
       kind: "text-window",
       source_refs: [lineWindowRef(rel, startLine, endLine)],
-      body: pickProjectionPayload(body),
-      size_bytes: body.length,
+      ...projectionTextFields(body),
+      size_bytes: byteLength(body),
+    });
+  }
+  return rows;
+}
+
+function projectStructuredJsonRows(filePath: string, content: string): ProjectionSourceRow[] {
+  const rel = toPosix(filePath);
+  const fileSha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
+  const lines = content.split(/\r?\n/);
+  const rows: ProjectionSourceRow[] = [
+    {
+      path: rel,
+      sha256: fileSha256,
+      content_type: deriveContentType(filePath),
+      kind: "json",
+      source_refs: [rel],
+      ...projectionTextFields(content),
+      size_bytes: byteLength(content),
+    },
+  ];
+  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
+    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
+    if (!body.trim()) continue;
+    const startLine = start + 1;
+    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
+    rows.push({
+      path: lineWindowRef(rel, startLine, endLine),
+      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
+      content_type: deriveContentType(filePath),
+      kind: "json-window",
+      source_refs: [lineWindowRef(rel, startLine, endLine)],
+      ...projectionTextFields(body),
+      size_bytes: byteLength(body),
     });
   }
   return rows;
@@ -189,8 +257,8 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
           content_type: deriveContentType(filePath),
           kind: "jsonl-file",
           source_refs: [toPosix(filePath)],
-          body: pickProjectionPayload(content),
-          size_bytes: content.length,
+          ...projectionTextFields(content),
+          size_bytes: byteLength(content),
         },
       ];
     }
@@ -205,23 +273,13 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
         content_type: deriveContentType(filePath),
         kind: "jsonl-row",
         source_refs: sourceRefsForJsonlRow(row, ref),
-        body: serialized,
-        size_bytes: serialized.length,
+        ...projectionTextFields(serialized),
+        size_bytes: byteLength(serialized),
       };
     });
   }
   if (filePath.endsWith(".json")) {
-    return [
-      {
-        path: rel,
-        sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
-        content_type: deriveContentType(filePath),
-        kind: toProjectionRowKind(filePath),
-        source_refs: [toPosix(filePath)],
-        body: pickProjectionPayload(content),
-        size_bytes: content.length,
-      },
-    ];
+    return projectStructuredJsonRows(filePath, content);
   }
   if (filePath.endsWith(".md") || filePath.endsWith(".mdx")) {
     return projectMarkdownRows(filePath, content);
@@ -236,8 +294,8 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
       content_type: deriveContentType(filePath),
       kind: toProjectionRowKind(filePath),
       source_refs: [toPosix(filePath)],
-      body: pickProjectionPayload(content),
-      size_bytes: content.length,
+      ...projectionTextFields(content),
+      size_bytes: byteLength(content),
     },
   ];
 }
