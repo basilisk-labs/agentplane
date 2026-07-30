@@ -6,7 +6,7 @@ Created: 2026-07-30T09:44:33.829Z
 
 - Task: `202607221852-YP9QCH`
 - Title: Build source-driven canonical reconciliation candidates
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can`
 - Canonical task record: `.agentplane/tasks/202607221852-YP9QCH/README.md`
 
