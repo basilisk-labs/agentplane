@@ -1,0 +1,118 @@
+---
+id: "202607302012-FCYR88"
+title: "Unblock protected-base conflict rework after main advancement"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 4
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "branch-pr"
+  - "code"
+  - "conflict-rework"
+  - "followup"
+  - "release-blocker"
+  - "v0.7"
+task_kind: "code"
+mutation_scope: "code"
+blueprint_request: "code.branch_pr"
+verify:
+  - "bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism"
+  - "bun run test:critical"
+  - "bun run typecheck"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-07-30T20:12:34.537Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: repair protected-base conflict rework routing after main advanced."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T20:13:03.894Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: repair protected-base conflict rework routing after main advanced."
+doc_version: 3
+doc_updated_at: "2026-07-30T20:13:03.894Z"
+doc_updated_by: "CODER"
+description: "Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668."
+sections:
+  Summary: |-
+    Unblock protected-base conflict rework after main advancement
+
+    Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
+  Scope: |-
+    - In scope: Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
+    - Out of scope: unrelated refactors not required for "Unblock protected-base conflict rework after main advancement".
+  Plan: "1. Reproduce the protected-base base-advancement state using a current provider head, INTEGRATOR handoff, queue rework state, and advanced local main. 2. Change only conflict-route eligibility/preparation so current provider-base handoffs either yield the formal adoption receipt or a bounded semantic-rework packet; CLI must not auto-rebase, auto-merge, force-push, or choose conflict hunks. 3. Add focused coverage for current provider-base and legacy absent-base handoffs, including stale-token rejection. 4. Run the declared focused test, typecheck, critical suite, record verifier/evaluator evidence, and integrate through the normal PR queue."
+  Verify Steps: |-
+    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.
+    2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
+    3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.
+    4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "ce7af971c0609eed73710cd239a3f2897ae3bd7e"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Unblock protected-base conflict rework after main advancement
+
+Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
+
+## Scope
+
+- In scope: Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
+- Out of scope: unrelated refactors not required for "Unblock protected-base conflict rework after main advancement".
+
+## Plan
+
+1. Reproduce the protected-base base-advancement state using a current provider head, INTEGRATOR handoff, queue rework state, and advanced local main. 2. Change only conflict-route eligibility/preparation so current provider-base handoffs either yield the formal adoption receipt or a bounded semantic-rework packet; CLI must not auto-rebase, auto-merge, force-push, or choose conflict hunks. 3. Add focused coverage for current provider-base and legacy absent-base handoffs, including stale-token rejection. 4. Run the declared focused test, typecheck, critical suite, record verifier/evaluator evidence, and integrate through the normal PR queue.
+
+## Verify Steps
+
+PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.
+2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
+3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.
+4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

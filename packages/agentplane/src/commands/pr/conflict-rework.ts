@@ -16,6 +16,7 @@ import type { PrFlowStatusReport } from "./flow-status.js";
 import { legacyProtectedConflictAdoptionToken } from "./integrate/queue-state.js";
 import type { LegacyProtectedConflictAdoptionEvidence } from "./integrate/queue-state.js";
 import {
+  isBaseAdvancedProtectedConflictRoute,
   isLegacyProtectedConflictRoute,
   legacyProtectedConflictAdoptionEvidence,
   localAncestry,
@@ -352,7 +353,7 @@ export async function prepareConflictReworkPacket(opts: {
   if (!localBase.ok) return localBase.preparation;
 
   const routeEvidence = routeEligibility.evidence;
-  const baseContext = isLegacyProtectedConflictRoute(routeEvidence)
+  const baseContext = isBaseAdvancedProtectedConflictRoute(routeEvidence)
     ? await (async () => {
         const legacyQueueBase = routeEvidence.queue.base_sha;
         if (localBase.value === providerBase) {

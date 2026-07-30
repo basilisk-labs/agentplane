@@ -8,6 +8,16 @@ export type LegacyProtectedConflictRouteEvidence = Extract<
   }
 >;
 
+export type BaseAdvancedProtectedConflictRouteEvidence = Extract<
+  ConflictRouteEvidence,
+  {
+    kind:
+      | "current_protected_base_rework"
+      | "legacy_unadopted_protected_base_handoff"
+      | "legacy_adopted_protected_base_handoff";
+  }
+>;
+
 type MergeBaseGitOps = {
   mergeBase: (gitRoot: string, left: string, right: string) => Promise<string>;
 };
@@ -18,6 +28,15 @@ export function isLegacyProtectedConflictRoute(
   return (
     routeEvidence.kind === "legacy_unadopted_protected_base_handoff" ||
     routeEvidence.kind === "legacy_adopted_protected_base_handoff"
+  );
+}
+
+export function isBaseAdvancedProtectedConflictRoute(
+  routeEvidence: ConflictRouteEvidence,
+): routeEvidence is BaseAdvancedProtectedConflictRouteEvidence {
+  return (
+    routeEvidence.kind === "current_protected_base_rework" ||
+    isLegacyProtectedConflictRoute(routeEvidence)
   );
 }
 

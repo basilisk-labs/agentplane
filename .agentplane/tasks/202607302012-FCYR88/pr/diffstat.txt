@@ -1,0 +1,5 @@
+ .../src/commands/pr/conflict-rework-legacy.ts      | 19 ++++++++++++
+ .../pr/conflict-rework-route-eligibility.ts        | 26 ++++++++++++++++
+ .../pr/conflict-rework.legacy-base.test.ts         | 36 ++++++++++++++++++++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  3 +-
+ 4 files changed, 83 insertions(+), 1 deletion(-)

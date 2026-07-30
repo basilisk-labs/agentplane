@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607302012-FCYR88/protected-base-conflict-rework",
+  "created_at": "2026-07-30T20:13:04.252Z",
+  "diffstat_sha256": "sha256:b1eed4d193816b9b7b9ad58ff24d204e783dd8e2daa7924805f99415b463d7ff",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607302012-FCYR88",
+  "updated_at": "2026-07-30T20:13:04.252Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
