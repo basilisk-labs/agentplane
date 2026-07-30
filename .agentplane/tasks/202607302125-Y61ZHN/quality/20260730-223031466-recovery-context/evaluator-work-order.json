@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607302125-Y61ZHN-e59279606f59be9a8c5279d1",
+  "prepared_at": "2026-07-30T22:30:31.466Z",
+  "task": {
+    "id": "202607302125-Y61ZHN",
+    "revision": 12,
+    "objective": "Record superseded provider-conflict outcomes without false integration\n\nAdd a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts",
+      "bun run typecheck",
+      "bun run test:critical",
+      "- In scope: Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue.\n- Out of scope: unrelated refactors not required for \"Record superseded provider-conflict outcomes without false integration\".",
+      "1. Inspect the integration-queue state model, provider-conflict route projection, and existing close commands to define a terminal superseded outcome that is distinct from successful integration. 2. Add a CLI-owned recording path that accepts the agent's semantic decision plus a completed successor task, validates identities and refuses stale or non-terminal inputs, then records the queue outcome without selecting conflict hunks or rewriting branches. 3. Project the outcome through queue listing, PR flow status, and next-action so a closed superseded PR cannot keep the merge lane in rework or appear merged. 4. Cover the stale-PR and successor validation cases with focused unit/CLI tests, including a regression for an updated PR head. 5. Run focused tests, typecheck, critical CLI tests, formatting, and lint; record verification, quality review, PR and hosted checks before integration.",
+      "1. Run the focused provider-conflict and PR-flow CLI tests. Expected: a semantic supersession can be recorded only against a current closed/conflicting PR and an existing completed successor; stale head, missing successor, and integrated-success substitution are rejected. 2. Inspect the queue and flow projections after the recorded outcome. Expected: the queue is terminally superseded rather than done/rework, the legacy task is not presented as merged, and later queued integration is not blocked. 3. Run bun run typecheck and bun run test:critical. Expected: the typed state model and critical CLI surface remain green. 4. Run format and lint checks. Expected: no formatting or lint regression in the CLI workflow surface."
+    ]
+  },
+  "evaluated_sha": "5646a4f5034a0267d4ff39d0a181e48e5dae1465",
+  "diff_base_sha": "ac63ebe31bf54d8bb088669beb0dabb79fc31ad4",
+  "blueprint_digest": "6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607302125-Y61ZHN/README.md",
+      "sha256": "sha256:3afd8870fad6e38573e4225864b42effc2b5f96075ec54c807595253107499b3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-223031466-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:1d14f8be7aaf3ae8b71d4e3bc6417318f0e462454d129afcccb0948883890ccf",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-223031466-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:a25650acceebd440edebd0538cc7bcd9a062ba2dc44f6cf1278a1660662e4219",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-223031466-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:097a2d9b847c6f830f86fb0f20798816bd7258b78270b61f5cffd2b19e1166a8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
