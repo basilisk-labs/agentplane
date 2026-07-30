@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T02:56:58.673Z",
+    "updated_by": "TESTER",
+    "note": "Verified recovery upstream binding against a main-only remote fetch configuration: focused recovery and conflict packet tests passed 29/29, and bun run ci:contract passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

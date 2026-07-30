@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300246-Q3RDCW-e747011c477572071b560858",
+  "prepared_at": "2026-07-30T02:57:33.809Z",
+  "task": {
+    "id": "202607300246-Q3RDCW",
+    "revision": 6,
+    "objective": "Fix diverged-head recovery upstream binding\n\nCorrect the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.",
+    "acceptance_criteria": [
+      "- In scope: Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery.\n- Out of scope: unrelated refactors not required for \"Fix diverged-head recovery upstream binding\".",
+      "1. Reproduce recovery from a branch with no configured upstream and only a raw fetched provider tracking ref. 2. Bind the recovery worktree to the exact refs/remotes/origin provider ref before the bounded reset; preserve archive-first validation and all fail-closed checks. 3. Add regression coverage for the exact binding form and retain stale-head/collision guarantees. 4. Run focused recovery tests, declared verification review, and the contract gate; publish through the branch_pr lifecycle.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.\n3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "f2dafbab579ab4256da715fcd7504bb42560bd61",
+  "diff_base_sha": "ee5ea7178ba961f1e17ae3a925cb6b81469c41d7",
+  "blueprint_digest": "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300246-Q3RDCW/README.md",
+      "sha256": "sha256:0ea26606e63520e6c198ef37b4de3ed5b1ebd4165e8cf7ca78e58da3a59e1e83",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:238fa0674d920d3a6bc51c220c44d8307c99e502fbdfd69b421b0fde5c3e0957",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:9d70d9b7e82255ac3209b899a2799b46cc42e7fc81dbd46a95402561f6d13744",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:517fefc6efe0806778d68ae0624277e6bdab3eaa348ec653720882ee042fb67d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

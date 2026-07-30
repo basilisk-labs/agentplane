@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300246-Q3RDCW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T02:57:33.930Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "f2dafbab579ab4256da715fcd7504bb42560bd61",
+  "blueprint_digest": "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e",
+  "findings": [
+    "The test proves archive and reset calls occur, yet a future reorder could reset before archive while the archive still records the supplied SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025733809-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Assert archive update precedes upstream configuration and hard reset in the mocked Git operation sequence."
+  ],
+  "hidden_assumptions": [
+    "Presence checks imply sequencing of the irreversible recovery steps."
+  ],
+  "residual_risks": [
+    "Add a focused ordering assertion only; preserve the current implementation scope and rerun the focused suite plus contract gate."
+  ]
+}
