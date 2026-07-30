@@ -1,10 +1,10 @@
 ---
 id: "202607221852-01ACZ9"
 title: "Serve bounded knowledge requests during agent episodes"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-30T13:20:25.394Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -40,11 +40,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T13:20:41.645Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:52:23.081Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-30T13:20:41.645Z"
+doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
   Summary: |-
@@ -74,6 +84,10 @@ sections:
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
