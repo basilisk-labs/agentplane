@@ -4,7 +4,7 @@ title: "Create CURATOR-gated post-task knowledge proposals"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T17:45:14.790Z"
+  updated_at: "2026-07-30T18:11:02.266Z"
   updated_by: "TESTER"
-  note: "Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff."
+  note: "Verified stale-lock fencing and CURATOR selection evidence."
   attempts: 0
 quality_review:
   state: "rework"
@@ -107,8 +107,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff."
+  -
+    type: "verify"
+    at: "2026-07-30T18:11:02.266Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified stale-lock fencing and CURATOR selection evidence."
 doc_version: 3
-doc_updated_at: "2026-07-30T17:45:15.541Z"
+doc_updated_at: "2026-07-30T18:11:05.876Z"
 doc_updated_by: "CODER"
 description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
 sections:
@@ -263,6 +269,61 @@ sections:
     Result: pass
     Evidence: TypeScript, generated CLI docs, approved v0.7 compatibility candidate, unused-code baseline, task-state, and diff-integrity checks all passed.
     Scope: declared verification gates at implementation commit 28dd4ab93aa1
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+    - old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T18:11:02.266Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified stale-lock fencing and CURATOR selection evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T17:45:15.541Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+    Details:
+
+    Command: bun run test -- src/commands/context/harvest-tasks.test.ts src/commands/context/extraction-apply.unit.test.ts src/commands/context/assimilation-supervisor.unit.test.ts src/context/ingest-task-pack.test.ts --maxWorkers=1 --no-file-parallelism
+    Result: pass
+    Evidence: 4 test files and 60 tests passed, including stale-lock replacement, canonical snapshot, transactional apply, and supervisor receipt coverage.
+    Scope: CURATOR proposal selection, source lock consistency, context apply, and supervision trace.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: repository TypeScript build completed for implementation SHA 3a368a1d7d2cc496b9a6abdfb548d8c4c435ec72.
+    Scope: typed CLI and context-harvest implementation.
+
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: task state OK for 3183 tasks.
+    Scope: durable task lifecycle artifacts.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 critical CLI chunks and 76 tests passed with exit code 0.
+    Scope: protected CLI and trust-boundary invariants.
+
+    Command: bun run docs:cli:check && bun run bench:compatibility:check && bun run knip:check && git diff --check
+    Result: pass
+    Evidence: CLI reference current, compatibility baseline accepted, Knip baseline accepted, and no whitespace errors.
+    Scope: public CLI contract and static hygiene.
 
     BlueprintSnapshotRef:
     - state: current
@@ -455,6 +516,61 @@ Command: bun run typecheck; bun run docs:cli:check; bun run bench:compatibility:
 Result: pass
 Evidence: TypeScript, generated CLI docs, approved v0.7 compatibility candidate, unused-code baseline, task-state, and diff-integrity checks all passed.
 Scope: declared verification gates at implementation commit 28dd4ab93aa1
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-WF8A0X-create-curator-gated-post-task-knowledge-proposa/.agentplane/tasks/202607221852-WF8A0X/blueprint/resolved-snapshot.json
+- old_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- current_digest: 0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-WF8A0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T18:11:02.266Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified stale-lock fencing and CURATOR selection evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T17:45:15.541Z, excerpt_hash=sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444
+
+Details:
+
+Command: bun run test -- src/commands/context/harvest-tasks.test.ts src/commands/context/extraction-apply.unit.test.ts src/commands/context/assimilation-supervisor.unit.test.ts src/context/ingest-task-pack.test.ts --maxWorkers=1 --no-file-parallelism
+Result: pass
+Evidence: 4 test files and 60 tests passed, including stale-lock replacement, canonical snapshot, transactional apply, and supervisor receipt coverage.
+Scope: CURATOR proposal selection, source lock consistency, context apply, and supervision trace.
+
+Command: bun run typecheck
+Result: pass
+Evidence: repository TypeScript build completed for implementation SHA 3a368a1d7d2cc496b9a6abdfb548d8c4c435ec72.
+Scope: typed CLI and context-harvest implementation.
+
+Command: bun run task-state:check
+Result: pass
+Evidence: task state OK for 3183 tasks.
+Scope: durable task lifecycle artifacts.
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 critical CLI chunks and 76 tests passed with exit code 0.
+Scope: protected CLI and trust-boundary invariants.
+
+Command: bun run docs:cli:check && bun run bench:compatibility:check && bun run knip:check && git diff --check
+Result: pass
+Evidence: CLI reference current, compatibility baseline accepted, Knip baseline accepted, and no whitespace errors.
+Scope: public CLI contract and static hygiene.
 
 BlueprintSnapshotRef:
 - state: current

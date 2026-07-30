@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test -- src/commands/context/harvest-tasks.test.ts src/commands/context/extraction-apply.unit.test.ts src/commands/context/assimilation-supervisor.unit.test.ts src/context/ingest-task-pack.test.ts --maxWorkers=1 --no-file-parallelism\nResult: pass\nEvidence: 4 test files and 60 tests passed, including stale-lock replacement, canonical snapshot, transactional apply, and supervisor receipt coverage.\nScope: CURATOR proposal selection, source lock consistency, context apply, and supervision trace.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: repository TypeScript build completed for implementation SHA 3a368a1d7d2cc496b9a6abdfb548d8c4c435ec72.\nScope: typed CLI and context-harvest implementation.\n\nCommand: bun run task-state:check\nResult: pass\nEvidence: task state OK for 3183 tasks.\nScope: durable task lifecycle artifacts.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 critical CLI chunks and 76 tests passed with exit code 0.\nScope: protected CLI and trust-boundary invariants.\n\nCommand: bun run docs:cli:check && bun run bench:compatibility:check && bun run knip:check && git diff --check\nResult: pass\nEvidence: CLI reference current, compatibility baseline accepted, Knip baseline accepted, and no whitespace errors.\nScope: public CLI contract and static hygiene.",
+  "digest": "sha256:4eff35e467f3f0e4b7c4b31874af1f017ed518c720ace284e3726436d2fd32bf",
+  "implementation_sha": "3a368a1d7d2cc496b9a6abdfb548d8c4c435ec72",
+  "kind": "task_verification_record",
+  "note": "Verified stale-lock fencing and CURATOR selection evidence.",
+  "recorded_at": "2026-07-30T18:11:02.266Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Complete fixtures containing durable and transient changes. Expected: only source-backed durable candidates are proposed; no wiki file changes automatically.\n2. Submit duplicate and conflicting proposals. Expected: dedupe/consolidation evidence precedes CURATOR selection.\n3. Select a proposal. Expected: a separate exact-id CURATOR task/work order owns semantic publication.\n4. Trace a published item. Expected: source refs, task/PR decision, CURATOR result, and apply receipt are complete.\n5. Run proposal/context/task-state tests.",
+  "scope_digest": "sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444",
+  "task_id": "202607221852-WF8A0X",
+  "verification_command": "agentplane verify 202607221852-WF8A0X --ok --by TESTER",
+  "verifier": "TESTER"
+}
