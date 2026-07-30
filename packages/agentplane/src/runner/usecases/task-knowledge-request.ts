@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 
 import {
-  parseCanonicalKnowledgeRef,
   validateAgentSemanticResult,
   type AgentSemanticResultKnowledgeRequest,
   type AgentWorkOrderV2,
@@ -9,13 +8,14 @@ import {
   type PreparedKnowledgeExcerpt,
 } from "@agentplaneorg/core/schemas";
 
-import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
+import { prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
 import {
   canonicalKnowledgePath,
+  matchTaskContextReferences,
   materializableKnowledgeRef,
   projectionScopes,
-  taskContextPaths,
+  taskContextReferences,
   uniqueKnowledgeRefs,
 } from "./task-knowledge-request-scope.js";
 
@@ -118,20 +118,6 @@ function compactQuery(value: string): string | null {
     return null;
   }
   return normalized;
-}
-
-function kindForRef(ref: string): KnowledgeRef["kind"] | null {
-  try {
-    const parsed = parseCanonicalKnowledgeRef(ref);
-    if (parsed.path.startsWith("context/wiki/")) return "wiki";
-    if (parsed.path.startsWith("context/raw/")) return "source";
-    if (parsed.selector?.key === "fact") return "fact";
-    if (parsed.selector?.key === "entity") return "entity";
-    if (parsed.selector?.key === "edge") return "edge";
-  } catch {
-    return null;
-  }
-  return null;
 }
 
 function sealedResponse(
@@ -322,8 +308,10 @@ export async function serveTaskKnowledgeRequest(opts: {
       ],
     });
   }
-  const allowedContextPaths = taskContextPaths(opts.work_order);
-  if (allowedContextPaths.size === 0) {
+  const allowedContext = taskContextReferences(opts.work_order).filter(
+    (knowledge) => canonicalKnowledgePath(knowledge.ref) !== null,
+  );
+  if (allowedContext.length === 0) {
     return response({
       invocation: opts.invocation,
       work_order: opts.work_order,
@@ -404,13 +392,7 @@ export async function serveTaskKnowledgeRequest(opts: {
     });
   }
   const projection = await readContextProjection(opts.repository_root);
-  const search = await searchContextProjection(opts.repository_root, {
-    query,
-    scopes: projectionScopes(request),
-    limit: TASK_KNOWLEDGE_REQUEST_POLICY.max_references,
-    offset: 0,
-  });
-  if (!projection || !search) {
+  if (!projection) {
     return response({
       invocation: opts.invocation,
       work_order: opts.work_order,
@@ -426,94 +408,107 @@ export async function serveTaskKnowledgeRequest(opts: {
       ],
     });
   }
+
   let outOfScopeCandidateCount = 0;
-  const candidates = uniqueKnowledgeRefs(
-    search.rows
-      .flatMap((row) => [row.path, ...(row.source_refs ?? [])])
-      .map((ref) => materializableKnowledgeRef(ref)),
-  )
-    .flatMap((ref) => {
-      const kind = kindForRef(ref);
-      if (!kind || (request.desired_kind !== "any" && kind !== request.desired_kind)) return [];
-      if (!allowedContextPaths.has(canonicalKnowledgePath(ref) ?? "")) {
-        outOfScopeCandidateCount += 1;
-        return [];
-      }
-      return [{ ref, kind }];
-    })
-    .slice(0, TASK_KNOWLEDGE_REQUEST_POLICY.max_references);
-  if (candidates.length === 0) {
-    return response({
-      invocation: opts.invocation,
-      work_order: opts.work_order,
-      round,
-      request_digest: requestId,
-      outcome: outOfScopeCandidateCount > 0 ? "denied" : "unresolved",
-      request_tokens: requestTokens,
-      omissions: [
-        {
-          code: outOfScopeCandidateCount > 0 ? "reference_outside_task_context" : "no_match",
-          detail:
-            outOfScopeCandidateCount > 0
-              ? "Search results were outside the digest-bound task context."
-              : "No scoped search result resolved to a canonical KnowledgeRef.",
-        },
-      ],
-    });
-  }
   const omissions: TaskKnowledgeRequestResponse["omissions"] = [];
   const references: KnowledgeRef[] = [];
   const excerpts: PreparedKnowledgeExcerpt[] = [];
   let responseTokens = 0;
-  for (const candidate of candidates) {
-    let knowledgeRef: KnowledgeRef;
-    try {
-      knowledgeRef = await materializeKnowledgeRef({
-        repository_root: opts.repository_root,
-        ref: candidate.ref,
-        kind: candidate.kind,
-        reason: `knowledge_request:${requestId}`,
-        retrieval: "fts",
-        required: false,
-      });
-    } catch (error) {
-      omissions.push({
-        code: "reference_not_materializable",
-        detail:
-          `Search candidate ${candidate.ref} could not be materialized with a fresh digest` +
-          `${error instanceof Error && error.message ? `: ${error.message}` : "."}`,
-      });
-      continue;
-    }
-    const remainingTokens = TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens - responseTokens;
-    if (remainingTokens <= 0) break;
-    const excerpt = await prepareKnowledgeExcerpt({
-      repository_root: opts.repository_root,
-      knowledge_ref: knowledgeRef,
-      max_bytes: Math.min(
-        TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_bytes,
-        Math.max(1, remainingTokens * 4),
-      ),
-      max_lines: TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_lines,
+  const processed = new Set<string>();
+  let offset = 0;
+  let matchedScopedCandidate = false;
+  while (
+    references.length < TASK_KNOWLEDGE_REQUEST_POLICY.max_references &&
+    responseTokens < TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens
+  ) {
+    const search = await searchContextProjection(opts.repository_root, {
+      query,
+      scopes: projectionScopes(request),
+      limit: TASK_KNOWLEDGE_REQUEST_POLICY.max_references,
+      offset,
     });
-    if (excerpt.status !== "included") {
-      omissions.push({
-        code: "excerpt_not_included",
-        detail: `KnowledgeRef ${knowledgeRef.ref} did not produce an included bounded excerpt.`,
+    if (!search) {
+      return response({
+        invocation: opts.invocation,
+        work_order: opts.work_order,
+        round,
+        request_digest: requestId,
+        outcome: "unresolved",
+        request_tokens: requestTokens,
+        response_tokens: responseTokens,
+        omissions: [
+          ...omissions,
+          {
+            code: "projection_unavailable",
+            detail: "The bounded context projection became unavailable during this request.",
+          },
+        ],
       });
-      continue;
     }
-    const excerptTokens = approximateTokens(excerpt.content);
-    if (excerptTokens > remainingTokens) {
-      omissions.push({
-        code: "excerpt_not_included",
-        detail: `KnowledgeRef ${knowledgeRef.ref} would exceed the response token budget.`,
+    if (search.rows.length === 0) break;
+    offset += search.rows.length;
+    const pageRefs = uniqueKnowledgeRefs(
+      search.rows
+        .flatMap((row) => [row.path, ...(row.source_refs ?? [])])
+        .map((ref) => materializableKnowledgeRef(ref)),
+    );
+    const matched = matchTaskContextReferences({
+      candidate_refs: pageRefs,
+      task_context: allowedContext,
+      desired_kind: request.desired_kind,
+    });
+    outOfScopeCandidateCount += matched.out_of_scope_candidate_count;
+    for (const knowledgeRef of matched.matches) {
+      const identity = `${knowledgeRef.ref}\u0000${knowledgeRef.digest}`;
+      if (processed.has(identity)) continue;
+      processed.add(identity);
+      matchedScopedCandidate = true;
+      const remainingTokens = TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens - responseTokens;
+      if (remainingTokens <= 0) break;
+      const excerpt = await prepareKnowledgeExcerpt({
+        repository_root: opts.repository_root,
+        knowledge_ref: knowledgeRef,
+        index_snapshot: projection,
+        max_bytes: Math.min(
+          TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_bytes,
+          Math.max(1, remainingTokens * 4),
+        ),
+        max_lines: TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_lines,
       });
-      continue;
+      if (excerpt.status !== "included") {
+        omissions.push({
+          code: "excerpt_not_included",
+          detail:
+            `Digest-bound KnowledgeRef ${knowledgeRef.ref} was not included ` +
+            `(${excerpt.status}:${excerpt.reason_code}).`,
+        });
+        continue;
+      }
+      const excerptTokens = approximateTokens(excerpt.content);
+      if (excerptTokens > remainingTokens) {
+        omissions.push({
+          code: "excerpt_not_included",
+          detail: `KnowledgeRef ${knowledgeRef.ref} would exceed the response token budget.`,
+        });
+        continue;
+      }
+      references.push(knowledgeRef);
+      excerpts.push(excerpt);
+      responseTokens += excerptTokens;
+      if (
+        references.length >= TASK_KNOWLEDGE_REQUEST_POLICY.max_references ||
+        responseTokens >= TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens
+      ) {
+        break;
+      }
+      if (
+        references.length >= TASK_KNOWLEDGE_REQUEST_POLICY.max_references ||
+        responseTokens >= TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens
+      ) {
+        break;
+      }
     }
-    references.push(knowledgeRef);
-    excerpts.push(excerpt);
-    responseTokens += excerptTokens;
+    if (search.rows.length < TASK_KNOWLEDGE_REQUEST_POLICY.max_references) break;
   }
   if (references.length === 0) {
     return response({
@@ -521,10 +516,24 @@ export async function serveTaskKnowledgeRequest(opts: {
       work_order: opts.work_order,
       round,
       request_digest: requestId,
-      outcome: "unresolved",
+      outcome: !matchedScopedCandidate && outOfScopeCandidateCount > 0 ? "denied" : "unresolved",
       request_tokens: requestTokens,
       response_tokens: responseTokens,
-      omissions,
+      omissions:
+        omissions.length > 0
+          ? omissions
+          : [
+              {
+                code:
+                  !matchedScopedCandidate && outOfScopeCandidateCount > 0
+                    ? "reference_outside_task_context"
+                    : "no_match",
+                detail:
+                  !matchedScopedCandidate && outOfScopeCandidateCount > 0
+                    ? "Search results were outside the digest-bound task context."
+                    : "No scoped search result resolved to a canonical KnowledgeRef.",
+              },
+            ],
     });
   }
   return response({

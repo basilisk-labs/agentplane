@@ -17,6 +17,7 @@ import {
   validateTaskKnowledgeRequestResponse,
   type TaskKnowledgeRequestAudit,
 } from "./task-knowledge-request.js";
+import { materializeKnowledgeRef } from "../../context/knowledge-ref.js";
 
 let tempRoots: string[] = [];
 
@@ -76,6 +77,24 @@ function input(
   };
 }
 
+async function inputWithVerifiedKnowledgeRef(
+  root: string,
+  opts: Parameters<typeof input>[0] & { ref: string },
+) {
+  const request = input(opts);
+  request.work_order.knowledge_refs = [
+    await materializeKnowledgeRef({
+      repository_root: root,
+      ref: opts.ref,
+      kind: "wiki",
+      reason: "test digest-bound task context",
+      retrieval: "fts",
+      required: false,
+    }),
+  ];
+  return request;
+}
+
 afterEach(async () => {
   vi.restoreAllMocks();
   await Promise.all(
@@ -99,7 +118,9 @@ describe("bounded task knowledge requests", () => {
     });
     stdout.mockRestore();
 
-    const request = input({ knowledge_ref: "context/wiki/retrieval.md" });
+    const request = await inputWithVerifiedKnowledgeRef(root, {
+      ref: "context/wiki/retrieval.md",
+    });
     const served = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
 
     expect(served.omissions).toEqual([]);
@@ -152,15 +173,16 @@ describe("bounded task knowledge requests", () => {
     });
     stdout.mockRestore();
 
+    const request = await inputWithVerifiedKnowledgeRef(root, {
+      ref: "context/wiki/allowed.md",
+      semantic_result: requestResult({
+        work_order_id: "work-order-example-001",
+        query: "cross task private retrieval marker",
+      }),
+    });
     const denied = await serveTaskKnowledgeRequest({
       repository_root: root,
-      ...input({
-        knowledge_ref: "context/wiki/allowed.md",
-        semantic_result: requestResult({
-          work_order_id: "work-order-example-001",
-          query: "cross task private retrieval marker",
-        }),
-      }),
+      ...request,
     });
 
     expect(denied).toMatchObject({
@@ -168,6 +190,71 @@ describe("bounded task knowledge requests", () => {
       knowledge_refs: [],
       omissions: [expect.objectContaining({ code: "reference_outside_task_context" })],
     });
+  });
+
+  it("continues FTS pages until it finds an authorized lower-ranked task-context result", async () => {
+    const root = await tempRoot();
+    await Promise.all(
+      Array.from(
+        { length: 7 },
+        async (_, index) =>
+          await write(
+            root,
+            `context/wiki/aaa-outside-${index}.md`,
+            "# Outside\n\nRanking boundary marker. Ranking boundary marker.\n",
+          ),
+      ),
+    );
+    await write(root, "context/wiki/zzz-allowed.md", "# Allowed\n\nRanking boundary marker.\n");
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
+    stdout.mockRestore();
+
+    const request = await inputWithVerifiedKnowledgeRef(root, {
+      ref: "context/wiki/zzz-allowed.md",
+      semantic_result: requestResult({
+        work_order_id: "work-order-example-001",
+        query: "ranking boundary marker",
+      }),
+    });
+    const served = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
+
+    expect(served).toMatchObject({
+      outcome: "served",
+      knowledge_refs: [expect.objectContaining({ ref: "context/wiki/zzz-allowed.md" })],
+    });
+  });
+
+  it("rejects post-work-order content drift instead of returning a fresh digest", async () => {
+    const root = await tempRoot();
+    await write(root, "context/wiki/drift.md", "# Drift\n\nOriginal bounded context.\n");
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
+    stdout.mockRestore();
+
+    const request = await inputWithVerifiedKnowledgeRef(root, {
+      ref: "context/wiki/drift.md",
+      semantic_result: requestResult({
+        work_order_id: "work-order-example-001",
+        query: "original bounded context",
+      }),
+    });
+    await write(root, "context/wiki/drift.md", "# Drift\n\nChanged content after work order.\n");
+
+    const rejected = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
+
+    expect(rejected).toMatchObject({
+      outcome: "unresolved",
+      knowledge_refs: [],
+      omissions: [expect.objectContaining({ code: "excerpt_not_included" })],
+    });
+    expect(rejected.omissions[0]?.detail).toContain("digest_mismatch");
   });
 
   it("accepts an EVALUATOR request under the same bounded policy", async () => {
