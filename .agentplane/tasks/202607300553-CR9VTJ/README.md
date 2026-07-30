@@ -2,10 +2,10 @@
 id: "202607300553-CR9VTJ"
 title: "Requalify the AgentPlane 0.7.0-beta.1 decision on current main"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -28,20 +28,21 @@ task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "quality.regression"
 verify:
+  - "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts"
+  - "node scripts/checks/check-agent-efficiency-replay.mjs"
   - "bun run ci:contract"
   - "bun run test:critical"
-  - "node scripts/checks/check-agent-efficiency-replay.mjs"
 plan_approval:
   state: "approved"
   updated_at: "2026-07-30T05:53:32.333Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-30T06:02:43.118Z"
+  state: "needs_rework"
+  updated_at: "2026-07-30T06:16:29.508Z"
   updated_by: "TESTER"
-  note: "Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access."
-  attempts: 0
+  note: "Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -67,9 +68,7 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Residual risk is causal, not contractual: the frozen samples are non-interleaved and differ in verified-success subsets, so they block beta.1 publication but cannot prove which setup component caused the latency change."
-commit:
-  hash: "89981c27eb9c9b652a17127de8cd3a5b482babd2"
-  message: "🧪 CR9VTJ task: record beta1 qualification evidence"
+commit: null
 comments:
   -
     author: "TESTER"
@@ -83,6 +82,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: replace the fallback Verify Steps with the concrete beta.1 gate checks already executed, then re-record verification and quality review."
 events:
   -
     type: "status"
@@ -116,9 +118,22 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T06:16:10.216Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: replace the fallback Verify Steps with the concrete beta.1 gate checks already executed, then re-record verification and quality review."
+  -
+    type: "verify"
+    at: "2026-07-30T06:16:29.508Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract."
 doc_version: 3
-doc_updated_at: "2026-07-30T06:05:08.019Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-07-30T06:17:39.145Z"
+doc_updated_by: "CODER"
 description: "Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency."
 sections:
   Summary: |-
@@ -130,11 +145,11 @@ sections:
     - Out of scope: unrelated refactors not required for "Requalify the AgentPlane 0.7.0-beta.1 decision on current main".
   Plan: "1. Persist the explicit replacement relation: keep the legacy beta.1 gate blocked because its stale PR cannot qualify current main, and replace only the beta.2 dependency edge with this successor. 2. On current main, validate the frozen 50-run/55-episode RF-04 evidence and the F8 timing-partition contract without invoking a provider or retrying the candidate. 3. Run the declared deterministic critical/contract checks, record any failure or flake as a blocker, and compare the retained latency failure against the unchanged quality rule. 4. Record beta.1 as do_not_publish, not as a product regression claim; publish no prerelease. 5. Close the graph-repair and quality-decision evidence through a normal PR, leaving actual beta.2 implementation work independent and ready only after this successor merges."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Requalify the AgentPlane 0.7.0-beta.1 decision on current main". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Requalify the AgentPlane 0.7.0-beta.1 decision on current main". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Inspect the beta.2 dependency diff. Expected: 202607221908-0JP0ZZ depends on 202607300553-CR9VTJ, while 202607221908-MR9EA9 is BLOCKED and is not a beta.2 prerequisite.
+    2. Run bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts. Expected: F8 timing partition and sealed failed RF-04 candidate behavior pass without provider access.
+    3. Run node scripts/checks/check-agent-efficiency-replay.mjs. Expected: immutable evidence validates exactly 50 runs, 55 provider episodes, and its structural/token/scalar coverage without a replay.
+    4. Inspect .agentplane/tasks/202607300553-CR9VTJ/evidence/qualification-packet.v1.json. Expected: qualification_decision=do_not_publish, exact latency failure IDs are retained, and live_provider_measurement=not_run_by_packet_builder.
+    5. Run bun run ci:contract and bun run test:critical. Expected: deterministic repository contract and critical CLI regression surfaces pass on the reviewed task head.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-30T06:02:43.118Z — VERIFY — ok
@@ -187,6 +202,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T06:16:29.508Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T06:16:10.216Z, excerpt_hash=sha256:de9be7b79d4ce8d2289484169d468746949ff267d509c0604fa35f16025d9a7e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300553-CR9VTJ-requalify-the-agentplane-0-7-0-beta-1-decision-o/.agentplane/tasks/202607300553-CR9VTJ/blueprint/resolved-snapshot.json
+    - old_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+    - current_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607300553-CR9VTJ
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -203,6 +248,10 @@ sections:
     - Observation: The frozen candidate still exceeds latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms thresholds.
       Impact: Beta.1 remains ineligible for publication despite healthy deterministic contracts.
       Resolution: Record do_not_publish and reserve any new capture for a separately approved provider task.
+
+    - Observation: The beta.2 dependency update is present, but the task README leaves its validation requirements generic.
+      Impact: The release-gate decision would be under-specified for independent review.
+      Resolution: Replace the fallback with concrete dependency, frozen-evidence, no-provider, decision, and regression checks before re-verification.
 extensions:
   workflow_route_baseline:
     start_head_sha: "7856c47baaab749275df9f7bbdc640bac19c86d5"
@@ -226,11 +275,11 @@ Replace the stranded beta.1 gate with a current-main qualification record. Prese
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Requalify the AgentPlane 0.7.0-beta.1 decision on current main". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Requalify the AgentPlane 0.7.0-beta.1 decision on current main". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Inspect the beta.2 dependency diff. Expected: 202607221908-0JP0ZZ depends on 202607300553-CR9VTJ, while 202607221908-MR9EA9 is BLOCKED and is not a beta.2 prerequisite.
+2. Run bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts. Expected: F8 timing partition and sealed failed RF-04 candidate behavior pass without provider access.
+3. Run node scripts/checks/check-agent-efficiency-replay.mjs. Expected: immutable evidence validates exactly 50 runs, 55 provider episodes, and its structural/token/scalar coverage without a replay.
+4. Inspect .agentplane/tasks/202607300553-CR9VTJ/evidence/qualification-packet.v1.json. Expected: qualification_decision=do_not_publish, exact latency failure IDs are retained, and live_provider_measurement=not_run_by_packet_builder.
+5. Run bun run ci:contract and bun run test:critical. Expected: deterministic repository contract and critical CLI regression surfaces pass on the reviewed task head.
 
 ## Verification
 
@@ -285,6 +334,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T06:16:29.508Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T06:16:10.216Z, excerpt_hash=sha256:de9be7b79d4ce8d2289484169d468746949ff267d509c0604fa35f16025d9a7e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300553-CR9VTJ-requalify-the-agentplane-0-7-0-beta-1-decision-o/.agentplane/tasks/202607300553-CR9VTJ/blueprint/resolved-snapshot.json
+- old_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+- current_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607300553-CR9VTJ
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -305,3 +384,7 @@ DecisionContextRef:
 - Observation: The frozen candidate still exceeds latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms thresholds.
   Impact: Beta.1 remains ineligible for publication despite healthy deterministic contracts.
   Resolution: Record do_not_publish and reserve any new capture for a separately approved provider task.
+
+- Observation: The beta.2 dependency update is present, but the task README leaves its validation requirements generic.
+  Impact: The release-gate decision would be under-specified for independent review.
+  Resolution: Replace the fallback with concrete dependency, frozen-evidence, no-provider, decision, and regression checks before re-verification.

@@ -6,14 +6,14 @@ Created: 2026-07-30T05:53:55.797Z
 
 - Task: `202607300553-CR9VTJ`
 - Title: Requalify the AgentPlane 0.7.0-beta.1 decision on current main
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607300553-CR9VTJ/requalify-the-agentplane-0-7-0-beta-1-decision-o`
 - Canonical task record: `.agentplane/tasks/202607300553-CR9VTJ/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access.
+- State: needs_rework
+- Note: Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -15,13 +15,8 @@ Replace the stranded beta.1 gate with a current-main qualification record. Prese
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation
-without provider access.
-```
+- State: needs_rework
+- Note: Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.
 - Canonical workflow state lives in the task README.
 
 <details>
