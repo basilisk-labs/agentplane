@@ -5,7 +5,7 @@ result_summary: "Prepared and verified v0.6.25 maintenance release candidate wit
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -38,24 +38,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-30T12:34:46.794Z"
+  updated_at: "2026-07-30T12:37:11.266Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.25 candidate and the release-sized integration verification fix are ready for final pre-merge closure."
-  evaluated_sha: "86249b4c4aec2a42c194a71449d8887a0531da22"
+  note: "Quality review passed."
+  evaluated_sha: "a4cd47e91dba00b796943936121e988b4bf4b979"
   blueprint_digest: "505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8"
   evidence_refs:
     - ".agentplane/tasks/202607301059-SWF2VC/README.md"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123446794-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123446794-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123446794-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123711266-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123711266-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-123711266-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607301059-SWF2VC/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-    - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
-    - "docs/releases/v0.6.25.md"
-    - "bun.lock"
-    - ".agentplane/workflows/last-known-good.md"
   findings:
-    - "The 50 MiB verification buffer is regression-pinned, focused and hosted checks pass, and the release payload remains version-consistent and isolated from main."
+    - "No blocking findings."
 commit:
   hash: "f905f72296101e08eacee1c0acd47b732c126a84"
   message: "🎨 SWF2VC release: format versioned ACR example"
