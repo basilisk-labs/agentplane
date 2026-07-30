@@ -802,7 +802,9 @@ describe("context release readiness guards", () => {
     const prompt =
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
     expect(prompt).toContain("context.maximum_assimilation");
-    expect(prompt).toContain("Reconcile semantically: compare each source term");
+    expect(prompt).toContain(
+      "Reconcile semantically: inspect the source-driven candidate evidence",
+    );
     expect(prompt).toContain("reuse `canonical_entity_id`");
     expect(prompt).toContain("Return only that semantic result");
     expect(prompt).toContain("CLI supervision materializes the formal layer");

@@ -77,7 +77,7 @@ function buildIngestMetadata(
     `Owner: CURATOR; prompt: ${promptRef}; blueprint: ${blueprintId}.`,
     ...deprecatedModeNote(workspaceMode),
     "",
-    "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
+    "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `canonical-reconciliation-candidates.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
     "CURATOR owns semantic entity reconciliation and returns one schema-valid SGR extraction. The CLI supervisor owns validation, atomic materialization, indexes, reports, retrieval checks, evaluation, ACR, and finalization. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
   ].join("\n");
   return {
@@ -100,7 +100,7 @@ function buildContextTaskDocSections(): NonNullable<TaskNewParsed["taskDocSectio
       "5. Stop after the semantic SGR result. CLI supervision owns all materialization, validation, retrieval, evaluation, ACR, and finalization gates.",
     ].join("\n"),
     "Verify Steps": [
-      "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
+      "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `canonical-reconciliation-candidates.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
       "2. Validate the SGR extraction before apply. Expected: every entity-bearing term has exactly one supported semantic resolution with candidates checked, comparison dimensions, evidence for and against, rationale, and explicit unresolved questions where needed; same_as/alias_of reuse an existing canonical ID and add no duplicate graph entity.",
       "3. Return the SGR without applying, indexing, validating, evaluating, or finalizing it. Expected: only semantic output and evidence-bearing decisions are produced by CURATOR.",
       "4. Expected from the CLI supervisor: formal and Wiki artifacts are atomically materialized, indexes/reports/graph/task checks pass, and curated retrieval remains useful without raw source dependence.",
@@ -139,6 +139,7 @@ export function createTaskNewParsed(
     ".agentplane/tasks/${taskId}/extraction-contract.json",
     ".agentplane/tasks/${taskId}/canonical-snapshot.json",
     ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
+    ".agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json",
     ".agentplane/tasks/${taskId}/source-set.lock.json",
     ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
     ".agentplane/tasks/${taskId}/expected-artifacts.json",
