@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607302331-3C8V0X-fe3e581ac9edb1d21192e20d",
+  "task_id": "202607302331-3C8V0X",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Preserve the shared isRecord replacement and current passing checks, but supply task-local review evidence that enumerates and classifies all three new clone groups or otherwise explains the three absolute metric increases before repeating evaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The clone baseline was refreshed, but the frozen evidence does not substantively review or classify the three absolute clone-metric increases.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
+          "sha256": "sha256:c20ea5050ec997697a5e33fbe681dd037c40d92c5f2758f78a934a51494817f9",
+          "section": "Summary, Plan, Verification, and Findings"
+        },
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:14118d387df4781cf853af2a2fc2196ecd8825fa63556104a9560ab6c9ba50e9",
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json",
+          "sha256": "sha256:f7331d2444d4f004855cb335bf5396c550c96ecf7193588f18cc242ad82913b7",
+          "section": "guards:check and clone:check evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-result.json"
+}

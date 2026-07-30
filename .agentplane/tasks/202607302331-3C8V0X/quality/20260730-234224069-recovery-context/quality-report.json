@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607302331-3C8V0X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T23:43:29.813Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "fe3e7f4145cb5d38be4591c336b064b9dee6f237",
+  "blueprint_digest": "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b",
+  "findings": [
+    "The clone baseline was refreshed, but the frozen evidence does not substantively review or classify the three absolute clone-metric increases."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607302331-3C8V0X/README.md",
+    ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json"
+  ],
+  "missing_tests": [
+    "Add deterministic evidence that identifies the three newly counted clone groups, attributes each increase to specific source changes, and verifies that no unintended duplication was accepted by merely refreshing the baseline."
+  ],
+  "hidden_assumptions": [
+    "The increases from 90 to 93 clones, 1431 to 1462 duplicated lines, and 9976 to 10292 duplicated tokens are assumed acceptable because the regenerated baseline passes clone:check.",
+    "The verification at implementation SHA 2f127f86086217e2b984f7c8c2fa94506a54bdc6 is assumed to remain representative of evaluated SHA fe3e7f4145cb5d38be4591c336b064b9dee6f237."
+  ],
+  "residual_risks": [
+    "Preserve the shared isRecord replacement and current passing checks, but supply task-local review evidence that enumerates and classifies all three new clone groups or otherwise explains the three absolute metric increases before repeating evaluation."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607302331-3C8V0X-fe3e581ac9edb1d21192e20d",
+  "prepared_at": "2026-07-30T23:42:24.069Z",
+  "task": {
+    "id": "202607302331-3C8V0X",
+    "revision": 6,
+    "objective": "Repair beta.2 guard and clone baseline drift\n\nMove the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run guards:check && bun run clone:check",
+      "bun run typecheck",
+      "bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts",
+      "- In scope: Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.\n- Out of scope: unrelated refactors not required for \"Repair beta.2 guard and clone baseline drift\".",
+      "1. Reproduce the beta.2 gate failures against main and classify the shared-guard violation plus clone-baseline drift without changing qualification evidence. 2. Replace only the local isRecord guard with the canonical shared guard, regenerate the measured clone baseline, and format the generated JSON. 3. Run the focused semantic-escalation test, shared-guard and clone checks, typecheck, and full ci:contract. 4. Record structured verification and an independent evaluator review; do not publish a release. 5. Open, verify, and integrate one bounded repair PR, then make beta.2 qualification depend on the merged repair.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "fe3e7f4145cb5d38be4591c336b064b9dee6f237",
+  "diff_base_sha": "9b299bedb15d2efdbf92b83567660e65aa3451a9",
+  "blueprint_digest": "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
+      "sha256": "sha256:c20ea5050ec997697a5e33fbe681dd037c40d92c5f2758f78a934a51494817f9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:14118d387df4781cf853af2a2fc2196ecd8825fa63556104a9560ab6c9ba50e9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:5f189f88dbbdbdf23dedfc663c8942ee705f1f9eb7356eb951fab072f25b44ba",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json",
+      "sha256": "sha256:f7331d2444d4f004855cb335bf5396c550c96ecf7193588f18cc242ad82913b7",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:a31b5b442ff1301253239bce8ff98682b090931b826fd285fbfb914b5048356d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
