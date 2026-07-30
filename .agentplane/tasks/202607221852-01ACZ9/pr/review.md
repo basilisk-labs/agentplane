@@ -6,14 +6,14 @@ Created: 2026-07-30T13:20:41.795Z
 
 - Task: `202607221852-01ACZ9`
 - Title: Serve bounded knowledge requests during agent episodes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep`
 - Canonical task record: `.agentplane/tasks/202607221852-01ACZ9/README.md`
 
 ## Verification
 
 - State: ok
-- Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused concurrent retrieval coverage also passed.
+- Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 321c7d0d; focused reservation and concurrent retrieval coverage also passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

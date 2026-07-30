@@ -19,8 +19,8 @@ RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking 
 - Note:
 
 ```text
-RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused
-concurrent retrieval coverage also passed.
+RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 321c7d0d; focused
+reservation and concurrent retrieval coverage also passed.
 ```
 - Canonical workflow state lives in the task README.
 
