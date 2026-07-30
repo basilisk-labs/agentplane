@@ -8,12 +8,15 @@
  .../src/commands/integrate-queue.spec.ts           |  45 ++++++++--
  .../src/commands/pr/flow-status.render.ts          |   3 +-
  packages/agentplane/src/commands/pr/flow-status.ts |   7 ++
+ .../pr/integrate/queue-state-superseded.ts         |  54 +++++++++++
+ .../pr/integrate/queue-state-transition.ts         |  31 +++++++
  .../src/commands/pr/integrate/queue-state.test.ts  |  50 +++++++++++
- .../src/commands/pr/integrate/queue-state.ts       |  86 +++++++++++++++++-
+ .../src/commands/pr/integrate/queue-state.ts       |  56 ++++++------
  .../src/commands/shared/route-decision-blockers.ts |   7 ++
- .../src/commands/shared/workflow-step-branch.ts    |  18 ++++
+ .../src/commands/shared/workflow-step-branch.ts    |   3 +
  ...rkflow-step-projections.conflict-rework.test.ts |  56 ++++++++++++
+ .../workflow-step-provider-conflict-superseded.ts  |  22 +++++
  .../src/commands/shared/workflow-step.ts           |   3 +-
  .../baselines/v0.7-compatibility-candidate.json    |  50 +++++++++--
  .../check-compatibility-contract-baseline.mjs      |  38 +++++++-
- 18 files changed, 585 insertions(+), 27 deletions(-)
+ 21 files changed, 622 insertions(+), 52 deletions(-)
