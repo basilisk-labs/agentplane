@@ -19,10 +19,9 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
 - Note:
 
 ```text
-Verified RF-20: proposal collection writes no wiki/fact/graph artifacts; duplicate/consolidation
-evidence is recorded before exact CURATOR selection; CLI builds the bounded source/canonical/SGR
-work pack and retains apply ownership. Checks: typecheck; focused harvest tasks 9/9; Knip baseline;
-CLI docs freshness; targeted ESLint; diff check.
+Verified RF-20 rework: only explicit durable task signals produce proposals; every signal has exact
+captured evidence; PR/diff/evaluator provenance is attached when present; unchanged selections
+retain one CURATOR owner.
 ```
 - Canonical workflow state lives in the task README.
 

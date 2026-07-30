@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run task-state:check\nResult: pass\nEvidence: task state OK (tasks=3183); commit=40669840b6682ece5711276cb7e1e3c86feb625a\nScope: declared task-state gate at the reviewed implementation head\n\nCommand: bun run test:critical\nResult: pass\nEvidence: critical-cli completed all 12 isolated checks at the reviewed implementation head\nScope: repository-wide CLI compatibility, lifecycle, replay, scope, and trust-boundary invariants\n\nCommand: bun run typecheck\nResult: pass\nEvidence: scripts/checks/run-typescript-build.mjs completed at the reviewed implementation head\nScope: TypeScript contract for the changed harvest, selection, and context-pack paths\n\nCommand: bun run test -- src/commands/context/harvest-tasks.test.ts --maxWorkers=1 --no-file-parallelism\nResult: pass\nEvidence: 12 focused harvest scenarios passed, including transient rejection, late-line provenance, and concurrent selection ownership\nScope: RF-20 proposal and CURATOR-selection behavior\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: approved v0.7 cumulative candidate remains exact; immutable v0.6.24 baseline unchanged\nScope: compatibility contract ratchet\n\nCommand: bun run knip:check\nResult: pass\nEvidence: Knip baseline check completed without new findings\nScope: changed TypeScript source and export surface\n\nCommand: bun run docs:cli:check\nResult: pass\nEvidence: docs/user/cli-reference.generated.mdx is up to date\nScope: generated CLI reference freshness\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors before the reviewed implementation commit\nScope: task branch diff integrity",
+  "digest": "sha256:1387b7603aa33c464fab3d23420c49e7414b2a3bba5b0210081a4f77560768b1",
+  "implementation_sha": "40669840b6682ece5711276cb7e1e3c86feb625a",
+  "kind": "task_verification_record",
+  "note": "Verified RF-20 rework: only explicit durable task signals produce proposals; every signal has exact captured evidence; PR/diff/evaluator provenance is attached when present; unchanged selections retain one CURATOR owner.",
+  "recorded_at": "2026-07-30T17:24:55.174Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Complete fixtures containing durable and transient changes. Expected: only source-backed durable candidates are proposed; no wiki file changes automatically.\n2. Submit duplicate and conflicting proposals. Expected: dedupe/consolidation evidence precedes CURATOR selection.\n3. Select a proposal. Expected: a separate exact-id CURATOR task/work order owns semantic publication.\n4. Trace a published item. Expected: source refs, task/PR decision, CURATOR result, and apply receipt are complete.\n5. Run proposal/context/task-state tests.",
+  "scope_digest": "sha256:2c6461cba2f778022162c9c1a87b5a99f55c4b41bc5ba8bcbb37a548d5103444",
+  "task_id": "202607221852-WF8A0X",
+  "verification_command": "agentplane verify 202607221852-WF8A0X --ok --by TESTER",
+  "verifier": "TESTER"
+}
