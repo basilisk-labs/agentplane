@@ -554,7 +554,9 @@ async function acquireTaskKnowledgeSelectionReclaimGuard(
     kind: "task_knowledge_proposal_selection_reclaim_guard",
     owner,
     acquired_at: acquiredAt.toISOString(),
-    expires_at: new Date(acquiredAt.getTime() + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS).toISOString(),
+    expires_at: new Date(
+      acquiredAt.getTime() + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS,
+    ).toISOString(),
   };
   await handle.writeFile(`${JSON.stringify(guard)}\n`, "utf8");
   await handle.sync();
@@ -698,9 +700,7 @@ function isReclaimableTaskKnowledgeSelectionLock(lockFile: {
   const expired = Number.isFinite(expiresAt)
     ? expiresAt <= Date.now()
     : lockFile.metadata.mtimeMs + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS <= Date.now();
-  const liveness = lockFile.lock
-    ? taskKnowledgeLockOwnerLiveness(lockFile.lock.owner)
-    : "unknown";
+  const liveness = lockFile.lock ? taskKnowledgeLockOwnerLiveness(lockFile.lock.owner) : "unknown";
   return liveness !== "alive" && (expired || liveness === "dead");
 }
 
@@ -829,8 +829,7 @@ async function markTaskKnowledgeSelectionIntentCreated(opts: {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message:
-        `Task knowledge selection intent ${opts.intent.proposal_id} already records CURATOR task ${opts.intent.curator_task_id}.`,
+      message: `Task knowledge selection intent ${opts.intent.proposal_id} already records CURATOR task ${opts.intent.curator_task_id}.`,
     });
   }
   const created: TaskKnowledgeSelectionIntent = {
@@ -1109,9 +1108,7 @@ async function createExtractionTasks(opts: {
     }
     for (const plan of plans) {
       const sourceTaskId = plan.source_task_ids[0];
-      const selectionIntent = sourceTaskId
-        ? selectionIntentsByTask.get(sourceTaskId)
-        : undefined;
+      const selectionIntent = sourceTaskId ? selectionIntentsByTask.get(sourceTaskId) : undefined;
       if (!sourceTaskId || !selectionIntent) {
         throw new CliError({
           exitCode: 3,
@@ -1124,9 +1121,7 @@ async function createExtractionTasks(opts: {
         intent: selectionIntent.intent,
       });
       const currentTasks = await opts.ctx.taskBackend.listTasks();
-      const currentSourceTask = currentTasks.find(
-        (task) => task.id === sourceTaskId,
-      );
+      const currentSourceTask = currentTasks.find((task) => task.id === sourceTaskId);
       const currentCuratorTaskId = currentSourceTask
         ? taskHasCurrentCuratorSelection({
             task: currentSourceTask,

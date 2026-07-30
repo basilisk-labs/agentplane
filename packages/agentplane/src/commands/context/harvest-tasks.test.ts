@@ -1092,7 +1092,8 @@ describe("context harvest tasks", () => {
       ctx: ctx(root, tasks),
       cwd: root,
       parsed: parsed({ task: [source.id], createExtractionTasks: true }),
-      createTask: () => Promise.reject(new Error("retry must adopt the already-created CURATOR task")),
+      createTask: () =>
+        Promise.reject(new Error("retry must adopt the already-created CURATOR task")),
     });
 
     expect(tasks.filter((candidate) => candidate.owner === "CURATOR")).toHaveLength(1);
@@ -1100,7 +1101,10 @@ describe("context harvest tasks", () => {
       context_task_extraction: { extraction_task_id: "202604040900-CURAT1" },
     });
     await expect(
-      readFile(path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"), "utf8"),
+      readFile(
+        path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"),
+        "utf8",
+      ),
     ).resolves.toContain(`.agentplane/tasks/${source.id}/README.md`);
     const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
     const proposalFiles = await readdir(proposalDir);
@@ -1176,7 +1180,8 @@ describe("context harvest tasks", () => {
         ctx: ctx(root, tasks),
         cwd: root,
         parsed: parsed({ task: [source.id], createExtractionTasks: true }),
-        createTask: () => Promise.reject(new Error("completed selections must not create a second task")),
+        createTask: () =>
+          Promise.reject(new Error("completed selections must not create a second task")),
       }),
     ).rejects.toThrow(/already owned by CURATOR task 202604040900-CURAT1/u);
   });
