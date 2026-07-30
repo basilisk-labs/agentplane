@@ -69,6 +69,10 @@ function taskKnowledgeSelectionIntentPath(proposalId: string): string {
   return `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.selection.intent.json`;
 }
 
+function taskKnowledgeSelectionReceiptPath(proposalId: string): string {
+  return `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.selection.json`;
+}
+
 type CanonicalKnowledgeSource = {
   path: string;
   sha256: string;
@@ -1028,23 +1032,6 @@ async function createExtractionTasks(opts: {
         testHooks: opts.selectionLockTestHooks,
       });
       releases.push(release);
-      const latestTasks = await opts.ctx.taskBackend.listTasks();
-      const latest = latestTasks.find((candidate) => candidate.id === task.id);
-      const existingCuratorTaskId = latest
-        ? taskHasCurrentCuratorSelection({
-            task: latest,
-            fingerprint: opts.sourceFingerprints.get(task.id),
-          })
-        : null;
-      if (existingCuratorTaskId) {
-        throw new CliError({
-          exitCode: 3,
-          code: "E_VALIDATION",
-          message:
-            `Task knowledge proposal for ${task.id} is already owned by CURATOR task ${existingCuratorTaskId}. ` +
-            "Change the source before selecting it again.",
-        });
-      }
       const evidence = opts.output.evidence.find((candidate) => candidate.id === task.id);
       if (!evidence) {
         throw new CliError({
@@ -1136,6 +1123,38 @@ async function createExtractionTasks(opts: {
         tasks: await opts.ctx.taskBackend.listTasks(),
         intent: selectionIntent.intent,
       });
+      const currentTasks = await opts.ctx.taskBackend.listTasks();
+      const currentSourceTask = currentTasks.find(
+        (task) => task.id === sourceTaskId,
+      );
+      const currentCuratorTaskId = currentSourceTask
+        ? taskHasCurrentCuratorSelection({
+            task: currentSourceTask,
+            fingerprint: opts.sourceFingerprints.get(sourceTaskId),
+          })
+        : null;
+      if (currentCuratorTaskId && currentCuratorTaskId !== existingCuratorTask?.id) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            `Task knowledge proposal for ${sourceTaskId} is already owned by CURATOR task ${currentCuratorTaskId}, ` +
+            "but that task does not match the durable selection intent.",
+        });
+      }
+      const receiptPath = taskKnowledgeSelectionReceiptPath(selectionIntent.intent.proposal_id);
+      const receiptExists = await fileExists(
+        path.join(opts.ctx.resolvedProject.gitRoot, receiptPath),
+      );
+      if (currentCuratorTaskId && receiptExists) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            `Task knowledge proposal for ${sourceTaskId} is already owned by CURATOR task ${currentCuratorTaskId}. ` +
+            "Change the source before selecting it again.",
+        });
+      }
       if (
         selectionIntent.intent.state === "created" &&
         selectionIntent.intent.curator_task_id !== existingCuratorTask?.id
@@ -1230,18 +1249,20 @@ async function createExtractionTasks(opts: {
           fingerprint: opts.sourceFingerprints.get(sourceTaskId),
         });
         const extensions = isRecord(task.extensions) ? task.extensions : {};
-        if (isRecord(extensions.context_task_extraction)) {
-          const current = JSON.stringify(extensions.context_task_extraction);
-          if (current === JSON.stringify(marker)) continue;
-        }
-        await opts.ctx.taskBackend.writeTask({
-          ...task,
-          extensions: {
-            ...extensions,
-            context_task_extraction: marker,
-          },
+        const currentCuratorTaskId = taskHasCurrentCuratorSelection({
+          task,
+          fingerprint: opts.sourceFingerprints.get(sourceTaskId),
         });
-        sourceChangedPaths.push(`.agentplane/tasks/${task.id}/README.md`);
+        if (currentCuratorTaskId !== extractionTaskId) {
+          await opts.ctx.taskBackend.writeTask({
+            ...task,
+            extensions: {
+              ...extensions,
+              context_task_extraction: marker,
+            },
+          });
+          sourceChangedPaths.push(`.agentplane/tasks/${task.id}/README.md`);
+        }
         const proposal = opts.output.proposals.find(
           (candidate) => candidate.source_task_id === sourceTaskId,
         );
@@ -1270,7 +1291,7 @@ async function createExtractionTasks(opts: {
             message: `Cannot select task knowledge proposal for ${sourceTaskId}: canonical check source lock is missing.`,
           });
         }
-        const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
+        const receiptPath = taskKnowledgeSelectionReceiptPath(proposal.id);
         await mkdir(path.dirname(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath)), {
           recursive: true,
         });
