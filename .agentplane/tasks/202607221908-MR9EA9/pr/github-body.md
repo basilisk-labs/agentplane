@@ -24,6 +24,10 @@ bounded EXECUTOR/CURATOR fixture tests passed.
 ```
 - Canonical workflow state lives in the task README.
 
+## Handoff Notes
+
+- 2026-07-30T21:19:12Z CODER: Semantic resolution: GitHub PR #4668 is superseded by task 202607300553-CR9VTJ. Current main keeps MR9EA9 BLOCKED; the stale beta.1 qualification artifacts must not be merged or published.
+
 <details>
 <summary>Raw evidence</summary>
 

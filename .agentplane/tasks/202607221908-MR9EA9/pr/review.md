@@ -18,7 +18,7 @@ Created: 2026-07-29T10:19:28.019Z
 
 ## Handoff Notes
 
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+- 2026-07-30T21:19:12Z CODER: Semantic resolution: GitHub PR #4668 is superseded by task 202607300553-CR9VTJ. Current main keeps MR9EA9 BLOCKED; the stale beta.1 qualification artifacts must not be merged or published.
 
 <!-- BEGIN AUTO SUMMARY -->
 <details>
