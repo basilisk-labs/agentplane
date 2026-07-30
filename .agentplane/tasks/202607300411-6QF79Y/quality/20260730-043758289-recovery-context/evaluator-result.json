@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Holding and releasing the actual recovery lease replaces scheduler timing with an explicit boundary; if the production resolver stops classifying busy retirement or invoking its wait path, the test cannot reach the coordination point.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The resolver's initial active-claim read remains part of the production precondition; its removal correctly causes this integration test to fail and require review."
+  ]
+}

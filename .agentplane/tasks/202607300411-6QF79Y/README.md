@@ -2,10 +2,10 @@
 id: "202607300411-6QF79Y"
 title: "Stabilize concurrent effect-resolution retirement test"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,26 +26,26 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T04:27:27.140Z"
+  updated_at: "2026-07-30T04:37:58.465Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "78484117b66db9bfea82d2b447a02ee0ef0b1c50"
+  evaluated_sha: "62b1eda065c9345e2180ca8fd10c286295f88d99"
   blueprint_digest: "693f8dc16204766e2de8ef776db68fa09206cb6501a985a05e4878a858103bbc"
   evidence_refs:
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300411-6QF79Y/README.md"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-042727039-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-blueprint.json"
   findings:
-    - "The direct helper test removes scheduler and stack-trace dependence while retaining durable runner repository state; the exported helper remains internal to the source module and does not alter its runtime behavior."
+    - "Holding and releasing the actual recovery lease replaces scheduler timing with an explicit boundary; if the production resolver stops classifying busy retirement or invoking its wait path, the test cannot reach the coordination point."
 commit:
-  hash: "78484117b66db9bfea82d2b447a02ee0ef0b1c50"
-  message: "🐛 6QF79Y test: stabilize effect retirement retry"
+  hash: "62b1eda065c9345e2180ca8fd10c286295f88d99"
+  message: "🐛 6QF79Y test: cover concurrent retirement through resolver"
 comments:
   -
     author: "CODER"
@@ -59,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: GitHub review found that direct helper coverage could bypass the production resolveTaskRunnerEffect catch-and-wait integration. Reopening this pre-merge task to make the test deterministic through the production path."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -94,8 +97,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: GitHub review found that direct helper coverage could bypass the production resolveTaskRunnerEffect catch-and-wait integration. Reopening this pre-merge task to make the test deterministic through the production path."
+  -
+    type: "status"
+    at: "2026-07-30T04:38:29.202Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T04:32:44.997Z"
+doc_updated_at: "2026-07-30T04:38:29.202Z"
 doc_updated_by: "CODER"
 description: "Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing."
 sections:

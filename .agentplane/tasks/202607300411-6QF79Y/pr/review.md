@@ -6,7 +6,7 @@ Created: 2026-07-30T04:12:14.054Z
 
 - Task: `202607300411-6QF79Y`
 - Title: Stabilize concurrent effect-resolution retirement test
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300411-6QF79Y/stabilize-effect-resolution-test`
 - Canonical task record: `.agentplane/tasks/202607300411-6QF79Y/README.md`
 
