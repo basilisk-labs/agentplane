@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts\nResult: pass\nEvidence: 20 tests passed; qualification fixture retains the sealed failed candidate decision.\nScope: RF-04 replay timing partition and beta qualification packet behavior.\n\nCommand: node scripts/checks/check-agent-efficiency-replay.mjs\nResult: pass\nEvidence: frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.\nScope: immutable no-provider replay evidence structure.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: formatting, policy, lifecycle, architecture, baseline, and threshold contract checks completed successfully.\nScope: repository-wide deterministic contract surface on the successor branch.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical-cli chunks passed.\nScope: critical CLI regression surface.",
+  "digest": "sha256:befc8eb57136184d9d9b83d9657ffe9068b9e5e250e48d67acdae88c6398b9ad",
+  "implementation_sha": "fdd390c49302b81eb559743d445abf9d70e5ce57",
+  "kind": "task_verification_record",
+  "note": "Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access.",
+  "recorded_at": "2026-07-30T06:02:43.118Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:de9be7b79d4ce8d2289484169d468746949ff267d509c0604fa35f16025d9a7e",
+  "task_id": "202607300553-CR9VTJ",
+  "verification_command": "agentplane verify 202607300553-CR9VTJ --ok --by TESTER",
+  "verifier": "TESTER"
+}
