@@ -33,13 +33,8 @@ function canonicalSha256(value: unknown): `sha256:${string}` {
     .digest("hex")}`;
 }
 
-function candidateEvidenceDocument(opts?: {
-  candidateRuntimeVersion?: string;
-  candidateSubjectSha?: string;
-}) {
-  const baselineRuntimeVersion = "0.6.24/codex-0.146.0-alpha.3.1";
-  const candidateRuntimeVersion = opts?.candidateRuntimeVersion ?? baselineRuntimeVersion;
-  const profile = (runtimeVersion: string) => ({
+function rf04RuntimeProfile(runtimeVersion: string) {
+  return {
     adapter_id: "codex-exec-jsonl-supervisor",
     cache_mode: "ephemeral-provider-default",
     model_id: "gpt-5.6-terra",
@@ -48,18 +43,26 @@ function candidateEvidenceDocument(opts?: {
     runtime_id: "agentplane-anchor-cli-preparation/codex-cli-execution",
     runtime_version: runtimeVersion,
     sandbox_mode: "workspace-write-network-disabled",
-  });
+  };
+}
+
+function candidateEvidenceDocument(opts?: {
+  candidateRuntimeVersion?: string;
+  candidateSubjectSha?: string;
+}) {
+  const baselineRuntimeVersion = "0.6.24/codex-0.146.0-alpha.3.1";
+  const candidateRuntimeVersion = opts?.candidateRuntimeVersion ?? baselineRuntimeVersion;
   const measurement = {
     schema_version: 1,
     kind: "agent_efficiency_candidate_measurement_v1",
     baseline: {
       source: "runtime_bridge",
       subject_sha: "a".repeat(40),
-      runtime_profile: profile(baselineRuntimeVersion),
+      runtime_profile: rf04RuntimeProfile(baselineRuntimeVersion),
     },
     candidate: {
       subject_sha: opts?.candidateSubjectSha ?? "b".repeat(40),
-      runtime_profile: profile(candidateRuntimeVersion),
+      runtime_profile: rf04RuntimeProfile(candidateRuntimeVersion),
       coverage: { replay_runs: 50, scenarios: 10 },
       actual_values: { provider_episodes: 55 },
     },

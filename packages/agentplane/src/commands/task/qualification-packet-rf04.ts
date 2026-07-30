@@ -185,7 +185,7 @@ function requiredStringArray(value: unknown, label: string): string[] {
       message: `RF-04 candidate evidence requires ${label} to be a string array.`,
     });
   }
-  return value.map((entry) => String(entry)).toSorted();
+  return value.map(String).toSorted();
 }
 
 function sameJson(left: unknown, right: unknown): boolean {
