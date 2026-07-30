@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
+import { cmdContextWikiExplain, cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
 
 let tempRoots: string[] = [];
 
@@ -93,6 +93,32 @@ describe("context wiki Obsidian compatibility", () => {
     expect(pageText).toContain("cssclasses:");
     expect(pageText).toContain("## Sources");
     expect(pageText).toContain("1. [.agentplane/tasks/202605130501-CTX001/README.md]");
+  });
+
+  it("explains generated pages with AgentPlane context frontmatter", async () => {
+    const root = await tempRoot();
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiNew({
+      cwd: root,
+      parsed: {
+        page: "decisions/context-claims",
+        title: "Context Claims",
+        modality: "decision",
+        status: "reviewed_claim",
+        visibility: "project",
+        source: [".agentplane/tasks/202605130501-CTX001/README.md"],
+        force: false,
+      },
+    });
+    await cmdContextWikiLint({ cwd: root, parsed: { path: "context/wiki" } });
+    await cmdContextWikiExplain({ cwd: root, parsed: { page: "decisions/context-claims" } });
+
+    const output = out.mock.calls.map((call) => String(call[0])).join("");
+    expect(output).toContain("context wiki new: context/wiki/decisions/context-claims.md");
+    expect(output).toContain("context wiki lint: ok (1 page(s))");
+    expect(output).toContain("canonical_id:");
+    expect(output).toContain("modality: decision");
   });
 
   it("rejects wikilinks whose target case differs from canonical page title", async () => {
