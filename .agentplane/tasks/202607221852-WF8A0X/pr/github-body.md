@@ -16,7 +16,7 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
 ## Verification
 
 - State: ok
-- Note: Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff.
+- Note: Verified stale-lock fencing and CURATOR selection evidence.
 - Canonical workflow state lives in the task README.
 
 <details>

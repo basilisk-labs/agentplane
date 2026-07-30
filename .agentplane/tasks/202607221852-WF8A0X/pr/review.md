@@ -13,7 +13,7 @@ Created: 2026-07-30T16:07:19.966Z
 ## Verification
 
 - State: ok
-- Note: Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff.
+- Note: Verified stale-lock fencing and CURATOR selection evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
