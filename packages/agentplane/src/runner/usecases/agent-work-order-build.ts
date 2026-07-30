@@ -25,6 +25,7 @@ import type {
   AgentWorkOrderLegacyBriefProjection,
   AgentWorkOrderSourceManifest,
 } from "./agent-work-order-projection.js";
+import type { TaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
 
 /**
  * A work order carries the resolved prompt, policy, and blueprint manifests as
@@ -258,6 +259,7 @@ function protectedPaths(executionContext: ReadOnlyExecutionContext): string[] {
 function requiredInputs(opts: {
   task_envelope: RunnerTaskContextEnvelope;
   source_manifest: AgentWorkOrderSourceManifest;
+  knowledge_retrieval: TaskKnowledgeRetrieval;
 }): AgentWorkOrderV2["required_inputs"] {
   const taskReadme = opts.source_manifest.source_paths.find((source) =>
     source.endsWith("/README.md"),
@@ -296,6 +298,16 @@ function requiredInputs(opts: {
       required: false,
     });
   }
+  for (const [index, knowledge] of opts.knowledge_retrieval.knowledge_refs.entries()) {
+    inputs.push({
+      id: `knowledge-ref-${index + 1}`,
+      kind: "knowledge_ref",
+      description: `Prepared knowledge selected by ${knowledge.retrieval}: ${knowledge.reason}`,
+      path: knowledge.ref,
+      digest: knowledge.digest,
+      required: knowledge.required,
+    });
+  }
   return inputs;
 }
 
@@ -306,6 +318,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     route_decision: TaskRouteDecision;
   };
   source_manifest: AgentWorkOrderSourceManifest;
+  knowledge_retrieval: TaskKnowledgeRetrieval;
 }): AgentWorkOrderV2 {
   const {
     task_envelope: taskEnvelope,
@@ -327,6 +340,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
         "workspace_write",
       ]
     : ["repository_read", "git_read", "run_checks", "report_result", "report_blocker"];
+  if (opts.knowledge_retrieval.knowledge_refs.length > 0) {
+    allowedToolClasses.push("knowledge_read");
+  }
   const summary =
     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
     task.narrative.description;
@@ -371,15 +387,23 @@ export function buildCanonicalAgentWorkOrder(opts: {
     },
     context_intent: {
       purpose:
-        "Provide the bounded task, route, prompt, and verification context for one semantic agent episode.",
-      required_knowledge_ref_digests: [],
-      require_prepared_evidence: false,
+        "Provide bounded task, route, prompt, verification, and deterministic knowledge context for one semantic agent episode.",
+      required_knowledge_ref_digests: opts.knowledge_retrieval.knowledge_refs
+        .filter((knowledge) => knowledge.required)
+        .map((knowledge) => knowledge.digest),
+      require_prepared_evidence: opts.knowledge_retrieval.prepared_evidence.some(
+        (excerpt) => excerpt.status === "included",
+      ),
     },
-    knowledge_refs: [],
-    prepared_evidence: [],
+    knowledge_refs: opts.knowledge_retrieval.knowledge_refs,
+    prepared_evidence: opts.knowledge_retrieval.prepared_evidence.map((excerpt) => ({
+      role,
+      excerpt,
+    })),
     required_inputs: requiredInputs({
       task_envelope: taskEnvelope,
       source_manifest: opts.source_manifest,
+      knowledge_retrieval: opts.knowledge_retrieval,
     }),
     required_outputs: [
       {

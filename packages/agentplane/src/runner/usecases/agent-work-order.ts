@@ -41,6 +41,7 @@ import {
   type AgentWorkOrderPreparationView,
 } from "./agent-work-order-projection.js";
 import { resolveRunnerBlueprintPlan } from "./task-run-blueprint-plan.js";
+import { prepareTaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
 
 export {
   type AgentWorkOrderLegacyBriefProjection,
@@ -207,6 +208,12 @@ export async function prepareAgentWorkOrder(opts: {
         execution_context: executionContext,
       },
     });
+    const knowledgeRetrieval = await prepareTaskKnowledgeRetrieval({
+      command_ctx: executionContext.command,
+      task_envelope: taskEnvelope,
+      blueprint,
+      repository_root: executionContext.repo.git_root,
+    });
     const briefProjection = await buildAgentWorkOrderLegacyBriefProjection({
       command_ctx: executionContext.command,
       task_envelope: taskEnvelope,
@@ -219,6 +226,7 @@ export async function prepareAgentWorkOrder(opts: {
         route_decision: routeDecision,
       },
       source_manifest: sourceManifest,
+      knowledge_retrieval: knowledgeRetrieval,
     });
     const preparation: AgentWorkOrderPreparationView = {
       schema_version: 2,
@@ -231,6 +239,7 @@ export async function prepareAgentWorkOrder(opts: {
       }),
       route: projectAgentWorkOrderRoute(routeDecision),
       source_manifest: sourceManifest,
+      knowledge_retrieval: knowledgeRetrieval.receipt,
       verification_intent: structuredClone(canonicalWorkOrder.verification_intent),
     };
     return {

@@ -13,6 +13,7 @@ import {
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
+import { cmdContextReindex } from "../../commands/context/reindex.js";
 import { projectTaskBriefFromPreparedWorkOrder } from "../../commands/task/brief-model.js";
 import { routePacket } from "../../commands/hermes/hermes-runtime.js";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
@@ -43,6 +44,7 @@ type WorkOrderView = {
     remote_policy: unknown;
     route: unknown;
     source_manifest: unknown;
+    knowledge_retrieval: unknown;
   };
   execution?: {
     sandbox_policy?: {
@@ -213,6 +215,98 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
 }
 
 describe("AgentWorkOrder v2 surface integration", () => {
+  it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
+    await mkdir(path.join(root, ".agentplane", "context", "derived", "graph"), {
+      recursive: true,
+    });
+    await mkdir(path.join(root, ".agentplane", "context", "derived", "ontology"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(root, "context", "wiki", "retrieval.md"),
+      "# Retrieval Guide\n\nUse the deterministic retrieval receipt before repository discovery.\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "context", "wiki", "fts-only.md"),
+      "# Market Signal\n\nMarket context is indexed only through deterministic full-text retrieval.\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "context", "derived", "graph", "entities.jsonl"),
+      `${JSON.stringify({ id: "payment-gateway", label: "Payment Gateway", aliases: ["Billing API"] })}\n` +
+        `${JSON.stringify({ id: "billing-ledger", label: "Billing Ledger" })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "context", "derived", "graph", "edges.jsonl"),
+      `${JSON.stringify({ id: "edge.payment-ledger", from: "payment-gateway", to: "billing-ledger" })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "context", "derived", "ontology", "aliases.jsonl"),
+      `${JSON.stringify({ alias: "Payment Gateway", canonical_entity_id: "payment-gateway" })}\n`,
+      "utf8",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      rootOverride: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: true },
+    });
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await commandCtx.taskBackend.getTask(taskId);
+    expect(task).toBeTruthy();
+    await commandCtx.taskBackend.writeTask({
+      ...task!,
+      title: "Build Payment Gateway retrieval",
+      description:
+        "Payment Gateway; use retrieval context/wiki/retrieval.md; missing context/wiki/not-present.md must be recorded, not fabricated.",
+      tags: ["retrieval", "market"],
+    });
+
+    const prepare = async () =>
+      requirePreparedAgentWorkOrder(
+        await prepareAgentWorkOrder({
+          command_ctx: commandCtx,
+          cwd: root,
+          root_override: root,
+          task_id: taskId,
+        }),
+      );
+    const first = await prepare();
+    const second = await prepare();
+    expect(first.work_order.knowledge_refs).toEqual(second.work_order.knowledge_refs);
+    expect(first.preparation.knowledge_retrieval).toEqual(second.preparation.knowledge_retrieval);
+    expect(first.work_order.knowledge_refs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=payment-gateway",
+          retrieval: "alias",
+        }),
+        expect.objectContaining({
+          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=billing-ledger",
+          retrieval: "graph",
+        }),
+        expect.objectContaining({ ref: "context/wiki/retrieval.md", retrieval: "exact" }),
+        expect.objectContaining({ ref: "context/wiki/fts-only.md", retrieval: "fts" }),
+      ]),
+    );
+    expect(first.work_order.authority.allowed_tool_classes).toContain("knowledge_read");
+    expect(first.work_order.context_intent.require_prepared_evidence).toBe(true);
+    expect(first.preparation.knowledge_retrieval.budgets).toMatchObject({
+      max_references: 12,
+      max_fts_queries: 12,
+    });
+    expect(
+      first.preparation.knowledge_retrieval.omissions.some(
+        (omission) => omission.reason_code === "not_materializable",
+      ),
+    ).toBe(true);
+  });
+
   it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
     for (const workflowMode of ["direct", "branch_pr"] as const) {
       const root = await mkGitRepoRoot();

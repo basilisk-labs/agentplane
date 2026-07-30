@@ -2,6 +2,7 @@ import type { AgentWorkOrderV2, StateFingerprint } from "@agentplaneorg/core/sch
 
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
+import type { TaskKnowledgeRetrievalReceipt } from "./task-knowledge-retrieval.js";
 
 type AgentWorkOrderRemotePolicy = {
   schema_version: 1;
@@ -82,6 +83,7 @@ export type AgentWorkOrderPreparationView = {
   remote_policy: AgentWorkOrderRemotePolicy;
   route: AgentWorkOrderRouteProjection;
   source_manifest: AgentWorkOrderSourceManifest;
+  knowledge_retrieval: TaskKnowledgeRetrievalReceipt;
   verification_intent: AgentWorkOrderV2["verification_intent"];
 };
 
