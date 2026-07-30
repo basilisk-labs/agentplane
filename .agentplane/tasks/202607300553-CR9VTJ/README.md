@@ -4,7 +4,7 @@ title: "Requalify the AgentPlane 0.7.0-beta.1 decision on current main"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -36,10 +36,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T06:02:43.118Z"
+  updated_by: "TESTER"
+  note: "Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access."
   attempts: 0
 commit: null
 comments:
@@ -72,8 +72,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Checkpoint: current-main successor gate now records the preserved beta.1 no-publish decision and dependency repair."
+  -
+    type: "verify"
+    at: "2026-07-30T06:02:43.118Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access."
 doc_version: 3
-doc_updated_at: "2026-07-30T05:59:12.563Z"
+doc_updated_at: "2026-07-30T06:02:44.301Z"
 doc_updated_by: "CODER"
 description: "Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency."
 sections:
@@ -93,6 +99,56 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T06:02:43.118Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T05:59:12.563Z, excerpt_hash=sha256:de9be7b79d4ce8d2289484169d468746949ff267d509c0604fa35f16025d9a7e
+
+    Details:
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+    Result: pass
+    Evidence: 20 tests passed; qualification fixture retains the sealed failed candidate decision.
+    Scope: RF-04 replay timing partition and beta qualification packet behavior.
+
+    Command: node scripts/checks/check-agent-efficiency-replay.mjs
+    Result: pass
+    Evidence: frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.
+    Scope: immutable no-provider replay evidence structure.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, policy, lifecycle, architecture, baseline, and threshold contract checks completed successfully.
+    Scope: repository-wide deterministic contract surface on the successor branch.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed.
+    Scope: critical CLI regression surface.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300553-CR9VTJ-requalify-the-agentplane-0-7-0-beta-1-decision-o/.agentplane/tasks/202607300553-CR9VTJ/blueprint/resolved-snapshot.json
+    - old_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+    - current_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607300553-CR9VTJ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -105,6 +161,10 @@ sections:
     - Observation: Current-main deterministic validation passed: RF-04 driver and qualification packet tests are 20/20, replay baseline validates 50 runs and 55 provider episodes, ci:contract and test:critical pass.
       Impact: The framework contracts and frozen evidence lineage remain intact on main, but this does not alter the candidate latency verdict.
       Resolution: Retain the committed F3 decision do_not_publish: latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms exceed their frozen thresholds; no beta.1 prerelease is published.
+
+    - Observation: The frozen candidate still exceeds latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms thresholds.
+      Impact: Beta.1 remains ineligible for publication despite healthy deterministic contracts.
+      Resolution: Record do_not_publish and reserve any new capture for a separately approved provider task.
 extensions:
   workflow_route_baseline:
     start_head_sha: "7856c47baaab749275df9f7bbdc640bac19c86d5"
@@ -137,6 +197,56 @@ PLANNER fallback scaffold for "Requalify the AgentPlane 0.7.0-beta.1 decision on
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T06:02:43.118Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T05:59:12.563Z, excerpt_hash=sha256:de9be7b79d4ce8d2289484169d468746949ff267d509c0604fa35f16025d9a7e
+
+Details:
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+Result: pass
+Evidence: 20 tests passed; qualification fixture retains the sealed failed candidate decision.
+Scope: RF-04 replay timing partition and beta qualification packet behavior.
+
+Command: node scripts/checks/check-agent-efficiency-replay.mjs
+Result: pass
+Evidence: frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.
+Scope: immutable no-provider replay evidence structure.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, policy, lifecycle, architecture, baseline, and threshold contract checks completed successfully.
+Scope: repository-wide deterministic contract surface on the successor branch.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed.
+Scope: critical CLI regression surface.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300553-CR9VTJ-requalify-the-agentplane-0-7-0-beta-1-decision-o/.agentplane/tasks/202607300553-CR9VTJ/blueprint/resolved-snapshot.json
+- old_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+- current_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607300553-CR9VTJ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -153,3 +263,7 @@ PLANNER fallback scaffold for "Requalify the AgentPlane 0.7.0-beta.1 decision on
 - Observation: Current-main deterministic validation passed: RF-04 driver and qualification packet tests are 20/20, replay baseline validates 50 runs and 55 provider episodes, ci:contract and test:critical pass.
   Impact: The framework contracts and frozen evidence lineage remain intact on main, but this does not alter the candidate latency verdict.
   Resolution: Retain the committed F3 decision do_not_publish: latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms exceed their frozen thresholds; no beta.1 prerelease is published.
+
+- Observation: The frozen candidate still exceeds latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms thresholds.
+  Impact: Beta.1 remains ineligible for publication despite healthy deterministic contracts.
+  Resolution: Record do_not_publish and reserve any new capture for a separately approved provider task.

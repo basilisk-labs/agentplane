@@ -15,8 +15,13 @@ Replace the stranded beta.1 gate with a current-main qualification record. Prese
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation
+without provider access.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

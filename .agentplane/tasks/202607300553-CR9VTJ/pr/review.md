@@ -12,8 +12,8 @@ Created: 2026-07-30T05:53:55.797Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
