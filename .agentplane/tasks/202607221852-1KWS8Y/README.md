@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
     - "Current-head review: source manifests, transactional source replacement, FTS external-content triggers, and full-rebuild fallback preserve search continuity across add/change/delete and corrupt or obsolete indexes."
     - "Performance evidence: the declared 600-source benchmark satisfies the p95 threshold (0.422 observed <= 0.8 required); the result correctly scopes the remaining all-source snapshot cost."
 commit:
-  hash: "b6faeb4c76fb24259727170f1a20a979db3eb70c"
-  message: "🚧 1KWS8Y context: incrementally update SQLite projections"
+  hash: "abc4f54a011accd37989dd8f0ab8efe7de7c7a6a"
+  message: "🔎 1KWS8Y task: refresh quality review"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -103,8 +106,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T09:23:27.444Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T09:12:51.370Z"
+doc_updated_at: "2026-07-30T09:23:27.444Z"
 doc_updated_by: "CODER"
 description: "RF-15: compute freshness once per source/query, dedupe canonical refs, upsert changed paths, delete removed paths, preserve unchanged rows, and recover corruption with a controlled full rebuild."
 sections:
@@ -164,6 +174,9 @@ sections:
       Impact: The projection keeps unchanged source rows and FTS entries, while one search query reads and projects each source once.
       Resolution: Verified the committed RF-15 implementation b6faeb4c76fb24259727170f1a20a979db3eb70c; remaining scope is intentionally all-source enumeration and hashing.
 extensions:
+  implementation_commit:
+    hash: "efadd7678c8ed997024f51fb7f3c79eaa42ba0d3"
+    message: "🔧 1KWS8Y context: fix static lint"
   workflow_route_baseline:
     start_head_sha: "45b38ab477c3511ae7395f9b221495527888bf7e"
     version: 1

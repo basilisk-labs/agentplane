@@ -8,10 +8,10 @@
   "pr_number": 4687,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4687",
   "pre_merge_closure": {
-    "basis_commit": "b6faeb4c76fb24259727170f1a20a979db3eb70c",
+    "basis_commit": "abc4f54a011accd37989dd8f0ab8efe7de7c7a6a",
     "branch": "task/202607221852-1KWS8Y/batch-context-freshness-and-incrementally-update",
     "pr_number": 4687,
-    "recorded_at": "2026-07-30T09:12:51.435Z",
+    "recorded_at": "2026-07-30T09:23:27.496Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
