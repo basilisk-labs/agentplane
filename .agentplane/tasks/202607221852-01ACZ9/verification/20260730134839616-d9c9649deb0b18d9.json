@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d9c9649deb0b18d93fa193179a416a52c77426f793ea3fe7db0e089f6d8ae7fd",
+  "implementation_sha": "35758465c6432d0503e12e56c6f31eb49cfb7604",
+  "kind": "task_verification_record",
+  "note": "RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered.",
+  "recorded_at": "2026-07-30T13:48:39.616Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Submit valid executor and evaluator requests. Expected: scoped digest-valid refs/excerpts and a complete run audit.\n2. Exceed round/token budget or request a forbidden scope. Expected: typed denial without broader repository authority.\n3. Repeat an unresolved blocking request. Expected: deduplicated evidence followed by blocker/escalation, not an infinite loop.\n4. Tamper with work-order id, fingerprint, or returned digest. Expected: validation rejects the request/response.\n5. Run schema, runner, and retrieval tests.",
+  "scope_digest": "sha256:71de638d60efec5e2dc8cfe8b2cf6bbd9f5eb77930537d5185b761b29bac9ca7",
+  "task_id": "202607221852-01ACZ9",
+  "verification_command": "agentplane verify 202607221852-01ACZ9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

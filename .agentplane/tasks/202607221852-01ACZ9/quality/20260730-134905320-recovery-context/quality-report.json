@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-01ACZ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T13:50:36.814Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "35758465c6432d0503e12e56c6f31eb49cfb7604",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "findings": [
+    "The bounded knowledge-request handler is exported but never invoked by a CLI or runner episode path, so an EXECUTOR/EVALUATOR request cannot receive the promised response or durable run audit.",
+    "The declared task_context scope constrains only projection kind, not task identity or authorized paths; retrieval searches the repository-wide context projection and may return unrelated context."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221852-01ACZ9/README.md"
+  ],
+  "missing_tests": [
+    "An end-to-end runner/CLI test that consumes a needs_context semantic result, serves the request, returns the bounded response, and verifies that the audit is persisted and reused on the next round.",
+    "A negative authorization test proving task_context retrieval cannot return a matching document outside the current task/work-order context or allowed authority roots.",
+    "A restart/recovery test proving persisted audits, rather than caller-supplied in-memory arrays alone, enforce round limits and repeated-unresolved escalation."
+  ],
+  "hidden_assumptions": [
+    "A later caller will invoke serveTaskKnowledgeRequest and persist its audit even though no such lifecycle integration is included.",
+    "Filtering by desired_kind is sufficient to implement task_context scope.",
+    "Prior audits supplied by a caller are complete, digest-valid, and durably recovered for the run."
+  ],
+  "residual_risks": [
+    "Connect the handler to the actual CLI/runner semantic-result path, persist and reload its audit by run/work-order binding, and enforce task/authority path boundaries before accepting retrieval candidates; then add end-to-end and cross-task denial coverage."
+  ]
+}

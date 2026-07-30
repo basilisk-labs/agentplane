@@ -35,8 +35,11 @@ export type {
   SemanticRetrievalSelectionWorkOrder,
 } from "./task-knowledge-semantic-escalation.js";
 export {
+  loadTaskKnowledgeRequestAudits,
   persistTaskKnowledgeRequestAudit,
   serveTaskKnowledgeRequest,
+  taskKnowledgeRequestAuditPath,
+  TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY,
   validateTaskKnowledgeRequestResponse,
   TASK_KNOWLEDGE_REQUEST_POLICY,
 } from "./task-knowledge-request.js";

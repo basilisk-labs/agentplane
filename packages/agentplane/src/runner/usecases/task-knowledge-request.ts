@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 
-import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import {
   parseCanonicalKnowledgeRef,
   validateAgentSemanticResult,
@@ -12,6 +11,13 @@ import {
 
 import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
+import {
+  canonicalKnowledgePath,
+  materializableKnowledgeRef,
+  projectionScopes,
+  taskContextPaths,
+  uniqueKnowledgeRefs,
+} from "./task-knowledge-request-scope.js";
 
 export const TASK_KNOWLEDGE_REQUEST_POLICY = {
   schema_version: 1,
@@ -50,6 +56,8 @@ export type TaskKnowledgeRequestResponse = {
       | "query_invalid"
       | "projection_unavailable"
       | "no_match"
+      | "task_context_unavailable"
+      | "reference_outside_task_context"
       | "reference_not_materializable"
       | "excerpt_not_included"
       | "repeated_unresolved";
@@ -126,27 +134,6 @@ function kindForRef(ref: string): KnowledgeRef["kind"] | null {
   return null;
 }
 
-function materializableRef(ref: string): string {
-  try {
-    const parsed = parseCanonicalKnowledgeRef(ref);
-    return parsed.path.startsWith("context/wiki/") || parsed.path.startsWith("context/raw/")
-      ? parsed.path
-      : ref;
-  } catch {
-    return ref;
-  }
-}
-
-function projectionScopes(
-  request: AgentSemanticResultKnowledgeRequest,
-): ("wiki" | "facts" | "graph" | "raw")[] {
-  if (request.desired_kind === "wiki") return ["wiki"];
-  if (request.desired_kind === "source") return ["raw"];
-  if (request.desired_kind === "fact") return ["facts"];
-  if (request.desired_kind === "entity" || request.desired_kind === "edge") return ["graph"];
-  return ["wiki", "facts", "graph", "raw"];
-}
-
 function sealedResponse(
   response: Omit<TaskKnowledgeRequestResponse, "schema_version" | "kind" | "digest">,
 ): TaskKnowledgeRequestResponse {
@@ -215,14 +202,9 @@ function responseMatchesBinding(opts: {
   invocation: KnowledgeRequestInvocation;
 }): boolean {
   return (
-    opts.audit.run.run_id === opts.invocation.run_id &&
     opts.audit.run.work_order_id === opts.invocation.work_order_id &&
     opts.audit.run.state_fingerprint_digest === opts.invocation.state_fingerprint_digest
   );
-}
-
-function uniqueRefs(values: string[]): string[] {
-  return [...new Set(values)].toSorted((left, right) => left.localeCompare(right));
 }
 
 /**
@@ -232,7 +214,10 @@ function uniqueRefs(values: string[]): string[] {
 export async function serveTaskKnowledgeRequest(opts: {
   repository_root: string;
   invocation: KnowledgeRequestInvocation;
-  work_order: Pick<AgentWorkOrderV2, "work_order_id" | "role" | "state_fingerprint" | "authority">;
+  work_order: Pick<
+    AgentWorkOrderV2,
+    "work_order_id" | "role" | "state_fingerprint" | "authority" | "knowledge_refs"
+  >;
   semantic_result: unknown;
   prior_audits?: readonly TaskKnowledgeRequestAudit[];
 }): Promise<TaskKnowledgeRequestResponse> {
@@ -337,6 +322,22 @@ export async function serveTaskKnowledgeRequest(opts: {
       ],
     });
   }
+  const allowedContextPaths = taskContextPaths(opts.work_order);
+  if (allowedContextPaths.size === 0) {
+    return response({
+      invocation: opts.invocation,
+      work_order: opts.work_order,
+      round,
+      request_digest: requestDigest(request),
+      outcome: "denied",
+      omissions: [
+        {
+          code: "task_context_unavailable",
+          detail: "The current work order contains no digest-valid task context to search.",
+        },
+      ],
+    });
+  }
   const requestId = requestDigest(request);
   const requestTokens = approximateTokens(`${request.query}\n${request.reason}`);
   if (round > TASK_KNOWLEDGE_REQUEST_POLICY.max_rounds) {
@@ -425,14 +426,19 @@ export async function serveTaskKnowledgeRequest(opts: {
       ],
     });
   }
-  const candidates = uniqueRefs(
+  let outOfScopeCandidateCount = 0;
+  const candidates = uniqueKnowledgeRefs(
     search.rows
       .flatMap((row) => [row.path, ...(row.source_refs ?? [])])
-      .map((ref) => materializableRef(ref)),
+      .map((ref) => materializableKnowledgeRef(ref)),
   )
     .flatMap((ref) => {
       const kind = kindForRef(ref);
       if (!kind || (request.desired_kind !== "any" && kind !== request.desired_kind)) return [];
+      if (!allowedContextPaths.has(canonicalKnowledgePath(ref) ?? "")) {
+        outOfScopeCandidateCount += 1;
+        return [];
+      }
       return [{ ref, kind }];
     })
     .slice(0, TASK_KNOWLEDGE_REQUEST_POLICY.max_references);
@@ -442,12 +448,15 @@ export async function serveTaskKnowledgeRequest(opts: {
       work_order: opts.work_order,
       round,
       request_digest: requestId,
-      outcome: "unresolved",
+      outcome: outOfScopeCandidateCount > 0 ? "denied" : "unresolved",
       request_tokens: requestTokens,
       omissions: [
         {
-          code: "no_match",
-          detail: "No scoped search result resolved to a canonical KnowledgeRef.",
+          code: outOfScopeCandidateCount > 0 ? "reference_outside_task_context" : "no_match",
+          detail:
+            outOfScopeCandidateCount > 0
+              ? "Search results were outside the digest-bound task context."
+              : "No scoped search result resolved to a canonical KnowledgeRef.",
         },
       ],
     });
@@ -569,10 +578,9 @@ export function validateTaskKnowledgeRequestResponse(
   return response;
 }
 
-export async function persistTaskKnowledgeRequestAudit(opts: {
-  file_path: string;
-  audit: TaskKnowledgeRequestAudit;
-}): Promise<void> {
-  validateTaskKnowledgeRequestResponse(opts.audit);
-  await atomicWriteFile(opts.file_path, `${JSON.stringify(opts.audit, null, 2)}\n`, "utf8");
-}
+export {
+  loadTaskKnowledgeRequestAudits,
+  persistTaskKnowledgeRequestAudit,
+  taskKnowledgeRequestAuditPath,
+  TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY,
+} from "./task-knowledge-request-audit.js";
