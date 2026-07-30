@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -66,7 +66,7 @@ quality_review:
     - "Executor authority remains least-privilege: knowledge_read and required inputs are added only when materialized knowledge exists; prepared-evidence intent is derived from included excerpts."
     - "The current commit is formatting-only after the CodeQL-safe symbol scan; it does not alter retrieval behavior validated by the focused integration test and full fast CI."
 commit:
-  hash: "e62d54b69678593111b632d6d0b04e10873559c8"
+  hash: "244a6a82fa6ff3b96858cb06e819ab7648eba618"
   message: "🚧 9T0RT3 task: refresh quality review"
 comments:
   -
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -116,8 +119,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T12:09:35.259Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:00:26.131Z"
+doc_updated_at: "2026-07-30T12:09:35.259Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:
@@ -180,8 +190,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "728699402f64ee6381f474f68106aaecf8873b11"
-    message: "🚧 9T0RT3 task: harden symbol extraction"
+    hash: "911c4c95343a4de1b2ca89f0c75cbd40e3dfb01a"
+    message: "🚧 9T0RT3 task: format deterministic retrieval"
   workflow_route_baseline:
     start_head_sha: "2872d82ce71ecfa658dc9686ed1d36bb101f9278"
     version: 1
