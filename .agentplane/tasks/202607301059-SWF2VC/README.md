@@ -5,7 +5,7 @@ result_summary: "Prepared and verified v0.6.25 maintenance release candidate wit
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -37,25 +37,23 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-30T11:53:01.898Z"
+  updated_at: "2026-07-30T11:53:55.146Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.25 maintenance release candidate is ready for integration after full local and hosted verification."
+  note: "Final pre-merge closure for v0.6.25 is consistent with the verified maintenance release candidate."
   evaluated_sha: "f905f72296101e08eacee1c0acd47b732c126a84"
   blueprint_digest: "505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8"
   evidence_refs:
     - ".agentplane/tasks/202607301059-SWF2VC/README.md"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-115301898-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-115301898-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-115301898-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-115355146-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-115355146-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607301059-SWF2VC/quality/20260730-115355146-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607301059-SWF2VC/blueprint/resolved-snapshot.json"
     - "docs/releases/v0.6.25.md"
-    - ".agentplane/.release/apply/2026-07-30T11-41-57-736Z.json"
     - "bun.lock"
     - ".agentplane/workflows/last-known-good.md"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts"
+    - "packages/spec/examples/acr.json"
   findings:
-    - "All routing fixes, release version surfaces, generated assets, Bun workspace lock, recovery snapshot, release notes, and package artifacts are consistent at 0.6.25."
+    - "Closure metadata, current blueprint snapshot, release evidence, generated assets, version parity, lockfile, and hosted checks are complete; main remains outside the integration target."
 commit:
   hash: "f905f72296101e08eacee1c0acd47b732c126a84"
   message: "🎨 SWF2VC release: format versioned ACR example"
