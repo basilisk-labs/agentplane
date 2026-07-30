@@ -4,7 +4,7 @@ title: "Requalify the AgentPlane 0.7.0-beta.1 decision on current main"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -49,6 +49,9 @@ comments:
   -
     author: "CODER"
     body: "Checkpoint: rewired beta.2 to the current-main successor gate, retained the legacy gate as blocked, and completed deterministic validation without provider access."
+  -
+    author: "CODER"
+    body: "Checkpoint: current-main successor gate now records the preserved beta.1 no-publish decision and dependency repair."
 events:
   -
     type: "status"
@@ -62,8 +65,15 @@ events:
     at: "2026-07-30T05:58:27.695Z"
     author: "CODER"
     body: "Checkpoint: rewired beta.2 to the current-main successor gate, retained the legacy gate as blocked, and completed deterministic validation without provider access."
+  -
+    type: "status"
+    at: "2026-07-30T05:59:12.563Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Checkpoint: current-main successor gate now records the preserved beta.1 no-publish decision and dependency repair."
 doc_version: 3
-doc_updated_at: "2026-07-30T05:58:27.695Z"
+doc_updated_at: "2026-07-30T05:59:12.563Z"
 doc_updated_by: "CODER"
 description: "Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency."
 sections:
