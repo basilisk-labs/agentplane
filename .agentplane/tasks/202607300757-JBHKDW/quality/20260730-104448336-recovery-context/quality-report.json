@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300757-JBHKDW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T10:44:48.336Z",
+  "verdict": "pass",
+  "summary": "Routing fixes are scoped and release-ready after full local CI.",
+  "evaluated_sha": "c3d51c336a9af8a0172c75e36c2597f2aa788841",
+  "blueprint_digest": "f46f992a26c22cb3a11cc073c1e371e5b58b0c03db398f719af23da0857ad2b6",
+  "findings": [
+    "Direct closeout emits argv-safe task complete and branch_pr recovery infers a unique local task branch without repeating work start."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300757-JBHKDW/README.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

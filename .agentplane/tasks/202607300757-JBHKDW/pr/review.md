@@ -6,14 +6,14 @@ Created: 2026-07-30T10:44:25.661Z
 
 - Task: `202607300757-JBHKDW`
 - Title: Fix direct verified-task closeout route
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300757-JBHKDW/fix-direct-verified-task-closeout-route`
 - Canonical task record: `.agentplane/tasks/202607300757-JBHKDW/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: direct verified-task closeout now emits concrete exactArgv, safe_to_mutate=true, and canExecuteNow=true; targeted and full fast CI passed.
+- Note: Verified: both routing regressions pass targeted coverage and full local CI (369 files, 2176 unit tests, 14 critical CLI tests, 90 platform-critical tests, significant coverage).
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-07-30T10:44:25.661Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T10:44:25.661Z
+- Updated: 2026-07-30T10:44:29.202Z
 - Branch: task/202607300757-JBHKDW/fix-direct-verified-task-closeout-route
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
