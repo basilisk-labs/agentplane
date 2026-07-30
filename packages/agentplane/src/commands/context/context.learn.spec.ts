@@ -95,9 +95,10 @@ export const contextLearnTasksSpec: CommandSpec<{
 }> = {
   id: ["context", "learn", "tasks"],
   group: "Context",
-  summary: "Create CURATOR extraction tasks from completed task history.",
+  summary:
+    "Collect completed-task knowledge proposals; select one task to create a CURATOR work order.",
   description:
-    "Selects completed tasks oldest-first and creates standard CURATOR tasks for semantic extraction from task README/ACR sources. It does not write wiki proposals or promote pages directly.",
+    "Collects source-backed, unpublished knowledge proposals from completed task README/ACR evidence. An exact single --task selection also creates one CURATOR semantic work order. This command never writes wiki, facts, or graph artifacts directly.",
   options: [
     {
       kind: "string",
@@ -118,7 +119,8 @@ export const contextLearnTasksSpec: CommandSpec<{
       name: "task",
       repeatable: true,
       valueHint: "<task-id>",
-      description: "Repeatable explicit task id filter.",
+      description:
+        "Explicit task id filter. Exactly one id selects that proposal for a CURATOR semantic work order.",
     },
     {
       kind: "string",
@@ -136,20 +138,20 @@ export const contextLearnTasksSpec: CommandSpec<{
       kind: "string",
       name: "after-task",
       valueHint: "<task-id>",
-      description: "Continue after a previously queued task id.",
+      description: "Continue after a previously proposed task id.",
     },
     {
       kind: "string",
       name: "limit",
       valueHint: "<n>",
-      description: "Maximum number of oldest matching tasks to queue.",
+      description: "Maximum number of oldest matching proposals to collect.",
     },
     {
       kind: "string",
       name: "batch-size",
       default: "25",
       valueHint: "<n>",
-      description: "Number of selected completed tasks per generated extraction task.",
+      description: "Legacy compatibility option. A selected work order always contains one task.",
     },
     {
       kind: "string",
@@ -157,13 +159,13 @@ export const contextLearnTasksSpec: CommandSpec<{
       default: "131072",
       valueHint: "<bytes>",
       description:
-        "Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated.",
+        "Maximum UTF-8 bytes of the selected task source pack. An oversized source remains isolated.",
     },
     {
       kind: "boolean",
       name: "dry-run",
       default: false,
-      description: "Preview batches without creating tasks.",
+      description: "Preview candidate proposals without writing records or creating a work order.",
     },
     {
       kind: "string",
@@ -177,11 +179,11 @@ export const contextLearnTasksSpec: CommandSpec<{
   examples: [
     {
       cmd: "agentplane context learn tasks --tag release --limit 25",
-      why: "Create bounded CURATOR tasks from the oldest completed release tasks.",
+      why: "Collect source-backed, unpublished proposals from the oldest completed release tasks.",
     },
     {
-      cmd: "agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run",
-      why: "Preview task-history extraction batches without mutating task state.",
+      cmd: "agentplane context learn tasks --task 202605100837-PJZW2E",
+      why: "Select one proposal and create its CURATOR semantic work order.",
     },
   ],
   parse: (raw) => ({

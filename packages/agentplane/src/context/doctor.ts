@@ -357,15 +357,17 @@ async function checkHarvestReports(
   } catch {
     return;
   }
-  for (const entry of entries.filter((name) => name.startsWith("task-harvest-"))) {
+  for (const entry of entries.filter(
+    (name) => name.startsWith("task-harvest-") || name.startsWith("task-knowledge-proposals-"),
+  )) {
     const rel = `.agentplane/context/derived/reports/${entry}`;
     const report = await readHarvestReport(path.join(root, rel));
     if (!report) {
       issues.push(`invalid task harvest report: ${rel}`);
       continue;
     }
-    if (report.promotion_gate.state === "promoted" && report.promotion_gate.blockers.length > 0) {
-      issues.push(`promoted task harvest report has blockers: ${rel}`);
+    if (report.selection_gate.state === "ready" && report.selection_gate.blockers.length > 0) {
+      issues.push(`ready task knowledge proposal report has blockers: ${rel}`);
     }
     if (report.source_refs.length === 0) {
       warnings.push(`task harvest report has no source refs: ${rel}`);

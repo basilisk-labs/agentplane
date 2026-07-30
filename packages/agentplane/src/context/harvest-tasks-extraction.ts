@@ -8,6 +8,8 @@ import { CONTEXT_EXTRACTION_SGR_EXAMPLE } from "../runtime/sgr/index.js";
 import { CliError } from "../shared/errors.js";
 import { isRecord } from "./context-utils.js";
 import { taskSourceFingerprint, type TaskSourceFingerprint } from "./harvest-tasks-markers.js";
+import { taskKnowledgeProposalId } from "./harvest-tasks-builders.js";
+import { taskTextDigest } from "./harvest-tasks-markers.js";
 import type { ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
 import { parsePositiveIntegerOption } from "./harvest-tasks-model.js";
 import { validateContextExtractionSgrResult } from "./sgr-extraction.js";
@@ -36,12 +38,12 @@ type ExtractionBatch = {
 };
 
 const CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS =
-  "framework/template/generated.artifact/context_task_extraction/v1";
+  "framework/template/generated.artifact/context_task_knowledge_proposal/v2";
 
 type TaskExtractionMarker = {
   schema_version: 1;
   pipeline: "context.harvest.tasks";
-  state: "queued";
+  state: "selected";
   queued_at: string;
   source_digest: string;
   source_fingerprint_version: 1 | 2;
@@ -83,31 +85,14 @@ function sourceTaskRef(task: ExtractionTask, fingerprint: TaskSourceFingerprint)
             typeof marker.source_digest === "string" ? marker.source_digest : undefined,
           raw_evidence_path:
             typeof marker.raw_evidence_path === "string" ? marker.raw_evidence_path : undefined,
-          wiki_proposal_path:
-            typeof marker.wiki_proposal_path === "string" ? marker.wiki_proposal_path : undefined,
-          promotion_state:
-            typeof marker.promotion_state === "string" ? marker.promotion_state : undefined,
+          proposal_id: typeof marker.proposal_id === "string" ? marker.proposal_id : undefined,
+          proposal_path:
+            typeof marker.proposal_path === "string" ? marker.proposal_path : undefined,
+          publication_state:
+            typeof marker.publication_state === "string" ? marker.publication_state : undefined,
         }
       : null,
   };
-}
-
-function existingExtractionMarker(task: ExtractionTask): TaskExtractionMarker | null {
-  const extensions = isRecord(task.extensions) ? task.extensions : {};
-  const marker = extensions.context_task_extraction;
-  if (!isRecord(marker) || marker.pipeline !== "context.harvest.tasks") return null;
-  return marker as TaskExtractionMarker;
-}
-
-export function alreadyQueuedForExtractionUnchanged(
-  task: ExtractionTask,
-  parsed: Pick<ContextHarvestTasksParsed, "task">,
-  fingerprint = taskSourceFingerprint(task),
-): boolean {
-  const marker = existingExtractionMarker(task);
-  if (marker?.source_digest !== fingerprint.digest) return false;
-  if (parsed.task.includes(task.id)) return false;
-  return true;
 }
 
 export function buildTaskExtractionMarker(opts: {
@@ -122,7 +107,7 @@ export function buildTaskExtractionMarker(opts: {
   return {
     schema_version: 1,
     pipeline: "context.harvest.tasks",
-    state: "queued",
+    state: "selected",
     queued_at: opts.queuedAt,
     source_digest: fingerprint.digest,
     source_fingerprint_version: fingerprint.version,
@@ -197,23 +182,21 @@ function buildExtractionPromptModule(): PromptModule {
       kind: "framework",
       package_name: "agentplane",
     },
-    title: "Context task-history extraction prompt",
+    title: "Task knowledge proposal semantic prompt",
     summary:
-      "Default CURATOR prompt module for extracting sourced wiki, facts, and graph updates from completed task READMEs and ACR evidence.",
+      "CURATOR prompt for deciding one selected task-history knowledge proposal from bounded README and ACR evidence.",
     content_kind: "markdown",
     content: [
-      "# Context Task Extraction",
+      "# Task Knowledge Proposal",
       "",
-      "Goal: convert a bounded batch of completed task READMEs/ACRs into reusable typed context and linked wiki updates; do not restate task summaries as knowledge.",
+      "Goal: decide the semantic content of exactly one selected source-backed task knowledge proposal. Do not restate task summaries as durable knowledge.",
       "",
-      "1. Read every source README and available ACR. Reconcile candidate terms against existing wiki/facts/graph before creating entities or pages.",
-      "2. Extract precise source-backed entities, decisions, requirements, invariants, risks, failures, mitigations, relations, conflicts, open questions, and coverage using the task-bound `extraction-contract.json`.",
-      "3. Save one SGR v2 `context_extraction` result and run `agentplane context extraction apply <sgr-json> --task-id <task-id>` before narrative wiki edits.",
-      "4. Update canonical reusable pages; keep local details under headings. Add useful first-mention wikilinks and keep the glossary a thin alias/navigation layer.",
-      "5. Preserve exact README/ACR source refs, validity/supersession, stale/conflict state, and explicit coverage reasons. Raw proposal artifacts and caches are indexes, not semantic truth.",
-      "6. Reindex, refresh wiki reports, validate graph/task context, and smoke-search exact task terminology.",
+      "1. Read the task-bound proposal record, source README, available ACR, canonical snapshot, and `extraction-contract.json`.",
+      "2. Reconcile candidate terms against existing canonical context. Decide whether the proposal yields durable knowledge, is duplicate, needs consolidation, is transient, conflicts with existing knowledge, or should be rejected.",
+      "3. Return one schema-valid SGR v2 `context_extraction` result with source refs, semantic resolution evidence, durable claims only when justified, and explicit coverage/rejection reasons.",
+      "4. Do not apply the SGR, edit wiki/facts/graph files, reindex, validate, invoke evaluators, write ACR, or finalize the task. CLI supervision owns every mechanical operation and records the apply receipt.",
       "",
-      "Stop rather than promote when identity, source precision, private-data safety, topology rationale, or conflict resolution is insufficient. Legacy SGR v1 remains readable, but new tasks must emit schema v2.",
+      "Stop rather than promote when identity, source precision, private-data safety, topology rationale, or conflict resolution is insufficient. New tasks must emit schema v2.",
     ].join("\n"),
     mutability: "replaceable",
     merge: {
@@ -245,18 +228,16 @@ function buildDescription(opts: {
   oversizedCount: number;
 }): string {
   return [
-    `Semantically extract reusable context from completed task history batch ${opts.batchIndex}/${opts.batchCount}.`,
-    `Source range: ${opts.first.id} -> ${opts.last.id}; source tasks: ${opts.count}; source bytes: ${opts.sourceBytes}/${opts.byteBudget}; oversized sources: ${opts.oversizedCount}.`,
-    "Read task READMEs and ACR evidence, then update sourced wiki proposals, facts, graph rows, stale markers, and conflict markers with provenance.",
+    `Semantically decide the selected task-history knowledge proposal ${opts.batchIndex}/${opts.batchCount}.`,
+    `Source task: ${opts.first.id}; source bytes: ${opts.sourceBytes}/${opts.byteBudget}; oversized sources: ${opts.oversizedCount}.`,
+    "Return one source-backed SGR only. CLI supervision validates and materializes any accepted formal context and wiki updates.",
   ].join(" ");
 }
 
 function buildVerifySteps(): string[] {
   return [
-    "agentplane context doctor",
-    "agentplane context graph summary",
-    "agentplane context graph validate",
-    "agentplane context verify-task <task-id>",
+    "Return one schema-valid context_extraction SGR under semantic-results/.",
+    "Do not apply or materialize semantic output; CLI supervision owns the apply receipt and all deterministic checks.",
   ];
 }
 
@@ -286,6 +267,9 @@ export function buildExtractionTaskPlans(
       .map((entry) => entry.task.id);
     const sourceTasks = batch.entries.map((entry) => sourceTaskRef(entry.task, entry.fingerprint));
     const fingerprint = batchFingerprint(batch.entries);
+    const proposalIds = batch.entries.map((entry) =>
+      taskKnowledgeProposalId({ id: entry.task.id, text_digest: taskTextDigest(entry.task) }),
+    );
     return {
       batch_index: batchIndex,
       batch_count: batchCount,
@@ -295,7 +279,7 @@ export function buildExtractionTaskPlans(
       oversized_source_ids: oversizedSourceIds,
       batch_fingerprint: fingerprint,
       parsed: {
-        title: `Extract task-history context ${first.id}..${last.id}`,
+        title: `Curate task knowledge proposal ${proposalIds.join(", ")}`,
         description: buildDescription({
           batchIndex,
           batchCount,
@@ -308,18 +292,27 @@ export function buildExtractionTaskPlans(
         }),
         owner: "CURATOR",
         priority: "med",
-        tags: ["context", "assimilation", "task-harvest"],
+        tags: ["context", "assimilation", "task-harvest", "knowledge-proposal"],
         taskKind: "context",
         mutationScope: "context",
-        blueprintRequest: "context.assimilation",
+        blueprintRequest: "context.maximum_assimilation",
         extensions: {
           "agentplane.context": {
             schema_version: 1,
-            task_type: "context_task_extraction",
+            task_type: "task_knowledge_proposal",
             pipeline: "context.harvest.tasks",
             workspace: "context",
-            mode: "task_history_batch",
-            order: "oldest_first",
+            mode: "selected_task_knowledge_proposal",
+            order: "explicit_selection",
+            proposal: {
+              ids: proposalIds,
+              paths: proposalIds.map(
+                (proposalId) =>
+                  `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.json`,
+              ),
+              selected_by: "context.harvest.tasks --create-extraction-tasks --task <task-id>",
+              publication_state: "not_published",
+            },
             batch: {
               index: batchIndex,
               count: batchCount,
@@ -349,12 +342,36 @@ export function buildExtractionTaskPlans(
             extraction_contract_path: ".agentplane/tasks/${taskId}/extraction-contract.json",
             allowed_outputs: [
               "context/wiki/**",
+              ".agentplane/context/derived/claims/**",
               ".agentplane/context/derived/facts/**",
               ".agentplane/context/derived/graph/**",
+              ".agentplane/context/derived/ontology/**",
               ".agentplane/context/derived/reports/**",
+              ".agentplane/context/derived/sources/**",
+              ".agentplane/context/derived/wiki/**",
               ".agentplane/tasks/${taskId}/README.md",
               ".agentplane/tasks/${taskId}/acr.json",
+              ".agentplane/tasks/${taskId}/context-pack.md",
               ".agentplane/tasks/${taskId}/extraction-contract.json",
+              ".agentplane/tasks/${taskId}/canonical-snapshot.json",
+              ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
+              ".agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json",
+              ".agentplane/tasks/${taskId}/source-set.lock.json",
+              ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
+              ".agentplane/tasks/${taskId}/expected-artifacts.json",
+              ".agentplane/tasks/${taskId}/semantic-results/**",
+              ".agentplane/tasks/${taskId}/context-rework/**",
+            ],
+            agent_allowed_outputs: [".agentplane/tasks/${taskId}/semantic-results/**"],
+            cli_owned_operations: [
+              "validate_semantic_result",
+              "apply_semantic_result",
+              "materialize_context",
+              "reindex",
+              "verify",
+              "evaluate",
+              "acr",
+              "finalize",
             ],
             forbidden_outputs: [
               "context/raw/**",
@@ -367,7 +384,7 @@ export function buildExtractionTaskPlans(
               extract_entities: true,
               extract_facts: true,
               extract_relations: true,
-              update_wiki: true,
+              update_wiki: false,
               detect_contradictions: true,
               detect_stale_claims: true,
               detect_open_questions: true,

@@ -407,9 +407,10 @@ export const contextHarvestTasksSpec: CommandSpec<{
 }> = {
   id: ["context", "harvest", "tasks"],
   group: "Context",
-  summary: "Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.",
+  summary:
+    "Collect source-backed task knowledge proposals and create selected CURATOR work orders.",
   description:
-    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates raw scaffold writing, default CURATOR extraction task creation, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
+    "Collects completed-task evidence into non-semantic proposal records, records mechanical duplicate/consolidation signals, and creates one CURATOR semantic work order only for an explicit task selection. The command never writes wiki, fact, or graph knowledge. Write modes require an initialized context workspace.",
   options: [
     {
       kind: "string",
@@ -461,21 +462,22 @@ export const contextHarvestTasksSpec: CommandSpec<{
       name: "write-proposals",
       default: false,
       description:
-        "Write raw evidence and proposal scaffold artifacts only; semantic wiki/facts/graph extraction belongs to CURATOR tasks.",
+        "Write source-backed, unpublished task knowledge proposal records only; this never writes semantic wiki, fact, or graph artifacts.",
     },
     {
       kind: "boolean",
       name: "create-extraction-tasks",
       default: false,
       description:
-        "Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. This is the default non-write action.",
+        "Create one CURATOR semantic work order for exactly one explicit --task proposal selection.",
     },
     {
       kind: "string",
       name: "batch-size",
       default: "25",
       valueHint: "<n>",
-      description: "Number of selected completed tasks per generated extraction task.",
+      description:
+        "Legacy compatibility option. Selected proposal work orders always contain one task.",
     },
     {
       kind: "string",
@@ -483,13 +485,14 @@ export const contextHarvestTasksSpec: CommandSpec<{
       default: "131072",
       valueHint: "<bytes>",
       description:
-        "Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated.",
+        "Maximum UTF-8 bytes of the selected task source pack. An oversized source remains isolated.",
     },
     {
       kind: "boolean",
       name: "promote",
       default: false,
-      description: "Promote the wiki proposal to semi-canonical only if the promotion gate passes.",
+      description:
+        "Deprecated and rejected: task harvest never promotes semantic knowledge directly.",
     },
     {
       kind: "boolean",
@@ -509,19 +512,15 @@ export const contextHarvestTasksSpec: CommandSpec<{
   examples: [
     {
       cmd: "agentplane context harvest tasks --tag release --limit 20 --dry-run",
-      why: "Preview the oldest completed release tasks before creating extraction tasks or writing raw scaffolds.",
-    },
-    {
-      cmd: "agentplane context harvest tasks --tag branch_pr --batch-size 25",
-      why: "Create default CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.",
+      why: "Preview the oldest completed release-task candidates without creating proposal records or CURATOR work orders.",
     },
     {
       cmd: "agentplane context harvest tasks --tag branch_pr --write-proposals",
-      why: "Write raw source-backed proposal scaffolds from completed branch_pr tasks.",
+      why: "Collect source-backed, unpublished knowledge proposal records for completed branch_pr tasks.",
     },
     {
-      cmd: "agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25",
-      why: "Explicitly request CURATOR extraction tasks for older scripts.",
+      cmd: "agentplane context harvest tasks --task 202605100837-PJZW2E --create-extraction-tasks",
+      why: "Select exactly one proposal and create one CURATOR semantic work order; the CLI retains apply and verification ownership.",
     },
   ],
   parse: (raw) => {
@@ -537,8 +536,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
       afterTask: typeof raw.opts["after-task"] === "string" ? raw.opts["after-task"] : "",
       limit: typeof raw.opts.limit === "string" ? raw.opts.limit : "",
       writeProposals,
-      createExtractionTasks:
-        raw.opts["create-extraction-tasks"] === true || (!writeProposals && !promote && !dryRun),
+      createExtractionTasks: raw.opts["create-extraction-tasks"] === true,
       batchSize: typeof raw.opts["batch-size"] === "string" ? raw.opts["batch-size"] : "25",
       batchBytes: typeof raw.opts["batch-bytes"] === "string" ? raw.opts["batch-bytes"] : "131072",
       promote,

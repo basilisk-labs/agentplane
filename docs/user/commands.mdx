@@ -211,23 +211,21 @@ agentplane context wiki link context/wiki/decisions/context-storage.md
 agentplane context ingest --changed
 agentplane context ingest ./notes.md
 agentplane context harvest tasks --tag release --limit 20 --dry-run
-agentplane context harvest tasks --tag branch_pr --batch-size 25
 agentplane context harvest tasks --tag branch_pr --write-proposals
+agentplane context harvest tasks --task 202605100837-PJZW2E --create-extraction-tasks
 agentplane context verify-task <task-id>
 ```
 
 Source artifacts live under `context/**`. Derived context artifacts live under
 `.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
-database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to convert completed task
-history into raw evidence scaffolds or default `CURATOR` extraction tasks before promoting reusable
-knowledge. Semantic extraction is agent-owned by default for non-write broad harvest runs: standard
-`CURATOR` tasks read task READMEs and ACR evidence in bounded oldest-first batches, then update
-wiki/facts/graph outputs through the normal task lifecycle. `--write-proposals` is the deterministic
-raw/proposal scaffold path, not the semantic truth path. Write modes also mark harvested task
-READMEs with `extensions.context_harvest` for raw ingestion and
-`extensions.context_task_extraction` for queued semantic extraction, so later broad runs can skip
-unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
-require `agentplane context init` first.
+database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to collect completed task history
+into source-backed, unpublished knowledge proposals. The CLI writes evidence, proposal records,
+duplicate/consolidation signals, and selection receipts; it never writes wiki, facts, or graph
+knowledge from task text. Select exactly one task with `--create-extraction-tasks` to create a
+CURATOR work order. CURATOR returns one semantic SGR; CLI supervision owns validation,
+materialization, indexing, evaluation, and the apply receipt. Write modes mark source task READMEs
+with `extensions.context_harvest` and `extensions.context_task_extraction` so unchanged sources do
+not create duplicate work. Write modes require `agentplane context init` first.
 
 During the v0.7 supervisor migration, a persisted execution receipt is diagnostic evidence, not an
 authentication channel. `context verify-task` and `context finalize-task` therefore fail closed with

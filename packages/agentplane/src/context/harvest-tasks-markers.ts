@@ -4,20 +4,21 @@ import path from "node:path";
 
 import type { TaskData } from "../backends/task-backend.js";
 import { isRecord } from "./context-utils.js";
+import type { TaskKnowledgeProposal } from "./harvest-tasks-model.js";
 
 export type TaskHarvestMarker = {
   schema_version: 1;
   pipeline: "context.harvest.tasks";
-  state: "ingested";
+  state: "proposed";
   harvested_at: string;
   source_digest: string;
   source_fingerprint_version: 1;
   raw_evidence_path: string;
   report_path: string;
-  wiki_proposal_path: string;
-  promoted_path: string | null;
-  promotion_state: "proposal" | "promoted" | "blocked";
-  fact_ids: string[];
+  proposal_id: string;
+  proposal_path: string;
+  proposal_state: TaskKnowledgeProposal["state"];
+  publication_state: "not_published";
   source_refs: string[];
 };
 
@@ -32,11 +33,6 @@ type MarkerEvidence = {
   id: string;
   text_digest: string;
   source_refs: string[];
-};
-
-type MarkerFact = {
-  id: string;
-  task_id: string;
 };
 
 export type TaskSourceFingerprint = {
@@ -166,50 +162,45 @@ function existingHarvestMarker(task: HarvestMarkerTask): TaskHarvestMarker | nul
 
 export function alreadyHarvestedUnchanged(
   task: HarvestMarkerTask,
-  opts: { task: string[]; promote: boolean },
+  opts: { task: string[] },
 ): boolean {
   const marker = existingHarvestMarker(task);
   if (marker?.source_digest !== taskTextDigest(task)) return false;
   if (opts.task.includes(task.id)) return false;
-  if (opts.promote && marker.promotion_state !== "promoted") return false;
   return true;
 }
 
 export function buildTaskHarvestMarkers(opts: {
   evidence: MarkerEvidence[];
-  facts: MarkerFact[];
+  proposals: TaskKnowledgeProposal[];
   reportPath: string;
-  wikiPath: string;
   report: {
     generated_at: string;
-    promotion_gate: {
-      state: "proposal" | "promoted" | "blocked";
-      promoted_path: string | null;
-    };
   };
 }): Record<string, TaskHarvestMarker> {
-  const factsByTask = new Map<string, MarkerFact[]>();
-  for (const fact of opts.facts) {
-    factsByTask.set(fact.task_id, [...(factsByTask.get(fact.task_id) ?? []), fact]);
-  }
+  const proposalByTask = new Map(
+    opts.proposals.map((proposal) => [proposal.source_task_id, proposal]),
+  );
   return Object.fromEntries(
-    opts.evidence.map((row) => {
+    opts.evidence.flatMap((row) => {
+      const proposal = proposalByTask.get(row.id);
+      if (!proposal) return [];
       const marker: TaskHarvestMarker = {
         schema_version: 1,
         pipeline: "context.harvest.tasks",
-        state: "ingested",
+        state: "proposed",
         harvested_at: opts.report.generated_at,
         source_digest: row.text_digest,
         source_fingerprint_version: 1,
         raw_evidence_path: `context/raw/tasks/${row.id}.json`,
         report_path: opts.reportPath,
-        wiki_proposal_path: opts.wikiPath,
-        promoted_path: opts.report.promotion_gate.promoted_path,
-        promotion_state: opts.report.promotion_gate.state,
-        fact_ids: (factsByTask.get(row.id) ?? []).map((fact) => fact.id),
+        proposal_id: proposal.id,
+        proposal_path: `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.json`,
+        proposal_state: proposal.state,
+        publication_state: "not_published",
         source_refs: row.source_refs,
       };
-      return [row.id, marker];
+      return [[row.id, marker]];
     }),
   );
 }

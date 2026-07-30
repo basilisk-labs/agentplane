@@ -29,24 +29,23 @@ Use this after editing `context/**` by hand.
 
 ```bash
 agentplane context learn tasks --tag release --limit 20 --dry-run
-agentplane context learn tasks --tag branch_pr --batch-size 25
+agentplane context learn tasks --tag branch_pr --limit 25
+agentplane context learn tasks --task 202605100837-PJZW2E
 ```
 
-This turns completed task history into extraction tasks. It is useful when repeated fixes, release
-rules, or workflow lessons should become durable context.
+This first turns completed task history into source-backed, unpublished knowledge proposals. A
+single explicit `--task` selection creates one CURATOR semantic work order. It is useful when
+repeated fixes, release rules, or workflow lessons may become durable context, but the CLI must not
+guess their meaning or publish them automatically.
 
 ## Agent write order
 
-1. Lock the source set and hashes.
-2. Search existing wiki, facts, graph, and glossary.
-3. Reuse canonical names and record source-local aliases.
-4. Write wiki pages or sections only where they improve reuse.
-5. Add fact and graph rows for claims and relationships that should be machine-readable.
-6. Reindex and run checks.
-7. Record coverage, conflicts, and review notes.
+1. CLI records the selected source set, hashes, candidate signals, and duplicate/consolidation evidence.
+2. CURATOR searches canonical wiki, facts, graph, and glossary, then returns one semantic SGR.
+3. CLI validates and materializes an accepted result, reindexes, runs checks, evaluates it, and records the apply receipt.
 
 ## Avoid duplicates
 
-If a source mentions something that probably already exists, update the existing page or section.
-Create a new page only when the concept, entity, decision, risk, workflow, or module is likely to be
-reused independently.
+If a source mentions something that probably already exists, CURATOR records duplicate or
+consolidation reasoning in the semantic result. The CLI records only mechanical source duplication;
+it never selects a canonical page or merges knowledge by itself.

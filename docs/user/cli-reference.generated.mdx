@@ -3817,9 +3817,9 @@ agentplane context learn files docs/research.md context/raw/customer-notes.md
 
 ### context learn tasks
 
-Create CURATOR extraction tasks from completed task history.
+Collect completed-task knowledge proposals; select one task to create a CURATOR work order.
 
-Selects completed tasks oldest-first and creates standard CURATOR tasks for semantic extraction from task README/ACR sources. It does not write wiki proposals or promote pages directly.
+Collects source-backed, unpublished knowledge proposals from completed task README/ACR evidence. An exact single --task selection also creates one CURATOR semantic work order. This command never writes wiki, facts, or graph artifacts directly.
 
 Usage:
 
@@ -3831,14 +3831,14 @@ Options:
 
 - `--status <status>`: Repeatable task status filter. Defaults to DONE. (repeatable)
 - `--tag <tag>`: Repeatable tag filter. Matches tasks with any listed tag. (repeatable)
-- `--task <task-id>`: Repeatable explicit task id filter. (repeatable)
+- `--task <task-id>`: Explicit task id filter. Exactly one id selects that proposal for a CURATOR semantic work order. (repeatable)
 - `--since <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or after this task-id timestamp prefix.
 - `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
-- `--after-task <task-id>`: Continue after a previously queued task id.
-- `--limit <n>`: Maximum number of oldest matching tasks to queue.
-- `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
-- `--batch-bytes <bytes>`: Maximum UTF-8 bytes of normalized task source text per extraction task. A single oversized source is isolated. (default=131072)
-- `--dry-run`: Preview batches without creating tasks. (default=false)
+- `--after-task <task-id>`: Continue after a previously proposed task id.
+- `--limit <n>`: Maximum number of oldest matching proposals to collect.
+- `--batch-size <n>`: Legacy compatibility option. A selected work order always contains one task. (default=25)
+- `--batch-bytes <bytes>`: Maximum UTF-8 bytes of the selected task source pack. An oversized source remains isolated. (default=131072)
+- `--dry-run`: Preview candidate proposals without writing records or creating a work order. (default=false)
 - `--format <text|json>`: Output format. (choices=text|json, default=text)
 
 Examples:
@@ -3847,13 +3847,13 @@ Examples:
 agentplane context learn tasks --tag release --limit 25
 ```
 
-- Create bounded CURATOR tasks from the oldest completed release tasks.
+- Collect source-backed, unpublished proposals from the oldest completed release tasks.
 
 ```sh
-agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run
+agentplane context learn tasks --task 202605100837-PJZW2E
 ```
 
-- Preview task-history extraction batches without mutating task state.
+- Select one proposal and create its CURATOR semantic work order.
 
 ### context search
 
