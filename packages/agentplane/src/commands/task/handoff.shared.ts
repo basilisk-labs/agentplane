@@ -1,4 +1,8 @@
-import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import {
+  gitListTaskBranches,
+  parseTaskIdFromBranch,
+  resolveBaseBranch,
+} from "@agentplaneorg/core/git";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -29,6 +33,7 @@ export type TaskResumeContext = {
   head_sha: string | null;
   workspace_root: string;
   pr_branch: string | null;
+  local_task_branch?: string | null;
   latest_handoff: TaskHandoffArtifact | null;
   runner: TaskHandoffRunnerHint;
 };
@@ -40,6 +45,22 @@ function taskStatus(task: TaskData): string {
 function nullIfCliIo(err: unknown): null {
   if (err instanceof CliError && err.code === "E_IO") return null;
   throw err;
+}
+
+async function inferLocalTaskBranch(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  currentBranch: string | null;
+}): Promise<string | null> {
+  const taskPrefix = opts.ctx.config.branch.task_prefix;
+  if (opts.currentBranch && parseTaskIdFromBranch(taskPrefix, opts.currentBranch) === opts.taskId) {
+    return opts.currentBranch;
+  }
+  const taskBranches = await gitListTaskBranches(opts.ctx.resolvedProject.gitRoot, taskPrefix);
+  const matchingBranches = taskBranches.filter(
+    (branch) => parseTaskIdFromBranch(taskPrefix, branch) === opts.taskId,
+  );
+  return matchingBranches.length === 1 ? (matchingBranches[0] ?? null) : null;
 }
 
 export async function buildTaskResumeContext(opts: {
@@ -71,6 +92,15 @@ export async function buildTaskResumeContext(opts: {
       rootOverride: ctx.resolvedProject.gitRoot,
       mode: ctx.config.workflow_mode,
     }).catch(() => null));
+  const local_task_branch =
+    ctx.config.workflow_mode === "branch_pr"
+      ? await inferLocalTaskBranch({
+          ctx,
+          taskId: opts.task_id,
+          currentBranch: branch,
+        })
+      : null;
+  const pr_branch = prMeta.branch ?? local_task_branch;
 
   let runner: TaskHandoffRunnerHint;
   try {
@@ -121,7 +151,8 @@ export async function buildTaskResumeContext(opts: {
     base_branch,
     head_sha,
     workspace_root: ctx.resolvedProject.gitRoot,
-    pr_branch: prMeta.branch,
+    pr_branch,
+    local_task_branch,
     latest_handoff,
     runner,
   };

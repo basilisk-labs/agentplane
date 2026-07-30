@@ -4,7 +4,7 @@ title: "Fix direct verified-task closeout route"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,7 +21,7 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-30T07:58:43.838Z"
+  updated_at: "2026-07-30T10:24:21.735Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -67,7 +67,7 @@ events:
     state: "ok"
     note: "Verified: direct verified-task closeout now emits concrete exactArgv, safe_to_mutate=true, and canExecuteNow=true; targeted and full fast CI passed."
 doc_version: 3
-doc_updated_at: "2026-07-30T08:11:13.175Z"
+doc_updated_at: "2026-07-30T10:24:15.683Z"
 doc_updated_by: "CODER"
 description: "Reproduce and fix v0.6.24 route guidance that selects task complete with placeholder arguments, leaving verified direct-workflow tasks without an argv-safe closeout command."
 sections:
@@ -78,7 +78,7 @@ sections:
   Scope: |-
     - In scope: Reproduce and fix v0.6.24 route guidance that selects task complete with placeholder arguments, leaving verified direct-workflow tasks without an argv-safe closeout command.
     - Out of scope: unrelated refactors not required for "Fix direct verified-task closeout route".
-  Plan: "1. Reproduce direct verified-task next-action output on v0.6.24. 2. Make complete_direct emit a concrete argv-safe task complete command using recorded commit metadata and a deterministic one-token result. 3. Add unit and CLI regression coverage for operator guidance and persistent-carrier-shaped tasks. 4. Run targeted tests, typecheck, routing policy check, and final status review."
+  Plan: "1. Keep the direct verified-task argv-safe closeout fix. 2. Infer a unique existing local task branch when PR metadata is not recorded so next-action does not repeat work start after successful worktree creation. 3. Add regression coverage for the post-work-start route from the base checkout. 4. Run targeted route tests, typecheck, policy routing, full local CI, evaluator review, and release gates."
   Verify Steps: |-
     PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -152,7 +152,7 @@ Reproduce and fix v0.6.24 route guidance that selects task complete with placeho
 
 ## Plan
 
-1. Reproduce direct verified-task next-action output on v0.6.24. 2. Make complete_direct emit a concrete argv-safe task complete command using recorded commit metadata and a deterministic one-token result. 3. Add unit and CLI regression coverage for operator guidance and persistent-carrier-shaped tasks. 4. Run targeted tests, typecheck, routing policy check, and final status review.
+1. Keep the direct verified-task argv-safe closeout fix. 2. Infer a unique existing local task branch when PR metadata is not recorded so next-action does not repeat work start after successful worktree creation. 3. Add regression coverage for the post-work-start route from the base checkout. 4. Run targeted route tests, typecheck, policy routing, full local CI, evaluator review, and release gates.
 
 ## Verify Steps
 
