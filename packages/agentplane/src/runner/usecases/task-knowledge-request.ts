@@ -7,11 +7,7 @@ import {
 
 import { prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
-import {
-  approximateTokens,
-  compactQuery,
-  requestDigest,
-} from "./task-knowledge-request-codec.js";
+import { approximateTokens, compactQuery, requestDigest } from "./task-knowledge-request-codec.js";
 import {
   createTaskKnowledgeRequestResponse,
   TASK_KNOWLEDGE_REQUEST_POLICY,

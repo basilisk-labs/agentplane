@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on:
@@ -83,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted verify-contract failure was formatting-only: Prettier required the task-knowledge-request codec import to be on one line. Applied the repository formatter; format:check, schemas:check, arch:check, agentplane typecheck, and focused request/lifecycle/lock tests pass."
 events:
   -
     type: "status"
@@ -141,8 +144,13 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "comment"
+    at: "2026-07-30T15:29:07.504Z"
+    author: "CODER"
+    body: "Hosted verify-contract failure was formatting-only: Prettier required the task-knowledge-request codec import to be on one line. Applied the repository formatter; format:check, schemas:check, arch:check, agentplane typecheck, and focused request/lifecycle/lock tests pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T15:25:17.413Z"
+doc_updated_at: "2026-07-30T15:29:07.504Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
