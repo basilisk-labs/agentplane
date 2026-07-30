@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-YP9QCH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T10:19:41.097Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "4b4ce38d33cfd6af44c81eae3227f6829d18f393",
+  "blueprint_digest": "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324",
+  "findings": [
+    "Candidate generation remains bounded and deterministic: term, candidate, reason, evidence-ref, and index-digest ordering is explicit.",
+    "The CLI emits reconciliation evidence only; semantic_decision_owner remains CURATOR and no identity merge decision is synthesized.",
+    "The reviewed candidate provenance includes RF-17 and the strict compatibility check verifies the generated artifact boundary and CURATOR ownership."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-101940013-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
