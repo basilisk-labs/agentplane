@@ -19,11 +19,21 @@ import {
   type RetrievalAdapter,
   type TaskKnowledgeRetrieval,
 } from "./task-knowledge-retrieval-query.js";
+import {
+  selectSemanticRetrievalCandidates,
+  type SemanticRetrievalSelector,
+} from "./task-knowledge-semantic-escalation.js";
 
 export type {
   TaskKnowledgeRetrieval,
   TaskKnowledgeRetrievalReceipt,
 } from "./task-knowledge-retrieval-query.js";
+export type {
+  SemanticRetrievalEscalationReceipt,
+  SemanticRetrievalSelector,
+  SemanticRetrievalSelectorResponse,
+  SemanticRetrievalSelectionWorkOrder,
+} from "./task-knowledge-semantic-escalation.js";
 
 const MAX_STRUCTURED_FILE_BYTES = 2 * 1024 * 1024;
 
@@ -323,6 +333,7 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   task_envelope: RunnerTaskContextEnvelope;
   blueprint: BlueprintPlanArtifact;
   repository_root: string;
+  semantic_selector?: SemanticRetrievalSelector;
 }): Promise<TaskKnowledgeRetrieval> {
   const [projection, index, dependencies] = await Promise.all([
     readContextProjection(opts.repository_root),
@@ -393,8 +404,28 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
       });
     }
   }
+  const semanticSelection = await selectSemanticRetrievalCandidates({
+    candidates: materialized.map(({ candidate, ref }) => ({
+      ref: ref.ref,
+      digest: ref.digest,
+      kind: candidate.kind,
+      retrieval: candidate.retrieval,
+      score: candidate.score,
+      reasons: candidate.reasons,
+    })),
+    collected_candidate_count: ordered.length,
+    queries,
+    selector: opts.semantic_selector,
+  });
+  const materializedByIdentity = new Map(
+    materialized.map((entry) => [`${entry.ref.ref}\u0000${entry.ref.digest}`, entry]),
+  );
+  const selectedMaterialized = semanticSelection.candidates.flatMap((candidate) => {
+    const entry = materializedByIdentity.get(`${candidate.ref}\u0000${candidate.digest}`);
+    return entry ? [entry] : [];
+  });
   const excerpts = await Promise.all(
-    materialized.map(
+    selectedMaterialized.map(
       async ({ ref }) =>
         await prepareKnowledgeExcerpt({
           repository_root: opts.repository_root,
@@ -410,7 +441,7 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
       .filter((excerpt) => excerpt.status === "included")
       .map((excerpt) => `${excerpt.knowledge_ref.ref}\u0000${excerpt.knowledge_ref.digest}`),
   );
-  const knowledgeRefs = materialized.map(({ candidate, ref }, indexPosition) => {
+  const knowledgeRefs = selectedMaterialized.map(({ candidate, ref }, indexPosition) => {
     const identity = `${ref.ref}\u0000${ref.digest}`;
     const required =
       indexPosition < RETRIEVAL_LIMITS.max_required_references && includedIdentities.has(identity);
@@ -452,12 +483,13 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
       alias: ordered.filter((candidate) => candidate.retrieval === "alias").length,
       graph: ordered.filter((candidate) => candidate.retrieval === "graph").length,
     },
-    selected: materialized.map(({ candidate, ref }) => ({
+    selected: selectedMaterialized.map(({ candidate, ref }) => ({
       ref: ref.ref,
       retrieval: candidate.retrieval,
       score: candidate.score,
       reasons: candidate.reasons,
     })),
+    semantic_escalation: semanticSelection.receipt,
     omissions: omissions.toSorted(
       (left, right) =>
         (left.query ?? "").localeCompare(right.query ?? "") ||

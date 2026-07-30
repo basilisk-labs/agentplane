@@ -41,7 +41,10 @@ import {
   type AgentWorkOrderPreparationView,
 } from "./agent-work-order-projection.js";
 import { resolveRunnerBlueprintPlan } from "./task-run-blueprint-plan.js";
-import { prepareTaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
+import {
+  prepareTaskKnowledgeRetrieval,
+  type SemanticRetrievalSelector,
+} from "./task-knowledge-retrieval.js";
 
 export {
   type AgentWorkOrderLegacyBriefProjection,
@@ -147,6 +150,7 @@ export async function prepareAgentWorkOrder(opts: {
   runner_command?: string;
   execution_context?: ReadOnlyExecutionContext;
   execution_profile?: ResolvedExecutionProfileRuntime;
+  semantic_selector?: SemanticRetrievalSelector;
 }): Promise<AgentWorkOrderPreparationResult> {
   const includeRunnerState = opts.include_runner_state;
   const executionContext =
@@ -213,6 +217,7 @@ export async function prepareAgentWorkOrder(opts: {
       task_envelope: taskEnvelope,
       blueprint,
       repository_root: executionContext.repo.git_root,
+      semantic_selector: opts.semantic_selector,
     });
     const briefProjection = await buildAgentWorkOrderLegacyBriefProjection({
       command_ctx: executionContext.command,

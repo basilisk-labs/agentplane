@@ -4,6 +4,7 @@ import type { KnowledgeRef, PreparedKnowledgeExcerpt } from "@agentplaneorg/core
 
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
+import type { SemanticRetrievalEscalationReceipt } from "./task-knowledge-semantic-escalation.js";
 
 export const RETRIEVAL_LIMITS = {
   max_query_terms: 24,
@@ -69,6 +70,7 @@ export type TaskKnowledgeRetrievalReceipt = {
   adapter_counts: Record<RetrievalAdapter, number>;
   selected: { ref: string; retrieval: RetrievalAdapter; score: number; reasons: string[] }[];
   omissions: ReceiptOmission[];
+  semantic_escalation: SemanticRetrievalEscalationReceipt;
   digest: string;
 };
 
