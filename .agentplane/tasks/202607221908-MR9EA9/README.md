@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-beta.1 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -37,10 +37,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T19:58:50.903Z"
+  updated_by: "TESTER"
+  note: "beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed."
   attempts: 0
 commit: null
 comments:
@@ -55,8 +55,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-07-30T19:58:50.903Z"
+    author: "TESTER"
+    state: "ok"
+    note: "beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed."
 doc_version: 3
-doc_updated_at: "2026-07-29T10:19:27.879Z"
+doc_updated_at: "2026-07-30T19:58:52.310Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -76,12 +82,45 @@ sections:
   Verify Steps: "1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-beta.1, including 202607242236-1BFWEY, is an ancestor and has merged verification/evaluator/hosted-close evidence. 2. Run bun run test:critical, bun run coverage:workflow-suite, bun run lifecycle:invariants, bun run ci:contract, bun run schemas:check, and bun run package:install-smoke. Expected: all milestone checks and the installed-package journal/migration smoke pass on one reviewed SHA. 3. Run direct EXECUTOR and context/CURATOR rework fixtures through their configured episode/token/no-progress limits and restart checkpoints. Expected: both are bounded, resumable, and cannot replay completed agent or effect operations. 4. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements. 5. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T19:58:50.903Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T10:19:27.879Z, excerpt_hash=sha256:30e4c5027093bce34db76bbb664a88009f81254b3688947bc6d3811e8efa7164
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: missing
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-MR9EA9-qualify-the-agentplane-0-7-0-beta-1-milestone/.agentplane/tasks/202607221908-MR9EA9/blueprint/resolved-snapshot.json
+    - old_digest: none
+    - current_digest: 5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e
+    - route_changed: unknown
+    - safe_command: agentplane blueprint snapshot 202607221908-MR9EA9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Do not mutate product state during qualification beyond evidence artifacts.
     - If a prerelease was not published, revert only the gate evidence through its task branch.
     - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
-  Findings: ""
+  Findings: |-
+    - Observation: All declared beta.1 checks and bounded rework fixtures passed on the task branch.
+      Impact: The qualification gate has current deterministic and installed-package evidence.
+      Resolution: Proceed to independent evaluator review and provider-conflict route.
 extensions:
   workflow_route_baseline:
     start_head_sha: "b90a9e6df9ae35a1a518e1ffa73903d6e5784d35"
@@ -114,6 +153,36 @@ Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DO
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T19:58:50.903Z — VERIFY — ok
+
+By: TESTER
+
+Note: beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T10:19:27.879Z, excerpt_hash=sha256:30e4c5027093bce34db76bbb664a88009f81254b3688947bc6d3811e8efa7164
+
+Details:
+
+BlueprintSnapshotRef:
+- state: missing
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-MR9EA9-qualify-the-agentplane-0-7-0-beta-1-milestone/.agentplane/tasks/202607221908-MR9EA9/blueprint/resolved-snapshot.json
+- old_digest: none
+- current_digest: 5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e
+- route_changed: unknown
+- safe_command: agentplane blueprint snapshot 202607221908-MR9EA9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -123,3 +192,7 @@ Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DO
 - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
 
 ## Findings
+
+- Observation: All declared beta.1 checks and bounded rework fixtures passed on the task branch.
+  Impact: The qualification gate has current deterministic and installed-package evidence.
+  Resolution: Proceed to independent evaluator review and provider-conflict route.
