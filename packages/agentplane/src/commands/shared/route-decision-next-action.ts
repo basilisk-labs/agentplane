@@ -204,6 +204,14 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
+  if (opts.resume.local_task_branch && !opts.prFlow) {
+    return {
+      code: "open_pr",
+      command: `agentplane pr open ${id} --author ${opts.task.owner}`,
+      summary: "publish/link the task PR",
+      requiresApproval: false,
+    };
+  }
   if (opts.blockers.some((blocker) => blocker.code === "pr_meta_stale")) {
     return {
       code: "update_pr_artifacts",

@@ -1,0 +1,4 @@
+ .../run-cli.core.route-decision.work-start.test.ts | 140 +++++++++++++++++++++
+ .../commands/shared/route-decision-next-action.ts  |   8 ++
+ .../agentplane/src/commands/task/handoff.shared.ts |  35 +++++-
+ 3 files changed, 181 insertions(+), 2 deletions(-)
