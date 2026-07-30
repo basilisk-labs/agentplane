@@ -1,5 +1,6 @@
-import { createHash } from "node:crypto";
-import { mkdir, open, readFile, readdir, stat, unlink } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, open, readFile, readdir, rename, stat, unlink } from "node:fs/promises";
+import { hostname } from "node:os";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -57,6 +58,243 @@ function sameMarker(current: unknown, next: TaskHarvestMarker): boolean {
 
 function taskKnowledgeRawEvidencePath(taskId: string): string {
   return `context/raw/tasks/${taskId}.json`;
+}
+
+function taskKnowledgeSelectionCheckPath(proposalId: string): string {
+  return `.agentplane/context/derived/proposals/task-knowledge/${proposalId}.canonical-check.json`;
+}
+
+type CanonicalKnowledgeSource = {
+  path: string;
+  sha256: string;
+  size_bytes: number;
+  content_type: string;
+};
+
+type CanonicalKnowledgeMatch = {
+  source_ref: string;
+  source_id: string | null;
+  matched_terms: string[];
+  match_basis: "exact_phrase" | "lexical_overlap";
+  excerpt: string;
+};
+
+type TaskKnowledgeCanonicalCheck = {
+  schema_version: 1;
+  kind: "task_knowledge_proposal_canonical_check";
+  proposal_id: string;
+  source_task_id: string;
+  checked_at: string;
+  checked_by: "context.harvest.tasks";
+  query_source_refs: string[];
+  canonical_sources: CanonicalKnowledgeSource[];
+  matches: CanonicalKnowledgeMatch[];
+  result: "clear" | "consolidation_required";
+  resolution: {
+    state: "recorded";
+    owner: "CURATOR";
+    required_action: "semantic_reconciliation" | "durable_knowledge_assessment";
+  };
+};
+
+const TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS = 10 * 60 * 1000;
+
+type TaskKnowledgeSelectionLock = {
+  schema_version: 1;
+  kind: "task_knowledge_proposal_selection_lock";
+  owner: {
+    token: string;
+    pid: number;
+    hostname: string;
+  };
+  acquired_at: string;
+  expires_at: string;
+};
+
+function normalizedTerms(text: string): string[] {
+  return [
+    ...new Set(
+      normalizeText(text)
+        .split(" ")
+        .filter((term) => term.length >= 3),
+    ),
+  ].toSorted();
+}
+
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .replaceAll(/[^\p{L}\p{N}]+/gu, " ")
+    .replaceAll(/\s+/gu, " ")
+    .trim();
+}
+
+async function collectCanonicalKnowledgePaths(root: string): Promise<string[]> {
+  const paths = [
+    ".agentplane/context/derived/facts/facts.jsonl",
+    ".agentplane/context/derived/graph/entities.jsonl",
+    ".agentplane/context/derived/graph/edges.jsonl",
+    ".agentplane/context/derived/ontology/aliases.jsonl",
+    ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+    ".agentplane/context/derived/wiki/page-manifests.jsonl",
+  ];
+  const wikiRoot = path.join(root, "context/wiki");
+  const stack = [wikiRoot];
+  while (stack.length > 0) {
+    const directory = stack.pop();
+    if (!directory) continue;
+    let entries: { name: string; isDirectory: () => boolean }[];
+    try {
+      entries = await readdir(directory, { withFileTypes: true });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw error;
+    }
+    for (const entry of entries) {
+      if (entry.name.startsWith(".") || entry.name === "service") continue;
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(absolute);
+      } else if (/\.mdx?$/iu.test(entry.name)) {
+        paths.push(path.relative(root, absolute).split(path.sep).join("/"));
+      }
+    }
+  }
+  const candidates = await Promise.all(
+    paths.toSorted().map(async (candidate) => ({
+      candidate,
+      exists: await fileExists(path.join(root, candidate)),
+    })),
+  );
+  return candidates.filter((entry) => entry.exists).map((entry) => entry.candidate);
+}
+
+function canonicalRecordId(value: string, fallback: string): string | null {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!isRecord(parsed)) return null;
+    for (const key of ["id", "claim_id", "entity_id", "path", "target_path"]) {
+      if (typeof parsed[key] === "string" && parsed[key].trim()) return parsed[key].trim();
+    }
+  } catch {
+    // Markdown and malformed historical JSONL rows are still searchable as text.
+  }
+  return fallback || null;
+}
+
+function canonicalMatchesForText(opts: {
+  path: string;
+  text: string;
+  queryPhrases: readonly string[];
+  queryTerms: readonly string[];
+}): CanonicalKnowledgeMatch[] {
+  const lines = opts.text.split(/\r?\n/u);
+  const matches: CanonicalKnowledgeMatch[] = [];
+  for (const [index, line] of lines.entries()) {
+    const normalizedLine = normalizeText(line);
+    if (!normalizedLine) continue;
+    const exactPhrase = opts.queryPhrases.find(
+      (phrase) => phrase.length >= 18 && normalizedLine.includes(phrase),
+    );
+    const lineTerms = new Set(normalizedTerms(line));
+    const sharedTerms = opts.queryTerms.filter((term) => lineTerms.has(term));
+    if (!exactPhrase && sharedTerms.length < 3) continue;
+    matches.push({
+      source_ref: `${opts.path}#line=${index + 1}`,
+      source_id: canonicalRecordId(line, `${opts.path}:${index + 1}`),
+      matched_terms: (exactPhrase ? normalizedTerms(exactPhrase) : sharedTerms).slice(0, 12),
+      match_basis: exactPhrase ? "exact_phrase" : "lexical_overlap",
+      excerpt: line.trim().slice(0, 280),
+    });
+  }
+  return matches;
+}
+
+async function buildTaskKnowledgeCanonicalCheck(opts: {
+  root: string;
+  proposal: ReturnType<typeof buildOutput>["proposals"][number];
+  evidence: ReturnType<typeof buildOutput>["evidence"][number];
+}): Promise<TaskKnowledgeCanonicalCheck> {
+  const canonicalPaths = await collectCanonicalKnowledgePaths(opts.root);
+  const signalLines = opts.proposal.signals.flatMap((signal) =>
+    signal.source_refs.flatMap((ref) => {
+      const line = Number.parseInt(ref.split("=").at(-1) ?? "", 10);
+      return Number.isInteger(line) && line > 0
+        ? [opts.evidence.source_text_lines[line - 1] ?? ""]
+        : [];
+    }),
+  );
+  const queryPhrases = [opts.proposal.title, ...signalLines]
+    .map((phrase) => normalizeText(phrase))
+    .filter((phrase) => phrase.length >= 18);
+  const queryTerms = normalizedTerms([opts.proposal.title, ...signalLines].join(" "));
+  const canonicalSources: CanonicalKnowledgeSource[] = [];
+  const matches: CanonicalKnowledgeMatch[] = [];
+  for (const rel of canonicalPaths) {
+    const absolute = path.join(opts.root, rel);
+    const content = await readFile(absolute);
+    canonicalSources.push({
+      path: rel,
+      sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+      size_bytes: content.byteLength,
+      content_type: contentTypeForPath(rel),
+    });
+    matches.push(
+      ...canonicalMatchesForText({
+        path: rel,
+        text: content.toString("utf8"),
+        queryPhrases,
+        queryTerms,
+      }),
+    );
+  }
+  const uniqueMatches = matches
+    .toSorted((left, right) => left.source_ref.localeCompare(right.source_ref))
+    .filter(
+      (match, index, rows) => index === 0 || rows[index - 1]?.source_ref !== match.source_ref,
+    );
+  return {
+    schema_version: 1,
+    kind: "task_knowledge_proposal_canonical_check",
+    proposal_id: opts.proposal.id,
+    source_task_id: opts.proposal.source_task_id,
+    checked_at: new Date().toISOString(),
+    checked_by: "context.harvest.tasks",
+    query_source_refs: opts.proposal.source_refs,
+    canonical_sources: canonicalSources,
+    matches: uniqueMatches,
+    result: uniqueMatches.length > 0 ? "consolidation_required" : "clear",
+    resolution: {
+      state: "recorded",
+      owner: "CURATOR",
+      required_action:
+        uniqueMatches.length > 0 ? "semantic_reconciliation" : "durable_knowledge_assessment",
+    },
+  };
+}
+
+async function writeTaskKnowledgeCanonicalChecks(opts: {
+  root: string;
+  output: ReturnType<typeof buildOutput>;
+}): Promise<Map<string, { path: string; check: TaskKnowledgeCanonicalCheck }>> {
+  const evidenceByTaskId = new Map(opts.output.evidence.map((evidence) => [evidence.id, evidence]));
+  const checks = new Map<string, { path: string; check: TaskKnowledgeCanonicalCheck }>();
+  for (const proposal of opts.output.proposals) {
+    const evidence = evidenceByTaskId.get(proposal.source_task_id);
+    if (!evidence) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Task knowledge proposal evidence is missing: ${proposal.source_task_id}`,
+      });
+    }
+    const check = await buildTaskKnowledgeCanonicalCheck({ root: opts.root, proposal, evidence });
+    const rel = taskKnowledgeSelectionCheckPath(proposal.id);
+    await mkdir(path.dirname(path.join(opts.root, rel)), { recursive: true });
+    await writeJsonStableIfChanged(path.join(opts.root, rel), check);
+    checks.set(proposal.source_task_id, { path: rel, check });
+  }
+  return checks;
 }
 
 function optionalTaskArtifactPaths(taskId: string): string[] {
@@ -132,26 +370,113 @@ async function acquireTaskKnowledgeSelectionLock(opts: {
   const rel = `.agentplane/context/derived/proposals/task-knowledge/${opts.proposalId}.selection.lock`;
   const target = path.join(opts.root, rel);
   await mkdir(path.dirname(target), { recursive: true });
-  let handle: Awaited<ReturnType<typeof open>>;
-  try {
-    handle = await open(target, "wx");
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+  const owner = { token: randomUUID(), pid: process.pid, hostname: hostname() };
+  let handle: Awaited<ReturnType<typeof open>> | null = null;
+  while (!handle) {
+    try {
+      handle = await open(target, "wx");
+      const acquiredAt = new Date();
+      const lock: TaskKnowledgeSelectionLock = {
+        schema_version: 1,
+        kind: "task_knowledge_proposal_selection_lock",
+        owner,
+        acquired_at: acquiredAt.toISOString(),
+        expires_at: new Date(
+          acquiredAt.getTime() + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS,
+        ).toISOString(),
+      };
+      await handle.writeFile(`${JSON.stringify(lock)}\n`, "utf8");
+      await handle.sync();
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      const reclaimed = await reclaimStaleTaskKnowledgeSelectionLock({ target });
+      if (reclaimed) continue;
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
         message:
-          "A CURATOR selection is already being created for this task knowledge proposal. Re-run after the active selection finishes.",
+          "A live CURATOR selection is already being created for this task knowledge proposal. Re-run after its lease expires or the active selection finishes.",
       });
     }
-    throw error;
   }
   return async () => {
     await handle.close();
+    const current = await readFile(target, "utf8").catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") return null;
+      throw error;
+    });
+    if (!current) return;
+    const parsed = parseTaskKnowledgeSelectionLock(current);
+    if (parsed?.owner.token !== owner.token) return;
     await unlink(target).catch((error: NodeJS.ErrnoException) => {
       if (error.code !== "ENOENT") throw error;
     });
   };
+}
+
+function parseTaskKnowledgeSelectionLock(value: string): TaskKnowledgeSelectionLock | null {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (
+      !isRecord(parsed) ||
+      parsed.schema_version !== 1 ||
+      parsed.kind !== "task_knowledge_proposal_selection_lock" ||
+      !isRecord(parsed.owner) ||
+      typeof parsed.owner.token !== "string" ||
+      typeof parsed.owner.pid !== "number" ||
+      typeof parsed.owner.hostname !== "string" ||
+      typeof parsed.acquired_at !== "string" ||
+      typeof parsed.expires_at !== "string"
+    ) {
+      return null;
+    }
+    return parsed as TaskKnowledgeSelectionLock;
+  } catch {
+    return null;
+  }
+}
+
+function taskKnowledgeSelectionLockLiveness(
+  lock: TaskKnowledgeSelectionLock,
+): "alive" | "dead" | "unknown" {
+  if (lock.owner.hostname !== hostname()) return "unknown";
+  try {
+    process.kill(lock.owner.pid, 0);
+    return "alive";
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "EPERM") return "alive";
+    return code === "ESRCH" ? "dead" : "unknown";
+  }
+}
+
+async function reclaimStaleTaskKnowledgeSelectionLock(opts: { target: string }): Promise<boolean> {
+  let content: string;
+  let metadata: Awaited<ReturnType<typeof stat>>;
+  try {
+    [content, metadata] = await Promise.all([readFile(opts.target, "utf8"), stat(opts.target)]);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+    throw error;
+  }
+  const lock = parseTaskKnowledgeSelectionLock(content);
+  const expiresAt = lock ? Date.parse(lock.expires_at) : Number.NaN;
+  const expired = Number.isFinite(expiresAt)
+    ? expiresAt <= Date.now()
+    : metadata.mtimeMs + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS <= Date.now();
+  const liveness = lock ? taskKnowledgeSelectionLockLiveness(lock) : "unknown";
+  if (liveness === "alive" || (!expired && liveness !== "dead")) return false;
+  const recoveryPath = `${opts.target}.recovered-${randomUUID()}`;
+  try {
+    await rename(opts.target, recoveryPath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+    throw error;
+  }
+  await unlink(recoveryPath).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+  return true;
 }
 
 async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof buildOutput>) {
@@ -176,6 +501,10 @@ async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof b
 async function buildTaskProposalSourceRows(
   root: string,
   taskIds: readonly string[],
+  canonicalChecksByTask: ReadonlyMap<
+    string,
+    { path: string; check: TaskKnowledgeCanonicalCheck }
+  > = new Map(),
 ): Promise<ManifestEntry[]> {
   const rows: ManifestEntry[] = [];
   for (const taskId of taskIds) {
@@ -185,6 +514,13 @@ async function buildTaskProposalSourceRows(
       { path: `.agentplane/tasks/${taskId}/README.md`, required: true },
       { path: `.agentplane/tasks/${taskId}/acr.json`, required: false },
       { path: taskKnowledgeRawEvidencePath(taskId), required: true },
+      ...(canonicalChecksByTask.get(taskId)
+        ? [{ path: canonicalChecksByTask.get(taskId)?.path ?? "", required: true }]
+        : []),
+      ...(canonicalChecksByTask.get(taskId)?.check.canonical_sources ?? []).map((source) => ({
+        path: source.path,
+        required: true,
+      })),
       ...provenancePaths.map((candidatePath) => ({ path: candidatePath, required: false })),
     ];
     for (const candidate of candidates) {
@@ -222,6 +558,7 @@ async function createExtractionTasks(opts: {
   parsed: ContextHarvestTasksParsed;
   sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
   sourceRowsByTask: ReadonlyMap<string, ManifestEntry[]>;
+  canonicalChecksByTask: ReadonlyMap<string, { path: string; check: TaskKnowledgeCanonicalCheck }>;
   createTask?: typeof runTaskNewParsed;
 }) {
   const proposalByTaskId = new Map(
@@ -235,6 +572,19 @@ async function createExtractionTasks(opts: {
     for (const task of proposalTasks) {
       const proposal = proposalByTaskId.get(task.id);
       if (!proposal) continue;
+      const canonicalCheck = opts.canonicalChecksByTask.get(task.id);
+      if (
+        canonicalCheck?.check.proposal_id !== proposal.id ||
+        canonicalCheck.check.resolution.state !== "recorded"
+      ) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            `Task knowledge proposal ${proposal.id} has no recorded canonical duplicate/consolidation check. ` +
+            "Re-run the proposal pre-selection check before creating a CURATOR work order.",
+        });
+      }
       const release = await acquireTaskKnowledgeSelectionLock({
         root: opts.ctx.resolvedProject.gitRoot,
         proposalId: proposal.id,
@@ -351,6 +701,14 @@ async function createExtractionTasks(opts: {
             message: `Cannot select task knowledge proposal for ${sourceTaskId}: proposal record is missing.`,
           });
         }
+        const canonicalCheck = opts.canonicalChecksByTask.get(sourceTaskId);
+        if (!canonicalCheck) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Cannot select task knowledge proposal for ${sourceTaskId}: canonical check is missing.`,
+          });
+        }
         const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
         await mkdir(path.dirname(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath)), {
           recursive: true,
@@ -363,6 +721,12 @@ async function createExtractionTasks(opts: {
             source_task_id: proposal.source_task_id,
             source_digest: proposal.source_digest,
             source_refs: proposal.source_refs,
+            canonical_check: {
+              path: canonicalCheck.path,
+              result: canonicalCheck.check.result,
+              match_refs: canonicalCheck.check.matches.map((match) => match.source_ref),
+              resolution: canonicalCheck.check.resolution,
+            },
             curator_task_id: extractionTaskId,
             selected_at: queuedAt,
             selected_by: "context.harvest.tasks",
@@ -451,6 +815,10 @@ export async function cmdContextHarvestTasks(opts: {
     opts.parsed.dryRun || !shouldWrite
       ? []
       : [...(await writeOutputs(root, output)), ...(await writeTaskMarkers(ctx, output))];
+  const canonicalChecksByTask =
+    opts.parsed.dryRun || !shouldCreateExtractionTasks
+      ? new Map<string, { path: string; check: TaskKnowledgeCanonicalCheck }>()
+      : await writeTaskKnowledgeCanonicalChecks({ root, output });
   const sourceRowsByTask =
     opts.parsed.dryRun || !shouldCreateExtractionTasks
       ? new Map<string, ManifestEntry[]>()
@@ -458,7 +826,10 @@ export async function cmdContextHarvestTasks(opts: {
           await Promise.all(
             output.selected.map(
               async (task) =>
-                [task.id, await buildTaskProposalSourceRows(root, [task.id])] as const,
+                [
+                  task.id,
+                  await buildTaskProposalSourceRows(root, [task.id], canonicalChecksByTask),
+                ] as const,
             ),
           ),
         );
@@ -479,9 +850,16 @@ export async function cmdContextHarvestTasks(opts: {
           parsed: opts.parsed,
           sourceFingerprints,
           sourceRowsByTask,
+          canonicalChecksByTask,
           createTask: opts.createTask,
         });
-  const changed = [...new Set([...written, ...extraction.changedPaths])];
+  const changed = [
+    ...new Set([
+      ...written,
+      ...[...canonicalChecksByTask.values()].map((entry) => entry.path),
+      ...extraction.changedPaths,
+    ]),
+  ];
   const payload = {
     ...output.report,
     selected_task_ids: selected.map((task) => task.id),

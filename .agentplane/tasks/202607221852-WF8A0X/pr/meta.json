@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa",
   "created_at": "2026-07-30T16:07:19.966Z",
-  "diffstat_sha256": "sha256:96d24eb7eb73d81e0a7c931f0cf00fc9febd7611c0e6026ffc2516abae28bcb3",
+  "diffstat_sha256": "sha256:db8c354c072925367054367f2ebe01c1a4f15b398c7932df1df1ee7bf983074e",
   "last_verified_at": "2026-07-30T17:24:55.174Z",
   "last_verified_diffstat_sha256": "sha256:96d24eb7eb73d81e0a7c931f0cf00fc9febd7611c0e6026ffc2516abae28bcb3",
   "pr_number": 4694,

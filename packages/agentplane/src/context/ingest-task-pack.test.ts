@@ -8,7 +8,7 @@ import type { TaskNewParsed } from "../commands/task/new.js";
 import { writeSqliteProjection } from "../commands/context/sqlite.js";
 import { cmdContextIngest } from "./ingest.js";
 import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
-import { writeContextTaskPack } from "./ingest-task-pack.js";
+import { writeContextExtractionContract, writeContextTaskPack } from "./ingest-task-pack.js";
 import { PROJECTION_VERSION } from "./reindex.js";
 
 let tempRoots: string[] = [];
@@ -36,6 +36,18 @@ async function readJson<T>(root: string, rel: string): Promise<T> {
 }
 
 describe("context ingest task pack", () => {
+  it("keeps the standalone extraction-contract writer available for compatibility callers", async () => {
+    const root = await tempRoot();
+    const taskId = "202607021200-CONTRACT";
+
+    const relativePath = await writeContextExtractionContract({ root, taskId });
+
+    expect(relativePath).toBe(`.agentplane/tasks/${taskId}/extraction-contract.json`);
+    await expect(readFile(path.join(root, relativePath), "utf8")).resolves.toContain(
+      '"sgr_schema_version": 2',
+    );
+  });
+
   it("creates task-bound source lock, canonical snapshot, span skeleton, context pack, and expected artifacts", async () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nStable contract.\n");

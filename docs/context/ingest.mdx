@@ -33,19 +33,21 @@ agentplane context learn tasks --tag branch_pr --limit 25
 agentplane context learn tasks --task 202605100837-PJZW2E
 ```
 
-This first turns only explicitly marked durable task history into source-backed, unpublished knowledge proposals. A
-single explicit `--task` selection creates one CURATOR semantic work order. It is useful when
-repeated fixes, release rules, or workflow lessons may become durable context, but the CLI must not
-guess their meaning or publish them automatically.
+This first turns only explicitly marked durable task history into source-backed, unpublished knowledge proposals. Before a
+single explicit `--task` selection creates one CURATOR semantic work order, the CLI freezes a
+canonical pre-selection check: source hashes, addressable lexical candidates, and a recorded
+`clear` or `consolidation_required` result. A candidate never becomes a CLI decision about semantic
+equality; CURATOR receives the evidence and performs reconciliation. The selection lease has an
+owner and expiry, so an interrupted handoff can be safely recovered without creating a second owner.
 
 ## Agent write order
 
-1. CLI records the selected source set, hashes, candidate signals, and duplicate/consolidation evidence.
+1. CLI records the selected source set, hashes, candidate signals, and pre-selection canonical duplicate/consolidation evidence.
 2. CURATOR searches canonical wiki, facts, graph, and glossary, then returns one semantic SGR.
 3. CLI validates and materializes an accepted result, reindexes, runs checks, evaluates it, and records the apply receipt.
 
 ## Avoid duplicates
 
-If a source mentions something that probably already exists, CURATOR records duplicate or
-consolidation reasoning in the semantic result. The CLI records only mechanical source duplication;
-it never selects a canonical page or merges knowledge by itself.
+If a source has addressable lexical candidates in current knowledge, the pre-selection check records
+`consolidation_required`; CURATOR records the duplicate or consolidation reasoning in the semantic
+result. The CLI never selects a canonical page or merges knowledge by itself.
