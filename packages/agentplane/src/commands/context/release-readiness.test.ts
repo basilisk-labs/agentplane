@@ -15,7 +15,7 @@ import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { createTaskNewParsed } from "../../context/ingest-task.js";
 import type { ManifestEntry } from "../../context/ingest.js";
-import { cmdContextWikiExplain, cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
+import { cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
 
 let tempRoots: string[] = [];
 
@@ -965,37 +965,5 @@ describe("context release readiness guards", () => {
       expect(maximumPrompt).toContain(expected);
     }
     expect(maximumPrompt.length).toBeLessThan(6500);
-  });
-
-  it("creates and explains wiki pages with AgentPlane context frontmatter", async () => {
-    const root = await tempRoot();
-    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-
-    await cmdContextWikiNew({
-      cwd: root,
-      parsed: {
-        page: "decisions/context-claims",
-        title: "Context Claims",
-        modality: "decision",
-        status: "reviewed_claim",
-        visibility: "project",
-        source: [".agentplane/tasks/202605130501-CTX001/README.md"],
-        force: false,
-      },
-    });
-    await cmdContextWikiLint({
-      cwd: root,
-      parsed: { path: "context/wiki" },
-    });
-    await cmdContextWikiExplain({
-      cwd: root,
-      parsed: { page: "decisions/context-claims" },
-    });
-
-    const output = out.mock.calls.map((call) => String(call[0])).join("");
-    expect(output).toContain("context wiki new: context/wiki/decisions/context-claims.md");
-    expect(output).toContain("context wiki lint: ok (1 page(s))");
-    expect(output).toContain("canonical_id:");
-    expect(output).toContain("modality: decision");
   });
 });

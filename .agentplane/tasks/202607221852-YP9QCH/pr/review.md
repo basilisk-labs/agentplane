@@ -30,7 +30,8 @@ Created: 2026-07-30T09:44:33.829Z
 
 ```text
  ...-cli.critical.agent-efficiency-baseline.test.ts |  37 +-
- .../src/commands/context/release-readiness.test.ts |   4 +-
+ .../src/commands/context/release-readiness.test.ts |  38 +-
+ .../commands/context/wiki.obsidian.unit.test.ts    |  28 +-
  .../src/context/ingest-task-pack.test.ts           | 239 +++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
  .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
@@ -38,7 +39,7 @@ Created: 2026-07-30T09:44:33.829Z
  .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
  .../baselines/v0.7-compatibility-candidate.json    |  38 +-
  .../check-compatibility-contract-baseline.mjs      |  39 +-
- 9 files changed, 885 insertions(+), 86 deletions(-)
+ 10 files changed, 913 insertions(+), 120 deletions(-)
 ```
 
 </details>
