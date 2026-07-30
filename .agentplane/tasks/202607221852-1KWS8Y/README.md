@@ -1,10 +1,10 @@
 ---
 id: "202607221852-1KWS8Y"
 title: "Batch context freshness and incrementally update projections"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-30T08:42:47.429Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -37,11 +37,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T08:43:03.409Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:52:11.837Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-30T08:43:03.409Z"
+doc_updated_by: "CODER"
 description: "RF-15: compute freshness once per source/query, dedupe canonical refs, upsert changed paths, delete removed paths, preserve unchanged rows, and recover corruption with a controlled full rebuild."
 sections:
   Summary: |-
@@ -51,12 +61,7 @@ sections:
   Scope: |-
     - In scope: per-query stat/hash/parse cache, canonical dedupe, changed/removed/unchanged detection, transactional incremental upsert/delete, projection-version migrations, equivalence tests, no-change behavior, corruption repair, and benchmarks.
     - Out of scope: semantic decisions or hidden stale reuse.
-  Plan: |-
-    1. Batch source freshness evaluation and parse each file at most once per query.
-    2. Compute an explicit change set from source and projection digests.
-    3. Apply transactional upserts/deletes while preserving unchanged rows.
-    4. Add version migration and controlled full-rebuild fallback.
-    5. Prove incremental/full equivalence and measure no-change/update costs.
+  Plan: "1. Version the SQLite projection schema to retain source identities and apply transactional per-source upsert/delete while keeping FTS rows synchronized. 2. Refactor reindex to capture each eligible file's stat, text, hash, and projection at most once; derive added, changed, removed, and unchanged sources without materializing the old corpus. 3. Return explicit no-op, incremental, and controlled full-rebuild receipts; force full rebuild for reset, integrity failure, projection-version mismatch, or index-scope changes. 4. Add deterministic tests for deduplication, no-change zero-write behavior, add/change/delete equivalence, corruption/version recovery, and FTS search continuity. 5. Add a reproducible scaled benchmark and record method, threshold, comparison, and residual scope; run focused checks, typecheck, critical CLI checks, hotspot, and Knip gates."
   Verify Steps: |-
     1. Query repeated matches from one source. Expected: one stat/hash/parse operation and deduplicated canonical results.
     2. Run no-change reindex. Expected: zero corpus rewrite and a truthful no-op receipt.
@@ -71,6 +76,10 @@ sections:
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "45b38ab477c3511ae7395f9b221495527888bf7e"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
@@ -86,11 +95,7 @@ RF-15: compute freshness once per source/query, dedupe canonical refs, upsert ch
 
 ## Plan
 
-1. Batch source freshness evaluation and parse each file at most once per query.
-2. Compute an explicit change set from source and projection digests.
-3. Apply transactional upserts/deletes while preserving unchanged rows.
-4. Add version migration and controlled full-rebuild fallback.
-5. Prove incremental/full equivalence and measure no-change/update costs.
+1. Version the SQLite projection schema to retain source identities and apply transactional per-source upsert/delete while keeping FTS rows synchronized. 2. Refactor reindex to capture each eligible file's stat, text, hash, and projection at most once; derive added, changed, removed, and unchanged sources without materializing the old corpus. 3. Return explicit no-op, incremental, and controlled full-rebuild receipts; force full rebuild for reset, integrity failure, projection-version mismatch, or index-scope changes. 4. Add deterministic tests for deduplication, no-change zero-write behavior, add/change/delete equivalence, corruption/version recovery, and FTS search continuity. 5. Add a reproducible scaled benchmark and record method, threshold, comparison, and residual scope; run focused checks, typecheck, critical CLI checks, hotspot, and Knip gates.
 
 ## Verify Steps
 
