@@ -1,10 +1,10 @@
 ---
 id: "202607221852-WF8A0X"
 title: "Create CURATOR-gated post-task knowledge proposals"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,9 +28,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-30T16:06:55.177Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -39,11 +39,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T16:07:19.854Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:52:25.915Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-30T16:07:19.854Z"
+doc_updated_by: "CODER"
 description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
 sections:
   Summary: |-
@@ -73,6 +83,10 @@ sections:
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "12115a42325bb38de85f15df89b96b2675b595cb"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
