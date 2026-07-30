@@ -3,14 +3,22 @@
   "branch": "task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation",
   "created_at": "2026-07-30T12:36:18.395Z",
   "diffstat_sha256": "sha256:84d8aecd41516460acb7c8a7db4e69ee6b0856159800ceb61e9b82654ee182a7",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-30T12:51:53.139Z",
+  "last_verified_diffstat_sha256": "sha256:84d8aecd41516460acb7c8a7db4e69ee6b0856159800ceb61e9b82654ee182a7",
   "pr_number": 4692,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4692",
+  "pre_merge_closure": {
+    "basis_commit": "ae57f3af8a46637818d16bcca69519bb77041aab",
+    "branch": "task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation",
+    "pr_number": 4692,
+    "recorded_at": "2026-07-30T12:54:35.667Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221852-ABP0EX",
   "updated_at": "2026-07-30T12:36:40.861Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

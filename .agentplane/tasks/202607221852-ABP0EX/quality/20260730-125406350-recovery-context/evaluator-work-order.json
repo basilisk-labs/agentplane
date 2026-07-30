@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-ABP0EX-5b0d9f8ea69ebc68ee128a41",
+  "prepared_at": "2026-07-30T12:54:06.350Z",
+  "task": {
+    "id": "202607221852-ABP0EX",
+    "revision": 10,
+    "objective": "Add policy-gated semantic retrieval escalation\n\nRF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: measurable escalation triggers, typed selector input/output, authority/budget policy, provenance, fallback, quality/escalation metrics, and conflict fixtures.\n- Out of scope: running CURATOR before every coding task or allowing semantic selection to rewrite durable knowledge.",
+      "1. Define threshold and policy inputs for size, confidence, domain conflict, and synthesis breadth.\n2. Prepare a bounded candidate-selection work order only when a trigger fires.\n3. Validate semantic selections against available refs/digests and retain deterministic fallback.\n4. Record cost, reason, selection provenance, and downstream quality.\n5. Calibrate triggers on golden retrieval scenarios.",
+      "1. Run high-confidence bounded retrieval. Expected: zero semantic escalation.\n2. Run each trigger fixture. Expected: one bounded selector episode with explicit reason, authority, budget, and candidate refs.\n3. Return invalid/stale selections or fail the adapter. Expected: validation rejects them and deterministic fallback/typed blocker is preserved.\n4. Compare escalation rate, retrieval quality, and total episode/token cost to baseline."
+    ]
+  },
+  "evaluated_sha": "ae57f3af8a46637818d16bcca69519bb77041aab",
+  "diff_base_sha": "3f46bbe11ff4528efbcf0aeff526e8a3cd98a981",
+  "blueprint_digest": "f8cfacdace7675c365e1aab8b657954cf4646e57daf30492c758c5eb3db5e683",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-ABP0EX/README.md",
+      "sha256": "sha256:979c59f3e029fe8b3e43cfd2e31e0773efb59dcf24bd39bc34d3f0c3f07667bf",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:08a78e08c7416140de4097751c1aeb4309802d1024fb8c93860c21de3f8ec0fb",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:d67afe4883c5e80f6bd7fe3897b492e096d197e702c7fcc7a32f621860e420e2",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:5edc617152bcb37c00a8ae20718c6bbbaa8377f2843bbd008b89a5725d035576",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

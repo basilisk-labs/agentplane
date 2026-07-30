@@ -1,1 +1,1 @@
-🚧 ABP0EX task: Add policy-gated semantic retrieval escalation [202607221852-ABP0EX]
+✅ ABP0EX task: Add policy-gated semantic retrieval escalation [202607221852-ABP0EX]

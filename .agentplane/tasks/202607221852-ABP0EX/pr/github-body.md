@@ -15,8 +15,15 @@ RF-19b: invoke an optional selector/reranker only for oversized, low-confidence,
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified c4348a3: 17 focused tests cover high-confidence zero escalation, four bounded trigger
+episodes, and stale/invalid/adapter-failure fallbacks; critical-cli 12 chunks, typecheck, and fast
+local CI passed. Receipt exposes baseline versus observed escalation and token cost; downstream
+quality remains explicitly not_observed pending evaluator evidence.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
