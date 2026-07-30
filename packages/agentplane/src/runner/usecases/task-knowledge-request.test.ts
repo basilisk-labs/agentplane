@@ -264,13 +264,14 @@ describe("bounded task knowledge requests", () => {
     await write(root, "context/wiki/drift.md", "# Drift\n\nChanged content after work order.\n");
 
     const rejected = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
+    const omissionDetail = rejected.omissions[0]?.detail;
 
     expect(rejected).toMatchObject({
       outcome: "unresolved",
       knowledge_refs: [],
       omissions: [expect.objectContaining({ code: "excerpt_not_included" })],
     });
-    expect(rejected.omissions[0]?.detail).toContain("digest_mismatch");
+    expect(omissionDetail).toMatch(/digest_mismatch/u);
   });
 
   it("keeps six long task-context candidates, metadata, and omission receipts within the response budget", async () => {
