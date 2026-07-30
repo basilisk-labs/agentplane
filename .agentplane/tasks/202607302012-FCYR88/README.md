@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,8 @@ quality_review:
   findings:
     - "No blocking defect found in the reviewed source diff. The added tests cover both the advanced-base topology and the prior equal-base regression."
 commit:
-  hash: "17fabaecde3a1258062d8a28d92c72f56bb5fde9"
-  message: "🧪 FCYR88 task: record conflict route review"
+  hash: "f6e1e6293f0043ba5da446b3a91096313b95c5e5"
+  message: "🧪 FCYR88 task: refresh equal-base evaluation"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -95,8 +98,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head."
+  -
+    type: "status"
+    at: "2026-07-30T20:38:49.935Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T20:34:20.332Z"
+doc_updated_at: "2026-07-30T20:38:49.936Z"
 doc_updated_by: "CODER"
 description: "Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668."
 sections:
@@ -192,8 +202,8 @@ sections:
       Resolution: Refresh independent evaluator evidence and pre-merge closure before publishing the review fix.
 extensions:
   implementation_commit:
-    hash: "3f61098fd12e2a8359ed90d3aae50f8282ecce4f"
-    message: "🐛 FCYR88 code: route protected-base conflict rework"
+    hash: "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2"
+    message: "🐛 FCYR88 code: preserve equal-base conflict routing"
   workflow_route_baseline:
     start_head_sha: "ce7af971c0609eed73710cd239a3f2897ae3bd7e"
     version: 1

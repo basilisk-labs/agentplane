@@ -8,10 +8,10 @@
   "pr_number": 4695,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4695",
   "pre_merge_closure": {
-    "basis_commit": "17fabaecde3a1258062d8a28d92c72f56bb5fde9",
+    "basis_commit": "f6e1e6293f0043ba5da446b3a91096313b95c5e5",
     "branch": "task/202607302012-FCYR88/protected-base-conflict-rework",
     "pr_number": 4695,
-    "recorded_at": "2026-07-30T20:24:17.440Z",
+    "recorded_at": "2026-07-30T20:38:50.019Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
