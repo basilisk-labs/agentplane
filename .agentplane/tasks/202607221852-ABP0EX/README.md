@@ -1,10 +1,10 @@
 ---
 id: "202607221852-ABP0EX"
 title: "Add policy-gated semantic retrieval escalation"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-30T12:36:01.385Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -37,11 +37,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T12:36:18.265Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:52:20.275Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-30T12:36:18.265Z"
+doc_updated_by: "CODER"
 description: "RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default."
 sections:
   Summary: |-
@@ -70,6 +80,10 @@ sections:
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "3f46bbe11ff4528efbcf0aeff526e8a3cd98a981"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
