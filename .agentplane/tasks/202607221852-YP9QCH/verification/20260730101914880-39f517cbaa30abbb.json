@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run bench:compatibility:check\nResult: pass\nEvidence: scripts/baselines/v0.7-compatibility-candidate.json#agent_facing_context_contracts; current=c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6\nScope: reviewed v0.7 compatibility candidate and immutable v0.6.24 baseline boundary\n\nCommand: bun run --filter=agentplane test -- src/context/ingest-task-pack.test.ts src/context/ingest-task.test.ts src/context/ingest-task-prompt.test.ts src/commands/context/release-readiness.test.ts\nResult: pass\nEvidence: 42 focused tests passed, including deterministic candidate ordering, beyond-first-50 recall, and CURATOR semantic ownership\nScope: RF-17 reconciliation task pack and executor prompt contract\n\nCommand: bun run --filter=agentplane build\nResult: pass\nEvidence: packages/agentplane/dist/cli.js built successfully\nScope: AgentPlane CLI TypeScript build\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint completed for packages, scripts, and configuration\nScope: changed source, candidate, checker, and pin-test lint coverage\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors in the compatibility rework diff\nScope: task branch diff integrity",
+  "digest": "sha256:39f517cbaa30abbbc6da3c02e012c37a965271484c3ec1004b58b7329c9261f8",
+  "implementation_sha": "73e6584f27e01828e79b033fcd2ae1b28ef1866f",
+  "kind": "task_verification_record",
+  "note": "Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch.",
+  "recorded_at": "2026-07-30T10:19:14.880Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Rebuild candidates twice from the same source/index. Expected: identical ordering, reasons, scores, refs, and digest.\n2. Use fixtures whose correct entity is beyond the old first-50 slice. Expected: the source-driven candidate set includes it without scanning an arbitrary alphabetical prefix.\n3. Inspect semantic application. Expected: CLI supplies candidates/evidence only; CURATOR supplies the identity decision and rationale.\n4. Run reconciliation/context tests and report fixture accuracy.",
+  "scope_digest": "sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d",
+  "task_id": "202607221852-YP9QCH",
+  "verification_command": "agentplane verify 202607221852-YP9QCH --ok --by TESTER",
+  "verifier": "TESTER"
+}
