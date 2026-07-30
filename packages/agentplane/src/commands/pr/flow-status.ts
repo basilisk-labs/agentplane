@@ -108,6 +108,7 @@ type QueueStatus =
       prNumber?: number | null;
       leaseExpiresAt?: string | null;
       legacyProtectedConflictAdoption?: LegacyProtectedConflictAdoptionReceipt | null;
+      supersededByTaskId?: string | null;
     };
 
 type HandoffStatus =
@@ -367,6 +368,11 @@ async function resolveCloseTailStatus(opts: {
 }
 
 function deriveNextAction(report: PrFlowStatusReport): string {
+  if (report.queue.present && report.queue.status === "superseded") {
+    return `semantic conflict outcome is superseded by ${
+      report.queue.supersededByTaskId ?? "a recorded successor"
+    }; do not reopen or integrate the closed PR`;
+  }
   if (!report.branch.name) return `agentplane pr open ${report.task.id} --author <ROLE>`;
   if (report.pr.state === "not_found")
     return `agentplane pr open ${report.task.id} --author <ROLE>`;
@@ -536,6 +542,7 @@ export async function resolvePrFlowStatus(opts: {
           prNumber: queueEntry.pr_number,
           leaseExpiresAt: queueEntry.lease_expires_at ?? null,
           legacyProtectedConflictAdoption: queueEntry.legacy_protected_conflict_adoption ?? null,
+          supersededByTaskId: queueEntry.superseded_by_task_id ?? null,
         }
       : { present: false },
     handoff,

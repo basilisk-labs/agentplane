@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("254commands/175args/821options");
+      expect(compatibility.stdout).toContain("254commands/175args/822options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -184,13 +184,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607291449-FTHNAR",
           "202607300150-MGCHE6",
           "202607221852-YP9QCH",
+          "202607302125-Y61ZHN",
         ],
         candidate: {
-          surface_sha256: "c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6",
+          surface_sha256: "57836414138578d277eebd4bc6d69bb9837c638afb6cda7ea60b9ba95760d481",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-            cli_topology: "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
+            cli_topology: "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",

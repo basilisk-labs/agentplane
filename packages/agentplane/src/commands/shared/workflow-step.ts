@@ -513,7 +513,8 @@ export type WorkflowStep =
           | "cleanup_blocked"
           | "done"
           | "input_required"
-          | "repair_required";
+          | "repair_required"
+          | "superseded";
         taskId: string;
       };
     });

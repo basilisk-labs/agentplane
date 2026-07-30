@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   writeIntegrationQueue: vi.fn(),
   createLegacyProtectedConflictAdoptionReceipt: vi.fn(),
   recordLegacyProtectedConflictAdoption: vi.fn(),
+  recordSupersededQueueEntry: vi.fn(),
+  loadBackendTask: vi.fn(),
   claimNextQueuedEntry: vi.fn(),
   markQueueEntry: vi.fn(),
   rejectIfQueuedEntryIsStale: vi.fn(),
@@ -35,6 +37,7 @@ vi.mock("./pr/integrate/queue-state.js", () => ({
   writeIntegrationQueue: mocks.writeIntegrationQueue,
   createLegacyProtectedConflictAdoptionReceipt: mocks.createLegacyProtectedConflictAdoptionReceipt,
   recordLegacyProtectedConflictAdoption: mocks.recordLegacyProtectedConflictAdoption,
+  recordSupersededQueueEntry: mocks.recordSupersededQueueEntry,
   claimNextQueuedEntry: mocks.claimNextQueuedEntry,
   markQueueEntry: mocks.markQueueEntry,
   upsertQueuedEntry: mocks.upsertQueuedEntry,
@@ -78,6 +81,7 @@ vi.mock("./pr/conflict-rework.js", () => ({
 vi.mock("./shared/task-worktree-cleanliness.js", () => ({
   inspectTaskWorktreeCleanliness: mocks.inspectTaskWorktreeCleanliness,
 }));
+vi.mock("./shared/task-backend.js", () => ({ loadBackendTask: mocks.loadBackendTask }));
 vi.mock("./shared/git-ops.js", () => ({ gitRevParse: mocks.gitRevParse }));
 vi.mock("../cli/output.js", () => ({
   createCliEmitter: () => mocks.output,
@@ -88,6 +92,7 @@ import {
   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler,
   makeRunIntegrateQueueClaimHandler,
   makeRunIntegrateQueueEnqueueHandler,
+  makeRunIntegrateQueueReleaseHandler,
   makeRunIntegrateQueueRunNextHandler,
 } from "./integrate-queue.command.js";
 
@@ -197,6 +202,14 @@ describe("integrate queue claim publication guard", () => {
     mocks.cmdIntegrate.mockResolvedValue(0);
     mocks.waitForHostedChecks.mockResolvedValue(undefined);
     mocks.resolvePrFlowStatus.mockResolvedValue({ branch: { name: entry.branch } });
+    mocks.loadBackendTask.mockImplementation(({ taskId }: { taskId: string }) =>
+      Promise.resolve({
+        task:
+          taskId === "T-successor"
+            ? { id: taskId, status: "DONE" }
+            : { id: taskId, status: "BLOCKED" },
+      }),
+    );
     mocks.inspectTaskWorktreeCleanliness.mockResolvedValue({
       state: "clean",
       branch: entry.branch,
@@ -215,6 +228,21 @@ describe("integrate queue claim publication guard", () => {
       evidence_token: adoptionToken,
     });
     mocks.recordLegacyProtectedConflictAdoption.mockImplementation((queue: unknown) => queue);
+    mocks.recordSupersededQueueEntry.mockImplementation(
+      (queue: unknown, opts: { taskId: string; supersededByTaskId: string; reason: string }) => ({
+        ...(queue as object),
+        entries: ((queue as { entries?: (typeof entry)[] }).entries ?? []).map((current) =>
+          current.task_id === opts.taskId
+            ? {
+                ...current,
+                status: "superseded",
+                reason: opts.reason,
+                superseded_by_task_id: opts.supersededByTaskId,
+              }
+            : current,
+        ),
+      }),
+    );
     mocks.markQueueEntry.mockImplementation(
       (queue: unknown, _taskId: string, status: string, reason?: string) => ({
         ...(queue as object),
@@ -276,6 +304,71 @@ describe("integrate queue claim publication guard", () => {
       "T-1",
       "recorded; recompute task next-action",
     );
+  });
+
+  it("records a closed stale PR as superseded by a completed successor even when its queued head is older", async () => {
+    const staleRework = { ...entry, status: "rework" as const, head_sha: "queued-head" };
+    mocks.queueState = { schema_version: 1, entries: [staleRework] };
+    mocks.resolvePrFlowStatus.mockResolvedValue({
+      pr: { source: "lookup", state: "CLOSED", headSha: "audited-head" },
+      providerObservation: { state: "found", pr: { status: "CLOSED", headSha: "audited-head" } },
+    });
+    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
+
+    await expect(
+      handler({ cwd: "/repo", rootOverride: null } as never, {
+        taskId: "T-1",
+        status: "superseded",
+        reason: "successor owns the current-main decision",
+        supersededByTaskId: "T-successor",
+      }),
+    ).resolves.toBe(0);
+
+    expect(mocks.recordSupersededQueueEntry).toHaveBeenCalledWith(
+      expect.objectContaining({ entries: [expect.objectContaining({ head_sha: "queued-head" })] }),
+      {
+        taskId: "T-1",
+        supersededByTaskId: "T-successor",
+        reason: "successor owns the current-main decision",
+      },
+    );
+    expect(mocks.output.success).toHaveBeenCalledWith(
+      "queue entry",
+      "T-1",
+      "status=superseded successor=T-successor",
+    );
+  });
+
+  it("refuses semantic supersession when the named successor is not completed", async () => {
+    mocks.queueState = { schema_version: 1, entries: [{ ...entry, status: "rework" as const }] };
+    mocks.loadBackendTask.mockImplementation(({ taskId }: { taskId: string }) =>
+      Promise.resolve({
+        task:
+          taskId === "T-successor"
+            ? { id: taskId, status: "DOING" }
+            : { id: taskId, status: "BLOCKED" },
+      }),
+    );
+    mocks.resolvePrFlowStatus.mockResolvedValue({
+      pr: { source: "lookup", state: "CLOSED" },
+      providerObservation: { state: "found", pr: { status: "CLOSED" } },
+    });
+    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
+
+    await expect(
+      handler({ cwd: "/repo", rootOverride: null } as never, {
+        taskId: "T-1",
+        status: "superseded",
+        reason: "successor owns the current-main decision",
+        supersededByTaskId: "T-successor",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "superseded_queue_successor_not_done" },
+    });
+
+    expect(mocks.recordSupersededQueueEntry).not.toHaveBeenCalled();
+    expect(mocks.writeIntegrationQueue).not.toHaveBeenCalled();
   });
 
   it("rejects a stale legacy adoption token without recording queue evidence", async () => {

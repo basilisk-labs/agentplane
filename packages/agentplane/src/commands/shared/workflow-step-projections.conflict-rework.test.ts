@@ -654,4 +654,60 @@ describe("WorkflowStep conflict rework projections", () => {
       exactArgv: null,
     });
   });
+
+  it("stops a closed provider conflict that has a recorded completed successor", () => {
+    const supersededPrFlow = {
+      task: { id: task.id, status: "BLOCKED", verification: null },
+      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+      pr: {
+        provider: "github",
+        state: "CLOSED",
+        source: "lookup",
+        prNumber: 4626,
+        prUrl: "https://github.example/acme/agentplane/pull/4626",
+        base: "main",
+        headSha: resume.head_sha,
+        mergeCommit: null,
+      },
+      closeTail: { state: "not_applicable", reason: "closed without integration" },
+      hostedChecks: {
+        checked: true,
+        total: 1,
+        pending: 0,
+        failing: 0,
+        passing: 1,
+        missingRequired: [],
+        rows: [],
+      },
+      reviewThreads: { checked: true, unresolved: 0 },
+      queue: {
+        present: true,
+        status: "superseded",
+        reason: "current-base qualification replaced stale conflict",
+        updatedAt: "2026-07-30T00:00:00.000Z",
+        supersededByTaskId: "202607300553-CR9VTJ",
+      },
+      handoff: { present: false },
+      nextAction: "semantic conflict outcome is superseded",
+    } satisfies PrFlowStatusReport;
+    const state = routeState({ prFlow: supersededPrFlow, conflictRework: null });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { baseCheckoutPath: "/repo" },
+    });
+
+    expect(step).toMatchObject({
+      kind: "terminal",
+      id: "terminal.provider_conflict_superseded",
+      phase: "provider_conflict_superseded",
+      outcome: { type: "superseded", taskId: task.id },
+    });
+    expect(oracle).toMatchObject({
+      authoritativeCheckout: "base_checkout",
+      nextCommand: null,
+    });
+    expect(packet).toMatchObject({ actionKind: "stop", safeToMutate: false, exactArgv: null });
+  });
 });

@@ -226,7 +226,8 @@ export async function normalizeTerminalQueueEntries(opts: {
 }): Promise<void> {
   const snapshot = await readIntegrationQueue(opts.gitRoot);
   const candidates = snapshot.entries.filter(
-    (entry) => entry.status !== "done" && entry.status !== "claimed",
+    (entry) =>
+      entry.status !== "done" && entry.status !== "superseded" && entry.status !== "claimed",
   );
   const decisions: {
     taskId: string;

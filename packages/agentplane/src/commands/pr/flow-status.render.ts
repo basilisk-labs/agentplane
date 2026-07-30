@@ -25,7 +25,8 @@ function renderReviewThreadsLine(status: ReviewThreadsStatus): string {
 
 function renderQueueLine(status: QueueStatus): string {
   if (!status.present) return "not_queued";
-  return `${status.status}${status.reason ? `: ${status.reason}` : ""}`;
+  const successor = status.supersededByTaskId ? ` successor=${status.supersededByTaskId}` : "";
+  return `${status.status}${successor}${status.reason ? `: ${status.reason}` : ""}`;
 }
 
 function renderHandoffLine(status: HandoffStatus): string {

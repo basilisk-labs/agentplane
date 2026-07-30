@@ -325,6 +325,7 @@ function validateReviewedCandidate({
     "202607260532-9M7RNH",
     "202607281655-YMPY8Y",
     "202607300150-MGCHE6",
+    "202607302125-Y61ZHN",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -348,6 +349,7 @@ function validateReviewedCandidate({
     "202607291449-FTHNAR",
     "202607300150-MGCHE6",
     "202607221852-YP9QCH",
+    "202607302125-Y61ZHN",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1329,6 +1331,12 @@ function validateReviewedCandidate({
       valueHint: "<sha256:...>",
     },
     {
+      command: "integrate queue release",
+      name: "superseded-by",
+      kind: "string",
+      valueHint: "<task-id>",
+    },
+    {
       command: "pr conflict-rework",
       name: "expect-freshness-token",
       kind: "string",
@@ -1602,6 +1610,12 @@ function validateReviewedCandidate({
     },
     {
       kind: "option",
+      command: "integrate queue release",
+      name: "superseded-by",
+      source_task: "202607302125-Y61ZHN",
+    },
+    {
+      kind: "option",
       command: "pr conflict-rework",
       name: "expect-freshness-token",
       source_task: "202607260007-DQM6AW",
@@ -1790,7 +1804,29 @@ function validateReviewedCandidate({
     "candidate mutates an existing CLI command shell",
   );
   assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
-  assert(cliTopologyDelta.mutated_options.length === 0, "candidate mutates an existing CLI option");
+  const supersededQueueReleaseStatusMutation = {
+    identity: "integrate queue release --status",
+    before: {
+      command: "integrate queue release",
+      name: "status",
+      kind: "string",
+      valueHint: "<queued|done|rework>",
+      default: "queued",
+      choices: ["queued", "done", "rework"],
+    },
+    after: {
+      command: "integrate queue release",
+      name: "status",
+      kind: "string",
+      valueHint: "<queued|done|rework|superseded>",
+      default: "queued",
+      choices: ["queued", "done", "rework", "superseded"],
+    },
+  };
+  assert(
+    hashJson(cliTopologyDelta.mutated_options) === hashJson([supersededQueueReleaseStatusMutation]),
+    "CLI option mutation is not the approved semantic-supersession extension",
+  );
 
   const machineOutputDelta = candidate.deltas.find(
     (delta) => delta.section === "machine_output_contract",

@@ -360,6 +360,24 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
 
 export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
+  if (state.prFlow?.queue.present && state.prFlow.queue.status === "superseded") {
+    const successor = state.prFlow.queue.supersededByTaskId ?? "a recorded successor";
+    return terminalStep({
+      state,
+      id: "terminal.provider_conflict_superseded",
+      code: "provider_conflict_superseded",
+      phase: "provider_conflict_superseded",
+      checkout: "base_checkout",
+      role: "INTEGRATOR",
+      outcome: "superseded",
+      summary:
+        `semantic provider-conflict outcome is superseded by ${successor}; ` +
+        "the closed PR must not be reopened, queued, or integrated",
+      mustNot: [
+        "do not reopen, merge, queue, or clean up the closed superseded PR as though it integrated",
+      ],
+    });
+  }
   const worktreeBlocker = taskWorktreeBlocker(state);
   const status = String(state.task.status).toUpperCase();
   if (status === "TODO") {

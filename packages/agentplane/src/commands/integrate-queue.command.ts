@@ -8,6 +8,7 @@ import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { sleep } from "../backends/task-backend/shared/concurrency.js";
 import type { CommandContext } from "./shared/task-backend.js";
+import { loadBackendTask } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
 import { isExternalStateUnavailableError } from "./shared/external-unavailability.js";
 import { cmdIntegrate } from "./pr/integrate/cmd.js";
@@ -18,6 +19,7 @@ import {
   markQueueEntry,
   readIntegrationQueue,
   recordLegacyProtectedConflictAdoption,
+  recordSupersededQueueEntry,
   upsertQueuedEntry,
   withIntegrationQueueMutex,
   writeIntegrationQueue,
@@ -162,7 +164,9 @@ export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promis
       output.json(queue);
       return 0;
     }
-    const active = queue.entries.filter((entry) => entry.status !== "done");
+    const active = queue.entries.filter(
+      (entry) => entry.status !== "done" && entry.status !== "superseded",
+    );
     if (active.length === 0) {
       output.line(emptyStateMessage("integration queue entries"));
       return 0;
@@ -231,6 +235,100 @@ export function makeRunIntegrateQueueReleaseHandler(
   return async (_ctx: CommandCtx, p: IntegrateQueueReleaseParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue release");
     const gitRoot = commandCtx.resolvedProject.gitRoot;
+    if (p.status === "superseded") {
+      const [legacy, successor, report] = await Promise.all([
+        loadBackendTask({
+          ctx: commandCtx,
+          cwd: _ctx.cwd,
+          rootOverride: _ctx.rootOverride ?? null,
+          taskId: p.taskId,
+          preferBranchSnapshot: false,
+        }),
+        loadBackendTask({
+          ctx: commandCtx,
+          cwd: _ctx.cwd,
+          rootOverride: _ctx.rootOverride ?? null,
+          taskId: p.supersededByTaskId ?? "",
+          preferBranchSnapshot: false,
+        }),
+        resolvePrFlowStatus({
+          ctx: commandCtx,
+          cwd: _ctx.cwd,
+          rootOverride: _ctx.rootOverride ?? undefined,
+          taskId: p.taskId,
+        }),
+      ]);
+      if (p.supersededByTaskId === p.taskId) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "A task cannot supersede its own provider-conflict outcome.",
+          context: { reason_code: "superseded_queue_self_reference", task_id: p.taskId },
+        });
+      }
+      if (String(legacy.task.status).toUpperCase() !== "BLOCKED") {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `Task ${p.taskId} must be BLOCKED on the current base before recording ` +
+            "a superseded provider-conflict outcome.",
+          context: {
+            reason_code: "superseded_queue_requires_blocked_task",
+            task_id: p.taskId,
+            task_status: legacy.task.status,
+          },
+        });
+      }
+      if (String(successor.task.status).toUpperCase() !== "DONE") {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `Successor task ${successor.task.id} must be DONE before it can supersede ` +
+            `${p.taskId}.`,
+          context: {
+            reason_code: "superseded_queue_successor_not_done",
+            task_id: p.taskId,
+            successor_task_id: successor.task.id,
+            successor_status: successor.task.status,
+          },
+        });
+      }
+      if (
+        report.pr.source !== "lookup" ||
+        report.pr.state !== "CLOSED" ||
+        report.providerObservation?.state !== "found" ||
+        report.providerObservation.pr.status !== "CLOSED"
+      ) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `Task ${p.taskId} requires a currently observed closed provider PR before ` +
+            "recording semantic supersession.",
+          context: {
+            reason_code: "superseded_queue_requires_closed_provider_pr",
+            task_id: p.taskId,
+            provider_state: report.pr.state,
+            provider_source: report.pr.source,
+          },
+        });
+      }
+      await withIntegrationQueueMutex(gitRoot, async () => {
+        const queue = await readIntegrationQueue(gitRoot);
+        await writeIntegrationQueue(
+          gitRoot,
+          recordSupersededQueueEntry(queue, {
+            taskId: p.taskId,
+            supersededByTaskId: successor.task.id,
+            reason: p.reason ?? "",
+          }),
+        );
+      });
+      createCliEmitter().success(
+        "queue entry",
+        p.taskId,
+        `status=superseded successor=${successor.task.id}`,
+      );
+      return 0;
+    }
     await withIntegrationQueueMutex(gitRoot, async () => {
       const queue = await readIntegrationQueue(gitRoot);
       await writeIntegrationQueue(

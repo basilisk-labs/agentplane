@@ -38,7 +38,7 @@ export async function runIntegrationQueueDoctor(opts: {
   const repairs: IntegrationQueueDoctorRepair[] = [];
 
   for (const entry of before.entries) {
-    if (entry.status === "done") continue;
+    if (entry.status === "done" || entry.status === "superseded") continue;
     const loaded = await loadBackendTask({
       ctx: opts.commandCtx,
       cwd: opts.ctx.cwd,
