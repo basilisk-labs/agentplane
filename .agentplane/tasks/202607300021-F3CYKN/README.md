@@ -4,7 +4,7 @@ title: "Bind RF-04 candidate evidence to the beta.1 qualification packet"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "6b842a4a8dda9f93a24cba29ff2149e899ab2353"
+  message: "🧩 F3CYKN task: bind RF-04 candidate evidence to beta.1 qualification"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Checkpoint: implemented the commit-owned RF-04 candidate evidence contract and preserved the failed latency verdict as do-not-publish."
 events:
   -
     type: "status"
@@ -46,8 +51,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-30T00:35:18.473Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Checkpoint: implemented the commit-owned RF-04 candidate evidence contract and preserved the failed latency verdict as do-not-publish."
 doc_version: 3
-doc_updated_at: "2026-07-30T00:24:17.862Z"
+doc_updated_at: "2026-07-30T00:35:18.473Z"
 doc_updated_by: "CODER"
 description: "Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds."
 sections:
