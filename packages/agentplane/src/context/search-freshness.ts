@@ -27,7 +27,8 @@ async function loadSourceFreshness(
 ): Promise<SourceFreshness | null> {
   const absolute = path.join(root, sourcePath);
   try {
-    if (!(await stat(absolute)).isFile()) return null;
+    const sourceStats = await stat(absolute);
+    if (!sourceStats.isFile()) return null;
     const rows = projectRows(sourcePath, await readText(absolute));
     return { rows: new Map(rows.map((row) => [row.path, row.sha256])) };
   } catch {

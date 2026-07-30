@@ -169,7 +169,8 @@ function projectionMetadata(
 
 async function isExistingFile(filePath: string): Promise<boolean> {
   try {
-    return (await stat(filePath)).isFile();
+    const fileStats = await stat(filePath);
+    return fileStats.isFile();
   } catch {
     return false;
   }
@@ -243,9 +244,7 @@ export async function cmdContextReindex(opts: {
     rebuildReason = "reset-requested";
   } else if (!(await isExistingFile(sqlitePath))) {
     rebuildReason = "missing-index";
-  } else if (!(await checkSqliteProjection(sqlitePath))) {
-    rebuildReason = "integrity-failure";
-  } else {
+  } else if (await checkSqliteProjection(sqlitePath)) {
     state = await readSqliteProjectionState(sqlitePath);
     if (!state) {
       rebuildReason = "schema-or-state-unavailable";
@@ -257,6 +256,8 @@ export async function cmdContextReindex(opts: {
     ) {
       rebuildReason = "index-scope-changed";
     }
+  } else {
+    rebuildReason = "integrity-failure";
   }
 
   if (rebuildReason) {

@@ -32,13 +32,13 @@ Created: 2026-07-30T08:43:03.527Z
  .../context/reindex.incremental.unit.test.ts       | 172 ++++++++++
  packages/agentplane/src/commands/context/search.ts |  32 +-
  .../agentplane/src/context/reindex-projection.ts   |  40 ++-
- packages/agentplane/src/context/reindex.ts         | 365 +++++++++++++++++----
- .../agentplane/src/context/search-freshness.ts     |  59 ++++
+ packages/agentplane/src/context/reindex.ts         | 366 +++++++++++++++++----
+ .../agentplane/src/context/search-freshness.ts     |  60 ++++
  .../src/context/search-freshness.unit.test.ts      |  49 +++
  packages/agentplane/src/context/sqlite.ts          | 286 +++++++++++++---
  scripts/baselines/knip-baseline.json               |  14 +-
  scripts/bench/context-incremental-reindex.mts      | 138 ++++++++
- 9 files changed, 982 insertions(+), 173 deletions(-)
+ 9 files changed, 984 insertions(+), 173 deletions(-)
 ```
 
 </details>
