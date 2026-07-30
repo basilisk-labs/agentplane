@@ -32,9 +32,9 @@ anchor-runtime-build and fixture-initialization components; no provider capture 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...critical.agent-efficiency-replay-driver.test.ts | 30 +++++++++++++++++-
- .../bench/run-agent-efficiency-codex-replay.mjs    | 36 ++++++++++++++++++++++
- 2 files changed, 65 insertions(+), 1 deletion(-)
+ ...critical.agent-efficiency-replay-driver.test.ts | 30 ++++++++++++++++++-
+ .../bench/run-agent-efficiency-codex-replay.mjs    | 35 ++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 1 deletion(-)
 ```
 
 </details>

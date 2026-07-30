@@ -199,8 +199,7 @@ export function partitionHarnessSetupClock({
   const anchor_runtime_build_latency_ms = Math.round(anchorRuntimeReadyAt - harnessStartedAt);
   return {
     anchor_runtime_build_latency_ms,
-    fixture_initialization_latency_ms:
-      harness_setup_latency_ms - anchor_runtime_build_latency_ms,
+    fixture_initialization_latency_ms: harness_setup_latency_ms - anchor_runtime_build_latency_ms,
     harness_setup_latency_ms,
   };
 }

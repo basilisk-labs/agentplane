@@ -2,10 +2,10 @@
 id: "202607300518-A5CTP0"
 title: "Attribute RF-04 harness latency without provider retries"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: hosted verify-contract rejected only Prettier formatting in scripts/bench/run-agent-efficiency-codex-replay.mjs; no behavioral or provider failure occurred."
 events:
   -
     type: "status"
@@ -97,8 +100,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T05:32:13.884Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: hosted verify-contract rejected only Prettier formatting in scripts/bench/run-agent-efficiency-codex-replay.mjs; no behavioral or provider failure occurred."
 doc_version: 3
-doc_updated_at: "2026-07-30T05:30:33.226Z"
+doc_updated_at: "2026-07-30T05:32:13.884Z"
 doc_updated_by: "CODER"
 description: "Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate."
 sections:
