@@ -13,7 +13,7 @@ Created: 2026-07-30T20:13:04.252Z
 ## Verification
 
 - State: ok
-- Note: Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.
+- Note: Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

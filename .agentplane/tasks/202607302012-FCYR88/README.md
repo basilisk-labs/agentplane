@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,9 +30,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T20:22:00.707Z"
+  updated_at: "2026-07-30T20:34:18.525Z"
   updated_by: "CODER"
-  note: "Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green."
+  note: "Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head."
   attempts: 0
 quality_review:
   state: "pass"
@@ -89,8 +89,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-30T20:34:18.525Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head."
 doc_version: 3
-doc_updated_at: "2026-07-30T20:24:17.365Z"
+doc_updated_at: "2026-07-30T20:34:20.332Z"
 doc_updated_by: "CODER"
 description: "Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668."
 sections:
@@ -142,6 +148,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T20:34:18.525Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T20:24:17.365Z, excerpt_hash=sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302012-FCYR88-protected-base-conflict-rework/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
+    - old_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
+    - current_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607302012-FCYR88
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -150,6 +186,10 @@ sections:
     - Observation: A verified INTEGRATOR handoff with a known provider base and a rework queue now yields a bounded read-only packet after strict provider-to-queue-to-current ancestry checks.
       Impact: A main advancement no longer deadlocks semantic conflict routing; the CLI still leaves rebase, merge, and hunk decisions to the executing agent.
       Resolution: Continue with independent evaluator review and normal PR lifecycle.
+
+    - Observation: Equal-base rework retains the ordinary protected-handoff path; ancestry reconciliation is now used only when main actually advanced.
+      Impact: The route preserves both current same-base recovery and bounded base-advanced recovery without CLI semantic mutation.
+      Resolution: Refresh independent evaluator evidence and pre-merge closure before publishing the review fix.
 extensions:
   implementation_commit:
     hash: "3f61098fd12e2a8359ed90d3aae50f8282ecce4f"
@@ -217,6 +257,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T20:34:18.525Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T20:24:17.365Z, excerpt_hash=sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302012-FCYR88-protected-base-conflict-rework/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
+- old_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
+- current_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607302012-FCYR88
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -229,3 +299,7 @@ DecisionContextRef:
 - Observation: A verified INTEGRATOR handoff with a known provider base and a rework queue now yields a bounded read-only packet after strict provider-to-queue-to-current ancestry checks.
   Impact: A main advancement no longer deadlocks semantic conflict routing; the CLI still leaves rebase, merge, and hunk decisions to the executing agent.
   Resolution: Continue with independent evaluator review and normal PR lifecycle.
+
+- Observation: Equal-base rework retains the ordinary protected-handoff path; ancestry reconciliation is now used only when main actually advanced.
+  Impact: The route preserves both current same-base recovery and bounded base-advanced recovery without CLI semantic mutation.
+  Resolution: Refresh independent evaluator evidence and pre-merge closure before publishing the review fix.
