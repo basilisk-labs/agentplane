@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-ABP0EX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T13:09:49.400Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "6efbeffea66bdd94a350232793a655c2c9551fc1",
+  "blueprint_digest": "f8cfacdace7675c365e1aab8b657954cf4646e57daf30492c758c5eb3db5e683",
+  "findings": [
+    "Hosted failure was isolated to nine static lint violations; the corrected runner files pass the routed ESLint command, focused semantic/integration tests, and typecheck.",
+    "The selector contract and high-confidence no-episode invariant remain unchanged; test assertions now observe the typed receipt work order instead of untyped mock-call data."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The hosted routed CI must rerun on the corrected head before integration; local lint and focused behavior checks are not a substitute for its branch-protection gate."
+  ],
+  "residual_risks": []
+}

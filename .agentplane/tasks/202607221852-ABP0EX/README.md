@@ -2,10 +2,10 @@
 id: "202607221852-ABP0EX"
 title: "Add policy-gated semantic retrieval escalation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -40,31 +40,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T12:54:06.554Z"
+  updated_at: "2026-07-30T13:09:49.400Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "ae57f3af8a46637818d16bcca69519bb77041aab"
+  evaluated_sha: "6efbeffea66bdd94a350232793a655c2c9551fc1"
   blueprint_digest: "f8cfacdace7675c365e1aab8b657954cf4646e57daf30492c758c5eb3db5e683"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221852-ABP0EX/README.md"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-130949127-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The high-confidence integration fixture proves that exact bounded retrieval does not create a selector episode despite auxiliary query signals."
-    - "The semantic selector contract is bounded to materialized references and validates candidate-set freshness, identity, uniqueness, and token/episode limits before changing prepared evidence."
+    - "Hosted failure was isolated to nine static lint violations; the corrected runner files pass the routed ESLint command, focused semantic/integration tests, and typecheck."
+    - "The selector contract and high-confidence no-episode invariant remain unchanged; test assertions now observe the typed receipt work order instead of untyped mock-call data."
 commit:
-  hash: "ae57f3af8a46637818d16bcca69519bb77041aab"
-  message: "📝 ABP0EX task: record implementation evidence"
+  hash: "6efbeffea66bdd94a350232793a655c2c9551fc1"
+  message: "🐛 ABP0EX task: fix selector lint"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: hosted routed CI found nine lint-only violations in the new selector and fixtures; correcting the lint surface without changing retrieval behavior."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -113,8 +116,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: hosted routed CI found nine lint-only violations in the new selector and fixtures; correcting the lint surface without changing retrieval behavior."
+  -
+    type: "status"
+    at: "2026-07-30T13:10:15.080Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:59:45.336Z"
+doc_updated_at: "2026-07-30T13:10:15.080Z"
 doc_updated_by: "CODER"
 description: "RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default."
 sections:

@@ -6,7 +6,7 @@ Created: 2026-07-30T12:36:18.395Z
 
 - Task: `202607221852-ABP0EX`
 - Title: Add policy-gated semantic retrieval escalation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation`
 - Canonical task record: `.agentplane/tasks/202607221852-ABP0EX/README.md`
 
