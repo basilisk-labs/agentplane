@@ -4,7 +4,7 @@ title: "Recover diverged task PR identities safely"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,36 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T02:12:48.694Z"
+  updated_by: "TESTER"
+  note: "Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full ci:contract suite passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T02:13:32.504Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed"
+  blueprint_digest: "5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e"
+  evidence_refs:
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/README.md"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Validated the safety boundary: stale identities, a provider move during fetch, an archive collision, a dirty/mismatched worktree, and non-conflicting provider truth fail closed before reset."
+    - "Validated the compatibility boundary: the cumulative v0.7 candidate explicitly records all three new CLI options and preserves the immutable v0.6.24 anchor."
 commit:
   hash: "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed"
   message: "✨ MGCHE6 task: safely recover diverged PR identity"
@@ -57,8 +82,14 @@ events:
     author: "CODER"
     from: "DOING"
     to: "DOING"
+  -
+    type: "verify"
+    at: "2026-07-30T02:12:48.694Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full ci:contract suite passed."
 doc_version: 3
-doc_updated_at: "2026-07-30T02:12:17.722Z"
+doc_updated_at: "2026-07-30T02:12:49.332Z"
 doc_updated_by: "CODER"
 description: "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner."
 sections:
@@ -78,11 +109,44 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T02:12:48.694Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full ci:contract suite passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T02:12:17.722Z, excerpt_hash=sha256:8e32be94b05c9807415151f4973944015a4219dd2bf86685dbe1a4b2e09518d6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300150-MGCHE6-recover-diverged-task-pr-identities-safely/.agentplane/tasks/202607300150-MGCHE6/blueprint/resolved-snapshot.json
+    - old_digest: 5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e
+    - current_digest: 5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607300150-MGCHE6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607300150-MGCHE6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Recovery archives the exact unpublished SHA; it rejects stale identities, a provider move during fetch, and archive collisions.
+      Impact: The task can safely re-enter normal conflict-rework preparation without overwriting local evidence or selecting semantic conflict resolution.
+      Resolution: No rebase, merge, force-push, or provider write is performed; remaining semantic resolution stays on the existing conflict-rework route.
 extensions:
   workflow_route_baseline:
     start_head_sha: "88c7ead3e32920f31a219880f72651635c41778a"
@@ -115,6 +179,36 @@ PLANNER fallback scaffold for "Recover diverged task PR identities safely". Repl
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T02:12:48.694Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full ci:contract suite passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T02:12:17.722Z, excerpt_hash=sha256:8e32be94b05c9807415151f4973944015a4219dd2bf86685dbe1a4b2e09518d6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300150-MGCHE6-recover-diverged-task-pr-identities-safely/.agentplane/tasks/202607300150-MGCHE6/blueprint/resolved-snapshot.json
+- old_digest: 5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e
+- current_digest: 5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607300150-MGCHE6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607300150-MGCHE6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -123,3 +217,7 @@ PLANNER fallback scaffold for "Recover diverged task PR identities safely". Repl
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Recovery archives the exact unpublished SHA; it rejects stale identities, a provider move during fetch, and archive collisions.
+  Impact: The task can safely re-enter normal conflict-rework preparation without overwriting local evidence or selecting semantic conflict resolution.
+  Resolution: No rebase, merge, force-push, or provider write is performed; remaining semantic resolution stays on the existing conflict-rework route.

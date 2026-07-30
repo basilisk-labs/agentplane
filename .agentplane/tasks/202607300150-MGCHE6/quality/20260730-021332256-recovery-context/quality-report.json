@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300150-MGCHE6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T02:13:32.504Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed",
+  "blueprint_digest": "5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e",
+  "findings": [
+    "Validated the safety boundary: stale identities, a provider move during fetch, an archive collision, a dirty/mismatched worktree, and non-conflicting provider truth fail closed before reset.",
+    "Validated the compatibility boundary: the cumulative v0.7 candidate explicitly records all three new CLI options and preserves the immutable v0.6.24 anchor."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -15,8 +15,13 @@ Provide a bounded CLI recovery route for branch_pr tasks whose local worktree he
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full
+ci:contract suite passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
