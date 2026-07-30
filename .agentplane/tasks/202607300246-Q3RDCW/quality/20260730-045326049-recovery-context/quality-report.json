@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300246-Q3RDCW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T04:53:26.242Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "5a50a1cc536e83159aa801b3b66ac599e0e3eceb",
+  "blueprint_digest": "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e",
+  "findings": [
+    "The lease boundary deterministically proves catch-and-wait behavior and convergence of two resolvers, while the original upstream-binding recovery source and its safety tests remain untouched."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The production resolver keeps its initial active-claim read as a precondition; removal should fail this integration test and prompt explicit review."
+  ],
+  "residual_risks": []
+}

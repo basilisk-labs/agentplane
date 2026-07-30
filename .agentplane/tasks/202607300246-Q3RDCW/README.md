@@ -2,10 +2,10 @@
 id: "202607300246-Q3RDCW"
 title: "Fix diverged-head recovery upstream binding"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -30,30 +30,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T04:03:23.942Z"
+  updated_at: "2026-07-30T04:53:26.242Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "2b28a0da150a21de744c620d294ae4bbedddccd5"
+  evaluated_sha: "5a50a1cc536e83159aa801b3b66ac599e0e3eceb"
   blueprint_digest: "e4bc3d4c40d529c276018d0bdbb38144ca9526e12957e9d63dea1842d9c89f7e"
   evidence_refs:
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300246-Q3RDCW/README.md"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-040323757-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No semantic merge, rebase, or push is introduced; the added coverage proves raw-refspec upstream binding and prevents evaluator fixture leakage into later lifecycle checks."
+    - "The lease boundary deterministically proves catch-and-wait behavior and convergence of two resolvers, while the original upstream-binding recovery source and its safety tests remain untouched."
 commit:
-  hash: "2b28a0da150a21de744c620d294ae4bbedddccd5"
-  message: "🐛 Q3RDCW code: isolate evaluator policy fixtures"
+  hash: "5a50a1cc536e83159aa801b3b66ac599e0e3eceb"
+  message: "🐛 Q3RDCW code: stabilize concurrent retirement coverage"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -82,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: backport the deterministic concurrent-retirement integration test already merged in F7, because F6 hosted CI failed only on the prior scheduler-dependent test."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -152,8 +155,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: backport the deterministic concurrent-retirement integration test already merged in F7, because F6 hosted CI failed only on the prior scheduler-dependent test."
+  -
+    type: "status"
+    at: "2026-07-30T04:53:57.295Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T04:48:35.406Z"
+doc_updated_at: "2026-07-30T04:53:57.296Z"
 doc_updated_by: "CODER"
 description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
 sections:
