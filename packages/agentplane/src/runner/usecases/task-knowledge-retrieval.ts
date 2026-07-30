@@ -185,7 +185,23 @@ function pathSignals(value: string): string[] {
 }
 
 function symbolSignals(value: string): string[] {
-  return value.match(/\b[A-Za-z][A-Za-z0-9]*(?:[A-Z][A-Za-z0-9]+)+\b/g) ?? [];
+  const tokens = value.match(/[A-Za-z][A-Za-z0-9]*/g) ?? [];
+  return tokens.filter((token) => {
+    for (let index = 1; index < token.length - 1; index += 1) {
+      const current = token[index];
+      const next = token[index + 1];
+      if (
+        current !== undefined &&
+        next !== undefined &&
+        current >= "A" &&
+        current <= "Z" &&
+        /[A-Za-z0-9]/u.test(next)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  });
 }
 
 function querySignalRank(query: Pick<QueryTerm, "signals">): number {
