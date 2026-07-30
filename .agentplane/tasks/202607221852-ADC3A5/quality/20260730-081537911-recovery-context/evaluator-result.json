@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The valid-index command path delegates matching and BM25 ordering to SQLite FTS5; it does not materialize or iterate the projection row set.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-081537911-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The checked JSON receipt distinguishes FTS-only execution from bounded live fallback while preserving the existing public CLI topology.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-081537911-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The benchmark artifact records equal 24/24 recall and a 93.5% p95 gain on its declared reproducible synthetic indexed corpus.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-081537911-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The measured 3,000-row synthetic corpus models indexed retrieval only; filesystem fallback and a production corpus are deliberately outside this benchmark."
+  ]
+}

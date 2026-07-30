@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:53bd426fae1bff330beb8b352ef2d0f38ffbb0e2587b801cc3c1acde316c9fa7",
+  "implementation_sha": "b7860bab46d9001e31c46d5adf8aaba8423b48b7",
+  "kind": "task_verification_record",
+  "note": "Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed.",
+  "recorded_at": "2026-07-30T08:15:01.897Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Search the known-ref corpus. Expected: every target appears within its declared top-k and carries a stable canonical ref and snippet.\n2. Inspect indexed query execution. Expected: no full projection-row iteration or duplicate live result path.\n3. Remove or stale the index. Expected: JSON reports the bounded fallback and its reason.\n4. Compare p50/p95 against the 0.6.24 baseline on the same corpus. Expected: statistically supported improvement without recall regression.\n5. Run focused search/SQLite tests and typecheck.",
+  "scope_digest": "sha256:2c4139b1e980415caefc3735e1ac117c071c7d5323ca2dbdb167cb40784ea9fb",
+  "task_id": "202607221852-ADC3A5",
+  "verification_command": "agentplane verify 202607221852-ADC3A5 --ok --by TESTER",
+  "verifier": "TESTER"
+}
