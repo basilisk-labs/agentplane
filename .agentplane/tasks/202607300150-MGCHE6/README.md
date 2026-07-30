@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +53,8 @@ quality_review:
     - "The changed test now asserts the measured CLI surface emitted by the compatibility gate; the generated reference documents the existing three recovery flags and their bounded semantics."
     - "No recovery implementation behavior, provider operation, qualification data, or baseline threshold was altered during this CI rework."
 commit:
-  hash: "98320a03497de247e7391eb93d9fc053bd7d5ae2"
-  message: "📝 MGCHE6 task: record verification and review evidence"
+  hash: "624cb81fe85c14176778c9f6df10bf7beeaa8013"
+  message: "📝 MGCHE6 task: record CI rework review"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -65,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -99,8 +102,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T02:24:34.848Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T02:15:26.689Z"
+doc_updated_at: "2026-07-30T02:24:34.848Z"
 doc_updated_by: "CODER"
 description: "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner."
 sections:
@@ -160,8 +170,8 @@ sections:
       Resolution: No rebase, merge, force-push, or provider write is performed; remaining semantic resolution stays on the existing conflict-rework route.
 extensions:
   implementation_commit:
-    hash: "4eb1bca90c544aaa6a5eb3cf1ef220880a47b40a"
-    message: "📝 MGCHE6 task: record implementation evidence"
+    hash: "b0a0eb50cfa070ee0b94550f0e7e096aaf805ce4"
+    message: "🐛 MGCHE6 task: align CLI contract artifacts"
   workflow_route_baseline:
     start_head_sha: "88c7ead3e32920f31a219880f72651635c41778a"
     version: 1
