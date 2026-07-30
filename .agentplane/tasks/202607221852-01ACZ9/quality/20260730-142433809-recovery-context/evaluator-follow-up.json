@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221852-01ACZ9-0ad6c357816abf12d3775e9e",
+  "task_id": "202607221852-01ACZ9",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Rebuild the frozen evaluator packet with deterministic results for the declared schema, critical-test, and typecheck commands at evaluated SHA 18c2c4338849ebc61dccb31941bb847f2e9cbc2f, including the focused adversarial ranking and post-work-order digest-drift tests. The implementation diff appears to address the prior two findings, but this episode cannot establish a pass from the frozen verification evidence.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Frozen verification evidence contains only an asserted verification note; it contains no deterministic check records, runner history, or runtime evidence for the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142433809-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:1bdd150fdca3c5ec04ad89012bf18293b5d86cbf8c4e4875cfd64d592c119ab0",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142433809-recovery-context/evaluator-result.json"
+}

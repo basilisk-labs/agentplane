@@ -1,8 +1,5 @@
-import { createHash } from "node:crypto";
-
 import {
   validateAgentSemanticResult,
-  type AgentSemanticResultKnowledgeRequest,
   type AgentWorkOrderV2,
   type KnowledgeRef,
   type PreparedKnowledgeExcerpt,
@@ -10,6 +7,13 @@ import {
 
 import { prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
+import {
+  approximateTokens,
+  compactQuery,
+  digestJson,
+  requestDigest,
+  serializedResponseTokens,
+} from "./task-knowledge-request-codec.js";
 import {
   canonicalKnowledgePath,
   matchTaskContextReferences,
@@ -83,52 +87,24 @@ type KnowledgeRequestInvocation = {
   state_fingerprint_digest: string;
 };
 
-function digest(value: unknown): string {
-  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
-}
-
-function requestDigest(request: AgentSemanticResultKnowledgeRequest): string {
-  return digest({
-    schema_version: request.schema_version,
-    kind: request.kind,
-    query: request.query,
-    reason: request.reason,
-    desired_kind: request.desired_kind,
-    scope: request.scope,
-    blocking: request.blocking,
-  });
-}
-
-function approximateTokens(value: string): number {
-  return Math.ceil(Buffer.byteLength(value, "utf8") / 4);
-}
-
-function compactQuery(value: string): string | null {
-  const normalized = value
-    .normalize("NFKC")
-    .toLocaleLowerCase("en-US")
-    .match(/[\p{L}\p{N}_]+/gu)
-    ?.join(" ")
-    .trim();
-  if (
-    !normalized ||
-    normalized.length > 160 ||
-    normalized.split(" ").length > TASK_KNOWLEDGE_REQUEST_POLICY.max_query_terms
-  ) {
-    return null;
-  }
-  return normalized;
-}
-
 function sealedResponse(
   response: Omit<TaskKnowledgeRequestResponse, "schema_version" | "kind" | "digest">,
 ): TaskKnowledgeRequestResponse {
-  const base = {
+  const unsigned = {
     schema_version: 1 as const,
     kind: "task_knowledge_response" as const,
     ...response,
+    usage: { ...response.usage, estimated_response_tokens: 0 },
   };
-  return { ...base, digest: digest(base) };
+  const tokenCount = serializedResponseTokens({
+    response: unsigned,
+    seal: (base) => ({ ...base, digest: digestJson(base) }),
+  });
+  const base = {
+    ...unsigned,
+    usage: { ...unsigned.usage, estimated_response_tokens: tokenCount },
+  };
+  return { ...base, digest: digestJson(base) };
 }
 
 function auditBase(opts: {
@@ -163,7 +139,6 @@ function response(opts: {
   outcome: TaskKnowledgeRequestAuditOutcome;
   omissions: TaskKnowledgeRequestResponse["omissions"];
   request_tokens?: number;
-  response_tokens?: number;
   knowledge_refs?: KnowledgeRef[];
   prepared_evidence?: PreparedKnowledgeExcerpt[];
   blocker?: TaskKnowledgeRequestResponse["blocker"];
@@ -176,7 +151,7 @@ function response(opts: {
     omissions: opts.omissions,
     usage: {
       estimated_request_tokens: opts.request_tokens ?? 0,
-      estimated_response_tokens: opts.response_tokens ?? 0,
+      estimated_response_tokens: 0,
       max_response_tokens: TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens,
     },
     blocker: opts.blocker ?? null,
@@ -374,7 +349,7 @@ export async function serveTaskKnowledgeRequest(opts: {
       },
     });
   }
-  const query = compactQuery(request.query);
+  const query = compactQuery(request.query, TASK_KNOWLEDGE_REQUEST_POLICY.max_query_terms);
   if (!query) {
     return response({
       invocation: opts.invocation,
@@ -417,6 +392,22 @@ export async function serveTaskKnowledgeRequest(opts: {
   const processed = new Set<string>();
   let offset = 0;
   let matchedScopedCandidate = false;
+  const appendBoundedOmission = (omission: TaskKnowledgeRequestResponse["omissions"][number]) => {
+    const candidate = response({
+      invocation: opts.invocation,
+      work_order: opts.work_order,
+      round,
+      request_digest: requestId,
+      outcome: "unresolved",
+      request_tokens: requestTokens,
+      knowledge_refs: references,
+      prepared_evidence: excerpts,
+      omissions: [...omissions, omission],
+    });
+    if (candidate.usage.estimated_response_tokens > candidate.usage.max_response_tokens) return;
+    omissions.push(omission);
+    responseTokens = candidate.usage.estimated_response_tokens;
+  };
   while (
     references.length < TASK_KNOWLEDGE_REQUEST_POLICY.max_references &&
     responseTokens < TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens
@@ -435,7 +426,6 @@ export async function serveTaskKnowledgeRequest(opts: {
         request_digest: requestId,
         outcome: "unresolved",
         request_tokens: requestTokens,
-        response_tokens: responseTokens,
         omissions: [
           ...omissions,
           {
@@ -463,20 +453,15 @@ export async function serveTaskKnowledgeRequest(opts: {
       if (processed.has(identity)) continue;
       processed.add(identity);
       matchedScopedCandidate = true;
-      const remainingTokens = TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens - responseTokens;
-      if (remainingTokens <= 0) break;
       const excerpt = await prepareKnowledgeExcerpt({
         repository_root: opts.repository_root,
         knowledge_ref: knowledgeRef,
         index_snapshot: projection,
-        max_bytes: Math.min(
-          TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_bytes,
-          Math.max(1, remainingTokens * 4),
-        ),
+        max_bytes: TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_bytes,
         max_lines: TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_lines,
       });
       if (excerpt.status !== "included") {
-        omissions.push({
+        appendBoundedOmission({
           code: "excerpt_not_included",
           detail:
             `Digest-bound KnowledgeRef ${knowledgeRef.ref} was not included ` +
@@ -484,23 +469,27 @@ export async function serveTaskKnowledgeRequest(opts: {
         });
         continue;
       }
-      const excerptTokens = approximateTokens(excerpt.content);
-      if (excerptTokens > remainingTokens) {
-        omissions.push({
+      const candidate = response({
+        invocation: opts.invocation,
+        work_order: opts.work_order,
+        round,
+        request_digest: requestId,
+        outcome: "served",
+        request_tokens: requestTokens,
+        knowledge_refs: [...references, knowledgeRef],
+        prepared_evidence: [...excerpts, excerpt],
+        omissions,
+      });
+      if (candidate.usage.estimated_response_tokens > candidate.usage.max_response_tokens) {
+        appendBoundedOmission({
           code: "excerpt_not_included",
-          detail: `KnowledgeRef ${knowledgeRef.ref} would exceed the response token budget.`,
+          detail: `KnowledgeRef ${knowledgeRef.ref} would exceed the complete response token budget.`,
         });
         continue;
       }
       references.push(knowledgeRef);
       excerpts.push(excerpt);
-      responseTokens += excerptTokens;
-      if (
-        references.length >= TASK_KNOWLEDGE_REQUEST_POLICY.max_references ||
-        responseTokens >= TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens
-      ) {
-        break;
-      }
+      responseTokens = candidate.usage.estimated_response_tokens;
       if (
         references.length >= TASK_KNOWLEDGE_REQUEST_POLICY.max_references ||
         responseTokens >= TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens
@@ -518,7 +507,6 @@ export async function serveTaskKnowledgeRequest(opts: {
       request_digest: requestId,
       outcome: !matchedScopedCandidate && outOfScopeCandidateCount > 0 ? "denied" : "unresolved",
       request_tokens: requestTokens,
-      response_tokens: responseTokens,
       omissions:
         omissions.length > 0
           ? omissions
@@ -543,7 +531,6 @@ export async function serveTaskKnowledgeRequest(opts: {
     request_digest: requestId,
     outcome: "served",
     request_tokens: requestTokens,
-    response_tokens: responseTokens,
     knowledge_refs: references,
     prepared_evidence: excerpts,
     omissions,
@@ -562,7 +549,7 @@ export function validateTaskKnowledgeRequestResponse(
     response.schema_version !== 1 ||
     response.kind !== "task_knowledge_response" ||
     typeof responseDigest !== "string" ||
-    responseDigest !== digest(unsigned)
+    responseDigest !== digestJson(unsigned)
   ) {
     throw new Error("Knowledge request response digest or version is invalid.");
   }
@@ -581,7 +568,17 @@ export function validateTaskKnowledgeRequestResponse(
   if (response.prepared_evidence.some((excerpt) => excerpt.status !== "included")) {
     throw new Error("Knowledge request response may contain only included excerpts.");
   }
-  if (response.usage.estimated_response_tokens > response.usage.max_response_tokens) {
+  const measuredResponseTokens = serializedResponseTokens({
+    response: {
+      ...unsigned,
+      usage: { ...unsigned.usage, estimated_response_tokens: 0 },
+    },
+    seal: (base) => ({ ...base, digest: digestJson(base) }),
+  });
+  if (
+    response.usage.estimated_response_tokens !== measuredResponseTokens ||
+    response.usage.estimated_response_tokens > response.usage.max_response_tokens
+  ) {
     throw new Error("Knowledge request response exceeded its token budget.");
   }
   return response;

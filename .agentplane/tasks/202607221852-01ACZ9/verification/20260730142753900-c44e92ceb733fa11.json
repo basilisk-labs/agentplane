@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run schemas:check\nResult: pass\nEvidence: schemas OK at HEAD 18c2c4338849ebc61dccb31941bb847f2e9cbc2f.\nScope: Generated public schemas and fixture synchronization.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: critical CLI matrix passed 12/12 chunks and 76 tests at HEAD 18c2c4338849ebc61dccb31941bb847f2e9cbc2f.\nScope: Critical CLI trust-boundary and agent-efficiency regressions.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: repository TypeScript build exited 0 at HEAD 18c2c4338849ebc61dccb31941bb847f2e9cbc2f.\nScope: Workspace type safety.\n\nCommand: bun run --filter=agentplane test -- task-knowledge-request.test.ts task-knowledge-request-lifecycle.test.ts task-knowledge-semantic-escalation.test.ts agent-work-order.integration.test.ts task-run-bootstrap.result-examples.test.ts result-manifest.test.ts codex-result-transport.test.ts direct-task-supervisor-observation.test.ts task-run-context.integration.test.ts task-run-lifecycle.test.ts\nResult: pass\nEvidence: 10 agentplane files and 96 tests passed; includes FTS pagination beyond six out-of-scope results and post-work-order digest drift rejection.\nScope: RF-22 request serving, runner lifecycle, authorization, digest binding, and adversarial retrieval regressions.\n\nCommand: bun run --filter=@agentplaneorg/core test -- agent-semantic-result.test.ts agent-work-order.test.ts\nResult: pass\nEvidence: 2 core files and 25 tests passed.\nScope: Semantic result and work-order contract compatibility.",
+  "digest": "sha256:c44e92ceb733fa116492c7750b0aa257283ab81080f1fff8e8d5d1fb9ccbaa36",
+  "implementation_sha": "18c2c4338849ebc61dccb31941bb847f2e9cbc2f",
+  "kind": "task_verification_record",
+  "note": "RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 18c2c433; focused adversarial retrieval coverage also passed.",
+  "recorded_at": "2026-07-30T14:27:53.900Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Submit valid executor and evaluator requests. Expected: scoped digest-valid refs/excerpts and a complete run audit.\n2. Exceed round/token budget or request a forbidden scope. Expected: typed denial without broader repository authority.\n3. Repeat an unresolved blocking request. Expected: deduplicated evidence followed by blocker/escalation, not an infinite loop.\n4. Tamper with work-order id, fingerprint, or returned digest. Expected: validation rejects the request/response.\n5. Run schema, runner, and retrieval tests.",
+  "scope_digest": "sha256:71de638d60efec5e2dc8cfe8b2cf6bbd9f5eb77930537d5185b761b29bac9ca7",
+  "task_id": "202607221852-01ACZ9",
+  "verification_command": "agentplane verify 202607221852-01ACZ9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

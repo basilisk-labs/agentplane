@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-01ACZ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T14:25:32.638Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "18c2c4338849ebc61dccb31941bb847f2e9cbc2f",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "findings": [
+    "Frozen verification evidence contains only an asserted verification note; it contains no deterministic check records, runner history, or runtime evidence for the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142433809-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The packet assumes the TESTER verification note accurately represents successful execution of all declared checks for evaluated SHA 18c2c4338849ebc61dccb31941bb847f2e9cbc2f despite supplying no underlying deterministic records."
+  ],
+  "residual_risks": [
+    "Rebuild the frozen evaluator packet with deterministic results for the declared schema, critical-test, and typecheck commands at evaluated SHA 18c2c4338849ebc61dccb31941bb847f2e9cbc2f, including the focused adversarial ranking and post-work-order digest-drift tests. The implementation diff appears to address the prior two findings, but this episode cannot establish a pass from the frozen verification evidence."
+  ]
+}
