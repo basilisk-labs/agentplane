@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "The hotspot constraint is satisfied structurally: task-knowledge-retrieval.ts is 475 lines and task-knowledge-retrieval-query.ts is 287 lines, both below the enforced 600-line limit."
     - "The focused integration fixture still covers deterministic selection through exact, FTS, alias, and graph adapters; typecheck, ESLint, formatting, and hotspot validation pass on the split head."
 commit:
-  hash: "ac3525f509876231900d5b6612669c7d194fa870"
-  message: "🚧 9T0RT3 task: refresh quality review"
+  hash: "1422f55769ec49c719db9949f9cd8f4f9fa0ea28"
+  message: "🚧 9T0RT3 task: refresh verification evidence"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -142,8 +145,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration coverage, hotspot policy, and the hosted PR gate on the current implementation SHA."
+  -
+    type: "status"
+    at: "2026-07-30T12:27:51.618Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:26:56.620Z"
+doc_updated_at: "2026-07-30T12:27:51.619Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:
