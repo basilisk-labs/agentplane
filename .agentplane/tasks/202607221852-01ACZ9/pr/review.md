@@ -45,8 +45,9 @@ Created: 2026-07-30T13:20:41.795Z
  .../usecases/task-knowledge-request-response.ts    | 168 +++++++
  .../usecases/task-knowledge-request-scope.ts       |  88 ++++
  .../runner/usecases/task-knowledge-request.test.ts | 494 +++++++++++++++++++++
- .../src/runner/usecases/task-knowledge-request.ts  | 430 ++++++++++++++++++
- .../runner/usecases/task-knowledge-retrieval.ts    |  14 +
+ .../src/runner/usecases/task-knowledge-request.ts  | 424 ++++++++++++++++++
+ .../runner/usecases/task-knowledge-retrieval.ts    |   7 +-
+ .../usecases/task-knowledge-semantic-escalation.ts |   4 +-
  .../task-run-bootstrap.result-examples.test.ts     |   6 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
  .../agentplane/src/runner/usecases/task-run.ts     |   8 +-
@@ -59,7 +60,7 @@ Created: 2026-07-30T13:20:41.795Z
  ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
  .../agent-work-order-v2.camel-case.compat.json     |   1 +
  schemas/examples/agent-work-order-v2.valid.json    |   1 +
- 30 files changed, 2205 insertions(+), 34 deletions(-)
+ 31 files changed, 2188 insertions(+), 42 deletions(-)
 ```
 
 </details>

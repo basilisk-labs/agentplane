@@ -415,16 +415,10 @@ export {
   persistTaskKnowledgeRequestAudit,
   taskKnowledgeRequestReservationUnavailableResponse,
   taskKnowledgeRequestAuditPath,
-  TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY,
   withTaskKnowledgeRequestAuditReservation,
 } from "./task-knowledge-request-audit.js";
-export {
-  createTaskKnowledgeRequestResponse,
-  TASK_KNOWLEDGE_REQUEST_POLICY,
-  validateTaskKnowledgeRequestResponse,
-} from "./task-knowledge-request-response.js";
+export { validateTaskKnowledgeRequestResponse } from "./task-knowledge-request-response.js";
 export type {
   TaskKnowledgeRequestAudit,
-  TaskKnowledgeRequestAuditOutcome,
   TaskKnowledgeRequestResponse,
 } from "./task-knowledge-request-response.js";

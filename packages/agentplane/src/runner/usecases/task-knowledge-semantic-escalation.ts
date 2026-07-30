@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 import type { RetrievalAdapter, RetrievalSignal } from "./task-knowledge-retrieval-query.js";
 
-export const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
+const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
   max_selector_episodes: 1,
   max_candidates: 12,
   max_selected_references: 12,
@@ -58,7 +58,7 @@ export type SemanticRetrievalSelectionWorkOrder = {
   candidates: SemanticRetrievalSelectionCandidate[];
 };
 
-export type SemanticRetrievalSelectorResponse = {
+type SemanticRetrievalSelectorResponse = {
   schema_version: 1;
   kind: "task_knowledge_selection_result";
   candidate_set_digest: string;
