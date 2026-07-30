@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The change adds no automatic rebase, merge, force-push, or semantic hunk selection; it only restores packet eligibility from already-persisted provider, queue, and handoff identities.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302012-FCYR88/quality/20260730-202226736-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The queue and handoff records remain atomically consistent with the provider PR identity when the packet is requested."
+  ]
+}
