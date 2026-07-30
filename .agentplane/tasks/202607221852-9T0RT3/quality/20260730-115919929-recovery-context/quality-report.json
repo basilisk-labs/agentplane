@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-9T0RT3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T11:59:20.166Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "728699402f64ee6381f474f68106aaecf8873b11",
+  "blueprint_digest": "b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408",
+  "findings": [
+    "Symbol extraction now scans bounded identifier tokens linearly, eliminating the CodeQL-reported exponential-backtracking path.",
+    "Focused retrieval fixture, typecheck, and lint pass after the security remediation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115919929-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "CodeQL confirmation requires the next hosted analysis on the published PR head."
+  ],
+  "residual_risks": []
+}
