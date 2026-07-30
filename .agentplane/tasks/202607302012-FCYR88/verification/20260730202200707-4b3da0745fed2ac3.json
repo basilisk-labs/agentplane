@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:4b3da0745fed2ac35bbee1301cd371d0b2ba5c2e0c4659bd6aaae853653478db",
+  "implementation_sha": "3f61098fd12e2a8359ed90d3aae50f8282ecce4f",
+  "kind": "task_verification_record",
+  "note": "Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.",
+  "recorded_at": "2026-07-30T20:22:00.707Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c",
+  "task_id": "202607302012-FCYR88",
+  "verification_command": "agentplane verify 202607302012-FCYR88 --ok --by CODER",
+  "verifier": "CODER"
+}
