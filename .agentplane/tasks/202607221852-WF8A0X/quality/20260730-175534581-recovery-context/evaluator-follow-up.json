@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-WF8A0X-3e92c9fde33d7fd0a7b86fb1",
+  "task_id": "202607221852-WF8A0X",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make stale-lock reclamation ownership-safe so it cannot remove a replacement lock, add the interleaving regression test, and freeze command-level verification evidence for the evaluated SHA before reevaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Stale-lock reclamation has a time-of-check/time-of-use race: after reading and classifying one lock as reclaimable, rename operates only on the shared path and does not verify that the lock still has the same owner token. If the observed lock is released and a new owner acquires the path before rename, the reclaimer can remove the new live owner's lock, allowing concurrent CURATOR task creation and inconsistent selection evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-175534581-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:7a15e5f8ff6d558a5e05cfc27f91a77ac2e836bbd46820803a9649aa40148104",
+          "line": 3496,
+          "lines": "3496-3522",
+          "section": "reclaimStaleTaskKnowledgeSelectionLock"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence, so it does not deterministically substantiate the declared checks or the claimed concurrency scenarios at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-175534581-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:eef5f1c96bb71031d5096ace294b7420828c04343c401bee3fd1accd45ec4224",
+          "line": 15,
+          "lines": "15-17",
+          "section": "verification evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-175534581-recovery-context/evaluator-result.json"
+}
