@@ -27,7 +27,9 @@ Move the duplicated local isRecord repair and measured clone-baseline refresh ou
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../usecases/task-knowledge-semantic-escalation.ts |  5 +-
+ scripts/baselines/clone-baseline.json              | 64 +++++++++++-----------
+ 2 files changed, 33 insertions(+), 36 deletions(-)
 ```
 
 </details>

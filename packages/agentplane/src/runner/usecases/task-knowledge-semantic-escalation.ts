@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 
+import { isRecord } from "../../shared/guards.js";
 import type { RetrievalAdapter, RetrievalSignal } from "./task-knowledge-retrieval-query.js";
 
 const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
@@ -278,10 +279,6 @@ function receipt(opts: {
     },
     failure: opts.failure ? { code: opts.failure } : null,
   };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function usageFrom(response: unknown):
