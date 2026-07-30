@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-YP9QCH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T10:41:12.776Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "7907943618d4a791d53305102b39b412ccab9ce1",
+  "blueprint_digest": "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324",
+  "findings": [
+    "Direct ESLint on both previously failing files now passes without suppressions or rule changes.",
+    "The payment candidate assertions still verify exact label, graph, page-family, structured-alias, and deterministic artifact behavior through typed fields.",
+    "The test-size repair remains within the existing hotspot baseline and keeps all scenarios intact."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-104111708-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
