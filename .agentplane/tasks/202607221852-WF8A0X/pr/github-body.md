@@ -33,24 +33,25 @@ retain one CURATOR owner.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/context/ingest.mdx                            |  25 +-
- docs/developer/local-context.mdx                   |  24 +-
- docs/user/agents.mdx                               |   6 +-
- docs/user/cli-reference.generated.mdx              |  22 +-
- docs/user/commands.mdx                             |  21 +-
- docs/user/local-context.mdx                        |  60 +-
- .../src/commands/context/context-runner.ts         |   4 +-
- .../src/commands/context/context.learn.spec.ts     |  24 +-
- .../src/commands/context/context.spec.ts           |  32 +-
- .../src/commands/context/harvest-tasks.test.ts     | 923 ++++++++-------------
- .../src/commands/context/harvest-tasks.ts          | 444 +++++++---
- packages/agentplane/src/context/doctor.ts          |   8 +-
- .../src/context/harvest-tasks-artifacts.ts         |  80 +-
- .../src/context/harvest-tasks-builders.ts          | 372 ++++-----
- .../src/context/harvest-tasks-extraction.ts        | 117 +--
- .../src/context/harvest-tasks-markers.ts           |  50 +-
- .../agentplane/src/context/harvest-tasks-model.ts  |  72 +-
- 17 files changed, 1112 insertions(+), 1172 deletions(-)
+ docs/context/ingest.mdx                            |   27 +-
+ docs/developer/local-context.mdx                   |   29 +-
+ docs/user/agents.mdx                               |    6 +-
+ docs/user/cli-reference.generated.mdx              |   22 +-
+ docs/user/commands.mdx                             |   21 +-
+ docs/user/local-context.mdx                        |   60 +-
+ .../src/commands/context/context-runner.ts         |    4 +-
+ .../src/commands/context/context.learn.spec.ts     |   24 +-
+ .../src/commands/context/context.spec.ts           |   32 +-
+ .../src/commands/context/harvest-tasks.test.ts     | 1061 ++++++++++----------
+ .../src/commands/context/harvest-tasks.ts          |  824 +++++++++++++--
+ packages/agentplane/src/context/doctor.ts          |    8 +-
+ .../src/context/harvest-tasks-artifacts.ts         |   80 +-
+ .../src/context/harvest-tasks-builders.ts          |  372 +++----
+ .../src/context/harvest-tasks-extraction.ts        |  117 ++-
+ .../src/context/harvest-tasks-markers.ts           |   50 +-
+ .../agentplane/src/context/harvest-tasks-model.ts  |   72 +-
+ .../src/context/ingest-task-pack.test.ts           |   14 +-
+ 18 files changed, 1667 insertions(+), 1156 deletions(-)
 ```
 
 </details>

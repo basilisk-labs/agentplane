@@ -576,6 +576,180 @@ describe("context harvest tasks", () => {
     );
   });
 
+  it("records canonical duplicate and consolidation evidence before creating CURATOR", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-CANON1",
+      title: "Release verification contract",
+      description: "Decision: release verification contract requires a checked PR.",
+    });
+    const tasks = [source];
+    const observedChecks: unknown[] = [];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+    await write(
+      root,
+      ".agentplane/context/derived/facts/facts.jsonl",
+      '{"id":"fact.release-verification","claim":"Release verification contract requires a checked PR."}\n',
+    );
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+        const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+        const proposalFiles = await readdir(proposalDir);
+        const checkName = proposalFiles.find((name) => name.endsWith(".canonical-check.json"));
+        expect(checkName).toBeDefined();
+        observedChecks.push(
+          JSON.parse(await readFile(path.join(proposalDir, checkName ?? ""), "utf8")),
+        );
+        await commandCtx.taskBackend.writeTask({
+          id: "202604040900-CURAT1",
+          title: taskParsed.title,
+          status: "TODO",
+          owner: taskParsed.owner,
+          priority: taskParsed.priority,
+          tags: taskParsed.tags,
+          description: taskParsed.description,
+          extensions: taskParsed.extensions,
+        } as TaskData);
+        return taskCreationResult("202604040900-CURAT1");
+      },
+    });
+
+    expect(observedChecks).toMatchObject([
+      {
+        result: "consolidation_required",
+        resolution: { state: "recorded", required_action: "semantic_reconciliation" },
+        matches: [
+          {
+            source_ref: ".agentplane/context/derived/facts/facts.jsonl#line=1",
+            source_id: "fact.release-verification",
+          },
+        ],
+      },
+    ]);
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const selectionName = proposalFiles.find((name) => name.endsWith(".selection.json"));
+    await expect(readFile(path.join(proposalDir, selectionName ?? ""), "utf8")).resolves.toContain(
+      '"result": "consolidation_required"',
+    );
+    await expect(
+      readFile(
+        path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"),
+        "utf8",
+      ),
+    ).resolves.toContain('"path": ".agentplane/context/derived/facts/facts.jsonl"');
+  });
+
+  it("reclaims an expired selection lease after an interrupted CURATOR handoff", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-STALE1",
+      title: "Recover interrupted knowledge selection",
+      description: "Decision: stale handoffs require safe recovery.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], writeProposals: true }),
+    });
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const proposalName = proposalFiles.find((name) => name.endsWith(".json"));
+    expect(proposalName).toBeDefined();
+    const proposalId = proposalName?.replace(/\.json$/u, "") ?? "";
+    const lockPath = path.join(proposalDir, `${proposalId}.selection.lock`);
+    await write(
+      root,
+      path.relative(root, lockPath),
+      JSON.stringify({
+        schema_version: 1,
+        kind: "task_knowledge_proposal_selection_lock",
+        owner: { token: "interrupted", pid: 999_999, hostname: "other-host" },
+        acquired_at: "1970-01-01T00:00:00.000Z",
+        expires_at: "1970-01-01T00:00:01.000Z",
+      }),
+    );
+
+    const createdTaskIds: string[] = [];
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+        const taskId = "202604040900-CURAT1";
+        createdTaskIds.push(taskId);
+        await commandCtx.taskBackend.writeTask({
+          id: taskId,
+          title: taskParsed.title,
+          status: "TODO",
+          owner: taskParsed.owner,
+          priority: taskParsed.priority,
+          tags: taskParsed.tags,
+          description: taskParsed.description,
+          extensions: taskParsed.extensions,
+        } as TaskData);
+        return taskCreationResult(taskId);
+      },
+    });
+
+    expect(createdTaskIds).toEqual(["202604040900-CURAT1"]);
+    await expect(readFile(lockPath, "utf8")).rejects.toThrow();
+  });
+
+  it("does not reclaim an expired lease while its local owner is still alive", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-LIVE01",
+      title: "Keep active selection exclusive",
+      description: "Decision: an active CURATOR selection remains exclusive.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], writeProposals: true }),
+    });
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const proposalName = proposalFiles.find((name) => name.endsWith(".json"));
+    expect(proposalName).toBeDefined();
+    const proposalId = proposalName?.replace(/\.json$/u, "") ?? "";
+    await write(
+      root,
+      path.join(
+        ".agentplane/context/derived/proposals/task-knowledge",
+        `${proposalId}.selection.lock`,
+      ),
+      JSON.stringify({
+        schema_version: 1,
+        kind: "task_knowledge_proposal_selection_lock",
+        owner: { token: "live-owner", pid: process.pid, hostname: os.hostname() },
+        acquired_at: "1970-01-01T00:00:00.000Z",
+        expires_at: "1970-01-01T00:00:01.000Z",
+      }),
+    );
+
+    await expect(
+      cmdContextHarvestTasks({
+        ctx: ctx(root, tasks),
+        cwd: root,
+        parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      }),
+    ).rejects.toThrow(/live CURATOR selection/u);
+  });
+
   it("keeps one CURATOR owner when the same proposal is selected concurrently", async () => {
     const root = await tempRoot();
     await initContextWorkspace(root);
