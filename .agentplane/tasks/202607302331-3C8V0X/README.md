@@ -4,7 +4,7 @@ title: "Repair beta.2 guard and clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
+  message: "🧩 3C8V0X code: repair guard and clone baseline"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the guard and clone-baseline gate failures in a dedicated bounded repair task, preserving beta.2 qualification as a separate evidence-only gate."
+  -
+    author: "CODER"
+    body: "Implemented: moved the shared record-guard repair and measured clone-baseline refresh into this bounded task; beta.2 qualification remains a separate evidence-only gate."
 events:
   -
     type: "status"
@@ -45,8 +50,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce the guard and clone-baseline gate failures in a dedicated bounded repair task, preserving beta.2 qualification as a separate evidence-only gate."
+  -
+    type: "status"
+    at: "2026-07-30T23:35:56.474Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: moved the shared record-guard repair and measured clone-baseline refresh into this bounded task; beta.2 qualification remains a separate evidence-only gate."
 doc_version: 3
-doc_updated_at: "2026-07-30T23:32:41.563Z"
+doc_updated_at: "2026-07-30T23:35:56.474Z"
 doc_updated_by: "CODER"
 description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
 sections:
