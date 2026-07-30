@@ -1,0 +1,5 @@
+ .agentplane/policy/incidents.md                            | 1 -
+ docs/developer/incident-archive.mdx                        | 4 ++++
+ packages/agentplane/assets/policy/incidents.md             | 1 -
+ packages/agentplane/src/shared/builtin-assets.generated.ts | 6 +++---
+ 4 files changed, 7 insertions(+), 5 deletions(-)
