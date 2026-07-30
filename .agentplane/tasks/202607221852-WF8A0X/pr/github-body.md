@@ -16,13 +16,7 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified RF-20 rework: only explicit durable task signals produce proposals; every signal has exact
-captured evidence; PR/diff/evaluator provenance is attached when present; unchanged selections
-retain one CURATOR owner.
-```
+- Note: Verified canonical pre-selection evidence and recoverable single-owner CURATOR handoff.
 - Canonical workflow state lives in the task README.
 
 <details>
