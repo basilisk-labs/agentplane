@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300553-CR9VTJ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T06:04:27.301Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "89981c27eb9c9b652a17127de8cd3a5b482babd2",
+  "blueprint_digest": "de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df",
+  "findings": [
+    "Residual risk is causal, not contractual: the frozen samples are non-interleaved and differ in verified-success subsets, so they block beta.1 publication but cannot prove which setup component caused the latency change."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
