@@ -15,8 +15,15 @@ RF-16: index complete section/window/row content while keeping bounded previews 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified projection schema v2 against all four task criteria: long markdown tail remains searchable
+with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose
+source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused
+tests, typecheck, critical CLI suite, and ci:local:fast passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

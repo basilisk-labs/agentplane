@@ -1,0 +1,1669 @@
+diff --git a/.agentplane/tasks/202607221852-J910P6/README.md b/.agentplane/tasks/202607221852-J910P6/README.md
+index c73ef7c7b..20d04b075 100644
+--- a/.agentplane/tasks/202607221852-J910P6/README.md
++++ b/.agentplane/tasks/202607221852-J910P6/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-J910P6"
+ title: "Separate indexed search text from preview snippets"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 9
+ origin:
+   system: "manual"
+ depends_on:
+@@ -25,10 +25,10 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
+-  note: null
++  state: "approved"
++  updated_at: "2026-07-30T07:16:36.624Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Approved under the user-authorized v0.7 controlled-wave plan after source inspection: schema v2, rebuild compatibility, exact refs, bounded previews, and measurable projection budgets."
+ verification:
+   state: "pending"
+   updated_at: null
+@@ -36,11 +36,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: implement projection schema v2 with full search text, bounded previews, exact source refs, and rebuild compatibility in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T07:16:50.145Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: implement projection schema v2 with full search text, bounded previews, exact source refs, and rebuild compatibility in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:06.215Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T07:25:15.644Z"
++doc_updated_by: "CODER"
+ description: "RF-16: index complete section/window/row content while keeping bounded previews and precise source spans for markdown, JSONL, and structured context files."
+ sections:
+   Summary: |-
+@@ -51,11 +61,11 @@ sections:
+     - In scope: versioned projection units, full search_text, bounded preview_text, markdown section/window splitting, JSONL row units, structured-field units, exact line/section/entity refs, and size/latency instrumentation.
+     - Out of scope: FTS query execution or incremental update logic.
+   Plan: |-
+-    1. Version the projection schema with separate search and preview fields.
+-    2. Project each supported source format into meaningful bounded units without truncating searchable tails.
+-    3. Preserve canonical source refs, line/section/entity spans, and digests.
+-    4. Add migration/full-rebuild compatibility.
+-    5. Benchmark index size and projection latency on a scalable fixture corpus.
++    1. Introduce projection schema v2 with complete `search_text`, UTF-8-bounded `preview_text`, stable source refs, and persisted byte/latency metrics.
++    2. Project markdown sections and plain-text windows without searchable-tail truncation; retain bounded file previews only for canonical whole-file refs.
++    3. Project JSONL rows and structured JSON units with deterministic selectors or line spans, preserving canonical refs and item digests.
++    4. Make search rank/match full `search_text` but render `preview_text`; recompute selector freshness from the current projected unit.
++    5. Treat v1 SQLite/legacy projections as rebuild-required, add focused schema/projection/search tests plus a scalable fixture with explicit preview-size and projection-latency budgets.
+   Verify Steps: |-
+     1. Index a long markdown page with a unique tail term. Expected: the term is searchable in projection data while the preview remains bounded and points to the exact section/lines.
+     2. Project JSONL and structured fixtures. Expected: row/entity boundaries and canonical refs are stable and reproducible.
+@@ -68,7 +78,16 @@ sections:
+     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+-  Findings: ""
++  Findings: |-
++    - Implemented projection schema v2: complete `search_text` is independent from UTF-8-bounded `preview_text`; SQLite FTS indexes `search_text`.
++    - Projection units preserve markdown section and line refs, JSONL rows, and structured JSON line windows. Search freshness now recomputes the exact current projection unit.
++    - v1 projections are rebuild-required; `agentplane context reindex` recreates the cache and emits source/search/preview byte metrics plus projection latency.
++    - Explicit budgets verified on a scalable fixture: preview <= 20 lines and <= 2048 UTF-8 bytes per row; projection fixture completes in < 2000 ms.
++    - Local evidence: typecheck, changed-file lint, focused projection/search/SQLite tests (25 tests) passed.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "b8dbca7245172f6b85d5431960a90debbc274c9d"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+@@ -84,11 +103,11 @@ RF-16: index complete section/window/row content while keeping bounded previews
+ 
+ ## Plan
+ 
+-1. Version the projection schema with separate search and preview fields.
+-2. Project each supported source format into meaningful bounded units without truncating searchable tails.
+-3. Preserve canonical source refs, line/section/entity spans, and digests.
+-4. Add migration/full-rebuild compatibility.
+-5. Benchmark index size and projection latency on a scalable fixture corpus.
++1. Introduce projection schema v2 with complete `search_text`, UTF-8-bounded `preview_text`, stable source refs, and persisted byte/latency metrics.
++2. Project markdown sections and plain-text windows without searchable-tail truncation; retain bounded file previews only for canonical whole-file refs.
++3. Project JSONL rows and structured JSON units with deterministic selectors or line spans, preserving canonical refs and item digests.
++4. Make search rank/match full `search_text` but render `preview_text`; recompute selector freshness from the current projected unit.
++5. Treat v1 SQLite/legacy projections as rebuild-required, add focused schema/projection/search tests plus a scalable fixture with explicit preview-size and projection-latency budgets.
+ 
+ ## Verify Steps
+ 
+@@ -109,3 +128,9 @@ RF-16: index complete section/window/row content while keeping bounded previews
+ - Re-run equivalence, recall, lifecycle, and type checks.
+ 
+ ## Findings
++
++- Implemented projection schema v2: complete `search_text` is independent from UTF-8-bounded `preview_text`; SQLite FTS indexes `search_text`.
++- Projection units preserve markdown section and line refs, JSONL rows, and structured JSON line windows. Search freshness now recomputes the exact current projection unit.
++- v1 projections are rebuild-required; `agentplane context reindex` recreates the cache and emits source/search/preview byte metrics plus projection latency.
++- Explicit budgets verified on a scalable fixture: preview <= 20 lines and <= 2048 UTF-8 bytes per row; projection fixture completes in < 2000 ms.
++- Local evidence: typecheck, changed-file lint, focused projection/search/SQLite tests (25 tests) passed.
+diff --git a/.agentplane/tasks/202607221852-J910P6/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-J910P6/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..57adb36ca
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-J910P6/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-J910P6",
++    "title": "Separate indexed search text from preview snippets",
++    "description": "RF-16: index complete section/window/row content while keeping bounded previews and precise source spans for markdown, JSONL, and structured context files.",
++    "tags": [
++      "context",
++      "milestone-beta2",
++      "projection",
++      "refactor",
++      "rf-16",
++      "search",
++      "v0.7",
++      "wave-retrieval"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-J910P6",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-J910P6/pr/diffstat.txt b/.agentplane/tasks/202607221852-J910P6/pr/diffstat.txt
+new file mode 100644
+index 000000000..e537e1ee0
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-J910P6/pr/diffstat.txt
+@@ -0,0 +1,9 @@
++ .../agentplane/src/commands/context/capability.ts  |   5 +-
++ .../src/commands/context/release-readiness.test.ts |  48 ++++++++
++ packages/agentplane/src/commands/context/search.ts |  51 ++------
++ .../src/commands/context/sqlite.unit.test.ts       |  58 +++++++++-
++ .../src/context/reindex-projection.test.ts         |  94 +++++++++++++++
++ .../agentplane/src/context/reindex-projection.ts   | 128 +++++++++++++++------
++ packages/agentplane/src/context/reindex.ts         |  33 +++++-
++ packages/agentplane/src/context/sqlite.ts          |  47 ++++++--
++ 8 files changed, 367 insertions(+), 97 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-J910P6/pr/github-body.md b/.agentplane/tasks/202607221852-J910P6/pr/github-body.md
+new file mode 100644
+index 000000000..f7a008fd4
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-J910P6/pr/github-body.md
+@@ -0,0 +1,41 @@
++Task: `202607221852-J910P6`
++Title: Separate indexed search text from preview snippets
++Canonical task record: `.agentplane/tasks/202607221852-J910P6/README.md`
++
++## Summary
++
++Separate indexed search text from preview snippets
++
++RF-16: index complete section/window/row content while keeping bounded previews and precise source spans for markdown, JSONL, and structured context files.
++
++## Scope
++
++- In scope: versioned projection units, full search_text, bounded preview_text, markdown section/window splitting, JSONL row units, structured-field units, exact line/section/entity refs, and size/latency instrumentation.
++- Out of scope: FTS query execution or incremental update logic.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T07:17:13.019Z
++- Branch: task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../agentplane/src/commands/context/capability.ts  |   5 +-
++ .../src/commands/context/release-readiness.test.ts |  48 ++++++++
++ packages/agentplane/src/commands/context/search.ts |  51 ++------
++ .../src/commands/context/sqlite.unit.test.ts       |  58 +++++++++-
++ .../src/context/reindex-projection.test.ts         |  94 +++++++++++++++
++ .../agentplane/src/context/reindex-projection.ts   | 128 +++++++++++++++------
++ packages/agentplane/src/context/reindex.ts         |  33 +++++-
++ packages/agentplane/src/context/sqlite.ts          |  47 ++++++--
++ 8 files changed, 367 insertions(+), 97 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-J910P6/pr/github-title.txt b/.agentplane/tasks/202607221852-J910P6/pr/github-title.txt
+new file mode 100644
+index 000000000..00223f4a2
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-J910P6/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 J910P6 task: Separate indexed search text from preview snippets [202607221852-J910P6]
+diff --git a/.agentplane/tasks/202607221852-J910P6/pr/meta.json b/.agentplane/tasks/202607221852-J910P6/pr/meta.json
+new file mode 100644
+index 000000000..920b92a19
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-J910P6/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe",
++  "created_at": "2026-07-30T07:16:50.265Z",
++  "diffstat_sha256": "sha256:5105f028e805cd67dfcd03f925e237be425ca34fd910e672916394362652103c",
++  "last_verified_at": null,
++  "pr_number": 4685,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4685",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-J910P6",
++  "updated_at": "2026-07-30T07:17:13.019Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-J910P6/pr/review.md b/.agentplane/tasks/202607221852-J910P6/pr/review.md
+new file mode 100644
+index 000000000..44c725ed7
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-J910P6/pr/review.md
+@@ -0,0 +1,44 @@
++# PR Review
++
++Created: 2026-07-30T07:16:50.265Z
++
++## Task
++
++- Task: `202607221852-J910P6`
++- Title: Separate indexed search text from preview snippets
++- Status: DOING
++- Branch: `task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe`
++- Canonical task record: `.agentplane/tasks/202607221852-J910P6/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T07:17:13.019Z
++- Branch: task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../agentplane/src/commands/context/capability.ts  |   5 +-
++ .../src/commands/context/release-readiness.test.ts |  48 ++++++++
++ packages/agentplane/src/commands/context/search.ts |  51 ++------
++ .../src/commands/context/sqlite.unit.test.ts       |  58 +++++++++-
++ .../src/context/reindex-projection.test.ts         |  94 +++++++++++++++
++ .../agentplane/src/context/reindex-projection.ts   | 128 +++++++++++++++------
++ packages/agentplane/src/context/reindex.ts         |  33 +++++-
++ packages/agentplane/src/context/sqlite.ts          |  47 ++++++--
++ 8 files changed, 367 insertions(+), 97 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/context/capability.ts b/packages/agentplane/src/commands/context/capability.ts
+index 8773f195c..3f1a32215 100644
+--- a/packages/agentplane/src/commands/context/capability.ts
++++ b/packages/agentplane/src/commands/context/capability.ts
+@@ -132,7 +132,8 @@ export async function cmdContextCapabilitySearch(opts: {
+     const matches = projection.rows
+       .filter((row) => isCapabilityProjectionPath(row.path))
+       .filter(
+-        (row) => row.body.toLowerCase().includes(query) || row.path.toLowerCase().includes(query),
++        (row) =>
++          row.search_text.toLowerCase().includes(query) || row.path.toLowerCase().includes(query),
+       );
+     for (const row of matches) {
+       process.stdout.write(`match: ${row.path}\n`);
+@@ -194,7 +195,7 @@ export async function cmdContextCapabilityDiscover(opts: {
+     const scored = projection.rows
+       .filter((row) => isCapabilityProjectionPath(row.path))
+       .map((row) => {
+-        const haystack = `${row.path}\n${row.body}`.toLowerCase();
++        const haystack = `${row.path}\n${row.search_text}`.toLowerCase();
+         const support = Math.max(row.source_refs?.length ?? 1, 1);
+         return haystack.includes(from) ? { row, support } : { row, support: 0 };
+       })
+diff --git a/packages/agentplane/src/commands/context/release-readiness.test.ts b/packages/agentplane/src/commands/context/release-readiness.test.ts
+index 8a4b8cf6e..43db57ec2 100644
+--- a/packages/agentplane/src/commands/context/release-readiness.test.ts
++++ b/packages/agentplane/src/commands/context/release-readiness.test.ts
+@@ -371,6 +371,54 @@ describe("context release readiness guards", () => {
+     expect(sectionResult?.freshness.stale).toBe(false);
+   });
+ 
++  it("searches complete projected text while returning a bounded section preview", async () => {
++    const root = await tempRoot();
++    const tail = "rf16-search-tail-sentinel";
++    await write(
++      root,
++      "context/wiki/projection.md",
++      [
++        "# Projection",
++        "",
++        "## Complete section",
++        ...Array.from({ length: 48 }, (_, index) => `detail line ${index + 1}`),
++        tail,
++      ].join("\n"),
++    );
++    await cmdContextReindex({
++      cwd: root,
++      parsed: { includeTasks: false, includeRaw: true, reset: false },
++    });
++    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
++
++    await cmdContextSearch({
++      cwd: root,
++      parsed: { query: tail, scope: "context", format: "json", explain: false },
++    });
++
++    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
++      adapter: string;
++      results: {
++        ref: string;
++        snippet: string;
++        source_refs: string[];
++        freshness: { stale: boolean };
++      }[];
++    };
++    const section = payload.results.find(
++      (result) => result.ref === "context/wiki/projection.md#section=complete-section",
++    );
++    expect(payload.adapter).toBe("sqlite");
++    expect(section).toMatchObject({
++      freshness: { stale: false },
++      source_refs: [
++        "context/wiki/projection.md#section=complete-section",
++        "context/wiki/projection.md#lines=3-52",
++      ],
++    });
++    expect(section?.snippet).not.toContain(tail);
++  });
++
+   it("keeps task history out of default context search unless tasks scope is explicit", async () => {
+     const root = await tempRoot();
+     await write(root, "context/wiki/release.md", "# Release\n\nCurated release checklist.\n");
+diff --git a/packages/agentplane/src/commands/context/search.ts b/packages/agentplane/src/commands/context/search.ts
+index 08bd26cf2..6e94f0b8a 100644
+--- a/packages/agentplane/src/commands/context/search.ts
++++ b/packages/agentplane/src/commands/context/search.ts
+@@ -15,6 +15,7 @@ import {
+   scoreMatch,
+   walkScopeFiles,
+ } from "./context-utils.js";
++import { projectRowsForFile } from "../../context/reindex-projection.js";
+ import { readContextProjection } from "./reindex.js";
+ 
+ type SearchResult = {
+@@ -55,14 +56,14 @@ export async function cmdContextSearch(opts: {
+     usedSQLite = true;
+     for (const row of projection.rows) {
+       if (!pathMatchesScopes(row.path, scopes)) continue;
+-      if (matchesQuery(row.body, query)) {
++      if (matchesQuery(row.search_text, query)) {
+         const freshness = await buildFreshness(root, row.path, row.sha256);
+         if (freshness.stale) continue;
+         results.push({
+           path: row.path,
+-          score: scoreSearchText(row.body, query),
+-          snippet: buildSnippet(row.body.split("\n"), 1, Math.min(row.body.split("\n").length, 4)),
+-          refs: [row.path],
++          score: scoreSearchText(row.search_text, query),
++          snippet: row.preview_text,
++          refs: row.source_refs?.length ? row.source_refs : [row.path],
+           freshness,
+         });
+       }
+@@ -208,47 +209,17 @@ async function buildFreshness(
+   } catch {
+     return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
+   }
+-  if (base.endsWith(".jsonl") && rowPath.includes("#")) {
+-    return buildJsonlRowFreshness(absolute, rowPath, projectionSha256);
+-  }
+-  const fileSha256 = await calculateSha256(absolute);
++  const current = projectRowsForFile(
++    rowPath.split("#", 1)[0] ?? rowPath,
++    await readText(absolute),
++  ).find((row) => row.path === rowPath);
+   return {
+     projection_sha256: projectionSha256,
+-    file_sha256: fileSha256,
+-    stale: fileSha256 !== projectionSha256,
++    file_sha256: current?.sha256 ?? null,
++    stale: current?.sha256 !== projectionSha256,
+   };
+ }
+ 
+-async function buildJsonlRowFreshness(
+-  filePath: string,
+-  rowPath: string,
+-  projectionSha256: string,
+-): Promise<{ projection_sha256: string; file_sha256: string | null; stale: boolean }> {
+-  const marker = rowPath.slice(rowPath.indexOf("#") + 1);
+-  const separator = marker.indexOf("=");
+-  if (separator === -1) {
+-    const fileSha256 = await calculateSha256(filePath);
+-    return {
+-      projection_sha256: projectionSha256,
+-      file_sha256: fileSha256,
+-      stale: fileSha256 !== projectionSha256,
+-    };
+-  }
+-  const expectedId = marker.slice(separator + 1);
+-  const rows = parseJsonlLines(await readText(filePath));
+-  for (const [index, row] of rows.entries()) {
+-    const id = String(row.id ?? index + 1);
+-    if (id !== expectedId) continue;
+-    const rowSha256 = `sha256:${createHash("sha256").update(JSON.stringify(row)).digest("hex")}`;
+-    return {
+-      projection_sha256: projectionSha256,
+-      file_sha256: rowSha256,
+-      stale: rowSha256 !== projectionSha256,
+-    };
+-  }
+-  return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
+-}
+-
+ async function calculateSha256(filePath: string): Promise<string> {
+   const hash = createHash("sha256");
+   return await new Promise((resolve, reject) => {
+diff --git a/packages/agentplane/src/commands/context/sqlite.unit.test.ts b/packages/agentplane/src/commands/context/sqlite.unit.test.ts
+index c9bcb55ec..2282ccb50 100644
+--- a/packages/agentplane/src/commands/context/sqlite.unit.test.ts
++++ b/packages/agentplane/src/commands/context/sqlite.unit.test.ts
+@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
+ 
+ import { mkTempDir } from "@agentplane/testkit";
+ 
++import { PROJECTION_VERSION, readContextProjection } from "../../context/reindex.js";
+ import { checkSqliteProjection, readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
+ 
+ describe("context SQLite projection", () => {
+@@ -24,22 +25,27 @@ describe("context SQLite projection", () => {
+ 
+     await writeSqliteProjection(dbPath, {
+       metadata: {
+-        projection_version: 1,
++        projection_version: 2,
+         generated_at: "2026-01-01T00:00:00.000Z",
+         workspace_hash: "workspace",
+         include_tasks: true,
+         include_raw: false,
++        source_bytes: 42,
++        search_text_bytes: 42,
++        preview_text_bytes: 12,
++        projection_elapsed_ms: 3,
+       },
+       rows: [
+         {
+           path: "README.md",
+           sha256: "hash",
+           content_type: "text/markdown",
+-          projection_version: 1,
++          projection_version: 2,
+           indexed_at: "2026-01-01T00:00:00.000Z",
+           size_bytes: 42,
+           kind: "doc",
+-          body: "Context body",
++          search_text: "Context body",
++          preview_text: "Context body",
+           source_refs: ["README.md"],
+         },
+       ],
+@@ -49,24 +55,64 @@ describe("context SQLite projection", () => {
+ 
+     expect(await checkSqliteProjection(dbPath)).toBe(true);
+     expect(projection?.metadata).toEqual({
+-      projection_version: 1,
++      projection_version: 2,
+       generated_at: "2026-01-01T00:00:00.000Z",
+       workspace_hash: "workspace",
+       include_tasks: true,
+       include_raw: false,
++      source_bytes: 42,
++      search_text_bytes: 42,
++      preview_text_bytes: 12,
++      projection_elapsed_ms: 3,
+     });
+     expect(projection?.rows).toEqual([
+       {
+         path: "README.md",
+         sha256: "hash",
+         content_type: "text/markdown",
+-        projection_version: 1,
++        projection_version: 2,
+         indexed_at: "2026-01-01T00:00:00.000Z",
+         size_bytes: 42,
+         kind: "doc",
+-        body: "Context body",
++        search_text: "Context body",
++        preview_text: "Context body",
+         source_refs: ["README.md"],
+       },
+     ]);
+   });
++
++  it("requires a full rebuild before consuming an older projection version", async () => {
++    const dbPath = path.join(tempDir, ".agentplane", "cache.sqlite");
++    await writeSqliteProjection(dbPath, {
++      metadata: {
++        projection_version: PROJECTION_VERSION - 1,
++        generated_at: "2026-01-01T00:00:00.000Z",
++        workspace_hash: "workspace",
++        include_tasks: false,
++        include_raw: true,
++        source_bytes: 9,
++        search_text_bytes: 9,
++        preview_text_bytes: 9,
++        projection_elapsed_ms: 1,
++      },
++      rows: [
++        {
++          path: "context/wiki/legacy.md",
++          sha256: "hash",
++          content_type: "text/markdown",
++          projection_version: PROJECTION_VERSION - 1,
++          indexed_at: "2026-01-01T00:00:00.000Z",
++          size_bytes: 9,
++          kind: "markdown",
++          search_text: "legacy row",
++          preview_text: "legacy row",
++          source_refs: ["context/wiki/legacy.md"],
++        },
++      ],
++    });
++
++    const legacyProjection = await readSqliteProjection(dbPath);
++    expect(legacyProjection?.metadata.projection_version).toBe(PROJECTION_VERSION - 1);
++    expect(await readContextProjection(tempDir)).toBeNull();
++  });
+ });
+diff --git a/packages/agentplane/src/context/reindex-projection.test.ts b/packages/agentplane/src/context/reindex-projection.test.ts
+new file mode 100644
+index 000000000..1d90dda27
+--- /dev/null
++++ b/packages/agentplane/src/context/reindex-projection.test.ts
+@@ -0,0 +1,94 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  PROJECTION_PREVIEW_MAX_BYTES,
++  PROJECTION_PREVIEW_MAX_LINES,
++  PROJECTION_WINDOW_MAX_LINES,
++  projectRowsForFile,
++} from "./reindex-projection.js";
++
++describe("context projection v2", () => {
++  it("keeps a long markdown section fully searchable while bounding its preview and source span", () => {
++    const tail = "rf16-markdown-tail-sentinel";
++    const content = [
++      "# Architecture",
++      "",
++      "## Retrieval boundary",
++      ...Array.from({ length: 48 }, (_, index) => `detail line ${index + 1}`),
++      tail,
++    ].join("\n");
++
++    const section = projectRowsForFile("context/wiki/architecture.md", content).find(
++      (row) => row.path === "context/wiki/architecture.md#section=retrieval-boundary",
++    );
++
++    expect(section?.search_text).toContain(tail);
++    expect(section?.preview_text).not.toContain(tail);
++    expect(section?.preview_text.split("\n")).toHaveLength(PROJECTION_PREVIEW_MAX_LINES);
++    expect(Buffer.byteLength(section?.preview_text ?? "", "utf8")).toBeLessThanOrEqual(
++      PROJECTION_PREVIEW_MAX_BYTES,
++    );
++    expect(section?.source_refs).toEqual([
++      "context/wiki/architecture.md#section=retrieval-boundary",
++      "context/wiki/architecture.md#lines=3-52",
++    ]);
++  });
++
++  it("uses stable JSONL rows and JSON line windows with complete search text", () => {
++    const jsonlTail = "rf16-jsonl-tail-sentinel";
++    const jsonl = `${JSON.stringify({
++      id: "fact:rf16",
++      fact: "A fact with a deliberately long value.",
++      details: "x".repeat(PROJECTION_PREVIEW_MAX_BYTES),
++      tail: jsonlTail,
++      source_refs: ["context/raw/research.md#lines=8-9"],
++    })}\n`;
++    const jsonlRow = projectRowsForFile(".agentplane/context/derived/facts/facts.jsonl", jsonl)[0];
++    expect(jsonlRow).toMatchObject({
++      path: ".agentplane/context/derived/facts/facts.jsonl#fact=fact:rf16",
++      kind: "jsonl-row",
++    });
++    expect(jsonlRow?.search_text).toContain(jsonlTail);
++    expect(Buffer.byteLength(jsonlRow?.preview_text ?? "", "utf8")).toBeLessThanOrEqual(
++      PROJECTION_PREVIEW_MAX_BYTES,
++    );
++    expect(jsonlRow?.source_refs).toEqual(["context/raw/research.md#lines=8-9"]);
++
++    const jsonTail = "rf16-json-tail-sentinel";
++    const json = [
++      "{",
++      ...Array.from(
++        { length: PROJECTION_WINDOW_MAX_LINES + 4 },
++        (_, index) => `  "field_${index}": "value_${index}",`,
++      ),
++      `  "tail": "${jsonTail}"`,
++      "}",
++    ].join("\n");
++    const jsonWindow = projectRowsForFile("context/raw/config.json", json).find(
++      (row) => row.kind === "json-window" && row.search_text.includes(jsonTail),
++    );
++    expect(jsonWindow).toMatchObject({
++      path: "context/raw/config.json#lines=81-87",
++      kind: "json-window",
++      source_refs: ["context/raw/config.json#lines=81-87"],
++    });
++  });
++
++  it("records projection-size boundaries on a scalable fixture within the explicit latency budget", () => {
++    const content = Array.from(
++      { length: PROJECTION_WINDOW_MAX_LINES * 16 },
++      (_, index) => `line ${index + 1}: ${"context ".repeat(32)}`,
++    ).join("\n");
++    const startedAt = performance.now();
++    const rows = projectRowsForFile("context/raw/scalable.txt", content);
++    const elapsedMs = performance.now() - startedAt;
++
++    expect(rows.some((row) => row.search_text.includes("line 1280"))).toBe(true);
++    expect(
++      rows.every(
++        (row) => Buffer.byteLength(row.preview_text, "utf8") <= PROJECTION_PREVIEW_MAX_BYTES,
++      ),
++    ).toBe(true);
++    expect(elapsedMs).toBeLessThan(2000);
++  });
++});
+diff --git a/packages/agentplane/src/context/reindex-projection.ts b/packages/agentplane/src/context/reindex-projection.ts
+index 7f0f86692..6daf56e07 100644
+--- a/packages/agentplane/src/context/reindex-projection.ts
++++ b/packages/agentplane/src/context/reindex-projection.ts
+@@ -12,16 +12,52 @@ export type ProjectionSourceRow = {
+   sha256: string;
+   content_type: string;
+   kind: string;
+-  body: string;
++  /** Complete unit content used by search and FTS. */
++  search_text: string;
++  /** A UTF-8-bounded, human-readable excerpt used only for result display. */
++  preview_text: string;
+   size_bytes: number;
+   source_refs?: string[];
+ };
+ 
+-function pickProjectionPayload(input: string): string {
+-  const text = input.toLowerCase();
+-  const lines = text.split(/\r?\n/);
+-  if (lines.length <= 40) return text;
+-  return lines.slice(0, 36).join("\n");
++export const PROJECTION_PREVIEW_MAX_BYTES = 2 * 1024;
++export const PROJECTION_PREVIEW_MAX_LINES = 20;
++export const PROJECTION_WINDOW_MAX_LINES = 80;
++
++function byteLength(input: string): number {
++  return Buffer.byteLength(input, "utf8");
++}
++
++function truncateUtf8(input: string, maxBytes: number): string {
++  if (byteLength(input) <= maxBytes) return input;
++  const marker = "…";
++  const markerBytes = byteLength(marker);
++  let consumed = 0;
++  let end = 0;
++  for (const character of input) {
++    const next = byteLength(character);
++    if (consumed + next + markerBytes > maxBytes) break;
++    consumed += next;
++    end += character.length;
++  }
++  return `${input.slice(0, end)}${marker}`;
++}
++
++function previewText(input: string): string {
++  const lines = input.split(/\r?\n/);
++  return truncateUtf8(
++    lines.slice(0, PROJECTION_PREVIEW_MAX_LINES).join("\n"),
++    PROJECTION_PREVIEW_MAX_BYTES,
++  );
++}
++
++function projectionTextFields(
++  input: string,
++): Pick<ProjectionSourceRow, "search_text" | "preview_text"> {
++  return {
++    search_text: input,
++    preview_text: previewText(input),
++  };
+ }
+ 
+ function lineWindowRef(filePath: string, start: number, end: number): string {
+@@ -110,8 +146,8 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
+       content_type: deriveContentType(filePath),
+       kind: "markdown",
+       source_refs: [rel],
+-      body: pickProjectionPayload(content),
+-      size_bytes: content.length,
++      ...projectionTextFields(content),
++      size_bytes: byteLength(content),
+     },
+   ];
+   for (let index = 0; index < lines.length; index += 1) {
+@@ -136,8 +172,8 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
+       content_type: deriveContentType(filePath),
+       kind: "markdown-section",
+       source_refs: [`${rel}#section=${sectionSlug}`, lineWindowRef(rel, startLine, endLine)],
+-      body: pickProjectionPayload(body),
+-      size_bytes: body.length,
++      ...projectionTextFields(body),
++      size_bytes: byteLength(body),
+     });
+   }
+   return rows;
+@@ -153,24 +189,56 @@ function projectPlainTextRows(filePath: string, content: string): ProjectionSour
+       content_type: deriveContentType(filePath),
+       kind: toProjectionRowKind(filePath),
+       source_refs: [rel],
+-      body: pickProjectionPayload(content),
+-      size_bytes: content.length,
++      ...projectionTextFields(content),
++      size_bytes: byteLength(content),
+     },
+   ];
+-  const windowSize = 80;
+-  for (let start = 0; start < lines.length; start += windowSize) {
+-    const body = lines.slice(start, start + windowSize).join("\n");
++  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
++    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
+     if (!body.trim()) continue;
+     const startLine = start + 1;
+-    const endLine = Math.min(lines.length, start + windowSize);
++    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
+     rows.push({
+       path: lineWindowRef(rel, startLine, endLine),
+       sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
+       content_type: deriveContentType(filePath),
+       kind: "text-window",
+       source_refs: [lineWindowRef(rel, startLine, endLine)],
+-      body: pickProjectionPayload(body),
+-      size_bytes: body.length,
++      ...projectionTextFields(body),
++      size_bytes: byteLength(body),
++    });
++  }
++  return rows;
++}
++
++function projectStructuredJsonRows(filePath: string, content: string): ProjectionSourceRow[] {
++  const rel = toPosix(filePath);
++  const fileSha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
++  const lines = content.split(/\r?\n/);
++  const rows: ProjectionSourceRow[] = [
++    {
++      path: rel,
++      sha256: fileSha256,
++      content_type: deriveContentType(filePath),
++      kind: "json",
++      source_refs: [rel],
++      ...projectionTextFields(content),
++      size_bytes: byteLength(content),
++    },
++  ];
++  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
++    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
++    if (!body.trim()) continue;
++    const startLine = start + 1;
++    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
++    rows.push({
++      path: lineWindowRef(rel, startLine, endLine),
++      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
++      content_type: deriveContentType(filePath),
++      kind: "json-window",
++      source_refs: [lineWindowRef(rel, startLine, endLine)],
++      ...projectionTextFields(body),
++      size_bytes: byteLength(body),
+     });
+   }
+   return rows;
+@@ -189,8 +257,8 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
+           content_type: deriveContentType(filePath),
+           kind: "jsonl-file",
+           source_refs: [toPosix(filePath)],
+-          body: pickProjectionPayload(content),
+-          size_bytes: content.length,
++          ...projectionTextFields(content),
++          size_bytes: byteLength(content),
+         },
+       ];
+     }
+@@ -205,23 +273,13 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
+         content_type: deriveContentType(filePath),
+         kind: "jsonl-row",
+         source_refs: sourceRefsForJsonlRow(row, ref),
+-        body: serialized,
+-        size_bytes: serialized.length,
++        ...projectionTextFields(serialized),
++        size_bytes: byteLength(serialized),
+       };
+     });
+   }
+   if (filePath.endsWith(".json")) {
+-    return [
+-      {
+-        path: rel,
+-        sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+-        content_type: deriveContentType(filePath),
+-        kind: toProjectionRowKind(filePath),
+-        source_refs: [toPosix(filePath)],
+-        body: pickProjectionPayload(content),
+-        size_bytes: content.length,
+-      },
+-    ];
++    return projectStructuredJsonRows(filePath, content);
+   }
+   if (filePath.endsWith(".md") || filePath.endsWith(".mdx")) {
+     return projectMarkdownRows(filePath, content);
+@@ -236,8 +294,8 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
+       content_type: deriveContentType(filePath),
+       kind: toProjectionRowKind(filePath),
+       source_refs: [toPosix(filePath)],
+-      body: pickProjectionPayload(content),
+-      size_bytes: content.length,
++      ...projectionTextFields(content),
++      size_bytes: byteLength(content),
+     },
+   ];
+ }
+diff --git a/packages/agentplane/src/context/reindex.ts b/packages/agentplane/src/context/reindex.ts
+index 9340ca2af..57f9ea33b 100644
+--- a/packages/agentplane/src/context/reindex.ts
++++ b/packages/agentplane/src/context/reindex.ts
+@@ -19,7 +19,7 @@ import {
+ } from "./reindex-projection.js";
+ import { readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
+ 
+-const PROJECTION_VERSION = 1;
++export const PROJECTION_VERSION = 2;
+ const MAX_LEGACY_JSON_PROJECTION_BYTES = 256 * 1024 * 1024;
+ 
+ type ProjectionIndex = {
+@@ -29,6 +29,10 @@ type ProjectionIndex = {
+     workspace_hash: string;
+     include_tasks: boolean;
+     include_raw: boolean;
++    source_bytes: number;
++    search_text_bytes: number;
++    preview_text_bytes: number;
++    projection_elapsed_ms: number;
+   };
+   rows: {
+     path: string;
+@@ -38,7 +42,8 @@ type ProjectionIndex = {
+     indexed_at: string;
+     size_bytes: number;
+     kind: string;
+-    body: string;
++    search_text: string;
++    preview_text: string;
+     source_refs?: string[];
+   }[];
+ };
+@@ -118,7 +123,9 @@ export async function cmdContextReindex(opts: {
+   }
+ 
+   const now = new Date().toISOString();
++  const projectionStartedAt = performance.now();
+   const rows: ProjectionSourceRow[] = [];
++  let sourceBytes = 0;
+   for (const rel of files) {
+     const abs = path.join(root, rel);
+     if (!(await fileExists(abs))) {
+@@ -136,6 +143,7 @@ export async function cmdContextReindex(opts: {
+       const text = await readText(abs);
+       const nextRows = projectRowsForFile(toPosix(rel), text);
+       rows.push(...nextRows);
++      sourceBytes += Buffer.byteLength(text, "utf8");
+     } catch {
+       // Skip unreadable files from projection to keep reindex resilient.
+       continue;
+@@ -149,6 +157,16 @@ export async function cmdContextReindex(opts: {
+       workspace_hash: defaultWorkspaceHash(root),
+       include_tasks: opts.parsed.includeTasks,
+       include_raw: opts.parsed.includeRaw,
++      source_bytes: sourceBytes,
++      search_text_bytes: rows.reduce(
++        (total, row) => total + Buffer.byteLength(row.search_text, "utf8"),
++        0,
++      ),
++      preview_text_bytes: rows.reduce(
++        (total, row) => total + Buffer.byteLength(row.preview_text, "utf8"),
++        0,
++      ),
++      projection_elapsed_ms: Math.round(performance.now() - projectionStartedAt),
+     },
+     rows: rows.map((row) => ({
+       ...row,
+@@ -162,6 +180,11 @@ export async function cmdContextReindex(opts: {
+ 
+   process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
+   process.stdout.write(infoMessage(`rows=${rows.length} files=${files.length}\n`));
++  process.stdout.write(
++    infoMessage(
++      `projection_metrics source_bytes=${payload.metadata.source_bytes} search_text_bytes=${payload.metadata.search_text_bytes} preview_text_bytes=${payload.metadata.preview_text_bytes} elapsed_ms=${payload.metadata.projection_elapsed_ms}`,
++    ) + "\n",
++  );
+   return 0;
+ }
+ 
+@@ -182,7 +205,11 @@ export async function readContextProjection(root: string): Promise<ProjectionInd
+ 
+   const sqliteProjection = await readSqliteProjection(pathIdentity.file_path).catch(() => null);
+   await assertContainedPathChainIdentityUnchanged(pathIdentity, "context projection cache");
+-  if (sqliteProjection) return sqliteProjection;
++  if (sqliteProjection) {
++    return sqliteProjection.metadata.projection_version === PROJECTION_VERSION
++      ? sqliteProjection
++      : null;
++  }
+ 
+   const expectedIdentity = pathIdentity.identities.at(-1);
+   if (!expectedIdentity) {
+diff --git a/packages/agentplane/src/context/sqlite.ts b/packages/agentplane/src/context/sqlite.ts
+index 40c14b7cd..22ac06ff3 100644
+--- a/packages/agentplane/src/context/sqlite.ts
++++ b/packages/agentplane/src/context/sqlite.ts
+@@ -12,7 +12,8 @@ type SqliteProjectionRow = {
+   indexed_at: string;
+   size_bytes: number;
+   kind: string;
+-  body: string;
++  search_text: string;
++  preview_text: string;
+   source_refs?: string[];
+ };
+ 
+@@ -23,6 +24,10 @@ type SqliteProjection = {
+     workspace_hash: string;
+     include_tasks: boolean;
+     include_raw: boolean;
++    source_bytes: number;
++    search_text_bytes: number;
++    preview_text_bytes: number;
++    projection_elapsed_ms: number;
+   };
+   rows: SqliteProjectionRow[];
+ };
+@@ -33,6 +38,10 @@ type SqliteProjectionMetadataRow = {
+   workspace_hash?: unknown;
+   include_tasks?: unknown;
+   include_raw?: unknown;
++  source_bytes?: unknown;
++  search_text_bytes?: unknown;
++  preview_text_bytes?: unknown;
++  projection_elapsed_ms?: unknown;
+ };
+ 
+ type SqliteProjectionRowRecord = {
+@@ -43,7 +52,8 @@ type SqliteProjectionRowRecord = {
+   indexed_at?: unknown;
+   size_bytes?: unknown;
+   kind?: unknown;
+-  body?: unknown;
++  search_text?: unknown;
++  preview_text?: unknown;
+   source_refs?: unknown;
+ };
+ 
+@@ -87,7 +97,11 @@ function resetContextProjectionSchema(db: SqliteDatabase): void {
+       generated_at TEXT NOT NULL,
+       workspace_hash TEXT NOT NULL,
+       include_tasks INTEGER NOT NULL,
+-      include_raw INTEGER NOT NULL
++      include_raw INTEGER NOT NULL,
++      source_bytes INTEGER NOT NULL,
++      search_text_bytes INTEGER NOT NULL,
++      preview_text_bytes INTEGER NOT NULL,
++      projection_elapsed_ms INTEGER NOT NULL
+     );
+     CREATE TABLE projection_rows (
+       path TEXT PRIMARY KEY,
+@@ -97,12 +111,13 @@ function resetContextProjectionSchema(db: SqliteDatabase): void {
+       indexed_at TEXT NOT NULL,
+       size_bytes INTEGER NOT NULL,
+       kind TEXT NOT NULL,
+-      body TEXT NOT NULL,
++      search_text TEXT NOT NULL,
++      preview_text TEXT NOT NULL,
+       source_refs TEXT NOT NULL
+     );
+     CREATE VIRTUAL TABLE projection_fts USING fts5(
+       path,
+-      body,
++      search_text,
+       content='projection_rows',
+       content_rowid='rowid'
+     );
+@@ -121,17 +136,21 @@ export async function writeSqliteProjection(
+     const transaction = db.transaction((payload: SqliteProjection) => {
+       resetContextProjectionSchema(db);
+       db.prepare(
+-        "INSERT INTO projection_metadata (projection_version, generated_at, workspace_hash, include_tasks, include_raw) VALUES (?, ?, ?, ?, ?)",
++        "INSERT INTO projection_metadata (projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+       ).run(
+         payload.metadata.projection_version,
+         payload.metadata.generated_at,
+         payload.metadata.workspace_hash,
+         payload.metadata.include_tasks ? 1 : 0,
+         payload.metadata.include_raw ? 1 : 0,
++        payload.metadata.source_bytes,
++        payload.metadata.search_text_bytes,
++        payload.metadata.preview_text_bytes,
++        payload.metadata.projection_elapsed_ms,
+       );
+ 
+       const insertRow = db.prepare(
+-        "INSERT INTO projection_rows (path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, body, source_refs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
++        "INSERT INTO projection_rows (path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, search_text, preview_text, source_refs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+       );
+       for (const row of payload.rows) {
+         insertRow.run(
+@@ -142,7 +161,8 @@ export async function writeSqliteProjection(
+           row.indexed_at,
+           row.size_bytes,
+           row.kind,
+-          row.body,
++          row.search_text,
++          row.preview_text,
+           refsToJson(row.source_refs),
+         );
+       }
+@@ -160,14 +180,14 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
+   try {
+     const metadata = db
+       .prepare(
+-        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw FROM projection_metadata LIMIT 1",
++        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms FROM projection_metadata LIMIT 1",
+       )
+       .get() as SqliteProjectionMetadataRow | undefined;
+     if (!metadata) return null;
+ 
+     const rows = db
+       .prepare(
+-        "SELECT path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, body, source_refs FROM projection_rows ORDER BY path",
++        "SELECT path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, search_text, preview_text, source_refs FROM projection_rows ORDER BY path",
+       )
+       .all() as SqliteProjectionRowRecord[];
+ 
+@@ -178,6 +198,10 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
+         workspace_hash: String(metadata.workspace_hash ?? ""),
+         include_tasks: Number(metadata.include_tasks ?? 0) === 1,
+         include_raw: Number(metadata.include_raw ?? 0) === 1,
++        source_bytes: Number(metadata.source_bytes ?? 0),
++        search_text_bytes: Number(metadata.search_text_bytes ?? 0),
++        preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
++        projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
+       },
+       rows: rows.map((row) => ({
+         path: String(row.path ?? ""),
+@@ -187,7 +211,8 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
+         indexed_at: String(row.indexed_at ?? ""),
+         size_bytes: Number(row.size_bytes ?? 0),
+         kind: String(row.kind ?? ""),
+-        body: String(row.body ?? ""),
++        search_text: String(row.search_text ?? ""),
++        preview_text: String(row.preview_text ?? ""),
+         source_refs: parseRefs(row.source_refs),
+       })),
+     };
