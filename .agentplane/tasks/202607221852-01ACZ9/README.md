@@ -4,7 +4,7 @@ title: "Serve bounded knowledge requests during agent episodes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -42,29 +42,28 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T14:29:19.615Z"
+  updated_at: "2026-07-30T14:38:55.030Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "18c2c4338849ebc61dccb31941bb847f2e9cbc2f"
+  evaluated_sha: "b05cb41623df33dd5f1883158af057dc808fcf0a"
   blueprint_digest: "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221852-01ACZ9/README.md"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/verification/20260730142753900-c44e92ceb733fa11.json"
-    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The response token budget counts only excerpt content, while returned references, omission receipts, run metadata, blocker text, and serialization overhead are excluded; therefore a response can exceed the declared token limit while reporting itself within budget."
+    - "Параллельные запросы одного запуска могут получить одинаковый номер раунда и независимо пройти лимит или проверку повторного нерешённого запроса."
 commit:
   hash: "35758465c6432d0503e12e56c6f31eb49cfb7604"
   message: "🚧 01ACZ9 task: serve bounded knowledge requests"
@@ -222,6 +221,9 @@ sections:
     - Observation: Bounded knowledge handler remains below the enforced 600-line runtime limit (578 lines); hotspot warning only.
       Impact: No current correctness gate is violated; future extraction may split the handler if its policy surface grows.
       Resolution: Keep RF-23 limited to provider-tool transport; do not widen this handler without a separate refactoring task.
+    - Observation: EVALUATOR found that concurrent requests could read the same audit history before a round was persisted.
+      Impact: Two requests could claim the same round, bypass a budget, or miss required escalation.
+      Resolution: Serialize audit reload, response calculation, and persistence by immutable work-order binding; concurrent runner coverage asserts rounds 1/2 and unresolved/escalated ordering across separate run directories.
 extensions:
   workflow_route_baseline:
     start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
@@ -356,6 +358,3 @@ DecisionContextRef:
 - Observation: Bounded knowledge handler remains below the enforced 600-line runtime limit (578 lines); hotspot warning only.
   Impact: No current correctness gate is violated; future extraction may split the handler if its policy surface grows.
   Resolution: Keep RF-23 limited to provider-tool transport; do not widen this handler without a separate refactoring task.
-- Observation: Independent review found global result truncation before task-context filtering, path-only digest rematerialization, and excerpt-only response budgeting.
-  Impact: Available scoped context could be denied, changed evidence could be returned under a stale work order, or metadata could push a response past its declared budget.
-  Resolution: Page FTS before response limiting, serve only original digest-bound references, and measure the complete sealed response before each inclusion; adversarial ranking, drift, six-candidate, and metadata-pressure tests cover these boundaries.
