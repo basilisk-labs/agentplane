@@ -22,12 +22,17 @@ RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, bl
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T10:59:23.993Z
+- Updated: 2026-07-30T10:59:50.919Z
 - Branch: task/202607221852-9T0RT3/build-deterministic-task-knowledge-retrieval
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/runner/usecases/agent-work-order-build.ts  |  34 +-
+ .../runner/usecases/agent-work-order-projection.ts |   2 +
+ .../usecases/agent-work-order.integration.test.ts  |  94 +++
+ .../src/runner/usecases/agent-work-order.ts        |   9 +
+ .../runner/usecases/task-knowledge-retrieval.ts    | 646 +++++++++++++++++++++
+ 5 files changed, 780 insertions(+), 5 deletions(-)
 ```
 
 </details>
