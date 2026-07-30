@@ -106,7 +106,7 @@ function isConcurrentRetirementError(error: unknown): boolean {
   );
 }
 
-async function waitForConcurrentResolutionRetirement(opts: {
+export async function waitForConcurrentResolutionRetirement(opts: {
   repository: RunnerRunRepository;
   git_root: string;
   workflow_dir: string;
