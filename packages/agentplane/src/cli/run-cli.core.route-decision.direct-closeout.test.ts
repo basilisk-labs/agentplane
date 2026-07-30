@@ -169,11 +169,17 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
-  it("routes verified direct tasks to closeout instead of rerunning them and drops them from active work", async () => {
+  it("routes verified direct tasks to an argv-safe closeout and drops them from active work", async () => {
     const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
+    await commitAll(root, "seed direct workflow config");
+    const { stdout: headOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const head = headOutput.trim();
 
     const taskId = await createBranchPrTask(root);
     await runCliSilent([
@@ -219,11 +225,39 @@ describe("runCli route decision direct closeout", () => {
       const parsed = JSON.parse(nextIo.stdout) as {
         route_oracle: { phase: string };
         next_action: { code: string; command: string | null; summary: string };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          exactArgv: string[] | null;
+        };
+        operator_guidance: {
+          canExecuteNow: boolean;
+          safeCommand: string | null;
+        };
       };
+      const expectedArgv = [
+        "agentplane",
+        "task",
+        "complete",
+        taskId,
+        "--result",
+        `verified-${taskId}`,
+        "--commit",
+        head,
+      ];
       expect(parsed.route_oracle.phase).toBe("direct_verified_pending_closeout");
       expect(parsed.next_action).toMatchObject({
         code: "complete_direct",
-        command: `agentplane task complete ${taskId} --result "<result>" --commit <hash>`,
+        command: expectedArgv.join(" "),
+      });
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: expectedArgv,
+      });
+      expect(parsed.operator_guidance).toMatchObject({
+        canExecuteNow: true,
+        safeCommand: expectedArgv.join(" "),
       });
       expect(parsed.next_action.summary).toContain("task complete");
       expect(parsed.next_action.summary).toContain("instead of rerunning execution");

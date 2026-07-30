@@ -151,9 +151,10 @@ export function deriveNextAction(opts: {
       opts.task.verification?.state === "ok" &&
       String(opts.task.status).toUpperCase() === "DOING"
     ) {
+      const commit = opts.task.commit?.hash ?? opts.resume.head_sha ?? "HEAD";
       return {
         code: "complete_direct",
-        command: `agentplane task complete ${id} --result "<result>" --commit <hash>`,
+        command: `agentplane task complete ${id} --result verified-${id} ` + `--commit ${commit}`,
         summary:
           "task is already verified in direct workflow; close it with task complete instead of rerunning execution",
         requiresApproval: false,
