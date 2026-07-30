@@ -134,10 +134,14 @@ function sourceRefsForJsonlRow(row: unknown, fallback: string): string[] {
   return refs.length > 0 ? [...new Set(refs)] : [fallback];
 }
 
-function projectMarkdownRows(filePath: string, content: string): ProjectionSourceRow[] {
+function projectMarkdownRows(
+  filePath: string,
+  content: string,
+  sourceSha256?: string,
+): ProjectionSourceRow[] {
   const rel = toPosix(filePath);
   const lines = content.split(/\r?\n/);
-  const fileSha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
+  const fileSha256 = sourceSha256 ?? `sha256:${createHash("sha256").update(content).digest("hex")}`;
   const nextSectionSlug = createMarkdownSectionSlugger();
   const rows: ProjectionSourceRow[] = [
     {
@@ -179,13 +183,17 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
   return rows;
 }
 
-function projectPlainTextRows(filePath: string, content: string): ProjectionSourceRow[] {
+function projectPlainTextRows(
+  filePath: string,
+  content: string,
+  sourceSha256?: string,
+): ProjectionSourceRow[] {
   const rel = toPosix(filePath);
   const lines = content.split(/\r?\n/);
   const rows: ProjectionSourceRow[] = [
     {
       path: rel,
-      sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+      sha256: sourceSha256 ?? `sha256:${createHash("sha256").update(content).digest("hex")}`,
       content_type: deriveContentType(filePath),
       kind: toProjectionRowKind(filePath),
       source_refs: [rel],
@@ -211,9 +219,13 @@ function projectPlainTextRows(filePath: string, content: string): ProjectionSour
   return rows;
 }
 
-function projectStructuredJsonRows(filePath: string, content: string): ProjectionSourceRow[] {
+function projectStructuredJsonRows(
+  filePath: string,
+  content: string,
+  sourceSha256?: string,
+): ProjectionSourceRow[] {
   const rel = toPosix(filePath);
-  const fileSha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
+  const fileSha256 = sourceSha256 ?? `sha256:${createHash("sha256").update(content).digest("hex")}`;
   const lines = content.split(/\r?\n/);
   const rows: ProjectionSourceRow[] = [
     {
@@ -244,7 +256,11 @@ function projectStructuredJsonRows(filePath: string, content: string): Projectio
   return rows;
 }
 
-export function projectRowsForFile(filePath: string, content: string): ProjectionSourceRow[] {
+export function projectRowsForFile(
+  filePath: string,
+  content: string,
+  sourceSha256?: string,
+): ProjectionSourceRow[] {
   const rel = toPosix(filePath);
   if (filePath.endsWith(".jsonl")) {
     const rows = parseJsonlLines(content);
@@ -253,7 +269,7 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
       return [
         {
           path: rel,
-          sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+          sha256: sourceSha256 ?? `sha256:${createHash("sha256").update(content).digest("hex")}`,
           content_type: deriveContentType(filePath),
           kind: "jsonl-file",
           source_refs: [toPosix(filePath)],
@@ -279,18 +295,18 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
     });
   }
   if (filePath.endsWith(".json")) {
-    return projectStructuredJsonRows(filePath, content);
+    return projectStructuredJsonRows(filePath, content, sourceSha256);
   }
   if (filePath.endsWith(".md") || filePath.endsWith(".mdx")) {
-    return projectMarkdownRows(filePath, content);
+    return projectMarkdownRows(filePath, content, sourceSha256);
   }
   if (deriveContentType(filePath) === "text/plain") {
-    return projectPlainTextRows(filePath, content);
+    return projectPlainTextRows(filePath, content, sourceSha256);
   }
   return [
     {
       path: rel,
-      sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+      sha256: sourceSha256 ?? `sha256:${createHash("sha256").update(content).digest("hex")}`,
       content_type: deriveContentType(filePath),
       kind: toProjectionRowKind(filePath),
       source_refs: [toPosix(filePath)],

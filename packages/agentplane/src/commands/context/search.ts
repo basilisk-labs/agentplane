@@ -2,7 +2,6 @@
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
 
 import { CliError } from "../../shared/errors.js";
 import {
@@ -14,7 +13,7 @@ import {
   scoreMatch,
   walkScopeFiles,
 } from "./context-utils.js";
-import { projectRowsForFile } from "../../context/reindex-projection.js";
+import { createProjectionFreshnessCache } from "../../context/search-freshness.js";
 import { searchContextProjection } from "./reindex.js";
 
 const MAX_FALLBACK_FILES = 200;
@@ -63,11 +62,12 @@ export async function cmdContextSearch(opts: {
     offset: 0,
   });
   const results: SearchResult[] = [];
+  const freshnessForRow = createProjectionFreshnessCache(root);
   let fallbackReason: string | null = indexed ? null : "missing_or_unreadable_index";
 
   if (indexed) {
     for (const row of indexed.rows) {
-      const freshness = await buildFreshness(root, row.path, row.sha256);
+      const freshness = await freshnessForRow(row.path, row.sha256);
       if (freshness.stale) {
         fallbackReason ??= "stale_projection_row";
         continue;
@@ -274,32 +274,6 @@ function scoreSearchText(text: string, query: string): number {
   if (tokens.length === 0) return 0;
   const matched = tokens.filter((token) => haystack.includes(token)).length;
   return Math.min(1, matched / tokens.length);
-}
-
-async function buildFreshness(
-  root: string,
-  rowPath: string,
-  projectionSha256: string,
-): Promise<{ projection_sha256: string; file_sha256: string | null; stale: boolean }> {
-  const base = rowPath.split("#", 1)[0];
-  const absolute = path.join(root, base);
-  try {
-    const st = await stat(absolute);
-    if (!st.isFile()) {
-      return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
-    }
-  } catch {
-    return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
-  }
-  const current = projectRowsForFile(
-    rowPath.split("#", 1)[0] ?? rowPath,
-    await readText(absolute),
-  ).find((row) => row.path === rowPath);
-  return {
-    projection_sha256: projectionSha256,
-    file_sha256: current?.sha256 ?? null,
-    stale: current?.sha256 !== projectionSha256,
-  };
 }
 
 async function calculateSha256(filePath: string): Promise<string> {
