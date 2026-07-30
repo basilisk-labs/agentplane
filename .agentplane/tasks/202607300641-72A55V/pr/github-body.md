@@ -15,8 +15,13 @@ Perform the dedicated incident review required by the release gate: preserve INC
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Archived RF-04 beta.1 provider mismatch faithfully; the active incident registry is clear and no
+provider retry or replacement was performed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

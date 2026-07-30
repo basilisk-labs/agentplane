@@ -6,14 +6,14 @@ Created: 2026-07-30T06:42:26.205Z
 
 - Task: `202607300641-72A55V`
 - Title: Archive the externally mitigated RF-04 provider mismatch incident
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider`
 - Canonical task record: `.agentplane/tasks/202607300641-72A55V/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Archived RF-04 beta.1 provider mismatch faithfully; the active incident registry is clear and no provider retry or replacement was performed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

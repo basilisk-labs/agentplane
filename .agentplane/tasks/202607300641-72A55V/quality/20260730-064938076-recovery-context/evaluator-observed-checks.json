@@ -1,0 +1,23 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "agentplane doctor",
+    "node .agentplane/policy/check-routing.mjs",
+    "node scripts/check-release-incidents.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T06:49:19.303Z",
+    "updated_by": "TESTER",
+    "note": "Archived RF-04 beta.1 provider mismatch faithfully; the active incident registry is clear and no provider retry or replacement was performed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

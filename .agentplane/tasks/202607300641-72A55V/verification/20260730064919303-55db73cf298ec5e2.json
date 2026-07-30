@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:55db73cf298ec5e283e6d3dd12b1900557f1709842a402c651f41481a1dd972e",
+  "implementation_sha": "7a0e4e1a6978b3f4880782b5904c7a3b8ce1e661",
+  "kind": "task_verification_record",
+  "note": "Archived RF-04 beta.1 provider mismatch faithfully; the active incident registry is clear and no provider retry or replacement was performed.",
+  "recorded_at": "2026-07-30T06:49:19.303Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Inspect INC-20260730-01 and CR9VTJ qualification evidence. Expected: the archive records the original CODEX_VERSION_MISMATCH, the explicit do_not_publish decision, and live_provider_measurement=not_run_by_packet_builder; it does not claim a successful rerun.\n2. Inspect docs/developer/incident-archive.mdx and .agentplane/policy/incidents.md. Expected: INC-20260730-01 appears exactly once in the archive with state=archived, an externally-mitigated disposition, source-task evidence, and a condition to reopen if future capture is attempted outside a pinned environment; it is absent from the active registry.\n3. Run node scripts/check-release-incidents.mjs. Expected: the active release-incident gate passes.\n4. Run node .agentplane/policy/check-routing.mjs and agentplane doctor. Expected: policy routing and workflow health pass; historical warnings, if any, are documented outside this task.\n5. Run git diff --check and record verification. Expected: only the archive, active registry, and this task artifacts changed; no provider run, package release, or product-code change occurred.",
+  "scope_digest": "sha256:9801fd78fc8aa061d024ed46b0505f0c4baa259acebc365519eb41893c90d65e",
+  "task_id": "202607300641-72A55V",
+  "verification_command": "agentplane verify 202607300641-72A55V --ok --by TESTER",
+  "verifier": "TESTER"
+}

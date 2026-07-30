@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300641-72A55V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T06:49:38.175Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "7a0e4e1a6978b3f4880782b5904c7a3b8ce1e661",
+  "blueprint_digest": "8a59ed2a88cfc82bdd9f50f4dd02154046019cf373c51cc88f02557ffd921e93",
+  "findings": [
+    "The root active registry is clear; the archive contains source, successor, disposition, enforcement, and reopen condition. Package mirror synchronization is an intentional, separately scoped code successor rather than a silent docs-task bypass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300641-72A55V/quality/20260730-064938076-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

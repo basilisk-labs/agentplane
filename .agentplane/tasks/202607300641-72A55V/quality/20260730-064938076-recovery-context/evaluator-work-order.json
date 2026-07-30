@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300641-72A55V-280f4962bc5a7c284e07eb70",
+  "prepared_at": "2026-07-30T06:49:38.076Z",
+  "task": {
+    "id": "202607300641-72A55V",
+    "revision": 7,
+    "objective": "Archive the externally mitigated RF-04 provider mismatch incident\n\nPerform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.",
+    "acceptance_criteria": [
+      "agentplane doctor",
+      "node .agentplane/policy/check-routing.mjs",
+      "node scripts/check-release-incidents.mjs",
+      "- In scope: Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.\n- Out of scope: unrelated refactors not required for \"Archive the externally mitigated RF-04 provider mismatch incident\".",
+      "1. Curate the final disposition of INC-20260730-01 from its original external provider precondition failure and the merged CR9VTJ no-publication decision. 2. Add a complete historical archive entry with the original failure, source evidence, user-approved no-retry boundary, residual condition, and explicit externally mitigated (not provider-resolved) status. 3. Remove only that entry from the active incident registry after the archival evidence is present. 4. Run the release-incident gate, policy routing, doctor, and diff hygiene checks. 5. Record verification and independent evaluator review, then integrate through the normal branch_pr route.",
+      "1. Inspect INC-20260730-01 and CR9VTJ qualification evidence. Expected: the archive records the original CODEX_VERSION_MISMATCH, the explicit do_not_publish decision, and live_provider_measurement=not_run_by_packet_builder; it does not claim a successful rerun.\n2. Inspect docs/developer/incident-archive.mdx and .agentplane/policy/incidents.md. Expected: INC-20260730-01 appears exactly once in the archive with state=archived, an externally-mitigated disposition, source-task evidence, and a condition to reopen if future capture is attempted outside a pinned environment; it is absent from the active registry.\n3. Run node scripts/check-release-incidents.mjs. Expected: the active release-incident gate passes.\n4. Run node .agentplane/policy/check-routing.mjs and agentplane doctor. Expected: policy routing and workflow health pass; historical warnings, if any, are documented outside this task.\n5. Run git diff --check and record verification. Expected: only the archive, active registry, and this task artifacts changed; no provider run, package release, or product-code change occurred."
+    ]
+  },
+  "evaluated_sha": "7a0e4e1a6978b3f4880782b5904c7a3b8ce1e661",
+  "diff_base_sha": "951374ef0854d7bccd57361e6be7ec6ddededa6d",
+  "blueprint_digest": "8a59ed2a88cfc82bdd9f50f4dd02154046019cf373c51cc88f02557ffd921e93",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300641-72A55V/README.md",
+      "sha256": "sha256:34f66dfb9b456485ee8bf6dd306eeedfce724898e1d5d25a7d9913abd7030fb8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300641-72A55V/quality/20260730-064938076-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:94e374d6870e9a66008f041b866c15c14c5ef4eab1cb66036e20d746e6145d5c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300641-72A55V/quality/20260730-064938076-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:41dba427b7e2ca2d683b4df51693086daf5ebb9eedeb54d116ee22b29c28af39",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300641-72A55V/quality/20260730-064938076-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d93b6283bf8667d2b980b304b64ae4ef2cd44beccce607af56698155cf8ef4a4",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

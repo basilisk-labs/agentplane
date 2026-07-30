@@ -1,0 +1,681 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 0ed2f6e74..3499a0898 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260730-01 | date: 2026-07-30 | scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | match: benchmark, milestone-beta1, performance, quality, rf-04, v0.7, implement, candidate, sha, measurement, route, that, records, actual, token, latency | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition. | advice: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify. | rule: Analogous Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607292104-W03KZ0; commit c6a10db56506 | enforcement: manual | fixability: external | state: open
+diff --git a/.agentplane/tasks/202607300641-72A55V/README.md b/.agentplane/tasks/202607300641-72A55V/README.md
+new file mode 100644
+index 000000000..4c3b50154
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/README.md
+@@ -0,0 +1,115 @@
++---
++id: "202607300641-72A55V"
++title: "Archive the externally mitigated RF-04 provider mismatch incident"
++status: "DOING"
++priority: "high"
++owner: "CURATOR"
++revision: 5
++origin:
++  system: "manual"
++depends_on:
++  - "202607300553-CR9VTJ"
++tags:
++  - "docs"
++  - "incidents"
++  - "milestone-beta1"
++  - "release"
++  - "rf-04"
++  - "v0.7"
++task_kind: "docs"
++mutation_scope: "docs"
++blueprint_request: "docs.change"
++verify:
++  - "agentplane doctor"
++  - "node .agentplane/policy/check-routing.mjs"
++  - "node scripts/check-release-incidents.mjs"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T06:41:54.009Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Approved under the user's standing authorization to continue the 0.7 refactor and clear release blockers without repeated permission prompts."
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "CURATOR"
++    body: "Start: curate the RF-04 provider mismatch incident as externally mitigated by the merged non-publication decision without repeating a provider capture."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T06:41:54.575Z"
++    author: "CURATOR"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: curate the RF-04 provider mismatch incident as externally mitigated by the merged non-publication decision without repeating a provider capture."
++doc_version: 3
++doc_updated_at: "2026-07-30T06:41:54.575Z"
++doc_updated_by: "CURATOR"
++description: "Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect."
++sections:
++  Summary: |-
++    Archive the externally mitigated RF-04 provider mismatch incident
++
++    Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.
++  Scope: |-
++    - In scope: Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.
++    - Out of scope: unrelated refactors not required for "Archive the externally mitigated RF-04 provider mismatch incident".
++  Plan: "1. Curate the final disposition of INC-20260730-01 from its original external provider precondition failure and the merged CR9VTJ no-publication decision. 2. Add a complete historical archive entry with the original failure, source evidence, user-approved no-retry boundary, residual condition, and explicit externally mitigated (not provider-resolved) status. 3. Remove only that entry from the active incident registry after the archival evidence is present. 4. Run the release-incident gate, policy routing, doctor, and diff hygiene checks. 5. Record verification and independent evaluator review, then integrate through the normal branch_pr route."
++  Verify Steps: |-
++    1. Inspect INC-20260730-01 and CR9VTJ qualification evidence. Expected: the archive records the original CODEX_VERSION_MISMATCH, the explicit do_not_publish decision, and live_provider_measurement=not_run_by_packet_builder; it does not claim a successful rerun.
++    2. Inspect docs/developer/incident-archive.mdx and .agentplane/policy/incidents.md. Expected: INC-20260730-01 appears exactly once in the archive with state=archived, an externally-mitigated disposition, source-task evidence, and a condition to reopen if future capture is attempted outside a pinned environment; it is absent from the active registry.
++    3. Run node scripts/check-release-incidents.mjs. Expected: the active release-incident gate passes.
++    4. Run node .agentplane/policy/check-routing.mjs and agentplane doctor. Expected: policy routing and workflow health pass; historical warnings, if any, are documented outside this task.
++    5. Run git diff --check and record verification. Expected: only the archive, active registry, and this task artifacts changed; no provider run, package release, or product-code change occurred.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "951374ef0854d7bccd57361e6be7ec6ddededa6d"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Archive the externally mitigated RF-04 provider mismatch incident
++
++Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.
++
++## Scope
++
++- In scope: Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.
++- Out of scope: unrelated refactors not required for "Archive the externally mitigated RF-04 provider mismatch incident".
++
++## Plan
++
++1. Curate the final disposition of INC-20260730-01 from its original external provider precondition failure and the merged CR9VTJ no-publication decision. 2. Add a complete historical archive entry with the original failure, source evidence, user-approved no-retry boundary, residual condition, and explicit externally mitigated (not provider-resolved) status. 3. Remove only that entry from the active incident registry after the archival evidence is present. 4. Run the release-incident gate, policy routing, doctor, and diff hygiene checks. 5. Record verification and independent evaluator review, then integrate through the normal branch_pr route.
++
++## Verify Steps
++
++1. Inspect INC-20260730-01 and CR9VTJ qualification evidence. Expected: the archive records the original CODEX_VERSION_MISMATCH, the explicit do_not_publish decision, and live_provider_measurement=not_run_by_packet_builder; it does not claim a successful rerun.
++2. Inspect docs/developer/incident-archive.mdx and .agentplane/policy/incidents.md. Expected: INC-20260730-01 appears exactly once in the archive with state=archived, an externally-mitigated disposition, source-task evidence, and a condition to reopen if future capture is attempted outside a pinned environment; it is absent from the active registry.
++3. Run node scripts/check-release-incidents.mjs. Expected: the active release-incident gate passes.
++4. Run node .agentplane/policy/check-routing.mjs and agentplane doctor. Expected: policy routing and workflow health pass; historical warnings, if any, are documented outside this task.
++5. Run git diff --check and record verification. Expected: only the archive, active registry, and this task artifacts changed; no provider run, package release, or product-code change occurred.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300641-72A55V/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300641-72A55V/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..16c5a9615
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/blueprint/resolved-snapshot.json
+@@ -0,0 +1,407 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300641-72A55V",
++    "title": "Archive the externally mitigated RF-04 provider mismatch incident",
++    "description": "Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.",
++    "tags": [
++      "docs",
++      "incidents",
++      "milestone-beta1",
++      "release",
++      "rf-04",
++      "v0.7"
++    ],
++    "owner": "CURATOR",
++    "taskKind": "docs",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "docs",
++    "mutationScope": "docs",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "docs.change"
++  },
++  "selectedBlueprint": {
++    "id": "docs.change",
++    "version": 1,
++    "title": "Documentation change",
++    "taskKinds": [
++      "docs"
++    ],
++    "workflowModes": [
++      "direct",
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "docs.change",
++    "blueprintVersion": 1,
++    "title": "Documentation change",
++    "taskId": "202607300641-72A55V",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "docs",
++      "mutationScope": "docs",
++      "blueprintRequest": "docs.change"
++    },
++    "whySelected": [
++      "explicit blueprint requested: docs.change",
++      "task intent kind: docs",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: docs"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.docs.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "docs.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed documentation paths."
++      },
++      {
++        "id": "docs.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Documentation checks."
++      },
++      {
++        "id": "docs.artifact",
++        "kind": "artifact",
++        "producedBy": "artifact_write",
++        "required": true,
++        "description": "Updated documentation artifact."
++      },
++      {
++        "id": "docs.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/dod.docs.md",
++      ".agentplane/policy/security.must.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "documentation checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 3,
++      "maxPromptBlocks": 10,
++      "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.docs.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "docs.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed documentation paths."
++    },
++    {
++      "id": "docs.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Documentation checks."
++    },
++    {
++      "id": "docs.artifact",
++      "kind": "artifact",
++      "producedBy": "artifact_write",
++      "required": true,
++      "description": "Updated documentation artifact."
++    },
++    {
++      "id": "docs.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/dod.docs.md",
++    ".agentplane/policy/security.must.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "documentation checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 3,
++    "maxPromptBlocks": 10,
++    "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: docs.change",
++    "task intent kind: docs",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: docs"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "8a59ed2a88cfc82bdd9f50f4dd02154046019cf373c51cc88f02557ffd921e93"
++  }
++}
+diff --git a/.agentplane/tasks/202607300641-72A55V/pr/diffstat.txt b/.agentplane/tasks/202607300641-72A55V/pr/diffstat.txt
+new file mode 100644
+index 000000000..1162b7ac9
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .agentplane/policy/incidents.md     | 1 -
++ docs/developer/incident-archive.mdx | 4 ++++
++ 2 files changed, 4 insertions(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607300641-72A55V/pr/github-body.md b/.agentplane/tasks/202607300641-72A55V/pr/github-body.md
+new file mode 100644
+index 000000000..45fdcad63
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/pr/github-body.md
+@@ -0,0 +1,35 @@
++Task: `202607300641-72A55V`
++Title: Archive the externally mitigated RF-04 provider mismatch incident
++Canonical task record: `.agentplane/tasks/202607300641-72A55V/README.md`
++
++## Summary
++
++Archive the externally mitigated RF-04 provider mismatch incident
++
++Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.
++
++## Scope
++
++- In scope: Perform the dedicated incident review required by the release gate: preserve INC-20260730-01 in the historical archive with its failed capture, the user-approved no-retry constraint, and CR9VTJ do_not_publish evidence; remove it from the active registry only as externally mitigated, not as a successful measurement or resolved provider defect.
++- Out of scope: unrelated refactors not required for "Archive the externally mitigated RF-04 provider mismatch incident".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T06:42:31.242Z
++- Branch: task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/policy/incidents.md     | 1 -
++ docs/developer/incident-archive.mdx | 4 ++++
++ 2 files changed, 4 insertions(+), 1 deletion(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300641-72A55V/pr/github-title.txt b/.agentplane/tasks/202607300641-72A55V/pr/github-title.txt
+new file mode 100644
+index 000000000..f3c1a243c
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 72A55V task: Archive the externally mitigated RF-04 provider mismatch incident [202607300641-72A55V]
+diff --git a/.agentplane/tasks/202607300641-72A55V/pr/meta.json b/.agentplane/tasks/202607300641-72A55V/pr/meta.json
+new file mode 100644
+index 000000000..c517a58a2
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider",
++  "created_at": "2026-07-30T06:42:26.205Z",
++  "diffstat_sha256": "sha256:7c465e3e8b1adc4f4dbad155c2907f852675bc21d737d7de82390819d9317115",
++  "last_verified_at": null,
++  "pr_number": 4683,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4683",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300641-72A55V",
++  "updated_at": "2026-07-30T06:42:31.242Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300641-72A55V/pr/review.md b/.agentplane/tasks/202607300641-72A55V/pr/review.md
+new file mode 100644
+index 000000000..815aa7745
+--- /dev/null
++++ b/.agentplane/tasks/202607300641-72A55V/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-07-30T06:42:26.205Z
++
++## Task
++
++- Task: `202607300641-72A55V`
++- Title: Archive the externally mitigated RF-04 provider mismatch incident
++- Status: DOING
++- Branch: `task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider`
++- Canonical task record: `.agentplane/tasks/202607300641-72A55V/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T06:42:31.242Z
++- Branch: task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/policy/incidents.md     | 1 -
++ docs/developer/incident-archive.mdx | 4 ++++
++ 2 files changed, 4 insertions(+), 1 deletion(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index 7200dee18..53e9c9a8b 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,10 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-07-30 RF-04 Beta.1 Provider Mismatch Disposition
++
++- id: INC-20260730-01 | date: 2026-07-30 | scope: Candidate-SHA RF-04 measurement for the beta.1 product SHA. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic `RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH` precondition. | advice: A future RF-04 capture must be preceded by a new incident review and use the pinned provider CLI environment before any provider episode; it must materialize a fresh candidate measurement and re-verify. | evidence: source task `202607292104-W03KZ0`, commit `c6a10db56506`; successor task `202607300553-CR9VTJ`, PR [#4681](https://github.com/basilisk-labs/agentplane/pull/4681), merged `bc873942fc1487a828cdc2705bc1220b2bda14ce`; its frozen qualification packet retained the original 50-run/55-provider-episode evidence, recorded `qualification_decision=do_not_publish` and `live_provider_measurement=not_run_by_packet_builder`, and made no provider retry or replacement capture. | enforcement: release-incident gate plus explicit incident review before any future capture | fixability: external | state: archived | archived_by: task `202607300641-72A55V` | archive_reason: externally mitigated for the closed beta.1 decision, not provider-resolved. The failed capture cannot characterize current product metrics, and the current-main successor explicitly chose `do_not_publish`; no active operator follow-up remains for that non-publication decision. Reopen as an active incident before any future RF-04 capture outside a pinned provider environment.
++
+ ## 2026-07-28 Task Episode Incident Reconciliation
+ 
+ - id: INC-20260727-01 | date: 2026-07-27 | scope: immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. | tags: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor | match: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor, immutable, identity, state, metadata, semantic, narrative, blueprint, selected | failure: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (`tasks.doc.required_sections`) as the structural authority. | advice: Keep RF-21 narrow: record the source as `task_document_schema`, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task. | rule: Analogous immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets work MUST review and apply the recorded external incident advice before retrying. | evidence: source task `202607221850-9C9WBP`; PR [#4647](https://github.com/basilisk-labs/agentplane/pull/4647) merged `2d6582e7f017820668cbbbbe90c211e360e47394`; current main `78b62230d`; reconciliation task `202607280107-BPZFPF` reran `bun test packages/agentplane/src/runner/context/task-context.test.ts` (6 pass, 0 fail, 32 assertions), `node .agentplane/policy/check-routing.mjs` (pass), and `agentplane doctor` (pass; two unrelated historical missing-commit warnings remain). The shipped code declares `section_policy.source = "task_document_schema"`, records `required_section_unavailable`, and rejects an oversized required section with `task_episode_required_section_exceeds_budget`; the regression suite covers localized structural headings. | enforcement: TaskEpisodeView implementation plus focused regression test and release-incident gate | fixability: repo-fixable | state: archived | archived_by: task `202607280107-BPZFPF` | archive_reason: the original RF-21 fix is merged, its section-authority and loss-prevention contract was reconfirmed on current main, and no active operator follow-up remains. Semantic role/heading policy is intentionally deferred to a separate context-policy task.
