@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -54,8 +54,8 @@ quality_review:
     - "The reference describes the superseded outcome, extends the status choices, and documents the successor-task flag required for that outcome."
     - "docs:cli:check regenerated the same reference from the current compiled CLI, so the documentation is source-derived rather than manually paraphrased."
 commit:
-  hash: "9840fe49865ee220d7185e65b1d7a73d60d379a5"
-  message: "🧩 Y61ZHN task: record superseded conflict outcomes"
+  hash: "8b25b6a2fc417cce9aff9c2575577cd014877d4e"
+  message: "🧪 Y61ZHN task: record refreshed quality review"
 comments:
   -
     author: "CODER"
@@ -66,6 +66,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -94,8 +97,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T22:15:45.732Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T22:08:05.933Z"
+doc_updated_at: "2026-07-30T22:15:45.733Z"
 doc_updated_by: "CODER"
 description: "Add a terminal superseded outcome for a semantic provider-conflict resolution. An agent may decide that a stale PR must not merge because a successor task owns the current-main decision; the CLI must validate and record that outcome without falsely marking the task integrated, and must unblock the integration queue."
 sections:
@@ -149,6 +159,9 @@ sections:
       Impact: Closed stale provider conflicts can be terminally superseded without being represented as integrated or blocking active queue work.
       Resolution: Current-base BLOCKED task, current closed provider PR, DONE successor, and rework queue entry are all required before the terminal outcome is recorded.
 extensions:
+  implementation_commit:
+    hash: "9f7d0fca4b2d79e3247907cae37b4ce935a1ad3e"
+    message: "📚 Y61ZHN task: refresh CLI reference"
   workflow_route_baseline:
     start_head_sha: "ac63ebe31bf54d8bb088669beb0dabb79fc31ad4"
     version: 1
