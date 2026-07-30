@@ -22,12 +22,13 @@ Replace the only active beta.2 implementation dependency that still points to th
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T06:29:16.369Z
+- Updated: 2026-07-30T06:29:20.783Z
 - Branch: task/202607300627-SFQ30G/repair-the-active-beta-2-dependency-path-after-b
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607221852-J910P6/README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
 </details>
