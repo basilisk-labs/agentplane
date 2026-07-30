@@ -2,10 +2,10 @@
 id: "202607300246-Q3RDCW"
 title: "Fix diverged-head recovery upstream binding"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: backport the deterministic concurrent-retirement integration test already merged in F7, because F6 hosted CI failed only on the prior scheduler-dependent test."
 events:
   -
     type: "status"
@@ -142,8 +145,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T04:48:35.406Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: backport the deterministic concurrent-retirement integration test already merged in F7, because F6 hosted CI failed only on the prior scheduler-dependent test."
 doc_version: 3
-doc_updated_at: "2026-07-30T04:03:55.447Z"
+doc_updated_at: "2026-07-30T04:48:35.406Z"
 doc_updated_by: "CODER"
 description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
 sections:

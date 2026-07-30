@@ -3,5 +3,6 @@
  .../src/cli/run-cli.core.route-decision.test.ts    | 78 +++++++++++++----
  .../commands/pr/conflict-rework-recovery.test.ts   | 58 ++++++++++---
  .../src/commands/pr/conflict-rework-recovery.ts    |  8 +-
+ .../usecases/task-run-effect-resolution.test.ts    | 63 +++++++++-----
  packages/testkit/src/cli-harness.ts                | 56 +++++++++++-
- 6 files changed, 247 insertions(+), 75 deletions(-)
+ 7 files changed, 291 insertions(+), 94 deletions(-)

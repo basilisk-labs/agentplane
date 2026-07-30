@@ -19,6 +19,10 @@ import {
   staleClaim,
   writeActiveClaim,
 } from "./task-run-active-claim.testkit.js";
+import {
+  acquireTaskRunnerActiveClaimRecoveryLease,
+  releaseTaskRunnerActiveClaimRecoveryLease,
+} from "./task-run-active-claim-recovery-lease.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
 import {
   acceptLegacyTaskRunnerEffect,
@@ -217,39 +221,60 @@ describe("task runner effect resolution", () => {
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
-  it("retries an unstable active-claim observation while a concurrent resolution retires it", async () => {
+  it("waits through a concurrent active-claim retirement", async () => {
     const fixture = await uncertainEffectFixture();
+    const input = resolutionInput(fixture);
+    const acquisition = await acquireTaskRunnerActiveClaimRecoveryLease({
+      git_root: fixture.root,
+      workflow_dir: fixture.ctx.config.paths.workflow_dir,
+      task_id: fixture.taskId,
+      target_generation: fixture.claim.generation,
+    });
+    expect(acquisition.status).toBe("acquired");
+    if (acquisition.status !== "acquired") {
+      throw new Error("Expected to hold the active-claim recovery lease.");
+    }
     const originalRead = stableFile.readStableRegularTextNoFollow;
-    let collisionInjected = false;
-    let retirementWaitReads = 0;
+    let activeClaimReads = 0;
+    let signalWaitStarted!: () => void;
+    const waitStarted = new Promise<void>((resolve) => {
+      signalWaitStarted = resolve;
+    });
     const readSpy = vi
       .spyOn(stableFile, "readStableRegularTextNoFollow")
       .mockImplementation(async (...args) => {
-        const isRetirementWaitRead =
-          args[1] === "runner active claim" &&
-          new Error("capture retirement wait stack").stack?.includes(
-            "waitForConcurrentResolutionRetirement",
-          );
+        const isRetirementWaitRead = args[1] === "runner active claim";
         if (isRetirementWaitRead) {
-          retirementWaitReads += 1;
-          if (!collisionInjected) {
-            collisionInjected = true;
-            throw new Error(`runner active claim path changed before it could be read: ${args[0]}`);
-          }
+          activeClaimReads += 1;
+          if (activeClaimReads === 2) signalWaitStarted();
         }
         return await originalRead(...args);
       });
 
     try {
-      const input = resolutionInput(fixture);
-      const resolutions = await Promise.all([
-        resolveTaskRunnerEffect(input),
+      const waitingResolution = resolveTaskRunnerEffect(input);
+      await waitStarted;
+      await releaseTaskRunnerActiveClaimRecoveryLease({
+        lease: acquisition.lease,
+        succeeded: false,
+      });
+      const [waiting, completing] = await Promise.all([
+        waitingResolution,
         resolveTaskRunnerEffect(input),
       ]);
 
-      expect(resolutions[0].resolution.digest).toBe(resolutions[1].resolution.digest);
-      expect(collisionInjected).toBe(true);
-      expect(retirementWaitReads).toBeGreaterThanOrEqual(2);
+      expect(activeClaimReads).toBeGreaterThanOrEqual(2);
+      expect(waiting.resolution.digest).toBe(completing.resolution.digest);
+      expect(waiting.claim_retirement).toBe("absent");
+      expect(completing.claim_retirement).toBe("retired");
+      await expect(
+        readTaskRunnerActiveClaim({
+          git_root: fixture.root,
+          workflow_dir: fixture.ctx.config.paths.workflow_dir,
+          task_id: fixture.taskId,
+          run_id: fixture.prepared.invocation.run_id,
+        }),
+      ).resolves.toBeNull();
     } finally {
       readSpy.mockRestore();
     }
