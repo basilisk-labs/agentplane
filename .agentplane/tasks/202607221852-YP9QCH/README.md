@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
     - "The payment candidate assertions still verify exact label, graph, page-family, structured-alias, and deterministic artifact behavior through typed fields."
     - "The test-size repair remains within the existing hotspot baseline and keeps all scenarios intact."
 commit:
-  hash: "c0dc433be858dfbc236877fabe9ccbf6ac308b82"
-  message: "🔎 YP9QCH task: review hotspot-budget repair"
+  hash: "2108ec8bfc99c42db9427e4d853ad2e6c465de66"
+  message: "🔎 YP9QCH task: review static-safe repair"
 comments:
   -
     author: "CODER"
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -198,8 +201,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T10:42:37.322Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:32:15.588Z"
+doc_updated_at: "2026-07-30T10:42:37.327Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
@@ -409,8 +419,8 @@ sections:
       Resolution: Updated only the v0.7 reviewed candidate, strict ratchet checker, and candidate pin test.
 extensions:
   implementation_commit:
-    hash: "17f175b15631e5bc6752857cd210f9bb0d42c775"
-    message: "🧪 YP9QCH task: keep context tests within hotspot budget"
+    hash: "7907943618d4a791d53305102b39b412ccab9ce1"
+    message: "🧪 YP9QCH task: make context tests static-safe"
   workflow_route_baseline:
     start_head_sha: "e9f2cbe94440b925b16f04da815cd21628812161"
     version: 1

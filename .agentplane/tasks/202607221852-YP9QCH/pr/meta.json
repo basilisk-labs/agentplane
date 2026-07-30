@@ -8,10 +8,10 @@
   "pr_number": 4688,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4688",
   "pre_merge_closure": {
-    "basis_commit": "c0dc433be858dfbc236877fabe9ccbf6ac308b82",
+    "basis_commit": "2108ec8bfc99c42db9427e4d853ad2e6c465de66",
     "branch": "task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can",
     "pr_number": 4688,
-    "recorded_at": "2026-07-30T10:32:15.775Z",
+    "recorded_at": "2026-07-30T10:42:37.493Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
