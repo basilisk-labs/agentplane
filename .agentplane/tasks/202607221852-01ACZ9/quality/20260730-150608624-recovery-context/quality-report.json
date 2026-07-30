@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-01ACZ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T15:07:26.505Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "findings": [
+    "Замороженные результаты проверок относятся к SHA 0502c0cfaac823d0f527854b91e83e18dde76adc, тогда как оценке подлежит SHA 321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a; исправление блокировки и связанные конкурентные изменения не имеют актуального детерминированного подтверждения."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-150608624-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221852-01ACZ9/README.md",
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-150608624-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Нет зафиксированного запуска bun run schemas:check, bun run test:critical и bun run typecheck на evaluated_sha 321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a.",
+    "Нет зафиксированного запуска целевых тестов блокировки и конкурентного резервирования раундов на evaluated_sha 321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что результаты проверок на SHA 0502c0cfaac823d0f527854b91e83e18dde76adc остаются применимыми после изменений до SHA 321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a; это не доказано замороженными данными."
+  ],
+  "residual_risks": [
+    "Повторно выполните обязательные проверки и целевые конкурентные тесты на evaluated_sha 321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a, затем подготовьте новый замороженный пакет с результатами, явно привязанными к этому SHA."
+  ]
+}

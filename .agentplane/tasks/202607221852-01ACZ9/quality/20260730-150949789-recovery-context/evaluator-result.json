@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "Implementation and frozen verification evidence cover the bounded knowledge-request contract, including digest binding, authorization boundaries, response and round budgets, repeated-gap escalation, and concurrent reservation behavior.",
+      "broken_invariant": "None; the reviewed implementation satisfies the task contract and relevant recovery/concurrency invariants.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-150949789-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3ed74a1005e659b3589fbff81b8c7b5032bb9a35a7177e9693cec0d65ef8614c"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/verification/20260730150932150-7a2193a0c01617b5.json",
+          "sha256": "sha256:1efbfc30f88b552c15c6e9584f9e2d9b135eb55bd86c6c79f5bdb3d3947a86bd"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

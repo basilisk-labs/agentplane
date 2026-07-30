@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-01ACZ9-c84a53b79681643629002d7f",
+  "prepared_at": "2026-07-30T15:09:49.789Z",
+  "task": {
+    "id": "202607221852-01ACZ9",
+    "revision": 20,
+    "objective": "Serve bounded knowledge requests during agent episodes\n\nRF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps.",
+    "acceptance_criteria": [
+      "bun run schemas:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: KnowledgeRequest schema, run-bound audit, deterministic retrieval response, verified refs/excerpts, round/token budgets, blocking semantics, dedupe, repeated-unresolved escalation, and role-specific policy.\n- Out of scope: exposing unrestricted repository/lifecycle access or naming the contract ContextGapRequest.",
+      "1. Define versioned request/response contracts and role policy.\n2. Bind requests to run/work-order identity, fingerprint, authority, rounds, and token budget.\n3. Execute deterministic retrieval with optional policy-gated escalation.\n4. Return verified refs/excerpts plus missing/omitted receipt.\n5. Convert repeated unresolved blocking requests into a typed blocker/human escalation.",
+      "1. Submit valid executor and evaluator requests. Expected: scoped digest-valid refs/excerpts and a complete run audit.\n2. Exceed round/token budget or request a forbidden scope. Expected: typed denial without broader repository authority.\n3. Repeat an unresolved blocking request. Expected: deduplicated evidence followed by blocker/escalation, not an infinite loop.\n4. Tamper with work-order id, fingerprint, or returned digest. Expected: validation rejects the request/response.\n5. Run schema, runner, and retrieval tests."
+    ]
+  },
+  "evaluated_sha": "321c7d0d9c3c9cc45da0fa1f75e7b374fcc13f5a",
+  "diff_base_sha": "1432ec85ec7ff015df754622d2c8e452930461ca",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-01ACZ9/README.md",
+      "sha256": "sha256:de12fe1bfa7a9ac48621b1d226758337fd00a6b0b926c25215fe2e08e77fdd33",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-150949789-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:3ed74a1005e659b3589fbff81b8c7b5032bb9a35a7177e9693cec0d65ef8614c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-150949789-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:09903f362b9905ef3a742aef3858404ff133e9ba9d6303ec85d9440b1116b178",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221852-01ACZ9/verification/20260730150932150-7a2193a0c01617b5.json",
+      "sha256": "sha256:1efbfc30f88b552c15c6e9584f9e2d9b135eb55bd86c6c79f5bdb3d3947a86bd",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-150949789-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d040b0f1e15f2945c253b2e48eb55f793a3c6412e7acd9300b626a97d598dcc9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
