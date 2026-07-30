@@ -31,10 +31,11 @@ Created: 2026-07-30T10:59:23.993Z
 ```text
  .../src/runner/usecases/agent-work-order-build.ts  |  34 +-
  .../runner/usecases/agent-work-order-projection.ts |   2 +
- .../usecases/agent-work-order.integration.test.ts  | 127 ++++
+ .../usecases/agent-work-order.integration.test.ts  | 127 ++++++
  .../src/runner/usecases/agent-work-order.ts        |   9 +
- .../runner/usecases/task-knowledge-retrieval.ts    | 740 +++++++++++++++++++++
- 5 files changed, 907 insertions(+), 5 deletions(-)
+ .../usecases/task-knowledge-retrieval-query.ts     | 287 +++++++++++++
+ .../runner/usecases/task-knowledge-retrieval.ts    | 474 +++++++++++++++++++++
+ 6 files changed, 928 insertions(+), 5 deletions(-)
 ```
 
 </details>

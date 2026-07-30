@@ -2,46 +2,30 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  parseCanonicalKnowledgeRef,
-  type KnowledgeRef,
-  type PreparedKnowledgeExcerpt,
-} from "@agentplaneorg/core/schemas";
+import { parseCanonicalKnowledgeRef, type KnowledgeRef } from "@agentplaneorg/core/schemas";
 
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
+import {
+  RETRIEVAL_LIMITS,
+  compactQuery,
+  querySignalRank,
+  taskQueryPlan,
+  type QueryTerm,
+  type ReceiptOmission,
+  type RetrievalAdapter,
+  type TaskKnowledgeRetrieval,
+} from "./task-knowledge-retrieval-query.js";
 
-const MAX_QUERY_TERMS = 24;
-const MAX_COLLECTED_QUERY_TERMS = MAX_QUERY_TERMS * 8;
-const MAX_FTS_QUERIES = 12;
-const MAX_FTS_RESULTS_PER_QUERY = 8;
-const MAX_REFERENCES = 12;
-const MAX_REQUIRED_REFERENCES = 3;
-const MAX_EXCERPT_BYTES = 3 * 1024;
-const MAX_EXCERPT_LINES = 80;
+export type {
+  TaskKnowledgeRetrieval,
+  TaskKnowledgeRetrievalReceipt,
+} from "./task-knowledge-retrieval-query.js";
+
 const MAX_STRUCTURED_FILE_BYTES = 2 * 1024 * 1024;
-
-type RetrievalAdapter = "exact" | "fts" | "alias" | "graph";
-type RetrievalSignal =
-  | "task_intent"
-  | "acceptance"
-  | "path"
-  | "symbol"
-  | "blueprint"
-  | "tag"
-  | "dependency"
-  | "finding";
-
-type QueryTerm = {
-  query: string;
-  normalized: string;
-  signals: RetrievalSignal[];
-  exact_refs: string[];
-  source_priority: number;
-};
 
 type Candidate = {
   ref: string;
@@ -51,49 +35,6 @@ type Candidate = {
   reasons: string[];
 };
 
-type ReceiptOmission = {
-  query: string | null;
-  adapter: RetrievalAdapter | "selection";
-  reason_code:
-    | "projection_unavailable"
-    | "no_match"
-    | "unsupported_ref"
-    | "not_materializable"
-    | "query_term_budget_exhausted"
-    | "reference_budget_exhausted"
-    | "excerpt_not_included";
-  detail: string;
-};
-
-export type TaskKnowledgeRetrievalReceipt = {
-  schema_version: 1;
-  kind: "task_knowledge_retrieval_receipt";
-  projection: {
-    available: boolean;
-    digest: string | null;
-    projection_version: number | null;
-  };
-  budgets: {
-    max_query_terms: number;
-    max_fts_queries: number;
-    max_fts_results_per_query: number;
-    max_references: number;
-    max_excerpt_bytes: number;
-    max_excerpt_lines: number;
-  };
-  query_plan: { query: string; signals: RetrievalSignal[] }[];
-  adapter_counts: Record<RetrievalAdapter, number>;
-  selected: { ref: string; retrieval: RetrievalAdapter; score: number; reasons: string[] }[];
-  omissions: ReceiptOmission[];
-  digest: string;
-};
-
-export type TaskKnowledgeRetrieval = {
-  knowledge_refs: KnowledgeRef[];
-  prepared_evidence: PreparedKnowledgeExcerpt[];
-  receipt: TaskKnowledgeRetrievalReceipt;
-};
-
 type EntityIndex = {
   by_term: Map<string, string[]>;
   neighbours: Map<string, { entity_id: string; edge_id: string | null }[]>;
@@ -101,214 +42,6 @@ type EntityIndex = {
 
 function digest(value: unknown): string {
   return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
-}
-
-function normalized(value: string): string {
-  return (
-    value
-      .normalize("NFKC")
-      .toLocaleLowerCase("en-US")
-      .match(/[\p{L}\p{N}_]+/gu)
-      ?.join(" ")
-      .trim() ?? ""
-  );
-}
-
-function compactQuery(value: string): string | null {
-  const query = normalized(value);
-  if (query.length < 2 || query.length > 160 || query.split(" ").length > 16) return null;
-  return query;
-}
-
-function addQuery(
-  queries: Map<string, QueryTerm>,
-  value: string,
-  signal: RetrievalSignal,
-  sourcePriority = 1,
-): void {
-  const exactRefs =
-    value.match(
-      /(?:context\/(?:wiki|raw)\/[A-Za-z0-9_./-]+(?:#(?:line|lines|section)=[A-Za-z0-9_%-]+)?)/gu,
-    ) ?? [];
-  const query = compactQuery(value);
-  if (!query) {
-    for (const ref of exactRefs) {
-      const key = `exact ${ref}`;
-      const current = queries.get(key);
-      if (current) {
-        if (!current.signals.includes(signal)) current.signals.push(signal);
-        current.source_priority = Math.min(current.source_priority, sourcePriority);
-        continue;
-      }
-      if (queries.size >= MAX_COLLECTED_QUERY_TERMS) return;
-      queries.set(key, {
-        query: key,
-        normalized: key,
-        signals: [signal],
-        exact_refs: [ref],
-        source_priority: sourcePriority,
-      });
-    }
-    return;
-  }
-  const existing = queries.get(query);
-  if (!existing && queries.size >= MAX_COLLECTED_QUERY_TERMS) return;
-  const current = existing ?? {
-    query,
-    normalized: query,
-    signals: [],
-    exact_refs: [],
-    source_priority: sourcePriority,
-  };
-  if (!current.signals.includes(signal)) current.signals.push(signal);
-  current.source_priority = Math.min(current.source_priority, sourcePriority);
-  for (const ref of exactRefs) {
-    if (!current.exact_refs.includes(ref)) current.exact_refs.push(ref);
-  }
-  queries.set(query, current);
-}
-
-function stringsFromText(value: string): string[] {
-  const phrases = value
-    .split(/[\r\n;:!?()[\]{}]+/u)
-    .map((part) => part.trim())
-    .filter((part) => part.length >= 3 && part.length <= 180);
-  return [value, ...phrases];
-}
-
-function pathSignals(value: string): string[] {
-  const matches =
-    value.match(/(?:\.agentplane\/|context\/)(?:[A-Za-z0-9_.-]+\/)*[A-Za-z0-9_.-]+/gu) ?? [];
-  return matches.flatMap((item) => {
-    const stem = path
-      .basename(item)
-      .replace(/\.[^.]+$/u, "")
-      .replaceAll(/[_-]+/gu, " ");
-    return [item.replaceAll(/[/_-]+/gu, " "), stem];
-  });
-}
-
-function symbolSignals(value: string): string[] {
-  const tokens = value.match(/[A-Za-z][A-Za-z0-9]*/g) ?? [];
-  return tokens.filter((token) => {
-    for (let index = 1; index < token.length - 1; index += 1) {
-      const current = token[index];
-      const next = token[index + 1];
-      if (
-        current !== undefined &&
-        next !== undefined &&
-        current >= "A" &&
-        current <= "Z" &&
-        /[A-Za-z0-9]/u.test(next)
-      ) {
-        return true;
-      }
-    }
-    return false;
-  });
-}
-
-function querySignalRank(query: Pick<QueryTerm, "signals">): number {
-  const ranks: Record<RetrievalSignal, number> = {
-    path: 0,
-    symbol: 1,
-    tag: 2,
-    task_intent: 2,
-    acceptance: 3,
-    blueprint: 5,
-    dependency: 3,
-    finding: 3,
-  };
-  return Math.min(...query.signals.map((signal) => ranks[signal]));
-}
-
-function taskQueryPlan(opts: {
-  task_envelope: RunnerTaskContextEnvelope;
-  blueprint: BlueprintPlanArtifact;
-  dependencies: { title: string; result_summary?: string; description: string }[];
-}): { queries: QueryTerm[]; omitted_count: number; collection_saturated: boolean } {
-  const queries = new Map<string, QueryTerm>();
-  const task = opts.task_envelope.source_task;
-  const taskText = `${task.title}\n${task.description}\n${task.doc ?? ""}`;
-  for (const value of pathSignals(taskText)) {
-    addQuery(queries, value, "path", 0);
-  }
-  for (const value of symbolSignals(taskText)) {
-    addQuery(queries, value, "symbol", 0);
-  }
-  for (const tag of task.tags ?? []) addQuery(queries, tag, "tag", 0);
-  addQuery(queries, opts.blueprint.blueprintId, "blueprint");
-  for (const dependency of opts.dependencies) {
-    for (const value of stringsFromText(
-      `${dependency.title}\n${dependency.result_summary ?? ""}\n${dependency.description}`,
-    )) {
-      addQuery(queries, value, "dependency", 0);
-    }
-  }
-  for (const finding of task.quality_review?.findings ?? []) {
-    addQuery(queries, finding, "finding", 0);
-  }
-  for (const value of stringsFromText(`${task.title}\n${task.description}`)) {
-    addQuery(queries, value, "task_intent", 0);
-  }
-  for (const section of opts.task_envelope.task.narrative.sections) {
-    const signal: RetrievalSignal = /verify|acceptance|scope|plan/iu.test(section.name)
-      ? "acceptance"
-      : "finding";
-    for (const value of stringsFromText(section.text)) addQuery(queries, value, signal, 2);
-  }
-  const ordered = [...queries.values()]
-    .map((query) => ({
-      ...query,
-      signals: [...query.signals].toSorted(),
-      exact_refs: [...query.exact_refs].toSorted(),
-    }))
-    .toSorted(
-      (left, right) =>
-        left.source_priority - right.source_priority ||
-        Number(right.exact_refs.length > 0) - Number(left.exact_refs.length > 0) ||
-        querySignalRank(left) - querySignalRank(right) ||
-        left.normalized.localeCompare(right.normalized),
-    );
-  const signalQuotas: [RetrievalSignal, number][] = [
-    ["path", 3],
-    ["symbol", 2],
-    ["task_intent", 5],
-    ["tag", 2],
-    ["dependency", 3],
-    ["finding", 3],
-    ["acceptance", 3],
-    ["blueprint", 1],
-  ];
-  const selected: QueryTerm[] = [];
-  const selectedKeys = new Set<string>();
-  for (const [signal, quota] of signalQuotas) {
-    let selectedForSignal = 0;
-    for (const query of ordered) {
-      if (
-        selected.length >= MAX_QUERY_TERMS ||
-        selectedForSignal >= quota ||
-        selectedKeys.has(query.normalized) ||
-        !query.signals.includes(signal)
-      ) {
-        continue;
-      }
-      selected.push(query);
-      selectedKeys.add(query.normalized);
-      selectedForSignal += 1;
-    }
-  }
-  for (const query of ordered) {
-    if (selected.length >= MAX_QUERY_TERMS) break;
-    if (selectedKeys.has(query.normalized)) continue;
-    selected.push(query);
-    selectedKeys.add(query.normalized);
-  }
-  return {
-    queries: selected,
-    omitted_count: ordered.length - selected.length,
-    collection_saturated: queries.size === MAX_COLLECTED_QUERY_TERMS,
-  };
 }
 
 function stringArray(value: unknown): string[] {
@@ -477,12 +210,12 @@ async function ftsCandidates(opts: {
         querySignalRank(left) - querySignalRank(right) ||
         left.normalized.localeCompare(right.normalized),
     )
-    .slice(0, MAX_FTS_QUERIES);
+    .slice(0, RETRIEVAL_LIMITS.max_fts_queries);
   for (const query of ftsQueries) {
     const result = await searchContextProjection(opts.root, {
       query: query.query,
       scopes: ["wiki", "facts", "graph", "raw"],
-      limit: MAX_FTS_RESULTS_PER_QUERY,
+      limit: RETRIEVAL_LIMITS.max_fts_results_per_query,
       offset: 0,
     });
     if (!result) {
@@ -625,16 +358,16 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
         left.ref.localeCompare(right.ref) ||
         left.retrieval.localeCompare(right.retrieval),
     );
-  if (ordered.length > MAX_REFERENCES) {
+  if (ordered.length > RETRIEVAL_LIMITS.max_references) {
     omissions.push({
       query: null,
       adapter: "selection",
       reason_code: "reference_budget_exhausted",
-      detail: `${ordered.length - MAX_REFERENCES} lower-ranked references were omitted by the bounded selection budget.`,
+      detail: `${ordered.length - RETRIEVAL_LIMITS.max_references} lower-ranked references were omitted by the bounded selection budget.`,
     });
   }
   const materialized: { candidate: Candidate; ref: KnowledgeRef }[] = [];
-  for (const candidate of ordered.slice(0, MAX_REFERENCES)) {
+  for (const candidate of ordered.slice(0, RETRIEVAL_LIMITS.max_references)) {
     try {
       materialized.push({
         candidate,
@@ -666,8 +399,8 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
         await prepareKnowledgeExcerpt({
           repository_root: opts.repository_root,
           knowledge_ref: ref,
-          max_bytes: MAX_EXCERPT_BYTES,
-          max_lines: MAX_EXCERPT_LINES,
+          max_bytes: RETRIEVAL_LIMITS.max_excerpt_bytes,
+          max_lines: RETRIEVAL_LIMITS.max_excerpt_lines,
           index_snapshot: projection,
         }),
     ),
@@ -679,7 +412,8 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   );
   const knowledgeRefs = materialized.map(({ candidate, ref }, indexPosition) => {
     const identity = `${ref.ref}\u0000${ref.digest}`;
-    const required = indexPosition < MAX_REQUIRED_REFERENCES && includedIdentities.has(identity);
+    const required =
+      indexPosition < RETRIEVAL_LIMITS.max_required_references && includedIdentities.has(identity);
     if (!includedIdentities.has(identity)) {
       omissions.push({
         query: null,
@@ -704,12 +438,12 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
       projection_version: projection?.metadata.projection_version ?? null,
     },
     budgets: {
-      max_query_terms: MAX_QUERY_TERMS,
-      max_fts_queries: MAX_FTS_QUERIES,
-      max_fts_results_per_query: MAX_FTS_RESULTS_PER_QUERY,
-      max_references: MAX_REFERENCES,
-      max_excerpt_bytes: MAX_EXCERPT_BYTES,
-      max_excerpt_lines: MAX_EXCERPT_LINES,
+      max_query_terms: RETRIEVAL_LIMITS.max_query_terms,
+      max_fts_queries: RETRIEVAL_LIMITS.max_fts_queries,
+      max_fts_results_per_query: RETRIEVAL_LIMITS.max_fts_results_per_query,
+      max_references: RETRIEVAL_LIMITS.max_references,
+      max_excerpt_bytes: RETRIEVAL_LIMITS.max_excerpt_bytes,
+      max_excerpt_lines: RETRIEVAL_LIMITS.max_excerpt_lines,
     },
     query_plan: queries.map((query) => ({ query: query.query, signals: query.signals })),
     adapter_counts: {
