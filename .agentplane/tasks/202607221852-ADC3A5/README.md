@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
     - "pathMatchesScopes remains used internally by walkScopeFiles, so scope behavior is retained; only its public export was removed."
     - "The updated head passes the focused FTS5/context suite, typecheck, hotspot baseline, and Knip baseline."
 commit:
-  hash: "4b25ba310b81742985d9aff4e58b7096948afc47"
-  message: "🔍 ADC3A5 fts5: record refreshed quality review"
+  hash: "bd15d67a29a602491c9a3eb54925d8af987f4d47"
+  message: "🔍 ADC3A5 fts5: record final quality review"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -113,8 +116,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T08:31:47.396Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T08:23:16.650Z"
+doc_updated_at: "2026-07-30T08:31:47.397Z"
 doc_updated_by: "CODER"
 description: "RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pagination, stable refs, snippets, truthful strategy output, and bounded live fallback."
 sections:
@@ -180,8 +190,8 @@ sections:
       Resolution: Benchmark artifact reports 24/24 recall and 93.5% p95 improvement on the reproducible synthetic indexed corpus.
 extensions:
   implementation_commit:
-    hash: "3893e0be01a8b4a5ed2bd6d8163d0532936af114"
-    message: "🧪 ADC3A5 fts5: isolate pagination coverage"
+    hash: "ac94e5127aa541efe96070ad536b1cfcc1faaa34"
+    message: "🧹 ADC3A5 fts5: privatize scope filter helper"
   workflow_route_baseline:
     start_head_sha: "5300e2fc75a17b15aaa0c0ff9fc1edbebadba163"
     version: 1
