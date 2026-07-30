@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300553-CR9VTJ-9be2f4cc1b1cb6c29193a34c",
+  "prepared_at": "2026-07-30T06:04:26.860Z",
+  "task": {
+    "id": "202607300553-CR9VTJ",
+    "revision": 9,
+    "objective": "Requalify the AgentPlane 0.7.0-beta.1 decision on current main\n\nReplace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run test:critical",
+      "node scripts/checks/check-agent-efficiency-replay.mjs",
+      "- In scope: Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency.\n- Out of scope: unrelated refactors not required for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\".",
+      "1. Persist the explicit replacement relation: keep the legacy beta.1 gate blocked because its stale PR cannot qualify current main, and replace only the beta.2 dependency edge with this successor. 2. On current main, validate the frozen 50-run/55-episode RF-04 evidence and the F8 timing-partition contract without invoking a provider or retrying the candidate. 3. Run the declared deterministic critical/contract checks, record any failure or flake as a blocker, and compare the retained latency failure against the unchanged quality rule. 4. Record beta.1 as do_not_publish, not as a product regression claim; publish no prerelease. 5. Close the graph-repair and quality-decision evidence through a normal PR, leaving actual beta.2 implementation work independent and ready only after this successor merges.",
+      "PLANNER fallback scaffold for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Requalify the AgentPlane 0.7.0-beta.1 decision on current main\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "89981c27eb9c9b652a17127de8cd3a5b482babd2",
+  "diff_base_sha": "7856c47baaab749275df9f7bbdc640bac19c86d5",
+  "blueprint_digest": "de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300553-CR9VTJ/README.md",
+      "sha256": "sha256:9f352b617cb6c978ec3a9ae5c5a58100f3a73fb714be729799c3ef0b9827be7e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:7d28a3b2d8f8384f2dfccb90ae50b4d2512933118765ee45257228b2d6cbdfc5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:981edd795ca198710d54e68dcdc479382bfd95627eea3e84178a57d67fca50d0",
+      "required": true
+    },
+    {
+      "id": "qualification-packet",
+      "kind": "qualification_packet",
+      "path": ".agentplane/tasks/202607300553-CR9VTJ/evidence/qualification-packet.v1.json",
+      "sha256": "sha256:fac068c6481d9e6cf0a663c78d6c318bef2efe8710dd4a024490908d08ba31b6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300553-CR9VTJ/quality/20260730-060426860-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:c418555c07064a95b10c3db760b208c74c0b5c41eff6736e53a50edde9907a4e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
