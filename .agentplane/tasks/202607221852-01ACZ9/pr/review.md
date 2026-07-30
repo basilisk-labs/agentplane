@@ -12,8 +12,8 @@ Created: 2026-07-30T13:20:41.795Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,22 +34,28 @@ Created: 2026-07-30T13:20:41.795Z
  .../src/runner/adapters/codex-result-transport.ts  |  38 +-
  .../agentplane/src/runner/result-manifest.test.ts  |  10 +
  .../src/runner/task-state-render-semantic.ts       |   2 +-
+ packages/agentplane/src/runner/types/invocation.ts |   9 +
  .../src/runner/usecases/agent-work-order-build.ts  |   3 +
- .../runner/usecases/task-knowledge-request.test.ts | 236 +++++++++
- .../src/runner/usecases/task-knowledge-request.ts  | 578 +++++++++++++++++++++
- .../runner/usecases/task-knowledge-retrieval.ts    |  11 +
+ .../usecases/task-knowledge-request-audit.ts       | 105 ++++
+ .../task-knowledge-request-lifecycle.test.ts       | 143 +++++
+ .../usecases/task-knowledge-request-lifecycle.ts   |  73 +++
+ .../usecases/task-knowledge-request-scope.ts       |  53 ++
+ .../runner/usecases/task-knowledge-request.test.ts | 294 +++++++++++
+ .../src/runner/usecases/task-knowledge-request.ts  | 586 +++++++++++++++++++++
+ .../runner/usecases/task-knowledge-retrieval.ts    |  14 +
  .../task-run-bootstrap.result-examples.test.ts     |   6 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   8 +-
  packages/core/src/index.ts                         |   4 +
  .../core/src/runner/agent-semantic-result.test.ts  |   5 +
  packages/core/src/runner/agent-semantic-result.ts  |  21 +
  .../core/src/runner/agent-work-order-fixtures.ts   |   1 +
  packages/core/src/schemas/index.ts                 |   4 +
- schemas/agent-semantic-result.schema.json          |  87 +++-
+ schemas/agent-semantic-result.schema.json          |  87 ++-
  ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
  .../agent-work-order-v2.camel-case.compat.json     |   1 +
  schemas/examples/agent-work-order-v2.valid.json    |   1 +
- 20 files changed, 1030 insertions(+), 12 deletions(-)
+ 26 files changed, 1489 insertions(+), 13 deletions(-)
 ```
 
 </details>

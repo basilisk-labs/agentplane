@@ -4,7 +4,7 @@ title: "Serve bounded knowledge requests during agent episodes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -34,16 +34,47 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T13:48:39.616Z"
+  updated_by: "TESTER"
+  note: "RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered."
   attempts: 0
-commit: null
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T13:50:36.814Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "35758465c6432d0503e12e56c6f31eb49cfb7604"
+  blueprint_digest: "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01"
+  evidence_refs:
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/README.md"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The bounded knowledge-request handler is exported but never invoked by a CLI or runner episode path, so an EXECUTOR/EVALUATOR request cannot receive the promised response or durable run audit."
+    - "The declared task_context scope constrains only projection kind, not task identity or authorized paths; retrieval searches the repository-wide context projection and may return unrelated context."
+commit:
+  hash: "35758465c6432d0503e12e56c6f31eb49cfb7604"
+  message: "🚧 01ACZ9 task: serve bounded knowledge requests"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented bounded knowledge request serving with typed schema, run-bound digest audit, role and scope controls, bounded retrieval, and escalation. Local verification passed: schemas, typecheck, focused tests, test:critical, ci:local:fast."
 events:
   -
     type: "status"
@@ -52,8 +83,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-30T13:43:41.544Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented bounded knowledge request serving with typed schema, run-bound digest audit, role and scope controls, bounded retrieval, and escalation. Local verification passed: schemas, typecheck, focused tests, test:critical, ci:local:fast."
+  -
+    type: "verify"
+    at: "2026-07-30T13:48:39.616Z"
+    author: "TESTER"
+    state: "ok"
+    note: "RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered."
 doc_version: 3
-doc_updated_at: "2026-07-30T13:20:41.645Z"
+doc_updated_at: "2026-07-30T13:48:40.341Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
@@ -78,12 +122,45 @@ sections:
     5. Run schema, runner, and retrieval tests.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T13:48:39.616Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T13:43:41.544Z, excerpt_hash=sha256:71de638d60efec5e2dc8cfe8b2cf6bbd9f5eb77930537d5185b761b29bac9ca7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-01ACZ9-serve-bounded-knowledge-requests-during-agent-ep/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json
+    - old_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+    - current_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-01ACZ9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-01ACZ9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Bounded knowledge handler remains below the enforced 600-line runtime limit (578 lines); hotspot warning only.
+      Impact: No current correctness gate is violated; future extraction may split the handler if its policy surface grows.
+      Resolution: Keep RF-23 limited to provider-tool transport; do not widen this handler without a separate refactoring task.
 extensions:
   workflow_route_baseline:
     start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
@@ -120,6 +197,36 @@ RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T13:48:39.616Z — VERIFY — ok
+
+By: TESTER
+
+Note: RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T13:43:41.544Z, excerpt_hash=sha256:71de638d60efec5e2dc8cfe8b2cf6bbd9f5eb77930537d5185b761b29bac9ca7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-01ACZ9-serve-bounded-knowledge-requests-during-agent-ep/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json
+- old_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+- current_digest: 74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-01ACZ9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-01ACZ9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -129,3 +236,7 @@ RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking 
 - Re-run equivalence, recall, lifecycle, and type checks.
 
 ## Findings
+
+- Observation: Bounded knowledge handler remains below the enforced 600-line runtime limit (578 lines); hotspot warning only.
+  Impact: No current correctness gate is violated; future extraction may split the handler if its policy surface grows.
+  Resolution: Keep RF-23 limited to provider-tool transport; do not widen this handler without a separate refactoring task.

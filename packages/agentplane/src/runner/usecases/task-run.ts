@@ -69,6 +69,7 @@ import {
   persistRunnerStateFingerprintRefusal,
   persistRunnerStateFingerprintSuccess,
 } from "./task-run-state-fingerprint-persistence.js";
+import { serveRunnerKnowledgeRequest } from "./task-knowledge-request-lifecycle.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -495,7 +496,12 @@ export async function executeTaskRunnerExecution(opts: {
     }
     const preconditionFingerprint = guardedExecution.precondition_fingerprint;
     const preconditionPolicy = guardedExecution.precondition_policy;
-    const result = guardedExecution.result;
+    const result = await serveRunnerKnowledgeRequest({
+      repository_root: ctx.resolvedProject.gitRoot,
+      invocation: prepared.invocation,
+      work_order: prepared.bundle.work_order,
+      result: guardedExecution.result,
+    });
     const acceptedEffect = await persistTaskRunnerEffectAccepted({
       session: effectOperation,
       task_id: opts.task_id,

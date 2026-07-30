@@ -1,0 +1,2207 @@
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/README.md b/.agentplane/tasks/202607221852-01ACZ9/README.md
+index 980baf56e..2b8367b6a 100644
+--- a/.agentplane/tasks/202607221852-01ACZ9/README.md
++++ b/.agentplane/tasks/202607221852-01ACZ9/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-01ACZ9"
+ title: "Serve bounded knowledge requests during agent episodes"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 7
+ origin:
+   system: "manual"
+ depends_on:
+@@ -29,9 +29,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-30T13:20:25.394Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -40,11 +40,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T13:20:41.645Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:23.081Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T13:20:41.645Z"
++doc_updated_by: "CODER"
+ description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
+ sections:
+   Summary: |-
+@@ -74,6 +84,10 @@ sections:
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..09e871fdf
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-01ACZ9/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-01ACZ9",
++    "title": "Serve bounded knowledge requests during agent episodes",
++    "description": "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps.",
++    "tags": [
++      "context",
++      "knowledge-request",
++      "milestone-beta2",
++      "refactor",
++      "rf-22",
++      "runner",
++      "v0.7",
++      "wave-retrieval"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-01ACZ9",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/pr/diffstat.txt b/.agentplane/tasks/202607221852-01ACZ9/pr/diffstat.txt
+new file mode 100644
+index 000000000..72d749fa6
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-01ACZ9/pr/diffstat.txt
+@@ -0,0 +1,21 @@
++ .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
++ .../runner/adapters/codex-result-transport.test.ts |   5 +
++ .../src/runner/adapters/codex-result-transport.ts  |  38 +-
++ .../agentplane/src/runner/result-manifest.test.ts  |  10 +
++ .../src/runner/task-state-render-semantic.ts       |   2 +-
++ .../src/runner/usecases/agent-work-order-build.ts  |   3 +
++ .../runner/usecases/task-knowledge-request.test.ts | 236 +++++++++
++ .../src/runner/usecases/task-knowledge-request.ts  | 578 +++++++++++++++++++++
++ .../runner/usecases/task-knowledge-retrieval.ts    |  11 +
++ .../task-run-bootstrap.result-examples.test.ts     |   6 +-
++ .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
++ packages/core/src/index.ts                         |   4 +
++ .../core/src/runner/agent-semantic-result.test.ts  |   5 +
++ packages/core/src/runner/agent-semantic-result.ts  |  21 +
++ .../core/src/runner/agent-work-order-fixtures.ts   |   1 +
++ packages/core/src/schemas/index.ts                 |   4 +
++ schemas/agent-semantic-result.schema.json          |  87 +++-
++ ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
++ .../agent-work-order-v2.camel-case.compat.json     |   1 +
++ schemas/examples/agent-work-order-v2.valid.json    |   1 +
++ 20 files changed, 1030 insertions(+), 12 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/pr/github-body.md b/.agentplane/tasks/202607221852-01ACZ9/pr/github-body.md
+new file mode 100644
+index 000000000..c5eac2b57
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-01ACZ9/pr/github-body.md
+@@ -0,0 +1,53 @@
++Task: `202607221852-01ACZ9`
++Title: Serve bounded knowledge requests during agent episodes
++Canonical task record: `.agentplane/tasks/202607221852-01ACZ9/README.md`
++
++## Summary
++
++Serve bounded knowledge requests during agent episodes
++
++RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps.
++
++## Scope
++
++- In scope: KnowledgeRequest schema, run-bound audit, deterministic retrieval response, verified refs/excerpts, round/token budgets, blocking semantics, dedupe, repeated-unresolved escalation, and role-specific policy.
++- Out of scope: exposing unrestricted repository/lifecycle access or naming the contract ContextGapRequest.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T13:21:04.341Z
++- Branch: task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
++ .../runner/adapters/codex-result-transport.test.ts |   5 +
++ .../src/runner/adapters/codex-result-transport.ts  |  38 +-
++ .../agentplane/src/runner/result-manifest.test.ts  |  10 +
++ .../src/runner/task-state-render-semantic.ts       |   2 +-
++ .../src/runner/usecases/agent-work-order-build.ts  |   3 +
++ .../runner/usecases/task-knowledge-request.test.ts | 236 +++++++++
++ .../src/runner/usecases/task-knowledge-request.ts  | 578 +++++++++++++++++++++
++ .../runner/usecases/task-knowledge-retrieval.ts    |  11 +
++ .../task-run-bootstrap.result-examples.test.ts     |   6 +-
++ .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
++ packages/core/src/index.ts                         |   4 +
++ .../core/src/runner/agent-semantic-result.test.ts  |   5 +
++ packages/core/src/runner/agent-semantic-result.ts  |  21 +
++ .../core/src/runner/agent-work-order-fixtures.ts   |   1 +
++ packages/core/src/schemas/index.ts                 |   4 +
++ schemas/agent-semantic-result.schema.json          |  87 +++-
++ ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
++ .../agent-work-order-v2.camel-case.compat.json     |   1 +
++ schemas/examples/agent-work-order-v2.valid.json    |   1 +
++ 20 files changed, 1030 insertions(+), 12 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/pr/github-title.txt b/.agentplane/tasks/202607221852-01ACZ9/pr/github-title.txt
+new file mode 100644
+index 000000000..1c1d54f08
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-01ACZ9/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 01ACZ9 task: Serve bounded knowledge requests during agent episodes [202607221852-01ACZ9]
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/pr/meta.json b/.agentplane/tasks/202607221852-01ACZ9/pr/meta.json
+new file mode 100644
+index 000000000..ad2995b4c
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-01ACZ9/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep",
++  "created_at": "2026-07-30T13:20:41.795Z",
++  "diffstat_sha256": "sha256:b353a7afb2b40c403f4ec25dd58cebd92a3fd590d6e03df23f74541e9550e870",
++  "last_verified_at": null,
++  "pr_number": 4693,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4693",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-01ACZ9",
++  "updated_at": "2026-07-30T13:21:04.341Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-01ACZ9/pr/review.md b/.agentplane/tasks/202607221852-01ACZ9/pr/review.md
+new file mode 100644
+index 000000000..783a50cff
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-01ACZ9/pr/review.md
+@@ -0,0 +1,56 @@
++# PR Review
++
++Created: 2026-07-30T13:20:41.795Z
++
++## Task
++
++- Task: `202607221852-01ACZ9`
++- Title: Serve bounded knowledge requests during agent episodes
++- Status: DOING
++- Branch: `task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep`
++- Canonical task record: `.agentplane/tasks/202607221852-01ACZ9/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T13:21:04.341Z
++- Branch: task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
++ .../runner/adapters/codex-result-transport.test.ts |   5 +
++ .../src/runner/adapters/codex-result-transport.ts  |  38 +-
++ .../agentplane/src/runner/result-manifest.test.ts  |  10 +
++ .../src/runner/task-state-render-semantic.ts       |   2 +-
++ .../src/runner/usecases/agent-work-order-build.ts  |   3 +
++ .../runner/usecases/task-knowledge-request.test.ts | 236 +++++++++
++ .../src/runner/usecases/task-knowledge-request.ts  | 578 +++++++++++++++++++++
++ .../runner/usecases/task-knowledge-retrieval.ts    |  11 +
++ .../task-run-bootstrap.result-examples.test.ts     |   6 +-
++ .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
++ packages/core/src/index.ts                         |   4 +
++ .../core/src/runner/agent-semantic-result.test.ts  |   5 +
++ packages/core/src/runner/agent-semantic-result.ts  |  21 +
++ .../core/src/runner/agent-work-order-fixtures.ts   |   1 +
++ packages/core/src/schemas/index.ts                 |   4 +
++ schemas/agent-semantic-result.schema.json          |  87 +++-
++ ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
++ .../agent-work-order-v2.camel-case.compat.json     |   1 +
++ schemas/examples/agent-work-order-v2.valid.json    |   1 +
++ 20 files changed, 1030 insertions(+), 12 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index be48f0cc2..c44a59ca8 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -64,6 +64,13 @@ const EVALUATOR_RESULT_FILE = "evaluator-result.json";
+ const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
+ const EVALUATOR_OBSERVED_CHECKS_FILE = "evaluator-observed-checks.json";
+ const EVALUATOR_BLUEPRINT_FILE = "evaluator-blueprint.json";
++const EVALUATOR_ALLOWED_TOOL_CLASSES = [
++  "repository_read",
++  "git_read",
++  "run_checks",
++  "knowledge_request",
++  "report_result",
++] as const;
+ 
+ const EVALUATOR_WORK_ORDER_SCHEMA = z
+   .object({
+@@ -93,9 +100,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
+       .object({
+         sandbox: z.literal("read-only"),
+         writable_roots: z.array(z.string()).length(0),
+-        allowed_tool_classes: z.array(
+-          z.enum(["repository_read", "git_read", "run_checks", "report_result"]),
+-        ),
++        allowed_tool_classes: z.array(z.enum(EVALUATOR_ALLOWED_TOOL_CLASSES)),
+         external_side_effects: z.array(z.string()).length(0),
+       })
+       .strict(),
+@@ -404,7 +409,7 @@ export async function prepareEvaluatorReview(opts: {
+     authority: {
+       sandbox: "read-only",
+       writable_roots: [],
+-      allowed_tool_classes: ["repository_read", "git_read", "run_checks", "report_result"],
++      allowed_tool_classes: EVALUATOR_ALLOWED_TOOL_CLASSES,
+       external_side_effects: [],
+     },
+     result_contract: "sgr.evaluator_result.v1",
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts
+index 64f68a627..a013617f3 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts
+@@ -342,8 +342,13 @@ describe("Codex supervisor semantic result transport", () => {
+         ...validTransportResult("run-read-only"),
+         status: "needs_context",
+         knowledge_request: {
++          schema_version: 1,
++          kind: "knowledge_request",
+           query: "Provide the contract.",
+           reason: "The contract is required.",
++          desired_kind: "source",
++          scope: "task_context",
++          blocking: true,
+           artifacts: ["contract.md"],
+         },
+       },
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+index 77347ae8c..f18c2ba0b 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+@@ -3,6 +3,10 @@ import {
+   AGENT_SEMANTIC_RESULT_KIND,
+   AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
+   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
++  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
++  KNOWLEDGE_REQUEST_KIND,
++  KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++  KNOWLEDGE_REQUEST_SCOPE_VALUES,
+   validateAgentSemanticResult,
+   type AgentSemanticResult,
+ } from "@agentplaneorg/core/schemas";
+@@ -85,10 +89,27 @@ const CODEX_RESULT_OUTPUT_SCHEMA = {
+       type: ["object", "null"],
+       additionalProperties: false,
+       properties: {
++        schema_version: {
++          type: "integer",
++          enum: [KNOWLEDGE_REQUEST_SCHEMA_VERSION],
++        },
++        kind: {
++          type: "string",
++          enum: [KNOWLEDGE_REQUEST_KIND],
++        },
+         query: NON_EMPTY_STRING_SCHEMA,
+         reason: NON_EMPTY_STRING_SCHEMA,
++        desired_kind: {
++          type: "string",
++          enum: KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
++        },
++        scope: {
++          type: "string",
++          enum: KNOWLEDGE_REQUEST_SCOPE_VALUES,
++        },
++        blocking: { type: "boolean" },
+       },
+-      required: ["query", "reason"],
++      required: ["schema_version", "kind", "query", "reason", "desired_kind", "scope", "blocking"],
+     },
+   },
+   required: [
+@@ -119,7 +140,15 @@ const CODEX_RESULT_TRANSPORT_KEYS = [
+ ] as const;
+ const CODEX_CLAIMED_CHECK_TRANSPORT_KEYS = ["check", "claimed_status", "details"] as const;
+ const CODEX_BLOCKER_TRANSPORT_KEYS = ["summary", "recommended_action"] as const;
+-const CODEX_KNOWLEDGE_REQUEST_TRANSPORT_KEYS = ["query", "reason"] as const;
++const CODEX_KNOWLEDGE_REQUEST_TRANSPORT_KEYS = [
++  "schema_version",
++  "kind",
++  "query",
++  "reason",
++  "desired_kind",
++  "scope",
++  "blocking",
++] as const;
+ 
+ function assertExactKeys(
+   value: Record<string, unknown>,
+@@ -373,8 +402,13 @@ export async function materializeCodexResultTransport(opts: {
+     ...(knowledgeRequest
+       ? {
+           knowledge_request: {
++            schema_version: knowledgeRequest.schema_version,
++            kind: knowledgeRequest.kind,
+             query: knowledgeRequest.query,
+             reason: knowledgeRequest.reason,
++            desired_kind: knowledgeRequest.desired_kind,
++            scope: knowledgeRequest.scope,
++            blocking: knowledgeRequest.blocking,
+           },
+         }
+       : {}),
+diff --git a/packages/agentplane/src/runner/result-manifest.test.ts b/packages/agentplane/src/runner/result-manifest.test.ts
+index 1bb436bc0..98cadd63d 100644
+--- a/packages/agentplane/src/runner/result-manifest.test.ts
++++ b/packages/agentplane/src/runner/result-manifest.test.ts
+@@ -90,8 +90,13 @@ describe("runner result manifest", () => {
+         recommended_action: "Provide the canonical schema.",
+       },
+       knowledge_request: {
++        schema_version: 1,
++        kind: "knowledge_request",
+         query: "canonical identifier schema",
+         reason: "The implementation cannot safely invent the identifier.",
++        desired_kind: "source",
++        scope: "task_context",
++        blocking: true,
+       },
+       claimed_checks: [
+         {
+@@ -119,8 +124,13 @@ describe("runner result manifest", () => {
+             recommended_action: "Provide the canonical schema.",
+           },
+           knowledge_request: {
++            schema_version: 1,
++            kind: "knowledge_request",
+             query: "canonical identifier schema",
+             reason: "The implementation cannot safely invent the identifier.",
++            desired_kind: "source",
++            scope: "task_context",
++            blocking: true,
+           },
+           claimed_checks: [
+             {
+diff --git a/packages/agentplane/src/runner/task-state-render-semantic.ts b/packages/agentplane/src/runner/task-state-render-semantic.ts
+index 6a8b082dc..1feb87ac4 100644
+--- a/packages/agentplane/src/runner/task-state-render-semantic.ts
++++ b/packages/agentplane/src/runner/task-state-render-semantic.ts
+@@ -48,7 +48,7 @@ export function renderAgentSemanticResult(
+     lines.push(
+       `AgentKnowledgeRequest[${report.provenance}]: ${encodeRunnerManagedText(
+         semantic.knowledge_request.query,
+-      )}; reason=${encodeRunnerManagedText(semantic.knowledge_request.reason)}`,
++      )}; reason=${encodeRunnerManagedText(semantic.knowledge_request.reason)}; kind=${semantic.knowledge_request.desired_kind}; scope=${semantic.knowledge_request.scope}; blocking=${String(semantic.knowledge_request.blocking)}`,
+     );
+   }
+   if ("claimed_checks" in semantic && semantic.claimed_checks?.length) {
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+index b2632d785..32652b4ba 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+@@ -343,6 +343,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
+   if (opts.knowledge_retrieval.knowledge_refs.length > 0) {
+     allowedToolClasses.push("knowledge_read");
+   }
++  if (role === "EXECUTOR" || role === "EVALUATOR") {
++    allowedToolClasses.push("knowledge_request");
++  }
+   const summary =
+     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
+     task.narrative.description;
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts b/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
+new file mode 100644
+index 000000000..85d8c0864
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
+@@ -0,0 +1,236 @@
++import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import {
++  buildAgentSemanticResultV2ValidFixtures,
++  buildAgentWorkOrderV2ValidFixture,
++} from "@agentplaneorg/core/schemas";
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import { cmdContextReindex } from "../../context/reindex.js";
++import {
++  persistTaskKnowledgeRequestAudit,
++  serveTaskKnowledgeRequest,
++  validateTaskKnowledgeRequestResponse,
++  type TaskKnowledgeRequestAudit,
++} from "./task-knowledge-request.js";
++
++let tempRoots: string[] = [];
++
++async function tempRoot(): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-knowledge-request-"));
++  tempRoots.push(root);
++  return root;
++}
++
++async function write(root: string, relative: string, contents: string): Promise<void> {
++  const target = path.join(root, relative);
++  await mkdir(path.dirname(target), { recursive: true });
++  await writeFile(target, contents, "utf8");
++}
++
++function requestResult(opts: { work_order_id: string; query?: string }) {
++  return {
++    ...buildAgentSemanticResultV2ValidFixtures(opts.work_order_id).needs_context,
++    knowledge_request: {
++      schema_version: 1 as const,
++      kind: "knowledge_request" as const,
++      query: opts.query ?? "canonical retrieval boundary",
++      reason: "The current episode needs one canonical source before it can continue.",
++      desired_kind: "wiki" as const,
++      scope: "task_context" as const,
++      blocking: true,
++    },
++  };
++}
++
++function input(
++  opts: {
++    semantic_result?: unknown;
++    prior_audits?: readonly TaskKnowledgeRequestAudit[];
++    role?: "EXECUTOR" | "EVALUATOR";
++  } = {},
++) {
++  const workOrder = buildAgentWorkOrderV2ValidFixture();
++  if (opts.role) workOrder.role = opts.role;
++  return {
++    work_order: workOrder,
++    invocation: {
++      run_id: "run-knowledge-001",
++      work_order_id: workOrder.work_order_id,
++      state_fingerprint_digest: workOrder.state_fingerprint.digest,
++    },
++    semantic_result:
++      opts.semantic_result ?? requestResult({ work_order_id: workOrder.work_order_id }),
++    ...(opts.prior_audits ? { prior_audits: opts.prior_audits } : {}),
++  };
++}
++
++afterEach(async () => {
++  vi.restoreAllMocks();
++  await Promise.all(
++    tempRoots.map(async (root) => await rm(root, { recursive: true, force: true })),
++  );
++  tempRoots = [];
++});
++
++describe("bounded task knowledge requests", () => {
++  it("returns digest-valid scoped references and persists a run-bound audit", async () => {
++    const root = await tempRoot();
++    await write(
++      root,
++      "context/wiki/retrieval.md",
++      "# Retrieval Boundary\n\nThe canonical retrieval boundary keeps CLI-owned context retrieval bounded for a semantic episode.\n",
++    );
++    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
++    await cmdContextReindex({
++      cwd: root,
++      parsed: { includeTasks: false, includeRaw: false, reset: false },
++    });
++    stdout.mockRestore();
++
++    const served = await serveTaskKnowledgeRequest({ repository_root: root, ...input() });
++
++    expect(served.omissions).toEqual([]);
++    expect(served).toMatchObject({
++      outcome: "served",
++      run: { run_id: "run-knowledge-001", role: "EXECUTOR" },
++      round: 1,
++    });
++    expect(served.knowledge_refs).toEqual(
++      expect.arrayContaining([expect.objectContaining({ ref: "context/wiki/retrieval.md" })]),
++    );
++    expect(served.prepared_evidence).toHaveLength(served.knowledge_refs.length);
++    expect(served.usage.estimated_response_tokens).toBeLessThanOrEqual(
++      served.usage.max_response_tokens,
++    );
++    expect(validateTaskKnowledgeRequestResponse(served)).toEqual(served);
++
++    const auditPath = path.join(root, "audit.json");
++    await persistTaskKnowledgeRequestAudit({ file_path: auditPath, audit: served });
++    expect(JSON.parse(await readFile(auditPath, "utf8"))).toEqual(served);
++  });
++
++  it("accepts an EVALUATOR request under the same bounded policy", async () => {
++    const root = await tempRoot();
++    const response = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...input({ role: "EVALUATOR" }),
++    });
++
++    expect(response).toMatchObject({
++      outcome: "unresolved",
++      run: { role: "EVALUATOR" },
++    });
++    expect(response.omissions).toEqual([
++      expect.objectContaining({ code: "projection_unavailable" }),
++    ]);
++  });
++
++  it("denies a result that is not bound to the current work order", async () => {
++    const root = await tempRoot();
++    const base = input();
++    const denied = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...base,
++      semantic_result: requestResult({ work_order_id: "stale-work-order" }),
++    });
++
++    expect(denied).toMatchObject({
++      outcome: "denied",
++      omissions: [expect.objectContaining({ code: "work_order_mismatch" })],
++    });
++  });
++
++  it("denies a stale invocation fingerprint without querying the repository", async () => {
++    const root = await tempRoot();
++    const base = input();
++    const denied = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...base,
++      invocation: { ...base.invocation, state_fingerprint_digest: "sha256:stale" },
++    });
++
++    expect(denied).toMatchObject({
++      outcome: "denied",
++      omissions: [expect.objectContaining({ code: "state_fingerprint_mismatch" })],
++    });
++  });
++
++  it("escalates a repeated unresolved blocking request instead of retrying it", async () => {
++    const root = await tempRoot();
++    const first = await serveTaskKnowledgeRequest({ repository_root: root, ...input() });
++    const second = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...input({ prior_audits: [first] }),
++    });
++
++    expect(first).toMatchObject({ outcome: "unresolved" });
++    expect(second.outcome).toBe("escalated");
++    expect(second.round).toBe(2);
++    expect(second.omissions).toEqual([expect.objectContaining({ code: "repeated_unresolved" })]);
++    expect(second.blocker?.recommended_action).toContain("Escalate");
++  });
++
++  it("returns a typed denial for a forbidden request scope and exhausted rounds", async () => {
++    const root = await tempRoot();
++    const forbidden = requestResult({ work_order_id: input().work_order.work_order_id });
++    const forbiddenResponse = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...input({
++        semantic_result: {
++          ...forbidden,
++          knowledge_request: { ...forbidden.knowledge_request, scope: "repository" },
++        },
++      }),
++    });
++    const first = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...input({
++        semantic_result: requestResult({
++          work_order_id: "work-order-example-001",
++          query: "first gap",
++        }),
++      }),
++    });
++    const second = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...input({
++        semantic_result: requestResult({
++          work_order_id: "work-order-example-001",
++          query: "second gap",
++        }),
++        prior_audits: [first],
++      }),
++    });
++    const exhausted = await serveTaskKnowledgeRequest({
++      repository_root: root,
++      ...input({
++        semantic_result: requestResult({
++          work_order_id: "work-order-example-001",
++          query: "third gap",
++        }),
++        prior_audits: [first, second],
++      }),
++    });
++
++    expect(forbiddenResponse).toMatchObject({
++      outcome: "denied",
++      omissions: [expect.objectContaining({ code: "invalid_semantic_result" })],
++    });
++    expect(exhausted).toMatchObject({
++      outcome: "denied",
++      omissions: [expect.objectContaining({ code: "round_budget_exhausted" })],
++    });
++  });
++
++  it("rejects a tampered CLI response digest", async () => {
++    const root = await tempRoot();
++    const response = await serveTaskKnowledgeRequest({ repository_root: root, ...input() });
++
++    expect(() =>
++      validateTaskKnowledgeRequestResponse({ ...response, digest: "sha256:tampered" }),
++    ).toThrow(/digest or version is invalid/u);
++  });
++});
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-request.ts b/packages/agentplane/src/runner/usecases/task-knowledge-request.ts
+new file mode 100644
+index 000000000..02ce9a75a
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-request.ts
+@@ -0,0 +1,578 @@
++import { createHash } from "node:crypto";
++
++import { atomicWriteFile } from "@agentplaneorg/core/fs";
++import {
++  parseCanonicalKnowledgeRef,
++  validateAgentSemanticResult,
++  type AgentSemanticResultKnowledgeRequest,
++  type AgentWorkOrderV2,
++  type KnowledgeRef,
++  type PreparedKnowledgeExcerpt,
++} from "@agentplaneorg/core/schemas";
++
++import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
++import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
++
++export const TASK_KNOWLEDGE_REQUEST_POLICY = {
++  schema_version: 1,
++  max_rounds: 2,
++  max_references: 6,
++  max_excerpt_bytes: 2048,
++  max_excerpt_lines: 60,
++  max_response_tokens: 1024,
++  max_query_terms: 16,
++} as const;
++
++export type TaskKnowledgeRequestAuditOutcome = "served" | "unresolved" | "denied" | "escalated";
++
++export type TaskKnowledgeRequestResponse = {
++  schema_version: 1;
++  kind: "task_knowledge_response";
++  run: {
++    run_id: string;
++    work_order_id: string;
++    state_fingerprint_digest: string;
++    role: AgentWorkOrderV2["role"];
++  };
++  round: number;
++  request_digest: string | null;
++  outcome: TaskKnowledgeRequestAuditOutcome;
++  knowledge_refs: KnowledgeRef[];
++  prepared_evidence: PreparedKnowledgeExcerpt[];
++  omissions: {
++    code:
++      | "invalid_semantic_result"
++      | "work_order_mismatch"
++      | "state_fingerprint_mismatch"
++      | "role_forbidden"
++      | "knowledge_request_not_authorized"
++      | "round_budget_exhausted"
++      | "query_invalid"
++      | "projection_unavailable"
++      | "no_match"
++      | "reference_not_materializable"
++      | "excerpt_not_included"
++      | "repeated_unresolved";
++    detail: string;
++  }[];
++  usage: {
++    estimated_request_tokens: number;
++    estimated_response_tokens: number;
++    max_response_tokens: number;
++  };
++  blocker: {
++    summary: string;
++    recommended_action: string | null;
++  } | null;
++  digest: string;
++};
++
++export type TaskKnowledgeRequestAudit = TaskKnowledgeRequestResponse;
++
++type KnowledgeRequestInvocation = {
++  run_id: string;
++  work_order_id: string;
++  state_fingerprint_digest: string;
++};
++
++function digest(value: unknown): string {
++  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
++}
++
++function requestDigest(request: AgentSemanticResultKnowledgeRequest): string {
++  return digest({
++    schema_version: request.schema_version,
++    kind: request.kind,
++    query: request.query,
++    reason: request.reason,
++    desired_kind: request.desired_kind,
++    scope: request.scope,
++    blocking: request.blocking,
++  });
++}
++
++function approximateTokens(value: string): number {
++  return Math.ceil(Buffer.byteLength(value, "utf8") / 4);
++}
++
++function compactQuery(value: string): string | null {
++  const normalized = value
++    .normalize("NFKC")
++    .toLocaleLowerCase("en-US")
++    .match(/[\p{L}\p{N}_]+/gu)
++    ?.join(" ")
++    .trim();
++  if (
++    !normalized ||
++    normalized.length > 160 ||
++    normalized.split(" ").length > TASK_KNOWLEDGE_REQUEST_POLICY.max_query_terms
++  ) {
++    return null;
++  }
++  return normalized;
++}
++
++function kindForRef(ref: string): KnowledgeRef["kind"] | null {
++  try {
++    const parsed = parseCanonicalKnowledgeRef(ref);
++    if (parsed.path.startsWith("context/wiki/")) return "wiki";
++    if (parsed.path.startsWith("context/raw/")) return "source";
++    if (parsed.selector?.key === "fact") return "fact";
++    if (parsed.selector?.key === "entity") return "entity";
++    if (parsed.selector?.key === "edge") return "edge";
++  } catch {
++    return null;
++  }
++  return null;
++}
++
++function materializableRef(ref: string): string {
++  try {
++    const parsed = parseCanonicalKnowledgeRef(ref);
++    return parsed.path.startsWith("context/wiki/") || parsed.path.startsWith("context/raw/")
++      ? parsed.path
++      : ref;
++  } catch {
++    return ref;
++  }
++}
++
++function projectionScopes(
++  request: AgentSemanticResultKnowledgeRequest,
++): ("wiki" | "facts" | "graph" | "raw")[] {
++  if (request.desired_kind === "wiki") return ["wiki"];
++  if (request.desired_kind === "source") return ["raw"];
++  if (request.desired_kind === "fact") return ["facts"];
++  if (request.desired_kind === "entity" || request.desired_kind === "edge") return ["graph"];
++  return ["wiki", "facts", "graph", "raw"];
++}
++
++function sealedResponse(
++  response: Omit<TaskKnowledgeRequestResponse, "schema_version" | "kind" | "digest">,
++): TaskKnowledgeRequestResponse {
++  const base = {
++    schema_version: 1 as const,
++    kind: "task_knowledge_response" as const,
++    ...response,
++  };
++  return { ...base, digest: digest(base) };
++}
++
++function auditBase(opts: {
++  invocation: KnowledgeRequestInvocation;
++  work_order: Pick<AgentWorkOrderV2, "role">;
++  round: number;
++  request_digest: string | null;
++}): Omit<
++  TaskKnowledgeRequestResponse,
++  | "schema_version"
++  | "kind"
++  | "digest"
++  | "outcome"
++  | "omissions"
++  | "usage"
++  | "blocker"
++  | "knowledge_refs"
++  | "prepared_evidence"
++> {
++  return {
++    run: { ...opts.invocation, role: opts.work_order.role },
++    round: opts.round,
++    request_digest: opts.request_digest,
++  };
++}
++
++function response(opts: {
++  invocation: KnowledgeRequestInvocation;
++  work_order: Pick<AgentWorkOrderV2, "role">;
++  round: number;
++  request_digest: string | null;
++  outcome: TaskKnowledgeRequestAuditOutcome;
++  omissions: TaskKnowledgeRequestResponse["omissions"];
++  request_tokens?: number;
++  response_tokens?: number;
++  knowledge_refs?: KnowledgeRef[];
++  prepared_evidence?: PreparedKnowledgeExcerpt[];
++  blocker?: TaskKnowledgeRequestResponse["blocker"];
++}): TaskKnowledgeRequestResponse {
++  return sealedResponse({
++    ...auditBase(opts),
++    outcome: opts.outcome,
++    knowledge_refs: opts.knowledge_refs ?? [],
++    prepared_evidence: opts.prepared_evidence ?? [],
++    omissions: opts.omissions,
++    usage: {
++      estimated_request_tokens: opts.request_tokens ?? 0,
++      estimated_response_tokens: opts.response_tokens ?? 0,
++      max_response_tokens: TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens,
++    },
++    blocker: opts.blocker ?? null,
++  });
++}
++
++function responseMatchesBinding(opts: {
++  audit: TaskKnowledgeRequestAudit;
++  invocation: KnowledgeRequestInvocation;
++}): boolean {
++  return (
++    opts.audit.run.run_id === opts.invocation.run_id &&
++    opts.audit.run.work_order_id === opts.invocation.work_order_id &&
++    opts.audit.run.state_fingerprint_digest === opts.invocation.state_fingerprint_digest
++  );
++}
++
++function uniqueRefs(values: string[]): string[] {
++  return [...new Set(values)].toSorted((left, right) => left.localeCompare(right));
++}
++
++/**
++ * The CLI calls this after an agent returns a typed request. It is deliberately
++ * independent of a provider adapter: RF-23 owns the in-episode tool transport.
++ */
++export async function serveTaskKnowledgeRequest(opts: {
++  repository_root: string;
++  invocation: KnowledgeRequestInvocation;
++  work_order: Pick<AgentWorkOrderV2, "work_order_id" | "role" | "state_fingerprint" | "authority">;
++  semantic_result: unknown;
++  prior_audits?: readonly TaskKnowledgeRequestAudit[];
++}): Promise<TaskKnowledgeRequestResponse> {
++  let semantic;
++  try {
++    semantic = validateAgentSemanticResult(opts.semantic_result);
++  } catch {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round: 1,
++      request_digest: null,
++      outcome: "denied",
++      omissions: [
++        {
++          code: "invalid_semantic_result",
++          detail: "The agent result is not a valid AgentSemanticResult v2 knowledge request.",
++        },
++      ],
++    });
++  }
++  const request = "knowledge_request" in semantic ? semantic.knowledge_request : undefined;
++  const prior = (opts.prior_audits ?? []).filter((audit) =>
++    responseMatchesBinding({ audit, invocation: opts.invocation }),
++  );
++  const round = prior.length + 1;
++  if (
++    semantic.work_order_id !== opts.invocation.work_order_id ||
++    semantic.work_order_id !== opts.work_order.work_order_id
++  ) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: null,
++      outcome: "denied",
++      omissions: [
++        {
++          code: "work_order_mismatch",
++          detail: "The agent result is not bound to the current work order.",
++        },
++      ],
++    });
++  }
++  if (opts.work_order.state_fingerprint.digest !== opts.invocation.state_fingerprint_digest) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: request ? requestDigest(request) : null,
++      outcome: "denied",
++      omissions: [
++        {
++          code: "state_fingerprint_mismatch",
++          detail: "The supplied work order does not match the invocation state fingerprint.",
++        },
++      ],
++    });
++  }
++  if (opts.work_order.role !== "EXECUTOR" && opts.work_order.role !== "EVALUATOR") {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: request ? requestDigest(request) : null,
++      outcome: "denied",
++      omissions: [
++        {
++          code: "role_forbidden",
++          detail: "Only EXECUTOR and EVALUATOR work orders may request knowledge.",
++        },
++      ],
++    });
++  }
++  if (!opts.work_order.authority.allowed_tool_classes.includes("knowledge_request")) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: request ? requestDigest(request) : null,
++      outcome: "denied",
++      omissions: [
++        {
++          code: "knowledge_request_not_authorized",
++          detail: "The current work order does not grant the knowledge_request tool class.",
++        },
++      ],
++    });
++  }
++  if (!request) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: null,
++      outcome: "denied",
++      omissions: [
++        {
++          code: "invalid_semantic_result",
++          detail: "The semantic result did not include a typed knowledge_request.",
++        },
++      ],
++    });
++  }
++  const requestId = requestDigest(request);
++  const requestTokens = approximateTokens(`${request.query}\n${request.reason}`);
++  if (round > TASK_KNOWLEDGE_REQUEST_POLICY.max_rounds) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: requestId,
++      outcome: "denied",
++      request_tokens: requestTokens,
++      omissions: [
++        {
++          code: "round_budget_exhausted",
++          detail: `The run already consumed ${TASK_KNOWLEDGE_REQUEST_POLICY.max_rounds} knowledge rounds.`,
++        },
++      ],
++      blocker: request.blocking
++        ? {
++            summary: "Knowledge request round budget is exhausted.",
++            recommended_action: "Return control to the parent workflow for escalation.",
++          }
++        : null,
++    });
++  }
++  const repeatedUnresolved = prior.some(
++    (audit) => audit.request_digest === requestId && audit.outcome === "unresolved",
++  );
++  if (repeatedUnresolved && request.blocking) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: requestId,
++      outcome: "escalated",
++      request_tokens: requestTokens,
++      omissions: [
++        {
++          code: "repeated_unresolved",
++          detail: "The same blocking knowledge request was unresolved in an earlier round.",
++        },
++      ],
++      blocker: {
++        summary: "A blocking knowledge request remains unresolved after a deduplicated retry.",
++        recommended_action:
++          "Escalate the missing canonical context to a human or CURATOR decision.",
++      },
++    });
++  }
++  const query = compactQuery(request.query);
++  if (!query) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: requestId,
++      outcome: "denied",
++      request_tokens: requestTokens,
++      omissions: [
++        {
++          code: "query_invalid",
++          detail: `Query must contain at most ${TASK_KNOWLEDGE_REQUEST_POLICY.max_query_terms} normalized terms.`,
++        },
++      ],
++    });
++  }
++  const projection = await readContextProjection(opts.repository_root);
++  const search = await searchContextProjection(opts.repository_root, {
++    query,
++    scopes: projectionScopes(request),
++    limit: TASK_KNOWLEDGE_REQUEST_POLICY.max_references,
++    offset: 0,
++  });
++  if (!projection || !search) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: requestId,
++      outcome: "unresolved",
++      request_tokens: requestTokens,
++      omissions: [
++        {
++          code: "projection_unavailable",
++          detail: "The bounded context projection is unavailable for this request.",
++        },
++      ],
++    });
++  }
++  const candidates = uniqueRefs(
++    search.rows
++      .flatMap((row) => [row.path, ...(row.source_refs ?? [])])
++      .map((ref) => materializableRef(ref)),
++  )
++    .flatMap((ref) => {
++      const kind = kindForRef(ref);
++      if (!kind || (request.desired_kind !== "any" && kind !== request.desired_kind)) return [];
++      return [{ ref, kind }];
++    })
++    .slice(0, TASK_KNOWLEDGE_REQUEST_POLICY.max_references);
++  if (candidates.length === 0) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: requestId,
++      outcome: "unresolved",
++      request_tokens: requestTokens,
++      omissions: [
++        {
++          code: "no_match",
++          detail: "No scoped search result resolved to a canonical KnowledgeRef.",
++        },
++      ],
++    });
++  }
++  const omissions: TaskKnowledgeRequestResponse["omissions"] = [];
++  const references: KnowledgeRef[] = [];
++  const excerpts: PreparedKnowledgeExcerpt[] = [];
++  let responseTokens = 0;
++  for (const candidate of candidates) {
++    let knowledgeRef: KnowledgeRef;
++    try {
++      knowledgeRef = await materializeKnowledgeRef({
++        repository_root: opts.repository_root,
++        ref: candidate.ref,
++        kind: candidate.kind,
++        reason: `knowledge_request:${requestId}`,
++        retrieval: "fts",
++        required: false,
++      });
++    } catch (error) {
++      omissions.push({
++        code: "reference_not_materializable",
++        detail:
++          `Search candidate ${candidate.ref} could not be materialized with a fresh digest` +
++          `${error instanceof Error && error.message ? `: ${error.message}` : "."}`,
++      });
++      continue;
++    }
++    const remainingTokens = TASK_KNOWLEDGE_REQUEST_POLICY.max_response_tokens - responseTokens;
++    if (remainingTokens <= 0) break;
++    const excerpt = await prepareKnowledgeExcerpt({
++      repository_root: opts.repository_root,
++      knowledge_ref: knowledgeRef,
++      max_bytes: Math.min(
++        TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_bytes,
++        Math.max(1, remainingTokens * 4),
++      ),
++      max_lines: TASK_KNOWLEDGE_REQUEST_POLICY.max_excerpt_lines,
++    });
++    if (excerpt.status !== "included") {
++      omissions.push({
++        code: "excerpt_not_included",
++        detail: `KnowledgeRef ${knowledgeRef.ref} did not produce an included bounded excerpt.`,
++      });
++      continue;
++    }
++    const excerptTokens = approximateTokens(excerpt.content);
++    if (excerptTokens > remainingTokens) {
++      omissions.push({
++        code: "excerpt_not_included",
++        detail: `KnowledgeRef ${knowledgeRef.ref} would exceed the response token budget.`,
++      });
++      continue;
++    }
++    references.push(knowledgeRef);
++    excerpts.push(excerpt);
++    responseTokens += excerptTokens;
++  }
++  if (references.length === 0) {
++    return response({
++      invocation: opts.invocation,
++      work_order: opts.work_order,
++      round,
++      request_digest: requestId,
++      outcome: "unresolved",
++      request_tokens: requestTokens,
++      response_tokens: responseTokens,
++      omissions,
++    });
++  }
++  return response({
++    invocation: opts.invocation,
++    work_order: opts.work_order,
++    round,
++    request_digest: requestId,
++    outcome: "served",
++    request_tokens: requestTokens,
++    response_tokens: responseTokens,
++    knowledge_refs: references,
++    prepared_evidence: excerpts,
++    omissions,
++  });
++}
++
++export function validateTaskKnowledgeRequestResponse(
++  responseValue: unknown,
++): TaskKnowledgeRequestResponse {
++  if (!responseValue || typeof responseValue !== "object" || Array.isArray(responseValue)) {
++    throw new Error("Knowledge request response must be an object.");
++  }
++  const response = responseValue as TaskKnowledgeRequestResponse;
++  const { digest: responseDigest, ...unsigned } = response;
++  if (
++    response.schema_version !== 1 ||
++    response.kind !== "task_knowledge_response" ||
++    typeof responseDigest !== "string" ||
++    responseDigest !== digest(unsigned)
++  ) {
++    throw new Error("Knowledge request response digest or version is invalid.");
++  }
++  const identities = response.knowledge_refs.map((ref) => `${ref.ref}\u0000${ref.digest}`);
++  if (new Set(identities).size !== identities.length) {
++    throw new Error("Knowledge request response contains duplicate knowledge references.");
++  }
++  const excerptIdentities = response.prepared_evidence.map(
++    (excerpt) => `${excerpt.knowledge_ref.ref}\u0000${excerpt.knowledge_ref.digest}`,
++  );
++  if (!excerptIdentities.every((identity) => identities.includes(identity))) {
++    throw new Error(
++      "Knowledge request response excerpt is not paired with a returned KnowledgeRef.",
++    );
++  }
++  if (response.prepared_evidence.some((excerpt) => excerpt.status !== "included")) {
++    throw new Error("Knowledge request response may contain only included excerpts.");
++  }
++  if (response.usage.estimated_response_tokens > response.usage.max_response_tokens) {
++    throw new Error("Knowledge request response exceeded its token budget.");
++  }
++  return response;
++}
++
++export async function persistTaskKnowledgeRequestAudit(opts: {
++  file_path: string;
++  audit: TaskKnowledgeRequestAudit;
++}): Promise<void> {
++  validateTaskKnowledgeRequestResponse(opts.audit);
++  await atomicWriteFile(opts.file_path, `${JSON.stringify(opts.audit, null, 2)}\n`, "utf8");
++}
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+index 54353d3f9..66d793249 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+@@ -34,6 +34,17 @@ export type {
+   SemanticRetrievalSelectorResponse,
+   SemanticRetrievalSelectionWorkOrder,
+ } from "./task-knowledge-semantic-escalation.js";
++export {
++  persistTaskKnowledgeRequestAudit,
++  serveTaskKnowledgeRequest,
++  validateTaskKnowledgeRequestResponse,
++  TASK_KNOWLEDGE_REQUEST_POLICY,
++} from "./task-knowledge-request.js";
++export type {
++  TaskKnowledgeRequestAudit,
++  TaskKnowledgeRequestAuditOutcome,
++  TaskKnowledgeRequestResponse,
++} from "./task-knowledge-request.js";
+ 
+ const MAX_STRUCTURED_FILE_BYTES = 2 * 1024 * 1024;
+ 
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index b80126779..a8f0b2fb8 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -49,7 +49,11 @@ describe("runner bootstrap result examples", () => {
+         expect(rawObject).not.toHaveProperty(supervisorOwnedField);
+       }
+     }
+-    expect(bootstrap).not.toContain('"schema_version":1');
++    expect(
++      [...examples.values()].map(
++        (raw) => (JSON.parse(raw) as { schema_version: number }).schema_version,
++      ),
++    ).toEqual(AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(() => 2));
+   });
+ 
+   it("binds examples to the prepared invocation and renders deterministically", () => {
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index f4ea1198a..e5c264c2f 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -88,6 +88,8 @@ export function renderTaskRunnerBootstrap(
+     route?.workflowStep.kind === "cli_operation" ? route.workflowStep.operation : undefined;
+   const routeMustNot = route?.executionPacket.mustNot ?? [];
+   const sandboxPolicy = bundle.execution.sandbox_policy;
++  const knowledgeRequestAuthorized =
++    bundle.work_order?.authority.allowed_tool_classes.includes("knowledge_request");
+   // Codex emits the typed result through its final structured response. The
+   // supervisor persists that response because runner artifacts live under
+   // `.git`, which is intentionally outside every Codex write sandbox.
+@@ -145,6 +147,13 @@ export function renderTaskRunnerBootstrap(
+     ...(routeMustNot.length > 0
+       ? ["Route must-not rules:", ...routeMustNot.map((rule) => `- ${rule}`)]
+       : []),
++    ...(knowledgeRequestAuthorized
++      ? [
++          "When bounded task context is missing, return status=needs_context with a KnowledgeRequest v1 in the semantic result.",
++          "KnowledgeRequest is limited to scope=task_context, a declared desired_kind, and blocking=true only when work cannot proceed without it.",
++          "Do not use repository search or lifecycle commands to fill that gap; the parent CLI validates the request, retrieves digest-valid references, and records its audit.",
++        ]
++      : []),
+     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked semantic result with blocker.summary and blocker.recommended_action; the supervisor owns path and conflict observation.",
+     "",
+     ...renderEvaluatorSkepticismLines(evaluatorSkepticismLevel),
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index e831049b6..4ac074d97 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -177,6 +177,10 @@ export {
+   type AgentSemanticResultClaimedCheck,
+   type AgentSemanticResultKnowledgeRequest,
+   type AgentSemanticResultStatus,
++  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
++  KNOWLEDGE_REQUEST_KIND,
++  KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++  KNOWLEDGE_REQUEST_SCOPE_VALUES,
+   type ExecutionReceipt,
+   type ExecutionReceiptV1,
+   type ExecutionReceiptV2,
+diff --git a/packages/core/src/runner/agent-semantic-result.test.ts b/packages/core/src/runner/agent-semantic-result.test.ts
+index f310c4df6..be88f63d0 100644
+--- a/packages/core/src/runner/agent-semantic-result.test.ts
++++ b/packages/core/src/runner/agent-semantic-result.test.ts
+@@ -87,8 +87,13 @@ describe("agent semantic result contract", () => {
+         ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+         status: "needs_context",
+         knowledge_request: {
++          schema_version: 1,
++          kind: "knowledge_request",
+           query: "Where is the provider contract defined?",
+           reason: "The current work order does not include that contract.",
++          desired_kind: "source",
++          scope: "task_context",
++          blocking: true,
+         },
+       }),
+     ).toEqual([]);
+diff --git a/packages/core/src/runner/agent-semantic-result.ts b/packages/core/src/runner/agent-semantic-result.ts
+index febffd600..eaa1005ce 100644
+--- a/packages/core/src/runner/agent-semantic-result.ts
++++ b/packages/core/src/runner/agent-semantic-result.ts
+@@ -20,6 +20,17 @@ export const AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_STATUS_VALUES = [
+   "failed",
+   "not_run",
+ ] as const;
++export const KNOWLEDGE_REQUEST_SCHEMA_VERSION = 1 as const;
++export const KNOWLEDGE_REQUEST_KIND = "knowledge_request" as const;
++export const KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES = [
++  "any",
++  "wiki",
++  "source",
++  "fact",
++  "entity",
++  "edge",
++] as const;
++export const KNOWLEDGE_REQUEST_SCOPE_VALUES = ["task_context"] as const;
+ 
+ const AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA = z
+   .object({
+@@ -30,8 +41,13 @@ const AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA = z
+ 
+ const AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA = z
+   .object({
++    schema_version: z.literal(KNOWLEDGE_REQUEST_SCHEMA_VERSION),
++    kind: z.literal(KNOWLEDGE_REQUEST_KIND),
+     query: NON_EMPTY_STRING,
+     reason: NON_EMPTY_STRING,
++    desired_kind: z.enum(KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES),
++    scope: z.enum(KNOWLEDGE_REQUEST_SCOPE_VALUES),
++    blocking: z.boolean(),
+   })
+   .strict();
+ 
+@@ -141,8 +157,13 @@ export function buildAgentSemanticResultV2ValidFixtures(
+       findings: ["The current work order does not contain the required contract."],
+       uncertainty: ["Inventing the missing contract could widen task scope."],
+       knowledge_request: {
++        schema_version: KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++        kind: KNOWLEDGE_REQUEST_KIND,
+         query: "Provide the canonical contract required by this work order.",
+         reason: "The runner cannot safely infer the missing semantic input.",
++        desired_kind: "any",
++        scope: "task_context",
++        blocking: true,
+       },
+     },
+     failed: {
+diff --git a/packages/core/src/runner/agent-work-order-fixtures.ts b/packages/core/src/runner/agent-work-order-fixtures.ts
+index b4de64826..a66319a9c 100644
+--- a/packages/core/src/runner/agent-work-order-fixtures.ts
++++ b/packages/core/src/runner/agent-work-order-fixtures.ts
+@@ -87,6 +87,7 @@ export function buildAgentWorkOrderV2ValidFixture(): AgentWorkOrderV2 {
+         "git_read",
+         "run_checks",
+         "knowledge_read",
++        "knowledge_request",
+         "report_result",
+         "report_blocker",
+       ],
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index 52be3cdbf..aa61a5b62 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -36,6 +36,10 @@ export {
+   type AgentSemanticResultClaimedCheck,
+   type AgentSemanticResultKnowledgeRequest,
+   type AgentSemanticResultStatus,
++  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
++  KNOWLEDGE_REQUEST_KIND,
++  KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++  KNOWLEDGE_REQUEST_SCOPE_VALUES,
+ } from "../runner/agent-semantic-result.js";
+ 
+ export {
+diff --git a/schemas/agent-semantic-result.schema.json b/schemas/agent-semantic-result.schema.json
+index e745b7a25..cabd0895c 100644
+--- a/schemas/agent-semantic-result.schema.json
++++ b/schemas/agent-semantic-result.schema.json
+@@ -79,6 +79,14 @@
+         "knowledge_request": {
+           "type": "object",
+           "properties": {
++            "schema_version": {
++              "type": "number",
++              "const": 1
++            },
++            "kind": {
++              "type": "string",
++              "const": "knowledge_request"
++            },
+             "query": {
+               "type": "string",
+               "minLength": 1
+@@ -86,9 +94,28 @@
+             "reason": {
+               "type": "string",
+               "minLength": 1
++            },
++            "desired_kind": {
++              "type": "string",
++              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
++            },
++            "scope": {
++              "type": "string",
++              "enum": ["task_context"]
++            },
++            "blocking": {
++              "type": "boolean"
+             }
+           },
+-          "required": ["query", "reason"],
++          "required": [
++            "schema_version",
++            "kind",
++            "query",
++            "reason",
++            "desired_kind",
++            "scope",
++            "blocking"
++          ],
+           "additionalProperties": false
+         }
+       },
+@@ -179,6 +206,14 @@
+         "knowledge_request": {
+           "type": "object",
+           "properties": {
++            "schema_version": {
++              "type": "number",
++              "const": 1
++            },
++            "kind": {
++              "type": "string",
++              "const": "knowledge_request"
++            },
+             "query": {
+               "type": "string",
+               "minLength": 1
+@@ -186,9 +221,28 @@
+             "reason": {
+               "type": "string",
+               "minLength": 1
++            },
++            "desired_kind": {
++              "type": "string",
++              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
++            },
++            "scope": {
++              "type": "string",
++              "enum": ["task_context"]
++            },
++            "blocking": {
++              "type": "boolean"
+             }
+           },
+-          "required": ["query", "reason"],
++          "required": [
++            "schema_version",
++            "kind",
++            "query",
++            "reason",
++            "desired_kind",
++            "scope",
++            "blocking"
++          ],
+           "additionalProperties": false
+         }
+       },
+@@ -279,6 +333,14 @@
+         "knowledge_request": {
+           "type": "object",
+           "properties": {
++            "schema_version": {
++              "type": "number",
++              "const": 1
++            },
++            "kind": {
++              "type": "string",
++              "const": "knowledge_request"
++            },
+             "query": {
+               "type": "string",
+               "minLength": 1
+@@ -286,9 +348,28 @@
+             "reason": {
+               "type": "string",
+               "minLength": 1
++            },
++            "desired_kind": {
++              "type": "string",
++              "enum": ["any", "wiki", "source", "fact", "entity", "edge"]
++            },
++            "scope": {
++              "type": "string",
++              "enum": ["task_context"]
++            },
++            "blocking": {
++              "type": "boolean"
+             }
+           },
+-          "required": ["query", "reason"],
++          "required": [
++            "schema_version",
++            "kind",
++            "query",
++            "reason",
++            "desired_kind",
++            "scope",
++            "blocking"
++          ],
+           "additionalProperties": false
+         }
+       },
+diff --git a/schemas/examples/agent-semantic-result-v2.needs-context.valid.json b/schemas/examples/agent-semantic-result-v2.needs-context.valid.json
+index 594d94a71..1d8b06352 100644
+--- a/schemas/examples/agent-semantic-result-v2.needs-context.valid.json
++++ b/schemas/examples/agent-semantic-result-v2.needs-context.valid.json
+@@ -7,7 +7,12 @@
+   "findings": ["The current work order does not contain the required contract."],
+   "uncertainty": ["Inventing the missing contract could widen task scope."],
+   "knowledge_request": {
++    "schema_version": 1,
++    "kind": "knowledge_request",
+     "query": "Provide the canonical contract required by this work order.",
+-    "reason": "The runner cannot safely infer the missing semantic input."
++    "reason": "The runner cannot safely infer the missing semantic input.",
++    "desired_kind": "any",
++    "scope": "task_context",
++    "blocking": true
+   }
+ }
+diff --git a/schemas/examples/agent-work-order-v2.camel-case.compat.json b/schemas/examples/agent-work-order-v2.camel-case.compat.json
+index 5d17f7953..3057aab73 100644
+--- a/schemas/examples/agent-work-order-v2.camel-case.compat.json
++++ b/schemas/examples/agent-work-order-v2.camel-case.compat.json
+@@ -101,6 +101,7 @@
+       "git_read",
+       "run_checks",
+       "knowledge_read",
++      "knowledge_request",
+       "report_result",
+       "report_blocker"
+     ],
+diff --git a/schemas/examples/agent-work-order-v2.valid.json b/schemas/examples/agent-work-order-v2.valid.json
+index ad6bcdbd1..2c53b1464 100644
+--- a/schemas/examples/agent-work-order-v2.valid.json
++++ b/schemas/examples/agent-work-order-v2.valid.json
+@@ -101,6 +101,7 @@
+       "git_read",
+       "run_checks",
+       "knowledge_read",
++      "knowledge_request",
+       "report_result",
+       "report_blocker"
+     ],

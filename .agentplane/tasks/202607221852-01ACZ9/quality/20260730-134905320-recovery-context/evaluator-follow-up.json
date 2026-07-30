@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-01ACZ9-fd74cb5edae2fe961ed21fec",
+  "task_id": "202607221852-01ACZ9",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Connect the handler to the actual CLI/runner semantic-result path, persist and reload its audit by run/work-order binding, and enforce task/authority path boundaries before accepting retrieval candidates; then add end-to-end and cross-task denial coverage.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The bounded knowledge-request handler is exported but never invoked by a CLI or runner episode path, so an EXECUTOR/EVALUATOR request cannot receive the promised response or durable run audit.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b695ac867d54e205292a6d2e3c330213d01cacedf2fc6aae574afccf9c327444",
+          "line": 1504,
+          "section": "task-knowledge-request.ts adds the serving API; task-knowledge-retrieval.ts only re-exports it, with no caller integration in the patch"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:1bdd150fdca3c5ec04ad89012bf18293b5d86cbf8c4e4875cfd64d592c119ab0",
+          "section": "runtime_evidence and runner_history are empty"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The declared task_context scope constrains only projection kind, not task identity or authorized paths; retrieval searches the repository-wide context projection and may return unrelated context.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b695ac867d54e205292a6d2e3c330213d01cacedf2fc6aae574afccf9c327444",
+          "line": 1413,
+          "section": "projectionScopes maps desired_kind to global projection partitions without applying task or authority boundaries"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/README.md",
+          "sha256": "sha256:81b17fa789bc8bbbe6288dfd6d9cf61116fa3bd02a489ca28562d5380ce5852e",
+          "section": "Scope and Verify Steps require scoped responses and denial of forbidden scope without broader repository authority"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-134905320-recovery-context/evaluator-result.json"
+}

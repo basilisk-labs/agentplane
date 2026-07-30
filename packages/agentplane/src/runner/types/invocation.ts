@@ -6,6 +6,7 @@ import type {
 import type { AgentSemanticResult } from "@agentplaneorg/core/schemas";
 
 import type { RunnerContextBundle } from "./context.js";
+import type { TaskKnowledgeRequestResponse } from "../usecases/task-knowledge-request.js";
 
 export type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 
@@ -87,6 +88,12 @@ type RunnerResultEvidence = {
   verification_candidates?: string[];
   blocked_reason?: string;
   recommended_parent_action?: string;
+  knowledge_request?: {
+    audit_path: string;
+    audit_digest: string;
+    outcome: TaskKnowledgeRequestResponse["outcome"];
+    round: number;
+  };
 };
 
 export type RunnerResultArtifact = {
@@ -164,6 +171,8 @@ export type RunnerResult = {
   metrics?: RunnerExecutionMetrics;
   evidence?: RunnerResultEvidence;
   semantic_result?: AgentReportedSemanticResult;
+  /** CLI-owned bounded response to an agent `needs_context` request, when present. */
+  knowledge_response?: TaskKnowledgeRequestResponse;
   agent_reported_claims?: AgentReportedLegacyClaim[];
   claim_conflicts?: AgentReportedClaimConflict[];
   manifest_warnings?: RunnerResultManifestWarning[];

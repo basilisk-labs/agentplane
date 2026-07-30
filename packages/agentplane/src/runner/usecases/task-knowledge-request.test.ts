@@ -10,8 +10,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { cmdContextReindex } from "../../context/reindex.js";
 import {
+  loadTaskKnowledgeRequestAudits,
   persistTaskKnowledgeRequestAudit,
   serveTaskKnowledgeRequest,
+  taskKnowledgeRequestAuditPath,
   validateTaskKnowledgeRequestResponse,
   type TaskKnowledgeRequestAudit,
 } from "./task-knowledge-request.js";
@@ -50,10 +52,17 @@ function input(
     semantic_result?: unknown;
     prior_audits?: readonly TaskKnowledgeRequestAudit[];
     role?: "EXECUTOR" | "EVALUATOR";
+    knowledge_ref?: string;
   } = {},
 ) {
   const workOrder = buildAgentWorkOrderV2ValidFixture();
   if (opts.role) workOrder.role = opts.role;
+  if (opts.knowledge_ref) {
+    workOrder.knowledge_refs = workOrder.knowledge_refs.map((knowledge) => ({
+      ...knowledge,
+      ref: opts.knowledge_ref!,
+    }));
+  }
   return {
     work_order: workOrder,
     invocation: {
@@ -90,7 +99,8 @@ describe("bounded task knowledge requests", () => {
     });
     stdout.mockRestore();
 
-    const served = await serveTaskKnowledgeRequest({ repository_root: root, ...input() });
+    const request = input({ knowledge_ref: "context/wiki/retrieval.md" });
+    const served = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
 
     expect(served.omissions).toEqual([]);
     expect(served).toMatchObject({
@@ -107,9 +117,57 @@ describe("bounded task knowledge requests", () => {
     );
     expect(validateTaskKnowledgeRequestResponse(served)).toEqual(served);
 
-    const auditPath = path.join(root, "audit.json");
+    const auditPath = taskKnowledgeRequestAuditPath({
+      run_dir: path.join(root, "runs", request.invocation.run_id),
+      audit: served,
+    });
     await persistTaskKnowledgeRequestAudit({ file_path: auditPath, audit: served });
     expect(JSON.parse(await readFile(auditPath, "utf8"))).toEqual(served);
+    await write(root, "runs/tampered/knowledge-requests/bad.json", "{}");
+    await expect(
+      loadTaskKnowledgeRequestAudits({
+        runs_dir: path.join(root, "runs"),
+        invocation: request.invocation,
+        role: request.work_order.role,
+      }),
+    ).resolves.toEqual([served]);
+  });
+
+  it("denies an FTS candidate outside the digest-bound task context", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/allowed.md",
+      "# Allowed\n\nOnly the approved context is visible.\n",
+    );
+    await write(
+      root,
+      "context/wiki/unrelated.md",
+      "# Unrelated\n\nCross-task private retrieval marker.\n",
+    );
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
+    stdout.mockRestore();
+
+    const denied = await serveTaskKnowledgeRequest({
+      repository_root: root,
+      ...input({
+        knowledge_ref: "context/wiki/allowed.md",
+        semantic_result: requestResult({
+          work_order_id: "work-order-example-001",
+          query: "cross task private retrieval marker",
+        }),
+      }),
+    });
+
+    expect(denied).toMatchObject({
+      outcome: "denied",
+      knowledge_refs: [],
+      omissions: [expect.objectContaining({ code: "reference_outside_task_context" })],
+    });
   });
 
   it("accepts an EVALUATOR request under the same bounded policy", async () => {
