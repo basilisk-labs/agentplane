@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300112-48RH1X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T01:29:27.580Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "f94ad71e8b08d3d18fa96c6736749b389159a893",
+  "blueprint_digest": "cd229775433a4bf34e184eb432e61a17b186818d35181c97c338d8225c87bd82",
+  "findings": [
+    "Frozen historical replay is projected from immutable envelopes, evidence, and baseline harness; current driver and dependency drift remains excluded from qualification-only projection."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

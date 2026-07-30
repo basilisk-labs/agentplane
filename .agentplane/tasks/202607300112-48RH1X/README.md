@@ -4,7 +4,7 @@ title: "Authorize deterministic RF-04 qualification rebuild evidence"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,31 @@ verification:
   updated_by: "TESTER"
   note: "Qualification rebuild evidence is restricted to the deterministic task-local path and preserves the RF-04 non-publication gate."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T01:29:27.580Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "f94ad71e8b08d3d18fa96c6736749b389159a893"
+  blueprint_digest: "cd229775433a4bf34e184eb432e61a17b186818d35181c97c338d8225c87bd82"
+  evidence_refs:
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300112-48RH1X/README.md"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300112-48RH1X/verification/20260730012859008-8773f55dfa661da7.json"
+    - ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Frozen historical replay is projected from immutable envelopes, evidence, and baseline harness; current driver and dependency drift remains excluded from qualification-only projection."
 commit: null
 comments:
   -

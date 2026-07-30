@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300112-48RH1X-d1457c18729122fa1ef8cd41",
+  "prepared_at": "2026-07-30T01:29:27.431Z",
+  "task": {
+    "id": "202607300112-48RH1X",
+    "revision": 7,
+    "objective": "Authorize deterministic RF-04 qualification rebuild evidence\n\nRepair the RF-04 replay capture safety contract so a qualification packet can rebuild frozen envelopes into its exact task-local evidence file without a provider driver, retry, replacement capture, or mutable baseline write. Keep all non-qualification capture targets restricted.",
+    "acceptance_criteria": [
+      "- In scope: Repair the RF-04 replay capture safety contract so a qualification packet can rebuild frozen envelopes into its exact task-local evidence file without a provider driver, retry, replacement capture, or mutable baseline write. Keep all non-qualification capture targets restricted.\n- Out of scope: unrelated refactors not required for \"Authorize deterministic RF-04 qualification rebuild evidence\".",
+      "1. Define one explicit qualification-rebuild target derived from a validated task ID and fixed evidence filename; retain canonical-only targets for every other RF-04 mode.\n2. Reject conflicting --output, provider --driver, --replace, and --pilot combinations for this deterministic rebuild path.\n3. Route qualification-packet RF-04 rebuilding through the new constrained contract and retain exact frozen-measurement comparison.\n4. Add focused tests for allowed task-local rebuild, traversal/foreign path rejection, and no-driver/no-replacement invariants.\n5. Run focused tests, RF-04 safety tests, qualification packet tests, ci:contract, and a real local packet-build probe with no provider invocation.",
+      "1. Focused RF-04 safety and capture-script tests prove that only the exact .agentplane/tasks/<task-id>/evidence/rf04-current-rebuild.v1.json target is accepted for qualification rebuilds.\n2. Focused qualification-packet tests prove the packet emits that evidence path and rejects divergent frozen measurements.\n3. Tests prove qualification rebuild rejects --driver, --replace, --pilot, conflicting --output, malformed task IDs, and path traversal.\n4. `bun run ci:contract` passes.\n5. A real local `ap task verify ok` packet-build probe reaches the RF-04 candidate gate without provider driver/retry/replacement execution; beta.1 remains blocked if candidate verdict is fail."
+    ]
+  },
+  "evaluated_sha": "f94ad71e8b08d3d18fa96c6736749b389159a893",
+  "diff_base_sha": "dd7d77beb33517ce7e208935925fa58ce66d4029",
+  "blueprint_digest": "cd229775433a4bf34e184eb432e61a17b186818d35181c97c338d8225c87bd82",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300112-48RH1X/README.md",
+      "sha256": "sha256:7d3c3d9e263745ad20e7a59fd987ba97746aa585e94aa5736ebe9cbe8c8644cc",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:e17f8ff4d5df51ac2985c8ca7421febd2b9f6a2be148f912929fe2ea4f813f5d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:f0566a94a8f56e0b352a9055393ba2bac0b3bb8acdd145afd41f30fac16ccb25",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607300112-48RH1X/verification/20260730012859008-8773f55dfa661da7.json",
+      "sha256": "sha256:646f52fdc113db9cf2d7743c47fc314bce1a362981463d2a90f378e6bc865623",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300112-48RH1X/quality/20260730-012927431-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:c68e2ec4f0165846ce75be354cf28bf3dec921e06f228584e82dfa4eff1213eb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
