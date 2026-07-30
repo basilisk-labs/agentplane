@@ -6,7 +6,7 @@ Created: 2026-07-30T02:49:39.908Z
 
 - Task: `202607300246-Q3RDCW`
 - Title: Fix diverged-head recovery upstream binding
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding`
 - Canonical task record: `.agentplane/tasks/202607300246-Q3RDCW/README.md`
 
@@ -34,8 +34,9 @@ Created: 2026-07-30T02:49:39.908Z
  .../src/cli/run-cli.core.route-decision.test.ts    | 78 +++++++++++++----
  .../commands/pr/conflict-rework-recovery.test.ts   | 58 ++++++++++---
  .../src/commands/pr/conflict-rework-recovery.ts    |  8 +-
+ .../usecases/task-run-effect-resolution.test.ts    | 63 +++++++++-----
  packages/testkit/src/cli-harness.ts                | 56 +++++++++++-
- 6 files changed, 247 insertions(+), 75 deletions(-)
+ 7 files changed, 291 insertions(+), 94 deletions(-)
 ```
 
 </details>
