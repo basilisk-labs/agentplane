@@ -2,10 +2,10 @@
 id: "202607300246-Q3RDCW"
 title: "Fix diverged-head recovery upstream binding"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: repair the temporary integration fixture so the mandatory quality-review contract is exercised only after its branch_pr context and required policy inputs exist."
 events:
   -
     type: "status"
@@ -123,8 +126,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T03:14:31.438Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: repair the temporary integration fixture so the mandatory quality-review contract is exercised only after its branch_pr context and required policy inputs exist."
 doc_version: 3
-doc_updated_at: "2026-07-30T03:04:15.570Z"
+doc_updated_at: "2026-07-30T03:14:31.438Z"
 doc_updated_by: "CODER"
 description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
 sections:

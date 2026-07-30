@@ -18,6 +18,15 @@ import {
 
 const execFileAsync = promisify(execFile);
 
+async function runJson<T>(args: string[]): Promise<[number, T]> {
+  const io = captureStdIO();
+  try {
+    return [await runCli(args), JSON.parse(io.stdout) as T];
+  } finally {
+    io.restore();
+  }
+}
+
 async function createBranchPrTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
   try {
@@ -654,6 +663,7 @@ describe("runCli route decision commands", () => {
       readmePath,
       readme
         .replace('status: "TODO"', 'status: "DONE"')
+        .replace(/(verification:\s+state: )"[^"]+"/u, '$1"ok"')
         .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Merge PR #1"'),
       "utf8",
     );
@@ -665,17 +675,27 @@ describe("runCli route decision commands", () => {
       const parsed = JSON.parse(statusIo.stdout) as {
         blockers: { code: string }[];
         nextAction: { code: string; command: string | null };
-        oracle: { phase: string };
+        oracle: { phase: string; nextCommand: string };
       };
       expect(parsed.blockers).toEqual([]);
-      expect(parsed.oracle.phase).toBe("remote_route_refresh_needed");
-      expect(parsed.nextAction).toMatchObject({
-        code: "refresh_remote_route",
-        command: `agentplane task next-action ${taskId} --remote --explain`,
-      });
+      expect(parsed.oracle.phase).toBe("side_effect_authority_required");
+      await runCliSilent([...parsed.oracle.nextCommand.split(" ").slice(1), "--root", root]);
     } finally {
       statusIo.restore();
     }
+
+    const [code, parsed] = await runJson<{
+      blockers: { code: string }[];
+      nextAction: { code: string; command: string | null };
+      oracle: { phase: string };
+    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
+    expect(code).toBe(0);
+    expect(parsed.blockers).toEqual([]);
+    expect(parsed.oracle.phase).toBe("remote_route_refresh_needed");
+    expect(parsed.nextAction).toMatchObject({
+      code: "refresh_remote_route",
+      command: `agentplane task next-action ${taskId} --remote --explain`,
+    });
   });
 
   it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
@@ -1010,21 +1030,49 @@ describe("runCli route decision commands", () => {
         ]);
         expect(code).toBe(0);
         const parsed = JSON.parse(nextIo.stdout) as {
-          route_oracle: { phase: string; authoritativeCheckout: string; blocker: { code: string } };
-          next_action: { code: string; command: string };
+          route_oracle: {
+            phase: string;
+            authoritativeCheckout: string;
+            blocker: { code: string };
+            nextCommand: string;
+          };
+          next_action: { code: string; command: string | null };
           blockers: { code: string }[];
         };
         expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pr_meta_stale");
-        expect(parsed.route_oracle).toMatchObject({
-          phase: "pr_artifacts_stale",
-          authoritativeCheckout: "task_worktree",
-          blocker: { code: "pr_meta_stale" },
-        });
-        expect(parsed.next_action.code).toBe("update_pr_artifacts");
-        expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
+        if (parsed.route_oracle.phase === "side_effect_authority_required") {
+          await runCliSilent([
+            ...parsed.route_oracle.nextCommand.split(" ").slice(1),
+            "--root",
+            root,
+          ]);
+        } else {
+          expect(parsed.route_oracle).toMatchObject({
+            phase: "pr_artifacts_stale",
+            authoritativeCheckout: "task_worktree",
+            blocker: { code: "pr_meta_stale" },
+          });
+          expect(parsed.next_action).toMatchObject({
+            code: "update_pr_artifacts",
+            command: `agentplane pr update ${taskId}`,
+          });
+        }
       } finally {
         nextIo.restore();
       }
+
+      const [code, parsed] = await runJson<{
+        route_oracle: { phase: string; authoritativeCheckout: string; blocker: { code: string } };
+        next_action: { code: string; command: string };
+      }>(["task", "next-action", taskId, "--json", "--remote", "--root", root]);
+      expect(code).toBe(0);
+      expect(parsed.route_oracle).toMatchObject({
+        phase: "pr_artifacts_stale",
+        authoritativeCheckout: "task_worktree",
+        blocker: { code: "pr_meta_stale" },
+      });
+      expect(parsed.next_action.code).toBe("update_pr_artifacts");
+      expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
 
       const repairIo = captureStdIO();
       try {

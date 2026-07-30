@@ -13,6 +13,7 @@ import {
   commitAll,
   configureGitUser,
   mkGitRepoRoot,
+  recordQualityReviewPass,
   registerAgentplaneHome,
   runCliSilent,
   silenceStdIO,
@@ -36,25 +37,7 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
-async function recordEvaluatorPass(root: string, taskId: string): Promise<void> {
-  await runCliSilent([
-    "evaluator",
-    "run",
-    taskId,
-    "--provenance",
-    "evaluator_supplied",
-    "--verdict",
-    "pass",
-    "--summary",
-    "Structured finish fixture has verification evidence.",
-    "--finding",
-    "The finish fixture passed its targeted branch_pr lifecycle checks.",
-    "--evidence",
-    "branch_pr finish fixture",
-    "--root",
-    root,
-  ]);
-}
+const recordEvaluatorPass = recordQualityReviewPass;
 
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
@@ -444,8 +427,10 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordEvaluatorPass(root, taskId);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+      await runCliSilent(["branch", "base", "clear", "--root", root]);
 
       const io = captureStdIO();
       try {
