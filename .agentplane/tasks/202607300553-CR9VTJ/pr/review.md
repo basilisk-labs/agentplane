@@ -12,8 +12,8 @@ Created: 2026-07-30T05:53:55.797Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.
+- State: ok
+- Note: Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

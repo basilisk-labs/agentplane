@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +38,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-30T06:16:29.508Z"
+  state: "ok"
+  updated_at: "2026-07-30T06:21:39.206Z"
   updated_by: "TESTER"
-  note: "Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract."
-  attempts: 1
+  note: "Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -131,8 +131,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract."
+  -
+    type: "verify"
+    at: "2026-07-30T06:21:39.206Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results."
 doc_version: 3
-doc_updated_at: "2026-07-30T06:17:39.145Z"
+doc_updated_at: "2026-07-30T06:21:40.389Z"
 doc_updated_by: "CODER"
 description: "Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency."
 sections:
@@ -232,6 +238,61 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T06:21:39.206Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T06:17:39.145Z, excerpt_hash=sha256:6fb203a777856f65d4df5da552b6f42857e36e1d1ee87fc0dce0fa1edd9afe9c
+
+    Details:
+
+    Command: node -e beta1-successor-decision-contract
+    Result: pass
+    Evidence: beta.2 depends on 202607300553-CR9VTJ, legacy 202607221908-MR9EA9 is BLOCKED, decision=do_not_publish, exact two latency failures retained, live_provider_measurement=not_run_by_packet_builder.
+    Scope: graph replacement and explicit non-publication decision.
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+    Result: pass
+    Evidence: 20 tests passed.
+    Scope: F8 timing partition and sealed failed RF-04 candidate behavior.
+
+    Command: node scripts/checks/check-agent-efficiency-replay.mjs
+    Result: pass
+    Evidence: frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.
+    Scope: immutable no-provider replay evidence.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: deterministic contract completed successfully on the concrete verification contract.
+    Scope: repository-wide contract surface.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed.
+    Scope: critical CLI regression surface.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300553-CR9VTJ-requalify-the-agentplane-0-7-0-beta-1-decision-o/.agentplane/tasks/202607300553-CR9VTJ/blueprint/resolved-snapshot.json
+    - old_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+    - current_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607300553-CR9VTJ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -252,6 +313,10 @@ sections:
     - Observation: The beta.2 dependency update is present, but the task README leaves its validation requirements generic.
       Impact: The release-gate decision would be under-specified for independent review.
       Resolution: Replace the fallback with concrete dependency, frozen-evidence, no-provider, decision, and regression checks before re-verification.
+
+    - Observation: The formal Verify Steps now enumerate graph, RF-04, no-provider, and regression acceptance criteria rather than a fallback scaffold.
+      Impact: Independent review can reproduce the beta.1 do-not-publish decision from current task evidence.
+      Resolution: No provider capture is performed; beta.2 remains dependent on this successor gate.
 extensions:
   workflow_route_baseline:
     start_head_sha: "7856c47baaab749275df9f7bbdc640bac19c86d5"
@@ -364,6 +429,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T06:21:39.206Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T06:17:39.145Z, excerpt_hash=sha256:6fb203a777856f65d4df5da552b6f42857e36e1d1ee87fc0dce0fa1edd9afe9c
+
+Details:
+
+Command: node -e beta1-successor-decision-contract
+Result: pass
+Evidence: beta.2 depends on 202607300553-CR9VTJ, legacy 202607221908-MR9EA9 is BLOCKED, decision=do_not_publish, exact two latency failures retained, live_provider_measurement=not_run_by_packet_builder.
+Scope: graph replacement and explicit non-publication decision.
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+Result: pass
+Evidence: 20 tests passed.
+Scope: F8 timing partition and sealed failed RF-04 candidate behavior.
+
+Command: node scripts/checks/check-agent-efficiency-replay.mjs
+Result: pass
+Evidence: frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.
+Scope: immutable no-provider replay evidence.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: deterministic contract completed successfully on the concrete verification contract.
+Scope: repository-wide contract surface.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed.
+Scope: critical CLI regression surface.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300553-CR9VTJ-requalify-the-agentplane-0-7-0-beta-1-decision-o/.agentplane/tasks/202607300553-CR9VTJ/blueprint/resolved-snapshot.json
+- old_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+- current_digest: de3002eb1f1282432ab84376988f2dc568c4394c2eea0599ddcb1e500fbea1df
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607300553-CR9VTJ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -388,3 +508,7 @@ DecisionContextRef:
 - Observation: The beta.2 dependency update is present, but the task README leaves its validation requirements generic.
   Impact: The release-gate decision would be under-specified for independent review.
   Resolution: Replace the fallback with concrete dependency, frozen-evidence, no-provider, decision, and regression checks before re-verification.
+
+- Observation: The formal Verify Steps now enumerate graph, RF-04, no-provider, and regression acceptance criteria rather than a fallback scaffold.
+  Impact: Independent review can reproduce the beta.1 do-not-publish decision from current task evidence.
+  Resolution: No provider capture is performed; beta.2 remains dependent on this successor gate.

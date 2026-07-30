@@ -15,8 +15,13 @@ Replace the stranded beta.1 gate with a current-main qualification record. Prese
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: review found that fallback Verify Steps do not state the concrete beta.1 gate acceptance contract.
+- State: ok
+- Note:
+
+```text
+Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure,
+no-provider decision, and deterministic regression results.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

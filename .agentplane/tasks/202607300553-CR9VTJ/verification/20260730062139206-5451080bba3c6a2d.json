@@ -1,0 +1,15 @@
+{
+  "details": "Command: node -e beta1-successor-decision-contract\nResult: pass\nEvidence: beta.2 depends on 202607300553-CR9VTJ, legacy 202607221908-MR9EA9 is BLOCKED, decision=do_not_publish, exact two latency failures retained, live_provider_measurement=not_run_by_packet_builder.\nScope: graph replacement and explicit non-publication decision.\n\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts\nResult: pass\nEvidence: 20 tests passed.\nScope: F8 timing partition and sealed failed RF-04 candidate behavior.\n\nCommand: node scripts/checks/check-agent-efficiency-replay.mjs\nResult: pass\nEvidence: frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.\nScope: immutable no-provider replay evidence.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: deterministic contract completed successfully on the concrete verification contract.\nScope: repository-wide contract surface.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical-cli chunks passed.\nScope: critical CLI regression surface.",
+  "digest": "sha256:5451080bba3c6a2da3da3e798541c4c1030c66036a34ae45745b5de5db0075fb",
+  "implementation_sha": "a2ea0bcc67b5e2238cc1c1553f7acc05bc76f411",
+  "kind": "task_verification_record",
+  "note": "Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results.",
+  "recorded_at": "2026-07-30T06:21:39.206Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Inspect the beta.2 dependency diff. Expected: 202607221908-0JP0ZZ depends on 202607300553-CR9VTJ, while 202607221908-MR9EA9 is BLOCKED and is not a beta.2 prerequisite.\n2. Run bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts. Expected: F8 timing partition and sealed failed RF-04 candidate behavior pass without provider access.\n3. Run node scripts/checks/check-agent-efficiency-replay.mjs. Expected: immutable evidence validates exactly 50 runs, 55 provider episodes, and its structural/token/scalar coverage without a replay.\n4. Inspect .agentplane/tasks/202607300553-CR9VTJ/evidence/qualification-packet.v1.json. Expected: qualification_decision=do_not_publish, exact latency failure IDs are retained, and live_provider_measurement=not_run_by_packet_builder.\n5. Run bun run ci:contract and bun run test:critical. Expected: deterministic repository contract and critical CLI regression surfaces pass on the reviewed task head.",
+  "scope_digest": "sha256:6fb203a777856f65d4df5da552b6f42857e36e1d1ee87fc0dce0fa1edd9afe9c",
+  "task_id": "202607300553-CR9VTJ",
+  "verification_command": "agentplane verify 202607300553-CR9VTJ --ok --by TESTER",
+  "verifier": "TESTER"
+}
