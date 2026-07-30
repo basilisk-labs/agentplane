@@ -706,6 +706,107 @@ describe("context harvest tasks", () => {
     await expect(readFile(lockPath, "utf8")).rejects.toThrow();
   });
 
+  it("does not reclaim a replacement lock after reading a stale owner", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-RACE01",
+      title: "Fence stale selection recovery",
+      description: "Decision: stale selection recovery must preserve replacement ownership.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], writeProposals: true }),
+    });
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const proposalName = proposalFiles.find((name) => name.endsWith(".json"));
+    expect(proposalName).toBeDefined();
+    const proposalId = proposalName?.replace(/\.json$/u, "") ?? "";
+    const lockPath = path.join(proposalDir, `${proposalId}.selection.lock`);
+    await write(
+      root,
+      path.relative(root, lockPath),
+      JSON.stringify({
+        schema_version: 1,
+        kind: "task_knowledge_proposal_selection_lock",
+        owner: { token: "interrupted", pid: 999_999, hostname: "other-host" },
+        acquired_at: "1970-01-01T00:00:00.000Z",
+        expires_at: "1970-01-01T00:00:01.000Z",
+      }),
+    );
+
+    let resumeReclaim: (() => void) | undefined;
+    const reclaimPaused = new Promise<void>((resolve) => {
+      resumeReclaim = resolve;
+    });
+    let signalStaleRead: (() => void) | undefined;
+    const staleRead = new Promise<void>((resolve) => {
+      signalStaleRead = resolve;
+    });
+    const first = cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      selectionLockTestHooks: {
+        afterStaleLockRead: async ({ ownerToken }) => {
+          expect(ownerToken).toBe("interrupted");
+          signalStaleRead?.();
+          await reclaimPaused;
+        },
+      },
+    });
+    await staleRead;
+
+    await rm(lockPath);
+    let allowReplacement: (() => void) | undefined;
+    const replacementAllowed = new Promise<void>((resolve) => {
+      allowReplacement = resolve;
+    });
+    let signalReplacementAcquired: (() => void) | undefined;
+    const replacementAcquired = new Promise<void>((resolve) => {
+      signalReplacementAcquired = resolve;
+    });
+    const createdTaskIds: string[] = [];
+    const second = cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+        signalReplacementAcquired?.();
+        await replacementAllowed;
+        const taskId = "202604040900-CURAT1";
+        createdTaskIds.push(taskId);
+        await commandCtx.taskBackend.writeTask({
+          id: taskId,
+          title: taskParsed.title,
+          status: "TODO",
+          owner: taskParsed.owner,
+          priority: taskParsed.priority,
+          tags: taskParsed.tags,
+          description: taskParsed.description,
+          extensions: taskParsed.extensions,
+        } as TaskData);
+        return taskCreationResult(taskId);
+      },
+    });
+    await replacementAcquired;
+    const replacementLock = await readFile(lockPath, "utf8");
+    expect(replacementLock).not.toContain("interrupted");
+
+    resumeReclaim?.();
+    await expect(first).rejects.toThrow(/live CURATOR selection/u);
+    await expect(readFile(lockPath, "utf8")).resolves.toBe(replacementLock);
+
+    allowReplacement?.();
+    await second;
+    expect(createdTaskIds).toEqual(["202604040900-CURAT1"]);
+  });
+
   it("does not reclaim an expired lease while its local owner is still alive", async () => {
     const root = await tempRoot();
     await initContextWorkspace(root);

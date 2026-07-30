@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import type { Stats } from "node:fs";
 import { mkdir, open, readFile, readdir, rename, stat, unlink } from "node:fs/promises";
 import { hostname } from "node:os";
 import path from "node:path";
@@ -109,6 +110,20 @@ type TaskKnowledgeSelectionLock = {
   };
   acquired_at: string;
   expires_at: string;
+};
+
+type TaskKnowledgeSelectionReclaimGuard = {
+  schema_version: 1;
+  kind: "task_knowledge_proposal_selection_reclaim_guard";
+  owner: { token: string };
+  acquired_at: string;
+};
+
+type TaskKnowledgeSelectionLockTestHooks = {
+  afterStaleLockRead?: (input: {
+    target: string;
+    ownerToken: string | null;
+  }) => void | Promise<void>;
 };
 
 function normalizedTerms(text: string): string[] {
@@ -354,6 +369,7 @@ function taskHasCurrentCuratorSelection(opts: {
 async function acquireTaskKnowledgeSelectionLock(opts: {
   root: string;
   proposalId: string;
+  testHooks?: TaskKnowledgeSelectionLockTestHooks;
 }): Promise<() => Promise<void>> {
   const rel = `.agentplane/context/derived/proposals/task-knowledge/${opts.proposalId}.selection.lock`;
   const target = path.join(opts.root, rel);
@@ -375,9 +391,24 @@ async function acquireTaskKnowledgeSelectionLock(opts: {
       };
       await handle.writeFile(`${JSON.stringify(lock)}\n`, "utf8");
       await handle.sync();
+      if (await fileExists(taskKnowledgeSelectionReclaimGuardPath(target))) {
+        await handle.close();
+        handle = null;
+        await removeTaskKnowledgeSelectionLockIfOwned({ target, ownerToken: owner.token });
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            "CURATOR selection recovery is already in progress for this task knowledge proposal. " +
+            "Re-run after the recovery guard is released.",
+        });
+      }
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
-      const reclaimed = await reclaimStaleTaskKnowledgeSelectionLock({ target });
+      const reclaimed = await reclaimStaleTaskKnowledgeSelectionLock({
+        target,
+        testHooks: opts.testHooks,
+      });
       if (reclaimed) continue;
       throw new CliError({
         exitCode: 3,
@@ -389,14 +420,80 @@ async function acquireTaskKnowledgeSelectionLock(opts: {
   }
   return async () => {
     await handle.close();
-    const current = await readFile(target, "utf8").catch((error: NodeJS.ErrnoException) => {
+    await removeTaskKnowledgeSelectionLockIfOwned({ target, ownerToken: owner.token });
+  };
+}
+
+function taskKnowledgeSelectionReclaimGuardPath(target: string): string {
+  return `${target}.reclaim.lock`;
+}
+
+async function removeTaskKnowledgeSelectionLockIfOwned(opts: {
+  target: string;
+  ownerToken: string;
+}): Promise<void> {
+  const current = await readFile(opts.target, "utf8").catch((error: NodeJS.ErrnoException) => {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  });
+  if (!current) return;
+  const parsed = parseTaskKnowledgeSelectionLock(current);
+  if (parsed?.owner.token !== opts.ownerToken) return;
+  await unlink(opts.target).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+}
+
+function parseTaskKnowledgeSelectionReclaimGuard(
+  value: string,
+): TaskKnowledgeSelectionReclaimGuard | null {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (
+      !isRecord(parsed) ||
+      parsed.schema_version !== 1 ||
+      parsed.kind !== "task_knowledge_proposal_selection_reclaim_guard" ||
+      !isRecord(parsed.owner) ||
+      typeof parsed.owner.token !== "string" ||
+      typeof parsed.acquired_at !== "string"
+    ) {
+      return null;
+    }
+    return parsed as TaskKnowledgeSelectionReclaimGuard;
+  } catch {
+    return null;
+  }
+}
+
+async function acquireTaskKnowledgeSelectionReclaimGuard(
+  target: string,
+): Promise<(() => Promise<void>) | null> {
+  const guardPath = taskKnowledgeSelectionReclaimGuardPath(target);
+  const ownerToken = randomUUID();
+  let handle: Awaited<ReturnType<typeof open>>;
+  try {
+    handle = await open(guardPath, "wx");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "EEXIST") return null;
+    throw error;
+  }
+  const guard: TaskKnowledgeSelectionReclaimGuard = {
+    schema_version: 1,
+    kind: "task_knowledge_proposal_selection_reclaim_guard",
+    owner: { token: ownerToken },
+    acquired_at: new Date().toISOString(),
+  };
+  await handle.writeFile(`${JSON.stringify(guard)}\n`, "utf8");
+  await handle.sync();
+  return async () => {
+    await handle.close();
+    const current = await readFile(guardPath, "utf8").catch((error: NodeJS.ErrnoException) => {
       if (error.code === "ENOENT") return null;
       throw error;
     });
     if (!current) return;
-    const parsed = parseTaskKnowledgeSelectionLock(current);
-    if (parsed?.owner.token !== owner.token) return;
-    await unlink(target).catch((error: NodeJS.ErrnoException) => {
+    if (parseTaskKnowledgeSelectionReclaimGuard(current)?.owner.token !== ownerToken) return;
+    await unlink(guardPath).catch((error: NodeJS.ErrnoException) => {
       if (error.code !== "ENOENT") throw error;
     });
   };
@@ -438,33 +535,69 @@ function taskKnowledgeSelectionLockLiveness(
   }
 }
 
-async function reclaimStaleTaskKnowledgeSelectionLock(opts: { target: string }): Promise<boolean> {
-  let content: string;
-  let metadata: Awaited<ReturnType<typeof stat>>;
+async function reclaimStaleTaskKnowledgeSelectionLock(opts: {
+  target: string;
+  testHooks?: TaskKnowledgeSelectionLockTestHooks;
+}): Promise<boolean> {
+  const observed = await readTaskKnowledgeSelectionLock(opts.target);
+  if (!observed) return true;
+  if (!isReclaimableTaskKnowledgeSelectionLock(observed)) return false;
+  await opts.testHooks?.afterStaleLockRead?.({
+    target: opts.target,
+    ownerToken: observed.lock?.owner.token ?? null,
+  });
+
+  // A reclaimer first owns a separate guard. New selection attempts honor this
+  // guard, so an old owner can release without a replacement lock being
+  // mistaken for the stale generation after the reclaimer has revalidated it.
+  const releaseGuard = await acquireTaskKnowledgeSelectionReclaimGuard(opts.target);
+  if (!releaseGuard) return false;
   try {
-    [content, metadata] = await Promise.all([readFile(opts.target, "utf8"), stat(opts.target)]);
+    const current = await readTaskKnowledgeSelectionLock(opts.target);
+    if (!current) return true;
+    if (current.content !== observed.content || !isReclaimableTaskKnowledgeSelectionLock(current)) {
+      return false;
+    }
+    const recoveryPath = `${opts.target}.recovered-${randomUUID()}`;
+    try {
+      await rename(opts.target, recoveryPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+      throw error;
+    }
+    await unlink(recoveryPath).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== "ENOENT") throw error;
+    });
+    return true;
+  } finally {
+    await releaseGuard();
+  }
+}
+
+async function readTaskKnowledgeSelectionLock(target: string): Promise<{
+  content: string;
+  metadata: Stats;
+  lock: TaskKnowledgeSelectionLock | null;
+} | null> {
+  try {
+    const [content, metadata] = await Promise.all([readFile(target, "utf8"), stat(target)]);
+    return { content, metadata, lock: parseTaskKnowledgeSelectionLock(content) };
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
     throw error;
   }
-  const lock = parseTaskKnowledgeSelectionLock(content);
-  const expiresAt = lock ? Date.parse(lock.expires_at) : Number.NaN;
+}
+
+function isReclaimableTaskKnowledgeSelectionLock(lockFile: {
+  metadata: Stats;
+  lock: TaskKnowledgeSelectionLock | null;
+}): boolean {
+  const expiresAt = lockFile.lock ? Date.parse(lockFile.lock.expires_at) : Number.NaN;
   const expired = Number.isFinite(expiresAt)
     ? expiresAt <= Date.now()
-    : metadata.mtimeMs + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS <= Date.now();
-  const liveness = lock ? taskKnowledgeSelectionLockLiveness(lock) : "unknown";
-  if (liveness === "alive" || (!expired && liveness !== "dead")) return false;
-  const recoveryPath = `${opts.target}.recovered-${randomUUID()}`;
-  try {
-    await rename(opts.target, recoveryPath);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
-    throw error;
-  }
-  await unlink(recoveryPath).catch((error: NodeJS.ErrnoException) => {
-    if (error.code !== "ENOENT") throw error;
-  });
-  return true;
+    : lockFile.metadata.mtimeMs + TASK_KNOWLEDGE_SELECTION_LOCK_LEASE_MS <= Date.now();
+  const liveness = lockFile.lock ? taskKnowledgeSelectionLockLiveness(lockFile.lock) : "unknown";
+  return liveness !== "alive" && (expired || liveness === "dead");
 }
 
 async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof buildOutput>) {
@@ -562,6 +695,7 @@ async function createExtractionTasks(opts: {
   parsed: ContextHarvestTasksParsed;
   sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
   createTask?: typeof runTaskNewParsed;
+  selectionLockTestHooks?: TaskKnowledgeSelectionLockTestHooks;
 }) {
   const proposalByTaskId = new Map(
     opts.output.proposals.map((proposal) => [proposal.source_task_id, proposal]),
@@ -581,6 +715,7 @@ async function createExtractionTasks(opts: {
       const release = await acquireTaskKnowledgeSelectionLock({
         root: opts.ctx.resolvedProject.gitRoot,
         proposalId: proposal.id,
+        testHooks: opts.selectionLockTestHooks,
       });
       releases.push(release);
       const latestTasks = await opts.ctx.taskBackend.listTasks();
@@ -794,6 +929,7 @@ export async function cmdContextHarvestTasks(opts: {
   rootOverride?: string;
   parsed: ContextHarvestTasksParsed;
   createTask?: typeof runTaskNewParsed;
+  selectionLockTestHooks?: TaskKnowledgeSelectionLockTestHooks;
 }): Promise<number> {
   const ctx =
     opts.ctx ??
@@ -868,6 +1004,7 @@ export async function cmdContextHarvestTasks(opts: {
           parsed: opts.parsed,
           sourceFingerprints,
           createTask: opts.createTask,
+          selectionLockTestHooks: opts.selectionLockTestHooks,
         });
   const changed = [...new Set([...written, ...extraction.changedPaths])];
   const payload = {
