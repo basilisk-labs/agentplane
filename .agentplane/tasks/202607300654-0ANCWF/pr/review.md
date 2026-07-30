@@ -6,14 +6,14 @@ Created: 2026-07-30T06:55:29.760Z
 
 - Task: `202607300654-0ANCWF`
 - Title: Atomically synchronize RF-04 incident archival across package assets
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a`
 - Canonical task record: `.agentplane/tasks/202607300654-0ANCWF/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Atomic RF-04 archival is synchronized across package assets, project policy, generated table, and archive; it contains no provider retry or release.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

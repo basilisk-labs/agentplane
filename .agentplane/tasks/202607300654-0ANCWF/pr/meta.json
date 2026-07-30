@@ -3,14 +3,22 @@
   "branch": "task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a",
   "created_at": "2026-07-30T06:55:29.760Z",
   "diffstat_sha256": "sha256:34379a1c79155fa917e1f4ffdac6dae3be266efc83ad0d7c246b1389f4ef3fdb",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-30T06:58:21.531Z",
+  "last_verified_diffstat_sha256": "sha256:34379a1c79155fa917e1f4ffdac6dae3be266efc83ad0d7c246b1389f4ef3fdb",
   "pr_number": 4684,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4684",
+  "pre_merge_closure": {
+    "basis_commit": "63cccee4d0994886764a634ccc52587e9d8fa16d",
+    "branch": "task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a",
+    "pr_number": 4684,
+    "recorded_at": "2026-07-30T06:59:00.449Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607300654-0ANCWF",
   "updated_at": "2026-07-30T06:55:50.968Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -1,0 +1,904 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 0ed2f6e74..3499a0898 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260730-01 | date: 2026-07-30 | scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | match: benchmark, milestone-beta1, performance, quality, rf-04, v0.7, implement, candidate, sha, measurement, route, that, records, actual, token, latency | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition. | advice: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify. | rule: Analogous Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607292104-W03KZ0; commit c6a10db56506 | enforcement: manual | fixability: external | state: open
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/README.md b/.agentplane/tasks/202607300654-0ANCWF/README.md
+new file mode 100644
+index 000000000..7961876e5
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/README.md
+@@ -0,0 +1,118 @@
++---
++id: "202607300654-0ANCWF"
++title: "Atomically synchronize RF-04 incident archival across package assets"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 5
++origin:
++  system: "manual"
++depends_on:
++  - "202607300553-CR9VTJ"
++tags:
++  - "assets"
++  - "code"
++  - "incidents"
++  - "milestone-beta1"
++  - "release"
++  - "rf-04"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "ap doctor"
++  - "bun run agents:check"
++  - "bun run assets:builtin:check"
++  - "node .agentplane/policy/check-routing.mjs"
++  - "node scripts/check-release-incidents.mjs"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T06:55:13.148Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Approved under the user's standing authorization. Package/project policy parity is a required atomic code boundary exposed by hosted CI, not a provider retry or release expansion."
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T06:55:29.628Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++doc_version: 3
++doc_updated_at: "2026-07-30T06:55:29.628Z"
++doc_updated_by: "CODER"
++description: "Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package."
++sections:
++  Summary: |-
++    Atomically synchronize RF-04 incident archival across package assets
++
++    Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.
++  Scope: |-
++    - In scope: Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.
++    - Out of scope: unrelated refactors not required for "Atomically synchronize RF-04 incident archival across package assets".
++  Plan: "1. Reconstruct the exact externally mitigated RF-04 disposition from the failed provider precondition and merged CR9VTJ non-publication decision. 2. Update the canonical packaged incident policy first, then synchronize the project policy target and regenerate the built-in asset table. 3. Add the identical, faithful historical archive entry without changing provider or release semantics. 4. Prove package/project parity and rerun the exact local CI path that rejected PR #4683. 5. Verify, evaluate, integrate through branch_pr, and close PR #4683 only as superseded after the replacement task is merged."
++  Verify Steps: |-
++    1. Inspect the original INC-20260730-01 and CR9VTJ packet. Expected: the preserved archive includes RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH, qualification_decision=do_not_publish, live_provider_measurement=not_run_by_packet_builder, and makes no successful-rerun claim.
++    2. Inspect packages/agentplane/assets/policy/incidents.md, .agentplane/policy/incidents.md, and docs/developer/incident-archive.mdx. Expected: the incident is absent from both active registries and occurs exactly once in the archive as externally mitigated, with source evidence and a future pinned-environment reopen condition.
++    3. Run bun run agents:check and bun run assets:builtin:check. Expected: canonical package policy, project policy target, and generated built-in asset table are synchronized.
++    4. Run node scripts/check-release-incidents.mjs, node .agentplane/policy/check-routing.mjs, ap doctor, and bun run ci:local:fast. Expected: release gate, policy routing, workflow health, and the previously failed routed CI path pass.
++    5. Run git diff --check and inspect the diff. Expected: only incident archive/registries, generated asset table, and task artifacts change; no provider call, measurement retry, package release, or unrelated product code.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "951374ef0854d7bccd57361e6be7ec6ddededa6d"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Atomically synchronize RF-04 incident archival across package assets
++
++Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.
++
++## Scope
++
++- In scope: Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.
++- Out of scope: unrelated refactors not required for "Atomically synchronize RF-04 incident archival across package assets".
++
++## Plan
++
++1. Reconstruct the exact externally mitigated RF-04 disposition from the failed provider precondition and merged CR9VTJ non-publication decision. 2. Update the canonical packaged incident policy first, then synchronize the project policy target and regenerate the built-in asset table. 3. Add the identical, faithful historical archive entry without changing provider or release semantics. 4. Prove package/project parity and rerun the exact local CI path that rejected PR #4683. 5. Verify, evaluate, integrate through branch_pr, and close PR #4683 only as superseded after the replacement task is merged.
++
++## Verify Steps
++
++1. Inspect the original INC-20260730-01 and CR9VTJ packet. Expected: the preserved archive includes RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH, qualification_decision=do_not_publish, live_provider_measurement=not_run_by_packet_builder, and makes no successful-rerun claim.
++2. Inspect packages/agentplane/assets/policy/incidents.md, .agentplane/policy/incidents.md, and docs/developer/incident-archive.mdx. Expected: the incident is absent from both active registries and occurs exactly once in the archive as externally mitigated, with source evidence and a future pinned-environment reopen condition.
++3. Run bun run agents:check and bun run assets:builtin:check. Expected: canonical package policy, project policy target, and generated built-in asset table are synchronized.
++4. Run node scripts/check-release-incidents.mjs, node .agentplane/policy/check-routing.mjs, ap doctor, and bun run ci:local:fast. Expected: release gate, policy routing, workflow health, and the previously failed routed CI path pass.
++5. Run git diff --check and inspect the diff. Expected: only incident archive/registries, generated asset table, and task artifacts change; no provider call, measurement retry, package release, or unrelated product code.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300654-0ANCWF/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..55214ef1d
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/blueprint/resolved-snapshot.json
+@@ -0,0 +1,583 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300654-0ANCWF",
++    "title": "Atomically synchronize RF-04 incident archival across package assets",
++    "description": "Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.",
++    "tags": [
++      "assets",
++      "code",
++      "incidents",
++      "milestone-beta1",
++      "release",
++      "rf-04",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607300654-0ANCWF",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "4c96f141eceecb1e7be48f49ec43c3853571d55b07930302a33450a6247e4af7"
++  }
++}
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/pr/diffstat.txt b/.agentplane/tasks/202607300654-0ANCWF/pr/diffstat.txt
+new file mode 100644
+index 000000000..b7d3ff83e
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/pr/diffstat.txt
+@@ -0,0 +1,5 @@
++ .agentplane/policy/incidents.md                            | 1 -
++ docs/developer/incident-archive.mdx                        | 4 ++++
++ packages/agentplane/assets/policy/incidents.md             | 1 -
++ packages/agentplane/src/shared/builtin-assets.generated.ts | 6 +++---
++ 4 files changed, 7 insertions(+), 5 deletions(-)
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/pr/github-body.md b/.agentplane/tasks/202607300654-0ANCWF/pr/github-body.md
+new file mode 100644
+index 000000000..93c6b3aeb
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/pr/github-body.md
+@@ -0,0 +1,37 @@
++Task: `202607300654-0ANCWF`
++Title: Atomically synchronize RF-04 incident archival across package assets
++Canonical task record: `.agentplane/tasks/202607300654-0ANCWF/README.md`
++
++## Summary
++
++Atomically synchronize RF-04 incident archival across package assets
++
++Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.
++
++## Scope
++
++- In scope: Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.
++- Out of scope: unrelated refactors not required for "Atomically synchronize RF-04 incident archival across package assets".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T06:55:50.968Z
++- Branch: task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/policy/incidents.md                            | 1 -
++ docs/developer/incident-archive.mdx                        | 4 ++++
++ packages/agentplane/assets/policy/incidents.md             | 1 -
++ packages/agentplane/src/shared/builtin-assets.generated.ts | 6 +++---
++ 4 files changed, 7 insertions(+), 5 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/pr/github-title.txt b/.agentplane/tasks/202607300654-0ANCWF/pr/github-title.txt
+new file mode 100644
+index 000000000..bc2952327
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 0ANCWF task: Atomically synchronize RF-04 incident archival across package assets [202607300654-0ANCWF]
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/pr/meta.json b/.agentplane/tasks/202607300654-0ANCWF/pr/meta.json
+new file mode 100644
+index 000000000..5c92acc45
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a",
++  "created_at": "2026-07-30T06:55:29.760Z",
++  "diffstat_sha256": "sha256:34379a1c79155fa917e1f4ffdac6dae3be266efc83ad0d7c246b1389f4ef3fdb",
++  "last_verified_at": null,
++  "pr_number": 4684,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4684",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300654-0ANCWF",
++  "updated_at": "2026-07-30T06:55:50.968Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300654-0ANCWF/pr/review.md b/.agentplane/tasks/202607300654-0ANCWF/pr/review.md
+new file mode 100644
+index 000000000..acb792144
+--- /dev/null
++++ b/.agentplane/tasks/202607300654-0ANCWF/pr/review.md
+@@ -0,0 +1,40 @@
++# PR Review
++
++Created: 2026-07-30T06:55:29.760Z
++
++## Task
++
++- Task: `202607300654-0ANCWF`
++- Title: Atomically synchronize RF-04 incident archival across package assets
++- Status: DOING
++- Branch: `task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a`
++- Canonical task record: `.agentplane/tasks/202607300654-0ANCWF/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T06:55:50.968Z
++- Branch: task/202607300654-0ANCWF/atomically-synchronize-rf-04-incident-archival-a
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/policy/incidents.md                            | 1 -
++ docs/developer/incident-archive.mdx                        | 4 ++++
++ packages/agentplane/assets/policy/incidents.md             | 1 -
++ packages/agentplane/src/shared/builtin-assets.generated.ts | 6 +++---
++ 4 files changed, 7 insertions(+), 5 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index 7200dee18..52282ee78 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,10 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-07-30 RF-04 Beta.1 Provider Mismatch Disposition
++
++- id: INC-20260730-01 | date: 2026-07-30 | scope: Candidate-SHA RF-04 measurement for the beta.1 product SHA. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic `RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH` precondition. | advice: A future RF-04 capture must be preceded by a new incident review and use the pinned provider CLI environment before any provider episode; it must materialize a fresh candidate measurement and re-verify. | evidence: source task `202607292104-W03KZ0`, commit `c6a10db56506`; successor task `202607300553-CR9VTJ`, PR [#4681](https://github.com/basilisk-labs/agentplane/pull/4681), merged `bc873942fc1487a828cdc2705bc1220b2bda14ce`; its frozen qualification packet retained the original 50-run/55-provider-episode evidence, recorded `qualification_decision=do_not_publish` and `live_provider_measurement=not_run_by_packet_builder`, and made no provider retry or replacement capture. | enforcement: release-incident gate plus explicit incident review before any future capture | fixability: external | state: archived | archived_by: task `202607300654-0ANCWF` | archive_reason: externally mitigated for the closed beta.1 decision, not provider-resolved. The failed capture cannot characterize current product metrics, and the current-main successor explicitly chose `do_not_publish`; no active operator follow-up remains for that non-publication decision. Reopen as an active incident before any future RF-04 capture outside a pinned provider environment.
++
+ ## 2026-07-28 Task Episode Incident Reconciliation
+ 
+ - id: INC-20260727-01 | date: 2026-07-27 | scope: immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. | tags: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor | match: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor, immutable, identity, state, metadata, semantic, narrative, blueprint, selected | failure: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (`tasks.doc.required_sections`) as the structural authority. | advice: Keep RF-21 narrow: record the source as `task_document_schema`, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task. | rule: Analogous immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets work MUST review and apply the recorded external incident advice before retrying. | evidence: source task `202607221850-9C9WBP`; PR [#4647](https://github.com/basilisk-labs/agentplane/pull/4647) merged `2d6582e7f017820668cbbbbe90c211e360e47394`; current main `78b62230d`; reconciliation task `202607280107-BPZFPF` reran `bun test packages/agentplane/src/runner/context/task-context.test.ts` (6 pass, 0 fail, 32 assertions), `node .agentplane/policy/check-routing.mjs` (pass), and `agentplane doctor` (pass; two unrelated historical missing-commit warnings remain). The shipped code declares `section_policy.source = "task_document_schema"`, records `required_section_unavailable`, and rejects an oversized required section with `task_episode_required_section_exceeds_budget`; the regression suite covers localized structural headings. | enforcement: TaskEpisodeView implementation plus focused regression test and release-incident gate | fixability: repo-fixable | state: archived | archived_by: task `202607280107-BPZFPF` | archive_reason: the original RF-21 fix is merged, its section-authority and loss-prevention contract was reconfirmed on current main, and no active operator follow-up remains. Semantic role/heading policy is intentionally deferred to a separate context-policy task.
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 0ed2f6e74..3499a0898 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260730-01 | date: 2026-07-30 | scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | match: benchmark, milestone-beta1, performance, quality, rf-04, v0.7, implement, candidate, sha, measurement, route, that, records, actual, token, latency | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH precondition. | advice: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify. | rule: Analogous Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607292104-W03KZ0; commit c6a10db56506 | enforcement: manual | fixability: external | state: open
+diff --git a/packages/agentplane/src/shared/builtin-assets.generated.ts b/packages/agentplane/src/shared/builtin-assets.generated.ts
+index 60dcce97f..c2d88d532 100644
+--- a/packages/agentplane/src/shared/builtin-assets.generated.ts
++++ b/packages/agentplane/src/shared/builtin-assets.generated.ts
+@@ -7,13 +7,13 @@ export type BuiltinAgentplaneAsset = {
+ };
+ 
+ export const BUILTIN_AGENTPLANE_ASSETS_HASH =
+-  "24704263cfb9078662941ce9633f6148d386b4f224ca332b7512f16f58bcace2";
++  "a9a0c0bb27c6151b66513fabbdd8bb1feb5cc18310421d2221e19546d5bf3b8c";
+ 
+ export const BUILTIN_AGENTPLANE_ASSETS: BuiltinAgentplaneAsset[] = [
+   {
+     path: "AGENTS.md",
+     base64:
+-      "PCEtLQpBR0VOVFNfUE9MSUNZOiBnYXRld2F5LXYxLjEKcmVwb19uYW1lc3BhY2U6IC5hZ2VudHBsYW5lCmRlZmF1bHRfaW5pdGlhdG9yOiBPUkNIRVNUUkFUT1IKLS0+Cgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5wdXJwb3NlLnB1cnBvc2UiIHNsb3Q9InB1cnBvc2UiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMgUFVSUE9TRQoKYEFHRU5UUy5tZGAgaXMgdGhlIHBvbGljeSBnYXRld2F5IGZvciBhZ2VudHMgaW4gdGhpcyByZXBvc2l0b3J5LgpJdCBwcm92aWRlcyBzdHJpY3Qgcm91dGluZywgaGFyZCBjb25zdHJhaW50cywgYW5kIGNvbW1hbmQgY29udHJhY3RzLgpEZXRhaWxlZCBwcm9jZWR1cmVzIGxpdmUgaW4gY2Fub25pY2FsIG1vZHVsZXMgZnJvbSBgIyMgQ0FOT05JQ0FMIERPQ1NgLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+Cgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5wdXJwb3NlLnByb2plY3QiIHNsb3Q9InB1cnBvc2UiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIFBST0pFQ1QKCi0gUmVwb3NpdG9yeSB0eXBlOiB1c2VyIHByb2plY3QgaW5pdGlhbGl6ZWQgd2l0aCBgYWdlbnRwbGFuZWAuCi0gQ0xJIHJ1bGU6IHByZWZlciBgYXBgIGZvciBjb21wYWN0IGFnZW50LW9yaWVudGVkIGNvbW1hbmRzOyBmYWxsIGJhY2sgdG8gYGFnZW50cGxhbmVgOyBpZiBuZWl0aGVyIGlzIGF2YWlsYWJsZSwgc3RvcCBhbmQgcmVxdWVzdCBpbnN0YWxsYXRpb24gZ3VpZGFuY2UgKGRvIG5vdCBpbnZlbnQgcmVwby1sb2NhbCBlbnRyeXBvaW50cykuCi0gU3RhcnR1cCBzaG9ydGN1dDogcnVuIGAjIyBDT01NQU5EUyAtPiBQcmVmbGlnaHRgOyB1c2UgYGFwIHF1aWNrc3RhcnRgOyBhY3RpdmF0ZSBgYXAgcm9sZSBPUkNIRVNUUkFUT1JgIGZvciBwbGFubmluZyBhbmQgYGFwIHJvbGUgPFJPTEU+YCBmb3IgZXhlY3V0aW9uOyB0aGVuIGFwcGx5IGAjIyBMT0FEIFJVTEVTYCBiZWZvcmUgbXV0YXRpb24uIFRoZSBndWFyZGVkIHJvdXRlIGlzIGRldGVybWluZWQgYnkgYHdvcmtmbG93Lm1vZGVgIGluIGAuYWdlbnRwbGFuZS9XT1JLRkxPVy5tZGA7IHRyZWF0IGBhcCB0YXNrIGJyaWVmIDx0YXNrLWlkPmAgYW5kIGBhcCB0YXNrIG5leHQtYWN0aW9uIDx0YXNrLWlkPiAtLWV4cGxhaW5gIGFzIHRoZSByb3V0ZSBvcmFjbGU6IGZvbGxvdyB0aGUgZW1pdHRlZCBjaGVja291dCwgYmxvY2tlciwgYW5kIG5leHQgY29tbWFuZCBpbnN0ZWFkIG9mIHJlY29uc3RydWN0aW5nIHdvcmtmbG93IHN0YXRlLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLnNvdXJjZV9vZl90cnV0aC5zb3VyY2VzLm9mLnRydXRoIiBzbG90PSJzb3VyY2Vfb2ZfdHJ1dGgiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIFNPVVJDRVMgT0YgVFJVVEgKClByaW9yaXR5IG9yZGVyIChoaWdoZXN0IGZpcnN0KToKCjEuIEVuZm9yY2VtZW50OiBDSSwgdGVzdHMsIGxpbnRlcnMsIGhvb2tzLCBDTEkgdmFsaWRhdGlvbnMuCjIuIFBvbGljeSBnYXRld2F5OiBgQUdFTlRTLm1kYC4KMy4gQ2Fub25pY2FsIHBvbGljeSBtb2R1bGVzIGZyb20gYCMjIENBTk9OSUNBTCBET0NTYC4KNC4gQ0xJIGd1aWRhbmNlOiBgYXAgcXVpY2tzdGFydGAsIGBhcCByb2xlIDxST0xFPmAsIGAuYWdlbnRwbGFuZS9XT1JLRkxPVy5tZGAuCjUuIFJlZmVyZW5jZSBleGFtcGxlcyBmcm9tIGAjIyBSRUZFUkVOQ0UgRVhBTVBMRVNgLgoKQ29uZmxpY3QgcnVsZToKCi0gSWYgZG9jdW1lbnRhdGlvbiBjb25mbGljdHMgd2l0aCBlbmZvcmNlbWVudCwgZW5mb3JjZW1lbnQgd2lucy4KLSBJZiBsb3dlci1wcmlvcml0eSB0ZXh0IGNvbmZsaWN0cyB3aXRoIGhpZ2hlci1wcmlvcml0eSBwb2xpY3ksIGhpZ2hlci1wcmlvcml0eSBwb2xpY3kgd2lucy4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5oYXJkX2NvbnN0cmFpbnQuc2NvcGUuYm91bmRhcnkiIHNsb3Q9ImhhcmRfY29uc3RyYWludCIgbXV0YWJpbGl0eT0iYXBwZW5kX29ubHkiIC0tPgoKIyMgU0NPUEUgQk9VTkRBUlkKCi0gTVVTVCBrZWVwIGFsbCBhY3Rpb25zIGluc2lkZSB0aGlzIHJlcG9zaXRvcnkgdW5sZXNzIHRoZSB1c2VyIGV4cGxpY2l0bHkgYXBwcm92ZXMgb3V0c2lkZS1yZXBvIGFjY2Vzcy4KLSBNVVNUIE5PVCByZWFkIG9yIG1vZGlmeSBnbG9iYWwgdXNlciBmaWxlcyAoYH5gLCBgL2V0Y2AsIGtleWNoYWlucywgc3NoIGtleXMsIGdsb2JhbCBnaXQgY29uZmlnKSB3aXRob3V0IGV4cGxpY2l0IHVzZXIgYXBwcm92YWwuCi0gTVVTVCB0cmVhdCBuZXR3b3JrIGFjY2VzcyBhcyBhcHByb3ZhbC1nYXRlZCB3aGVuIGBhZ2VudHMuYXBwcm92YWxzLnJlcXVpcmVfbmV0d29yaz10cnVlYC4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5jb21tYW5kcy5jb21tYW5kcyIgc2xvdD0iY29tbWFuZHMiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIENPTU1BTkRTCgojIyMgUHJlZmxpZ2h0CgpgYGBiYXNoCmFwIGNvbmZpZyBzaG93CmFwIHF1aWNrc3RhcnQKYXAgdGFzayBsaXN0CmFwIHRhc2sgYWN0aXZlCmdpdCBzdGF0dXMgLS1zaG9ydCAtLXVudHJhY2tlZC1maWxlcz1ubwpnaXQgc3RhdHVzIC0tc2hvcnQgLS11bnRyYWNrZWQtZmlsZXM9YWxsCmdpdCByZXYtcGFyc2UgLS1hYmJyZXYtcmVmIEhFQUQKYGBgCgojIyMgUm91dGUgY29tbWFuZHMKCmBgYGJhc2gKYXAgdGFzayBicmllZiA8dGFzay1pZD4KYXAgdGFzayBuZXh0LWFjdGlvbiA8dGFzay1pZD4gLS1leHBsYWluCmFwIHdvcmsgcmVzdW1lIDx0YXNrLWlkPgpgYGAKCiMjIyBUYXNrIGxpZmVjeWNsZQoKYGBgYmFzaAphcCB0YXNrIG5ldyAtLXRpdGxlICIuLi4iIC0tZGVzY3JpcHRpb24gIi4uLiIgLS1wcmlvcml0eSBtZWQgLS1vd25lciA8Uk9MRT4gLS10YWcgPHRhZz4KYXAgdGFzayBwbGFuIHNldCA8dGFzay1pZD4gLS10ZXh0ICIuLi4iIC0tdXBkYXRlZC1ieSA8Uk9MRT4KYXAgdGFzayBwbGFuIGFwcHJvdmUgPHRhc2staWQ+IC0tYnkgT1JDSEVTVFJBVE9SCmFwIHRhc2sgc3RhcnQtcmVhZHkgPHRhc2staWQ+IC0tYXV0aG9yIDxST0xFPiAtLWJvZHkgIlN0YXJ0OiAuLi4iCmFwIHZlcmlmeSA8dGFzay1pZD4gLS1va3wtLXJld29yayAtLWJ5IDxST0xFPiAtLW5vdGUgIi4uLiIgWy0tb2JzZXJ2YXRpb24gIi4uLiIgLS1pbXBhY3QgIi4uLiIgLS1yZXNvbHV0aW9uICIuLi4iXSBbLS1sb2NhbC1vbmx5XQphcCBmaW5pc2ggPHRhc2staWQ+IC0tYXV0aG9yIDxST0xFPiAtLWJvZHkgIlZlcmlmaWVkOiAuLi4iIC0tcmVzdWx0ICIuLi4iIC0tY29tbWl0IDxnaXQtcmV2PgpgYGAKCiMjIyBicmFuY2hfcHIgbGlmZWN5Y2xlCgpgYGBiYXNoCmFwIHdvcmsgc3RhcnQgPHRhc2staWQ+IC0tYWdlbnQgPFJPTEU+IC0tc2x1ZyA8c2x1Zz4gLS13b3JrdHJlZQphcCB0YXNrIHN0YXJ0LXJlYWR5IDx0YXNrLWlkPiAtLWF1dGhvciA8Uk9MRT4gLS1ib2R5ICJTdGFydDogLi4uIgpnaXQgY29tbWl0IC1tICJJbXBsZW1lbnQgPHRhc2s+IgphcCB0YXNrIHZlcmlmeS1zaG93IDx0YXNrLWlkPgphcCBwciBvcGVuIDx0YXNrLWlkPiAtLWJyYW5jaCB0YXNrLzx0YXNrLWlkPi88c2x1Zz4gLS1hdXRob3IgPFJPTEU+CmFwIHZlcmlmeSA8dGFzay1pZD4gLS1va3wtLXJld29yayAtLWJ5IDxST0xFPiAtLW5vdGUgIi4uLiIKYXAgZXZhbHVhdG9yIGV4ZWN1dGUgPHRhc2staWQ+IC0tZXZhbHVhdG9yIDxpZD4KYXAgaW50ZWdyYXRlIDx0YXNrLWlkPiAtLWJyYW5jaCB0YXNrLzx0YXNrLWlkPi88c2x1Zz4gLS1ydW4tdmVyaWZ5CmFwIGZpbmlzaCA8dGFzay1pZD4gLS1hdXRob3IgSU5URUdSQVRPUiAtLWJvZHkgIlZlcmlmaWVkOiAuLi4iIC0tcmVzdWx0ICIuLi4iIC0tY29tbWl0IDxnaXQtcmV2PiAtLWNsb3NlLWNvbW1pdApgYGAKCiMjIyBWZXJpZmljYXRpb24KCmBgYGJhc2gKYXAgdnNob3cgPHRhc2staWQ+CmFwIHZlcmlmeSA8dGFzay1pZD4gLS1va3wtLXJld29yayAtLWJ5IDxST0xFPiAtLW5vdGUgIi4uLiIgWy0tb2JzZXJ2YXRpb24gIi4uLiIgLS1pbXBhY3QgIi4uLiIgLS1yZXNvbHV0aW9uICIuLi4iXSBbLS1sb2NhbC1vbmx5XQphcCBldmFsdWF0b3IgZXhlY3V0ZSA8dGFzay1pZD4gLS1ldmFsdWF0b3IgPGlkPgphcCBpbmNpZGVudHMgYWR2aXNlIDx0YXNrLWlkPgphcCBpbmNpZGVudHMgY29sbGVjdCA8dGFzay1pZD4gLS1jaGVjawphcCBkb2N0b3IKbm9kZSAuYWdlbnRwbGFuZS9wb2xpY3kvY2hlY2stcm91dGluZy5tanMKYGBgCgo8IS0tIC9hcDpmcmFnbWVudCAtLT4KPCEtLSBhcDpmcmFnbWVudCBpZD0iZ2F0ZXdheS5hZ2VudHMuYm9keS50b29saW5nIiBzbG90PSJib2R5IiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBUT09MSU5HCgotIFVzZSBgIyMgQ09NTUFORFNgIGFzIHRoZSBjYW5vbmljYWwgY29tbWFuZCBzb3VyY2UuCi0gVXNlIGBhcCBxdWlja3N0YXJ0YCBhcyB0aGUgY29tcGFjdCBpbnN0YWxsZWQgc3RhcnR1cCBwYXRoIGFuZCBgYXAgcm9sZSA8Uk9MRT5gIHRvIGFjdGl2YXRlIHRoZSBjdXJyZW50IHJvbGUgYmVmb3JlIHJvbGUtc2NvcGVkIHBsYW5uaW5nIG9yIGV4ZWN1dGlvbi4KLSBGb3IgcG9saWN5IGNoYW5nZXMsIHJvdXRpbmcgdmFsaWRhdGlvbiBNVVNUIHBhc3MgdmlhIGBub2RlIC5hZ2VudHBsYW5lL3BvbGljeS9jaGVjay1yb3V0aW5nLm1qc2AuCgo8IS0tIC9hcDpmcmFnbWVudCAtLT4KPCEtLSBhcDpmcmFnbWVudCBpZD0iZ2F0ZXdheS5hZ2VudHMuYm9keS5zaGFyZWQucHJvbXB0LmNvbnRyYWN0IiBzbG90PSJib2R5IiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBTSEFSRUQgUFJPTVBUIENPTlRSQUNUCgotIE91dGNvbWUgY29udHJhY3Q6IHN0YXRlIHRoZSBnb2FsLCBzdWNjZXNzIGNyaXRlcmlhLCBpbXBvcnRhbnQgY29uc3RyYWludHMsIHJlcXVpcmVkIGV2aWRlbmNlLCBvdXRwdXQsIGFuZCBzdG9wIHJ1bGVzOyBwcmVzY3JpYmUgcHJvY2VkdXJlIG9ubHkgZm9yIGNvbW1hbmQgY29udHJhY3RzLCBzdGF0ZSBtYWNoaW5lcywgb3IgaXJyZXZlcnNpYmxlIGdhdGVzLgotIEF1dG9ub215IHJ1bGU6IGluc3BlY3Rpb24gYW5kIGFuYWx5c2lzIHN0YXkgcmVhZC1vbmx5OyBhZnRlciBwbGFuIGFwcHJvdmFsLCBjb21wbGV0ZSBzYWZlIGluLXNjb3BlIGxvY2FsIGVkaXRzIGFuZCB2YWxpZGF0aW9uIHdpdGhvdXQgZXh0cmEgcGF1c2VzOyByZXF1aXJlIHJlLWFwcHJvdmFsIGZvciBleHRlcm5hbCB3cml0ZXMsIGRlc3RydWN0aXZlIGFjdGlvbnMsIG9yIG1hdGVyaWFsIHNjb3BlIGV4cGFuc2lvbi4KLSBBbWJpZ3VpdHkgcnVsZTogYXNrIG9uZSBuYXJyb3cgcXVlc3Rpb24gb25seSB3aGVuIG1pc3NpbmcgaW5mb3JtYXRpb24gY2hhbmdlcyBzY29wZSwgc2VjdXJpdHksIHRhc2sgZ3JhcGgsIG9yIGFuIGlycmV2ZXJzaWJsZSBhY3Rpb247IG90aGVyd2lzZSBhY3QgdW5kZXIgZXhwbGljaXQgYXNzdW1wdGlvbnMuCi0gVG9vbCBydWxlOiBsb2FkIG9ubHkgbWF0Y2hlZCBwb2xpY3ksIHRhc2sgUkVBRE1FLCBWZXJpZnkgU3RlcHMsIGFuZCByZWxldmFudCBmaWxlczsgcGFyYWxsZWxpemUgaW5kZXBlbmRlbnQgcmVhZHMsIGtlZXAgZGVwZW5kZW50IGFjdGlvbnMgc2VxdWVudGlhbCwgYW5kIHRyeSBhIGJvdW5kZWQgZmFsbGJhY2sgd2hlbiByZXF1aXJlZCBldmlkZW5jZSBpcyBlbXB0eSBvciBzdXNwaWNpb3VzbHkgbmFycm93LgotIFJvdXRlL3BlcnNpc3RlbmNlIHJ1bGU6IGZvciBtdWx0aS1zdGVwIG9yIHRvb2wtaGVhdnkgd29yaywgc2VuZCBhIHNob3J0IHByZWFtYmxlLCBsb2FkIGBhcCB0YXNrIGJyaWVmIDx0YXNrLWlkPmAsIGZvbGxvdyBgYXAgdGFzayBuZXh0LWFjdGlvbiA8dGFzay1pZD4gLS1leHBsYWluYCwgYW5kIHBlcnNpc3QgdGhyb3VnaCBpbXBsZW1lbnRhdGlvbiBhbmQgdmVyaWZpY2F0aW9uIHVubGVzcyBibG9ja2VkLgotIFJlc3BvbnNlIHJ1bGU6IGxlYWQgd2l0aCB0aGUgb3V0Y29tZTsgcHJlc2VydmUgcmVxdWlyZWQgZmFjdHMsIGV2aWRlbmNlLCBjYXZlYXRzLCBibG9ja2VycywgYW5kIG5leHQgYWN0aW9uczsgcmVtb3ZlIHJlcGV0aXRpb24gYW5kIG9wdGlvbmFsIGJhY2tncm91bmQgYmVmb3JlIHJlbW92aW5nIGRlY2lzaW9uLWNyaXRpY2FsIGNvbnRlbnQuCi0gS2VlcCByb2xlIHByb21wdHMgbGltaXRlZCB0byByb2xlLXNwZWNpZmljIGJlaGF2aW9yOyB0aGV5IE1VU1QgTk9UIHJlcGVhdCB0aGlzIHNoYXJlZCBjb250cmFjdCBvciBmdWxsIGdhdGV3YXkgY29tbWFuZCBwcm9jZWR1cmVzLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkudXNlci5pbnN0cnVjdGlvbnMiIHNsb3Q9ImJvZHkiIG11dGFiaWxpdHk9ImFwcGVuZF9vbmx5IiAtLT4KCklGIGAuYWdlbnRwbGFuZS91c2VyLWluc3RydWN0aW9ucy5tZGAgZXhpc3RzIFRIRU4gTE9BRCBpdCBhcyBgZ2F0ZXdheS51c2VyLmluc3RydWN0aW9uc2AuCgo8IS0tIC9hcDpmcmFnbWVudCAtLT4KPCEtLSBhcDpmcmFnbWVudCBpZD0iZ2F0ZXdheS5hZ2VudHMubG9hZF9ydWxlcy5sb2FkLnJ1bGVzIiBzbG90PSJsb2FkX3J1bGVzIiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBMT0FEIFJVTEVTCgpSb3V0aW5nIGlzIHN0cmljdC4gTG9hZCBvbmx5IG1vZHVsZXMgdGhhdCBtYXRjaCB0aGUgY3VycmVudCB0YXNrLgoKIyMjIEFsd2F5cyBpbXBvcnRzIGZvciBtdXRhdGluZyB0YXNrcwoKQ29uZGl0aW9uOiB0YXNrIGluY2x1ZGVzIG11dGF0aW9uIChmaWxlIGVkaXRzLCB0YXNrLXN0YXRlIGNoYW5nZXMsIGNvbW1pdHMsIG1lcmdlL2ludGVncmF0ZSwgcmVsZWFzZS9wdWJsaXNoKS4KCi0gYEAuYWdlbnRwbGFuZS9wb2xpY3kvc2VjdXJpdHkubXVzdC5tZGAKLSBgQC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuY29yZS5tZGAKCiMjIyBDb25kaXRpb25hbCBpbXBvcnRzIChsaW5lYXIgSUYgLT4gTE9BRCBjb250cmFjdCkKCjEuIElGIGB3b3JrZmxvdy5tb2RlPWRpcmVjdGAgVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LmRpcmVjdC5tZGAuCjIuIElGIGB3b3JrZmxvdy5tb2RlPWJyYW5jaF9wcmAgVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LmJyYW5jaF9wci5tZGAuCjMuIElGIHRhc2sgdG91Y2hlcyByZWxlYXNlL3ZlcnNpb24vcHVibGlzaCBUSEVOIExPQUQgYEAuYWdlbnRwbGFuZS9wb2xpY3kvd29ya2Zsb3cucmVsZWFzZS5tZGAuCjQuIElGIHRhc2sgcnVucyBDTEkgdXBncmFkZSBvciB0b3VjaGVzIGAuYWdlbnRwbGFuZS8udXBncmFkZS8qKmAgVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LnVwZ3JhZGUubWRgLgo1LiBJRiB0YXNrIG1vZGlmaWVzIGltcGxlbWVudGF0aW9uIGNvZGUgcGF0aHMgVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L2RvZC5jb2RlLm1kYC4KNi4gSUYgdGFzayBtb2RpZmllcyBkb2NzL3BvbGljeS1vbmx5IHBhdGhzIChgQUdFTlRTLm1kYCwgZG9jcywgYC5hZ2VudHBsYW5lL3BvbGljeS8qKmApIFRIRU4gTE9BRCBgQC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuZG9jcy5tZGAuCjcuIElGIHRhc2sgbW9kaWZpZXMgcG9saWN5IGZpbGVzIChgQUdFTlRTLm1kYCBvciBgLmFnZW50cGxhbmUvcG9saWN5LyoqYCkgVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L2dvdmVybmFuY2UubWRgLgo4LiBJRiB0YXNrIG1vZGlmaWVzIGAuYWdlbnRwbGFuZS9wb2xpY3kvaW5jaWRlbnRzLm1kYCBUSEVOIExPQUQgYEAuYWdlbnRwbGFuZS9wb2xpY3kvaW5jaWRlbnRzLm1kYC4KClJvdXRpbmcgY29uc3RyYWludHM6CgotIE1VU1QgTk9UIGxvYWQgdW5yZWxhdGVkIHBvbGljeSBtb2R1bGVzLgotIE1VU1QgTk9UIHVzZSB3aWxkY2FyZCBwb2xpY3kgcGF0aHMuCi0gTVVTVCBrZWVwIGxvYWRlZCBwb2xpY3kgc2V0IG1pbmltYWwgKHRhcmdldDogMi00IGZpbGVzIHBlciB0YXNrKS4KLSBJZiByb3V0aW5nIGlzIGFtYmlndW91cywgYXNrIG9uZSBjbGFyaWZ5aW5nIHF1ZXN0aW9uIGJlZm9yZSBsb2FkaW5nIGV4dHJhIG1vZHVsZXMuCgo8IS0tIC9hcDpmcmFnbWVudCAtLT4KPCEtLSBhcDpmcmFnbWVudCBpZD0iZ2F0ZXdheS5hZ2VudHMuaGFyZF9jb25zdHJhaW50Lm11c3QubXVzdC5ub3QiIHNsb3Q9ImhhcmRfY29uc3RyYWludCIgbXV0YWJpbGl0eT0iYXBwZW5kX29ubHkiIC0tPgoKIyMgTVVTVCAvIE1VU1QgTk9UCgotIE1VU1Qgc3RhcnQgd2l0aCBPUkNIRVNUUkFUT1IgcHJlZmxpZ2h0IGFuZCBwbGFuIHN1bW1hcnkuCi0gTVVTVCBOT1QgcGVyZm9ybSBtdXRhdGluZyBhY3Rpb25zIGJlZm9yZSBleHBsaWNpdCB1c2VyIGFwcHJvdmFsLgotIE1VU1QgY3JlYXRlL3JldXNlIGV4ZWN1dGFibGUgdGFzayBJRHMgZm9yIGFueSByZXBvLXN0YXRlIG11dGF0aW9uLgotIE1VU1QgdXNlIGBhcGAvYGFnZW50cGxhbmVgIGNvbW1hbmRzIGZvciB0YXNrIGxpZmVjeWNsZSB1cGRhdGVzOyBNVVNUIE5PVCBtYW51YWxseSBlZGl0IGAuYWdlbnRwbGFuZS90YXNrcy5qc29uYC4KLSBNVVNUIHJ1biBgYXAgdGFzayBwbGFuIGFwcHJvdmUgLi4uYCBhbmQgYGFwIHRhc2sgc3RhcnQtcmVhZHkgLi4uYCBzZXF1ZW50aWFsbHkgKG5ldmVyIGluIHBhcmFsbGVsKS4KLSBNVVNUIGFjdGl2YXRlIGBhcCByb2xlIE9SQ0hFU1RSQVRPUmAgZm9yIHBsYW5uaW5nIGFuZCBgYXAgcm9sZSA8Uk9MRT5gIGZvciB0aGUgYWN0aXZlIHRhc2sgb3duZXIgYmVmb3JlIG93bmVyLXNjb3BlZCBleGVjdXRpb24gb3IgdmVyaWZpY2F0aW9uLgotIE1VU1Qga2VlcCByZXBvc2l0b3J5IGFydGlmYWN0cyBpbiBFbmdsaXNoIGJ5IGRlZmF1bHQgKHVubGVzcyB1c2VyIGV4cGxpY2l0bHkgcmVxdWVzdHMgYW5vdGhlciBsYW5ndWFnZSBmb3IgYSBzcGVjaWZpYyBhcnRpZmFjdCkuCi0gTVVTVCBOT1QgZmFicmljYXRlIHJlcG9zaXRvcnkgZmFjdHMuCi0gTVVTVCBzdGFnZS9jb21taXQgb25seSBpbnRlbnRpb25hbCBjaGFuZ2VzIGZvciB0aGUgYWN0aXZlIHRhc2sgc2NvcGUuCi0gTVVTVCBzdG9wIGFuZCByZXF1ZXN0IHJlLWFwcHJvdmFsIHdoZW4gc2NvcGUsIHJpc2ssIG9yIHZlcmlmaWNhdGlvbiBjcml0ZXJpYSBtYXRlcmlhbGx5IGRyaWZ0LgotIE1VU1QgTk9UIGxldCBPUkNIRVNUUkFUT1IgcGVyZm9ybSBvd25lci1zY29wZWQgaW1wbGVtZW50YXRpb24gb3IgdmVyaWZpY2F0aW9uIG9uY2UgYSB0YXNrIG93bmVyIGlzIGtub3duLCB1bmxlc3MgdGhlIGFwcHJvdmVkIHBsYW4gZXhwbGljaXRseSBtYWtlcyBPUkNIRVNUUkFUT1IgdGhlIG93bmVyLgotIE1VU1QgdHJlYXQgdXNlci1hdXRoZW50aWNhdGVkIEdpdEh1YiBhY3Rpb25zIGFzIHVzZXItYXR0cmlidXRlZCBwdWJsaWNhdGlvbiBhbmQgcm91dGUgcG9zdC1tZXJnZSBmaXhlcyB0aHJvdWdoIGEgbmV3IHRhc2sgb3IgZXhwbGljaXQgYHBvc3QtbWVyZ2UtYCBicmFuY2ggb3IgYGZvbGxvd3VwYCBzbHVnIHRva2VuLgoKUm9sZSBib3VuZGFyaWVzOiBPUkNIRVNUUkFUT1IgPSBwcmVmbGlnaHQgKyBwbGFuICsgYXBwcm92YWxzOyBQTEFOTkVSID0gZXhlY3V0YWJsZSB0YXNrIGdyYXBoIGNyZWF0aW9uL3VwZGF0ZTsgSU5URUdSQVRPUiA9IGJhc2UgaW50ZWdyYXRpb24vZmluaXNoIGluIGBicmFuY2hfcHJgLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmJvZHkuY29yZS5kb2QiIHNsb3Q9ImJvZHkiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIENPUkUgRE9ECgpBIHRhc2sgaXMgZG9uZSBvbmx5IHdoZW4gYXBwcm92ZWQgc2NvcGUsIGxvYWRlZCBEb0QgbW9kdWxlcywgc2VjdXJpdHkgZ2F0ZXMsIHRhc2sgdHJhY2VhYmlsaXR5LCByZWNvcmRlZCB2ZXJpZmljYXRpb24sIGFuZCBjbGVhbiBmaW5hbCB0cmFja2VkIHN0YXRlIGFsbCBwYXNzLiBEZXRhaWxlZCBEb0QgcnVsZXMgbGl2ZSBpbiBgLmFnZW50cGxhbmUvcG9saWN5L2RvZC5jb3JlLm1kYCwgYC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuY29kZS5tZGAsIGFuZCBgLmFnZW50cGxhbmUvcG9saWN5L2RvZC5kb2NzLm1kYC4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5oYXJkX2NvbnN0cmFpbnQuc2l6ZS5idWRnZXQiIHNsb3Q9ImhhcmRfY29uc3RyYWludCIgbXV0YWJpbGl0eT0iYXBwZW5kX29ubHkiIC0tPgoKIyMgU0laRSBCVURHRVQKCi0gYEFHRU5UUy5tZGAgTVVTVCBzdGF5IDw9IDI1MCBsaW5lcy4KLSBFdmVyeSBwb2xpY3kgbWFya2Rvd24gbW9kdWxlIHVuZGVyIGAuYWdlbnRwbGFuZS9wb2xpY3kvKi5tZGAgTVVTVCBzdGF5IDw9IDEwMCBsaW5lcy4KLSBXb3JzdC1jYXNlIGxvYWRlZCBwb2xpY3kgZ3JhcGggKGFsd2F5cyBpbXBvcnRzICsgYWxsIGNvbmRpdGlvbmFsIGltcG9ydHMpIE1VU1Qgc3RheSA8PSA2MDAgbGluZXMuCi0gRW5mb3JjZWQgYnkgYG5vZGUgLmFnZW50cGxhbmUvcG9saWN5L2NoZWNrLXJvdXRpbmcubWpzYC4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5ib2R5LmNhbm9uaWNhbC5kb2NzIiBzbG90PSJib2R5IiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBDQU5PTklDQUwgRE9DUwoKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS93b3JrZmxvdy5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS93b3JrZmxvdy5kaXJlY3QubWRgCi0gRE9DIGAuYWdlbnRwbGFuZS9wb2xpY3kvd29ya2Zsb3cuYnJhbmNoX3ByLm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LnJlbGVhc2UubWRgCi0gRE9DIGAuYWdlbnRwbGFuZS9wb2xpY3kvd29ya2Zsb3cudXBncmFkZS5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS9zZWN1cml0eS5tdXN0Lm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L2RvZC5jb3JlLm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L2RvZC5jb2RlLm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L2RvZC5kb2NzLm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L2dvdmVybmFuY2UubWRgCi0gRE9DIGAuYWdlbnRwbGFuZS9wb2xpY3kvaW5jaWRlbnRzLm1kYAoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmV4YW1wbGUucmVmZXJlbmNlLmV4YW1wbGVzIiBzbG90PSJleGFtcGxlIiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBSRUZFUkVOQ0UgRVhBTVBMRVMKCi0gRVhBTVBMRSBgLmFnZW50cGxhbmUvcG9saWN5L2V4YW1wbGVzL3ByLW5vdGUubWRgCi0gRVhBTVBMRSBgLmFnZW50cGxhbmUvcG9saWN5L2V4YW1wbGVzL3VuaXQtdGVzdC1wYXR0ZXJuLm1kYAotIEVYQU1QTEUgYC5hZ2VudHBsYW5lL3BvbGljeS9leGFtcGxlcy9taWdyYXRpb24tbm90ZS5tZGAKCi0tLQoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmJvZHkuY2hhbmdlLmNvbnRyb2wiIHNsb3Q9ImJvZHkiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIENIQU5HRSBDT05UUk9MCgotIEZvbGxvdyBpbmNpZGVudC1sb2csIGltbXV0YWJpbGl0eSwgYW5kIHBvbGljeS1idWRnZXQgcnVsZXMgaW4gYC5hZ2VudHBsYW5lL3BvbGljeS9nb3Zlcm5hbmNlLm1kYC4KLSBSZWNvcmQgc2l0dWF0aW9uYWwgaW5jaWRlbnQgcnVsZXMgb25seSBpbiBgLmFnZW50cGxhbmUvcG9saWN5L2luY2lkZW50cy5tZGA7IHVzZSB0YXJnZXRlZCBsb29rdXAvcHJvbW90aW9uIChgdGFzayBzdGFydC1yZWFkeWAsIGBpbmNpZGVudHMgYWR2aXNlYCwgYGluY2lkZW50cyBjb2xsZWN0YCwgYGZpbmlzaGApIGluc3RlYWQgb2YgYnVsay1sb2FkaW5nIGl0IGR1cmluZyBub3JtYWwgc3RhcnR1cC4KLSBLZWVwIGBBR0VOVFMubWRgIGFzIGEgZ2F0ZXdheTsgbW92ZSBkZXRhaWxlZCBwcm9jZWR1cmVzIHRvIGNhbm9uaWNhbCBtb2R1bGVzLgo8IS0tIC9hcDpmcmFnbWVudCAtLT4K",
++      "PCEtLQpBR0VOVFNfUE9MSUNZOiBnYXRld2F5LXYxLjEKcmVwb19uYW1lc3BhY2U6IC5hZ2VudHBsYW5lCmRlZmF1bHRfaW5pdGlhdG9yOiBPUkNIRVNUUkFUT1IKLS0+Cgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5wdXJwb3NlLnB1cnBvc2UiIHNsb3Q9InB1cnBvc2UiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMgUFVSUE9TRQoKYEFHRU5UUy5tZGAgaXMgdGhlIHBvbGljeSBnYXRld2F5IGZvciBhZ2VudHMgaW4gdGhpcyByZXBvc2l0b3J5LgpJdCBwcm92aWRlcyBzdHJpY3Qgcm91dGluZywgaGFyZCBjb25zdHJhaW50cywgYW5kIGNvbW1hbmQgY29udHJhY3RzLgpEZXRhaWxlZCBwcm9jZWR1cmVzIGxpdmUgaW4gY2Fub25pY2FsIG1vZHVsZXMgZnJvbSBgIyMgQ0FOT05JQ0FMIERPQ1NgLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+Cgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5wdXJwb3NlLnByb2plY3QiIHNsb3Q9InB1cnBvc2UiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIFBST0pFQ1QKCi0gUmVwb3NpdG9yeSB0eXBlOiB1c2VyIHByb2plY3QgaW5pdGlhbGl6ZWQgd2l0aCBgYWdlbnRwbGFuZWAuCi0gQ0xJIHJ1bGU6IHByZWZlciBgYXBgIGZvciBjb21wYWN0IGFnZW50LW9yaWVudGVkIGNvbW1hbmRzOyBmYWxsIGJhY2sgdG8gYGFnZW50cGxhbmVgOyBpZiBuZWl0aGVyIGlzIGF2YWlsYWJsZSwgc3RvcCBhbmQgcmVxdWVzdCBpbnN0YWxsYXRpb24gZ3VpZGFuY2UgKGRvIG5vdCBpbnZlbnQgcmVwby1sb2NhbCBlbnRyeXBvaW50cykuCi0gU3RhcnR1cCBzaG9ydGN1dDogcnVuIGAjIyBDT01NQU5EUyAtPiBQcmVmbGlnaHRgOyB1c2UgYGFwIHF1aWNrc3RhcnRgOyBhY3RpdmF0ZSBgYXAgcm9sZSBPUkNIRVNUUkFUT1JgIGZvciBwbGFubmluZyBhbmQgYGFwIHJvbGUgPFJPTEU+YCBmb3IgZXhlY3V0aW9uOyB0aGVuIGFwcGx5IGAjIyBMT0FEIFJVTEVTYCBiZWZvcmUgbXV0YXRpb24uIFRoZSBndWFyZGVkIHJvdXRlIGlzIGRldGVybWluZWQgYnkgYHdvcmtmbG93Lm1vZGVgIGluIGAuYWdlbnRwbGFuZS9XT1JLRkxPVy5tZGA7IHRyZWF0IGBhcCB0YXNrIGJyaWVmIDx0YXNrLWlkPmAgYW5kIGBhcCB0YXNrIG5leHQtYWN0aW9uIDx0YXNrLWlkPiAtLWV4cGxhaW5gIGFzIHRoZSByb3V0ZSBvcmFjbGU6IGZvbGxvdyB0aGUgZW1pdHRlZCBjaGVja291dCwgYmxvY2tlciwgYW5kIG5leHQgY29tbWFuZCBpbnN0ZWFkIG9mIHJlY29uc3RydWN0aW5nIHdvcmtmbG93IHN0YXRlLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLnNvdXJjZV9vZl90cnV0aC5zb3VyY2VzLm9mLnRydXRoIiBzbG90PSJzb3VyY2Vfb2ZfdHJ1dGgiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIFNPVVJDRVMgT0YgVFJVVEgKClByaW9yaXR5IG9yZGVyIChoaWdoZXN0IGZpcnN0KToKCjEuIEVuZm9yY2VtZW50OiBDSSwgdGVzdHMsIGxpbnRlcnMsIGhvb2tzLCBDTEkgdmFsaWRhdGlvbnMuCjIuIFBvbGljeSBnYXRld2F5OiBgQUdFTlRTLm1kYC4KMy4gQ2Fub25pY2FsIHBvbGljeSBtb2R1bGVzIGZyb20gYCMjIENBTk9OSUNBTCBET0NTYC4KNC4gQ0xJIGd1aWRhbmNlOiBgYXAgcXVpY2tzdGFydGAsIGBhcCByb2xlIDxST0xFPmAsIGAuYWdlbnRwbGFuZS9XT1JLRkxPVy5tZGAuCjUuIFJlZmVyZW5jZSBleGFtcGxlcyBmcm9tIGAjIyBSRUZFUkVOQ0UgRVhBTVBMRVNgLgoKQ29uZmxpY3QgcnVsZToKCi0gSWYgZG9jdW1lbnRhdGlvbiBjb25mbGljdHMgd2l0aCBlbmZvcmNlbWVudCwgZW5mb3JjZW1lbnQgd2lucy4KLSBJZiBsb3dlci1wcmlvcml0eSB0ZXh0IGNvbmZsaWN0cyB3aXRoIGhpZ2hlci1wcmlvcml0eSBwb2xpY3ksIGhpZ2hlci1wcmlvcml0eSBwb2xpY3kgd2lucy4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5oYXJkX2NvbnN0cmFpbnQuc2NvcGUuYm91bmRhcnkiIHNsb3Q9ImhhcmRfY29uc3RyYWludCIgbXV0YWJpbGl0eT0iYXBwZW5kX29ubHkiIC0tPgoKIyMgU0NPUEUgQk9VTkRBUlkKCi0gTVVTVCBrZWVwIGFsbCBhY3Rpb25zIGluc2lkZSB0aGlzIHJlcG9zaXRvcnkgdW5sZXNzIHRoZSB1c2VyIGV4cGxpY2l0bHkgYXBwcm92ZXMgb3V0c2lkZS1yZXBvIGFjY2Vzcy4KLSBNVVNUIE5PVCByZWFkIG9yIG1vZGlmeSBnbG9iYWwgdXNlciBmaWxlcyAoYH5gLCBgL2V0Y2AsIGtleWNoYWlucywgc3NoIGtleXMsIGdsb2JhbCBnaXQgY29uZmlnKSB3aXRob3V0IGV4cGxpY2l0IHVzZXIgYXBwcm92YWwuCi0gTVVTVCB0cmVhdCBuZXR3b3JrIGFjY2VzcyBhcyBhcHByb3ZhbC1nYXRlZCB3aGVuIGBhZ2VudHMuYXBwcm92YWxzLnJlcXVpcmVfbmV0d29yaz10cnVlYC4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5jb21tYW5kcy5jb21tYW5kcyIgc2xvdD0iY29tbWFuZHMiIG11dGFiaWxpdHk9InJlcGxhY2VhYmxlIiAtLT4KCiMjIENPTU1BTkRTCgojIyMgUHJlZmxpZ2h0CgpgYGBiYXNoCmFwIGNvbmZpZyBzaG93CmFwIHF1aWNrc3RhcnQKYXAgdGFzayBsaXN0CmFwIHRhc2sgYWN0aXZlCmdpdCBzdGF0dXMgLS1zaG9ydCAtLXVudHJhY2tlZC1maWxlcz1ubwpnaXQgc3RhdHVzIC0tc2hvcnQgLS11bnRyYWNrZWQtZmlsZXM9YWxsCmdpdCByZXYtcGFyc2UgLS1hYmJyZXYtcmVmIEhFQUQKYGBgCgojIyMgUm91dGUgY29tbWFuZHMKCmBgYGJhc2gKYXAgdGFzayBicmllZiA8dGFzay1pZD4KYXAgdGFzayBuZXh0LWFjdGlvbiA8dGFzay1pZD4gLS1leHBsYWluCmFwIHdvcmsgcmVzdW1lIDx0YXNrLWlkPgpgYGAKCiMjIyBUYXNrIGxpZmVjeWNsZQoKYGBgYmFzaAphcCB0YXNrIG5ldyAtLXRpdGxlICIuLi4iIC0tZGVzY3JpcHRpb24gIi4uLiIgLS1wcmlvcml0eSBtZWQgLS1vd25lciA8Uk9MRT4gLS10YWcgPHRhZz4KYXAgdGFzayBwbGFuIHNldCA8dGFzay1pZD4gLS10ZXh0ICIuLi4iIC0tdXBkYXRlZC1ieSA8Uk9MRT4KYXAgdGFzayBwbGFuIGFwcHJvdmUgPHRhc2staWQ+IC0tYnkgT1JDSEVTVFJBVE9SCmFwIHRhc2sgc3RhcnQtcmVhZHkgPHRhc2staWQ+IC0tYXV0aG9yIDxST0xFPiAtLWJvZHkgIlN0YXJ0OiAuLi4iCmFwIHZlcmlmeSA8dGFzay1pZD4gLS1va3wtLXJld29yayAtLWJ5IDxST0xFPiAtLW5vdGUgIi4uLiIgWy0tb2JzZXJ2YXRpb24gIi4uLiIgLS1pbXBhY3QgIi4uLiIgLS1yZXNvbHV0aW9uICIuLi4iXSBbLS1sb2NhbC1vbmx5XQphcCBmaW5pc2ggPHRhc2staWQ+IC0tYXV0aG9yIDxST0xFPiAtLWJvZHkgIlZlcmlmaWVkOiAuLi4iIC0tcmVzdWx0ICIuLi4iIC0tY29tbWl0IDxnaXQtcmV2PgpgYGAKCiMjIyBicmFuY2hfcHIgbGlmZWN5Y2xlCgpgYGBiYXNoCmFwIHdvcmsgc3RhcnQgPHRhc2staWQ+IC0tYWdlbnQgPFJPTEU+IC0tc2x1ZyA8c2x1Zz4gLS13b3JrdHJlZQphcCB0YXNrIHN0YXJ0LXJlYWR5IDx0YXNrLWlkPiAtLWF1dGhvciA8Uk9MRT4gLS1ib2R5ICJTdGFydDogLi4uIgpnaXQgY29tbWl0IC1tICJJbXBsZW1lbnQgPHRhc2s+IgphcCB0YXNrIHZlcmlmeS1zaG93IDx0YXNrLWlkPgphcCBwciBvcGVuIDx0YXNrLWlkPiAtLWJyYW5jaCB0YXNrLzx0YXNrLWlkPi88c2x1Zz4gLS1hdXRob3IgPFJPTEU+CmFwIHZlcmlmeSA8dGFzay1pZD4gLS1va3wtLXJld29yayAtLWJ5IDxST0xFPiAtLW5vdGUgIi4uLiIKYXAgZXZhbHVhdG9yIGV4ZWN1dGUgPHRhc2staWQ+IC0tZXZhbHVhdG9yIDxpZD4KYXAgaW50ZWdyYXRlIDx0YXNrLWlkPiAtLWJyYW5jaCB0YXNrLzx0YXNrLWlkPi88c2x1Zz4gLS1ydW4tdmVyaWZ5CmFwIGZpbmlzaCA8dGFzay1pZD4gLS1hdXRob3IgSU5URUdSQVRPUiAtLWJvZHkgIlZlcmlmaWVkOiAuLi4iIC0tcmVzdWx0ICIuLi4iIC0tY29tbWl0IDxnaXQtcmV2PiAtLWNsb3NlLWNvbW1pdApgYGAKCiMjIyBWZXJpZmljYXRpb24KCmBgYGJhc2gKYXAgdnNob3cgPHRhc2staWQ+CmFwIHZlcmlmeSA8dGFzay1pZD4gLS1va3wtLXJld29yayAtLWJ5IDxST0xFPiAtLW5vdGUgIi4uLiIgWy0tb2JzZXJ2YXRpb24gIi4uLiIgLS1pbXBhY3QgIi4uLiIgLS1yZXNvbHV0aW9uICIuLi4iXSBbLS1sb2NhbC1vbmx5XQphcCBldmFsdWF0b3IgcnVuIDx0YXNrLWlkPiAtLXByb3ZlbmFuY2UgaHVtYW5fc3VwcGxpZWR8ZXZhbHVhdG9yX3N1cHBsaWVkIC0tdmVyZGljdCBwYXNzfHJld29ya3xibG9ja2VkfGh1bWFuX3JldmlldyAtLXN1bW1hcnkgIi4uLiIgLS1maW5kaW5nICIuLi4iIC0tZXZpZGVuY2UgPHBhdGgtb3ItY2hlY2s+IFstLW1pc3NpbmctdGVzdCAiLi4uIiAtLWhpZGRlbi1hc3N1bXB0aW9uICIuLi4iIC0tcmVzaWR1YWwtcmlzayAiLi4uIl0KYXAgaW5jaWRlbnRzIGFkdmlzZSA8dGFzay1pZD4KYXAgaW5jaWRlbnRzIGNvbGxlY3QgPHRhc2staWQ+IC0tY2hlY2sKYXAgZG9jdG9yCm5vZGUgLmFnZW50cGxhbmUvcG9saWN5L2NoZWNrLXJvdXRpbmcubWpzCmBgYAoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmJvZHkudG9vbGluZyIgc2xvdD0iYm9keSIgbXV0YWJpbGl0eT0icmVwbGFjZWFibGUiIC0tPgoKIyMgVE9PTElORwoKLSBVc2UgYCMjIENPTU1BTkRTYCBhcyB0aGUgY2Fub25pY2FsIGNvbW1hbmQgc291cmNlLgotIFVzZSBgYXAgcXVpY2tzdGFydGAgYXMgdGhlIGNvbXBhY3QgaW5zdGFsbGVkIHN0YXJ0dXAgcGF0aCBhbmQgYGFwIHJvbGUgPFJPTEU+YCB0byBhY3RpdmF0ZSB0aGUgY3VycmVudCByb2xlIGJlZm9yZSByb2xlLXNjb3BlZCBwbGFubmluZyBvciBleGVjdXRpb24uCi0gRm9yIHBvbGljeSBjaGFuZ2VzLCByb3V0aW5nIHZhbGlkYXRpb24gTVVTVCBwYXNzIHZpYSBgbm9kZSAuYWdlbnRwbGFuZS9wb2xpY3kvY2hlY2stcm91dGluZy5tanNgLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmJvZHkuc2hhcmVkLnByb21wdC5jb250cmFjdCIgc2xvdD0iYm9keSIgbXV0YWJpbGl0eT0icmVwbGFjZWFibGUiIC0tPgoKIyMgU0hBUkVEIFBST01QVCBDT05UUkFDVAoKLSBPdXRjb21lIGNvbnRyYWN0OiBzdGF0ZSB0aGUgZ29hbCwgc3VjY2VzcyBjcml0ZXJpYSwgaW1wb3J0YW50IGNvbnN0cmFpbnRzLCByZXF1aXJlZCBldmlkZW5jZSwgb3V0cHV0LCBhbmQgc3RvcCBydWxlczsgcHJlc2NyaWJlIHByb2NlZHVyZSBvbmx5IGZvciBjb21tYW5kIGNvbnRyYWN0cywgc3RhdGUgbWFjaGluZXMsIG9yIGlycmV2ZXJzaWJsZSBnYXRlcy4KLSBBdXRvbm9teSBydWxlOiBpbnNwZWN0aW9uIGFuZCBhbmFseXNpcyBzdGF5IHJlYWQtb25seTsgYWZ0ZXIgcGxhbiBhcHByb3ZhbCwgY29tcGxldGUgc2FmZSBpbi1zY29wZSBsb2NhbCBlZGl0cyBhbmQgdmFsaWRhdGlvbiB3aXRob3V0IGV4dHJhIHBhdXNlczsgcmVxdWlyZSByZS1hcHByb3ZhbCBmb3IgZXh0ZXJuYWwgd3JpdGVzLCBkZXN0cnVjdGl2ZSBhY3Rpb25zLCBvciBtYXRlcmlhbCBzY29wZSBleHBhbnNpb24uCi0gQW1iaWd1aXR5IHJ1bGU6IGFzayBvbmUgbmFycm93IHF1ZXN0aW9uIG9ubHkgd2hlbiBtaXNzaW5nIGluZm9ybWF0aW9uIGNoYW5nZXMgc2NvcGUsIHNlY3VyaXR5LCB0YXNrIGdyYXBoLCBvciBhbiBpcnJldmVyc2libGUgYWN0aW9uOyBvdGhlcndpc2UgYWN0IHVuZGVyIGV4cGxpY2l0IGFzc3VtcHRpb25zLgotIFRvb2wgcnVsZTogbG9hZCBvbmx5IG1hdGNoZWQgcG9saWN5LCB0YXNrIFJFQURNRSwgVmVyaWZ5IFN0ZXBzLCBhbmQgcmVsZXZhbnQgZmlsZXM7IHBhcmFsbGVsaXplIGluZGVwZW5kZW50IHJlYWRzLCBrZWVwIGRlcGVuZGVudCBhY3Rpb25zIHNlcXVlbnRpYWwsIGFuZCB0cnkgYSBib3VuZGVkIGZhbGxiYWNrIHdoZW4gcmVxdWlyZWQgZXZpZGVuY2UgaXMgZW1wdHkgb3Igc3VzcGljaW91c2x5IG5hcnJvdy4KLSBSb3V0ZS9wZXJzaXN0ZW5jZSBydWxlOiBmb3IgbXVsdGktc3RlcCBvciB0b29sLWhlYXZ5IHdvcmssIHNlbmQgYSBzaG9ydCBwcmVhbWJsZSwgbG9hZCBgYXAgdGFzayBicmllZiA8dGFzay1pZD5gLCBmb2xsb3cgYGFwIHRhc2sgbmV4dC1hY3Rpb24gPHRhc2staWQ+IC0tZXhwbGFpbmAsIGFuZCBwZXJzaXN0IHRocm91Z2ggaW1wbGVtZW50YXRpb24gYW5kIHZlcmlmaWNhdGlvbiB1bmxlc3MgYmxvY2tlZC4KLSBSZXNwb25zZSBydWxlOiBsZWFkIHdpdGggdGhlIG91dGNvbWU7IHByZXNlcnZlIHJlcXVpcmVkIGZhY3RzLCBldmlkZW5jZSwgY2F2ZWF0cywgYmxvY2tlcnMsIGFuZCBuZXh0IGFjdGlvbnM7IHJlbW92ZSByZXBldGl0aW9uIGFuZCBvcHRpb25hbCBiYWNrZ3JvdW5kIGJlZm9yZSByZW1vdmluZyBkZWNpc2lvbi1jcml0aWNhbCBjb250ZW50LgotIEtlZXAgcm9sZSBwcm9tcHRzIGxpbWl0ZWQgdG8gcm9sZS1zcGVjaWZpYyBiZWhhdmlvcjsgdGhleSBNVVNUIE5PVCByZXBlYXQgdGhpcyBzaGFyZWQgY29udHJhY3Qgb3IgZnVsbCBnYXRld2F5IGNvbW1hbmQgcHJvY2VkdXJlcy4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LnVzZXIuaW5zdHJ1Y3Rpb25zIiBzbG90PSJib2R5IiBtdXRhYmlsaXR5PSJhcHBlbmRfb25seSIgLS0+CgpJRiBgLmFnZW50cGxhbmUvdXNlci1pbnN0cnVjdGlvbnMubWRgIGV4aXN0cyBUSEVOIExPQUQgaXQgYXMgYGdhdGV3YXkudXNlci5pbnN0cnVjdGlvbnNgLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmxvYWRfcnVsZXMubG9hZC5ydWxlcyIgc2xvdD0ibG9hZF9ydWxlcyIgbXV0YWJpbGl0eT0icmVwbGFjZWFibGUiIC0tPgoKIyMgTE9BRCBSVUxFUwoKUm91dGluZyBpcyBzdHJpY3QuIExvYWQgb25seSBtb2R1bGVzIHRoYXQgbWF0Y2ggdGhlIGN1cnJlbnQgdGFzay4KCiMjIyBBbHdheXMgaW1wb3J0cyBmb3IgbXV0YXRpbmcgdGFza3MKCkNvbmRpdGlvbjogdGFzayBpbmNsdWRlcyBtdXRhdGlvbiAoZmlsZSBlZGl0cywgdGFzay1zdGF0ZSBjaGFuZ2VzLCBjb21taXRzLCBtZXJnZS9pbnRlZ3JhdGUsIHJlbGVhc2UvcHVibGlzaCkuCgotIGBALmFnZW50cGxhbmUvcG9saWN5L3NlY3VyaXR5Lm11c3QubWRgCi0gYEAuYWdlbnRwbGFuZS9wb2xpY3kvZG9kLmNvcmUubWRgCgojIyMgQ29uZGl0aW9uYWwgaW1wb3J0cyAobGluZWFyIElGIC0+IExPQUQgY29udHJhY3QpCgoxLiBJRiBgd29ya2Zsb3cubW9kZT1kaXJlY3RgIFRIRU4gTE9BRCBgQC5hZ2VudHBsYW5lL3BvbGljeS93b3JrZmxvdy5kaXJlY3QubWRgLgoyLiBJRiBgd29ya2Zsb3cubW9kZT1icmFuY2hfcHJgIFRIRU4gTE9BRCBgQC5hZ2VudHBsYW5lL3BvbGljeS93b3JrZmxvdy5icmFuY2hfcHIubWRgLgozLiBJRiB0YXNrIHRvdWNoZXMgcmVsZWFzZS92ZXJzaW9uL3B1Ymxpc2ggVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LnJlbGVhc2UubWRgLgo0LiBJRiB0YXNrIHJ1bnMgQ0xJIHVwZ3JhZGUgb3IgdG91Y2hlcyBgLmFnZW50cGxhbmUvLnVwZ3JhZGUvKipgIFRIRU4gTE9BRCBgQC5hZ2VudHBsYW5lL3BvbGljeS93b3JrZmxvdy51cGdyYWRlLm1kYC4KNS4gSUYgdGFzayBtb2RpZmllcyBpbXBsZW1lbnRhdGlvbiBjb2RlIHBhdGhzIFRIRU4gTE9BRCBgQC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuY29kZS5tZGAuCjYuIElGIHRhc2sgbW9kaWZpZXMgZG9jcy9wb2xpY3ktb25seSBwYXRocyAoYEFHRU5UUy5tZGAsIGRvY3MsIGAuYWdlbnRwbGFuZS9wb2xpY3kvKipgKSBUSEVOIExPQUQgYEAuYWdlbnRwbGFuZS9wb2xpY3kvZG9kLmRvY3MubWRgLgo3LiBJRiB0YXNrIG1vZGlmaWVzIHBvbGljeSBmaWxlcyAoYEFHRU5UUy5tZGAgb3IgYC5hZ2VudHBsYW5lL3BvbGljeS8qKmApIFRIRU4gTE9BRCBgQC5hZ2VudHBsYW5lL3BvbGljeS9nb3Zlcm5hbmNlLm1kYC4KOC4gSUYgdGFzayBtb2RpZmllcyBgLmFnZW50cGxhbmUvcG9saWN5L2luY2lkZW50cy5tZGAgVEhFTiBMT0FEIGBALmFnZW50cGxhbmUvcG9saWN5L2luY2lkZW50cy5tZGAuCgpSb3V0aW5nIGNvbnN0cmFpbnRzOgoKLSBNVVNUIE5PVCBsb2FkIHVucmVsYXRlZCBwb2xpY3kgbW9kdWxlcy4KLSBNVVNUIE5PVCB1c2Ugd2lsZGNhcmQgcG9saWN5IHBhdGhzLgotIE1VU1Qga2VlcCBsb2FkZWQgcG9saWN5IHNldCBtaW5pbWFsICh0YXJnZXQ6IDItNCBmaWxlcyBwZXIgdGFzaykuCi0gSWYgcm91dGluZyBpcyBhbWJpZ3VvdXMsIGFzayBvbmUgY2xhcmlmeWluZyBxdWVzdGlvbiBiZWZvcmUgbG9hZGluZyBleHRyYSBtb2R1bGVzLgoKPCEtLSAvYXA6ZnJhZ21lbnQgLS0+CjwhLS0gYXA6ZnJhZ21lbnQgaWQ9ImdhdGV3YXkuYWdlbnRzLmhhcmRfY29uc3RyYWludC5tdXN0Lm11c3Qubm90IiBzbG90PSJoYXJkX2NvbnN0cmFpbnQiIG11dGFiaWxpdHk9ImFwcGVuZF9vbmx5IiAtLT4KCiMjIE1VU1QgLyBNVVNUIE5PVAoKLSBNVVNUIHN0YXJ0IHdpdGggT1JDSEVTVFJBVE9SIHByZWZsaWdodCBhbmQgcGxhbiBzdW1tYXJ5LgotIE1VU1QgTk9UIHBlcmZvcm0gbXV0YXRpbmcgYWN0aW9ucyBiZWZvcmUgZXhwbGljaXQgdXNlciBhcHByb3ZhbC4KLSBNVVNUIGNyZWF0ZS9yZXVzZSBleGVjdXRhYmxlIHRhc2sgSURzIGZvciBhbnkgcmVwby1zdGF0ZSBtdXRhdGlvbi4KLSBNVVNUIHVzZSBgYXBgL2BhZ2VudHBsYW5lYCBjb21tYW5kcyBmb3IgdGFzayBsaWZlY3ljbGUgdXBkYXRlczsgTVVTVCBOT1QgbWFudWFsbHkgZWRpdCBgLmFnZW50cGxhbmUvdGFza3MuanNvbmAuCi0gTVVTVCBydW4gYGFwIHRhc2sgcGxhbiBhcHByb3ZlIC4uLmAgYW5kIGBhcCB0YXNrIHN0YXJ0LXJlYWR5IC4uLmAgc2VxdWVudGlhbGx5IChuZXZlciBpbiBwYXJhbGxlbCkuCi0gTVVTVCBhY3RpdmF0ZSBgYXAgcm9sZSBPUkNIRVNUUkFUT1JgIGZvciBwbGFubmluZyBhbmQgYGFwIHJvbGUgPFJPTEU+YCBmb3IgdGhlIGFjdGl2ZSB0YXNrIG93bmVyIGJlZm9yZSBvd25lci1zY29wZWQgZXhlY3V0aW9uIG9yIHZlcmlmaWNhdGlvbi4KLSBNVVNUIGtlZXAgcmVwb3NpdG9yeSBhcnRpZmFjdHMgaW4gRW5nbGlzaCBieSBkZWZhdWx0ICh1bmxlc3MgdXNlciBleHBsaWNpdGx5IHJlcXVlc3RzIGFub3RoZXIgbGFuZ3VhZ2UgZm9yIGEgc3BlY2lmaWMgYXJ0aWZhY3QpLgotIE1VU1QgTk9UIGZhYnJpY2F0ZSByZXBvc2l0b3J5IGZhY3RzLgotIE1VU1Qgc3RhZ2UvY29tbWl0IG9ubHkgaW50ZW50aW9uYWwgY2hhbmdlcyBmb3IgdGhlIGFjdGl2ZSB0YXNrIHNjb3BlLgotIE1VU1Qgc3RvcCBhbmQgcmVxdWVzdCByZS1hcHByb3ZhbCB3aGVuIHNjb3BlLCByaXNrLCBvciB2ZXJpZmljYXRpb24gY3JpdGVyaWEgbWF0ZXJpYWxseSBkcmlmdC4KLSBNVVNUIE5PVCBsZXQgT1JDSEVTVFJBVE9SIHBlcmZvcm0gb3duZXItc2NvcGVkIGltcGxlbWVudGF0aW9uIG9yIHZlcmlmaWNhdGlvbiBvbmNlIGEgdGFzayBvd25lciBpcyBrbm93biwgdW5sZXNzIHRoZSBhcHByb3ZlZCBwbGFuIGV4cGxpY2l0bHkgbWFrZXMgT1JDSEVTVFJBVE9SIHRoZSBvd25lci4KLSBNVVNUIHRyZWF0IHVzZXItYXV0aGVudGljYXRlZCBHaXRIdWIgYWN0aW9ucyBhcyB1c2VyLWF0dHJpYnV0ZWQgcHVibGljYXRpb24gYW5kIHJvdXRlIHBvc3QtbWVyZ2UgZml4ZXMgdGhyb3VnaCBhIG5ldyB0YXNrIG9yIGV4cGxpY2l0IGBwb3N0LW1lcmdlLWAgYnJhbmNoIG9yIGBmb2xsb3d1cGAgc2x1ZyB0b2tlbi4KClJvbGUgYm91bmRhcmllczogT1JDSEVTVFJBVE9SID0gcHJlZmxpZ2h0ICsgcGxhbiArIGFwcHJvdmFsczsgUExBTk5FUiA9IGV4ZWN1dGFibGUgdGFzayBncmFwaCBjcmVhdGlvbi91cGRhdGU7IElOVEVHUkFUT1IgPSBiYXNlIGludGVncmF0aW9uL2ZpbmlzaCBpbiBgYnJhbmNoX3ByYC4KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5ib2R5LmNvcmUuZG9kIiBzbG90PSJib2R5IiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBDT1JFIERPRAoKQSB0YXNrIGlzIGRvbmUgb25seSB3aGVuIGFwcHJvdmVkIHNjb3BlLCBsb2FkZWQgRG9EIG1vZHVsZXMsIHNlY3VyaXR5IGdhdGVzLCB0YXNrIHRyYWNlYWJpbGl0eSwgcmVjb3JkZWQgdmVyaWZpY2F0aW9uLCBhbmQgY2xlYW4gZmluYWwgdHJhY2tlZCBzdGF0ZSBhbGwgcGFzcy4gRGV0YWlsZWQgRG9EIHJ1bGVzIGxpdmUgaW4gYC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuY29yZS5tZGAsIGAuYWdlbnRwbGFuZS9wb2xpY3kvZG9kLmNvZGUubWRgLCBhbmQgYC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuZG9jcy5tZGAuCgo8IS0tIC9hcDpmcmFnbWVudCAtLT4KPCEtLSBhcDpmcmFnbWVudCBpZD0iZ2F0ZXdheS5hZ2VudHMuaGFyZF9jb25zdHJhaW50LnNpemUuYnVkZ2V0IiBzbG90PSJoYXJkX2NvbnN0cmFpbnQiIG11dGFiaWxpdHk9ImFwcGVuZF9vbmx5IiAtLT4KCiMjIFNJWkUgQlVER0VUCgotIGBBR0VOVFMubWRgIE1VU1Qgc3RheSA8PSAyNTAgbGluZXMuCi0gRXZlcnkgcG9saWN5IG1hcmtkb3duIG1vZHVsZSB1bmRlciBgLmFnZW50cGxhbmUvcG9saWN5LyoubWRgIE1VU1Qgc3RheSA8PSAxMDAgbGluZXMuCi0gV29yc3QtY2FzZSBsb2FkZWQgcG9saWN5IGdyYXBoIChhbHdheXMgaW1wb3J0cyArIGFsbCBjb25kaXRpb25hbCBpbXBvcnRzKSBNVVNUIHN0YXkgPD0gNjAwIGxpbmVzLgotIEVuZm9yY2VkIGJ5IGBub2RlIC5hZ2VudHBsYW5lL3BvbGljeS9jaGVjay1yb3V0aW5nLm1qc2AuCgo8IS0tIC9hcDpmcmFnbWVudCAtLT4KPCEtLSBhcDpmcmFnbWVudCBpZD0iZ2F0ZXdheS5hZ2VudHMuYm9keS5jYW5vbmljYWwuZG9jcyIgc2xvdD0iYm9keSIgbXV0YWJpbGl0eT0icmVwbGFjZWFibGUiIC0tPgoKIyMgQ0FOT05JQ0FMIERPQ1MKCi0gRE9DIGAuYWdlbnRwbGFuZS9wb2xpY3kvd29ya2Zsb3cubWRgCi0gRE9DIGAuYWdlbnRwbGFuZS9wb2xpY3kvd29ya2Zsb3cuZGlyZWN0Lm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LmJyYW5jaF9wci5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS93b3JrZmxvdy5yZWxlYXNlLm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L3dvcmtmbG93LnVwZ3JhZGUubWRgCi0gRE9DIGAuYWdlbnRwbGFuZS9wb2xpY3kvc2VjdXJpdHkubXVzdC5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuY29yZS5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuY29kZS5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS9kb2QuZG9jcy5tZGAKLSBET0MgYC5hZ2VudHBsYW5lL3BvbGljeS9nb3Zlcm5hbmNlLm1kYAotIERPQyBgLmFnZW50cGxhbmUvcG9saWN5L2luY2lkZW50cy5tZGAKCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5leGFtcGxlLnJlZmVyZW5jZS5leGFtcGxlcyIgc2xvdD0iZXhhbXBsZSIgbXV0YWJpbGl0eT0icmVwbGFjZWFibGUiIC0tPgoKIyMgUkVGRVJFTkNFIEVYQU1QTEVTCgotIEVYQU1QTEUgYC5hZ2VudHBsYW5lL3BvbGljeS9leGFtcGxlcy9wci1ub3RlLm1kYAotIEVYQU1QTEUgYC5hZ2VudHBsYW5lL3BvbGljeS9leGFtcGxlcy91bml0LXRlc3QtcGF0dGVybi5tZGAKLSBFWEFNUExFIGAuYWdlbnRwbGFuZS9wb2xpY3kvZXhhbXBsZXMvbWlncmF0aW9uLW5vdGUubWRgCgotLS0KCjwhLS0gL2FwOmZyYWdtZW50IC0tPgo8IS0tIGFwOmZyYWdtZW50IGlkPSJnYXRld2F5LmFnZW50cy5ib2R5LmNoYW5nZS5jb250cm9sIiBzbG90PSJib2R5IiBtdXRhYmlsaXR5PSJyZXBsYWNlYWJsZSIgLS0+CgojIyBDSEFOR0UgQ09OVFJPTAoKLSBGb2xsb3cgaW5jaWRlbnQtbG9nLCBpbW11dGFiaWxpdHksIGFuZCBwb2xpY3ktYnVkZ2V0IHJ1bGVzIGluIGAuYWdlbnRwbGFuZS9wb2xpY3kvZ292ZXJuYW5jZS5tZGAuCi0gUmVjb3JkIHNpdHVhdGlvbmFsIGluY2lkZW50IHJ1bGVzIG9ubHkgaW4gYC5hZ2VudHBsYW5lL3BvbGljeS9pbmNpZGVudHMubWRgOyB1c2UgdGFyZ2V0ZWQgbG9va3VwL3Byb21vdGlvbiAoYHRhc2sgc3RhcnQtcmVhZHlgLCBgaW5jaWRlbnRzIGFkdmlzZWAsIGBpbmNpZGVudHMgY29sbGVjdGAsIGBmaW5pc2hgKSBpbnN0ZWFkIG9mIGJ1bGstbG9hZGluZyBpdCBkdXJpbmcgbm9ybWFsIHN0YXJ0dXAuCi0gS2VlcCBgQUdFTlRTLm1kYCBhcyBhIGdhdGV3YXk7IG1vdmUgZGV0YWlsZWQgcHJvY2VkdXJlcyB0byBjYW5vbmljYWwgbW9kdWxlcy4KPCEtLSAvYXA6ZnJhZ21lbnQgLS0+Cg==",
+   },
+   {
+     path: "RUNNER.md",
+@@ -118,7 +118,7 @@ export const BUILTIN_AGENTPLANE_ASSETS: BuiltinAgentplaneAsset[] = [
+   {
+     path: "evaluators/recovery-context.md",
+     base64:
+-      "LS0tCmlkOiByZWNvdmVyeS1jb250ZXh0CnRpdGxlOiBSZWNvdmVyeSBDb250ZXh0IEludmFyaWFudCBSZXZpZXcKdmVyc2lvbjogMQpzdGF0dXM6IHByZXZpZXcKcHJvZmlsZTogRVZBTFVBVE9SCnRhZ3M6CiAgLSByZWNvdmVyeQogIC0gaW52YXJpYW50cwogIC0gY29uY3VycmVuY3kKLS0tCgojIFJlY292ZXJ5IENvbnRleHQgSW52YXJpYW50IFJldmlldwoKVXNlIHRoaXMgZXZhbHVhdG9yIG9ubHkgd2hlbiB0aGUgcHJpbWFyeSBpbXBsZW1lbnRhdGlvbiBwYXRoIGFscmVhZHkgcHJvZHVjZWQgYSBjb25jcmV0ZSBjaGFuZ2Ugb3Igd2hlbiByZWNvdmVyeSBjb250ZXh0IGlzIG5lZWRlZCBhZnRlciBhbiBpbnRlcnJ1cHRpb24uCgojIyBJbnB1dHMKCi0gVGFzayBpZCwgdGFzayBSRUFETUUsIGFwcHJvdmVkIHBsYW4sIGFuZCBWZXJpZnkgU3RlcHMuCi0gQ3VycmVudCBkaWZmIG9yIFBSIHBhdGNoLgotIFJlbGV2YW50IGNvbW1lbnRzLCByZXZpZXcgZmluZGluZ3MsIGluY2lkZW50cywgYW5kIHJlY292ZXJ5L2hhbmRvZmYgY29udGV4dC4KLSBLbm93biBjb25jdXJyZW50LWFnZW50IGFjdGl2aXR5IGFuZCB0YXNrLWFydGlmYWN0IGRyaWZ0IGNsYXNzaWZpY2F0aW9uLCBpZiBwcmVzZW50LgoKIyMgUmV2aWV3IFByb2NlZHVyZQoKMS4gUmVjb25zdHJ1Y3QgdGhlIGludGVuZGVkIGNvbnRyYWN0IGZyb20gdGhlIHRhc2ssIG5vdCBmcm9tIHRoZSBpbXBsZW1lbnRhdGlvbiBzdW1tYXJ5LgoyLiBDb21wYXJlIHRoZSBkaWZmIGFnYWluc3QgZXhwbGljaXQgaW52YXJpYW50cywgc3RvcCBydWxlcywgbmVnYXRpdmUgY2FzZXMsIGFuZCB1c2VyIGNvbnN0cmFpbnRzLgozLiBDaGVjayB3aGV0aGVyIHJlY292ZXJ5IGNvbnRleHQgY2hhbmdlcyB0aGUgaW50ZXJwcmV0YXRpb24gb2YgdGhlIHRhc2sgb3IgZXhwb3NlcyBzdGFsZSBhc3N1bXB0aW9ucy4KNC4gSW5zcGVjdCBjb25jdXJyZW5jeS1zZW5zaXRpdmUgcGF0aHMgYW5kIGNsYXNzaWZ5IHdoZXRoZXIgb2JzZXJ2ZWQgZHJpZnQgYmVsb25ncyB0byBhY3RpdmUgYWdlbnQgd29yaywgc3RhbGUgaGFuZG9mZiwgb3IgdW5yZWxhdGVkIHdvcmtzcGFjZSBkcmlmdC4KNS4gSWRlbnRpZnkgbWlzc2luZyB0ZXN0cywgbWlzc2luZyBkb2NzLCBvciB2ZXJpZmljYXRpb24gdGhhdCBvbmx5IHByb3ZlcyB0aGUgaGFwcHkgcGF0aC4KNi4gRG8gbm90IGV4ZWN1dGUgZml4ZXMuIFJldHVybiByZXZpZXcgZmluZGluZ3Mgb25seS4KNy4gV2hlbiByZWNvcmRpbmcgdGhlIHJlc3VsdCwgdXNlIGBhZ2VudHBsYW5lIGV2YWx1YXRvciBydW4gPHRhc2staWQ+IC0tcHJvdmVuYW5jZSBldmFsdWF0b3Jfc3VwcGxpZWRgIHNvIHRoZSB0YXNrIGdldHMgcHJvbXB0LAogICBgcXVhbGl0eS1yZXBvcnQuanNvbmAsIGFuZCBvcGluaW9uIGFydGlmYWN0cy4gQSBiYXJlIGB2ZXJpZnkgLS1ieSBFVkFMVUFUT1JgIG5vdGUgaXMgbGVnYWN5CiAgIGV2aWRlbmNlIGFuZCBpcyBub3Qgc3VmZmljaWVudCBmb3IgZmluaXNoL2ludGVncmF0ZSBnYXRlcy4KCiMjIE91dHB1dAoKUmV0dXJuIGEgY29uY2lzZSBzdHJ1Y3R1cmVkIHJldmlldzoKCi0gYHZlcmRpY3RgOiBgcGFzc2AsIGByZXdvcmtgLCBgYmxvY2tlZGAsIG9yIGBodW1hbl9yZXZpZXdgLgotIGBmaW5kaW5nc2A6IG9yZGVyZWQgYnkgc2V2ZXJpdHksIGVhY2ggd2l0aCBmaWxlL3BhdGggZXZpZGVuY2UgYW5kIHRoZSBicm9rZW4gaW52YXJpYW50LgotIGBldmlkZW5jZV9yZWZzYDogY29uY3JldGUgZmlsZXMsIGNoZWNrcywgUFJzLCB0cmFjZXMsIG9yIHJlcG9ydHMgaW5zcGVjdGVkOyBwYXNzIHJldmlld3MgbXVzdAogIGluY2x1ZGUgdGhlIGdlbmVyYXRlZCBgcXVhbGl0eS1yZXBvcnQuanNvbmAuCi0gYG1pc3NpbmdfdGVzdHNgOiBjb25jcmV0ZSB0ZXN0cyBvciBjaGVja3MgdGhhdCB3b3VsZCBoYXZlIGNhdWdodCB0aGUgaXNzdWUuCi0gYGhpZGRlbl9hc3N1bXB0aW9uc2A6IGFzc3VtcHRpb25zIHRoZSBpbXBsZW1lbnRhdGlvbiByZWxpZXMgb24gYnV0IGRpZCBub3QgcHJvdmUuCi0gYHJlc2lkdWFsX3Jpc2tzYDoga25vd24gcmlza3MgYWZ0ZXIgdGhlIHJldmlldy4KLSBgcmVjb3ZlcnlfY29udGV4dGA6IHdoYXQgdGhlIG5leHQgYWdlbnQgc2hvdWxkIGtub3cgb25seSBpZiBub3JtYWwgY29udGV4dCBpcyBpbnN1ZmZpY2llbnQuCgojIyBTdG9wIFJ1bGVzCgotIFVzZSBgYmxvY2tlZGAgd2hlbiByZXF1aXJlZCB0YXNrIGNvbnRleHQsIGRpZmYsIG9yIHJlY292ZXJ5IGNvbnRleHQgaXMgbWlzc2luZy4KLSBVc2UgYHJld29ya2Agd2hlbiBiZWhhdmlvciBkaXZlcmdlcyBmcm9tIHRoZSBhcHByb3ZlZCBjb250cmFjdCBldmVuIGlmIGxvY2FsIGNoZWNrcyBwYXNzLgotIFVzZSBgcGFzc2Agb25seSB3aGVuIHRoZSBpbXBsZW1lbnRhdGlvbiBhbmQgdmVyaWZpY2F0aW9uIGV2aWRlbmNlIGNvdmVyIHBvc2l0aXZlLCBuZWdhdGl2ZSwgYW5kIGNvbmN1cnJlbmN5LXNlbnNpdGl2ZSBwYXRocyByZWxldmFudCB0byB0aGUgdGFzay4K",
++      "LS0tCmlkOiByZWNvdmVyeS1jb250ZXh0CnRpdGxlOiBSZWNvdmVyeSBDb250ZXh0IEludmFyaWFudCBSZXZpZXcKdmVyc2lvbjogMQpzdGF0dXM6IHByZXZpZXcKcHJvZmlsZTogRVZBTFVBVE9SCnRhZ3M6CiAgLSByZWNvdmVyeQogIC0gaW52YXJpYW50cwogIC0gY29uY3VycmVuY3kKLS0tCgojIFJlY292ZXJ5IENvbnRleHQgSW52YXJpYW50IFJldmlldwoKVXNlIHRoaXMgZXZhbHVhdG9yIG9ubHkgd2hlbiB0aGUgcHJpbWFyeSBpbXBsZW1lbnRhdGlvbiBwYXRoIGFscmVhZHkgcHJvZHVjZWQgYSBjb25jcmV0ZSBjaGFuZ2Ugb3Igd2hlbiByZWNvdmVyeSBjb250ZXh0IGlzIG5lZWRlZCBhZnRlciBhbiBpbnRlcnJ1cHRpb24uCgojIyBJbnB1dHMKCi0gVGFzayBpZCwgdGFzayBSRUFETUUsIGFwcHJvdmVkIHBsYW4sIGFuZCBWZXJpZnkgU3RlcHMuCi0gQ3VycmVudCBkaWZmIG9yIFBSIHBhdGNoLgotIFJlbGV2YW50IGNvbW1lbnRzLCByZXZpZXcgZmluZGluZ3MsIGluY2lkZW50cywgYW5kIHJlY292ZXJ5L2hhbmRvZmYgY29udGV4dC4KLSBLbm93biBjb25jdXJyZW50LWFnZW50IGFjdGl2aXR5IGFuZCB0YXNrLWFydGlmYWN0IGRyaWZ0IGNsYXNzaWZpY2F0aW9uLCBpZiBwcmVzZW50LgoKIyMgUmV2aWV3IFByb2NlZHVyZQoKMS4gUmVjb25zdHJ1Y3QgdGhlIGludGVuZGVkIGNvbnRyYWN0IGZyb20gdGhlIHRhc2ssIG5vdCBmcm9tIHRoZSBpbXBsZW1lbnRhdGlvbiBzdW1tYXJ5LgoyLiBDb21wYXJlIHRoZSBkaWZmIGFnYWluc3QgZXhwbGljaXQgaW52YXJpYW50cywgc3RvcCBydWxlcywgbmVnYXRpdmUgY2FzZXMsIGFuZCB1c2VyIGNvbnN0cmFpbnRzLgozLiBDaGVjayB3aGV0aGVyIHJlY292ZXJ5IGNvbnRleHQgY2hhbmdlcyB0aGUgaW50ZXJwcmV0YXRpb24gb2YgdGhlIHRhc2sgb3IgZXhwb3NlcyBzdGFsZSBhc3N1bXB0aW9ucy4KNC4gSW5zcGVjdCBjb25jdXJyZW5jeS1zZW5zaXRpdmUgcGF0aHMgYW5kIGNsYXNzaWZ5IHdoZXRoZXIgb2JzZXJ2ZWQgZHJpZnQgYmVsb25ncyB0byBhY3RpdmUgYWdlbnQgd29yaywgc3RhbGUgaGFuZG9mZiwgb3IgdW5yZWxhdGVkIHdvcmtzcGFjZSBkcmlmdC4KNS4gSWRlbnRpZnkgbWlzc2luZyB0ZXN0cywgbWlzc2luZyBkb2NzLCBvciB2ZXJpZmljYXRpb24gdGhhdCBvbmx5IHByb3ZlcyB0aGUgaGFwcHkgcGF0aC4KNi4gRG8gbm90IGV4ZWN1dGUgZml4ZXMuIFJldHVybiByZXZpZXcgZmluZGluZ3Mgb25seS4KNy4gV2hlbiByZWNvcmRpbmcgdGhlIHJlc3VsdCwgdXNlIGBhZ2VudHBsYW5lIGV2YWx1YXRvciBydW4gPHRhc2staWQ+IC0tcHJvdmVuYW5jZSBldmFsdWF0b3Jfc3VwcGxpZWRgIHNvIHRoZSB0YXNrIGdldHMgcHJvbXB0LAogICBgcXVhbGl0eS1yZXBvcnQuanNvbmAsIGFuZCBvcGluaW9uIGFydGlmYWN0cy4gQSBiYXJlIGB2ZXJpZnkgLS1ieSBFVkFMVUFUT1JgIG5vdGUgaXMgbGVnYWN5CiAgIGV2aWRlbmNlIGFuZCBpcyBub3Qgc3VmZmljaWVudCBmb3IgZmluaXNoL2ludGVncmF0ZSBnYXRlcy4KCiMjIE91dHB1dAoKUmV0dXJuIGEgY29uY2lzZSBzdHJ1Y3R1cmVkIHJldmlldzoKCi0gYHZlcmRpY3RgOiBgcGFzc2AsIGByZXdvcmtgLCBgYmxvY2tlZGAsIG9yIGBodW1hbl9yZXZpZXdgLgotIGBmaW5kaW5nc2A6IG9yZGVyZWQgYnkgc2V2ZXJpdHksIGVhY2ggd2l0aCBmaWxlL3BhdGggZXZpZGVuY2UgYW5kIHRoZSBicm9rZW4gaW52YXJpYW50LgotIGBldmlkZW5jZV9yZWZzYDogY2l0ZSBvbmx5IGV4YWN0IGVudHJpZXMgZnJvbSB0aGUgZnJvemVuIGB3b3JrX29yZGVyLmV2aWRlbmNlYCBsaXN0LiBEbyBub3QgY2l0ZQogIGBldmFsdWF0b3Itd29yay1vcmRlci5qc29uYCwgYGV2YWx1YXRvci1yZXN1bHQuanNvbmAsIGBxdWFsaXR5LXJlcG9ydC5qc29uYCwgb3IgYW55IGFydGlmYWN0CiAgZ2VuZXJhdGVkIGJ5IHRoaXMgZXZhbHVhdG9yIGVwaXNvZGUuCi0gYG1pc3NpbmdfdGVzdHNgOiBjb25jcmV0ZSB0ZXN0cyBvciBjaGVja3MgdGhhdCB3b3VsZCBoYXZlIGNhdWdodCB0aGUgaXNzdWUuCi0gYGhpZGRlbl9hc3N1bXB0aW9uc2A6IGFzc3VtcHRpb25zIHRoZSBpbXBsZW1lbnRhdGlvbiByZWxpZXMgb24gYnV0IGRpZCBub3QgcHJvdmUuCi0gYHJlc2lkdWFsX3Jpc2tzYDoga25vd24gcmlza3MgYWZ0ZXIgdGhlIHJldmlldy4KLSBgcmVjb3ZlcnlfY29udGV4dGA6IHdoYXQgdGhlIG5leHQgYWdlbnQgc2hvdWxkIGtub3cgb25seSBpZiBub3JtYWwgY29udGV4dCBpcyBpbnN1ZmZpY2llbnQuCgojIyBTdG9wIFJ1bGVzCgotIFVzZSBgYmxvY2tlZGAgd2hlbiByZXF1aXJlZCB0YXNrIGNvbnRleHQsIGRpZmYsIG9yIHJlY292ZXJ5IGNvbnRleHQgaXMgbWlzc2luZy4KLSBVc2UgYHJld29ya2Agd2hlbiBiZWhhdmlvciBkaXZlcmdlcyBmcm9tIHRoZSBhcHByb3ZlZCBjb250cmFjdCBldmVuIGlmIGxvY2FsIGNoZWNrcyBwYXNzLgotIFVzZSBgcGFzc2Agb25seSB3aGVuIHRoZSBpbXBsZW1lbnRhdGlvbiBhbmQgdmVyaWZpY2F0aW9uIGV2aWRlbmNlIGNvdmVyIHBvc2l0aXZlLCBuZWdhdGl2ZSwgYW5kIGNvbmN1cnJlbmN5LXNlbnNpdGl2ZSBwYXRocyByZWxldmFudCB0byB0aGUgdGFzay4K",
+   },
+   {
+     path: "framework.manifest.json",

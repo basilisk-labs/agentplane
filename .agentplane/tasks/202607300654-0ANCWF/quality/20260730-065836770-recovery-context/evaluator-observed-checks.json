@@ -1,0 +1,25 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "ap doctor",
+    "bun run agents:check",
+    "bun run assets:builtin:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "node scripts/check-release-incidents.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T06:58:21.531Z",
+    "updated_by": "TESTER",
+    "note": "Atomic RF-04 archival is synchronized across package assets, project policy, generated table, and archive; it contains no provider retry or release."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
