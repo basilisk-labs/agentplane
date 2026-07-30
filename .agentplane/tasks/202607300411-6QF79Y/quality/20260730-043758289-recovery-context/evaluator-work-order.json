@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300411-6QF79Y-5e2a661869bf420847507552",
+  "prepared_at": "2026-07-30T04:37:58.289Z",
+  "task": {
+    "id": "202607300411-6QF79Y",
+    "revision": 9,
+    "objective": "Stabilize concurrent effect-resolution retirement test\n\nMake the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.",
+    "acceptance_criteria": [
+      "- In scope: Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing.\n- Out of scope: unrelated refactors not required for \"Stabilize concurrent effect-resolution retirement test\".",
+      "1. Reproduce the unstable runner effect-resolution test and identify the missing synchronization boundary.\n2. Make the test hold the recovery lease, observe the retry path, release it, and let a concurrent resolver complete retirement.\n3. Run the focused regression repeatedly plus the exact hosted unit command (bun run test:fast); publish through the normal branch_pr PR route.",
+      "PLANNER fallback scaffold for \"Stabilize concurrent effect-resolution retirement test\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Stabilize concurrent effect-resolution retirement test\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "62b1eda065c9345e2180ca8fd10c286295f88d99",
+  "diff_base_sha": "ee5ea7178ba961f1e17ae3a925cb6b81469c41d7",
+  "blueprint_digest": "693f8dc16204766e2de8ef776db68fa09206cb6501a985a05e4878a858103bbc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300411-6QF79Y/README.md",
+      "sha256": "sha256:bb1b14548f19717525530e487b03c521b5011ddf37850f4c4d20c9a43a04b7a6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:4d8b9a1a4ea030dae3b22ba255a1eaafa8eb09f865ba699dc0b3897e4fafb486",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:f4ef62085e701aff97b885c81353c6b67da5a54e32dbc322257dd7772bdbcbac",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300411-6QF79Y/quality/20260730-043758289-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:ade39a7006650f6b96b681d1aafbd2118ac5dc9d5f6c9fd2ac85f617d84a30b2",
+      "required": true
+    }
+  ]
+}

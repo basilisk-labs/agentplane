@@ -8,10 +8,10 @@
   "pr_number": 4679,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4679",
   "pre_merge_closure": {
-    "basis_commit": "78484117b66db9bfea82d2b447a02ee0ef0b1c50",
+    "basis_commit": "62b1eda065c9345e2180ca8fd10c286295f88d99",
     "branch": "task/202607300411-6QF79Y/stabilize-effect-resolution-test",
     "pr_number": 4679,
-    "recorded_at": "2026-07-30T04:27:56.318Z",
+    "recorded_at": "2026-07-30T04:38:29.257Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
