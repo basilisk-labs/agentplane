@@ -15,7 +15,7 @@ import {
   validateTaskKnowledgeRequestResponse,
   type TaskKnowledgeRequestAudit,
   type TaskKnowledgeRequestResponse,
-} from "./task-knowledge-request.js";
+} from "./task-knowledge-request-response.js";
 import { requestDigest } from "./task-knowledge-request-codec.js";
 
 export const TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY = "knowledge-requests" as const;
