@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -748,6 +749,81 @@ describe("context harvest tasks", () => {
         parsed: parsed({ task: [source.id], createExtractionTasks: true }),
       }),
     ).rejects.toThrow(/live CURATOR selection/u);
+  });
+
+  it("freezes the canonical check under the selection lease before writing the CURATOR source lock", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-FREEZE",
+      title: "Freeze canonical selection evidence",
+      description: "Decision: canonical evidence must stay immutable during selection.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+    let allowCreation: (() => void) | undefined;
+    const creationAllowed = new Promise<void>((resolve) => {
+      allowCreation = resolve;
+    });
+    let signalCreation: (() => void) | undefined;
+    const creationStarted = new Promise<void>((resolve) => {
+      signalCreation = resolve;
+    });
+
+    const first = cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+        signalCreation?.();
+        await creationAllowed;
+        await commandCtx.taskBackend.writeTask({
+          id: "202604040900-CURAT1",
+          title: taskParsed.title,
+          status: "TODO",
+          owner: taskParsed.owner,
+          priority: taskParsed.priority,
+          tags: taskParsed.tags,
+          description: taskParsed.description,
+          extensions: taskParsed.extensions,
+        } as TaskData);
+        return taskCreationResult("202604040900-CURAT1");
+      },
+    });
+    await creationStarted;
+
+    await expect(
+      cmdContextHarvestTasks({
+        ctx: ctx(root, tasks),
+        cwd: root,
+        parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      }),
+    ).rejects.toThrow(/live CURATOR selection/u);
+
+    allowCreation?.();
+    await first;
+
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const checkName = proposalFiles.find((name) => name.endsWith(".canonical-check.json"));
+    expect(checkName).toBeDefined();
+    const checkPath = path.join(proposalDir, checkName ?? "");
+    const checkContent = await readFile(checkPath);
+    const sourceLock = JSON.parse(
+      await readFile(
+        path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"),
+        "utf8",
+      ),
+    ) as { files: { path: string; sha256: string }[] };
+    const checkSha256 = `sha256:${createHash("sha256").update(checkContent).digest("hex")}`;
+    expect(
+      sourceLock.files.find((file) => file.path === path.relative(root, checkPath))?.sha256,
+    ).toBe(checkSha256);
+    const selectionName = proposalFiles.find((name) => name.endsWith(".selection.json"));
+    const selection = JSON.parse(
+      await readFile(path.join(proposalDir, selectionName ?? ""), "utf8"),
+    ) as { canonical_check: { sha256: string } };
+    expect(selection.canonical_check.sha256).toBe(checkSha256);
   });
 
   it("keeps one CURATOR owner when the same proposal is selected concurrently", async () => {
