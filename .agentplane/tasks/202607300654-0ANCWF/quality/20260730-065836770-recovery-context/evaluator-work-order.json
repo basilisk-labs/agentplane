@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300654-0ANCWF-46e0c9da81b64263c0f46da6",
+  "prepared_at": "2026-07-30T06:58:36.770Z",
+  "task": {
+    "id": "202607300654-0ANCWF",
+    "revision": 7,
+    "objective": "Atomically synchronize RF-04 incident archival across package assets\n\nSupersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.",
+    "acceptance_criteria": [
+      "ap doctor",
+      "bun run agents:check",
+      "bun run assets:builtin:check",
+      "node .agentplane/policy/check-routing.mjs",
+      "node scripts/check-release-incidents.mjs",
+      "- In scope: Supersede the unmergeable docs-only archival PR #4683 by applying the already-approved external-mitigation disposition atomically: remove INC-20260730-01 from the packaged canonical incident policy, synchronize the project policy target, regenerate built-in assets, and add the faithful historical archive record. Preserve CR9VTJ do_not_publish evidence and the no-retry/no-replacement boundary; do not call a provider, release, or publish a package.\n- Out of scope: unrelated refactors not required for \"Atomically synchronize RF-04 incident archival across package assets\".",
+      "1. Reconstruct the exact externally mitigated RF-04 disposition from the failed provider precondition and merged CR9VTJ non-publication decision. 2. Update the canonical packaged incident policy first, then synchronize the project policy target and regenerate the built-in asset table. 3. Add the identical, faithful historical archive entry without changing provider or release semantics. 4. Prove package/project parity and rerun the exact local CI path that rejected PR #4683. 5. Verify, evaluate, integrate through branch_pr, and close PR #4683 only as superseded after the replacement task is merged.",
+      "1. Inspect the original INC-20260730-01 and CR9VTJ packet. Expected: the preserved archive includes RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH, qualification_decision=do_not_publish, live_provider_measurement=not_run_by_packet_builder, and makes no successful-rerun claim.\n2. Inspect packages/agentplane/assets/policy/incidents.md, .agentplane/policy/incidents.md, and docs/developer/incident-archive.mdx. Expected: the incident is absent from both active registries and occurs exactly once in the archive as externally mitigated, with source evidence and a future pinned-environment reopen condition.\n3. Run bun run agents:check and bun run assets:builtin:check. Expected: canonical package policy, project policy target, and generated built-in asset table are synchronized.\n4. Run node scripts/check-release-incidents.mjs, node .agentplane/policy/check-routing.mjs, ap doctor, and bun run ci:local:fast. Expected: release gate, policy routing, workflow health, and the previously failed routed CI path pass.\n5. Run git diff --check and inspect the diff. Expected: only incident archive/registries, generated asset table, and task artifacts change; no provider call, measurement retry, package release, or unrelated product code."
+    ]
+  },
+  "evaluated_sha": "63cccee4d0994886764a634ccc52587e9d8fa16d",
+  "diff_base_sha": "951374ef0854d7bccd57361e6be7ec6ddededa6d",
+  "blueprint_digest": "4c96f141eceecb1e7be48f49ec43c3853571d55b07930302a33450a6247e4af7",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300654-0ANCWF/README.md",
+      "sha256": "sha256:1e48d2937d35b8526f2f2fdfc37e020eb33b4dcb5a035e0f94c62ab759f5117a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300654-0ANCWF/quality/20260730-065836770-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:b26f16c222dc892192a308cd90af31404b889499a4d78dc41e6f4a3f0b2e4c15",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300654-0ANCWF/quality/20260730-065836770-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:2ba0b0d6f3357b1bae91e3f680a03e295fecc7a7ff03da4d8b396287739f1d4a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300654-0ANCWF/quality/20260730-065836770-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:594c8dec9b188d07d7405cce68e12f9829b37d07e00cb0bd88bb6cb91bc2630f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

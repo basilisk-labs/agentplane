@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300654-0ANCWF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T06:58:36.898Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "63cccee4d0994886764a634ccc52587e9d8fa16d",
+  "blueprint_digest": "4c96f141eceecb1e7be48f49ec43c3853571d55b07930302a33450a6247e4af7",
+  "findings": [
+    "The code task correctly follows the package asset as canonical, synchronizes the project mirror, regenerates the built-in table, and reruns the exact CI surface that rejected the prior docs-only change."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300654-0ANCWF/quality/20260730-065836770-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

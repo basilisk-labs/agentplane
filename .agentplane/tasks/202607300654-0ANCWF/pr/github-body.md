@@ -15,8 +15,13 @@ Supersede the unmergeable docs-only archival PR #4683 by applying the already-ap
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Atomic RF-04 archival is synchronized across package assets, project policy, generated table, and
+archive; it contains no provider retry or release.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
