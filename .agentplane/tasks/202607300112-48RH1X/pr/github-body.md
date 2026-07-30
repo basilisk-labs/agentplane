@@ -15,8 +15,13 @@ Repair the RF-04 replay capture safety contract so a qualification packet can re
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Qualification rebuild evidence is restricted to the deterministic task-local path and preserves the
+RF-04 non-publication gate.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
