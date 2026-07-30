@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-9T0RT3-358d08615b6582c3ac3730b6",
+  "prepared_at": "2026-07-30T12:21:14.460Z",
+  "task": {
+    "id": "202607221852-9T0RT3",
+    "revision": 15,
+    "objective": "Build deterministic task knowledge retrieval\n\nRF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: deterministic query planning, exact/FTS/alias/graph retrieval, scoring/reasons, budgets, prepared excerpts, missing/omitted receipt, work-order integration, relevance fixtures, and metrics.\n- Out of scope: always-on CURATOR or semantic reranking.",
+      "1. Build structured retrieval intent from task/acceptance, affected paths/symbols, blueprint/tags, dependency outputs, and evaluator findings.\n2. Resolve through exact, FTS, alias, and graph adapters under explicit budgets.\n3. Select refs/excerpts deterministically with reasons and coverage/omission receipt.\n4. Embed results in AgentWorkOrder and fingerprint the knowledge projection.\n5. Compare retrieval hits/gaps and executor repo-discovery probes to baseline scenarios.",
+      "1. Run fixed task fixtures twice. Expected: identical queries, refs, excerpts, scores/reasons, budgets, and retrieval receipt.\n2. Exercise path, symbol, dependency, and prior-finding signals. Expected: each contributes only when present and is auditable.\n3. Remove required knowledge or exceed budget. Expected: an explicit missing/omitted receipt, never fabricated context.\n4. Compare executor broad-discovery probes and verified success to baseline. Expected: fewer redundant probes without quality regression.\n5. Run work-order/retrieval tests and typecheck."
+    ]
+  },
+  "evaluated_sha": "7c9808336038299d70a28870ec02012571d079e6",
+  "diff_base_sha": "2872d82ce71ecfa658dc9686ed1d36bb101f9278",
+  "blueprint_digest": "b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-9T0RT3/README.md",
+      "sha256": "sha256:0ea545b97d5fb668acaddf8d2af894c76500a04d89afdac70ae3799b20f1659a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-122114460-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0ee73a377212076795f2e0d9aa35c15031ef2658cd87d4ef61ca3bbd531da500",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-122114460-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:daf5d903b8d8f849358b36386b6ce3648db9232a29b29ed06e2d0ec481321f82",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-122114460-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:a472eff5547173dbaf2e294b058e86db08995aefef3a0656a3f151483b03912f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
