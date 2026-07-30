@@ -7,6 +7,11 @@ import { CONTEXT_EXTRACTION_CONTRACT } from "../runtime/sgr/index.js";
 import type { TaskCreationResult } from "../commands/task/new.js";
 
 import type { ManifestEntry } from "./ingest-manifest.js";
+import {
+  buildCanonicalReconciliationCandidates,
+  type CanonicalCatalogEntity,
+  type CanonicalEntityCatalog,
+} from "./reconciliation-candidates.js";
 import { buildSourceSpanSkeleton } from "./source-spans.js";
 
 const CONTEXT_TASK_PACK_FILES = [
@@ -15,12 +20,11 @@ const CONTEXT_TASK_PACK_FILES = [
   "extraction-contract.json",
   "canonical-snapshot.json",
   "canonical-entity-catalog.json",
+  "canonical-reconciliation-candidates.json",
   "source-set.lock.json",
   "source-spans.skeleton.jsonl",
   "expected-artifacts.json",
 ] as const;
-
-const CANDIDATE_LIMIT = 50;
 
 const SNAPSHOT_SURFACES = {
   wiki: { path: "context/wiki", kind: "directory" },
@@ -159,48 +163,6 @@ async function directoryExists(directoryPath: string): Promise<boolean> {
   }
 }
 
-function wikiTitle(text: string, relativePath: string): string {
-  const frontmatterTitle = /^---\s*[\s\S]*?^title:\s*["']?([^\n"']+)/mu.exec(text)?.[1]?.trim();
-  const headingTitle = /^#\s+(.+)$/mu.exec(text)?.[1]?.trim();
-  return (
-    frontmatterTitle ?? headingTitle ?? path.basename(relativePath, path.extname(relativePath))
-  );
-}
-
-async function wikiCandidates(root: string, files: string[]) {
-  const candidates = [];
-  for (const relativePath of files.slice(0, CANDIDATE_LIMIT)) {
-    const text = await readFile(path.join(root, relativePath), "utf8");
-    candidates.push({ path: relativePath, title: wikiTitle(text, relativePath) });
-  }
-  return candidates;
-}
-
-async function entityCandidates(root: string) {
-  const relativePath = ".agentplane/context/derived/graph/entities.jsonl";
-  const content = await readFileOrNull(path.join(root, relativePath));
-  if (!content) return [];
-  const rows: { id: string; label?: string; kind?: string; aliases?: string[] }[] = [];
-  for (const line of content.toString("utf8").split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const row = JSON.parse(line) as Record<string, unknown>;
-      if (typeof row.id !== "string" || !row.id.trim()) continue;
-      rows.push({
-        id: row.id,
-        ...(typeof row.label === "string" ? { label: row.label } : {}),
-        ...(typeof row.kind === "string" ? { kind: row.kind } : {}),
-        ...(Array.isArray(row.aliases) && row.aliases.every((alias) => typeof alias === "string")
-          ? { aliases: row.aliases as string[] }
-          : {}),
-      });
-    } catch {
-      continue;
-    }
-  }
-  return rows.toSorted((left, right) => left.id.localeCompare(right.id)).slice(0, CANDIDATE_LIMIT);
-}
-
 async function jsonlRecords(
   root: string,
   relativePath: string,
@@ -245,7 +207,7 @@ async function buildCanonicalEntityCatalog(opts: {
   root: string;
   taskId: string;
   generatedAt: string;
-}): Promise<Record<string, unknown>> {
+}): Promise<CanonicalEntityCatalog> {
   const [entities, aliases, edges, pageManifests] = await Promise.all([
     jsonlRecords(opts.root, ".agentplane/context/derived/graph/entities.jsonl"),
     jsonlRecords(opts.root, ".agentplane/context/derived/ontology/aliases.jsonl"),
@@ -293,7 +255,7 @@ async function buildCanonicalEntityCatalog(opts: {
     });
     relationsByEntity.set(to, incoming);
   }
-  const catalogEntities = entities
+  const catalogEntities: CanonicalCatalogEntity[] = entities
     .flatMap((entity) => {
       const id = optionalText(entity, "id");
       if (!id) return [];
@@ -352,15 +314,10 @@ async function buildCanonicalSnapshot(opts: { root: string; taskId: string; gene
     ),
   );
   return {
-    version: 2,
+    version: 3,
     task_id: opts.taskId,
     generated_at: opts.generatedAt,
-    candidate_limit: CANDIDATE_LIMIT,
     surfaces: Object.fromEntries(surfaceEntries),
-    candidates: {
-      wiki_pages: await wikiCandidates(opts.root, wikiFiles),
-      graph_entities: await entityCandidates(opts.root),
-    },
   };
 }
 
@@ -447,8 +404,9 @@ function buildContextPackMarkdown(opts: {
     "- `task-creation.json`: CLI-owned receipt containing the exact created task identity, revision, backend, and recovery artifact paths; treat it as immutable during semantic work.",
     "- `source-set.lock.json`: selected source identity, hashes, status, type, and size.",
     "- `extraction-contract.json`: exact SGR v2 payload requirements plus a valid example.",
-    "- `canonical-snapshot.json`: current surface counts, digests, and bounded page/entity candidates for reconciliation.",
+    "- `canonical-snapshot.json`: current canonical surface counts and digests.",
     "- `canonical-entity-catalog.json`: complete canonical entity inventory with aliases, provenance, wiki targets, and graph neighborhoods.",
+    "- `canonical-reconciliation-candidates.json`: source-derived lexical and structural candidate evidence, deterministic scores/reasons/refs, exact index digest, and bounded follow-up search queries. It never decides identity.",
     "- `source-spans.skeleton.jsonl`: deterministic addressable source spans for semantic classification.",
     "- `expected-artifacts.json`: required output contract for this task.",
     "",
@@ -466,7 +424,7 @@ function buildContextPackMarkdown(opts: {
     "",
     "For every source term that may denote an entity, CURATOR must decide meaning before creating or updating graph rows. Deterministic AgentPlane code must not make this decision.",
     "",
-    "1. Search the complete canonical entity catalog, then use context search and graph neighbors for plausible lexical and semantic candidates.",
+    "1. Inspect the source-driven reconciliation candidates, then search the complete canonical entity catalog and use context search and graph neighbors for additional plausible lexical and semantic candidates.",
     "2. Compare kind, scope, time/validity, ownership, defining properties, aliases, source evidence, wiki use, and graph neighborhood. Similar spelling alone is insufficient.",
     "3. Emit one evidence-bearing entity_resolution row: same_as, alias_of, distinct_entity, possibly_same_as, or new_entity_proposal.",
     "4. For same_as or alias_of, reuse canonical_entity_id and do not emit a second graph_entity. For ambiguity, preserve both identities and list evidence still needed. Propose a new entity only after documenting the candidates and why none match.",
@@ -505,6 +463,14 @@ export async function writeContextTaskPack(opts: {
     taskId: opts.taskId,
     generatedAt,
   });
+  const reconciliationCandidates = await buildCanonicalReconciliationCandidates({
+    root: opts.root,
+    taskId: opts.taskId,
+    generatedAt,
+    sources: opts.sources,
+    spans,
+    catalog: canonicalEntityCatalog,
+  });
   await writeJsonStableIfChanged(path.join(taskDir, "source-set.lock.json"), {
     version: 1,
     task_id: opts.taskId,
@@ -516,6 +482,10 @@ export async function writeContextTaskPack(opts: {
   await writeJsonStableIfChanged(
     path.join(taskDir, "canonical-entity-catalog.json"),
     canonicalEntityCatalog,
+  );
+  await writeJsonStableIfChanged(
+    path.join(taskDir, "canonical-reconciliation-candidates.json"),
+    reconciliationCandidates,
   );
   await writeTextIfChanged(
     path.join(taskDir, "source-spans.skeleton.jsonl"),

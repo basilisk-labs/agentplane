@@ -5,8 +5,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../commands/shared/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
+import { writeSqliteProjection } from "../commands/context/sqlite.js";
 import { cmdContextIngest } from "./ingest.js";
 import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
+import { writeContextTaskPack } from "./ingest-task-pack.js";
+import { PROJECTION_VERSION } from "./reindex.js";
 
 let tempRoots: string[] = [];
 
@@ -152,11 +155,19 @@ describe("context ingest task pack", () => {
         facts: { row_count: number; sha256: string };
         graph_entities: { row_count: number; sha256: string };
       };
-      candidates: {
-        wiki_pages: { path: string; title: string }[];
-        graph_entities: { id: string; label: string }[];
-      };
     }>(root, `${taskRoot}/canonical-snapshot.json`);
+    const reconciliationCandidates = await readJson<{
+      version: number;
+      index: { available: boolean; digest: string | null; fts_results_per_query: number };
+      candidate_digest: string;
+      semantic_decision_owner: string;
+      candidate_groups: {
+        query: string;
+        source_paths: string[];
+        source_span_ids: string[];
+        candidates: unknown[];
+      }[];
+    }>(root, `${taskRoot}/canonical-reconciliation-candidates.json`);
     const canonicalEntityCatalog = await readJson<{
       version: number;
       entity_count: number;
@@ -218,15 +229,11 @@ describe("context ingest task pack", () => {
       ]),
     );
     expect(canonicalSnapshot).toMatchObject({
-      version: 2,
+      version: 3,
       surfaces: {
         wiki: { file_count: 1 },
         facts: { row_count: 1 },
         graph_entities: { row_count: 1 },
-      },
-      candidates: {
-        wiki_pages: [{ path: "context/wiki/payments.md", title: "Payments" }],
-        graph_entities: [{ id: "entity.payments", label: "Payments" }],
       },
     });
     expect(canonicalSnapshot.surfaces.wiki.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
@@ -254,10 +261,28 @@ describe("context ingest task pack", () => {
       ],
     });
     expect(canonicalEntityCatalog.catalog_sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(reconciliationCandidates).toMatchObject({
+      version: 1,
+      index: { available: false, digest: null, fts_results_per_query: 20 },
+      semantic_decision_owner: "CURATOR",
+    });
+    expect(reconciliationCandidates.candidate_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(reconciliationCandidates.candidate_groups).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          query: "payment api",
+          source_paths: ["context/raw/specs/payment-api.md"],
+          source_span_ids: [expect.stringMatching(/^span\./u)],
+        }),
+      ]),
+    );
     expect(expectedArtifacts.required).toContain(`${taskRoot}/source-spans.skeleton.jsonl`);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/task-creation.json`);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/extraction-contract.json`);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/canonical-entity-catalog.json`);
+    expect(expectedArtifacts.required).toContain(
+      `${taskRoot}/canonical-reconciliation-candidates.json`,
+    );
     expect(expectedArtifacts.required).toEqual(
       expect.arrayContaining([
         ".agentplane/context/derived/ontology/entity-resolution.jsonl",
@@ -284,6 +309,7 @@ describe("context ingest task pack", () => {
         ".agentplane/tasks/${taskId}/extraction-contract.json",
         ".agentplane/tasks/${taskId}/canonical-snapshot.json",
         ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
+        ".agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json",
         ".agentplane/tasks/${taskId}/source-set.lock.json",
         ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
         ".agentplane/tasks/${taskId}/expected-artifacts.json",
@@ -296,6 +322,177 @@ describe("context ingest task pack", () => {
       "same_as/alias_of reuse an existing canonical ID",
     );
     expect(parsedTaskDocSections?.Findings).toContain("Semantic identity is agent-owned");
+  });
+
+  it("builds stable source-driven candidates beyond the former alphabetical first-50 slice", async () => {
+    const root = await tempRoot();
+    const taskId = "202607021203-CANDID";
+    const sourcePath = "context/raw/specs/payment-api.md";
+    const structuredSourcePath = "context/raw/specs/payment-terms.json";
+    await write(
+      root,
+      sourcePath,
+      "# Payment API\n\nUse the legacy Payment Gateway name only in migration notes.\n",
+    );
+    await write(
+      root,
+      "context/wiki/payment-api.md",
+      "# Payment API\n\nCanonical payment contract.\n",
+    );
+    await write(root, structuredSourcePath, JSON.stringify({ title: "Payment Gateway" }));
+    const fillerEntities = Array.from({ length: 55 }, (_, index) => ({
+      id: `entity.${String(index).padStart(3, "0")}`,
+      kind: "concept",
+      label: `Filler ${index}`,
+    }));
+    const paymentApi = {
+      id: "entity.zz-payment-api",
+      kind: "service",
+      label: "Payment API",
+      source_refs: ["context/raw/specs/legacy-payments.md#L1-L4"],
+    };
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      [...fillerEntities, paymentApi].map((row) => JSON.stringify(row)).join("\n") + "\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/ontology/aliases.jsonl",
+      `${JSON.stringify({
+        id: "alias.payment-gateway",
+        alias: "Payment Gateway",
+        canonical_entity_id: paymentApi.id,
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/edges.jsonl",
+      `${JSON.stringify({
+        id: "edge.payment-api.uses.ledger",
+        from: paymentApi.id,
+        to: "entity.010",
+        relation: "uses",
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/wiki/page-manifests.jsonl",
+      `${JSON.stringify({
+        id: "page.payment-api",
+        path: "context/wiki/payment-api.md",
+        canonical_entity_ids: [paymentApi.id],
+      })}\n`,
+    );
+    await writeSqliteProjection(path.join(root, ".agentplane", "cache.sqlite"), {
+      metadata: {
+        projection_version: PROJECTION_VERSION,
+        generated_at: "2026-07-02T12:03:00.000Z",
+        workspace_hash: "fixture-reconciliation-index",
+        include_tasks: false,
+        include_raw: false,
+        source_bytes: 100,
+        search_text_bytes: 100,
+        preview_text_bytes: 100,
+        projection_elapsed_ms: 1,
+      },
+      rows: [
+        {
+          path: ".agentplane/context/derived/graph/entities.jsonl#entity=entity.zz-payment-api",
+          sha256: "payment-api-graph-row",
+          content_type: "application/json",
+          projection_version: PROJECTION_VERSION,
+          indexed_at: "2026-07-02T12:03:00.000Z",
+          size_bytes: 50,
+          kind: "jsonl-row",
+          search_text: "Payment API service",
+          preview_text: "Payment API service",
+          source_refs: paymentApi.source_refs,
+        },
+        {
+          path: "context/wiki/payment-api.md#section=payment-api",
+          sha256: "payment-api-wiki-row",
+          content_type: "text/markdown",
+          projection_version: PROJECTION_VERSION,
+          indexed_at: "2026-07-02T12:03:00.000Z",
+          size_bytes: 50,
+          kind: "markdown-section",
+          search_text: "Payment API canonical contract",
+          preview_text: "Payment API canonical contract",
+          source_refs: ["context/wiki/payment-api.md#section=payment-api"],
+        },
+      ],
+    });
+    const sources = [
+      {
+        path: sourcePath,
+        sha256: "sha256:payment-api-source",
+        size_bytes: 74,
+        mtime: "2026-07-02T12:03:00.000Z",
+        content_type: "text/markdown",
+        status: "new" as const,
+      },
+      {
+        path: structuredSourcePath,
+        sha256: "sha256:payment-terms-source",
+        size_bytes: 27,
+        mtime: "2026-07-02T12:03:00.000Z",
+        content_type: "application/json",
+        status: "new" as const,
+      },
+    ];
+    const creation = {
+      task_id: taskId,
+      revision: 1,
+      backend_id: "local",
+      artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+    };
+    const generatedAt = "2026-07-02T12:03:00.000Z";
+    await writeContextTaskPack({ root, taskId, sources, creation, generatedAt });
+    const first = await readJson<{
+      index: { available: boolean; digest: string | null };
+      candidate_digest: string;
+      candidate_groups: {
+        query: string;
+        origins: string[];
+        candidates: {
+          canonical_entity_id: string;
+          score: number;
+          reasons: string[];
+          evidence_refs: string[];
+        }[];
+      }[];
+    }>(root, `.agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json`);
+    await writeContextTaskPack({ root, taskId, sources, creation, generatedAt });
+    const second = await readJson(
+      root,
+      `.agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json`,
+    );
+
+    const paymentGroup = first.candidate_groups.find((group) => group.query === "payment api");
+    const paymentCandidate = paymentGroup?.candidates.find(
+      (candidate) => candidate.canonical_entity_id === paymentApi.id,
+    );
+    const aliasGroup = first.candidate_groups.find((group) => group.query === "payment gateway");
+    const aliasCandidate = aliasGroup?.candidates.find(
+      (candidate) => candidate.canonical_entity_id === paymentApi.id,
+    );
+    expect(paymentCandidate).toMatchObject({
+      score: expect.any(Number),
+      reasons: expect.arrayContaining(["label_exact", "fts_graph_entity", "fts_page_family"]),
+      evidence_refs: expect.arrayContaining([
+        ".agentplane/context/derived/graph/entities.jsonl#entity=entity.zz-payment-api",
+        "context/wiki/payment-api.md#section=payment-api",
+      ]),
+    });
+    expect(first.index).toMatchObject({
+      available: true,
+      digest: expect.stringMatching(/^sha256:/u),
+    });
+    expect(aliasGroup).toMatchObject({ origins: expect.arrayContaining(["structured_field"]) });
+    expect(aliasCandidate?.reasons).toContain("alias_exact");
+    expect(first.candidate_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(second).toEqual(first);
   });
 
   it("persists the exact creation receipt before a later task-pack failure", async () => {
