@@ -1611,7 +1611,7 @@ agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
 
 ### pr conflict-rework
 
-Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.
+Prepare a bounded conflict packet, or explicitly recover a diverged local/provider task head without semantic resolution.
 
 Usage:
 
@@ -1622,6 +1622,9 @@ agentplane pr conflict-rework <task-id> [options]
 Options:
 
 - `--expect-freshness-token <sha256-token>`: Fail closed unless the newly observed conflict packet matches this token.
+- `--recover-diverged-head`: Archive the exact local head and adopt the exact provider task head after explicit identity checks. (default=false)
+- `--expected-local-head <full-sha>`: Required with --recover-diverged-head. Exact local task-branch head to archive.
+- `--expected-provider-head <full-sha>`: Required with --recover-diverged-head. Exact provider task-branch head to adopt.
 - `--json`: Emit the conflict packet as JSON. (default=false)
 
 Examples:
@@ -1631,6 +1634,12 @@ agentplane pr conflict-rework 202602030608-F1Q8AB --json
 ```
 
 - Read current provider conflict truth without changing any branch, worktree, PR, or queue state.
+
+```sh
+agentplane pr conflict-rework 202602030608-F1Q8AB --recover-diverged-head --expected-local-head <sha> --expected-provider-head <sha>
+```
+
+- Preserve an unpublished local head before adopting the exact conflicting provider head.
 
 ### pr flow status
 

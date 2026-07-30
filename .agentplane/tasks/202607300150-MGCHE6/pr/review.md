@@ -29,6 +29,8 @@ Created: 2026-07-30T01:54:00.904Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  11 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
  .../commands/pr/conflict-rework-recovery.test.ts   | 221 +++++++++++++++++++++
  .../src/commands/pr/conflict-rework-recovery.ts    | 190 ++++++++++++++++++
  .../src/commands/pr/conflict-rework.command.ts     |  33 +++
@@ -36,7 +38,7 @@ Created: 2026-07-30T01:54:00.904Z
  packages/agentplane/src/commands/pr/pr.spec.ts     |  73 ++++++-
  .../baselines/v0.7-compatibility-candidate.json    |  69 ++++++-
  .../check-compatibility-contract-baseline.mjs      |  42 ++++
- 7 files changed, 623 insertions(+), 8 deletions(-)
+ 9 files changed, 634 insertions(+), 10 deletions(-)
 ```
 
 </details>

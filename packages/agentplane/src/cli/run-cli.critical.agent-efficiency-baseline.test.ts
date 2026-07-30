@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("254commands/175args/818options");
+      expect(compatibility.stdout).toContain("254commands/175args/821options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
