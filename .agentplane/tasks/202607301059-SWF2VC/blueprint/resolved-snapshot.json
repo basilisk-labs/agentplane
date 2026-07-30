@@ -3,7 +3,7 @@
   "artifactKind": "agentplane.blueprint.resolved_snapshot",
   "resolverInput": {
     "taskId": "202607301059-SWF2VC",
-    "title": "Release AgentPlane v0.6.25 from maintenance branch",
+    "title": "Release AgentPlane v0.6.25",
     "description": "Prepare and publish v0.6.25 from codex/fix-v0.6.24-closeout-route only, including release notes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub release verification, and proof that main does not contain the maintenance commits.",
     "tags": [
       "maintenance",
@@ -489,6 +489,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "63c4a2408ec049f7d8f6711cfba77426598b775fe5ae068f371cf34647e4dd4c"
+    "value": "505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607301059-SWF2VC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T11:53:01.898Z",
+  "verdict": "pass",
+  "summary": "v0.6.25 maintenance release candidate is ready for integration after full local and hosted verification.",
+  "evaluated_sha": "f905f72296101e08eacee1c0acd47b732c126a84",
+  "blueprint_digest": "505193e6d3d016445e932ecee3032868e05c236396dcf3053bf418bb543767f8",
+  "findings": [
+    "All routing fixes, release version surfaces, generated assets, Bun workspace lock, recovery snapshot, release notes, and package artifacts are consistent at 0.6.25."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607301059-SWF2VC/README.md",
+    "docs/releases/v0.6.25.md",
+    ".agentplane/.release/apply/2026-07-30T11-41-57-736Z.json",
+    "bun.lock",
+    ".agentplane/workflows/last-known-good.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

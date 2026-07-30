@@ -2,15 +2,23 @@
   "base": "codex/fix-v0.6.24-closeout-route",
   "branch": "task/202607301059-SWF2VC/release-v0-6-25",
   "created_at": "2026-07-30T10:59:38.090Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:bcdadd04715b34797c0151492e913510d026f74bb742dc592f88d2bdeef22f44",
+  "last_verified_at": "2026-07-30T11:53:24.284Z",
+  "last_verified_diffstat_sha256": "sha256:bcdadd04715b34797c0151492e913510d026f74bb742dc592f88d2bdeef22f44",
   "pr_number": 4691,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4691",
+  "pre_merge_closure": {
+    "basis_commit": "f905f72296101e08eacee1c0acd47b732c126a84",
+    "branch": "task/202607301059-SWF2VC/release-v0-6-25",
+    "pr_number": 4691,
+    "recorded_at": "2026-07-30T11:53:42.176Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607301059-SWF2VC",
   "updated_at": "2026-07-30T11:00:00.322Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
