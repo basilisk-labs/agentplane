@@ -48,7 +48,7 @@ reservation and concurrent retrieval coverage also passed.
  .../usecases/task-knowledge-request-response.ts    | 168 +++++++
  .../usecases/task-knowledge-request-scope.ts       |  88 ++++
  .../runner/usecases/task-knowledge-request.test.ts | 494 +++++++++++++++++++++
- .../src/runner/usecases/task-knowledge-request.ts  | 435 ++++++++++++++++++
+ .../src/runner/usecases/task-knowledge-request.ts  | 431 ++++++++++++++++++
  .../runner/usecases/task-knowledge-retrieval.ts    |  14 +
  .../task-run-bootstrap.result-examples.test.ts     |   6 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
@@ -62,7 +62,7 @@ reservation and concurrent retrieval coverage also passed.
  ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
  .../agent-work-order-v2.camel-case.compat.json     |   1 +
  schemas/examples/agent-work-order-v2.valid.json    |   1 +
- 30 files changed, 2210 insertions(+), 34 deletions(-)
+ 30 files changed, 2206 insertions(+), 34 deletions(-)
 ```
 
 </details>
