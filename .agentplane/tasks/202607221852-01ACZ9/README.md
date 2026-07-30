@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "Reviewed commit 33887675: Prettier-normalized the only rejected import without changing behavior. Local format, schema, architecture, type, and focused request/lifecycle/lock checks pass; no new dependency edge or contract change was introduced."
 commit:
-  hash: "e8e65c95ae9c7915b6f9d6cdc07f9b90c83f473c"
-  message: "🧪 01ACZ9 task: record cycle-fix quality review"
+  hash: "f0a8d6a102ae39f973b0eaf1731a2f01bdab2011"
+  message: "🧪 01ACZ9 task: record format-fix quality review"
 comments:
   -
     author: "CODER"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Hosted verify-contract failure was formatting-only: Prettier required the task-knowledge-request codec import to be on one line. Applied the repository formatter; format:check, schemas:check, arch:check, agentplane typecheck, and focused request/lifecycle/lock tests pass."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -149,8 +152,15 @@ events:
     at: "2026-07-30T15:29:07.504Z"
     author: "CODER"
     body: "Hosted verify-contract failure was formatting-only: Prettier required the task-knowledge-request codec import to be on one line. Applied the repository formatter; format:check, schemas:check, arch:check, agentplane typecheck, and focused request/lifecycle/lock tests pass."
+  -
+    type: "status"
+    at: "2026-07-30T15:30:41.415Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T15:29:07.504Z"
+doc_updated_at: "2026-07-30T15:30:41.416Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
@@ -387,8 +397,8 @@ sections:
       Resolution: Reuse an owner-verified cross-process lock without time-based eviction, retain dead-owner recovery, and return a bounded round-0 escalation when the reservation wait expires.
 extensions:
   implementation_commit:
-    hash: "c48ce0be61a7ff0b35fa3d6d4cad352a88da5c2e"
-    message: "🐛 01ACZ9 task: break knowledge request import cycle"
+    hash: "33887675818a9d372fdab802499a82320eb6290f"
+    message: "🧹 01ACZ9 task: format knowledge request imports"
   workflow_route_baseline:
     start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
     version: 1

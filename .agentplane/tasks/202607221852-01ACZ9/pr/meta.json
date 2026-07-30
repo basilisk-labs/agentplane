@@ -8,10 +8,10 @@
   "pr_number": 4693,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4693",
   "pre_merge_closure": {
-    "basis_commit": "e8e65c95ae9c7915b6f9d6cdc07f9b90c83f473c",
+    "basis_commit": "f0a8d6a102ae39f973b0eaf1731a2f01bdab2011",
     "branch": "task/202607221852-01ACZ9/serve-bounded-knowledge-requests-during-agent-ep",
     "pr_number": 4693,
-    "recorded_at": "2026-07-30T15:25:17.469Z",
+    "recorded_at": "2026-07-30T15:30:41.470Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
