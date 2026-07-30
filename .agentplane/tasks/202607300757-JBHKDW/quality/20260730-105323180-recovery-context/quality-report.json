@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300757-JBHKDW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T10:53:23.180Z",
+  "verdict": "pass",
+  "summary": "Corrected integration verification contract passes on the routing implementation.",
+  "evaluated_sha": "c3d51c336a9af8a0172c75e36c2597f2aa788841",
+  "blueprint_digest": "f46f992a26c22cb3a11cc073c1e371e5b58b0c03db398f719af23da0857ad2b6",
+  "findings": [
+    "All task Verify Steps now use the matching Vitest projects and pass together with full local and hosted CI."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300757-JBHKDW/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

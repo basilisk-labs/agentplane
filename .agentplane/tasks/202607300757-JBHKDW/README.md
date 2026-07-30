@@ -5,7 +5,7 @@ result_summary: "Fixed direct closeout and post-work-start routing"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,8 @@ mutation_scope: "code"
 blueprint_request: "code.branch_pr"
 verify:
   - "bun run typecheck"
-  - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+  - "bun run test:project -- agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts"
+  - "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts"
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
@@ -33,20 +34,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-30T10:45:31.302Z"
+  updated_at: "2026-07-30T10:53:23.180Z"
   updated_by: "EVALUATOR"
-  note: "Routing fixes are scoped and release-ready after full local CI."
+  note: "Corrected integration verification contract passes on the routing implementation."
   evaluated_sha: "c3d51c336a9af8a0172c75e36c2597f2aa788841"
   blueprint_digest: "f46f992a26c22cb3a11cc073c1e371e5b58b0c03db398f719af23da0857ad2b6"
   evidence_refs:
     - ".agentplane/tasks/202607300757-JBHKDW/README.md"
-    - ".agentplane/tasks/202607300757-JBHKDW/quality/20260730-104531302-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300757-JBHKDW/quality/20260730-104531302-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300757-JBHKDW/quality/20260730-104531302-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300757-JBHKDW/quality/20260730-105323180-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300757-JBHKDW/quality/20260730-105323180-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300757-JBHKDW/quality/20260730-105323180-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607300757-JBHKDW/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts"
   findings:
-    - "Direct closeout emits argv-safe task complete and branch_pr recovery infers a unique local task branch without repeating work start."
+    - "All task Verify Steps now use the matching Vitest projects and pass together with full local and hosted CI."
 commit:
   hash: "c3d51c336a9af8a0172c75e36c2597f2aa788841"
   message: "🐛 JBHKDW routing: resume existing task worktree"
@@ -100,11 +100,11 @@ sections:
   Verify Steps: |-
     PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
 
-    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-    4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `bun run test:project -- agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts`. Expected: route guidance tests pass.
+    2. Run `bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts`. Expected: direct closeout and post-work-start route regressions pass.
+    3. Run `bun run typecheck`. Expected: it succeeds.
+    4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds.
+    5. Review the changed routing behavior and compare the final result against the task summary. Expected: both reported dead ends are closed and any remaining follow-up is explicit in Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-30T08:11:12.984Z — VERIFY — ok
@@ -214,11 +214,11 @@ Reproduce and fix v0.6.24 route guidance that selects task complete with placeho
 
 PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
 
-1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.
-4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bun run test:project -- agentplane packages/agentplane/src/commands/shared/route-guidance.test.ts`. Expected: route guidance tests pass.
+2. Run `bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts`. Expected: direct closeout and post-work-start route regressions pass.
+3. Run `bun run typecheck`. Expected: it succeeds.
+4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds.
+5. Review the changed routing behavior and compare the final result against the task summary. Expected: both reported dead ends are closed and any remaining follow-up is explicit in Findings.
 
 ## Verification
 
