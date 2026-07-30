@@ -9,7 +9,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { cmdContextReindex } from "../../context/reindex.js";
 import type { RunnerResult } from "../types.js";
-import { loadTaskKnowledgeRequestAudits } from "./task-knowledge-request.js";
+import {
+  loadTaskKnowledgeRequestAudits,
+  validateTaskKnowledgeRequestResponse,
+  withTaskKnowledgeRequestAuditReservation,
+} from "./task-knowledge-request.js";
 import { serveRunnerKnowledgeRequest } from "./task-knowledge-request-lifecycle.js";
 import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution } from "./task-run.js";
@@ -224,5 +228,95 @@ describe("runner knowledge-request lifecycle", () => {
       { round: 1, outcome: "unresolved" },
       { round: 2, outcome: "escalated" },
     ]);
+  });
+
+  it("keeps a held reservation exclusive and returns a bounded typed escalation on timeout", async () => {
+    const root = await mkGitRepoRoot();
+    await configureNeedsContextRunner(root);
+    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
+    await writeFile(
+      path.join(root, "context", "wiki", "retrieval.md"),
+      "# Bounded retrieval continuation\n\nCLI owns the canonical bounded retrieval response.\n",
+      "utf8",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
+    const taskId = await createDoingRunnerTask({
+      root,
+      title: "Bounded retrieval continuation",
+      plan_text: "Keep a knowledge request reservation exclusive.",
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const executed = await executeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: "run-knowledge-reservation-base",
+    });
+    const workOrder = executed.bundle.work_order!;
+    const runsDir = path.dirname(executed.invocation.run_dir);
+    const invocation = {
+      run_id: "run-knowledge-reservation-held",
+      run_dir: path.join(runsDir, "run-knowledge-reservation-held"),
+      work_order_id: workOrder.work_order_id,
+    };
+    let release!: () => void;
+    let markHeld!: () => void;
+    const held = new Promise<void>((resolve) => {
+      markHeld = resolve;
+    });
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const holder = withTaskKnowledgeRequestAuditReservation({
+      repository_root: root,
+      invocation: {
+        run_id: invocation.run_id,
+        work_order_id: invocation.work_order_id,
+        state_fingerprint_digest: workOrder.state_fingerprint.digest,
+      },
+      role: workOrder.role,
+      work: async () => {
+        markHeld();
+        await gate;
+        return "released";
+      },
+    });
+    await held;
+
+    const contended = await serveRunnerKnowledgeRequest({
+      repository_root: root,
+      invocation: {
+        ...invocation,
+        run_id: "run-knowledge-reservation-contended",
+        run_dir: path.join(runsDir, "run-knowledge-reservation-contended"),
+      },
+      reservation_wait_ms: 25,
+      work_order: workOrder,
+      result: needsContextRunnerResult(workOrder.work_order_id),
+    });
+    expect(contended.knowledge_response).toMatchObject({
+      round: 0,
+      outcome: "escalated",
+      omissions: [{ code: "reservation_unavailable" }],
+    });
+    expect(validateTaskKnowledgeRequestResponse(contended.knowledge_response)).toEqual(
+      contended.knowledge_response,
+    );
+    expect(typeof contended.knowledge_response?.blocker?.recommended_action).toBe("string");
+
+    release();
+    await expect(holder).resolves.toMatchObject({ status: "reserved", value: "released" });
+    const recovered = await serveRunnerKnowledgeRequest({
+      repository_root: root,
+      invocation,
+      reservation_wait_ms: 25,
+      work_order: workOrder,
+      result: needsContextRunnerResult(workOrder.work_order_id),
+    });
+    expect(recovered.knowledge_response).toMatchObject({ round: 2, outcome: "served" });
   });
 });

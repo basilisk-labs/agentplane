@@ -1,21 +1,26 @@
-import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import { validateAgentSemanticResult, type AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import {
+  isCloudProjectionLockHeldError,
+  withCloudProjectionLock,
+} from "../../backends/task-backend/cloud-projection-lock.js";
+import {
+  createTaskKnowledgeRequestResponse,
   validateTaskKnowledgeRequestResponse,
   type TaskKnowledgeRequestAudit,
+  type TaskKnowledgeRequestResponse,
 } from "./task-knowledge-request.js";
+import { requestDigest } from "./task-knowledge-request-codec.js";
 
 export const TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY = "knowledge-requests" as const;
-const AUDIT_RESERVATION_STALE_AFTER_MS = 60_000;
 const AUDIT_RESERVATION_RETRY_DELAY_MS = 10;
 const AUDIT_RESERVATION_WAIT_MS = 5000;
-const AUDIT_RESERVATION_OWNER_FILE = "owner";
 
 type KnowledgeRequestInvocation = {
   run_id: string;
@@ -33,8 +38,7 @@ function matchesInvocation(opts: {
   );
 }
 
-function reservationLockPath(opts: {
-  runs_dir: string;
+function reservationLockName(opts: {
   invocation: KnowledgeRequestInvocation;
   role: AgentWorkOrderV2["role"];
 }): string {
@@ -44,61 +48,90 @@ function reservationLockPath(opts: {
     role: opts.role,
   });
   const suffix = createHash("sha256").update(binding, "utf8").digest("hex").slice(0, 32);
-  return path.join(opts.runs_dir, `.knowledge-request-${suffix}.lock`);
+  return `knowledge-request-${suffix}`;
 }
 
 /**
  * Keep audit reload, round calculation, and durable persistence in one
- * cross-process critical section. The lock is keyed to the immutable work
- * order binding, not a physical run id, because a continuation may allocate a
- * later run directory for the same semantic episode.
+ * cross-process critical section. The owned file lock has no age-based expiry:
+ * a live holder cannot be removed by a slow request. The lock is keyed to the
+ * immutable work order binding, not a physical run id, because a continuation
+ * may allocate a later run directory for the same semantic episode.
  */
 export async function withTaskKnowledgeRequestAuditReservation<T>(opts: {
-  runs_dir: string;
   invocation: KnowledgeRequestInvocation;
+  repository_root: string;
   role: AgentWorkOrderV2["role"];
+  wait_ms?: number;
   work: () => Promise<T>;
-}): Promise<T> {
-  await mkdir(opts.runs_dir, { recursive: true, mode: 0o700 });
-  const lockPath = reservationLockPath(opts);
-  const deadline = Date.now() + AUDIT_RESERVATION_WAIT_MS;
-  const owner = randomUUID();
+}): Promise<{ status: "reserved"; value: T } | { status: "busy" }> {
+  const deadline = Date.now() + (opts.wait_ms ?? AUDIT_RESERVATION_WAIT_MS);
+  const lockName = reservationLockName(opts);
   while (true) {
     try {
-      await mkdir(lockPath, { mode: 0o700 });
-      try {
-        await writeFile(path.join(lockPath, AUDIT_RESERVATION_OWNER_FILE), `${owner}\n`, "utf8");
-      } catch (error) {
-        await rm(lockPath, { recursive: true, force: true });
-        throw error;
-      }
-      break;
+      return {
+        status: "reserved",
+        value: await withCloudProjectionLock(
+          {
+            lockName,
+            operation: "knowledge-request-audit-reservation",
+            repositoryRoot: opts.repository_root,
+          },
+          opts.work,
+        ),
+      };
     } catch (error) {
-      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
-      const age = await stat(lockPath)
-        .then((entry) => Date.now() - entry.mtimeMs)
-        .catch(() => 0);
-      if (age > AUDIT_RESERVATION_STALE_AFTER_MS) {
-        await rm(lockPath, { recursive: true, force: true });
-        continue;
-      }
+      if (!isCloudProjectionLockHeldError(error)) throw error;
       if (Date.now() >= deadline) {
-        throw new Error(`Timed out reserving task knowledge request audit: ${lockPath}`);
+        return { status: "busy" };
       }
       await sleep(AUDIT_RESERVATION_RETRY_DELAY_MS);
     }
   }
+}
+
+/**
+ * A contended reservation must return a bounded, typed response rather than
+ * leak a storage-level lock failure through the runner lifecycle. Round 0
+ * means that this response was not reserved or persisted and did not consume
+ * the work order's knowledge-request budget.
+ */
+export function taskKnowledgeRequestReservationUnavailableResponse(opts: {
+  invocation: KnowledgeRequestInvocation;
+  semantic_result: unknown;
+  work_order: Pick<AgentWorkOrderV2, "role">;
+}): TaskKnowledgeRequestResponse {
+  let requestDigestValue: string | null = null;
+  let blocking = false;
   try {
-    return await opts.work();
-  } finally {
-    const observedOwner = await readFile(
-      path.join(lockPath, AUDIT_RESERVATION_OWNER_FILE),
-      "utf8",
-    ).catch(() => null);
-    if (observedOwner?.trim() === owner) {
-      await rm(lockPath, { recursive: true, force: true });
+    const semantic = validateAgentSemanticResult(opts.semantic_result);
+    const request = "knowledge_request" in semantic ? semantic.knowledge_request : undefined;
+    if (request) {
+      requestDigestValue = requestDigest(request);
+      blocking = request.blocking;
     }
+  } catch {
+    // Preserve a typed response if malformed transport data reaches this edge.
   }
+  return createTaskKnowledgeRequestResponse({
+    invocation: opts.invocation,
+    work_order: opts.work_order,
+    round: 0,
+    request_digest: requestDigestValue,
+    outcome: blocking ? "escalated" : "unresolved",
+    omissions: [
+      {
+        code: "reservation_unavailable",
+        detail: "Another CLI knowledge response is still reserving this work-order context.",
+      },
+    ],
+    blocker: blocking
+      ? {
+          summary: "The bounded knowledge response could not reserve its context round in time.",
+          recommended_action: "Return control to the parent workflow for a bounded retry.",
+        }
+      : null,
+  });
 }
 
 export async function persistTaskKnowledgeRequestAudit(opts: {

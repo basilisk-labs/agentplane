@@ -8,6 +8,7 @@ import {
   persistTaskKnowledgeRequestAudit,
   serveTaskKnowledgeRequest,
   taskKnowledgeRequestAuditPath,
+  taskKnowledgeRequestReservationUnavailableResponse,
   withTaskKnowledgeRequestAuditReservation,
 } from "./task-knowledge-request.js";
 
@@ -26,6 +27,8 @@ function requestedKnowledge(result: RunnerResult) {
 export async function serveRunnerKnowledgeRequest(opts: {
   repository_root: string;
   invocation: Pick<RunnerInvocation, "run_id" | "run_dir" | "work_order_id">;
+  /** Internal test seam for the bounded cross-process reservation wait. */
+  reservation_wait_ms?: number;
   work_order: AgentWorkOrderV2 | undefined;
   result: RunnerResult;
 }): Promise<RunnerResult> {
@@ -38,10 +41,11 @@ export async function serveRunnerKnowledgeRequest(opts: {
     state_fingerprint_digest: workOrder.state_fingerprint.digest,
   };
   const runsDir = path.dirname(opts.invocation.run_dir);
-  return await withTaskKnowledgeRequestAuditReservation({
-    runs_dir: runsDir,
+  const reservation = await withTaskKnowledgeRequestAuditReservation({
     invocation: requestInvocation,
+    repository_root: opts.repository_root,
     role: workOrder.role,
+    wait_ms: opts.reservation_wait_ms,
     work: async () => {
       const priorAudits = await loadTaskKnowledgeRequestAudits({
         runs_dir: runsDir,
@@ -80,4 +84,15 @@ export async function serveRunnerKnowledgeRequest(opts: {
       };
     },
   });
+  if (reservation.status === "busy") {
+    return {
+      ...opts.result,
+      knowledge_response: taskKnowledgeRequestReservationUnavailableResponse({
+        invocation: requestInvocation,
+        semantic_result: semanticResult,
+        work_order: workOrder,
+      }),
+    };
+  }
+  return reservation.value;
 }

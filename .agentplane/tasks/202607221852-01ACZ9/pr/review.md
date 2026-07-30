@@ -13,7 +13,7 @@ Created: 2026-07-30T13:20:41.795Z
 ## Verification
 
 - State: ok
-- Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 18c2c433; focused adversarial retrieval coverage also passed.
+- Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 0502c0cf; focused concurrent retrieval coverage also passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,6 +29,8 @@ Created: 2026-07-30T13:20:41.795Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../task-backend/cloud-projection-lock.test.ts     |  33 ++
+ .../backends/task-backend/cloud-projection-lock.ts |  90 +++-
  .../commands/evaluator/evaluator-review-usecase.ts |  13 +-
  .../runner/adapters/codex-result-transport.test.ts |   5 +
  .../src/runner/adapters/codex-result-transport.ts  |  38 +-
@@ -36,13 +38,13 @@ Created: 2026-07-30T13:20:41.795Z
  .../src/runner/task-state-render-semantic.ts       |   2 +-
  packages/agentplane/src/runner/types/invocation.ts |   9 +
  .../src/runner/usecases/agent-work-order-build.ts  |   3 +
- .../usecases/task-knowledge-request-audit.ts       | 179 +++++++
+ .../usecases/task-knowledge-request-audit.ts       | 212 ++++++++
  .../usecases/task-knowledge-request-codec.ts       |  56 ++
- .../task-knowledge-request-lifecycle.test.ts       | 228 ++++++++
- .../usecases/task-knowledge-request-lifecycle.ts   |  83 +++
+ .../task-knowledge-request-lifecycle.test.ts       | 322 +++++++++++
+ .../usecases/task-knowledge-request-lifecycle.ts   |  98 ++++
  .../usecases/task-knowledge-request-scope.ts       |  88 +++
  .../runner/usecases/task-knowledge-request.test.ts | 494 +++++++++++++++++
- .../src/runner/usecases/task-knowledge-request.ts  | 593 +++++++++++++++++++++
+ .../src/runner/usecases/task-knowledge-request.ts  | 597 +++++++++++++++++++++
  .../runner/usecases/task-knowledge-retrieval.ts    |  14 +
  .../task-run-bootstrap.result-examples.test.ts     |   6 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
@@ -56,7 +58,7 @@ Created: 2026-07-30T13:20:41.795Z
  ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
  .../agent-work-order-v2.camel-case.compat.json     |   1 +
  schemas/examples/agent-work-order-v2.valid.json    |   1 +
- 27 files changed, 1956 insertions(+), 13 deletions(-)
+ 29 files changed, 2204 insertions(+), 34 deletions(-)
 ```
 
 </details>

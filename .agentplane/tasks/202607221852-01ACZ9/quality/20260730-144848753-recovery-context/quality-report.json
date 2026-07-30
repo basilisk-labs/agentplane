@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-01ACZ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T14:49:54.292Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "0502c0cfaac823d0f527854b91e83e18dde76adc",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "findings": [
+    "Замороженная проверка относится к SHA 18c2c433, а оцениваемая версия имеет SHA 0502c0cf; исправление конкурентного резервирования и соответствующие тесты не подтверждены детерминированным прогоном на оцениваемой версии."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Записать детерминированный успешный прогон на evaluated_sha 0502c0cfaac823d0f527854b91e83e18dde76adc: объявленные schemas:check, test:critical и typecheck, а также конкурентные проверки уникальных раундов и последовательности unresolved → escalated."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что результаты проверок на SHA 18c2c433 остаются применимыми после изменений, добавивших межпроцессное резервирование и конкурентные тесты; замороженные доказательства этого не подтверждают."
+  ],
+  "residual_risks": [
+    "Следующему проверяющему нужен свежий детерминированный пакет проверок для SHA 0502c0cfaac823d0f527854b91e83e18dde76adc, включая конкурентные сценарии одного work-order binding; после этого семантическую оценку можно повторить."
+  ]
+}

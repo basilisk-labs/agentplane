@@ -112,6 +112,39 @@ describe("cloud projection operation lock", () => {
     await first;
   });
 
+  it("keeps independently named owned locks from serializing each other", async () => {
+    const root = await makeRoot();
+    let releaseFirst!: () => void;
+    let markFirstStarted!: () => void;
+    const firstStarted = new Promise<void>((resolve) => {
+      markFirstStarted = resolve;
+    });
+    const gate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const first = withCloudProjectionLock(
+      { lockName: "knowledge-request-a", operation: "held", repositoryRoot: root },
+      async () => {
+        markFirstStarted();
+        await gate;
+      },
+    );
+    await firstStarted;
+
+    let secondEntered = false;
+    await withCloudProjectionLock(
+      { lockName: "knowledge-request-b", operation: "independent", repositoryRoot: root },
+      () => {
+        secondEntered = true;
+        return Promise.resolve();
+      },
+    );
+    expect(secondEntered).toBe(true);
+
+    releaseFirst();
+    await first;
+  });
+
   it("recovers a fully published same-host lock whose owner process is gone", async () => {
     const root = await makeRoot();
     const lockPath = path.join(root, LOCK_RELATIVE);

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженная проверка относится к SHA 18c2c433, а оцениваемая версия имеет SHA 0502c0cf; исправление конкурентного резервирования и соответствующие тесты не подтверждены детерминированным прогоном на оцениваемой версии.",
+      "broken_invariant": "Вердикт pass требует актуальных доказательств, покрывающих положительные, отрицательные и конкурентные пути именно для evaluated_sha.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:931d0ec5ca68200fba32d63e320c02b8ab26505c1be3dacc4f25935c48d8a416",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-144848753-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:aa6cd0f7770256fc3eb7a15193604656760b08e0277165de1e8387fca5b289bf",
+          "section": "task-knowledge-request-audit.ts and task-knowledge-request-lifecycle.test.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Записать детерминированный успешный прогон на evaluated_sha 0502c0cfaac823d0f527854b91e83e18dde76adc: объявленные schemas:check, test:critical и typecheck, а также конкурентные проверки уникальных раундов и последовательности unresolved → escalated."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что результаты проверок на SHA 18c2c433 остаются применимыми после изменений, добавивших межпроцессное резервирование и конкурентные тесты; замороженные доказательства этого не подтверждают."
+  ],
+  "recovery_context": "Следующему проверяющему нужен свежий детерминированный пакет проверок для SHA 0502c0cfaac823d0f527854b91e83e18dde76adc, включая конкурентные сценарии одного work-order binding; после этого семантическую оценку можно повторить.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

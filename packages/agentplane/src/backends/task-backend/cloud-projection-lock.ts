@@ -23,9 +23,7 @@ import { compareCodeUnits } from "./cloud-backend-utils.js";
 import { BackendError } from "./shared/errors.js";
 
 const LOCK_DIRECTORY = ".agentplane/cache/cloud-projection-lock";
-const LOCK_NAME = "projection-operation.lock";
-const CANDIDATE_PREFIX = "projection-operation.candidate.";
-const RECOVERY_PREFIX = "projection-operation.recovery.";
+const DEFAULT_LOCK_NAME = "projection-operation";
 const RECOVERY_MARKER_SUFFIX = ".json";
 const RECOVERY_TARGET_SUFFIX = ".target";
 const NO_FOLLOW = constants.O_NOFOLLOW ?? 0;
@@ -51,13 +49,20 @@ type RecoveryClaim = {
   targetPath: string;
 };
 
+type LockArtifacts = {
+  candidate_prefix: string;
+  lock_file_name: string;
+  recovery_prefix: string;
+};
+
 export async function withCloudProjectionLock<T>(
-  opts: { operation: string; repositoryRoot: string },
+  opts: { lockName?: string; operation: string; repositoryRoot: string },
   run: () => Promise<T>,
 ): Promise<T> {
   const repositoryRoot = await realpath(path.resolve(opts.repositoryRoot));
   const lockDir = path.join(repositoryRoot, LOCK_DIRECTORY);
-  const lockPath = path.join(lockDir, LOCK_NAME);
+  const artifacts = lockArtifacts(opts.lockName);
+  const lockPath = path.join(lockDir, artifacts.lock_file_name);
   const directoryChain = await ensureContainedDirectoryChain(
     repositoryRoot,
     lockDir,
@@ -73,6 +78,7 @@ export async function withCloudProjectionLock<T>(
     directoryChain,
     lockDir,
     lockPath,
+    artifacts,
     owner,
   });
   try {
@@ -83,14 +89,18 @@ export async function withCloudProjectionLock<T>(
 }
 
 async function acquireLock(opts: {
+  artifacts: LockArtifacts;
   directoryChain: CloudProjectionDirectoryIdentity[];
   lockDir: string;
   lockPath: string;
   owner: ProcessOwner;
 }): Promise<FileHandle> {
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    await removeAbandonedRecoveryClaims(opts.lockDir);
-    const candidatePath = path.join(opts.lockDir, `${CANDIDATE_PREFIX}${opts.owner.nonce}.json`);
+    await removeAbandonedRecoveryClaims(opts.lockDir, opts.artifacts);
+    const candidatePath = path.join(
+      opts.lockDir,
+      `${opts.artifacts.candidate_prefix}${opts.owner.nonce}.json`,
+    );
     await writeNewStableRegularFileNoFollow(
       candidatePath,
       `${JSON.stringify(
@@ -111,7 +121,7 @@ async function acquireLock(opts: {
       await assertDirectoryChainUnchanged(opts.directoryChain);
       await assertOwnedLockPath(handle, opts.lockPath);
       await unlink(candidatePath);
-      if (!(await waitForRecoveryClaimsToClear(opts.lockDir))) {
+      if (!(await waitForRecoveryClaimsToClear(opts.lockDir, opts.artifacts))) {
         throw cloudProjectionLockHeldError(opts.lockPath, null);
       }
       await assertOwnedLockPath(handle, opts.lockPath);
@@ -137,6 +147,7 @@ async function acquireLock(opts: {
 }
 
 async function tryRecoverAbandonedLock(opts: {
+  artifacts: LockArtifacts;
   directoryChain: CloudProjectionDirectoryIdentity[];
   lockDir: string;
   lockPath: string;
@@ -145,11 +156,11 @@ async function tryRecoverAbandonedLock(opts: {
   const recoveryNonce = randomUUID();
   const markerPath = path.join(
     opts.lockDir,
-    `${RECOVERY_PREFIX}${recoveryNonce}${RECOVERY_MARKER_SUFFIX}`,
+    `${opts.artifacts.recovery_prefix}${recoveryNonce}${RECOVERY_MARKER_SUFFIX}`,
   );
   const targetPath = path.join(
     opts.lockDir,
-    `${RECOVERY_PREFIX}${recoveryNonce}${RECOVERY_TARGET_SUFFIX}`,
+    `${opts.artifacts.recovery_prefix}${recoveryNonce}${RECOVERY_TARGET_SUFFIX}`,
   );
   const claim: RecoveryClaim = {
     markerPath,
@@ -173,8 +184,8 @@ async function tryRecoverAbandonedLock(opts: {
     "utf8",
   );
   try {
-    await removeAbandonedRecoveryClaims(opts.lockDir);
-    const markerNames = await listRecoveryMarkerNames(opts.lockDir);
+    await removeAbandonedRecoveryClaims(opts.lockDir, opts.artifacts);
+    const markerNames = await listRecoveryMarkerNames(opts.lockDir, opts.artifacts);
     if (markerNames[0] !== path.basename(markerPath)) return false;
     await assertDirectoryChainUnchanged(opts.directoryChain);
     try {
@@ -216,10 +227,13 @@ async function tryRecoverAbandonedLock(opts: {
   }
 }
 
-async function waitForRecoveryClaimsToClear(lockDir: string): Promise<boolean> {
+async function waitForRecoveryClaimsToClear(
+  lockDir: string,
+  artifacts: LockArtifacts,
+): Promise<boolean> {
   for (let attempt = 0; attempt < RECOVERY_WAIT_ATTEMPTS; attempt += 1) {
-    await removeAbandonedRecoveryClaims(lockDir);
-    const markerNames = await listRecoveryMarkerNames(lockDir);
+    await removeAbandonedRecoveryClaims(lockDir, artifacts);
+    const markerNames = await listRecoveryMarkerNames(lockDir, artifacts);
     if (markerNames.length === 0) return true;
     await new Promise<void>((resolve) => {
       setTimeout(resolve, RECOVERY_WAIT_MS);
@@ -228,24 +242,38 @@ async function waitForRecoveryClaimsToClear(lockDir: string): Promise<boolean> {
   return false;
 }
 
-async function removeAbandonedRecoveryClaims(lockDir: string): Promise<void> {
-  for (const markerName of await listRecoveryMarkerNames(lockDir)) {
+async function removeAbandonedRecoveryClaims(
+  lockDir: string,
+  artifacts: LockArtifacts,
+): Promise<void> {
+  for (const markerName of await listRecoveryMarkerNames(lockDir, artifacts)) {
     const markerPath = path.join(lockDir, markerName);
     const owner = await readProcessOwner(markerPath);
     if (!owner || !isRecoverableAbandonedOwner(owner)) continue;
-    const nonce = markerName.slice(RECOVERY_PREFIX.length, -RECOVERY_MARKER_SUFFIX.length);
+    const nonce = markerName.slice(
+      artifacts.recovery_prefix.length,
+      -RECOVERY_MARKER_SUFFIX.length,
+    );
     await cleanupRecoveryClaim({
       markerPath,
       owner,
-      targetPath: path.join(lockDir, `${RECOVERY_PREFIX}${nonce}${RECOVERY_TARGET_SUFFIX}`),
+      targetPath: path.join(
+        lockDir,
+        `${artifacts.recovery_prefix}${nonce}${RECOVERY_TARGET_SUFFIX}`,
+      ),
     });
   }
 }
 
-async function listRecoveryMarkerNames(lockDir: string): Promise<string[]> {
+async function listRecoveryMarkerNames(
+  lockDir: string,
+  artifacts: LockArtifacts,
+): Promise<string[]> {
   const names = await readdir(lockDir);
   return names
-    .filter((name) => name.startsWith(RECOVERY_PREFIX) && name.endsWith(RECOVERY_MARKER_SUFFIX))
+    .filter(
+      (name) => name.startsWith(artifacts.recovery_prefix) && name.endsWith(RECOVERY_MARKER_SUFFIX),
+    )
     .toSorted(compareCodeUnits);
 }
 
@@ -442,4 +470,24 @@ function cloudProjectionLockHeldError(lockPath: string, owner: ProcessOwner | nu
     "E_BACKEND",
     { reasonCode: "cloud_projection_operation_in_progress" },
   );
+}
+
+export function isCloudProjectionLockHeldError(error: unknown): boolean {
+  return (
+    error instanceof BackendError && error.reasonCode === "cloud_projection_operation_in_progress"
+  );
+}
+
+function lockArtifacts(lockName: string | undefined): LockArtifacts {
+  const base = lockName ?? DEFAULT_LOCK_NAME;
+  if (!/^[a-z0-9][a-z0-9-]{0,95}$/u.test(base)) {
+    throw new BackendError(`Invalid cloud projection lock name: ${base}`, "E_BACKEND", {
+      reasonCode: "cloud_projection_lock_name_invalid",
+    });
+  }
+  return {
+    candidate_prefix: `${base}.candidate.`,
+    lock_file_name: `${base}.lock`,
+    recovery_prefix: `${base}.recovery.`,
+  };
 }
