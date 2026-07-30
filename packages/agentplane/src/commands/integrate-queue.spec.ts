@@ -144,31 +144,66 @@ export const integrateQueueClaimSpec: CommandSpec<IntegrateQueueClaimParsed> = {
 
 export type IntegrateQueueReleaseParsed = {
   taskId: string;
-  status: "queued" | "done" | "rework";
+  status: "queued" | "done" | "rework" | "superseded";
   reason: string | null;
+  supersededByTaskId: string | null;
 };
 
 export const integrateQueueReleaseSpec: CommandSpec<IntegrateQueueReleaseParsed> = {
   id: ["integrate", "queue", "release"],
   group: "PR",
-  summary: "Release or complete a queue entry.",
+  summary: "Release, complete, or record a superseded queue entry.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
       kind: "string",
       name: "status",
-      valueHint: "<queued|done|rework>",
-      choices: ["queued", "done", "rework"],
+      valueHint: "<queued|done|rework|superseded>",
+      choices: ["queued", "done", "rework", "superseded"],
       default: "queued",
       description: "Next queue status.",
     },
     { kind: "string", name: "reason", valueHint: "<text>", description: "Release reason." },
+    {
+      kind: "string",
+      name: "superseded-by",
+      valueHint: "<task-id>",
+      description: "Completed successor task required when --status superseded.",
+    },
   ],
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
-    status: (raw.opts.status ?? "queued") as IntegrateQueueReleaseParsed["status"],
+    status: (typeof raw.opts.status === "string"
+      ? raw.opts.status
+      : "queued") as IntegrateQueueReleaseParsed["status"],
     reason: typeof raw.opts.reason === "string" ? raw.opts.reason : null,
+    supersededByTaskId:
+      typeof raw.opts["superseded-by"] === "string" ? raw.opts["superseded-by"].trim() : null,
   }),
+  validateRaw: (raw) => {
+    const status = typeof raw.opts.status === "string" ? raw.opts.status.trim() : "queued";
+    const reason = typeof raw.opts.reason === "string" ? raw.opts.reason.trim() : "";
+    const supersededBy =
+      typeof raw.opts["superseded-by"] === "string" ? raw.opts["superseded-by"].trim() : "";
+    if (status === "superseded" && !supersededBy) {
+      throw usageError({
+        spec: integrateQueueReleaseSpec,
+        message: "Missing required --superseded-by when --status superseded.",
+      });
+    }
+    if (status === "superseded" && !reason) {
+      throw usageError({
+        spec: integrateQueueReleaseSpec,
+        message: "Missing required --reason when --status superseded.",
+      });
+    }
+    if (status !== "superseded" && supersededBy) {
+      throw usageError({
+        spec: integrateQueueReleaseSpec,
+        message: "--superseded-by is only valid when --status superseded.",
+      });
+    }
+  },
 };
 
 export type IntegrateQueueAdoptLegacyProtectedConflictParsed = {

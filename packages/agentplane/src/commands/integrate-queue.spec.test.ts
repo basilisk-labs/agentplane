@@ -4,6 +4,7 @@ import { parseCommandArgv } from "../cli/spec/parse.js";
 import { applyIntegrationQueueDoctorRepairs } from "./integrate-queue-doctor.js";
 import {
   integrateQueueAdoptLegacyProtectedConflictSpec,
+  integrateQueueReleaseSpec,
   integrateQueueRunNextSpec,
 } from "./integrate-queue.spec.js";
 import {
@@ -82,6 +83,44 @@ describe("integrate queue spec parsing/validation", () => {
         "202607252223-THDN0G",
         "--expect-adoption-token",
         "free-form-reason",
+      ]),
+    ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
+  });
+
+  it("requires a reason and completed successor reference for semantic supersession", () => {
+    expect(
+      parseCommandArgv(integrateQueueReleaseSpec, [
+        "202607221908-MR9EA9",
+        "--status",
+        "superseded",
+        "--superseded-by",
+        "202607300553-CR9VTJ",
+        "--reason",
+        "current-base qualification replaced stale provider conflict",
+      ]).parsed,
+    ).toEqual({
+      taskId: "202607221908-MR9EA9",
+      status: "superseded",
+      supersededByTaskId: "202607300553-CR9VTJ",
+      reason: "current-base qualification replaced stale provider conflict",
+    });
+
+    expect(() =>
+      parseCommandArgv(integrateQueueReleaseSpec, [
+        "202607221908-MR9EA9",
+        "--status",
+        "superseded",
+        "--superseded-by",
+        "202607300553-CR9VTJ",
+      ]),
+    ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
+    expect(() =>
+      parseCommandArgv(integrateQueueReleaseSpec, [
+        "202607221908-MR9EA9",
+        "--status",
+        "rework",
+        "--superseded-by",
+        "202607300553-CR9VTJ",
       ]),
     ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
   });

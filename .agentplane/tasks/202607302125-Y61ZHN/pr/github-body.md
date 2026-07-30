@@ -22,12 +22,29 @@ Add a terminal superseded outcome for a semantic provider-conflict resolution. A
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T21:28:13.122Z
+- Updated: 2026-07-30T21:28:59.552Z
 - Branch: task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+ .../src/commands/integrate-queue-doctor-command.ts |   2 +-
+ .../src/commands/integrate-queue-lane.ts           |   3 +-
+ .../src/commands/integrate-queue.command.test.ts   |  93 +++++++++++++++++++
+ .../src/commands/integrate-queue.command.ts        | 100 ++++++++++++++++++++-
+ .../src/commands/integrate-queue.spec.test.ts      |  39 ++++++++
+ .../src/commands/integrate-queue.spec.ts           |  45 ++++++++--
+ .../src/commands/pr/flow-status.render.ts          |   3 +-
+ packages/agentplane/src/commands/pr/flow-status.ts |   7 ++
+ .../src/commands/pr/integrate/queue-state.test.ts  |  50 +++++++++++
+ .../src/commands/pr/integrate/queue-state.ts       |  86 +++++++++++++++++-
+ .../src/commands/shared/route-decision-blockers.ts |   7 ++
+ .../src/commands/shared/workflow-step-branch.ts    |  18 ++++
+ ...rkflow-step-projections.conflict-rework.test.ts |  56 ++++++++++++
+ .../src/commands/shared/workflow-step.ts           |   3 +-
+ .../baselines/v0.7-compatibility-candidate.json    |  50 +++++++++--
+ .../check-compatibility-contract-baseline.mjs      |  38 +++++++-
+ 17 files changed, 582 insertions(+), 25 deletions(-)
 ```
 
 </details>

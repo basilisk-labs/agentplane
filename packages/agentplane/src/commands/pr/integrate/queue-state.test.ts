@@ -15,6 +15,7 @@ import {
   inspectIntegrationQueueMutex,
   readIntegrationQueue,
   recordLegacyProtectedConflictAdoption,
+  recordSupersededQueueEntry,
   reserveQueueEntryForIntegration,
   withIntegrationQueueMutex,
   upsertQueuedEntry,
@@ -337,6 +338,55 @@ describe("integration queue state", () => {
       clock("2026-07-26T05:31:00.000Z"),
     );
     expect(requeued.entries[0]?.legacy_protected_conflict_adoption).toBeUndefined();
+  });
+
+  it("records a terminal semantic supersession only from rework and clears it when requeued", () => {
+    const rework = markQueueEntry(
+      upsertQueuedEntry(
+        emptyIntegrationQueue(),
+        enqueue("T-legacy"),
+        clock("2026-07-30T00:00:00Z"),
+      ),
+      "T-legacy",
+      "rework",
+      "provider conflict requires semantic resolution",
+      clock("2026-07-30T00:01:00Z"),
+    );
+    const superseded = recordSupersededQueueEntry(rework, {
+      taskId: "T-legacy",
+      supersededByTaskId: "T-successor",
+      reason: "successor owns the current-main decision",
+      clock: clock("2026-07-30T00:02:00Z"),
+    });
+
+    expect(superseded.entries[0]).toMatchObject({
+      status: "superseded",
+      superseded_by_task_id: "T-successor",
+      reason: "successor owns the current-main decision",
+    });
+    expect(() => markQueueEntry(superseded, "T-legacy", "superseded")).toThrowError(
+      expect.objectContaining({ code: "E_VALIDATION" }),
+    );
+    expect(() =>
+      recordSupersededQueueEntry(
+        upsertQueuedEntry(
+          emptyIntegrationQueue(),
+          enqueue("T-queued"),
+          clock("2026-07-30T00:00:00Z"),
+        ),
+        {
+          taskId: "T-queued",
+          supersededByTaskId: "T-successor",
+          reason: "must not skip semantic rework",
+        },
+      ),
+    ).toThrowError(expect.objectContaining({ code: "E_HANDOFF" }));
+    const requeued = upsertQueuedEntry(
+      superseded,
+      enqueue("T-legacy"),
+      clock("2026-07-30T00:03:00Z"),
+    );
+    expect(requeued.entries[0]?.superseded_by_task_id).toBeUndefined();
   });
 
   it("fails closed when an adoption receipt does not match the live queue snapshot", () => {

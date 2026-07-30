@@ -296,6 +296,13 @@ export async function deriveBlockers(opts: {
   conflictRework: ConflictReworkPreparation | null;
 }): Promise<RouteBlocker[]> {
   const blockers: RouteBlocker[] = [];
+  if (
+    opts.workflowMode === "branch_pr" &&
+    opts.prFlow?.queue.present &&
+    opts.prFlow.queue.status === "superseded"
+  ) {
+    return blockers;
+  }
   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
   if (
     opts.workflowMode === "branch_pr" &&

@@ -26,7 +26,13 @@ export type {
 export { integrationQueueEntryMatchesSnapshot } from "./queue-state-snapshot.js";
 export type { IntegrationQueueMutexContext } from "./queue-state-paths.js";
 
-export type IntegrationQueueStatus = "queued" | "claimed" | "handoff" | "done" | "rework";
+export type IntegrationQueueStatus =
+  | "queued"
+  | "claimed"
+  | "handoff"
+  | "done"
+  | "rework"
+  | "superseded";
 
 export type IntegrationQueueEntry = {
   task_id: string;
@@ -47,6 +53,7 @@ export type IntegrationQueueEntry = {
   claim_token?: string;
   active_operation?: "integration";
   reason?: string;
+  superseded_by_task_id?: string;
   legacy_protected_conflict_adoption?: LegacyProtectedConflictAdoptionReceipt;
 };
 
@@ -74,6 +81,7 @@ const INTEGRATION_QUEUE_STATUSES = new Set<IntegrationQueueStatus>([
   "handoff",
   "done",
   "rework",
+  "superseded",
 ]);
 
 export function emptyIntegrationQueue(): IntegrationQueueState {
@@ -149,6 +157,14 @@ function parseQueueState(text: string): IntegrationQueueState {
         `entry ${index} has a legacy protected-conflict adoption outside its matching rework entry`,
       );
     }
+    const supersededByTaskId =
+      typeof maybe.superseded_by_task_id === "string" ? maybe.superseded_by_task_id.trim() : "";
+    if (status === "superseded" && !supersededByTaskId) {
+      throw invalidQueueState(`superseded entry ${index} is missing superseded_by_task_id`);
+    }
+    if (status !== "superseded" && maybe.superseded_by_task_id !== undefined) {
+      throw invalidQueueState(`non-superseded entry ${index} has superseded_by_task_id`);
+    }
     if (taskIds.has(maybe.task_id!)) {
       throw invalidQueueState(`duplicate task_id ${maybe.task_id}`);
     }
@@ -156,6 +172,7 @@ function parseQueueState(text: string): IntegrationQueueState {
     if (status === "claimed" || status === "handoff") activeLanes += 1;
     entries.push({
       ...maybe,
+      ...(supersededByTaskId ? { superseded_by_task_id: supersededByTaskId } : {}),
       ...(legacyProtectedConflictAdoption
         ? { legacy_protected_conflict_adoption: legacyProtectedConflictAdoption }
         : {}),
@@ -435,6 +452,12 @@ export function markQueueEntry(
   reason?: string,
   clock?: QueueClock,
 ): IntegrationQueueState {
+  if (status === "superseded") {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Use recordSupersededQueueEntry to record a superseded integration outcome.",
+    });
+  }
   const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
   return {
     schema_version: 1,
@@ -442,6 +465,58 @@ export function markQueueEntry(
       entry.task_id === taskId ? markEntryStatus(entry, status, reason, resolvedClock) : entry,
     ),
   };
+}
+
+export function recordSupersededQueueEntry(
+  state: IntegrationQueueState,
+  opts: {
+    taskId: string;
+    supersededByTaskId: string;
+    reason: string;
+    clock?: QueueClock;
+  },
+): IntegrationQueueState {
+  const supersededByTaskId = opts.supersededByTaskId.trim();
+  const reason = opts.reason.trim();
+  if (!supersededByTaskId || !reason) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Superseded integration outcomes require a successor task and a reason.",
+    });
+  }
+  let found = false;
+  const clock = opts.clock ?? DEFAULT_QUEUE_CLOCK;
+  const entries = state.entries.map((entry) => {
+    if (entry.task_id !== opts.taskId) return entry;
+    found = true;
+    if (entry.status !== "rework") {
+      throw new CliError({
+        code: "E_HANDOFF",
+        message:
+          `Integration queue entry ${opts.taskId} must be in rework before recording ` +
+          "a semantic supersession outcome.",
+        context: {
+          reason_code: "superseded_queue_requires_rework",
+          task_id: opts.taskId,
+          queue_status: entry.status,
+        },
+      });
+    }
+    const released = markEntryStatus(entry, "done", reason, clock);
+    return {
+      ...released,
+      status: "superseded" as const,
+      superseded_by_task_id: supersededByTaskId,
+    };
+  });
+  if (!found) {
+    throw new CliError({
+      code: "E_HANDOFF",
+      message: `Integration queue entry not found for semantic supersession: ${opts.taskId}`,
+      context: { reason_code: "superseded_queue_entry_missing", task_id: opts.taskId },
+    });
+  }
+  return { schema_version: 1, entries };
 }
 
 function adoptionReceiptMatchesQueueEntry(
@@ -572,10 +647,15 @@ function markEntryStatus(
   reason: string | undefined,
   clock: QueueClock,
 ): IntegrationQueueEntry {
-  const { active_operation, legacy_protected_conflict_adoption, ...entryWithoutActiveOperation } =
-    entry;
+  const {
+    active_operation,
+    legacy_protected_conflict_adoption,
+    superseded_by_task_id,
+    ...entryWithoutActiveOperation
+  } = entry;
   void active_operation;
   void legacy_protected_conflict_adoption;
+  void superseded_by_task_id;
   const next = {
     ...entryWithoutActiveOperation,
     status,
