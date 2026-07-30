@@ -29,14 +29,14 @@
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1253,
-    "lines": 223799,
-    "tokens": 1281608,
-    "clones": 90,
-    "duplicatedLines": 1431,
-    "duplicatedTokens": 9976,
-    "percentage": 0.6394130447410399,
-    "percentageTokens": 0.7783971385946404
+    "sources": 1274,
+    "lines": 231268,
+    "tokens": 1323936,
+    "clones": 93,
+    "duplicatedLines": 1462,
+    "duplicatedTokens": 10292,
+    "percentage": 0.6321670097030285,
+    "percentageTokens": 0.777378966959128
   },
   "top_duplicates": [
     {
@@ -44,8 +44,8 @@
       "tokens": 103,
       "firstFile": {
         "path": "packages/core/src/index.ts",
-        "start": 365,
-        "end": 403
+        "start": 369,
+        "end": 407
       },
       "secondFile": {
         "path": "packages/core/src/tasks/index.ts",
@@ -161,8 +161,8 @@
       },
       "secondFile": {
         "path": "packages/testkit/src/cli-harness.ts",
-        "start": 619,
-        "end": 637
+        "start": 673,
+        "end": 691
       }
     },
     {
@@ -343,8 +343,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts",
-        "start": 35,
-        "end": 54
+        "start": 36,
+        "end": 55
       }
     },
     {
@@ -618,13 +618,13 @@
       "tokens": 147,
       "firstFile": {
         "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
-        "start": 190,
-        "end": 206
+        "start": 194,
+        "end": 210
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
-        "start": 341,
-        "end": 360
+        "start": 439,
+        "end": 458
       }
     },
     {
@@ -698,6 +698,20 @@
       }
     },
     {
+      "lines": 16,
+      "tokens": 139,
+      "firstFile": {
+        "path": "packages/agentplane/src/context/reindex-projection.ts",
+        "start": 198,
+        "end": 213
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/context/reindex-projection.ts",
+        "start": 235,
+        "end": 250
+      }
+    },
+    {
       "lines": 15,
       "tokens": 89,
       "firstFile": {
@@ -723,20 +737,6 @@
         "path": "scripts/bench/measure-cli-walltime.mjs",
         "start": 183,
         "end": 197
-      }
-    },
-    {
-      "lines": 14,
-      "tokens": 107,
-      "firstFile": {
-        "path": "packages/agentplane/src/commands/context/dashboard-graph.ts",
-        "start": 25,
-        "end": 38
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/commands/context/dashboard-wiki.ts",
-        "start": 35,
-        "end": 48
       }
     }
   ]
