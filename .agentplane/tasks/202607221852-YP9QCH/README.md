@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -61,7 +61,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "All four Verify Steps are covered: deterministic double build; canonical entity beyond the former first-50 range; lexical/structural evidence only with CURATOR as semantic owner; focused context regression suite."
-commit: null
+commit:
+  hash: "24cb5a3ab574d8d2db2da71ca6ca3841ac825014"
+  message: "🚧 YP9QCH task: ratchet reconciliation compatibility"
 comments:
   -
     author: "CODER"
@@ -81,6 +83,12 @@ comments:
   -
     author: "CODER"
     body: "Hosted compatibility ratchet failed because the approved v0.7 candidate predates this task-bound context contract. Reopening RF-17 only to record its reviewed candidate delta; immutable v0.6.24 baseline remains unchanged."
+  -
+    author: "CODER"
+    body: "Compatibility candidate ratcheted for the canonical reconciliation artifact; local compatibility, focused context tests, build, lint, and diff checks pass."
+  -
+    author: "CODER"
+    body: "Compatibility candidate ratcheted for the canonical reconciliation artifact; local compatibility, focused context tests, build, lint, and diff checks pass."
 events:
   -
     type: "status"
@@ -142,8 +150,22 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test."
+  -
+    type: "status"
+    at: "2026-07-30T10:16:13.166Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Compatibility candidate ratcheted for the canonical reconciliation artifact; local compatibility, focused context tests, build, lint, and diff checks pass."
+  -
+    type: "status"
+    at: "2026-07-30T10:16:21.908Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Compatibility candidate ratcheted for the canonical reconciliation artifact; local compatibility, focused context tests, build, lint, and diff checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:10:53.385Z"
+doc_updated_at: "2026-07-30T10:16:21.908Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
