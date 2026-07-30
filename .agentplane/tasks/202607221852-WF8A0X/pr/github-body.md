@@ -36,16 +36,21 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
  .../src/commands/context/context-runner.ts         |    4 +-
  .../src/commands/context/context.learn.spec.ts     |   24 +-
  .../src/commands/context/context.spec.ts           |   32 +-
- .../src/commands/context/harvest-tasks.test.ts     | 1377 ++++++++++++--------
- .../src/commands/context/harvest-tasks.ts          | 1374 +++++++++++++++++--
+ .../commands/context/harvest-tasks-execution.ts    |  466 ++++++++
+ .../commands/context/harvest-tasks-knowledge.ts    |  308 ++++++
+ .../context/harvest-tasks-selection-intent.ts      |  224 ++++
+ .../context/harvest-tasks-selection-lock.ts        |  295 +++++
+ .../context/harvest-tasks.recovery.test.ts         |  370 +++++++
+ .../src/commands/context/harvest-tasks.test.ts     | 1141 ++++++++++----------
+ .../src/commands/context/harvest-tasks.ts          |  207 +---
  packages/agentplane/src/context/doctor.ts          |    8 +-
  .../src/context/harvest-tasks-artifacts.ts         |   80 +-
- .../src/context/harvest-tasks-builders.ts          |  372 +++---
+ .../src/context/harvest-tasks-builders.ts          |  372 +++----
  .../src/context/harvest-tasks-extraction.ts        |  117 +-
  .../src/context/harvest-tasks-markers.ts           |   50 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |   72 +-
  .../src/context/ingest-task-pack.test.ts           |   14 +-
- 18 files changed, 2567 insertions(+), 1122 deletions(-)
+ 23 files changed, 2751 insertions(+), 1198 deletions(-)
 ```
 
 </details>
