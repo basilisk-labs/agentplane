@@ -19,9 +19,8 @@ RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, bl
 - Note:
 
 ```text
-Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and
-prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12
-chunks.
+Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration
+coverage, hotspot policy, and the hosted PR gate on the current implementation SHA.
 ```
 - Canonical workflow state lives in the task README.
 

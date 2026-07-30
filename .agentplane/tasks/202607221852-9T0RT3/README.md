@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T11:52:33.137Z"
-  updated_by: "TESTER"
-  note: "Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12 chunks."
+  updated_at: "2026-07-30T12:26:55.740Z"
+  updated_by: "CODER"
+  note: "Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration coverage, hotspot policy, and the hosted PR gate on the current implementation SHA."
   attempts: 0
 quality_review:
   state: "pass"
@@ -136,8 +136,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-30T12:26:55.740Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration coverage, hotspot policy, and the hosted PR gate on the current implementation SHA."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:22:19.181Z"
+doc_updated_at: "2026-07-30T12:26:56.620Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:
@@ -192,12 +198,45 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T12:26:55.740Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration coverage, hotspot policy, and the hosted PR gate on the current implementation SHA.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T12:22:19.181Z, excerpt_hash=sha256:87ed15263a2f5f035f42a831a0aefa6c1b3a7d79e4cf3a4dd351495390992992
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-9T0RT3-build-deterministic-task-knowledge-retrieval/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json
+    - old_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+    - current_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-9T0RT3
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Hosted verification previously failed only because the new retrieval module exceeded the 600-line hotspot limit.
+      Impact: The PR could not enter the protected merge lane despite passing behavior and security checks.
+      Resolution: Separated planner and shared retrieval types into a 287-line module; the execution module is now 475 lines and hotspot validation passes.
 extensions:
   implementation_commit:
     hash: "7c9808336038299d70a28870ec02012571d079e6"
@@ -267,6 +306,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T12:26:55.740Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration coverage, hotspot policy, and the hosted PR gate on the current implementation SHA.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T12:22:19.181Z, excerpt_hash=sha256:87ed15263a2f5f035f42a831a0aefa6c1b3a7d79e4cf3a4dd351495390992992
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-9T0RT3-build-deterministic-task-knowledge-retrieval/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json
+- old_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+- current_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-9T0RT3
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -276,3 +345,7 @@ DecisionContextRef:
 - Re-run equivalence, recall, lifecycle, and type checks.
 
 ## Findings
+
+- Observation: Hosted verification previously failed only because the new retrieval module exceeded the 600-line hotspot limit.
+  Impact: The PR could not enter the protected merge lane despite passing behavior and security checks.
+  Resolution: Separated planner and shared retrieval types into a 287-line module; the execution module is now 475 lines and hotspot validation passes.

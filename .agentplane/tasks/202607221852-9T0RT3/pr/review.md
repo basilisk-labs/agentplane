@@ -13,7 +13,7 @@ Created: 2026-07-30T10:59:23.993Z
 ## Verification
 
 - State: ok
-- Note: Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12 chunks.
+- Note: Verified: split retrieval planner passes formatting, ESLint, typecheck, focused integration coverage, hotspot policy, and the hosted PR gate on the current implementation SHA.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
