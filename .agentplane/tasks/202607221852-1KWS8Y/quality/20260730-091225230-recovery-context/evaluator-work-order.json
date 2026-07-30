@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-1KWS8Y-b2e64f553e28bb5b70707ab6",
+  "prepared_at": "2026-07-30T09:12:25.230Z",
+  "task": {
+    "id": "202607221852-1KWS8Y",
+    "revision": 10,
+    "objective": "Batch context freshness and incrementally update projections\n\nRF-15: compute freshness once per source/query, dedupe canonical refs, upsert changed paths, delete removed paths, preserve unchanged rows, and recover corruption with a controlled full rebuild.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: per-query stat/hash/parse cache, canonical dedupe, changed/removed/unchanged detection, transactional incremental upsert/delete, projection-version migrations, equivalence tests, no-change behavior, corruption repair, and benchmarks.\n- Out of scope: semantic decisions or hidden stale reuse.",
+      "1. Version the SQLite projection schema to retain source identities and apply transactional per-source upsert/delete while keeping FTS rows synchronized. 2. Refactor reindex to capture each eligible file's stat, text, hash, and projection at most once; derive added, changed, removed, and unchanged sources without materializing the old corpus. 3. Return explicit no-op, incremental, and controlled full-rebuild receipts; force full rebuild for reset, integrity failure, projection-version mismatch, or index-scope changes. 4. Add deterministic tests for deduplication, no-change zero-write behavior, add/change/delete equivalence, corruption/version recovery, and FTS search continuity. 5. Add a reproducible scaled benchmark and record method, threshold, comparison, and residual scope; run focused checks, typecheck, critical CLI checks, hotspot, and Knip gates.",
+      "1. Query repeated matches from one source. Expected: one stat/hash/parse operation and deduplicated canonical results.\n2. Run no-change reindex. Expected: zero corpus rewrite and a truthful no-op receipt.\n3. Modify, add, and delete sources. Expected: incremental results equal a clean full rebuild byte-for-byte after normalization.\n4. Corrupt the index or change projection version. Expected: controlled repair/full rebuild with no silent partial results.\n5. Run focused index tests and scaled benchmarks."
+    ]
+  },
+  "evaluated_sha": "b6faeb4c76fb24259727170f1a20a979db3eb70c",
+  "diff_base_sha": "45b38ab477c3511ae7395f9b221495527888bf7e",
+  "blueprint_digest": "990a68eab3e06df2e77bcc94c4d6ddb89b2ada9f8a6c643c1fbe52b39f9ec1c4",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-1KWS8Y/README.md",
+      "sha256": "sha256:d10930fc6d3768b7d699858eb5c79cc8abf6cae10866a3353d02102cffdbb64d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-1KWS8Y/quality/20260730-091225230-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:9e37ba49793af516fc145cce927007e6fd65612c4fb96356f312de316f12a83e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-1KWS8Y/quality/20260730-091225230-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:57ebde4ec6cddf4afc9be3baae3e1e34cd840ddc9c873c185aecb91380471b57",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-1KWS8Y/quality/20260730-091225230-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:17c37b11115dea2cc022fb200718695bbf7d033e340a2fd91182a7b6b5da6533",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

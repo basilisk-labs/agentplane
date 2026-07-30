@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:8b7cf236644cef1c4ddc5d0330ebecd8c64e3617775da7fa3597cf10da6fa1df",
+  "implementation_sha": "b6faeb4c76fb24259727170f1a20a979db3eb70c",
+  "kind": "task_verification_record",
+  "note": "RF-15 verification passed: source-query cache, no-op, delta equivalence, FTS continuity, version/corruption recovery, and benchmark threshold are covered.",
+  "recorded_at": "2026-07-30T09:11:46.641Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Query repeated matches from one source. Expected: one stat/hash/parse operation and deduplicated canonical results.\n2. Run no-change reindex. Expected: zero corpus rewrite and a truthful no-op receipt.\n3. Modify, add, and delete sources. Expected: incremental results equal a clean full rebuild byte-for-byte after normalization.\n4. Corrupt the index or change projection version. Expected: controlled repair/full rebuild with no silent partial results.\n5. Run focused index tests and scaled benchmarks.",
+  "scope_digest": "sha256:a31ed258641329805b571a4d1287187b15b770490a0483ef60099cbc5ac56e7a",
+  "task_id": "202607221852-1KWS8Y",
+  "verification_command": "agentplane verify 202607221852-1KWS8Y --ok --by TESTER",
+  "verifier": "TESTER"
+}

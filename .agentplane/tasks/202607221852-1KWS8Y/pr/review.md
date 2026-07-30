@@ -6,14 +6,14 @@ Created: 2026-07-30T08:43:03.527Z
 
 - Task: `202607221852-1KWS8Y`
 - Title: Batch context freshness and incrementally update projections
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-1KWS8Y/batch-context-freshness-and-incrementally-update`
 - Canonical task record: `.agentplane/tasks/202607221852-1KWS8Y/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: RF-15 verification passed: source-query cache, no-op, delta equivalence, FTS continuity, version/corruption recovery, and benchmark threshold are covered.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
