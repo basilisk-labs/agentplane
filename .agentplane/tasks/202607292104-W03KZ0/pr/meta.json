@@ -8,10 +8,10 @@
   "pr_number": 4674,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4674",
   "pre_merge_closure": {
-    "basis_commit": "c6a10db56506a3e38cba675cc2923569daa7e45e",
+    "basis_commit": "948e59112375a8eefa894155523fd40bc6f84684",
     "branch": "task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance",
     "pr_number": 4674,
-    "recorded_at": "2026-07-30T00:01:53.056Z",
+    "recorded_at": "2026-07-30T00:03:39.304Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
