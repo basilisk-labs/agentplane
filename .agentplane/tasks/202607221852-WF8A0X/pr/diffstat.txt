@@ -7,8 +7,8 @@
  .../src/commands/context/context-runner.ts         |    4 +-
  .../src/commands/context/context.learn.spec.ts     |   24 +-
  .../src/commands/context/context.spec.ts           |   32 +-
- .../src/commands/context/harvest-tasks.test.ts     | 1208 +++++++++++---------
- .../src/commands/context/harvest-tasks.ts          |  969 ++++++++++++++--
+ .../src/commands/context/harvest-tasks.test.ts     | 1309 +++++++++++--------
+ .../src/commands/context/harvest-tasks.ts          | 1358 ++++++++++++++++++--
  packages/agentplane/src/context/doctor.ts          |    8 +-
  .../src/context/harvest-tasks-artifacts.ts         |   80 +-
  .../src/context/harvest-tasks-builders.ts          |  372 +++---
@@ -16,4 +16,4 @@
  .../src/context/harvest-tasks-markers.ts           |   50 +-
  .../agentplane/src/context/harvest-tasks-model.ts  |   72 +-
  .../src/context/ingest-task-pack.test.ts           |   14 +-
- 18 files changed, 1975 insertions(+), 1140 deletions(-)
+ 18 files changed, 2479 insertions(+), 1126 deletions(-)

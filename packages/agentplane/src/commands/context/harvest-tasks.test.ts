@@ -706,6 +706,77 @@ describe("context harvest tasks", () => {
     await expect(readFile(lockPath, "utf8")).rejects.toThrow();
   });
 
+  it("reclaims an abandoned selection recovery guard", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-GUARD1",
+      title: "Recover abandoned selection guard",
+      description: "Decision: interrupted selection recovery must stay recoverable.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], writeProposals: true }),
+    });
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const proposalName = proposalFiles.find((name) => name.endsWith(".json"));
+    expect(proposalName).toBeDefined();
+    const proposalId = proposalName?.replace(/\.json$/u, "") ?? "";
+    const lockPath = path.join(proposalDir, `${proposalId}.selection.lock`);
+    await write(
+      root,
+      path.relative(root, lockPath),
+      JSON.stringify({
+        schema_version: 1,
+        kind: "task_knowledge_proposal_selection_lock",
+        owner: { token: "interrupted", pid: 999_999, hostname: "other-host" },
+        acquired_at: "1970-01-01T00:00:00.000Z",
+        expires_at: "1970-01-01T00:00:01.000Z",
+      }),
+    );
+    await write(
+      root,
+      path.relative(root, `${lockPath}.reclaim.lock`),
+      JSON.stringify({
+        schema_version: 1,
+        kind: "task_knowledge_proposal_selection_reclaim_guard",
+        owner: { token: "crashed-reclaimer", pid: 999_999, hostname: "other-host" },
+        acquired_at: "1970-01-01T00:00:00.000Z",
+        expires_at: "1970-01-01T00:00:01.000Z",
+      }),
+    );
+
+    const createdTaskIds: string[] = [];
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+        const taskId = "202604040900-CURAT1";
+        createdTaskIds.push(taskId);
+        await commandCtx.taskBackend.writeTask({
+          id: taskId,
+          title: taskParsed.title,
+          status: "TODO",
+          owner: taskParsed.owner,
+          priority: taskParsed.priority,
+          tags: taskParsed.tags,
+          description: taskParsed.description,
+          extensions: taskParsed.extensions,
+        } as TaskData);
+        return taskCreationResult(taskId);
+      },
+    });
+
+    expect(createdTaskIds).toEqual(["202604040900-CURAT1"]);
+    await expect(readFile(`${lockPath}.reclaim.lock`, "utf8")).rejects.toThrow();
+  });
+
   it("does not reclaim a replacement lock after reading a stale owner", async () => {
     const root = await tempRoot();
     await initContextWorkspace(root);
@@ -983,5 +1054,59 @@ describe("context harvest tasks", () => {
     expect(tasks.find((row) => row.id === source.id)?.extensions).toMatchObject({
       context_task_extraction: { extraction_task_id: createdTaskIds[0] },
     });
+  });
+
+  it("adopts a CURATOR task left between creation and selection receipts", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-ADOPT1",
+      title: "Adopt interrupted CURATOR task",
+      description: "Decision: CURATOR task creation must be idempotent after interruption.",
+    });
+    const tasks = [source];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+
+    await expect(
+      cmdContextHarvestTasks({
+        ctx: ctx(root, tasks),
+        cwd: root,
+        parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+        createTask: async ({ ctx: commandCtx, parsed: taskParsed }) => {
+          await commandCtx.taskBackend.writeTask({
+            id: "202604040900-CURAT1",
+            title: taskParsed.title,
+            status: "TODO",
+            owner: taskParsed.owner,
+            priority: taskParsed.priority,
+            tags: taskParsed.tags,
+            description: taskParsed.description,
+            extensions: taskParsed.extensions,
+          } as TaskData);
+          throw new Error("interrupted after CURATOR task creation");
+        },
+      }),
+    ).rejects.toThrow("interrupted after CURATOR task creation");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+      createTask: () => Promise.reject(new Error("retry must adopt the already-created CURATOR task")),
+    });
+
+    expect(tasks.filter((candidate) => candidate.owner === "CURATOR")).toHaveLength(1);
+    expect(tasks.find((candidate) => candidate.id === source.id)?.extensions).toMatchObject({
+      context_task_extraction: { extraction_task_id: "202604040900-CURAT1" },
+    });
+    await expect(
+      readFile(path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"), "utf8"),
+    ).resolves.toContain(`.agentplane/tasks/${source.id}/README.md`);
+    const proposalDir = path.join(root, ".agentplane/context/derived/proposals/task-knowledge");
+    const proposalFiles = await readdir(proposalDir);
+    const intentName = proposalFiles.find((name) => name.endsWith(".selection.intent.json"));
+    await expect(readFile(path.join(proposalDir, intentName ?? ""), "utf8")).resolves.toContain(
+      '"state": "created"',
+    );
   });
 });

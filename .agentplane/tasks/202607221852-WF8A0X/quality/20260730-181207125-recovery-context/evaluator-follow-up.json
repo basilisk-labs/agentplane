@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-WF8A0X-868070c100602da9802b8fcb",
+  "task_id": "202607221852-WF8A0X",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make reclaim guards lease- and owner-aware with safe stale-guard recovery, then introduce a durable pre-creation intent or idempotent adoption protocol so retries reconcile a partially created CURATOR task before creating another owner. Add crash-point tests for both recovery boundaries.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "A crashed stale-lock reclaimer leaves a permanent reclaim guard that prevents all later CURATOR selections.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-181207125-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:eaa888b9515a22b23b4f317bc3d09a61db28d4ff4f67e2a3510f3df6bde25914",
+          "section": "acquireTaskKnowledgeSelectionReclaimGuard and reclaimStaleTaskKnowledgeSelectionLock"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "CURATOR task creation and its durable selection receipt are not interruption-atomic, so a crash after task creation can produce an orphaned task and a duplicate owner on retry.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-181207125-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:eaa888b9515a22b23b4f317bc3d09a61db28d4ff4f67e2a3510f3df6bde25914",
+          "section": "createExtractionTasks task creation, task-pack writing, marker update, and selection receipt sequence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/README.md",
+          "sha256": "sha256:addcd81c71994943ba246f415a39167e88ffcee9e09336e5776205ad612deabb",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-181207125-recovery-context/evaluator-result.json"
+}
