@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Investigated hosted verify-static failure on PR #4693: dependency-cruiser found a circular import between task-knowledge-request and task-knowledge-request-audit. Moved the shared response contract, sealing, and validation into a neutral module; the request handler and audit adapter now depend on that module without importing each other. Local architecture, type, and focused lifecycle checks pass."
 events:
   -
     type: "status"
@@ -124,8 +127,13 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "comment"
+    at: "2026-07-30T15:23:19.484Z"
+    author: "CODER"
+    body: "Investigated hosted verify-static failure on PR #4693: dependency-cruiser found a circular import between task-knowledge-request and task-knowledge-request-audit. Moved the shared response contract, sealing, and validation into a neutral module; the request handler and audit adapter now depend on that module without importing each other. Local architecture, type, and focused lifecycle checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T15:11:32.390Z"
+doc_updated_at: "2026-07-30T15:23:19.484Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
