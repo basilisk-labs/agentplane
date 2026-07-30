@@ -22,12 +22,18 @@ RF-19b: invoke an optional selector/reranker only for oversized, low-confidence,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T12:36:18.395Z
+- Updated: 2026-07-30T12:36:40.861Z
 - Branch: task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../usecases/agent-work-order.integration.test.ts  |  54 ++-
+ .../src/runner/usecases/agent-work-order.ts        |   7 +-
+ .../usecases/task-knowledge-retrieval-query.ts     |   2 +
+ .../runner/usecases/task-knowledge-retrieval.ts    |  38 +-
+ .../task-knowledge-semantic-escalation.test.ts     | 191 ++++++++
+ .../usecases/task-knowledge-semantic-escalation.ts | 493 +++++++++++++++++++++
+ 6 files changed, 780 insertions(+), 5 deletions(-)
 ```
 
 </details>

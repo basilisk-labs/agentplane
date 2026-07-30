@@ -10,7 +10,7 @@ import {
   mkGitRepoRoot,
   writeConfig,
 } from "@agentplane/testkit";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { runCli } from "../../cli/run-cli.js";
 import { cmdContextReindex } from "../../commands/context/reindex.js";
@@ -338,6 +338,58 @@ describe("AgentWorkOrder v2 surface integration", () => {
         (omission) => omission.reason_code === "not_materializable",
       ),
     ).toBe(true);
+  });
+
+  it("keeps high-confidence bounded retrieval selector-free in the prepared work order", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
+    await writeFile(
+      path.join(root, "context", "wiki", "high-confidence.md"),
+      "# High confidence\n\nThe exact path is the only prepared knowledge source.\n",
+      "utf8",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      rootOverride: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: true },
+    });
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await commandCtx.taskBackend.getTask(taskId);
+    expect(task).toBeTruthy();
+    await commandCtx.taskBackend.writeTask({
+      ...task!,
+      title: "Use high-confidence retrieval",
+      description: "Read context/wiki/high-confidence.md before completing the task.",
+    });
+    const selector = vi.fn(async () => {
+      throw new Error("selector must not run for a high-confidence fixture");
+    });
+
+    const prepared = requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: commandCtx,
+        cwd: root,
+        root_override: root,
+        task_id: taskId,
+        semantic_selector: selector,
+      }),
+    );
+
+    expect(selector).not.toHaveBeenCalled();
+    expect(prepared.preparation.knowledge_retrieval.semantic_escalation).toMatchObject({
+      state: "not_requested",
+      work_order: null,
+      episode: { invoked: false, count: 0 },
+    });
+    expect(prepared.work_order.knowledge_refs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ref: "context/wiki/high-confidence.md",
+          retrieval: "exact",
+        }),
+      ]),
+    );
   });
 
   it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
