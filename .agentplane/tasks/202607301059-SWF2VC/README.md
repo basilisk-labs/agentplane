@@ -1,6 +1,6 @@
 ---
 id: "202607301059-SWF2VC"
-title: "Release AgentPlane v0.6.25 from maintenance branch"
+title: "Release AgentPlane v0.6.25"
 status: "DOING"
 priority: "high"
 owner: "CODER"
