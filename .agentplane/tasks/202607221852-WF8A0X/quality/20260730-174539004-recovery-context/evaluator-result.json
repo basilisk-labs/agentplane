@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Каноническая проверка создаётся и перезаписывается до получения эксклюзивной блокировки выбора. Параллельный запуск может заменить файл проверки после того, как победивший запуск вычислил его digest для source pack, поэтому задача CURATOR получает изменяемое или несогласованное доказательство.",
+      "broken_invariant": "Дедупликация и проверка консолидации должны предшествовать выбору, а переданный CURATOR набор источников должен быть согласованным и неизменным; конкурентный выбор не должен допускать drift между проверенным содержимым и зафиксированным digest.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-174539004-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6a213be06c6e09107798f2b492ddc74c534cf32eb9a55347ed3588724145167e",
+          "section": "writeTaskKnowledgeCanonicalChecks, buildTaskProposalSourceRows, acquireTaskKnowledgeSelectionLock и createExtractionTasks"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/README.md",
+          "sha256": "sha256:a9ebd7cb91d1da9ee90d7b4496bc93d349accbf7e2a0727c5a3291e8e993a538",
+          "section": "Plan и Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Параллельный тест, который принудительно чередует запись canonical-check, вычисление source-row digest и получение selection lock, затем подтверждает, что source-set.lock.json и CURATOR task pack ссылаются на точный digest фактически сохранённой проверки.",
+    "Проверка полного опубликованного следа из Verify Step 4: source refs, исходное решение task/PR, результат CURATOR и apply receipt после транзакционного применения."
+  ],
+  "hidden_assumptions": [
+    "Запуски, конкурирующие за одно предложение, сформируют байтово одинаковый canonical-check, хотя checked_at делает содержимое различным.",
+    "Файл canonical-check не изменится между вычислением его digest и материализацией CURATOR task pack.",
+    "Существующие критические тесты покрывают полный publication audit, хотя замороженная запись явно перечисляет только проверки proposal/context и общую CLI-совместимость."
+  ],
+  "recovery_context": "Перенести создание и фиксацию canonical-check под ту же эксклюзивную lease-блокировку, которая защищает выбор, либо создавать content-addressed неизменяемый снимок и атомарно связывать с ним selection receipt и CURATOR source pack. После этого добавить детерминированный тест указанного межпроцессного чередования и проверку полного apply receipt."
+}

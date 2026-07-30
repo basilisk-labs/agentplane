@@ -273,28 +273,16 @@ async function buildTaskKnowledgeCanonicalCheck(opts: {
   };
 }
 
-async function writeTaskKnowledgeCanonicalChecks(opts: {
+async function writeTaskKnowledgeCanonicalCheck(opts: {
   root: string;
-  output: ReturnType<typeof buildOutput>;
-}): Promise<Map<string, { path: string; check: TaskKnowledgeCanonicalCheck }>> {
-  const evidenceByTaskId = new Map(opts.output.evidence.map((evidence) => [evidence.id, evidence]));
-  const checks = new Map<string, { path: string; check: TaskKnowledgeCanonicalCheck }>();
-  for (const proposal of opts.output.proposals) {
-    const evidence = evidenceByTaskId.get(proposal.source_task_id);
-    if (!evidence) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `Task knowledge proposal evidence is missing: ${proposal.source_task_id}`,
-      });
-    }
-    const check = await buildTaskKnowledgeCanonicalCheck({ root: opts.root, proposal, evidence });
-    const rel = taskKnowledgeSelectionCheckPath(proposal.id);
-    await mkdir(path.dirname(path.join(opts.root, rel)), { recursive: true });
-    await writeJsonStableIfChanged(path.join(opts.root, rel), check);
-    checks.set(proposal.source_task_id, { path: rel, check });
-  }
-  return checks;
+  proposal: ReturnType<typeof buildOutput>["proposals"][number];
+  evidence: ReturnType<typeof buildOutput>["evidence"][number];
+}): Promise<{ path: string; check: TaskKnowledgeCanonicalCheck }> {
+  const check = await buildTaskKnowledgeCanonicalCheck(opts);
+  const rel = taskKnowledgeSelectionCheckPath(opts.proposal.id);
+  await mkdir(path.dirname(path.join(opts.root, rel)), { recursive: true });
+  await writeJsonStableIfChanged(path.join(opts.root, rel), check);
+  return { path: rel, check };
 }
 
 function optionalTaskArtifactPaths(taskId: string): string[] {
@@ -508,6 +496,7 @@ async function buildTaskProposalSourceRows(
 ): Promise<ManifestEntry[]> {
   const rows: ManifestEntry[] = [];
   for (const taskId of taskIds) {
+    const taskRowsStart = rows.length;
     const provenanceRefs = await existingTaskKnowledgeProvenanceRefs(root, taskId);
     const provenancePaths = provenanceRefs.map((ref) => ref.replace(/#all$/u, ""));
     const candidates = [
@@ -546,6 +535,21 @@ async function buildTaskProposalSourceRows(
         status: "new",
       });
     }
+    const canonicalCheck = canonicalChecksByTask.get(taskId)?.check;
+    if (!canonicalCheck) continue;
+    const taskRows = rows.slice(taskRowsStart);
+    for (const source of canonicalCheck.canonical_sources) {
+      const row = taskRows.find((candidate) => candidate.path === source.path);
+      if (row?.sha256 !== source.sha256) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            `Canonical knowledge changed while selecting task knowledge proposal ${taskId}: ${source.path}. ` +
+            "Retry so the CURATOR source pack can use one consistent canonical snapshot.",
+        });
+      }
+    }
   }
   return rows;
 }
@@ -557,8 +561,6 @@ async function createExtractionTasks(opts: {
   output: ReturnType<typeof buildOutput>;
   parsed: ContextHarvestTasksParsed;
   sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
-  sourceRowsByTask: ReadonlyMap<string, ManifestEntry[]>;
-  canonicalChecksByTask: ReadonlyMap<string, { path: string; check: TaskKnowledgeCanonicalCheck }>;
   createTask?: typeof runTaskNewParsed;
 }) {
   const proposalByTaskId = new Map(
@@ -568,23 +570,14 @@ async function createExtractionTasks(opts: {
   const plans = buildExtractionTaskPlans(proposalTasks, opts.parsed, opts.sourceFingerprints);
   const createTask = opts.createTask ?? runTaskNewParsed;
   const releases: (() => Promise<void>)[] = [];
+  const canonicalChecksByTask = new Map<
+    string,
+    { path: string; check: TaskKnowledgeCanonicalCheck }
+  >();
   try {
     for (const task of proposalTasks) {
       const proposal = proposalByTaskId.get(task.id);
       if (!proposal) continue;
-      const canonicalCheck = opts.canonicalChecksByTask.get(task.id);
-      if (
-        canonicalCheck?.check.proposal_id !== proposal.id ||
-        canonicalCheck.check.resolution.state !== "recorded"
-      ) {
-        throw new CliError({
-          exitCode: 3,
-          code: "E_VALIDATION",
-          message:
-            `Task knowledge proposal ${proposal.id} has no recorded canonical duplicate/consolidation check. ` +
-            "Re-run the proposal pre-selection check before creating a CURATOR work order.",
-        });
-      }
       const release = await acquireTaskKnowledgeSelectionLock({
         root: opts.ctx.resolvedProject.gitRoot,
         proposalId: proposal.id,
@@ -607,7 +600,38 @@ async function createExtractionTasks(opts: {
             "Change the source before selecting it again.",
         });
       }
+      const evidence = opts.output.evidence.find((candidate) => candidate.id === task.id);
+      if (!evidence) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Task knowledge proposal evidence is missing: ${task.id}`,
+        });
+      }
+      canonicalChecksByTask.set(
+        task.id,
+        await writeTaskKnowledgeCanonicalCheck({
+          root: opts.ctx.resolvedProject.gitRoot,
+          proposal,
+          evidence,
+        }),
+      );
     }
+    const sourceRowsByTask = new Map(
+      await Promise.all(
+        proposalTasks.map(
+          async (task) =>
+            [
+              task.id,
+              await buildTaskProposalSourceRows(
+                opts.ctx.resolvedProject.gitRoot,
+                [task.id],
+                canonicalChecksByTask,
+              ),
+            ] as const,
+        ),
+      ),
+    );
     const createdTaskIds: string[] = [];
     const taskPackPaths: string[] = [];
     for (const plan of plans) {
@@ -623,7 +647,7 @@ async function createExtractionTasks(opts: {
         root: opts.ctx.resolvedProject.gitRoot,
         taskId: createdTaskId,
         sources: plan.source_task_ids.flatMap((sourceTaskId) => {
-          const rows = opts.sourceRowsByTask.get(sourceTaskId);
+          const rows = sourceRowsByTask.get(sourceTaskId);
           if (rows) return rows;
           throw new CliError({
             exitCode: 3,
@@ -701,12 +725,22 @@ async function createExtractionTasks(opts: {
             message: `Cannot select task knowledge proposal for ${sourceTaskId}: proposal record is missing.`,
           });
         }
-        const canonicalCheck = opts.canonicalChecksByTask.get(sourceTaskId);
+        const canonicalCheck = canonicalChecksByTask.get(sourceTaskId);
         if (!canonicalCheck) {
           throw new CliError({
             exitCode: 3,
             code: "E_VALIDATION",
             message: `Cannot select task knowledge proposal for ${sourceTaskId}: canonical check is missing.`,
+          });
+        }
+        const canonicalCheckSource = sourceRowsByTask
+          .get(sourceTaskId)
+          ?.find((source) => source.path === canonicalCheck.path);
+        if (!canonicalCheckSource) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Cannot select task knowledge proposal for ${sourceTaskId}: canonical check source lock is missing.`,
           });
         }
         const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
@@ -723,6 +757,7 @@ async function createExtractionTasks(opts: {
             source_refs: proposal.source_refs,
             canonical_check: {
               path: canonicalCheck.path,
+              sha256: canonicalCheckSource.sha256,
               result: canonicalCheck.check.result,
               match_refs: canonicalCheck.check.matches.map((match) => match.source_ref),
               resolution: canonicalCheck.check.resolution,
@@ -741,6 +776,7 @@ async function createExtractionTasks(opts: {
       plans,
       taskIds: createdTaskIds,
       changedPaths: [
+        ...[...canonicalChecksByTask.values()].map((entry) => entry.path),
         ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
         ...taskPackPaths,
         ...sourceChangedPaths,
@@ -815,24 +851,6 @@ export async function cmdContextHarvestTasks(opts: {
     opts.parsed.dryRun || !shouldWrite
       ? []
       : [...(await writeOutputs(root, output)), ...(await writeTaskMarkers(ctx, output))];
-  const canonicalChecksByTask =
-    opts.parsed.dryRun || !shouldCreateExtractionTasks
-      ? new Map<string, { path: string; check: TaskKnowledgeCanonicalCheck }>()
-      : await writeTaskKnowledgeCanonicalChecks({ root, output });
-  const sourceRowsByTask =
-    opts.parsed.dryRun || !shouldCreateExtractionTasks
-      ? new Map<string, ManifestEntry[]>()
-      : new Map(
-          await Promise.all(
-            output.selected.map(
-              async (task) =>
-                [
-                  task.id,
-                  await buildTaskProposalSourceRows(root, [task.id], canonicalChecksByTask),
-                ] as const,
-            ),
-          ),
-        );
   const extraction =
     opts.parsed.dryRun || !shouldCreateExtractionTasks
       ? {
@@ -849,17 +867,9 @@ export async function cmdContextHarvestTasks(opts: {
           output,
           parsed: opts.parsed,
           sourceFingerprints,
-          sourceRowsByTask,
-          canonicalChecksByTask,
           createTask: opts.createTask,
         });
-  const changed = [
-    ...new Set([
-      ...written,
-      ...[...canonicalChecksByTask.values()].map((entry) => entry.path),
-      ...extraction.changedPaths,
-    ]),
-  ];
+  const changed = [...new Set([...written, ...extraction.changedPaths])];
   const payload = {
     ...output.report,
     selected_task_ids: selected.map((task) => task.id),
