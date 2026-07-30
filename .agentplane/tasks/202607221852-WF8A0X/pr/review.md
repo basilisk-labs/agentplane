@@ -13,7 +13,7 @@ Created: 2026-07-30T16:07:19.966Z
 ## Verification
 
 - State: ok
-- Note: Verified RF-20: proposal collection writes no wiki/fact/graph artifacts; duplicate/consolidation evidence is recorded before exact CURATOR selection; CLI builds the bounded source/canonical/SGR work pack and retains apply ownership. Checks: typecheck; focused harvest tasks 9/9; Knip baseline; CLI docs freshness; targeted ESLint; diff check.
+- Note: Verified RF-20 rework: only explicit durable task signals produce proposals; every signal has exact captured evidence; PR/diff/evaluator provenance is attached when present; unchanged selections retain one CURATOR owner.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
