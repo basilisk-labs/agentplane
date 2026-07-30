@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
@@ -243,6 +244,115 @@ describe("evaluator qualification packet", () => {
     });
   });
 
+  it("confines qualification rebuilding to frozen task-local evidence without provider modes", async () => {
+    const root = await realpath(await mkGitRepoRoot());
+    const safety = (await import(
+      pathToFileURL(path.join(process.cwd(), "scripts/lib/agent-efficiency-replay-safety.mjs")).href
+    )) as {
+      assertReplayCaptureTargets(options: Record<string, unknown>): unknown;
+      qualificationReplayOutputPath(repoRoot: string, taskId: string): string;
+    };
+    const capture = (await import(
+      pathToFileURL(path.join(process.cwd(), "scripts/bench/capture-agent-efficiency-replay.mjs"))
+        .href
+    )) as {
+      captureAgentEfficiencyReplay(options: Record<string, unknown>): unknown;
+      frozenReplayHarnessFromEnvelopeRecords(records: unknown[]): {
+        driverIdentity: { path: string; sha256: string };
+        harnessSha256: string;
+      };
+      parseArgs(argv: string[]): { outputPath: string; qualificationTaskId: string | null };
+    };
+    const taskId = "202607300112-AB12";
+    const sourceDirectory = path.join(root, "scripts/bench/agent-efficiency-replay-envelopes");
+    const evidenceDirectory = path.join(root, "scripts/bench/agent-efficiency-replay-evidence");
+    const registryPath = path.join(root, "scripts/bench/agent-efficiency-fixtures.json");
+    const outputPath = safety.qualificationReplayOutputPath(root, taskId);
+    await Promise.all([
+      mkdir(sourceDirectory, { recursive: true }),
+      mkdir(evidenceDirectory, { recursive: true }),
+      mkdir(path.dirname(outputPath), { recursive: true }),
+    ]);
+    await writeFile(registryPath, "{}\n", "utf8");
+    expect(() =>
+      safety.assertReplayCaptureTargets({
+        driverPath: null,
+        evidenceDirectory,
+        outputPath,
+        qualificationTaskId: taskId,
+        registryPath,
+        repoRoot: root,
+        sourceDirectory,
+      }),
+    ).not.toThrow();
+    expect(() =>
+      safety.assertReplayCaptureTargets({
+        driverPath: null,
+        evidenceDirectory,
+        outputPath: path.join(path.dirname(outputPath), "other.json"),
+        qualificationTaskId: taskId,
+        registryPath,
+        repoRoot: root,
+        sourceDirectory,
+      }),
+    ).toThrow("outputPath is not an authorized RF-04 capture target");
+    expect(() => safety.qualificationReplayOutputPath(root, "../outside")).toThrow(
+      "qualification rebuild task id is invalid",
+    );
+
+    const expectedOutput = path.join(
+      process.cwd(),
+      ".agentplane/tasks",
+      taskId,
+      "evidence/rf04-current-rebuild.v1.json",
+    );
+    expect(capture.parseArgs(["--qualification-task-id", taskId])).toMatchObject({
+      outputPath: expectedOutput,
+      qualificationTaskId: taskId,
+    });
+    expect(() =>
+      capture.parseArgs([
+        "--qualification-task-id",
+        taskId,
+        "--output",
+        path.join(process.cwd(), "scripts/baselines/other.json"),
+      ]),
+    ).toThrow("--output must match the fixed qualification rebuild target");
+    for (const options of [
+      { driverPath: path.join(process.cwd(), "scripts/bench/untrusted-driver.mjs") },
+      { pilot: true },
+      { replace: true },
+    ]) {
+      expect(() =>
+        capture.captureAgentEfficiencyReplay({
+          anchor: "unused",
+          qualificationTaskId: taskId,
+          ...options,
+        }),
+      ).toThrow("qualification rebuild must not use");
+    }
+    const firstRecord = {
+      value: {
+        anchor: {
+          driver: { contract_version: 1, path: "scripts/bench/driver.mjs", sha256: "sha256:a" },
+          harness_sha256: "sha256:harness",
+        },
+      },
+    };
+    expect(
+      capture.frozenReplayHarnessFromEnvelopeRecords([firstRecord, structuredClone(firstRecord)]),
+    ).toMatchObject({
+      driverIdentity: firstRecord.value.anchor.driver,
+      harnessSha256: "sha256:harness",
+    });
+    expect(() =>
+      capture.frozenReplayHarnessFromEnvelopeRecords([
+        firstRecord,
+        { value: { anchor: { ...firstRecord.value.anchor, harness_sha256: "sha256:other" } } },
+      ]),
+    ).toThrow("qualification rebuild envelopes disagree on their frozen harness identity");
+  });
+
   it("prepares a SHA-bound qualification packet before evaluator review", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -421,10 +531,16 @@ describe("evaluator qualification packet", () => {
     await writeFile(
       path.join(root, "scripts/bench/capture-agent-efficiency-replay.mjs"),
       [
-        'import { readFileSync, writeFileSync } from "node:fs";',
+        'import { mkdirSync, readFileSync, writeFileSync } from "node:fs";',
         'import path from "node:path";',
         'const output = process.argv.at(process.argv.indexOf("--output") + 1);',
         'if (!output) throw new Error("missing --output");',
+        'const taskId = process.argv.at(process.argv.indexOf("--qualification-task-id") + 1);',
+        'if (!taskId) throw new Error("missing --qualification-task-id");',
+        'const expectedSuffix = path.join(".agentplane/tasks", taskId, "evidence/rf04-current-rebuild.v1.json");',
+        'if (!output.endsWith(expectedSuffix)) throw new Error("qualification output target mismatch");',
+        'if (["--driver", "--replace", "--pilot"].some((flag) => process.argv.includes(flag))) throw new Error("qualification rebuild invoked a provider mode");',
+        "mkdirSync(path.dirname(output), { recursive: true });",
         'const baselinePath = path.join(process.cwd(), "scripts/baselines/agent-efficiency-pre-v0.7-replay.json");',
         'const rebuild = { ...JSON.parse(readFileSync(baselinePath, "utf8")), capture: "current-run" };',
         'writeFileSync(output, `${JSON.stringify(rebuild, null, 2)}\\n`, "utf8");',

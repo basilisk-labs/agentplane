@@ -19,6 +19,8 @@ export const TRUSTED_REPLAY_DRIVER_PATH =
   "/Applications/ChatGPT.app/Contents/Resources:/opt/homebrew/bin:/usr/bin:/bin";
 
 const REPLAY_DRIVER_DIAGNOSTIC_PATTERN = /^RF04_DRIVER_ERROR:([A-Z][A-Z0-9_]{0,63})\n?$/u;
+const QUALIFICATION_TASK_ID_PATTERN = /^\d{12}-[A-Z0-9]{4,64}$/u;
+const QUALIFICATION_REBUILD_FILENAME = "rf04-current-rebuild.v1.json";
 const MAX_REPLAY_DRIVER_DIAGNOSTIC_BYTES = Buffer.byteLength(
   `RF04_DRIVER_ERROR:${"A".repeat(64)}\n`,
 );
@@ -101,6 +103,20 @@ function isInside(root, candidate) {
   return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== "..");
 }
 
+export function qualificationReplayOutputPath(repoRoot, taskId) {
+  if (typeof taskId !== "string" || !QUALIFICATION_TASK_ID_PATTERN.test(taskId)) {
+    throw new Error("qualification rebuild task id is invalid");
+  }
+  return path.join(
+    repoRoot,
+    ".agentplane",
+    "tasks",
+    taskId,
+    "evidence",
+    QUALIFICATION_REBUILD_FILENAME,
+  );
+}
+
 export function assertRepoPathNoSymlinkEscape(repoRoot, candidate, label, options = {}) {
   const root = path.resolve(realpathSync(repoRoot));
   const resolved = path.resolve(candidate);
@@ -146,6 +162,7 @@ export function assertReplayCaptureTargets({
   evidenceDirectory,
   harnessPaths = [],
   outputPath,
+  qualificationTaskId = null,
   registryPath,
   repoRoot,
   runtimeBridgeTargetRoot = null,
@@ -159,6 +176,10 @@ export function assertReplayCaptureTargets({
     sourceDirectory: path.join(repoRoot, "scripts/bench/agent-efficiency-replay-envelopes"),
   };
   const targets = { evidenceDirectory, outputPath, registryPath, sourceDirectory };
+  const qualificationOutputPath =
+    qualificationTaskId === null
+      ? null
+      : path.resolve(qualificationReplayOutputPath(repoRoot, qualificationTaskId));
   const expectedRuntimeBridgeTargetRoot = path.join(
     repoRoot,
     ".agentplane",
@@ -182,7 +203,16 @@ export function assertReplayCaptureTargets({
       runtimeBridgeTargetRoot !== null &&
       isInside(path.resolve(runtimeBridgeTargetRoot), resolved) &&
       resolved !== path.resolve(runtimeBridgeTargetRoot);
-    if (resolved !== canonicalPath && !allowedTestPath && !allowedRuntimeBridgePath) {
+    const allowedQualificationOutputPath =
+      name === "outputPath" &&
+      qualificationOutputPath !== null &&
+      resolved === qualificationOutputPath;
+    if (
+      resolved !== canonicalPath &&
+      !allowedTestPath &&
+      !allowedRuntimeBridgePath &&
+      !allowedQualificationOutputPath
+    ) {
       throw new Error(`${name} is not an authorized RF-04 capture target`);
     }
   }

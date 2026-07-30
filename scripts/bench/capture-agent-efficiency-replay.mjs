@@ -39,6 +39,7 @@ import {
   assertRepoPathNoSymlinkEscape,
   assertReplayCaptureTargets,
   installReplayArtifactTransaction,
+  qualificationReplayOutputPath,
   replayDriverDiagnosticCode,
 } from "../lib/agent-efficiency-replay-safety.mjs";
 import {
@@ -108,6 +109,7 @@ function helpText() {
     "  --source-dir <path>  Persisted canonical envelopes directory.",
     "  --evidence-dir <path> Persisted canonical sanitized evidence bundles directory.",
     "  --output <path>      Replay baseline output path.",
+    "  --qualification-task-id <id> Rebuild only into that task's fixed qualification evidence file.",
     "  --driver <path>      Explicitly authorized local driver. It runs once per isolated scenario/run.",
     "  --pilot              Run only direct/run-01, validate it in memory, and persist nothing.",
     "  --replace            Replace envelopes, evidence, and baseline as one validated transaction.",
@@ -121,9 +123,18 @@ function helpText() {
   ].join("\n");
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["anchor", "runs", "registry", "source-dir", "evidence-dir", "output", "driver"],
+    valueFlags: [
+      "anchor",
+      "runs",
+      "registry",
+      "source-dir",
+      "evidence-dir",
+      "output",
+      "driver",
+      "qualification-task-id",
+    ],
     booleanFlags: ["replace", "pilot", "help"],
     aliases: { h: "help" },
   });
@@ -131,13 +142,27 @@ function parseArgs(argv) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
   }
   const runs = Number.parseInt(flags.runs ?? String(MINIMUM_REPLAY_RUNS), 10);
+  const qualificationTaskId = flags["qualification-task-id"] ?? null;
+  const requestedOutputPath = path.resolve(flags.output ?? DEFAULT_OUTPUT_PATH);
+  const qualificationOutputPath =
+    qualificationTaskId === null
+      ? null
+      : path.resolve(qualificationReplayOutputPath(repoRoot, qualificationTaskId));
+  if (
+    qualificationOutputPath !== null &&
+    flags.output !== undefined &&
+    requestedOutputPath !== qualificationOutputPath
+  ) {
+    throw new Error("--output must match the fixed qualification rebuild target");
+  }
   return {
     anchor: flags.anchor ?? REPLAY_ANCHOR_COMMIT,
     driverPath: flags.driver ? path.resolve(flags.driver) : null,
     evidenceDirectory: path.resolve(flags["evidence-dir"] ?? DEFAULT_EVIDENCE_DIRECTORY),
     help: flags.help === true,
-    outputPath: path.resolve(flags.output ?? DEFAULT_OUTPUT_PATH),
+    outputPath: qualificationOutputPath ?? requestedOutputPath,
     pilot: flags.pilot === true,
+    qualificationTaskId,
     registryPath: path.resolve(flags.registry ?? DEFAULT_REGISTRY_PATH),
     replace: flags.replace === true,
     runs,
@@ -479,7 +504,55 @@ function writeAtomic(filePath, bytes) {
   }
 }
 
+export function frozenReplayHarnessFromEnvelopeRecords(envelopeRecords) {
+  if (!Array.isArray(envelopeRecords) || envelopeRecords.length === 0) {
+    throw new Error("qualification rebuild requires at least one frozen replay envelope");
+  }
+  const firstAnchor = envelopeRecords[0]?.value?.anchor;
+  const driverIdentity = firstAnchor?.driver;
+  const harnessSha256 = firstAnchor?.harness_sha256;
+  if (!driverIdentity || typeof harnessSha256 !== "string") {
+    throw new Error("qualification rebuild envelope is missing its frozen harness identity");
+  }
+  for (const record of envelopeRecords) {
+    const anchor = record?.value?.anchor;
+    if (
+      stableJson(anchor?.driver) !== stableJson(driverIdentity) ||
+      anchor?.harness_sha256 !== harnessSha256
+    ) {
+      throw new Error("qualification rebuild envelopes disagree on their frozen harness identity");
+    }
+  }
+  return { driverIdentity, harnessSha256 };
+}
+
+function readFrozenReplayBaselineForQualification() {
+  const bytes = readFileSync(DEFAULT_OUTPUT_PATH, "utf8");
+  const baseline = JSON.parse(bytes);
+  if (bytes !== replayBaselineBytes(baseline)) {
+    throw new Error("frozen RF-04 replay baseline is not canonical JSON");
+  }
+  const harnessManifest = baseline?.anchor?.harness;
+  if (!harnessManifest || typeof harnessManifest !== "object") {
+    throw new Error("frozen RF-04 replay baseline is missing its harness manifest");
+  }
+  return harnessManifest;
+}
+
 export function captureAgentEfficiencyReplay(options) {
+  const qualificationTaskId = options.qualificationTaskId ?? null;
+  if (qualificationTaskId !== null) {
+    qualificationReplayOutputPath(repoRoot, qualificationTaskId);
+    if (options.driverPath) {
+      throw new Error("qualification rebuild must not use a provider driver");
+    }
+    if (options.pilot) {
+      throw new Error("qualification rebuild must not use --pilot");
+    }
+    if (options.replace) {
+      throw new Error("qualification rebuild must not use --replace");
+    }
+  }
   if (options.anchor !== REPLAY_ANCHOR_COMMIT) {
     throw new Error(`--anchor must remain exact commit ${REPLAY_ANCHOR_COMMIT}`);
   }
@@ -501,12 +574,16 @@ export function captureAgentEfficiencyReplay(options) {
     driverPath: options.driverPath,
     evidenceDirectory: options.evidenceDirectory,
     outputPath: options.outputPath,
+    qualificationTaskId,
     registryPath: options.registryPath,
     repoRoot,
     runtimeBridgeTargetRoot: options.runtimeBridgeTargetRoot ?? null,
     sourceDirectory: options.sourceDirectory,
     testTargetRoot,
   });
+  if (qualificationTaskId !== null) {
+    mkdirSync(path.dirname(options.outputPath), { recursive: true });
+  }
 
   if (options.driverPath) {
     requestedDriverIdentity = createReplayDriverIdentity(repoRoot, options.driverPath);
@@ -520,6 +597,7 @@ export function captureAgentEfficiencyReplay(options) {
       evidenceDirectory: options.evidenceDirectory,
       harnessPaths: captureHarnessManifest.files.map((entry) => path.join(repoRoot, entry.path)),
       outputPath: options.outputPath,
+      qualificationTaskId,
       registryPath: options.registryPath,
       repoRoot,
       runtimeBridgeTargetRoot: options.runtimeBridgeTargetRoot ?? null,
@@ -549,7 +627,13 @@ export function captureAgentEfficiencyReplay(options) {
   }
 
   const envelopeRecords = readReplayEnvelopeRecords(repoRoot, options.sourceDirectory);
-  const driverIdentity = replayDriverIdentityFromEnvelopeRecords(repoRoot, envelopeRecords);
+  const frozenHarness =
+    qualificationTaskId === null ? null : frozenReplayHarnessFromEnvelopeRecords(envelopeRecords);
+  const frozenHarnessManifest =
+    qualificationTaskId === null ? null : readFrozenReplayBaselineForQualification();
+  const driverIdentity =
+    frozenHarness?.driverIdentity ??
+    replayDriverIdentityFromEnvelopeRecords(repoRoot, envelopeRecords);
   if (
     requestedDriverIdentity &&
     stableJson(requestedDriverIdentity) !== stableJson(driverIdentity)
@@ -557,10 +641,18 @@ export function captureAgentEfficiencyReplay(options) {
     throw new Error("captured driver identity differs from the explicitly selected driver bytes");
   }
   const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(envelopeRecords);
-  assertReplayDependencyClaim(repoRoot, dependencyClaim);
-  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity, {
-    dependencyClaim,
-  });
+  if (qualificationTaskId === null) {
+    assertReplayDependencyClaim(repoRoot, dependencyClaim);
+  } else if (
+    stableJson(frozenHarnessManifest.dependency_claim) !== stableJson(dependencyClaim) ||
+    frozenHarnessManifest.sha256 !== frozenHarness.harnessSha256
+  ) {
+    throw new Error("frozen RF-04 replay baseline does not match its envelope harness identity");
+  }
+  const harnessManifest =
+    frozenHarness === null
+      ? createReplayHarnessManifest(repoRoot, driverIdentity, { dependencyClaim })
+      : frozenHarnessManifest;
   const baseline = buildReplayBaseline({
     anchor: options.anchor,
     driverIdentity,
