@@ -1090,7 +1090,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
       expect(io.stderr).toContain(
-        "agentplane pr <open|update|check|flow status|note|close|close-superseded>",
+        "agentplane pr <open|update|check|flow status|conflict-rework|note|close|close-superseded>",
       );
     } finally {
       io.restore();

@@ -32,11 +32,12 @@ format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |  2 +-
  .../src/commands/pr/conflict-rework-legacy.ts      | 21 +++++++
  .../pr/conflict-rework-route-eligibility.ts        | 26 +++++++++
  .../pr/conflict-rework.legacy-base.test.ts         | 68 ++++++++++++++++++++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  7 ++-
- 4 files changed, 121 insertions(+), 1 deletion(-)
+ 5 files changed, 122 insertions(+), 2 deletions(-)
 ```
 
 </details>
