@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +53,8 @@ quality_review:
     - "Recovery validates exact heads, fetches the provider ref explicitly, writes standard branch upstream fields without relying on fetch refspec discovery, and asserts archive < upstream configuration < hard reset."
     - "The real Git fixture limits origin fetch to main, demonstrates shorthand upstream binding fails, then verifies recovery preserves the local archive, adopts the provider head, remains clean, and writes remote and merge configuration."
 commit:
-  hash: "2b237b623595d7f9dec2a6d700879a29009cde9b"
-  message: "🐛 Q3RDCW code: enforce recovery archive ordering"
+  hash: "9c1f4f33da9e87fb67f96de2ef437c8e4bb1341d"
+  message: "🐛 Q3RDCW task: pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -65,6 +65,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: added deterministic ordering assertions for archive, upstream configuration, and reset; verification will repeat against commit 2b237b623595d7f9dec2a6d700879a29009cde9b."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: correct the owner-scoped execution transition before integrating the already-verified recovery fix."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -103,8 +109,22 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T03:03:43.164Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: correct the owner-scoped execution transition before integrating the already-verified recovery fix."
+  -
+    type: "status"
+    at: "2026-07-30T03:04:15.569Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T02:59:44.835Z"
+doc_updated_at: "2026-07-30T03:04:15.570Z"
 doc_updated_by: "CODER"
 description: "Correct the recovery command so its fetched provider tracking ref is bound as a valid upstream before the bounded hard reset. Preserve the archive-first and fail-closed guarantees; add a regression test that exercises the exact remote-tracking ref form observed in the beta.1 recovery."
 sections:
@@ -163,6 +183,9 @@ sections:
       Impact: No remaining implementation failure observed; existing repository hotspot warnings remain below enforced thresholds.
       Resolution: Use direct branch upstream config after exact provider SHA validation; do not rely on git branch shorthand for raw fetched refs.
 extensions:
+  implementation_commit:
+    hash: "2b237b623595d7f9dec2a6d700879a29009cde9b"
+    message: "🐛 Q3RDCW code: enforce recovery archive ordering"
   workflow_route_baseline:
     start_head_sha: "ee5ea7178ba961f1e17ae3a925cb6b81469c41d7"
     version: 1

@@ -8,10 +8,10 @@
   "pr_number": 4678,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4678",
   "pre_merge_closure": {
-    "basis_commit": "2b237b623595d7f9dec2a6d700879a29009cde9b",
+    "basis_commit": "9c1f4f33da9e87fb67f96de2ef437c8e4bb1341d",
     "branch": "task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding",
     "pr_number": 4678,
-    "recorded_at": "2026-07-30T02:59:44.888Z",
+    "recorded_at": "2026-07-30T03:04:15.622Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
