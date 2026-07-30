@@ -1,0 +1,1714 @@
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/README.md b/.agentplane/tasks/202607221852-ABP0EX/README.md
+index c3235b4d5..b44f3555a 100644
+--- a/.agentplane/tasks/202607221852-ABP0EX/README.md
++++ b/.agentplane/tasks/202607221852-ABP0EX/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-ABP0EX"
+ title: "Add policy-gated semantic retrieval escalation"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 8
+ origin:
+   system: "manual"
+ depends_on:
+@@ -26,9 +26,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-30T12:36:01.385Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -36,12 +36,34 @@ verification:
+   updated_by: null
+   note: null
+   attempts: 0
+-commit: null
+-comments: []
+-events: []
++commit:
++  hash: "c4348a3212b497f8f0de032751defa1c9edc8916"
++  message: "🚧 ABP0EX task: gate semantic retrieval selection"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implementation: added a policy-gated, adapter-injected semantic retrieval selector with a one-episode authority budget, deterministic fallback, provenance and comparison receipts; calibrated high-confidence and conflict fixtures."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T12:36:18.265Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-30T12:51:16.925Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation: added a policy-gated, adapter-injected semantic retrieval selector with a one-episode authority budget, deterministic fallback, provenance and comparison receipts; calibrated high-confidence and conflict fixtures."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:20.275Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T12:51:16.925Z"
++doc_updated_by: "CODER"
+ description: "RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default."
+ sections:
+   Summary: |-
+@@ -70,6 +92,10 @@ sections:
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "3f46bbe11ff4528efbcf0aeff526e8a3cd98a981"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-ABP0EX/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..bef83cba8
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ABP0EX/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-ABP0EX",
++    "title": "Add policy-gated semantic retrieval escalation",
++    "description": "RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default.",
++    "tags": [
++      "context",
++      "milestone-beta2",
++      "refactor",
++      "retrieval",
++      "rf-19",
++      "semantic-escalation",
++      "v0.7",
++      "wave-retrieval"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-ABP0EX",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "f8cfacdace7675c365e1aab8b657954cf4646e57daf30492c758c5eb3db5e683"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/pr/diffstat.txt b/.agentplane/tasks/202607221852-ABP0EX/pr/diffstat.txt
+new file mode 100644
+index 000000000..cd8a970c4
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ABP0EX/pr/diffstat.txt
+@@ -0,0 +1,7 @@
++ .../usecases/agent-work-order.integration.test.ts  |  54 ++-
++ .../src/runner/usecases/agent-work-order.ts        |   7 +-
++ .../usecases/task-knowledge-retrieval-query.ts     |   2 +
++ .../runner/usecases/task-knowledge-retrieval.ts    |  38 +-
++ .../task-knowledge-semantic-escalation.test.ts     | 191 ++++++++
++ .../usecases/task-knowledge-semantic-escalation.ts | 493 +++++++++++++++++++++
++ 6 files changed, 780 insertions(+), 5 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/pr/github-body.md b/.agentplane/tasks/202607221852-ABP0EX/pr/github-body.md
+new file mode 100644
+index 000000000..276ecf015
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ABP0EX/pr/github-body.md
+@@ -0,0 +1,39 @@
++Task: `202607221852-ABP0EX`
++Title: Add policy-gated semantic retrieval escalation
++Canonical task record: `.agentplane/tasks/202607221852-ABP0EX/README.md`
++
++## Summary
++
++Add policy-gated semantic retrieval escalation
++
++RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default.
++
++## Scope
++
++- In scope: measurable escalation triggers, typed selector input/output, authority/budget policy, provenance, fallback, quality/escalation metrics, and conflict fixtures.
++- Out of scope: running CURATOR before every coding task or allowing semantic selection to rewrite durable knowledge.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T12:36:40.861Z
++- Branch: task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../usecases/agent-work-order.integration.test.ts  |  54 ++-
++ .../src/runner/usecases/agent-work-order.ts        |   7 +-
++ .../usecases/task-knowledge-retrieval-query.ts     |   2 +
++ .../runner/usecases/task-knowledge-retrieval.ts    |  38 +-
++ .../task-knowledge-semantic-escalation.test.ts     | 191 ++++++++
++ .../usecases/task-knowledge-semantic-escalation.ts | 493 +++++++++++++++++++++
++ 6 files changed, 780 insertions(+), 5 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/pr/github-title.txt b/.agentplane/tasks/202607221852-ABP0EX/pr/github-title.txt
+new file mode 100644
+index 000000000..94f76c2d3
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ABP0EX/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 ABP0EX task: Add policy-gated semantic retrieval escalation [202607221852-ABP0EX]
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/pr/meta.json b/.agentplane/tasks/202607221852-ABP0EX/pr/meta.json
+new file mode 100644
+index 000000000..5bc652ee9
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ABP0EX/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation",
++  "created_at": "2026-07-30T12:36:18.395Z",
++  "diffstat_sha256": "sha256:84d8aecd41516460acb7c8a7db4e69ee6b0856159800ceb61e9b82654ee182a7",
++  "last_verified_at": null,
++  "pr_number": 4692,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4692",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-ABP0EX",
++  "updated_at": "2026-07-30T12:36:40.861Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ABP0EX/pr/review.md b/.agentplane/tasks/202607221852-ABP0EX/pr/review.md
+new file mode 100644
+index 000000000..4d216ee5f
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ABP0EX/pr/review.md
+@@ -0,0 +1,42 @@
++# PR Review
++
++Created: 2026-07-30T12:36:18.395Z
++
++## Task
++
++- Task: `202607221852-ABP0EX`
++- Title: Add policy-gated semantic retrieval escalation
++- Status: DOING
++- Branch: `task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation`
++- Canonical task record: `.agentplane/tasks/202607221852-ABP0EX/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T12:36:40.861Z
++- Branch: task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../usecases/agent-work-order.integration.test.ts  |  54 ++-
++ .../src/runner/usecases/agent-work-order.ts        |   7 +-
++ .../usecases/task-knowledge-retrieval-query.ts     |   2 +
++ .../runner/usecases/task-knowledge-retrieval.ts    |  38 +-
++ .../task-knowledge-semantic-escalation.test.ts     | 191 ++++++++
++ .../usecases/task-knowledge-semantic-escalation.ts | 493 +++++++++++++++++++++
++ 6 files changed, 780 insertions(+), 5 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+index e2dbceabd..21963c341 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+@@ -10,7 +10,7 @@ import {
+   mkGitRepoRoot,
+   writeConfig,
+ } from "@agentplane/testkit";
+-import { describe, expect, it } from "vitest";
++import { describe, expect, it, vi } from "vitest";
+ 
+ import { runCli } from "../../cli/run-cli.js";
+ import { cmdContextReindex } from "../../commands/context/reindex.js";
+@@ -340,6 +340,58 @@ describe("AgentWorkOrder v2 surface integration", () => {
+     ).toBe(true);
+   });
+ 
++  it("keeps high-confidence bounded retrieval selector-free in the prepared work order", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = await createPreparedTask(root);
++    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
++    await writeFile(
++      path.join(root, "context", "wiki", "high-confidence.md"),
++      "# High confidence\n\nThe exact path is the only prepared knowledge source.\n",
++      "utf8",
++    );
++    await cmdContextReindex({
++      cwd: root,
++      rootOverride: root,
++      parsed: { includeTasks: false, includeRaw: false, reset: true },
++    });
++    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const task = await commandCtx.taskBackend.getTask(taskId);
++    expect(task).toBeTruthy();
++    await commandCtx.taskBackend.writeTask({
++      ...task!,
++      title: "Use high-confidence retrieval",
++      description: "Read context/wiki/high-confidence.md before completing the task.",
++    });
++    const selector = vi.fn(async () => {
++      throw new Error("selector must not run for a high-confidence fixture");
++    });
++
++    const prepared = requirePreparedAgentWorkOrder(
++      await prepareAgentWorkOrder({
++        command_ctx: commandCtx,
++        cwd: root,
++        root_override: root,
++        task_id: taskId,
++        semantic_selector: selector,
++      }),
++    );
++
++    expect(selector).not.toHaveBeenCalled();
++    expect(prepared.preparation.knowledge_retrieval.semantic_escalation).toMatchObject({
++      state: "not_requested",
++      work_order: null,
++      episode: { invoked: false, count: 0 },
++    });
++    expect(prepared.work_order.knowledge_refs).toEqual(
++      expect.arrayContaining([
++        expect.objectContaining({
++          ref: "context/wiki/high-confidence.md",
++          retrieval: "exact",
++        }),
++      ]),
++    );
++  });
++
+   it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
+     for (const workflowMode of ["direct", "branch_pr"] as const) {
+       const root = await mkGitRepoRoot();
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.ts b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+index 6ee988fbd..b1a91e188 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+@@ -41,7 +41,10 @@ import {
+   type AgentWorkOrderPreparationView,
+ } from "./agent-work-order-projection.js";
+ import { resolveRunnerBlueprintPlan } from "./task-run-blueprint-plan.js";
+-import { prepareTaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
++import {
++  prepareTaskKnowledgeRetrieval,
++  type SemanticRetrievalSelector,
++} from "./task-knowledge-retrieval.js";
+ 
+ export {
+   type AgentWorkOrderLegacyBriefProjection,
+@@ -147,6 +150,7 @@ export async function prepareAgentWorkOrder(opts: {
+   runner_command?: string;
+   execution_context?: ReadOnlyExecutionContext;
+   execution_profile?: ResolvedExecutionProfileRuntime;
++  semantic_selector?: SemanticRetrievalSelector;
+ }): Promise<AgentWorkOrderPreparationResult> {
+   const includeRunnerState = opts.include_runner_state;
+   const executionContext =
+@@ -213,6 +217,7 @@ export async function prepareAgentWorkOrder(opts: {
+       task_envelope: taskEnvelope,
+       blueprint,
+       repository_root: executionContext.repo.git_root,
++      semantic_selector: opts.semantic_selector,
+     });
+     const briefProjection = await buildAgentWorkOrderLegacyBriefProjection({
+       command_ctx: executionContext.command,
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval-query.ts b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval-query.ts
+index 9630577db..cf572ec3e 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval-query.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval-query.ts
+@@ -4,6 +4,7 @@ import type { KnowledgeRef, PreparedKnowledgeExcerpt } from "@agentplaneorg/core
+ 
+ import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
+ import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
++import type { SemanticRetrievalEscalationReceipt } from "./task-knowledge-semantic-escalation.js";
+ 
+ export const RETRIEVAL_LIMITS = {
+   max_query_terms: 24,
+@@ -69,6 +70,7 @@ export type TaskKnowledgeRetrievalReceipt = {
+   adapter_counts: Record<RetrievalAdapter, number>;
+   selected: { ref: string; retrieval: RetrievalAdapter; score: number; reasons: string[] }[];
+   omissions: ReceiptOmission[];
++  semantic_escalation: SemanticRetrievalEscalationReceipt;
+   digest: string;
+ };
+ 
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+index b9ff971ab..54353d3f9 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+@@ -19,11 +19,21 @@ import {
+   type RetrievalAdapter,
+   type TaskKnowledgeRetrieval,
+ } from "./task-knowledge-retrieval-query.js";
++import {
++  selectSemanticRetrievalCandidates,
++  type SemanticRetrievalSelector,
++} from "./task-knowledge-semantic-escalation.js";
+ 
+ export type {
+   TaskKnowledgeRetrieval,
+   TaskKnowledgeRetrievalReceipt,
+ } from "./task-knowledge-retrieval-query.js";
++export type {
++  SemanticRetrievalEscalationReceipt,
++  SemanticRetrievalSelector,
++  SemanticRetrievalSelectorResponse,
++  SemanticRetrievalSelectionWorkOrder,
++} from "./task-knowledge-semantic-escalation.js";
+ 
+ const MAX_STRUCTURED_FILE_BYTES = 2 * 1024 * 1024;
+ 
+@@ -323,6 +333,7 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
+   task_envelope: RunnerTaskContextEnvelope;
+   blueprint: BlueprintPlanArtifact;
+   repository_root: string;
++  semantic_selector?: SemanticRetrievalSelector;
+ }): Promise<TaskKnowledgeRetrieval> {
+   const [projection, index, dependencies] = await Promise.all([
+     readContextProjection(opts.repository_root),
+@@ -393,8 +404,28 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
+       });
+     }
+   }
++  const semanticSelection = await selectSemanticRetrievalCandidates({
++    candidates: materialized.map(({ candidate, ref }) => ({
++      ref: ref.ref,
++      digest: ref.digest,
++      kind: candidate.kind,
++      retrieval: candidate.retrieval,
++      score: candidate.score,
++      reasons: candidate.reasons,
++    })),
++    collected_candidate_count: ordered.length,
++    queries,
++    selector: opts.semantic_selector,
++  });
++  const materializedByIdentity = new Map(
++    materialized.map((entry) => [`${entry.ref.ref}\u0000${entry.ref.digest}`, entry]),
++  );
++  const selectedMaterialized = semanticSelection.candidates.flatMap((candidate) => {
++    const entry = materializedByIdentity.get(`${candidate.ref}\u0000${candidate.digest}`);
++    return entry ? [entry] : [];
++  });
+   const excerpts = await Promise.all(
+-    materialized.map(
++    selectedMaterialized.map(
+       async ({ ref }) =>
+         await prepareKnowledgeExcerpt({
+           repository_root: opts.repository_root,
+@@ -410,7 +441,7 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
+       .filter((excerpt) => excerpt.status === "included")
+       .map((excerpt) => `${excerpt.knowledge_ref.ref}\u0000${excerpt.knowledge_ref.digest}`),
+   );
+-  const knowledgeRefs = materialized.map(({ candidate, ref }, indexPosition) => {
++  const knowledgeRefs = selectedMaterialized.map(({ candidate, ref }, indexPosition) => {
+     const identity = `${ref.ref}\u0000${ref.digest}`;
+     const required =
+       indexPosition < RETRIEVAL_LIMITS.max_required_references && includedIdentities.has(identity);
+@@ -452,12 +483,13 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
+       alias: ordered.filter((candidate) => candidate.retrieval === "alias").length,
+       graph: ordered.filter((candidate) => candidate.retrieval === "graph").length,
+     },
+-    selected: materialized.map(({ candidate, ref }) => ({
++    selected: selectedMaterialized.map(({ candidate, ref }) => ({
+       ref: ref.ref,
+       retrieval: candidate.retrieval,
+       score: candidate.score,
+       reasons: candidate.reasons,
+     })),
++    semantic_escalation: semanticSelection.receipt,
+     omissions: omissions.toSorted(
+       (left, right) =>
+         (left.query ?? "").localeCompare(right.query ?? "") ||
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts b/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts
+new file mode 100644
+index 000000000..75a17dbba
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts
+@@ -0,0 +1,191 @@
++import { describe, expect, it, vi } from "vitest";
++
++import {
++  selectSemanticRetrievalCandidates,
++  type SemanticRetrievalSelectionCandidate,
++  type SemanticRetrievalSelectionWorkOrder,
++} from "./task-knowledge-semantic-escalation.js";
++
++function candidate(opts: {
++  id: string;
++  score?: number;
++  kind?: SemanticRetrievalSelectionCandidate["kind"];
++}): SemanticRetrievalSelectionCandidate {
++  return {
++    ref: `context/wiki/${opts.id}.md`,
++    digest: `sha256:${opts.id}`,
++    kind: opts.kind ?? "wiki",
++    retrieval: "exact",
++    score: opts.score ?? 1,
++    reasons: ["golden_fixture"],
++  };
++}
++
++function response(
++  workOrder: SemanticRetrievalSelectionWorkOrder,
++  selected = workOrder.candidates.slice(0, 1),
++) {
++  return {
++    schema_version: 1 as const,
++    kind: "task_knowledge_selection_result" as const,
++    candidate_set_digest: workOrder.candidate_set_digest,
++    selected: selected.map(({ ref, digest }) => ({ ref, digest })),
++    usage: { episode_count: 1, input_tokens: 120, output_tokens: 20 },
++  };
++}
++
++describe("selectSemanticRetrievalCandidates", () => {
++  it("keeps a high-confidence bounded retrieval deterministic without a selector episode", async () => {
++    const selector = vi.fn();
++    const result = await selectSemanticRetrievalCandidates({
++      candidates: [candidate({ id: "high-confidence" })],
++      collected_candidate_count: 1,
++      queries: [{ signals: ["path"] }],
++      selector,
++    });
++
++    expect(selector).not.toHaveBeenCalled();
++    expect(result.receipt).toMatchObject({
++      state: "not_requested",
++      work_order: null,
++      episode: { invoked: false, count: 0 },
++      comparison: {
++        baseline: { escalation_rate: 0, episode_count: 0 },
++        observed: { escalation_rate: 0, episode_count: 0 },
++      },
++    });
++    expect(result.candidates).toEqual([candidate({ id: "high-confidence" })]);
++  });
++
++  it.each([
++    {
++      name: "oversized candidate set",
++      candidates: Array.from({ length: 12 }, (_, index) => candidate({ id: `size-${index}` })),
++      collected_candidate_count: 13,
++      queries: [{ signals: ["path"] }],
++      reason: "candidate_set_oversized",
++    },
++    {
++      name: "low-confidence candidate set",
++      candidates: [candidate({ id: "low", score: 0.6 })],
++      collected_candidate_count: 1,
++      queries: [{ signals: ["task_intent"] }],
++      reason: "low_confidence",
++    },
++    {
++      name: "conflicting near-top domains",
++      candidates: [
++        candidate({ id: "wiki", score: 0.92, kind: "wiki" }),
++        candidate({ id: "source", score: 0.88, kind: "source" }),
++      ],
++      collected_candidate_count: 2,
++      queries: [{ signals: ["task_intent"] }],
++      reason: "conflicting_domains",
++    },
++    {
++      name: "broad synthesis signals",
++      candidates: [
++        candidate({ id: "one", kind: "wiki" }),
++        candidate({ id: "two", score: 0.8, kind: "source" }),
++        candidate({ id: "three", score: 0.7, kind: "entity" }),
++        candidate({ id: "four", score: 0.6, kind: "fact" }),
++      ],
++      collected_candidate_count: 4,
++      queries: [{ signals: ["path", "symbol", "tag", "acceptance"] }],
++      reason: "broad_synthesis",
++    },
++  ])("invokes exactly one bounded selector episode for $name", async (fixture) => {
++    const selector = vi.fn(async (workOrder: SemanticRetrievalSelectionWorkOrder) =>
++      response(workOrder, [workOrder.candidates.at(-1)!]),
++    );
++    const result = await selectSemanticRetrievalCandidates({
++      candidates: fixture.candidates,
++      collected_candidate_count: fixture.collected_candidate_count,
++      queries: fixture.queries,
++      selector,
++    });
++
++    expect(selector).toHaveBeenCalledTimes(1);
++    const workOrder = selector.mock.calls[0]?.[0];
++    expect(workOrder).toMatchObject({
++      kind: "task_knowledge_selection",
++      trigger: { reasons: expect.arrayContaining([fixture.reason]) },
++      authority: {
++        network: "deny",
++        max_selector_episodes: 1,
++        max_candidates: 12,
++        max_selected_references: 12,
++      },
++    });
++    expect(workOrder?.candidates).toHaveLength(fixture.candidates.length);
++    expect(result.receipt).toMatchObject({
++      state: "selected",
++      selected: { source: "semantic_selector" },
++      episode: { invoked: true, count: 1, total_tokens: 140 },
++      comparison: {
++        baseline: { escalation_rate: 0, episode_count: 0 },
++        observed: { escalation_rate: 1, episode_count: 1, total_tokens: 140 },
++      },
++      downstream_quality: { state: "not_observed" },
++    });
++    expect(result.candidates).toEqual([fixture.candidates.at(-1)]);
++  });
++
++  it.each([
++    {
++      name: "stale candidate set",
++      selector: async (workOrder: SemanticRetrievalSelectionWorkOrder) => ({
++        ...response(workOrder),
++        candidate_set_digest: "sha256:stale",
++      }),
++      failure: "candidate_set_stale",
++    },
++    {
++      name: "unknown candidate",
++      selector: async (workOrder: SemanticRetrievalSelectionWorkOrder) => ({
++        ...response(workOrder),
++        selected: [{ ref: "context/wiki/unknown.md", digest: "sha256:unknown" }],
++      }),
++      failure: "invalid_selection",
++    },
++    {
++      name: "selector failure",
++      selector: async () => {
++        throw new Error("provider unavailable");
++      },
++      failure: "selector_failed",
++    },
++  ])("falls back to deterministic retrieval after $name", async (fixture) => {
++    const deterministic = [candidate({ id: "fallback", score: 0.5 })];
++    const result = await selectSemanticRetrievalCandidates({
++      candidates: deterministic,
++      collected_candidate_count: 1,
++      queries: [{ signals: ["task_intent"] }],
++      selector: fixture.selector,
++    });
++
++    expect(result.candidates).toEqual(deterministic);
++    expect(result.receipt).toMatchObject({
++      state: "fallback",
++      selected: { source: "deterministic" },
++      episode: { invoked: true, count: 1 },
++      failure: { code: fixture.failure },
++    });
++  });
++
++  it("uses a typed deterministic fallback when no selector adapter is configured", async () => {
++    const deterministic = [candidate({ id: "unavailable", score: 0.5 })];
++    const result = await selectSemanticRetrievalCandidates({
++      candidates: deterministic,
++      collected_candidate_count: 1,
++      queries: [{ signals: ["task_intent"] }],
++    });
++
++    expect(result.candidates).toEqual(deterministic);
++    expect(result.receipt).toMatchObject({
++      state: "fallback",
++      episode: { invoked: false, count: 0 },
++      failure: { code: "selector_unavailable" },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts b/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts
+new file mode 100644
+index 000000000..f403fcfab
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts
+@@ -0,0 +1,493 @@
++import { createHash } from "node:crypto";
++
++import type { RetrievalAdapter, RetrievalSignal } from "./task-knowledge-retrieval-query.js";
++
++export const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
++  max_selector_episodes: 1,
++  max_candidates: 12,
++  max_selected_references: 12,
++  max_input_tokens: 2_048,
++  max_output_tokens: 512,
++  low_confidence_top_score: 0.7,
++  conflicting_domain_score_delta: 0.1,
++  broad_synthesis_signal_count: 4,
++  broad_synthesis_candidate_count: 4,
++  broad_synthesis_domain_count: 2,
++} as const;
++
++export type SemanticRetrievalEscalationReason =
++  | "candidate_set_oversized"
++  | "low_confidence"
++  | "conflicting_domains"
++  | "broad_synthesis";
++
++export type SemanticRetrievalSelectionCandidate = {
++  ref: string;
++  digest: string;
++  kind: "wiki" | "source" | "fact" | "entity" | "edge";
++  retrieval: RetrievalAdapter;
++  score: number;
++  reasons: string[];
++};
++
++export type SemanticRetrievalSelectionWorkOrder = {
++  schema_version: 1;
++  kind: "task_knowledge_selection";
++  selection_id: string;
++  candidate_set_digest: string;
++  trigger: {
++    reasons: SemanticRetrievalEscalationReason[];
++    inputs: {
++      collected_candidate_count: number;
++      materialized_candidate_count: number;
++      top_score: number | null;
++      near_top_domain_count: number;
++      materialized_domain_count: number;
++      distinct_query_signal_count: number;
++    };
++  };
++  authority: {
++    network: "deny";
++    allowed_tool_classes: ["knowledge_read", "report_result", "report_blocker"];
++    max_selector_episodes: number;
++    max_candidates: number;
++    max_selected_references: number;
++    max_input_tokens: number;
++    max_output_tokens: number;
++  };
++  candidates: SemanticRetrievalSelectionCandidate[];
++};
++
++export type SemanticRetrievalSelectorResponse = {
++  schema_version: 1;
++  kind: "task_knowledge_selection_result";
++  candidate_set_digest: string;
++  selected: { ref: string; digest: string }[];
++  usage?: {
++    episode_count?: number;
++    input_tokens?: number;
++    output_tokens?: number;
++  };
++};
++
++/**
++ * This callback is an invocation seam, not a provider integration. The caller
++ * owns any provider episode and must enforce the work-order authority before
++ * invoking it. Keeping the seam here prevents retrieval from creating a
++ * second task-run lifecycle or granting network authority to the task agent.
++ */
++export type SemanticRetrievalSelector = (
++  workOrder: SemanticRetrievalSelectionWorkOrder,
++) => Promise<SemanticRetrievalSelectorResponse>;
++
++type SelectorFailureCode =
++  | "selector_unavailable"
++  | "selector_failed"
++  | "candidate_set_stale"
++  | "invalid_selection"
++  | "selector_budget_exceeded";
++
++export type SemanticRetrievalEscalationReceipt = {
++  state: "not_requested" | "selected" | "fallback";
++  policy: {
++    version: 1;
++    inputs: SemanticRetrievalSelectionWorkOrder["trigger"]["inputs"];
++    thresholds: {
++      max_candidates: number;
++      low_confidence_top_score: number;
++      conflicting_domain_score_delta: number;
++      broad_synthesis_signal_count: number;
++      broad_synthesis_candidate_count: number;
++      broad_synthesis_domain_count: number;
++    };
++  };
++  work_order: SemanticRetrievalSelectionWorkOrder | null;
++  selected: {
++    source: "deterministic" | "semantic_selector";
++    references: { ref: string; digest: string }[];
++  };
++  episode: {
++    invoked: boolean;
++    count: 0 | 1;
++    input_tokens: number | null;
++    output_tokens: number | null;
++    total_tokens: number | null;
++  };
++  downstream_quality: {
++    state: "not_observed";
++    note: string;
++  };
++  comparison: {
++    baseline: {
++      escalation_rate: 0;
++      episode_count: 0;
++      total_tokens: null;
++      selected_reference_count: number;
++      downstream_quality_state: "not_observed";
++    };
++    observed: {
++      escalation_rate: 0 | 1;
++      episode_count: 0 | 1;
++      total_tokens: number | null;
++      selected_reference_count: number;
++      downstream_quality_state: "not_observed";
++    };
++  };
++  failure: { code: SelectorFailureCode } | null;
++};
++
++export type SemanticRetrievalSelectionResult = {
++  candidates: SemanticRetrievalSelectionCandidate[];
++  receipt: SemanticRetrievalEscalationReceipt;
++};
++
++function digest(value: unknown): string {
++  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
++}
++
++function domain(candidate: SemanticRetrievalSelectionCandidate): string {
++  return candidate.kind;
++}
++
++function signalCount(queries: { signals: RetrievalSignal[] }[]): number {
++  return new Set(queries.flatMap((query) => query.signals)).size;
++}
++
++function escalationReasons(opts: {
++  candidates: SemanticRetrievalSelectionCandidate[];
++  collected_candidate_count: number;
++  queries: { signals: RetrievalSignal[] }[];
++}): {
++  reasons: SemanticRetrievalEscalationReason[];
++  inputs: SemanticRetrievalSelectionWorkOrder["trigger"]["inputs"];
++} {
++  const topScore = opts.candidates[0]?.score ?? null;
++  const nearTopDomains = new Set(
++    topScore === null
++      ? []
++      : opts.candidates
++          .filter(
++            (candidate) =>
++              candidate.score >=
++              topScore - SEMANTIC_RETRIEVAL_SELECTION_LIMITS.conflicting_domain_score_delta,
++          )
++          .map(domain),
++  );
++  const distinctQuerySignalCount = signalCount(opts.queries);
++  const materializedDomainCount = new Set(opts.candidates.map(domain)).size;
++  const reasons: SemanticRetrievalEscalationReason[] = [];
++  if (opts.collected_candidate_count > SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_candidates) {
++    reasons.push("candidate_set_oversized");
++  }
++  if (
++    topScore !== null &&
++    topScore < SEMANTIC_RETRIEVAL_SELECTION_LIMITS.low_confidence_top_score
++  ) {
++    reasons.push("low_confidence");
++  }
++  if (nearTopDomains.size > 1) reasons.push("conflicting_domains");
++  if (
++    opts.candidates.length >= SEMANTIC_RETRIEVAL_SELECTION_LIMITS.broad_synthesis_candidate_count &&
++    materializedDomainCount >= SEMANTIC_RETRIEVAL_SELECTION_LIMITS.broad_synthesis_domain_count &&
++    distinctQuerySignalCount >= SEMANTIC_RETRIEVAL_SELECTION_LIMITS.broad_synthesis_signal_count
++  ) {
++    reasons.push("broad_synthesis");
++  }
++  return {
++    reasons,
++    inputs: {
++      collected_candidate_count: opts.collected_candidate_count,
++      materialized_candidate_count: opts.candidates.length,
++      top_score: topScore,
++      near_top_domain_count: nearTopDomains.size,
++      materialized_domain_count: materializedDomainCount,
++      distinct_query_signal_count: distinctQuerySignalCount,
++    },
++  };
++}
++
++function selectedReferences(candidates: SemanticRetrievalSelectionCandidate[]): {
++  ref: string;
++  digest: string;
++}[] {
++  return candidates.map(({ ref, digest: candidateDigest }) => ({ ref, digest: candidateDigest }));
++}
++
++function receipt(opts: {
++  state: SemanticRetrievalEscalationReceipt["state"];
++  inputs: SemanticRetrievalSelectionWorkOrder["trigger"]["inputs"];
++  work_order: SemanticRetrievalSelectionWorkOrder | null;
++  selected: SemanticRetrievalSelectionCandidate[];
++  source: SemanticRetrievalEscalationReceipt["selected"]["source"];
++  invoked: boolean;
++  usage?: { input_tokens: number | null; output_tokens: number | null };
++  failure?: SelectorFailureCode;
++}): SemanticRetrievalEscalationReceipt {
++  const inputTokens = opts.usage?.input_tokens ?? null;
++  const outputTokens = opts.usage?.output_tokens ?? null;
++  const totalTokens =
++    inputTokens === null && outputTokens === null ? null : (inputTokens ?? 0) + (outputTokens ?? 0);
++  const selected = selectedReferences(opts.selected);
++  return {
++    state: opts.state,
++    policy: {
++      version: 1,
++      inputs: opts.inputs,
++      thresholds: {
++        max_candidates: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_candidates,
++        low_confidence_top_score: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.low_confidence_top_score,
++        conflicting_domain_score_delta:
++          SEMANTIC_RETRIEVAL_SELECTION_LIMITS.conflicting_domain_score_delta,
++        broad_synthesis_signal_count:
++          SEMANTIC_RETRIEVAL_SELECTION_LIMITS.broad_synthesis_signal_count,
++        broad_synthesis_candidate_count:
++          SEMANTIC_RETRIEVAL_SELECTION_LIMITS.broad_synthesis_candidate_count,
++        broad_synthesis_domain_count:
++          SEMANTIC_RETRIEVAL_SELECTION_LIMITS.broad_synthesis_domain_count,
++      },
++    },
++    work_order: opts.work_order,
++    selected: { source: opts.source, references: selected },
++    episode: {
++      invoked: opts.invoked,
++      count: opts.invoked ? 1 : 0,
++      input_tokens: inputTokens,
++      output_tokens: outputTokens,
++      total_tokens: totalTokens,
++    },
++    downstream_quality: {
++      state: "not_observed",
++      note: "Selection provenance is recorded here; downstream task quality requires a separate evaluator observation.",
++    },
++    comparison: {
++      baseline: {
++        escalation_rate: 0,
++        episode_count: 0,
++        total_tokens: null,
++        selected_reference_count: opts.inputs.materialized_candidate_count,
++        downstream_quality_state: "not_observed",
++      },
++      observed: {
++        escalation_rate: opts.invoked ? 1 : 0,
++        episode_count: opts.invoked ? 1 : 0,
++        total_tokens: totalTokens,
++        selected_reference_count: selected.length,
++        downstream_quality_state: "not_observed",
++      },
++    },
++    failure: opts.failure ? { code: opts.failure } : null,
++  };
++}
++
++function isRecord(value: unknown): value is Record<string, unknown> {
++  return value !== null && typeof value === "object" && !Array.isArray(value);
++}
++
++function usageFrom(response: unknown):
++  | {
++      ok: true;
++      value: { input_tokens: number | null; output_tokens: number | null };
++    }
++  | {
++      ok: false;
++      failure: "invalid_selection" | "selector_budget_exceeded";
++    } {
++  if (!isRecord(response)) return { ok: false, failure: "invalid_selection" };
++  const usage = response.usage;
++  if (usage === undefined) return { ok: true, value: { input_tokens: null, output_tokens: null } };
++  if (!isRecord(usage)) return { ok: false, failure: "invalid_selection" };
++  const rawEpisodeCount = usage.episode_count;
++  const rawInputTokens = usage.input_tokens;
++  const rawOutputTokens = usage.output_tokens;
++  if (
++    (rawEpisodeCount !== undefined && typeof rawEpisodeCount !== "number") ||
++    (rawInputTokens !== undefined && typeof rawInputTokens !== "number") ||
++    (rawOutputTokens !== undefined && typeof rawOutputTokens !== "number")
++  ) {
++    return { ok: false, failure: "invalid_selection" };
++  }
++  const episodeCount = rawEpisodeCount ?? 1;
++  const inputTokens = rawInputTokens ?? null;
++  const outputTokens = rawOutputTokens ?? null;
++  const validCount = episodeCount === 1;
++  const validInput =
++    inputTokens === null ||
++    (Number.isSafeInteger(inputTokens) &&
++      inputTokens >= 0 &&
++      inputTokens <= SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_input_tokens);
++  const validOutput =
++    outputTokens === null ||
++    (Number.isSafeInteger(outputTokens) &&
++      outputTokens >= 0 &&
++      outputTokens <= SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_output_tokens);
++  return validCount && validInput && validOutput
++    ? { ok: true, value: { input_tokens: inputTokens, output_tokens: outputTokens } }
++    : { ok: false, failure: "selector_budget_exceeded" };
++}
++
++function selectedCandidates(opts: {
++  response: unknown;
++  work_order: SemanticRetrievalSelectionWorkOrder;
++}):
++  | { ok: true; value: SemanticRetrievalSelectionCandidate[] }
++  | {
++      ok: false;
++      failure: "candidate_set_stale" | "invalid_selection";
++    } {
++  if (!isRecord(opts.response)) return { ok: false, failure: "invalid_selection" };
++  if (typeof opts.response.candidate_set_digest !== "string") {
++    return { ok: false, failure: "invalid_selection" };
++  }
++  if (opts.response.candidate_set_digest !== opts.work_order.candidate_set_digest) {
++    return { ok: false, failure: "candidate_set_stale" };
++  }
++  if (
++    opts.response.schema_version !== 1 ||
++    opts.response.kind !== "task_knowledge_selection_result" ||
++    !Array.isArray(opts.response.selected) ||
++    opts.response.selected.length === 0 ||
++    opts.response.selected.length > opts.work_order.authority.max_selected_references ||
++    !opts.response.selected.every(
++      (item) => isRecord(item) && typeof item.ref === "string" && typeof item.digest === "string",
++    )
++  ) {
++    return { ok: false, failure: "invalid_selection" };
++  }
++  const byIdentity = new Map(
++    opts.work_order.candidates.map((candidate) => [
++      `${candidate.ref}\u0000${candidate.digest}`,
++      candidate,
++    ]),
++  );
++  const selectedReferences = opts.response.selected as { ref: string; digest: string }[];
++  const selected = selectedReferences.map((item) =>
++    byIdentity.get(`${item.ref}\u0000${item.digest}`),
++  );
++  if (selected.some((candidate) => !candidate)) return { ok: false, failure: "invalid_selection" };
++  const identities = selectedReferences.map((item) => `${item.ref}\u0000${item.digest}`);
++  if (new Set(identities).size !== identities.length)
++    return { ok: false, failure: "invalid_selection" };
++  return { ok: true, value: selected as SemanticRetrievalSelectionCandidate[] };
++}
++
++export async function selectSemanticRetrievalCandidates(opts: {
++  candidates: SemanticRetrievalSelectionCandidate[];
++  collected_candidate_count: number;
++  queries: { signals: RetrievalSignal[] }[];
++  selector?: SemanticRetrievalSelector;
++}): Promise<SemanticRetrievalSelectionResult> {
++  const deterministic = opts.candidates;
++  const escalation = escalationReasons(opts);
++  if (escalation.reasons.length === 0) {
++    return {
++      candidates: deterministic,
++      receipt: receipt({
++        state: "not_requested",
++        inputs: escalation.inputs,
++        work_order: null,
++        selected: deterministic,
++        source: "deterministic",
++        invoked: false,
++      }),
++    };
++  }
++  const candidateSetDigest = digest(
++    deterministic.map((candidate) => ({
++      ref: candidate.ref,
++      digest: candidate.digest,
++      retrieval: candidate.retrieval,
++      score: candidate.score,
++    })),
++  );
++  const workOrder: SemanticRetrievalSelectionWorkOrder = {
++    schema_version: 1,
++    kind: "task_knowledge_selection",
++    selection_id: `knowledge-selection-${candidateSetDigest.slice("sha256:".length, 24)}`,
++    candidate_set_digest: candidateSetDigest,
++    trigger: { reasons: escalation.reasons, inputs: escalation.inputs },
++    authority: {
++      network: "deny",
++      allowed_tool_classes: ["knowledge_read", "report_result", "report_blocker"],
++      max_selector_episodes: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_selector_episodes,
++      max_candidates: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_candidates,
++      max_selected_references: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_selected_references,
++      max_input_tokens: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_input_tokens,
++      max_output_tokens: SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_output_tokens,
++    },
++    candidates: deterministic,
++  };
++  if (!opts.selector) {
++    return {
++      candidates: deterministic,
++      receipt: receipt({
++        state: "fallback",
++        inputs: escalation.inputs,
++        work_order: workOrder,
++        selected: deterministic,
++        source: "deterministic",
++        invoked: false,
++        failure: "selector_unavailable",
++      }),
++    };
++  }
++  let response: unknown;
++  try {
++    response = await opts.selector(workOrder);
++  } catch {
++    return {
++      candidates: deterministic,
++      receipt: receipt({
++        state: "fallback",
++        inputs: escalation.inputs,
++        work_order: workOrder,
++        selected: deterministic,
++        source: "deterministic",
++        invoked: true,
++        failure: "selector_failed",
++      }),
++    };
++  }
++  const usage = usageFrom(response);
++  if (!usage.ok) {
++    return {
++      candidates: deterministic,
++      receipt: receipt({
++        state: "fallback",
++        inputs: escalation.inputs,
++        work_order: workOrder,
++        selected: deterministic,
++        source: "deterministic",
++        invoked: true,
++        failure: usage.failure,
++      }),
++    };
++  }
++  const selection = selectedCandidates({ response, work_order: workOrder });
++  if (!selection.ok) {
++    return {
++      candidates: deterministic,
++      receipt: receipt({
++        state: "fallback",
++        inputs: escalation.inputs,
++        work_order: workOrder,
++        selected: deterministic,
++        source: "deterministic",
++        invoked: true,
++        usage: usage.value,
++        failure: selection.failure,
++      }),
++    };
++  }
++  return {
++    candidates: selection.value,
++    receipt: receipt({
++      state: "selected",
++      inputs: escalation.inputs,
++      work_order: workOrder,
++      selected: selection.value,
++      source: "semantic_selector",
++      invoked: true,
++      usage: usage.value,
++    }),
++  };
++}

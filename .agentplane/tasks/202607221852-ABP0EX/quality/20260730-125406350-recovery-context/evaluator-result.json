@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The high-confidence integration fixture proves that exact bounded retrieval does not create a selector episode despite auxiliary query signals.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The semantic selector contract is bounded to materialized references and validates candidate-set freshness, identity, uniqueness, and token/episode limits before changing prepared evidence.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A future provider adapter must enforce the emitted work-order authority before invoking a model; this task intentionally supplies no second task-run lifecycle."
+  ]
+}

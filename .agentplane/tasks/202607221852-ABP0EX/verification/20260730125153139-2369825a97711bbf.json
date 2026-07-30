@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:2369825a97711bbfac45e885cf1e08ecce4391135fb42e8409b3e537f883ce42",
+  "implementation_sha": "ae57f3af8a46637818d16bcca69519bb77041aab",
+  "kind": "task_verification_record",
+  "note": "Verified c4348a3: 17 focused tests cover high-confidence zero escalation, four bounded trigger episodes, and stale/invalid/adapter-failure fallbacks; critical-cli 12 chunks, typecheck, and fast local CI passed. Receipt exposes baseline versus observed escalation and token cost; downstream quality remains explicitly not_observed pending evaluator evidence.",
+  "recorded_at": "2026-07-30T12:51:53.139Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run high-confidence bounded retrieval. Expected: zero semantic escalation.\n2. Run each trigger fixture. Expected: one bounded selector episode with explicit reason, authority, budget, and candidate refs.\n3. Return invalid/stale selections or fail the adapter. Expected: validation rejects them and deterministic fallback/typed blocker is preserved.\n4. Compare escalation rate, retrieval quality, and total episode/token cost to baseline.",
+  "scope_digest": "sha256:6e4919e898d950fe105c80a8320939d44efb9b2c088c01dd58c1de795ea93db4",
+  "task_id": "202607221852-ABP0EX",
+  "verification_command": "agentplane verify 202607221852-ABP0EX --ok --by TESTER",
+  "verifier": "TESTER"
+}

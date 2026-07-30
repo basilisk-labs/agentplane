@@ -6,14 +6,14 @@ Created: 2026-07-30T12:36:18.395Z
 
 - Task: `202607221852-ABP0EX`
 - Title: Add policy-gated semantic retrieval escalation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation`
 - Canonical task record: `.agentplane/tasks/202607221852-ABP0EX/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified c4348a3: 17 focused tests cover high-confidence zero escalation, four bounded trigger episodes, and stale/invalid/adapter-failure fallbacks; critical-cli 12 chunks, typecheck, and fast local CI passed. Receipt exposes baseline versus observed escalation and token cost; downstream quality remains explicitly not_observed pending evaluator evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

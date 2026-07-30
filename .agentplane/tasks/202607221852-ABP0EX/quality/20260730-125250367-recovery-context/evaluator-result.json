@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "High-confidence bounded retrieval stays selector-free; oversized, low-confidence, conflicting-domain, and broad-synthesis scenarios are separately calibrated.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125250367-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The selection work order carries one-episode, candidate, token, tool, and network-deny limits; response validation requires current digest, membership, uniqueness, and bounded usage.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125250367-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A future provider adapter must enforce the emitted work-order authority before invoking a model; this task intentionally provides the seam and does not create a second task-run lifecycle."
+  ]
+}

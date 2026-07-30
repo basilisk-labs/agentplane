@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-ABP0EX",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T12:54:06.554Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "ae57f3af8a46637818d16bcca69519bb77041aab",
+  "blueprint_digest": "f8cfacdace7675c365e1aab8b657954cf4646e57daf30492c758c5eb3db5e683",
+  "findings": [
+    "The high-confidence integration fixture proves that exact bounded retrieval does not create a selector episode despite auxiliary query signals.",
+    "The semantic selector contract is bounded to materialized references and validates candidate-set freshness, identity, uniqueness, and token/episode limits before changing prepared evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-ABP0EX/quality/20260730-125406350-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A future provider adapter must enforce the emitted work-order authority before invoking a model; this task intentionally supplies no second task-run lifecycle."
+  ],
+  "residual_risks": []
+}
