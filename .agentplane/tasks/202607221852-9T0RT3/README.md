@@ -4,7 +4,7 @@ title: "Build deterministic task knowledge retrieval"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +38,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "e6b89ac4410e24344f0ec04a4c3d80d2e2ebafce"
+  message: "🚧 9T0RT3 task: add deterministic task knowledge retrieval"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: deterministic retrieval prepares exact, FTS, alias, and graph evidence with bounded receipts; targeted retrieval test, typecheck, and lint passed."
 events:
   -
     type: "status"
@@ -51,8 +56,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-30T11:42:20.822Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: deterministic retrieval prepares exact, FTS, alias, and graph evidence with bounded receipts; targeted retrieval test, typecheck, and lint passed."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:59:23.864Z"
+doc_updated_at: "2026-07-30T11:42:20.822Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:

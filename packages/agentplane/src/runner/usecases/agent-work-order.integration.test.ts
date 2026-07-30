@@ -218,6 +218,11 @@ describe("AgentWorkOrder v2 surface integration", () => {
   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createPreparedTask(root);
+    const dependencyId = await createDoingRunnerTask({
+      root,
+      title: "Completed prerequisite",
+      plan_text: "Prepare the dependency output fixture.",
+    });
     await mkdir(path.join(root, "context", "wiki"), { recursive: true });
     await mkdir(path.join(root, ".agentplane", "context", "derived", "graph"), {
       recursive: true,
@@ -238,7 +243,9 @@ describe("AgentWorkOrder v2 surface integration", () => {
     await writeFile(
       path.join(root, ".agentplane", "context", "derived", "graph", "entities.jsonl"),
       `${JSON.stringify({ id: "payment-gateway", label: "Payment Gateway", aliases: ["Billing API"] })}\n` +
-        `${JSON.stringify({ id: "billing-ledger", label: "Billing Ledger" })}\n`,
+        `${JSON.stringify({ id: "billing-ledger", label: "Billing Ledger" })}\n` +
+        `${JSON.stringify({ id: "dependency-result", label: "Dependency Result Sentinel" })}\n` +
+        `${JSON.stringify({ id: "prior-finding", label: "Prior Finding Sentinel" })}\n`,
       "utf8",
     );
     await writeFile(
@@ -257,6 +264,13 @@ describe("AgentWorkOrder v2 surface integration", () => {
       parsed: { includeTasks: false, includeRaw: false, reset: true },
     });
     const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const dependency = await commandCtx.taskBackend.getTask(dependencyId);
+    expect(dependency).toBeTruthy();
+    await commandCtx.taskBackend.writeTask({
+      ...dependency!,
+      status: "DONE",
+      result_summary: "Dependency Result Sentinel",
+    });
     const task = await commandCtx.taskBackend.getTask(taskId);
     expect(task).toBeTruthy();
     await commandCtx.taskBackend.writeTask({
@@ -264,9 +278,20 @@ describe("AgentWorkOrder v2 surface integration", () => {
       title: "Build Payment Gateway retrieval",
       description:
         "Payment Gateway; use retrieval context/wiki/retrieval.md; missing context/wiki/not-present.md must be recorded, not fabricated.",
+      depends_on: [dependencyId],
       tags: ["retrieval", "market"],
+      quality_review: {
+        state: "pass",
+        provenance: "evaluator_supplied",
+        updated_at: "2026-07-30T00:00:00.000Z",
+        updated_by: "EVALUATOR",
+        note: "Prior finding fixture.",
+        evaluated_sha: null,
+        blueprint_digest: null,
+        evidence_refs: [],
+        findings: ["Prior Finding Sentinel"],
+      },
     });
-
     const prepare = async () =>
       requirePreparedAgentWorkOrder(
         await prepareAgentWorkOrder({
@@ -292,6 +317,14 @@ describe("AgentWorkOrder v2 surface integration", () => {
         }),
         expect.objectContaining({ ref: "context/wiki/retrieval.md", retrieval: "exact" }),
         expect.objectContaining({ ref: "context/wiki/fts-only.md", retrieval: "fts" }),
+        expect.objectContaining({
+          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=dependency-result",
+          retrieval: "alias",
+        }),
+        expect.objectContaining({
+          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=prior-finding",
+          retrieval: "alias",
+        }),
       ]),
     );
     expect(first.work_order.authority.allowed_tool_classes).toContain("knowledge_read");
