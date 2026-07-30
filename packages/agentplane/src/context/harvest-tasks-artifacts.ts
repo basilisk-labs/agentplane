@@ -4,9 +4,7 @@ import path from "node:path";
 import type { TaskData } from "../backends/task-backend.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { fileExists, isRecord, parseJsonlLines, readText } from "./context-utils.js";
-import { alreadyQueuedForExtractionUnchanged } from "./harvest-tasks-extraction.js";
 import { alreadyHarvestedUnchanged } from "./harvest-tasks-markers.js";
-import type { TaskSourceFingerprint } from "./harvest-tasks-markers.js";
 import {
   normalizeDateKey,
   normalizeTags,
@@ -73,27 +71,15 @@ export function selectTaskCandidates(
   return asTaskList(tasks).filter((task) => taskMatches(task, parsed));
 }
 
-export function selectTasks(
-  tasks: TaskData[],
-  parsed: ContextHarvestTasksParsed,
-  extractionFingerprints: ReadonlyMap<string, TaskSourceFingerprint> = new Map(),
-): HarvestTask[] {
+export function selectTasks(tasks: TaskData[], parsed: ContextHarvestTasksParsed): HarvestTask[] {
   const limit = parseLimit(parsed.limit);
   const selected = selectTaskCandidates(tasks, parsed)
-    .filter((task) =>
-      parsed.createExtractionTasks
-        ? !alreadyQueuedForExtractionUnchanged(task, parsed, extractionFingerprints.get(task.id))
-        : !alreadyHarvestedUnchanged(task, parsed),
-    )
+    .filter((task) => !alreadyHarvestedUnchanged(task, parsed))
     .toSorted((a, b) => a.id.localeCompare(b.id));
   return limit === null ? selected : selected.slice(0, limit);
 }
 
-export async function writeOutputs(
-  root: string,
-  output: HarvestOutput,
-  promote: boolean,
-): Promise<string[]> {
+export async function writeOutputs(root: string, output: HarvestOutput): Promise<string[]> {
   const changed: string[] = [];
   await mkdir(path.join(root, "context/raw/tasks"), { recursive: true });
   for (const row of output.evidence) {
@@ -105,6 +91,10 @@ export async function writeOutputs(
   if (await writeJsonStableIfChanged(path.join(root, output.reportPath), output.report)) {
     changed.push(output.reportPath);
   }
+  for (const proposal of output.proposals) {
+    const rel = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.json`;
+    if (await writeJsonStableIfChanged(path.join(root, rel), proposal)) changed.push(rel);
+  }
   if (
     await mergeJsonl(
       path.join(root, ".agentplane/context/derived/ingestion/tasks.jsonl"),
@@ -112,46 +102,6 @@ export async function writeOutputs(
     )
   ) {
     changed.push(".agentplane/context/derived/ingestion/tasks.jsonl");
-  }
-  if (
-    await mergeJsonl(path.join(root, ".agentplane/context/derived/facts/facts.jsonl"), output.facts)
-  ) {
-    changed.push(".agentplane/context/derived/facts/facts.jsonl");
-  }
-  if (
-    await mergeJsonl(
-      path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
-      output.entities,
-    )
-  ) {
-    changed.push(".agentplane/context/derived/graph/entities.jsonl");
-  }
-  if (
-    await mergeJsonl(path.join(root, ".agentplane/context/derived/graph/edges.jsonl"), output.edges)
-  ) {
-    changed.push(".agentplane/context/derived/graph/edges.jsonl");
-  }
-  if (
-    await mergeJsonl(
-      path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
-      output.provenance,
-    )
-  ) {
-    changed.push(".agentplane/context/derived/graph/provenance_edges.jsonl");
-  }
-  await mkdir(path.dirname(path.join(root, output.wikiPath)), { recursive: true });
-  if (await writeTextIfChanged(path.join(root, output.wikiPath), output.wikiProposal)) {
-    changed.push(output.wikiPath);
-  }
-  if (promote && output.report.promotion_gate.state === "promoted") {
-    await mkdir(path.dirname(path.join(root, output.promotedPath)), { recursive: true });
-    const promoted = output.wikiProposal.replace(
-      "promotion_state: proposal",
-      "promotion_state: semi-canonical",
-    );
-    if (await writeTextIfChanged(path.join(root, output.promotedPath), promoted)) {
-      changed.push(output.promotedPath);
-    }
   }
   return changed;
 }
@@ -164,17 +114,13 @@ export function renderText(
   return [
     "context harvest tasks",
     `- selected tasks: ${output.report.counts.selected_tasks}`,
-    `- facts: ${output.report.counts.facts}`,
-    `- entities: ${output.report.counts.entities}`,
-    `- edges: ${output.report.counts.edges}`,
-    `- stale candidates: ${output.report.counts.stale_candidates}`,
-    `- conflict candidates: ${output.report.counts.conflict_candidates}`,
-    `- promotion gate: ${output.report.promotion_gate.state}`,
-    `- extraction task batches: ${extraction?.planned ?? 0}`,
+    `- knowledge proposals: ${output.report.counts.proposals}`,
+    `- consolidation required: ${output.report.counts.consolidation_required}`,
+    `- selection gate: ${output.report.selection_gate.state}`,
+    `- CURATOR work orders: ${extraction?.planned ?? 0}`,
     `- created extraction tasks: ${extraction?.created.length ?? 0}`,
     ...(extraction?.created ?? []).map((item) => `  - ${item}`),
-    `- proposal: ${output.wikiPath}`,
-    `- promoted: ${output.report.promotion_gate.promoted_path ?? "not promoted"}`,
+    "- publication: CURATOR semantic result followed by CLI supervision only",
     `- changed paths: ${changed.length}`,
     ...changed.map((item) => `  - ${item}`),
   ].join("\n");
@@ -184,7 +130,7 @@ export async function readHarvestReport(filePath: string): Promise<HarvestReport
   try {
     const parsed = JSON.parse(await readFile(filePath, "utf8")) as unknown;
     if (!isRecord(parsed) || parsed.generated_by !== "context.harvest.tasks") return null;
-    if (!isRecord(parsed.promotion_gate) || !Array.isArray(parsed.source_refs)) return null;
+    if (!isRecord(parsed.selection_gate) || !Array.isArray(parsed.source_refs)) return null;
     return parsed as HarvestReport;
   } catch {
     return null;

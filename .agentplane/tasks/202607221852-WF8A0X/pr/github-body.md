@@ -22,12 +22,30 @@ RF-20: collect source-backed durable-knowledge candidates after tasks but publis
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T16:07:19.966Z
+- Updated: 2026-07-30T16:07:48.548Z
 - Branch: task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/context/ingest.mdx                            |  25 +-
+ docs/developer/local-context.mdx                   |  22 +-
+ docs/user/agents.mdx                               |   6 +-
+ docs/user/cli-reference.generated.mdx              |  22 +-
+ docs/user/commands.mdx                             |  20 +-
+ docs/user/local-context.mdx                        |  60 +-
+ .../src/commands/context/context-runner.ts         |   4 +-
+ .../src/commands/context/context.learn.spec.ts     |  24 +-
+ .../src/commands/context/context.spec.ts           |  32 +-
+ .../src/commands/context/harvest-tasks.test.ts     | 817 ++++++---------------
+ .../src/commands/context/harvest-tasks.ts          | 166 ++++-
+ packages/agentplane/src/context/doctor.ts          |   8 +-
+ .../src/context/harvest-tasks-artifacts.ts         |  80 +-
+ .../src/context/harvest-tasks-builders.ts          | 331 ++++-----
+ .../src/context/harvest-tasks-extraction.ts        | 117 +--
+ .../src/context/harvest-tasks-markers.ts           |  49 +-
+ .../agentplane/src/context/harvest-tasks-model.ts  |  70 +-
+ .../agentplane/src/context/ingest-task-pack.ts     |   2 +-
+ 18 files changed, 736 insertions(+), 1119 deletions(-)
 ```
 
 </details>

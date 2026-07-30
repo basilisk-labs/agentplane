@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { mkdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -5,10 +7,9 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { runTaskNewParsed, type TaskCreationResult } from "../task/new.js";
 import { fileExists, isRecord } from "./context-utils.js";
-import {
-  writeContextExtractionContract,
-  writeContextTaskCreationReceipt,
-} from "../../context/ingest-task-pack.js";
+import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { writeContextTaskPack } from "../../context/ingest-task-pack.js";
+import { contentTypeForPath, type ManifestEntry } from "../../context/ingest-manifest.js";
 import {
   buildOutput,
   renderText,
@@ -73,6 +74,43 @@ async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof b
   return changed;
 }
 
+async function buildTaskProposalSourceRows(
+  root: string,
+  taskIds: readonly string[],
+): Promise<ManifestEntry[]> {
+  const rows: ManifestEntry[] = [];
+  for (const taskId of taskIds) {
+    const candidates = [
+      { path: `.agentplane/tasks/${taskId}/README.md`, required: true },
+      { path: `.agentplane/tasks/${taskId}/acr.json`, required: false },
+    ];
+    for (const candidate of candidates) {
+      const absolute = path.join(root, candidate.path);
+      let content: Buffer;
+      let metadata: Awaited<ReturnType<typeof stat>>;
+      try {
+        [content, metadata] = await Promise.all([readFile(absolute), stat(absolute)]);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT" && !candidate.required) continue;
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Task knowledge proposal source is missing: ${candidate.path}`,
+        });
+      }
+      rows.push({
+        path: candidate.path,
+        sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+        size_bytes: content.byteLength,
+        mtime: metadata.mtime.toISOString(),
+        content_type: contentTypeForPath(candidate.path),
+        status: "new",
+      });
+    }
+  }
+  return rows;
+}
+
 async function createExtractionTasks(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -80,6 +118,7 @@ async function createExtractionTasks(opts: {
   output: ReturnType<typeof buildOutput>;
   parsed: ContextHarvestTasksParsed;
   sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
+  sourceRowsByTask: ReadonlyMap<string, ManifestEntry[]>;
   createTask?: typeof runTaskNewParsed;
 }) {
   const plans = buildExtractionTaskPlans(
@@ -89,7 +128,7 @@ async function createExtractionTasks(opts: {
   );
   const createTask = opts.createTask ?? runTaskNewParsed;
   const createdTaskIds: string[] = [];
-  const recoveryPaths: string[] = [];
+  const taskPackPaths: string[] = [];
   for (const plan of plans) {
     const created: TaskCreationResult = await createTask({
       ctx: opts.ctx,
@@ -99,19 +138,36 @@ async function createExtractionTasks(opts: {
       printTaskId: false,
     });
     const createdTaskId = created.task_id;
-    recoveryPaths.push(
-      await writeContextTaskCreationReceipt({
-        root: opts.ctx.resolvedProject.gitRoot,
-        result: created,
-      }),
-    );
-    await writeContextExtractionContract({
+    await writeContextTaskPack({
       root: opts.ctx.resolvedProject.gitRoot,
       taskId: createdTaskId,
+      sources: plan.source_task_ids.flatMap((sourceTaskId) => {
+        const rows = opts.sourceRowsByTask.get(sourceTaskId);
+        if (rows) return rows;
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Task knowledge proposal source set is missing: ${sourceTaskId}`,
+        });
+      }),
+      creation: created,
     });
+    const taskRoot = `.agentplane/tasks/${createdTaskId}`;
+    taskPackPaths.push(
+      `${taskRoot}/task-creation.json`,
+      `${taskRoot}/context-pack.md`,
+      `${taskRoot}/extraction-contract.json`,
+      `${taskRoot}/canonical-snapshot.json`,
+      `${taskRoot}/canonical-entity-catalog.json`,
+      `${taskRoot}/canonical-reconciliation-candidates.json`,
+      `${taskRoot}/source-set.lock.json`,
+      `${taskRoot}/source-spans.skeleton.jsonl`,
+      `${taskRoot}/expected-artifacts.json`,
+    );
     createdTaskIds.push(createdTaskId);
   }
   const sourceChangedPaths: string[] = [];
+  const selectionReceiptPaths: string[] = [];
   const queuedAt = new Date().toISOString();
   const latestTasks = await opts.ctx.taskBackend.listTasks();
   const latestById = new Map(
@@ -154,6 +210,36 @@ async function createExtractionTasks(opts: {
         },
       });
       sourceChangedPaths.push(`.agentplane/tasks/${task.id}/README.md`);
+      const proposal = opts.output.proposals.find(
+        (candidate) => candidate.source_task_id === sourceTaskId,
+      );
+      if (!proposal) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Cannot select task knowledge proposal for ${sourceTaskId}: proposal record is missing.`,
+        });
+      }
+      const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
+      await mkdir(path.dirname(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath)), {
+        recursive: true,
+      });
+      if (
+        await writeJsonStableIfChanged(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath), {
+          schema_version: 1,
+          kind: "task_knowledge_proposal_selection",
+          proposal_id: proposal.id,
+          source_task_id: proposal.source_task_id,
+          source_digest: proposal.source_digest,
+          source_refs: proposal.source_refs,
+          curator_task_id: extractionTaskId,
+          selected_at: queuedAt,
+          selected_by: "context.harvest.tasks",
+          publication_state: "not_published",
+        })
+      ) {
+        selectionReceiptPaths.push(receiptPath);
+      }
     }
   }
   return {
@@ -161,9 +247,9 @@ async function createExtractionTasks(opts: {
     taskIds: createdTaskIds,
     changedPaths: [
       ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
-      ...recoveryPaths,
-      ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/extraction-contract.json`),
+      ...taskPackPaths,
       ...sourceChangedPaths,
+      ...selectionReceiptPaths,
     ],
   };
 }
@@ -180,28 +266,60 @@ export async function cmdContextHarvestTasks(opts: {
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const root = ctx.resolvedProject.gitRoot;
   const allTasks = await readAllTasks(ctx);
+  if (opts.parsed.promote) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        "context harvest never promotes task knowledge directly. Create a CURATOR work order for one explicit --task selection and let CLI supervision materialize an accepted semantic result.",
+    });
+  }
+  if (opts.parsed.createExtractionTasks && opts.parsed.task.length !== 1) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        "context harvest CURATOR work orders require exactly one explicit --task selection. First write or preview proposals, then select one task id.",
+    });
+  }
   const extractionCandidates = opts.parsed.createExtractionTasks
     ? selectTaskCandidates(allTasks, opts.parsed)
     : [];
   const sourceFingerprints = opts.parsed.createExtractionTasks
     ? await taskExtractionSourceFingerprints(root, extractionCandidates)
     : new Map<string, TaskSourceFingerprint>();
-  const selected = selectTasks(allTasks, opts.parsed, sourceFingerprints);
+  const selected = selectTasks(allTasks, opts.parsed);
+  if (opts.parsed.createExtractionTasks && selected.length !== 1) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        "context harvest could not resolve the explicit task selection to one eligible knowledge proposal.",
+    });
+  }
   const output = buildOutput(opts.parsed, selected);
-  const shouldWrite = opts.parsed.writeProposals || opts.parsed.promote;
+  const shouldWrite = opts.parsed.writeProposals || opts.parsed.createExtractionTasks;
   const shouldCreateExtractionTasks = opts.parsed.createExtractionTasks;
 
   if (!opts.parsed.dryRun && (shouldWrite || shouldCreateExtractionTasks)) {
     await assertContextWorkspaceReady(root);
   }
+  const sourceRowsByTask =
+    opts.parsed.dryRun || !shouldCreateExtractionTasks
+      ? new Map<string, ManifestEntry[]>()
+      : new Map(
+          await Promise.all(
+            output.selected.map(
+              async (task) =>
+                [task.id, await buildTaskProposalSourceRows(root, [task.id])] as const,
+            ),
+          ),
+        );
 
   const written =
     opts.parsed.dryRun || !shouldWrite
       ? []
-      : [
-          ...(await writeOutputs(root, output, opts.parsed.promote)),
-          ...(await writeTaskMarkers(ctx, output)),
-        ];
+      : [...(await writeOutputs(root, output)), ...(await writeTaskMarkers(ctx, output))];
   const extraction =
     opts.parsed.dryRun || !shouldCreateExtractionTasks
       ? {
@@ -218,6 +336,7 @@ export async function cmdContextHarvestTasks(opts: {
           output,
           parsed: opts.parsed,
           sourceFingerprints,
+          sourceRowsByTask,
           createTask: opts.createTask,
         });
   const changed = [...new Set([...written, ...extraction.changedPaths])];
@@ -249,12 +368,5 @@ export async function cmdContextHarvestTasks(opts: {
     );
   }
 
-  if (opts.parsed.promote && output.report.promotion_gate.state === "blocked") {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `context harvest promotion blocked: ${output.report.promotion_gate.blockers.join("; ")}`,
-    });
-  }
   return 0;
 }

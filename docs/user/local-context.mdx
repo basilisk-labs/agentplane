@@ -262,50 +262,41 @@ new pages are discoverable without treating the index as a competing source of t
 
 ```bash
 agentplane context learn tasks --tag release --limit 20 --dry-run
-agentplane context learn tasks --tag branch_pr --batch-size 25
+agentplane context learn tasks --tag branch_pr --limit 25
 ap context harvest tasks --tag branch_pr --write-proposals
-ap context harvest tasks --task 202605100837-PJZW2E --write-proposals
+ap context harvest tasks --task 202605100837-PJZW2E --create-extraction-tasks
 ```
 
-`context learn tasks` turns completed task history into standard `CURATOR` extraction tasks. It
-scans matching tasks oldest-first and creates bounded batches controlled by `--batch-size`. Each
-generated task uses the task README and ACR as semantic sources and carries provenance, allowed
-outputs, stale-marker, conflict-marker, and prompt-module requirements.
+`context learn tasks` scans completed task history oldest-first and writes source-backed,
+unpublished knowledge proposal records. Supplying exactly one `--task` selects that proposal and
+creates one `CURATOR` semantic work order. A dry run only previews candidates.
 
 The advanced `ap context harvest tasks` command exposes the full context pipeline and keeps its
 stages separate:
 
 - source indexing: task README, comments, and commit metadata become raw evidence under
   `context/raw/tasks/**`
-- raw scaffold extraction: deterministic task-backed claims are written as proposal fact rows with
-  `source_refs`, confidence, status, stale markers, and conflict markers
-- semantic extraction: default non-write harvest runs create `CURATOR` tasks that extract wiki,
-  facts, and graph updates through the normal task lifecycle
-- wiki synthesis: a human-readable proposal is written under `context/wiki/proposals/task-harvest/**`
-- promotion: `--promote` writes a semi-canonical page only when the promotion gate has no blockers
+- proposal collection: CLI writes typed candidate records with exact source refs and mechanical
+  duplicate/consolidation evidence under `.agentplane/context/derived/proposals/task-knowledge/**`
+- explicit selection: one `--task` creates one CURATOR work order and a selection receipt; broad
+  collection never creates semantic work automatically
+- semantic decision: CURATOR reads the bounded source pack and returns one SGR describing durable,
+  duplicate, transient, conflicting, or rejected knowledge
+- supervised publication: CLI validates and applies an accepted SGR, then owns indexes, checks,
+  evaluator, ACR, finalization, and the apply receipt
 
 Use `--tag`, `--task`, `--since`, `--until`, `--after-task`, and `--limit` to advance gradually from
-older completed work toward newer changes. Human `learn tasks` never promotes or writes wiki
-proposals directly; it creates extraction tasks. Advanced `ap context harvest tasks
---write-proposals` writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
-`extensions.context_harvest` markers back into the harvested task READMEs. Those markers include the
-source digest, raw evidence path, report path, proposal path, promotion state, fact IDs, and source
-refs. Later broad runs skip tasks whose marker digest still matches the README evidence; explicit
-`--task` selection and `--promote` can still revisit a marked task when needed. `learn tasks` and
-advanced write modes require an initialized context workspace from `agentplane context init`;
-dry-run mode can be used before initialization.
+older completed work toward newer changes. `--promote` is rejected: task harvesting cannot publish
+semantic knowledge. Proposal and selection markers include the source digest, proposal path, source
+refs, work-order id, and publication state. Later broad runs skip unchanged source digests; an
+explicit `--task` can intentionally revisit a changed source. `learn tasks` and advanced write modes
+require an initialized context workspace from `agentplane context init`; dry-run mode can be used
+before initialization.
 
-Use `learn tasks`, the default advanced non-write mode, or explicit `--create-extraction-tasks` for
-older scripts when completed task history needs agentic semantic extraction rather than deterministic
-one-claim-per-task proposals. Each generated task carries an
-`extensions.agentplane.context` source pack with the selected task README paths, ACR paths, source
-digests, allowed outputs, provenance requirements, and a replaceable prompt module for extracting
-wiki pages, facts, entities, relations, stale markers, and conflict markers. This mode does not write
-`context/raw/tasks/*.json` by itself; the source of semantic truth is the task README and ACR
-evidence named in the generated task. It also marks source tasks with
-`extensions.context_task_extraction` so later broad runs do not create duplicate extraction tasks
-while the README digest is unchanged. Raw-ingestion markers from `--write-proposals` do not count as
-semantic extraction completion.
+Each selected work order carries an `extensions.agentplane.context` source pack with the exact task
+README and ACR paths, source digest, proposal id, allowed outputs, provenance requirements, and a
+replaceable prompt module. CURATOR may write its task-local SGR result only. It must not write
+`context/wiki/**`, facts, graph rows, indexes, evaluator output, ACR, or finalization artifacts.
 
 ## Verify task context
 
@@ -354,7 +345,8 @@ summaries. The local context layer is repository-owned; it is not a secrets vaul
 agentplane context init
 agentplane context learn changes
 agentplane context learn files <path>
-agentplane context learn tasks --tag <tag> --batch-size 25
+agentplane context learn tasks --tag <tag> --limit 25
+agentplane context learn tasks --task <task-id>
 agentplane context doctor
 agentplane context search "<query>"
 agentplane context show <ref>

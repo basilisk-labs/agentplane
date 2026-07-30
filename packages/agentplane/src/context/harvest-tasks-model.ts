@@ -40,36 +40,44 @@ export type TaskEvidence = {
   excerpts: string[];
 };
 
-export type HarvestFact = {
-  id: string;
-  kind: "completed_task_claim";
-  subject: string;
-  predicate: "recorded_outcome";
-  object: string;
-  claim: string;
-  status: "active" | "stale_candidate" | "conflict_candidate";
-  confidence: number;
+type TaskKnowledgeSignalKind =
+  | "task_pr_decision"
+  | "adr_or_public_api_candidate"
+  | "stable_workflow_rule_candidate"
+  | "recurring_evaluator_finding_candidate"
+  | "resolved_conflict_candidate";
+
+export type TaskKnowledgeSignal = {
+  kind: TaskKnowledgeSignalKind;
   source_refs: string[];
-  task_id: string;
-  tags: string[];
-  generated_by: "context.harvest.tasks";
-  promotion_state: "proposal";
-  stale_marker?: string;
-  conflict_markers?: string[];
+  evidence: string;
 };
 
-export type GraphRow = Record<string, unknown> & { id: string; source_refs: string[] };
+export type TaskKnowledgeProposal = {
+  schema_version: 1;
+  id: string;
+  kind: "task_knowledge_proposal";
+  state: "candidate" | "duplicate" | "consolidation_required";
+  publication_state: "not_published";
+  source_task_id: string;
+  source_digest: string;
+  source_fingerprint_version: 1;
+  title: string;
+  source_refs: string[];
+  signals: TaskKnowledgeSignal[];
+  dedupe: {
+    identity_key: string;
+    duplicate_of: string[];
+    consolidation_with: string[];
+  };
+  generated_at: string;
+  generated_by: "context.harvest.tasks";
+};
 
 export type HarvestOutput = {
   selected: HarvestTask[];
   evidence: TaskEvidence[];
-  facts: HarvestFact[];
-  entities: GraphRow[];
-  edges: GraphRow[];
-  provenance: GraphRow[];
-  wikiProposal: string;
-  wikiPath: string;
-  promotedPath: string;
+  proposals: TaskKnowledgeProposal[];
   reportPath: string;
   report: HarvestReport;
   markers: Record<string, TaskHarvestMarker>;
@@ -92,20 +100,14 @@ export type HarvestReport = {
   };
   counts: {
     selected_tasks: number;
-    facts: number;
-    entities: number;
-    edges: number;
-    provenance_edges: number;
-    stale_candidates: number;
-    conflict_candidates: number;
-    promotion_blockers: number;
+    proposals: number;
+    duplicate_proposals: number;
+    consolidation_required: number;
   };
-  promotion_gate: {
-    state: "proposal" | "promoted" | "blocked";
+  selection_gate: {
+    state: "ready" | "blocked";
     blockers: string[];
-    warnings: string[];
-    proposal_path: string;
-    promoted_path: string | null;
+    requires_explicit_task_selection: true;
   };
   source_refs: string[];
 };

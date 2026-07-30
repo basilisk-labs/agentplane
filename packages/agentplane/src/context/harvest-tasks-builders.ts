@@ -12,12 +12,12 @@ import {
   slug,
   stableHash,
   type ContextHarvestTasksParsed,
-  type GraphRow,
-  type HarvestFact,
   type HarvestOutput,
   type HarvestReport,
   type HarvestTask,
   type TaskEvidence,
+  type TaskKnowledgeProposal,
+  type TaskKnowledgeSignal,
 } from "./harvest-tasks-model.js";
 
 function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
@@ -45,156 +45,129 @@ function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
   };
 }
 
-function buildFact(row: TaskEvidence, conflicts: Map<string, string[]>): HarvestFact {
-  const duplicateIds = conflicts.get(normalizeClaim(row.title)) ?? [];
-  const staleMarker =
-    row.commit?.hash || row.excerpts.length > 0
-      ? undefined
-      : "Task lacks commit hash and extracted body evidence; review before promotion.";
-  const conflictMarkers =
-    duplicateIds.length > 1
-      ? [`Similar completed task title found in: ${duplicateIds.join(", ")}`]
-      : undefined;
-  return {
-    id: `task_fact_${row.id}`,
-    kind: "completed_task_claim",
-    subject: `task:${row.id}`,
-    predicate: "recorded_outcome",
-    object: row.title,
-    claim: `${row.id} recorded completed work: ${row.title}`,
-    status: conflictMarkers ? "conflict_candidate" : staleMarker ? "stale_candidate" : "active",
-    confidence: conflictMarkers ? 0.55 : staleMarker ? 0.6 : 0.82,
-    source_refs: row.source_refs,
-    task_id: row.id,
-    tags: row.tags,
-    generated_by: "context.harvest.tasks",
-    promotion_state: "proposal",
-    stale_marker: staleMarker,
-    conflict_markers: conflictMarkers,
-  };
+function sourceText(row: TaskEvidence): string {
+  return [row.title, ...row.excerpts, row.tags.join(" ")].join("\n").toLowerCase();
 }
 
-function buildGraph(evidence: TaskEvidence[], facts: HarvestFact[]) {
-  const entityRows = new Map<string, GraphRow>();
-  const edges: GraphRow[] = [];
-  const provenance: GraphRow[] = [];
-  for (const row of evidence) {
-    entityRows.set(`task:${row.id}`, {
-      id: `task:${row.id}`,
-      kind: "task",
-      label: row.title,
-      status: "active",
-      task_id: row.id,
+function buildSignals(row: TaskEvidence): TaskKnowledgeSignal[] {
+  const text = sourceText(row);
+  const signals: TaskKnowledgeSignal[] = [
+    {
+      kind: "task_pr_decision",
       source_refs: row.source_refs,
-      generated_by: "context.harvest.tasks",
-    });
-    for (const tag of row.tags) {
-      entityRows.set(`tag:${tag}`, {
-        id: `tag:${tag}`,
-        kind: "concept",
-        label: tag,
-        status: "active",
-        source_refs: row.source_refs,
-        generated_by: "context.harvest.tasks",
-      });
-      edges.push({
-        id: `edge_${stableHash(`${row.id}:tag:${tag}`)}`,
-        relation: "mentions",
-        from: `task:${row.id}`,
-        to: `tag:${tag}`,
-        status: "active",
-        source_refs: row.source_refs,
-        generated_by: "context.harvest.tasks",
-      });
-    }
-  }
-  for (const fact of facts) {
-    provenance.push({
-      id: `prov_${stableHash(fact.id)}`,
-      relation: "supports",
-      target: fact.id,
-      source: fact.source_refs[0] ?? "",
-      source_refs: fact.source_refs,
-      generated_by: "context.harvest.tasks",
+      evidence:
+        "Completed task record and its task/PR decision evidence are available for CURATOR review.",
+    },
+  ];
+  if (
+    row.tags.some((tag) => ["adr", "api", "public-api"].includes(tag)) ||
+    /\badr\b|public api|public interface/u.test(text)
+  ) {
+    signals.push({
+      kind: "adr_or_public_api_candidate",
+      source_refs: row.source_refs,
+      evidence:
+        "Task metadata contains an ADR or public-interface signal; this is not an asserted API or decision.",
     });
   }
-  return { entities: [...entityRows.values()], edges, provenance };
+  if (
+    row.tags.includes("workflow") ||
+    row.mutation_scope === "workflow" ||
+    /workflow rule|workflow contract|lifecycle rule/u.test(text)
+  ) {
+    signals.push({
+      kind: "stable_workflow_rule_candidate",
+      source_refs: row.source_refs,
+      evidence:
+        "Task metadata contains a workflow signal; CURATOR must decide whether it is durable and reusable.",
+    });
+  }
+  if (/recurring evaluator finding|recurring finding/u.test(text)) {
+    signals.push({
+      kind: "recurring_evaluator_finding_candidate",
+      source_refs: row.source_refs,
+      evidence:
+        "Task evidence mentions a recurring evaluator finding; no recurrence is inferred by the CLI.",
+    });
+  }
+  if (/resolved conflict|conflict resolved/u.test(text)) {
+    signals.push({
+      kind: "resolved_conflict_candidate",
+      source_refs: row.source_refs,
+      evidence:
+        "Task evidence mentions a resolved conflict; CURATOR must preserve uncertainty or competing evidence when present.",
+    });
+  }
+  return signals;
 }
 
-function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], report: HarvestReport) {
-  const sourceRefs = [...new Set(evidence.flatMap((row) => row.source_refs))].slice(0, 40);
-  const lines = [
-    "---",
-    "aliases:",
-    '  - "Completed task history harvest"',
-    "tags:",
-    "  - agentplane/context",
-    "  - agentplane/task-history",
-    "cssclasses:",
-    "  - agentplane-context",
-    "agentplane_context:",
-    "  schema_version: 1",
-    "  artifact_type: wiki_page",
-    `  canonical_id: "wiki.task_harvest.${stableHash(report.promotion_gate.proposal_path)}"`,
-    '  title: "Completed task history harvest"',
-    "  modality: observation",
-    "  epistemic_status: sourced_claim",
-    "  visibility: project",
-    "  source_refs:",
-    ...sourceRefs.map((ref) => `    - ${JSON.stringify(ref)}`),
-    "  claims: []",
-    "  graph_refs:",
-    "    entities: []",
-    "    edges: []",
-    "  conflicts: []",
-    "  updated_by: context.harvest.tasks",
-    "generated_by: context.harvest.tasks",
-    "promotion_state: proposal",
-    "source_refs:",
-    ...sourceRefs.map((ref) => `  - ${JSON.stringify(ref)}`),
-    "---",
-    "",
-    "# Completed task raw proposal scaffold",
-    "",
-    "This page is a raw proposal scaffold generated from completed task evidence. Semantic wiki,",
-    "fact, and graph extraction belongs to CURATOR tasks by default. Promote only after reviewing",
-    "the gate report, conflict markers, stale markers, and source references.",
-    "Use [[Context glossary]] for canonical task-history terms when a maximum-assimilation",
-    "workspace provides the glossary page.",
-    "",
-    "## Promotion gate",
-    "",
-    `- State: ${report.promotion_gate.state}`,
-    `- Blockers: ${report.promotion_gate.blockers.length}`,
-    `- Warnings: ${report.promotion_gate.warnings.length}`,
-    "",
-    "## Scaffold claims",
-    "",
-  ];
-  for (const fact of facts) {
-    lines.push(
-      `### ${fact.task_id}`,
-      "",
-      `- Claim: ${fact.claim}`,
-      `- Status: ${fact.status}`,
-      `- Confidence: ${fact.confidence}`,
-      `- Tags: ${fact.tags.join(", ") || "none"}`,
-      `- source_refs: ${fact.source_refs.join(", ")}`,
-      "",
-    );
-    if (fact.stale_marker) lines.push(`- Stale marker: ${fact.stale_marker}`, "");
-    if (fact.conflict_markers) {
-      for (const marker of fact.conflict_markers) lines.push(`- Conflict marker: ${marker}`);
-      lines.push("");
-    }
+export function taskKnowledgeProposalId(row: Pick<TaskEvidence, "id" | "text_digest">): string {
+  return `task-knowledge-${slug(row.id)}-${stableHash(row.text_digest)}`;
+}
+
+function buildProposals(evidence: TaskEvidence[], now: string): TaskKnowledgeProposal[] {
+  const candidates = evidence.map((row) => {
+    const signals = buildSignals(row);
+    return {
+      row,
+      id: taskKnowledgeProposalId(row),
+      identityKey: stableHash(
+        JSON.stringify({
+          title: normalizeClaim(row.title),
+          signals: signals.map((signal) => signal.kind),
+        }),
+      ),
+      signals,
+    };
+  });
+  const byIdentity = new Map<string, string[]>();
+  for (const candidate of candidates) {
+    byIdentity.set(candidate.identityKey, [
+      ...(byIdentity.get(candidate.identityKey) ?? []),
+      candidate.id,
+    ]);
   }
-  lines.push(
-    "## Sources",
-    "",
-    ...sourceRefs.map((ref, index) => `${index + 1}. [${ref}](${ref})`),
-    "",
-  );
-  return `${lines.join("\n").trim()}\n`;
+  const bySourceDigest = new Map<string, string[]>();
+  for (const candidate of candidates) {
+    bySourceDigest.set(candidate.row.text_digest, [
+      ...(bySourceDigest.get(candidate.row.text_digest) ?? []),
+      candidate.id,
+    ]);
+  }
+  return candidates.map(({ row, id, identityKey, signals }) => {
+    const related = (byIdentity.get(identityKey) ?? []).filter((candidateId) => candidateId !== id);
+    const sourceDuplicates = (bySourceDigest.get(row.text_digest) ?? []).filter(
+      (candidateId) => candidateId !== id,
+    );
+    const duplicateOf = sourceDuplicates.filter((candidateId) => candidateId < id);
+    return {
+      schema_version: 1,
+      id,
+      kind: "task_knowledge_proposal",
+      state:
+        duplicateOf.length > 0
+          ? "duplicate"
+          : related.length > 0
+            ? "consolidation_required"
+            : "candidate",
+      publication_state: "not_published",
+      source_task_id: row.id,
+      source_digest: row.text_digest,
+      source_fingerprint_version: 1,
+      title: row.title,
+      source_refs: row.source_refs,
+      signals,
+      dedupe: {
+        identity_key: identityKey,
+        duplicate_of: duplicateOf,
+        consolidation_with: related.filter(
+          (candidateId) => !sourceDuplicates.includes(candidateId),
+        ),
+      },
+      generated_at: now,
+      generated_by: "context.harvest.tasks",
+    };
+  });
 }
 
 function reportSlug(opts: ContextHarvestTasksParsed): string {
@@ -208,33 +181,15 @@ function reportSlug(opts: ContextHarvestTasksParsed): string {
 
 function buildReport(opts: {
   parsed: ContextHarvestTasksParsed;
-  facts: HarvestFact[];
+  proposals: TaskKnowledgeProposal[];
   evidence: TaskEvidence[];
-  entities: GraphRow[];
-  edges: GraphRow[];
-  provenance: GraphRow[];
-  wikiPath: string;
-  promotedPath: string;
   now: string;
 }): HarvestReport {
-  const warnings: string[] = [];
   const blockers: string[] = [];
-  if (opts.evidence.length === 0) blockers.push("No completed tasks matched the harvest filters.");
-  for (const fact of opts.facts) {
-    if (fact.source_refs.length === 0) blockers.push(`${fact.id}: missing source refs`);
-    if (fact.status === "conflict_candidate") {
-      blockers.push(`${fact.id}: conflict marker requires manual review before promotion`);
-    }
-    if (fact.status === "stale_candidate")
-      warnings.push(`${fact.id}: stale marker requires review`);
+  if (opts.proposals.length === 0) blockers.push("No completed tasks matched the harvest filters.");
+  for (const proposal of opts.proposals) {
+    if (proposal.source_refs.length === 0) blockers.push(`${proposal.id}: missing source refs`);
   }
-  const state = opts.parsed.promote
-    ? blockers.length > 0
-      ? "blocked"
-      : "promoted"
-    : blockers.length > 0
-      ? "blocked"
-      : "proposal";
   return {
     schema_version: 1,
     generated_by: "context.harvest.tasks",
@@ -251,27 +206,24 @@ function buildReport(opts: {
     },
     counts: {
       selected_tasks: opts.evidence.length,
-      facts: opts.facts.length,
-      entities: opts.entities.length,
-      edges: opts.edges.length,
-      provenance_edges: opts.provenance.length,
-      stale_candidates: opts.facts.filter((fact) => fact.status === "stale_candidate").length,
-      conflict_candidates: opts.facts.filter((fact) => fact.status === "conflict_candidate").length,
-      promotion_blockers: blockers.length,
+      proposals: opts.proposals.length,
+      duplicate_proposals: opts.proposals.filter((proposal) => proposal.state === "duplicate")
+        .length,
+      consolidation_required: opts.proposals.filter(
+        (proposal) => proposal.state === "consolidation_required",
+      ).length,
     },
-    promotion_gate: {
-      state,
+    selection_gate: {
+      state: blockers.length > 0 ? "blocked" : "ready",
       blockers,
-      warnings,
-      proposal_path: opts.wikiPath,
-      promoted_path: state === "promoted" ? opts.promotedPath : null,
+      requires_explicit_task_selection: true,
     },
     source_refs: [...new Set(opts.evidence.flatMap((row) => row.source_refs))],
   };
 }
 
-function reportPathForWiki(wikiPath: string): string {
-  return `.agentplane/context/derived/reports/task-harvest-${stableHash(wikiPath)}.json`;
+function reportPathFor(parsed: ContextHarvestTasksParsed): string {
+  return `.agentplane/context/derived/reports/task-knowledge-proposals-${stableHash(reportSlug(parsed))}.json`;
 }
 
 export function buildOutput(
@@ -280,27 +232,14 @@ export function buildOutput(
 ): HarvestOutput {
   const now = new Date().toISOString();
   const evidence = selected.map((task) => buildEvidence(task, now));
-  const claims = new Map<string, string[]>();
-  for (const row of evidence) {
-    const key = normalizeClaim(row.title);
-    claims.set(key, [...(claims.get(key) ?? []), row.id]);
-  }
-  const conflicts = new Map([...claims].filter(([, ids]) => ids.length > 1));
-  const facts = evidence.map((row) => buildFact(row, conflicts));
-  const graph = buildGraph(evidence, facts);
-  const wikiPath = `context/wiki/proposals/task-harvest/${reportSlug(parsed)}.md`;
-  const promotedPath = `context/wiki/task-harvest/${reportSlug(parsed)}.md`;
-  const report = buildReport({ parsed, facts, evidence, ...graph, wikiPath, promotedPath, now });
-  const reportPath = reportPathForWiki(wikiPath);
-  const markers = buildTaskHarvestMarkers({ evidence, facts, reportPath, wikiPath, report });
+  const proposals = buildProposals(evidence, now);
+  const reportPath = reportPathFor(parsed);
+  const report = buildReport({ parsed, proposals, evidence, now });
+  const markers = buildTaskHarvestMarkers({ evidence, proposals, reportPath, report });
   return {
     selected,
     evidence,
-    facts,
-    ...graph,
-    wikiProposal: buildWikiProposal(evidence, facts, report),
-    wikiPath,
-    promotedPath,
+    proposals,
     reportPath,
     report,
     markers,

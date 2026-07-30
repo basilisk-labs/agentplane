@@ -31,23 +31,23 @@ it no longer owns the SQLite file.
 
 ## Task-history extraction
 
-`context harvest tasks` uses `CURATOR` extraction tasks as the default non-write semantic layer for
-completed task history. `--create-extraction-tasks` remains an explicit compatibility flag for
-scripts that want to name the action.
-It does not treat the deterministic `context/raw/tasks/*.json` snapshot as the semantic source.
-Instead, it creates standard `CURATOR` tasks whose context extension names the source task READMEs,
-ACR files, source digests, allowed outputs, and a replaceable prompt module.
+`context harvest tasks` first produces source-backed, unpublished proposal records for completed
+task history. It does not infer facts, graph edges, wiki content, or semantic identity from task
+text. A CURATOR work order is created only after exactly one explicit `--task` selection; its context
+extension names the proposal, task README, ACR file, source digest, allowed outputs, and a
+replaceable prompt module.
 
 The generated prompt module uses the normal prompt-module schema with a stable address:
 
 ```text
-framework/template/generated.artifact/context_task_extraction/v1
+framework/template/generated.artifact/context_task_knowledge_proposal/v2
 ```
 
-This keeps task-history extraction improvable through the same module/mutation model as other
-Agentplane prompts. The generated task remains the execution boundary: a CURATOR agent reads the
-source pack, searches existing wiki/facts/graph rows, writes sourced updates, records stale/conflict
-markers, and verifies through context gates before promotion.
+This keeps task-history assimilation improvable through the same module/mutation model as other
+Agentplane prompts. CURATOR is the semantic execution boundary: it reads the bounded source pack,
+reconciles the candidate, and returns one SGR. The CLI supervisor remains the mechanical boundary:
+it validates and materializes an accepted SGR, reindexes, evaluates, records ACR, and writes the
+apply receipt. A CURATOR task must not edit wiki/facts/graph artifacts or perform lifecycle gates.
 
 ## Assimilation blueprint contract
 
