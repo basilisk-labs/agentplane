@@ -4,7 +4,7 @@ title: "Recover diverged task PR identities safely"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed"
+  message: "✨ MGCHE6 task: safely recover diverged PR identity"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: recover the exact provider/local task-branch identity mismatch without losing the local rework commit or performing automatic semantic resolution."
+  -
+    author: "CODER"
+    body: "Implementation: committed be17d45d4163; added explicit diverged-head recovery that archives the unpublished local SHA, validates the provider SHA after fetch, and resets only the clean dedicated task worktree; full ci:contract passed."
 events:
   -
     type: "status"
@@ -39,9 +44,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: recover the exact provider/local task-branch identity mismatch without losing the local rework commit or performing automatic semantic resolution."
+  -
+    type: "status"
+    at: "2026-07-30T02:11:56.828Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: committed be17d45d4163; added explicit diverged-head recovery that archives the unpublished local SHA, validates the provider SHA after fetch, and resets only the clean dedicated task worktree; full ci:contract passed."
+  -
+    type: "status"
+    at: "2026-07-30T02:12:17.722Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
 doc_version: 3
-doc_updated_at: "2026-07-30T01:51:17.231Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-30T02:12:17.722Z"
+doc_updated_by: "CODER"
 description: "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner."
 sections:
   Summary: |-
