@@ -1,10 +1,11 @@
 ---
 id: "202607300112-48RH1X"
 title: "Authorize deterministic RF-04 qualification rebuild evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -51,11 +52,16 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Frozen historical replay is projected from immutable envelopes, evidence, and baseline harness; current driver and dependency drift remains excluded from qualification-only projection."
-commit: null
+commit:
+  hash: "d8b93f77c2cbf3fcb08564a3e13452c5d7773565"
+  message: "🔗 48RH1X task: record qualification rebuild PR"
 comments:
   -
     author: "CODER"
     body: "Start: implement the constrained deterministic RF-04 qualification rebuild target in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -70,8 +76,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Qualification rebuild evidence is restricted to the deterministic task-local path and preserves the RF-04 non-publication gate."
+  -
+    type: "status"
+    at: "2026-07-30T01:30:38.549Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T01:28:59.759Z"
+doc_updated_at: "2026-07-30T01:30:38.550Z"
 doc_updated_by: "CODER"
 description: "Repair the RF-04 replay capture safety contract so a qualification packet can rebuild frozen envelopes into its exact task-local evidence file without a provider driver, retry, replacement capture, or mutable baseline write. Keep all non-qualification capture targets restricted."
 sections:
@@ -140,6 +153,9 @@ sections:
       Impact: Current workspace evolution otherwise makes a valid frozen replay artifact impossible to rebuild and blocks the beta.1 packet before its candidate gate.
       Resolution: Qualification mode accepts only a fixed task-local output, preserves no-driver/no-replace controls, and reconstructs using the frozen baseline harness after envelope consistency checks.
 extensions:
+  implementation_commit:
+    hash: "f94ad71e8b08d3d18fa96c6736749b389159a893"
+    message: "🛡️ 48RH1X task: constrain RF-04 qualification rebuild evidence"
   workflow_route_baseline:
     start_head_sha: "dd7d77beb33517ce7e208935925fa58ce66d4029"
     version: 1

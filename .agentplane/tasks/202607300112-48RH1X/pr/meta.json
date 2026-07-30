@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1e2e8e9c0220c0c642af652d394af970eaf5284777f7234d2e5a1ac07ab575a3",
   "pr_number": 4676,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4676",
+  "pre_merge_closure": {
+    "basis_commit": "d8b93f77c2cbf3fcb08564a3e13452c5d7773565",
+    "branch": "task/202607300112-48RH1X/authorize-deterministic-rf-04-qualification-rebu",
+    "pr_number": 4676,
+    "recorded_at": "2026-07-30T01:30:38.602Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607300112-48RH1X",
