@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -66,7 +66,7 @@ quality_review:
     - "The hotspot constraint is satisfied structurally: task-knowledge-retrieval.ts is 475 lines and task-knowledge-retrieval-query.ts is 287 lines, both below the enforced 600-line limit."
     - "The focused integration fixture still covers deterministic selection through exact, FTS, alias, and graph adapters; typecheck, ESLint, formatting, and hotspot validation pass on the split head."
 commit:
-  hash: "244a6a82fa6ff3b96858cb06e819ab7648eba618"
+  hash: "ac3525f509876231900d5b6612669c7d194fa870"
   message: "🚧 9T0RT3 task: refresh quality review"
 comments:
   -
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -126,8 +129,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T12:22:19.180Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:09:35.259Z"
+doc_updated_at: "2026-07-30T12:22:19.181Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:
@@ -190,8 +200,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "911c4c95343a4de1b2ca89f0c75cbd40e3dfb01a"
-    message: "🚧 9T0RT3 task: format deterministic retrieval"
+    hash: "7c9808336038299d70a28870ec02012571d079e6"
+    message: "🚧 9T0RT3 task: split retrieval query planner"
   workflow_route_baseline:
     start_head_sha: "2872d82ce71ecfa658dc9686ed1d36bb101f9278"
     version: 1
