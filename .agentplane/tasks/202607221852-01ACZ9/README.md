@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "Reviewed commit 25b7e93d: lint:core now covers the exact hosted failure and passes alongside format, schema, architecture, type, and focused request/lifecycle/lock checks. No behavioral or API delta beyond eliminating the unused binding."
 commit:
-  hash: "f0a8d6a102ae39f973b0eaf1731a2f01bdab2011"
-  message: "🧪 01ACZ9 task: record format-fix quality review"
+  hash: "52eed65c71da590e3c2ed02aa65cfe23e64745f8"
+  message: "🧪 01ACZ9 task: record lint-fix quality review"
 comments:
   -
     author: "CODER"
@@ -92,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Hosted verify-static lint failure identified an unused local validator import left after moving response validation to the neutral response module. Removed the unused import. Local format, lint:core, schemas, architecture, type, and focused request/lifecycle/lock checks pass."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -167,8 +170,15 @@ events:
     at: "2026-07-30T15:37:07.271Z"
     author: "CODER"
     body: "Hosted verify-static lint failure identified an unused local validator import left after moving response validation to the neutral response module. Removed the unused import. Local format, lint:core, schemas, architecture, type, and focused request/lifecycle/lock checks pass."
+  -
+    type: "status"
+    at: "2026-07-30T15:38:45.692Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T15:37:07.271Z"
+doc_updated_at: "2026-07-30T15:38:45.692Z"
 doc_updated_by: "CODER"
 description: "RF-22: let EXECUTOR/EVALUATOR request a query, reason, kind/scope, and blocking flag; let CLI return digest-valid refs/excerpts under round and token limits with escalation on repeated gaps."
 sections:
@@ -405,8 +415,8 @@ sections:
       Resolution: Reuse an owner-verified cross-process lock without time-based eviction, retain dead-owner recovery, and return a bounded round-0 escalation when the reservation wait expires.
 extensions:
   implementation_commit:
-    hash: "33887675818a9d372fdab802499a82320eb6290f"
-    message: "🧹 01ACZ9 task: format knowledge request imports"
+    hash: "25b7e93d17a7c0ca870e759c4e2d4e55891d0d7d"
+    message: "🐛 01ACZ9 task: remove unused response validator import"
   workflow_route_baseline:
     start_head_sha: "1432ec85ec7ff015df754622d2c8e452930461ca"
     version: 1
