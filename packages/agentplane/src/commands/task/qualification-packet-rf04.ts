@@ -93,8 +93,7 @@ type ReplayMetricSnapshot = {
 
 const RF04_CURRENT_REBUILD_FILE = "rf04-current-rebuild.v1.json";
 const RF04_CAPTURE_SCRIPT = "scripts/bench/capture-agent-efficiency-replay.mjs";
-const RF04_CANDIDATE_EVIDENCE_FILE =
-  "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
+const RF04_CANDIDATE_EVIDENCE_FILE = "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
 const RF04_CANDIDATE_EVIDENCE_KIND = "agentplane.rf04.qualification_candidate_evidence";
 const SHA1_PATTERN = /^[a-f0-9]{40}$/u;
 const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
@@ -224,10 +223,7 @@ export async function readQualificationRf04CandidateMeasurement(opts: {
     label: "RF-04 candidate evidence",
   });
   const document = parseCandidateEvidence(evidence.raw);
-  if (
-    document.schema_version !== 1 ||
-    document.kind !== RF04_CANDIDATE_EVIDENCE_KIND
-  ) {
+  if (document.schema_version !== 1 || document.kind !== RF04_CANDIDATE_EVIDENCE_KIND) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "RF-04 candidate evidence has an unsupported schema or kind.",
@@ -269,13 +265,13 @@ export async function readQualificationRf04CandidateMeasurement(opts: {
   const candidateCoverage = requiredRecord(candidate.coverage, "candidate coverage");
   const candidateProfile = requiredRecord(candidate.runtime_profile, "candidate runtime profile");
   const baselineProfile = requiredRecord(baseline.runtime_profile, "baseline runtime profile");
-  const runtimeComparison = requiredRecord(
-    measurement.runtime_comparison,
-    "runtime comparison",
-  );
+  const runtimeComparison = requiredRecord(measurement.runtime_comparison, "runtime comparison");
   const subjectSha = requiredSha1(candidate.subject_sha, "candidate.subject_sha");
   const baselineSubjectSha = requiredSha1(baseline.subject_sha, "baseline.subject_sha");
-  const replayRuns = requiredNumber(candidateCoverage.replay_runs, "candidate coverage replay_runs");
+  const replayRuns = requiredNumber(
+    candidateCoverage.replay_runs,
+    "candidate coverage replay_runs",
+  );
   const scenarios = requiredNumber(candidateCoverage.scenarios, "candidate coverage scenarios");
   const providerEpisodes = requiredNumber(
     candidateActual.provider_episodes,

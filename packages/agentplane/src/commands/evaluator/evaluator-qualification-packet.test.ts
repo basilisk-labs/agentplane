@@ -25,8 +25,7 @@ import {
   prepareTypedReview,
 } from "./evaluator-test-helpers.js";
 
-const CANDIDATE_EVIDENCE_PATH =
-  "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
+const CANDIDATE_EVIDENCE_PATH = "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
 
 function canonicalSha256(value: unknown): `sha256:${string}` {
   return `sha256:${createHash("sha256")
@@ -164,11 +163,9 @@ describe("evaluator qualification packet", () => {
     await execFileAsync("git", ["commit", "-m", "test: cross-runtime RF-04 evidence"], {
       cwd: root,
     });
-    const { stdout: crossRuntimeShaOutput } = await execFileAsync(
-      "git",
-      ["rev-parse", "HEAD"],
-      { cwd: root },
-    );
+    const { stdout: crossRuntimeShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
     await expect(
       readQualificationRf04CandidateMeasurement({
         gitRoot: root,
@@ -176,7 +173,10 @@ describe("evaluator qualification packet", () => {
       }),
     ).rejects.toThrow("requires an exact matched runtime profile");
 
-    await writeCandidateEvidence(root, candidateEvidenceDocument({ candidateSubjectSha: "invalid" }));
+    await writeCandidateEvidence(
+      root,
+      candidateEvidenceDocument({ candidateSubjectSha: "invalid" }),
+    );
     await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: invalid RF-04 candidate SHA"], {
       cwd: root,
