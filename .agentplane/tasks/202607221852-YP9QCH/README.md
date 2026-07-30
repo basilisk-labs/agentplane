@@ -2,10 +2,10 @@
 id: "202607221852-YP9QCH"
 title: "Build source-driven canonical reconciliation candidates"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "The CLI emits reconciliation evidence only; semantic_decision_owner remains CURATOR and no identity merge decision is synthesized."
     - "The reviewed candidate provenance includes RF-17 and the strict compatibility check verifies the generated artifact boundary and CURATOR ownership."
 commit:
-  hash: "24cb5a3ab574d8d2db2da71ca6ca3841ac825014"
-  message: "🚧 YP9QCH task: ratchet reconciliation compatibility"
+  hash: "ae5a7a51f17509cd75f2233bb2f95d05219ed6e9"
+  message: "🔎 YP9QCH task: refresh quality review"
 comments:
   -
     author: "CODER"
@@ -92,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Compatibility candidate ratcheted for the canonical reconciliation artifact; local compatibility, focused context tests, build, lint, and diff checks pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -179,8 +182,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch."
+  -
+    type: "status"
+    at: "2026-07-30T10:20:42.943Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:19:15.936Z"
+doc_updated_at: "2026-07-30T10:20:42.945Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
@@ -389,6 +399,9 @@ sections:
       Impact: Hosted verify-routed can accept the reviewed additive context contract instead of treating it as unrecorded drift.
       Resolution: Updated only the v0.7 reviewed candidate, strict ratchet checker, and candidate pin test.
 extensions:
+  implementation_commit:
+    hash: "4b4ce38d33cfd6af44c81eae3227f6829d18f393"
+    message: "📝 YP9QCH task: record compatibility rework"
   workflow_route_baseline:
     start_head_sha: "e9f2cbe94440b925b16f04da815cd21628812161"
     version: 1
