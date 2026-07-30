@@ -1,0 +1,15 @@
+{
+  "details": "Focused qualification-packet tests passed (5/5); current-head evidence probe confirms 50 replay runs, 10 scenarios, 55 provider episodes, verdict=fail, exact failures latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms, decision=do_not_publish. W03 no-provider cache validation completed against b58705432c46df612a89348ef28ea268fdcc2b04 and correctly returned its expected non-zero failed-gate status without provider retry. bun run test:critical and bun run ci:contract passed.",
+  "digest": "sha256:a362661c5dc43575676a50890492129859f8056b19085453ed2551a605566ba4",
+  "implementation_sha": "3b97bb9b977af418df3c9df4067fb19dddd7eb43",
+  "kind": "task_verification_record",
+  "note": "F3 binds immutable RF-04 candidate evidence to qualification packets and records the failed matched-runtime result as do_not_publish.",
+  "recorded_at": "2026-07-30T00:45:35.680Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused qualification-packet and RF-04 candidate tests. Expected: a packet requires commit-owned evidence and rejects absent, tampered, cross-runtime, or candidate-SHA-mismatched data.\n2. Run the deterministic no-provider candidate evidence check against W03 subject b58705432c46df612a89348ef28ea268fdcc2b04 and Codex 0.146.0-alpha.3.1. Expected: it validates 50 runs and 55 episodes, then retains the two declared latency failures without retrying any provider call.\n3. Build a beta.1 qualification packet from the committed failed evidence. Expected: it exposes exact failure IDs and a do-not-publish/rework decision; it cannot claim beta.1 pass.\n4. Run bun run ci:contract. Expected: the repository contract passes with the new packet lineage and tests.",
+  "scope_digest": "sha256:9a12204d021ed89bfd0779a84fdf0be37909015aa3e4f10aa288d35b02ba323a",
+  "task_id": "202607300021-F3CYKN",
+  "verification_command": "agentplane task verify ok 202607300021-F3CYKN --ok --by TESTER",
+  "verifier": "TESTER"
+}

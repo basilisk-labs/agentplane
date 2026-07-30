@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300021-F3CYKN-baec07f4740421b2542bb361",
+  "prepared_at": "2026-07-30T00:46:35.291Z",
+  "task": {
+    "id": "202607300021-F3CYKN",
+    "revision": 7,
+    "objective": "Bind RF-04 candidate evidence to the beta.1 qualification packet\n\nMake the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run test:critical",
+      "- In scope: Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candidate and matched-runtime bridge evidence, expose its verdict and failed thresholds to the evaluator, and reject absent, cross-runtime, or tampered evidence. Preserve the observed W03 failure as a do-not-publish decision; do not retry provider capture or weaken thresholds.\n- Out of scope: unrelated refactors not required for \"Bind RF-04 candidate evidence to the beta.1 qualification packet\".",
+      "1. Inspect the completed W03 immutable measurement and define the minimal commit-owned candidate evidence contract: reviewed product SHA, candidate runtime profile, matched bridge identity, 50-run/55-episode coverage, normalized metric values, comparison thresholds/failure IDs, verdict, and stable digests. Preserve a failed candidate as evidence, not as an error to erase.\n2. Extend the beta.1 qualification packet and evaluator-facing lineage so it consumes only that committed evidence and rejects missing, tampered, cross-runtime, or unreviewed-SHA inputs. A failed candidate must produce an explicit do-not-publish/rework decision; it must never be represented as a passing beta.1 gate.\n3. Add focused tests with a committed fixture covering valid failed evidence, missing evidence, digest tampering, runtime mismatch, and a candidate SHA mismatch. Do not issue provider calls, change frozen thresholds, or retry W03.\n4. Run focused qualification/RF-04 tests, the deterministic no-provider evidence validation, and bun run ci:contract. Record residual limitations: the existing latency samples are non-interleaved and success subsets differ, so the comparison blocks beta.1 but is not causal attribution.",
+      "1. Run focused qualification-packet and RF-04 candidate tests. Expected: a packet requires commit-owned evidence and rejects absent, tampered, cross-runtime, or candidate-SHA-mismatched data.\n2. Run the deterministic no-provider candidate evidence check against W03 subject b58705432c46df612a89348ef28ea268fdcc2b04 and Codex 0.146.0-alpha.3.1. Expected: it validates 50 runs and 55 episodes, then retains the two declared latency failures without retrying any provider call.\n3. Build a beta.1 qualification packet from the committed failed evidence. Expected: it exposes exact failure IDs and a do-not-publish/rework decision; it cannot claim beta.1 pass.\n4. Run bun run ci:contract. Expected: the repository contract passes with the new packet lineage and tests."
+    ]
+  },
+  "evaluated_sha": "3b97bb9b977af418df3c9df4067fb19dddd7eb43",
+  "diff_base_sha": "3a15147b76962e5547061a519d0ad51d79a74d7f",
+  "blueprint_digest": "c921e86bb24deb9a98bc1866c9d98819f4085a1e79a57ea0b5553576c07ef2f1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300021-F3CYKN/README.md",
+      "sha256": "sha256:3d781f26e2f5ebcf287074d27c4723cf737ff01dd7b1024b1b9fb3274f47aced",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300021-F3CYKN/quality/20260730-004635291-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:cfc87895d35e91d8f12337de4873c4805a194e46eaabe68ccaa503bb420b6e68",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300021-F3CYKN/quality/20260730-004635291-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:654e47d7dff00329182a94175e7a9cc8339544e5c3ad59ad98e9ed93ab92aa09",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300021-F3CYKN/quality/20260730-004635291-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d6380301fe6f283fafcecae67ddc5246bd87d0c8d975f1355471bacea921ab74",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

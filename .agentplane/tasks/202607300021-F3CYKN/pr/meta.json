@@ -3,14 +3,22 @@
   "branch": "task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual",
   "created_at": "2026-07-30T00:24:17.976Z",
   "diffstat_sha256": "sha256:95669f747d5ce55ef7eccd13611e7a3b63347ee4294726b3ebf9ba75b8962bf6",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-30T00:45:35.680Z",
+  "last_verified_diffstat_sha256": "sha256:95669f747d5ce55ef7eccd13611e7a3b63347ee4294726b3ebf9ba75b8962bf6",
   "pr_number": 4675,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4675",
+  "pre_merge_closure": {
+    "basis_commit": "3b97bb9b977af418df3c9df4067fb19dddd7eb43",
+    "branch": "task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual",
+    "pr_number": 4675,
+    "recorded_at": "2026-07-30T00:47:12.284Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607300021-F3CYKN",
   "updated_at": "2026-07-30T00:25:08.421Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

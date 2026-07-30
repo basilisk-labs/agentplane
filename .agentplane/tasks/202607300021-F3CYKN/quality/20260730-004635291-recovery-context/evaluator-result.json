@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The reviewed parser reads the evidence blob at the reviewed SHA, validates its canonical digest, exact 50-run/10-scenario/55-episode coverage, matched runtime profile, runtime-bridge baseline, comparison failure IDs, and internally consistent verdict.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300021-F3CYKN/quality/20260730-004635291-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The packet exposes candidate_measurement and deterministically maps the retained failed verdict to qualification_decision=do_not_publish; focused tests cover failed-valid, missing, cross-runtime, tampered, and invalid-candidate-SHA inputs.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300021-F3CYKN/quality/20260730-004635291-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300021-F3CYKN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T00:46:35.401Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "3b97bb9b977af418df3c9df4067fb19dddd7eb43",
+  "blueprint_digest": "c921e86bb24deb9a98bc1866c9d98819f4085a1e79a57ea0b5553576c07ef2f1",
+  "findings": [
+    "The reviewed parser reads the evidence blob at the reviewed SHA, validates its canonical digest, exact 50-run/10-scenario/55-episode coverage, matched runtime profile, runtime-bridge baseline, comparison failure IDs, and internally consistent verdict.",
+    "The packet exposes candidate_measurement and deterministically maps the retained failed verdict to qualification_decision=do_not_publish; focused tests cover failed-valid, missing, cross-runtime, tampered, and invalid-candidate-SHA inputs."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300021-F3CYKN/quality/20260730-004635291-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
