@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607302012-FCYR88",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T20:37:35.166Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2",
+  "blueprint_digest": "9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2",
+  "findings": [
+    "No blocking defect found in the reviewed source diff. The added tests cover both the advanced-base topology and the prior equal-base regression."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

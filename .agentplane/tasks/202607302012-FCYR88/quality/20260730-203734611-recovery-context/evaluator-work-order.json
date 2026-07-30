@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607302012-FCYR88-3d42d01123f90b45f5c5b29d",
+  "prepared_at": "2026-07-30T20:37:34.611Z",
+  "task": {
+    "id": "202607302012-FCYR88",
+    "revision": 8,
+    "objective": "Unblock protected-base conflict rework after main advancement\n\nRepair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.",
+    "acceptance_criteria": [
+      "bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.\n- Out of scope: unrelated refactors not required for \"Unblock protected-base conflict rework after main advancement\".",
+      "1. Reproduce the protected-base base-advancement state using a current provider head, INTEGRATOR handoff, queue rework state, and advanced local main. 2. Change only conflict-route eligibility/preparation so current provider-base handoffs either yield the formal adoption receipt or a bounded semantic-rework packet; CLI must not auto-rebase, auto-merge, force-push, or choose conflict hunks. 3. Add focused coverage for current provider-base and legacy absent-base handoffs, including stale-token rejection. 4. Run the declared focused test, typecheck, critical suite, record verifier/evaluator evidence, and integrate through the normal PR queue.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2",
+  "diff_base_sha": "ce7af971c0609eed73710cd239a3f2897ae3bd7e",
+  "blueprint_digest": "9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607302012-FCYR88/README.md",
+      "sha256": "sha256:f1fe1086d5801bf18255c237d0e4fece01b5ea0c102ea5957631d96c1fbd09ba",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:f1748400dc9446daf93c2552a14240f250c07bf957ed37be2e9ada46fd8affc9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:106e986e1ea80c0f9352fb24886fa95219a7894ea9874765b38b53d8795b1eff",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:5ffa1b2841c143dfc2098600b807ce9191f6f1422eb50adf02cd8daa4061f981",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
