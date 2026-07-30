@@ -133,7 +133,7 @@ async function sourceTerms(
   try {
     text = await readFile(path.join(root, source.path), "utf8");
   } catch {
-    return { markdownHeadings: [], structuredFields: [], basename };
+    return { markdownHeadings: [], structuredFields: [], basename: null };
   }
   const markdownHeadings =
     source.content_type === "text/markdown"

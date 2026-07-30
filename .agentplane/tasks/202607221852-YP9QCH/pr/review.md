@@ -30,12 +30,12 @@ Created: 2026-07-30T09:44:33.829Z
 
 ```text
  .../src/commands/context/release-readiness.test.ts |   4 +-
- .../src/context/ingest-task-pack.test.ts           | 227 ++++++++-
+ .../src/context/ingest-task-pack.test.ts           | 239 +++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
  .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
  packages/agentplane/src/context/ingest-task.ts     |   5 +-
  .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
- 6 files changed, 777 insertions(+), 68 deletions(-)
+ 6 files changed, 789 insertions(+), 68 deletions(-)
 ```
 
 </details>

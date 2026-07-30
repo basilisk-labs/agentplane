@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The read failure branch returns basename instead of no term, so a vanished source path can create stale candidate evidence.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Unreadable manifest entry produces no candidate term or candidate group."
+  ],
+  "hidden_assumptions": [
+    "A source path remains evidence after its content cannot be read."
+  ],
+  "recovery_context": "Return basename null from the read failure path and add the unreadable-source regression beside the deleted-source fixture."
+}
