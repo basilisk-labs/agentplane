@@ -27,7 +27,7 @@ targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T20:13:04.252Z
+- Updated: 2026-07-30T20:23:18.010Z
 - Branch: task/202607302012-FCYR88/protected-base-conflict-rework
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
