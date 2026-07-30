@@ -1,7 +1,7 @@
  .../src/commands/context/release-readiness.test.ts |   4 +-
- .../src/context/ingest-task-pack.test.ts           | 215 ++++++++-
+ .../src/context/ingest-task-pack.test.ts           | 227 ++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
  .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
  packages/agentplane/src/context/ingest-task.ts     |   5 +-
  .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
- 6 files changed, 765 insertions(+), 68 deletions(-)
+ 6 files changed, 777 insertions(+), 68 deletions(-)

@@ -127,7 +127,7 @@ async function sourceTerms(
       source.path.toLowerCase().endsWith(".jsonl")
     )
   ) {
-    return { markdownHeadings: [], structuredFields: [], basename };
+    return { markdownHeadings: [], structuredFields: [], basename: null };
   }
   let text: string;
   try {

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-YP9QCH-724f7e7e0066b5c09270b8b6",
+  "prepared_at": "2026-07-30T10:01:22.509Z",
+  "task": {
+    "id": "202607221852-YP9QCH",
+    "revision": 9,
+    "objective": "Build source-driven canonical reconciliation candidates\n\nRF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: source-derived query terms, candidate fusion from FTS/aliases/graph/page families, deterministic scoring/reasons, bounded additional search, index digest, full-catalog compatibility, and entity-resolution fixture metrics.\n- Out of scope: deciding semantic identity in CLI; CURATOR remains authoritative.",
+      "1. Extract deterministic candidate queries from source spans and structured terms.\n2. Gather FTS, alias, graph-neighbour, and page-family candidates.\n3. Score/dedupe with explicit reasons and bind to the index digest.\n4. Provide bounded additional search when evidence is insufficient.\n5. Compare fixture resolution coverage and eliminate alphabetical bias.",
+      "1. Rebuild candidates twice from the same source/index. Expected: identical ordering, reasons, scores, refs, and digest.\n2. Use fixtures whose correct entity is beyond the old first-50 slice. Expected: the source-driven candidate set includes it without scanning an arbitrary alphabetical prefix.\n3. Inspect semantic application. Expected: CLI supplies candidates/evidence only; CURATOR supplies the identity decision and rationale.\n4. Run reconciliation/context tests and report fixture accuracy."
+    ]
+  },
+  "evaluated_sha": "18e8d9f30ffefb7f0cb0024f685ffc6ae141aa18",
+  "diff_base_sha": "e9f2cbe94440b925b16f04da815cd21628812161",
+  "blueprint_digest": "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-YP9QCH/README.md",
+      "sha256": "sha256:781128965806b82e449f6c8282599fa5ef5770a82c83910b2ec179c9b253abfe",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:bb379f84d9d80711398a75eb97e7ea255da13e440dba23f12c9ccef0c598809e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:4bce1b28754a0c0b0611b9e8646d5f6b766a683b7b356a49da40ce90d090286f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:e96fa208fb97e1d0087ccba508bf5ec6f11c021aa2b4f578eebf1bef08ce6a1c",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
