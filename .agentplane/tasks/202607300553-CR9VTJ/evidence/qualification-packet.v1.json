@@ -18,7 +18,7 @@
           },
           "pr_number": 4596,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fdd390c49302b81eb559743d445abf9d70e5ce57",
+          "task_artifact_commit": "a2ea0bcc67b5e2238cc1c1553f7acc05bc76f411",
           "task_document": {
             "path": ".agentplane/tasks/202607221838-SD1W93/README.md",
             "sha256": "sha256:36bf87f7617f2b2424327e5d2fd3159c7abcb67bb55a67747d02243f4e20f6ad"
@@ -49,7 +49,7 @@
           },
           "pr_number": 4629,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fdd390c49302b81eb559743d445abf9d70e5ce57",
+          "task_artifact_commit": "a2ea0bcc67b5e2238cc1c1553f7acc05bc76f411",
           "task_document": {
             "path": ".agentplane/tasks/202607260532-9M7RNH/README.md",
             "sha256": "sha256:1a0f6de3ddfc3e74556018fe4f745b9e6a039b09b6529b6bd5099654c44465ff"
@@ -80,7 +80,7 @@
           },
           "pr_number": 4670,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fdd390c49302b81eb559743d445abf9d70e5ce57",
+          "task_artifact_commit": "a2ea0bcc67b5e2238cc1c1553f7acc05bc76f411",
           "task_document": {
             "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
             "sha256": "sha256:e236c7c7d3d978146b8df072bc99fa6fb9ed7b5c4ce1e0743490ac7089bb7504"
@@ -112,10 +112,10 @@
       "202607291148-1F9GZD"
     ]
   },
-  "digest": "sha256:55c9974604b8bc2c6b398b46ef8b8a4edaa4dbf50127eb03c68bff968799fa59",
-  "implementation_sha": "fdd390c49302b81eb559743d445abf9d70e5ce57",
+  "digest": "sha256:13d57c561e16bda4c04db0bc96c59eeed71e6519d74448870d9724542462b786",
+  "implementation_sha": "a2ea0bcc67b5e2238cc1c1553f7acc05bc76f411",
   "kind": "task_qualification_packet",
-  "prepared_at": "2026-07-30T06:02:43.118Z",
+  "prepared_at": "2026-07-30T06:21:39.206Z",
   "rf04": {
     "candidate_measurement": {
       "baseline_runtime_profile": {
@@ -2557,22 +2557,28 @@
   "verification": {
     "checks": [
       {
-        "command": "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
-        "evidence": "20 tests passed; qualification fixture retains the sealed failed candidate decision.",
+        "command": "node -e beta1-successor-decision-contract",
+        "evidence": "beta.2 depends on 202607300553-CR9VTJ, legacy 202607221908-MR9EA9 is BLOCKED, decision=do_not_publish, exact two latency failures retained, live_provider_measurement=not_run_by_packet_builder.",
         "result": "pass",
-        "scope": "RF-04 replay timing partition and beta qualification packet behavior."
+        "scope": "graph replacement and explicit non-publication decision."
+      },
+      {
+        "command": "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
+        "evidence": "20 tests passed.",
+        "result": "pass",
+        "scope": "F8 timing partition and sealed failed RF-04 candidate behavior."
       },
       {
         "command": "node scripts/checks/check-agent-efficiency-replay.mjs",
         "evidence": "frozen replay baseline validates 50 runs, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.",
         "result": "pass",
-        "scope": "immutable no-provider replay evidence structure."
+        "scope": "immutable no-provider replay evidence."
       },
       {
         "command": "bun run ci:contract",
-        "evidence": "formatting, policy, lifecycle, architecture, baseline, and threshold contract checks completed successfully.",
+        "evidence": "deterministic contract completed successfully on the concrete verification contract.",
         "result": "pass",
-        "scope": "repository-wide deterministic contract surface on the successor branch."
+        "scope": "repository-wide contract surface."
       },
       {
         "command": "bun run test:critical",
@@ -2581,12 +2587,12 @@
         "scope": "critical CLI regression surface."
       }
     ],
-    "implementation_sha": "fdd390c49302b81eb559743d445abf9d70e5ce57",
-    "note": "Verified: successor gate retains beta.1 do_not_publish after deterministic current-main validation without provider access.",
-    "record_digest": "sha256:befc8eb57136184d9d9b83d9657ffe9068b9e5e250e48d67acdae88c6398b9ad",
-    "record_path": ".agentplane/tasks/202607300553-CR9VTJ/verification/20260730060243118-befc8eb57136184d.json",
-    "record_sha256": "sha256:e1860ce4a757cdcfa08feecaaa8fa57618b1b28c574781581b82abfab8fbcb63",
-    "recorded_at": "2026-07-30T06:02:43.118Z",
+    "implementation_sha": "a2ea0bcc67b5e2238cc1c1553f7acc05bc76f411",
+    "note": "Verified: concrete beta.1 gate checks preserve the successor dependency, exact frozen failure, no-provider decision, and deterministic regression results.",
+    "record_digest": "sha256:5451080bba3c6a2da3da3e798541c4c1030c66036a34ae45745b5de5db0075fb",
+    "record_path": ".agentplane/tasks/202607300553-CR9VTJ/verification/20260730062139206-5451080bba3c6a2d.json",
+    "record_sha256": "sha256:3925f47ecdd42f8a1963daa8d78375846d8ada863cc3e4bd93d9ad63466538c4",
+    "recorded_at": "2026-07-30T06:21:39.206Z",
     "result": "ok",
     "verifier": "TESTER"
   }
