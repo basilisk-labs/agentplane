@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:1362b08b05ff6355a5cd7d391d60b316a0db36607cb65eb03724e41d18b2d591",
+  "implementation_sha": "9eba6daf7e4074b9b6d9835cc65adacfa386c06f",
+  "kind": "task_verification_record",
+  "note": "Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked.",
+  "recorded_at": "2026-07-30T05:28:30.525Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Attribute RF-04 harness latency without provider retries\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Attribute RF-04 harness latency without provider retries\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:fbb29b830893007ef1d34f05f76bce814a1f6fc1cd6fb0e1d2f23d019c08d9de",
+  "task_id": "202607300518-A5CTP0",
+  "verification_command": "agentplane verify 202607300518-A5CTP0 --ok --by TESTER",
+  "verifier": "TESTER"
+}

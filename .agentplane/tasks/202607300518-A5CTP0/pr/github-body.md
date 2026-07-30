@@ -15,14 +15,19 @@ Preserve the immutable beta.1 candidate and add deterministic, no-provider attri
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: attribution preserves the RF-04 aggregate harness metric while recording
+anchor-runtime-build and fixture-initialization components; no provider capture was invoked.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T05:26:25.323Z
+- Updated: 2026-07-30T05:27:22.411Z
 - Branch: task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

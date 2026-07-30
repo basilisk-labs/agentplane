@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300518-A5CTP0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T05:29:51.780Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "9eba6daf7e4074b9b6d9835cc65adacfa386c06f",
+  "blueprint_digest": "c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf",
+  "findings": [
+    "The receipt now attributes harness setup to anchor runtime build and fixture initialization without changing the immutable candidate, thresholds, or provider behavior."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen candidate cannot establish a causal component split because its 50 runs are non-interleaved and no provider retry is authorized; this task adds only future-capture attribution."
+  ],
+  "residual_risks": []
+}

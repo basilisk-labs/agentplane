@@ -3,11 +3,22 @@
   "branch": "task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider",
   "created_at": "2026-07-30T05:26:25.323Z",
   "diffstat_sha256": "sha256:7d8ce69cee4a532ae558e0d4856da08c03bf3eeca59603d471d8e8292e77db4f",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-30T05:28:30.525Z",
+  "last_verified_diffstat_sha256": "sha256:7d8ce69cee4a532ae558e0d4856da08c03bf3eeca59603d471d8e8292e77db4f",
+  "pr_number": 4680,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4680",
+  "pre_merge_closure": {
+    "basis_commit": "9eba6daf7e4074b9b6d9835cc65adacfa386c06f",
+    "branch": "task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider",
+    "pr_number": 4680,
+    "recorded_at": "2026-07-30T05:30:33.280Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607300518-A5CTP0",
-  "updated_at": "2026-07-30T05:26:25.323Z",
+  "updated_at": "2026-07-30T05:27:22.411Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
