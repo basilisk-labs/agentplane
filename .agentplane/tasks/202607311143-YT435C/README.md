@@ -2,10 +2,10 @@
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -54,7 +54,9 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.test.ts"
   findings:
     - "Exact reproduction with AGENTPLANE_RUNTIME_ACTIVE_BIN pointing at 0.6.25 passes 43/43 and resolves candidate version 0.6.26 after sanitization."
-commit: null
+commit:
+  hash: "5343f438ede7829c429d7773f4948f05e45471ab"
+  message: "✅ YT435C release: verify runtime isolation"
 comments:
   -
     author: "CODER"
@@ -80,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: isolate verification from transient runtime provenance variables."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -191,8 +196,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass."
+  -
+    type: "status"
+    at: "2026-07-31T13:50:48.028Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:50:07.347Z"
+doc_updated_at: "2026-07-31T13:50:48.029Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -519,8 +531,8 @@ sections:
       Resolution: Verification now strips presentation, runtime provenance, repo-local handoff, and transient dev-bootstrap carrier variables before spawning commands.
 extensions:
   implementation_commit:
-    hash: "a913b33383db5f5b7c167da51c4ba69cda14cd64"
-    message: "🐛 YT435C release: isolate verify process environment"
+    hash: "020dfcd89e6b4535896e1b211c58806d20e5aa84"
+    message: "🐛 YT435C release: isolate runtime provenance"
 id_source: "generated"
 ---
 ## Summary
