@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -41,28 +41,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T20:30:21.131Z"
+  updated_at: "2026-07-31T20:40:50.192Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "32da254a5accb6ee2e704d94a4e16e192a50de97"
+  evaluated_sha: "3bb947f75aee3ce9075d56a0a90db0e8d6c3fa05"
   blueprint_digest: "db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221854-RW8CJF/README.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The hosted failure was test-placement debt only: no runtime or capability behavior changed."
-    - "The dedicated trace test preserves coverage while reducing run-cli.core.test.ts to its frozen 1046-line baseline."
+    - "The hosted dead-code failure exposed unnecessary type re-exports only; internal session types and runtime behavior remain unchanged."
+    - "The public catalog surface is now limited to the existing CommandEntry and RunDeps contract, while internal consumers import only the session types they use."
 commit:
   hash: "3c2735705af084189c02a50fca450c7a7c81f9f0"
   message: "🔎 RW8CJF task: re-evaluate hosted CI rework"
@@ -117,7 +117,7 @@ events:
     state: "ok"
     note: "Hosted dead-code baseline rework passed: unused type re-exports removed, knip baseline unchanged at 545 entries, typecheck and 13 focused tests pass at 3bb947f75."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:40:27.088Z"
+doc_updated_at: "2026-07-31T20:40:50.218Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:

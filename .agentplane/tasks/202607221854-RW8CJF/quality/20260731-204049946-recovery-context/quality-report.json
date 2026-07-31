@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-RW8CJF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T20:40:50.192Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "3bb947f75aee3ce9075d56a0a90db0e8d6c3fa05",
+  "blueprint_digest": "db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06",
+  "findings": [
+    "The hosted dead-code failure exposed unnecessary type re-exports only; internal session types and runtime behavior remain unchanged.",
+    "The public catalog surface is now limited to the existing CommandEntry and RunDeps contract, while internal consumers import only the session types they use."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The pilot intentionally treats the existing CommandContext as one compatibility preparation node; capability declarations do not yet imply field-level object isolation."
+  ],
+  "residual_risks": []
+}
