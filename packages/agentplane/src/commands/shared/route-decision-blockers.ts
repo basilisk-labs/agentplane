@@ -91,6 +91,7 @@ function addConflictReworkBlockers(
     );
     return;
   }
+  if (preparation.state === "publication_required") return;
   addBlocker(
     blockers,
     "provider_conflict_context_invalid",
