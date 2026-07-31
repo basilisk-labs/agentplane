@@ -19,8 +19,8 @@ Re-run the beta.2 qualification gate from corrected main after the guard and clo
 - Note:
 
 ```text
-Qualification completed on corrected main: local gates passed and the live RF-04 capture requires
-do_not_publish because latency guardrails failed.
+Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from
+obsolete 0JP0ZZ to 7KFTPH.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -18,7 +18,7 @@
           },
           "pr_number": 4596,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "49be800b46f6a711f78d2f8195700258928a1fae",
+          "task_artifact_commit": "380f3685b26eb60322191d0f780ffe039ed3989d",
           "task_document": {
             "path": ".agentplane/tasks/202607221838-SD1W93/README.md",
             "sha256": "sha256:36bf87f7617f2b2424327e5d2fd3159c7abcb67bb55a67747d02243f4e20f6ad"
@@ -49,7 +49,7 @@
           },
           "pr_number": 4629,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "49be800b46f6a711f78d2f8195700258928a1fae",
+          "task_artifact_commit": "380f3685b26eb60322191d0f780ffe039ed3989d",
           "task_document": {
             "path": ".agentplane/tasks/202607260532-9M7RNH/README.md",
             "sha256": "sha256:1a0f6de3ddfc3e74556018fe4f745b9e6a039b09b6529b6bd5099654c44465ff"
@@ -80,7 +80,7 @@
           },
           "pr_number": 4670,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "49be800b46f6a711f78d2f8195700258928a1fae",
+          "task_artifact_commit": "380f3685b26eb60322191d0f780ffe039ed3989d",
           "task_document": {
             "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
             "sha256": "sha256:e236c7c7d3d978146b8df072bc99fa6fb9ed7b5c4ce1e0743490ac7089bb7504"
@@ -111,7 +111,7 @@
           },
           "pr_number": 4698,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "49be800b46f6a711f78d2f8195700258928a1fae",
+          "task_artifact_commit": "380f3685b26eb60322191d0f780ffe039ed3989d",
           "task_document": {
             "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
             "sha256": "sha256:1021eca825e140730e5c9243c0ae8e6c2b484ca9ab2bf5901e2786ffcf627ba2"
@@ -145,10 +145,10 @@
       "202607302331-3C8V0X"
     ]
   },
-  "digest": "sha256:303127828e862b321b8b9392fe51bfdcab890c24672b7ae736517af5a9522bf7",
-  "implementation_sha": "49be800b46f6a711f78d2f8195700258928a1fae",
+  "digest": "sha256:9707275a9f2d0fa259b0c0316b74b6ea1fa768d5d0fb1df32c3d4d25a7d799bc",
+  "implementation_sha": "380f3685b26eb60322191d0f780ffe039ed3989d",
   "kind": "task_qualification_packet",
-  "prepared_at": "2026-07-31T09:45:08.981Z",
+  "prepared_at": "2026-07-31T09:52:19.140Z",
   "rf04": {
     "candidate_measurement": {
       "baseline_runtime_profile": {
@@ -2590,47 +2590,47 @@
     "checks": [
       {
         "command": "node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH",
-        "evidence": "rf04-current-rebuild.v1.json sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d; 50 runs, 70/70 outcomes, 27/27 token cells, 170/170 scalar cells",
+        "evidence": "rf04-current-rebuild.v1.json sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d; 50 runs and complete cells",
         "result": "pass",
-        "scope": "deterministic replay rebuild for product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878"
+        "scope": "deterministic replay rebuild for corrected product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878"
       },
       {
         "command": "node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1",
-        "evidence": "rf04-live-candidate-summary.v1.json and raw sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c; no retry; latency guardrails failed",
+        "evidence": "rf04-live-candidate-summary.v1.json; raw sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c; retry_count=0",
         "result": "fail",
-        "scope": "one live 50-run, 10-scenario, 55-provider-episode RF-04 candidate measurement on corrected main"
+        "scope": "single live 50-run, 10-scenario, 55-provider-episode capture; latency gate failed"
       },
       {
-        "command": "node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1 --runtime-bridge 0.146.0-alpha.3.1",
-        "evidence": "rf04-live-candidate-summary.v1.json reproduction_gap; authoritative runtime-bridge sanitized envelopes are absent",
-        "result": "fail",
-        "scope": "deterministic matched-profile rematerialization; no provider retry performed"
+        "command": "agentplane task update 202607221852-ECBY56 and 202607221908-AB2SFC --replace-depends-on",
+        "evidence": "ECBY56 depends_on=[202607310028-7KFTPH]; AB2SFC depends_on=[202607221852-71SCSW,202607221852-ECBY56,202607310028-7KFTPH]",
+        "result": "pass",
+        "scope": "review-required task graph repair; obsolete 202607221908-0JP0ZZ removed from downstream executable fan-in"
       },
       {
         "command": "bun run typecheck",
         "evidence": "run-typescript-build.mjs exit 0",
         "result": "pass",
-        "scope": "TypeScript build on task branch before evidence-only commits"
+        "scope": "implementation code unchanged; task-artifact-only review repair"
       },
       {
         "command": "bun run test:critical",
         "evidence": "critical-cli suite exit 0; 12/12 chunks passed",
         "result": "pass",
-        "scope": "critical regression surface on task branch before evidence-only commits"
+        "scope": "critical regression surface before task-artifact-only review repair"
       },
       {
         "command": "bun run ci:contract",
-        "evidence": "ci:contract exit 0; policy, replay, lifecycle, architecture, clone, knip, and coverage guards passed",
+        "evidence": "ci:contract exit 0; all contract guards passed",
         "result": "pass",
-        "scope": "full local contract gate; no product code changed"
+        "scope": "full local contract gate before task-artifact-only review repair"
       }
     ],
-    "implementation_sha": "49be800b46f6a711f78d2f8195700258928a1fae",
-    "note": "Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed.",
-    "record_digest": "sha256:0133de6d32227aea94670dff4501972cdaa4a10b96bcb108ae57b83d9ea0f344",
-    "record_path": ".agentplane/tasks/202607310028-7KFTPH/verification/20260731094508981-0133de6d32227aea.json",
-    "record_sha256": "sha256:2a09bfee4e28472e30f662d939edd504407d6a906b9ac626f5ec421376d877db",
-    "recorded_at": "2026-07-31T09:45:08.981Z",
+    "implementation_sha": "380f3685b26eb60322191d0f780ffe039ed3989d",
+    "note": "Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH.",
+    "record_digest": "sha256:f5f694f108845244aabf95a30884f501fa5f7a5badabaae9011c3eaf2f42450d",
+    "record_path": ".agentplane/tasks/202607310028-7KFTPH/verification/20260731095219140-f5f694f108845244.json",
+    "record_sha256": "sha256:8475a853e97685a1f500fb241e7d800f8c3811b2c6bee4c6e40f092ae2f5e5c0",
+    "recorded_at": "2026-07-31T09:52:19.140Z",
     "result": "ok",
     "verifier": "TESTER"
   }
