@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -41,31 +41,30 @@ verification:
   note: "Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T13:00:55.955Z"
+  updated_at: "2026-07-31T13:03:55.552Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea"
   blueprint_digest: "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221852-71SCSW/README.md"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "PASS: stale inactive queue entries fall through to one typed integration.enqueue refresh, while matching queued/done entries and all claimed/handoff entries remain non-destructive waits."
-    - "PASS: the branch_pr supervisor keeps semantic EXECUTOR/EVALUATOR work role-scoped and routes worktree, verification, PR publication, queue, hosted-close, and cleanup through typed CLI operations with durable idempotency."
-    - "PASS: the real two-worktree regression proves a stale base README cannot override DONE task-branch truth and that base-owned queue state is observed from the task worktree."
+    - "A completed integration.enqueue journal was converted to terminal stale_state when the later pr.head.publish step opened against a new fingerprint, so safe sequential branch_pr operations cannot resume across normal task/authority mutations."
 commit:
   hash: "2257c5a99a1e980b8ba0817a3f78e6c9ddf5cb55"
   message: "🧭 71SCSW task: pass stale queue fix"
