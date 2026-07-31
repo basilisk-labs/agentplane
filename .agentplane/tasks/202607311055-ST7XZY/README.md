@@ -2,10 +2,10 @@
 id: "202607311055-ST7XZY"
 title: "Eliminate direct workflow state-neutral routing loops"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -21,32 +21,23 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-31T11:12:03.380Z"
+  state: "needs_rework"
+  updated_at: "2026-07-31T11:17:00.628Z"
   updated_by: "EVALUATOR"
-  note: "Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness."
-  attempts: 0
+  note: "Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification."
+  attempts: 1
 quality_review:
-  state: "pass"
-  updated_at: "2026-07-31T11:12:06.577Z"
+  state: "rework"
+  updated_at: "2026-07-31T11:17:00.628Z"
   updated_by: "EVALUATOR"
-  note: "Direct routing and task persistence regressions pass for the v0.6.26 maintenance patch."
-  evaluated_sha: "d60e737bb85a8252367b8203074719531811764b"
+  note: "Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification."
+  evaluated_sha: "4249b38e6c8e3e8c5c9497f2c4c44f7d86114a4e"
   blueprint_digest: "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d"
   evidence_refs:
     - ".agentplane/tasks/202607311055-ST7XZY/README.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111206577-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111206577-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111206577-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-    - "packages/agentplane/src/commands/shared/task-handoff.test.ts"
-  findings:
-    - "No state-neutral verify-show command remains in runner transition hints or direct next-action routes."
-    - "Untracked active and DONE canonical task artifacts now receive deterministic task-scoped persistence or cleanup commands."
-commit:
-  hash: "666b99486bd6fc90355445552a154be6651850f1"
-  message: "✅ ST7XZY task: record routing verification"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
+  findings: []
+commit: null
 comments:
   -
     author: "CODER"
@@ -54,6 +45,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: apply the hosted contract rework by shrinking the route regression without changing production behavior or the oversized-test baseline."
 events:
   -
     type: "status"
@@ -75,8 +69,21 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T11:17:00.628Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification."
+  -
+    type: "status"
+    at: "2026-07-31T11:17:04.207Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: apply the hosted contract rework by shrinking the route regression without changing production behavior or the oversized-test baseline."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:12:31.521Z"
+doc_updated_at: "2026-07-31T11:17:04.207Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -109,6 +116,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:07:50.558Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+    - diagnostic_command: agentplane pr check 202607311055-ST7XZY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-31T11:17:00.628Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:12:31.521Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
 
     Details:
 
@@ -200,6 +237,36 @@ Note: Command: focused Vitest route/runner suite; bun run coverage:significant-s
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:07:50.558Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+- diagnostic_command: agentplane pr check 202607311055-ST7XZY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-31T11:17:00.628Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:12:31.521Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
 
 Details:
 

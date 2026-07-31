@@ -6,14 +6,14 @@ Created: 2026-07-31T10:56:26.206Z
 
 - Task: `202607311055-ST7XZY`
 - Title: Eliminate direct workflow state-neutral routing loops
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing`
 - Canonical task record: `.agentplane/tasks/202607311055-ST7XZY/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness.
+- State: needs_rework
+- Note: Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,7 +30,7 @@ Created: 2026-07-31T10:56:26.206Z
 
 ```text
  ...cli.core.route-decision.direct-closeout.test.ts | 224 ++++++++++++++++++++-
- .../src/cli/run-cli.core.route-decision.test.ts    |  10 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    |   7 +-
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
  .../src/commands/shared/route-decision-blockers.ts |  28 ++-
  .../commands/shared/route-decision-next-action.ts  |  74 ++++---
@@ -41,7 +41,7 @@ Created: 2026-07-31T10:56:26.206Z
  .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 12 files changed, 356 insertions(+), 54 deletions(-)
+ 12 files changed, 353 insertions(+), 54 deletions(-)
 ```
 
 </details>

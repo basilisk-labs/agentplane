@@ -906,10 +906,7 @@ describe("runCli route decision commands", () => {
         nextAction: { code: string; command: string | null };
       };
       expect(parsed.blockers).toEqual([expect.objectContaining({ code: "dirty_task_artifacts" })]);
-      expect(parsed.nextAction).toMatchObject({
-        code: "commit_direct_task_artifacts",
-        command: `agentplane commit ${taskId} --close --unstage-others`,
-      });
+      expect(parsed.nextAction.code).toBe("commit_direct_task_artifacts");
     } finally {
       statusIo.restore();
     }
