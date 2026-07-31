@@ -13,7 +13,7 @@ Created: 2026-07-31T11:44:30.841Z
 ## Verification
 
 - State: ok
-- Note: Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure.
+- Note: Final c06faee4 state passes full format check and focused immutable-finalize regression 6/6; prior semantic HEAD passed integration tests 40/40, typecheck, lint, fast release gate, hosted CI, and full merge-lane release:prepublish.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

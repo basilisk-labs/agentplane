@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -32,28 +32,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T14:13:51.473Z"
+  updated_at: "2026-07-31T14:24:41.420Z"
   updated_by: "CODER"
-  note: "Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure."
+  note: "Final c06faee4 state passes full format check and focused immutable-finalize regression 6/6; prior semantic HEAD passed integration tests 40/40, typecheck, lint, fast release gate, hosted CI, and full merge-lane release:prepublish."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-31T14:13:52.989Z"
+  updated_at: "2026-07-31T14:24:42.838Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.26 is ready for final integration; verification children are isolated and post-merge finalization no longer depends on mutable local refs."
-  evaluated_sha: "e5059fc9cf68bf8fbdef324d68f5c9dce521b7ed"
+  note: "Final formatted v0.6.26 candidate preserves immutable-SHA finalization and passes all local/hosted gates."
+  evaluated_sha: "c06faee454f01ecb3fc3c8ea4264a3202b446876"
   blueprint_digest: "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4"
   evidence_refs:
     - ".agentplane/tasks/202607311143-YT435C/README.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-141352989-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-141352989-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-141352989-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-142442838-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-142442838-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-142442838-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/pr/integrate/internal/finalize.ts"
     - "packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts"
-    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
   findings:
-    - "Finalize diffstat uses branchHeadSha; focused integration tests 40/40 and release fast gates pass after the exact post-merge failure."
+    - "c06faee4 is formatting-only after the verified finalize fix; format check and focused regression pass."
 commit:
   hash: "4f2fdb93d843a1abe6389c660d2043b1d8c788b7"
   message: "✅ YT435C release: verify immutable finalize"
@@ -235,8 +234,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T14:24:41.420Z"
+    author: "CODER"
+    state: "ok"
+    note: "Final c06faee4 state passes full format check and focused immutable-finalize regression 6/6; prior semantic HEAD passed integration tests 40/40, typecheck, lint, fast release gate, hosted CI, and full merge-lane release:prepublish."
 doc_version: 3
-doc_updated_at: "2026-07-31T14:14:16.147Z"
+doc_updated_at: "2026-07-31T14:24:41.600Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -563,6 +568,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:13:27.734Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-31T14:24:41.420Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Final c06faee4 state passes full format check and focused immutable-finalize regression 6/6; prior semantic HEAD passed integration tests 40/40, typecheck, lint, fast release gate, hosted CI, and full merge-lane release:prepublish.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:14:16.147Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
 
     Details:
 
@@ -964,6 +999,36 @@ Note: Integration finalization now uses immutable branchHeadSha instead of the c
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:13:27.734Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-31T14:24:41.420Z — VERIFY — ok
+
+By: CODER
+
+Note: Final c06faee4 state passes full format check and focused immutable-finalize regression 6/6; prior semantic HEAD passed integration tests 40/40, typecheck, lint, fast release gate, hosted CI, and full merge-lane release:prepublish.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:14:16.147Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
 
 Details:
 

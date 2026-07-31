@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311143-YT435C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T14:24:42.838Z",
+  "verdict": "pass",
+  "summary": "Final formatted v0.6.26 candidate preserves immutable-SHA finalization and passes all local/hosted gates.",
+  "evaluated_sha": "c06faee454f01ecb3fc3c8ea4264a3202b446876",
+  "blueprint_digest": "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4",
+  "findings": [
+    "c06faee4 is formatting-only after the verified finalize fix; format check and focused regression pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311143-YT435C/README.md",
+    "packages/agentplane/src/commands/pr/integrate/internal/finalize.ts",
+    "packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts"
+  ],
+  "missing_tests": [
+    "none"
+  ],
+  "hidden_assumptions": [
+    "Publish the exact final maintenance SHA."
+  ],
+  "residual_risks": [
+    "Final integration and publication remain."
+  ]
+}
