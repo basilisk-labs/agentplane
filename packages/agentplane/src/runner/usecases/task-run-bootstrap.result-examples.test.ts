@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
   AGENT_SEMANTIC_RESULT_V2_INVALID_FIXTURES,
+  buildAgentWorkOrderV2ValidFixture,
 } from "@agentplaneorg/core/schemas";
 import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
 
@@ -105,7 +106,7 @@ describe("runner bootstrap result examples", () => {
     expect(bootstrap).toContain("Do not attempt to write result_path.");
     expect(bootstrap).toContain("the supervisor writes and validates result_path");
     expect(bootstrap).toContain(
-      "The parent CLI owns those actions; use a CLI command only when its behavior is the explicit semantic implementation target",
+      "The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
     );
     expect(bootstrap).not.toContain(
       "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
@@ -116,6 +117,77 @@ describe("runner bootstrap result examples", () => {
     expect(workspaceWriteBootstrap).toContain("Do not attempt to write result_path.");
     expect(workspaceWriteBootstrap).not.toContain(
       "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+    );
+  });
+
+  it("renders the complete exact run-scoped API without depending on global help", () => {
+    const bundle = makeRunnerContextBundle({ runId: "phase-tool-bootstrap" });
+    const workOrder = buildAgentWorkOrderV2ValidFixture();
+    bundle.work_order = workOrder;
+    bundle.execution.phase_tools = {
+      schema_version: 1,
+      kind: "runner_phase_tool_manifest",
+      run_id: bundle.execution.run_id,
+      work_order_id: workOrder.work_order_id,
+      task_id: bundle.task!.metadata.task_id,
+      phase: "semantic_episode",
+      role: workOrder.role,
+      global_help_required: false,
+      token: {
+        id: "token-1",
+        issued_at: "2026-07-31T00:00:00.000Z",
+        expires_at: "2026-07-31T00:30:00.000Z",
+        terminal_reports_revoke: true,
+      },
+      tools: [
+        {
+          name: "report_result",
+          allowed: true,
+          transport: "run_scoped_command",
+          enforcement: "supervisor",
+          invocation: "agentplane task run tool report_result",
+          input_mode: "stdin_json",
+          input_schema: {
+            $ref: "https://agentplane.org/schemas/agent-semantic-result.schema.json",
+          },
+          reason: null,
+        },
+        {
+          name: "knowledge_show",
+          allowed: false,
+          transport: "none",
+          enforcement: "advisory",
+          invocation: null,
+          input_mode: "terminal_result",
+          input_schema: { type: "object" },
+          reason: "The adapter does not expose this phase tool.",
+        },
+      ],
+      repository_tool_classes: ["repository_read", "workspace_write"],
+      grant_path: "/protected/run/phase-tools/grant.json",
+      audit_directory: "/protected/run/phase-tools/audits",
+    };
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("Run-scoped phase tool contract:");
+    expect(bootstrap).toContain("- global_help_required: false");
+    expect(bootstrap).toContain(
+      "report_result: transport=run_scoped_command enforcement=supervisor invocation=agentplane task run tool report_result",
+    );
+    expect(bootstrap).toContain("knowledge_show: unavailable");
+    expect(bootstrap).toContain("Never print the token or pass it on argv.");
+    expect(bootstrap).not.toContain("agentplane help");
+
+    const reportResult = bundle.execution.phase_tools.tools[0]!;
+    reportResult.transport = "terminal_result";
+    reportResult.enforcement = "adapter";
+    reportResult.invocation = null;
+    reportResult.input_mode = "terminal_result";
+    const terminalOnlyBootstrap = renderTaskRunnerBootstrap(bundle);
+    expect(terminalOnlyBootstrap).toContain("This adapter exposes no run_scoped_command transport");
+    expect(terminalOnlyBootstrap).not.toContain(
+      "The supervisor injects the signed token and a checkout-local broker channel",
     );
   });
 

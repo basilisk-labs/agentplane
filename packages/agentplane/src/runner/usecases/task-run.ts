@@ -1,6 +1,11 @@
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
+import {
+  attachRunnerPhaseToolBrokerEnv,
+  executeWithRunnerPhaseToolBroker,
+} from "../phase-tools/broker.js";
+import { issueRunnerPhaseToolGrant } from "../phase-tools/token.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
 import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
@@ -246,6 +251,10 @@ export async function prepareTaskRunnerExecution(opts: {
   await repository.createFreshDirectory({
     run_id: bundle.execution.run_id,
   });
+  const phaseToolGrant = await issueRunnerPhaseToolGrant({ bundle });
+  if (phaseToolGrant) {
+    bundle.execution.phase_tools = phaseToolGrant.manifest;
+  }
   let invocation: RunnerInvocation;
   try {
     assertRunnerPolicyCompatibility(bundle);
@@ -255,6 +264,7 @@ export async function prepareTaskRunnerExecution(opts: {
     });
     await repository.assertBoundary("after writing the blueprint snapshot");
     invocation = await adapter.prepare(bundle);
+    attachRunnerPhaseToolBrokerEnv({ bundle, invocation, grant: phaseToolGrant });
   } catch (err) {
     if (err instanceof CliError) {
       bundle.execution.policy_decision = applyRunnerPolicyRefusal({
@@ -479,7 +489,11 @@ export async function executeTaskRunnerExecution(opts: {
             state_fingerprint: stateFingerprint,
           });
         },
-        apply: async (invocation) => await adapter.execute(invocation),
+        apply: async (invocation) =>
+          await executeWithRunnerPhaseToolBroker({
+            invocation,
+            execute: async () => await adapter.execute(invocation),
+          }),
       });
     } catch (error) {
       if (!(error instanceof RunnerStateFingerprintCliError)) throw error;

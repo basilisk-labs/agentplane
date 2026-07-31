@@ -74,6 +74,7 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
     expect(findCommandEntry(["task", "normalize"])?.surface).toBe("internal");
     expect(findCommandEntry(["task", "run"])?.surface).toBe("internal");
+    expect(findCommandEntry(["task", "run", "tool"])?.surface).toBe("internal");
     expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
     expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
 
@@ -82,6 +83,7 @@ describe("command catalog graph", () => {
     expect(normalHelpIds).not.toContain("task normalize");
     expect(normalHelpIds).not.toContain("task run");
     expect(normalHelpIds).not.toContain("task run status");
+    expect(normalHelpIds).not.toContain("task run tool");
     expect(normalHelpIds).not.toContain("context harvest tasks");
     expect(normalHelpIds).toContain("context learn tasks");
     expect(normalHelpIds).toContain("context check");
@@ -94,12 +96,14 @@ describe("command catalog graph", () => {
     expect(frameworkHelpIds).toContain("release");
     expect(frameworkHelpIds).not.toContain("task normalize");
     expect(frameworkHelpIds).not.toContain("task run");
+    expect(frameworkHelpIds).not.toContain("task run tool");
 
     const allHelpIds = getHelpCommandEntries("all").map((entry) => entry.spec.id.join(" "));
     expect(allHelpIds).toContain("release");
     expect(allHelpIds).toContain("task normalize");
     expect(allHelpIds).toContain("task run");
     expect(allHelpIds).toContain("task run status");
+    expect(allHelpIds).toContain("task run tool");
     expect(allHelpIds).toContain("context harvest tasks");
   });
 });

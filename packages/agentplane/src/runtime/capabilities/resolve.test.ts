@@ -9,6 +9,8 @@ import {
   resolveRunnerAdapterCapabilityRegistry,
   resolveTaskBackendCapabilityRegistry,
 } from "./index.js";
+import { CODEX_RUN_PROFILE_CAPABILITIES } from "../../runner/adapters/codex-preparation.js";
+import { buildCustomCapabilities } from "../../runner/adapters/custom-preparation.js";
 
 describe("runtime capability registry", () => {
   it("enumerates backend capabilities and marks disabled features unavailable", () => {
@@ -206,6 +208,36 @@ describe("runtime capability registry", () => {
         boundary: "workspace",
         descendant_inheritance: "enforced",
         lifetime_containment: "not_provided",
+      },
+    });
+  });
+
+  it("publishes phase-tool availability and adapter limitations as typed capabilities", () => {
+    const codex = resolveRunnerAdapterCapabilityRegistry({
+      adapter_id: "codex",
+      capabilities: CODEX_RUN_PROFILE_CAPABILITIES,
+    });
+    const custom = resolveRunnerAdapterCapabilityRegistry({
+      adapter_id: "custom",
+      capabilities: buildCustomCapabilities(undefined),
+    });
+
+    expect(
+      getCapabilityEntries(codex, "runner.adapter.codex.phase_tool.knowledge_search")[0],
+    ).toMatchObject({
+      availability: "available",
+      metadata: {
+        transport: "run_scoped_command",
+        enforcement: "supervisor",
+      },
+    });
+    expect(
+      getCapabilityEntries(custom, "runner.adapter.custom.phase_tool.knowledge_search")[0],
+    ).toMatchObject({
+      availability: "unavailable",
+      metadata: {
+        transport: "none",
+        enforcement: "advisory",
       },
     });
   });

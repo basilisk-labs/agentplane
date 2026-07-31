@@ -56,6 +56,7 @@ import {
   taskRunSpec,
   taskRunStatusSpec,
 } from "../../../commands/task/run.command.js";
+import { taskRunToolSpec } from "../../../commands/task/run-tool.command.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
 import { taskSearchSpec } from "../../../commands/task/search.spec.js";
@@ -106,6 +107,7 @@ import {
   loadTaskRunResolveEffectSpec,
   loadTaskRunResumeEffectSpec,
   loadTaskRunSpec,
+  loadTaskRunToolSpec,
   loadTaskRunStatusSpec,
   loadTaskCompleteSpec,
   loadTaskDeriveSpec,
@@ -225,6 +227,12 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskRunSpec, {
     load: loadTaskRunSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunToolSpec, {
+    load: loadTaskRunToolSpec,
+    needs: "project",
     surface: "internal",
     helpGroup: "Maintenance",
   }),

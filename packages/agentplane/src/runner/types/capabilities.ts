@@ -1,3 +1,5 @@
+import type { RunnerPhaseToolCapability, RunnerPhaseToolName } from "./phase-tools.js";
+
 export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsupported";
 
 export type RunnerCapabilityChannel = "argv" | "env" | "result" | "none";
@@ -22,4 +24,5 @@ export type RunnerAdapterCapabilities = {
   adapter_id: string;
   fields: Record<string, RunnerCapabilityDescriptor>;
   filesystem_effect_containment?: RunnerFilesystemEffectContainmentCapability;
+  phase_tools?: Partial<Record<RunnerPhaseToolName, RunnerPhaseToolCapability>>;
 };

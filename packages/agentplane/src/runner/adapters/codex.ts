@@ -15,7 +15,7 @@ import {
 import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
 import type { SupervisedProcessResult } from "../process-supervision/run.js";
 import { exitCodeForSignal } from "../process-supervision/signals.js";
-import { applyRunnerResultManifest, type readRunnerResultManifest } from "../result-manifest.js";
+import { applyRunnerResultManifest, readRunnerResultManifest } from "../result-manifest.js";
 import { assertAdapterBundle, assertAdapterInvocation } from "./base.js";
 import {
   buildCodexInvocation,
@@ -185,6 +185,17 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           processResult.timeout_reason !== null ||
           processResult.cancel_requested_at
         ) {
+          return;
+        }
+        const phaseToolResult = await readRunnerResultManifest(input.result_path, {
+          legacy_work_order_id: input.work_order_id,
+        });
+        if (phaseToolResult) {
+          if (phaseToolResult.semantic_result.value.work_order_id !== input.work_order_id) {
+            throw new Error(
+              "Run-scoped phase-tool semantic result does not match the supervised work order.",
+            );
+          }
           return;
         }
         await materializeCodexResultTransport({

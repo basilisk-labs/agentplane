@@ -22,6 +22,7 @@ import type { AgentWorkOrderPreparationView } from "../usecases/agent-work-order
 
 import type { RunnerAdapterCapabilities } from "./capabilities.js";
 import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
+import type { RunnerPhaseToolManifest } from "./phase-tools.js";
 import type { RunnerExecutionPlaybookContract } from "./playbooks.js";
 import type {
   RunnerPolicyDecision,
@@ -174,6 +175,7 @@ export type RunnerExecutionContract = {
   evaluator_skepticism_level?: EvaluatorSkepticismLevel;
   adapter_capabilities?: RunnerAdapterCapabilities;
   adapter_capability_registry?: AgentplaneCapabilityRegistry;
+  phase_tools?: RunnerPhaseToolManifest;
   policy_decision?: RunnerPolicyDecision;
   sandbox_policy?: RunnerSandboxPolicy;
   write_scope?: RunnerWriteScopePolicy;

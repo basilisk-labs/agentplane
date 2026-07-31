@@ -1,4 +1,5 @@
 import type { RunnerAdapterCapabilities } from "../../runner/types.js";
+import { RUNNER_PHASE_TOOL_NAMES } from "../../runner/types.js";
 
 import { createCapabilityRegistry } from "./registry.js";
 import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./model.js";
@@ -20,6 +21,10 @@ function policyFieldCapabilityId(adapterId: string, fieldName: string): string {
 
 function filesystemEffectContainmentCapabilityId(adapterId: string): string {
   return `runner.adapter.${adapterId}.filesystem_effect_containment`;
+}
+
+function phaseToolCapabilityId(adapterId: string, toolName: string): string {
+  return `runner.adapter.${adapterId}.phase_tool.${toolName}`;
 }
 
 export function resolveRunnerAdapterCapabilityRegistry(opts: {
@@ -70,6 +75,32 @@ export function resolveRunnerAdapterCapabilityRegistry(opts: {
         descendant_inheritance: effectContainment.descendant_inheritance,
         lifetime_containment: effectContainment.lifetime_containment,
         ...(effectContainment.note ? { note: effectContainment.note } : {}),
+      },
+    });
+  }
+
+  for (const toolName of RUNNER_PHASE_TOOL_NAMES) {
+    const capability = opts.capabilities?.phase_tools?.[toolName];
+    const available = capability?.availability === "available";
+    entries.push({
+      id: phaseToolCapabilityId(adapterId, toolName),
+      kind: "tool",
+      availability: available ? "available" : "unavailable",
+      source: source(adapterId),
+      summary: `Run-scoped phase tool ${toolName}`,
+      ...(available
+        ? {}
+        : {
+            reason:
+              capability?.note ??
+              "The adapter does not declare a transport for this run-scoped phase tool.",
+          }),
+      metadata: {
+        adapter_id: adapterId,
+        tool: toolName,
+        transport: capability?.transport ?? "none",
+        enforcement: capability?.enforcement ?? "advisory",
+        ...(capability?.note ? { note: capability.note } : {}),
       },
     });
   }

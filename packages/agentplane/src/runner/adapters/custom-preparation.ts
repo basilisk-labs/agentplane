@@ -32,6 +32,38 @@ export function buildCustomCapabilities(
     `(platform=${JSON.stringify(enforcement.platform)}).`;
   return {
     adapter_id: adapterId,
+    phase_tools: {
+      report_result: {
+        availability: "available",
+        transport: "terminal_result",
+        enforcement: "adapter",
+        note: "The custom process may return AgentSemanticResult v2 through the existing terminal result manifest.",
+      },
+      report_blocker: {
+        availability: "available",
+        transport: "terminal_result",
+        enforcement: "adapter",
+        note: "The custom process may return a blocked AgentSemanticResult v2 through the existing terminal result manifest.",
+      },
+      request_knowledge: {
+        availability: "available",
+        transport: "terminal_result",
+        enforcement: "supervisor",
+        note: "The supervisor can serve a typed KnowledgeRequest only after the configured process returns a terminal result.",
+      },
+      knowledge_search: {
+        availability: "unavailable",
+        transport: "none",
+        enforcement: "advisory",
+        note: "A custom command does not declare a guaranteed interactive run-tool transport.",
+      },
+      knowledge_show: {
+        availability: "unavailable",
+        transport: "none",
+        enforcement: "advisory",
+        note: "A custom command does not declare a guaranteed interactive run-tool transport.",
+      },
+    },
     filesystem_effect_containment: {
       level: "advisory",
       supported_sandboxes: [],

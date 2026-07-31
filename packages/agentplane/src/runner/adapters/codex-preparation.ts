@@ -55,6 +55,38 @@ export function codexInvocationHasExactFilesystemEffectSandbox(
 
 export const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
   adapter_id: "codex",
+  phase_tools: {
+    report_result: {
+      availability: "available",
+      transport: "run_scoped_command",
+      enforcement: "supervisor",
+      note: "Codex can invoke the exact run-scoped command; AgentPlane validates the signed token and owns the canonical result artifact.",
+    },
+    report_blocker: {
+      availability: "available",
+      transport: "run_scoped_command",
+      enforcement: "supervisor",
+      note: "Codex can invoke the exact run-scoped command; AgentPlane validates the signed token and owns the canonical result artifact.",
+    },
+    request_knowledge: {
+      availability: "available",
+      transport: "run_scoped_command",
+      enforcement: "supervisor",
+      note: "Codex can request bounded knowledge through the signed run-scoped command without lifecycle or unrestricted repository authority.",
+    },
+    knowledge_search: {
+      availability: "available",
+      transport: "run_scoped_command",
+      enforcement: "supervisor",
+      note: "Codex can search only the digest-bound knowledge references declared by the current work order.",
+    },
+    knowledge_show: {
+      availability: "available",
+      transport: "run_scoped_command",
+      enforcement: "supervisor",
+      note: "Codex can materialize only an exact digest-bound knowledge reference declared by the current work order.",
+    },
+  },
   fields: {
     sandbox: {
       level: "native",
