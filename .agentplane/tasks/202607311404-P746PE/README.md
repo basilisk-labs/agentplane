@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T14:27:16.722Z"
+  updated_at: "2026-07-31T15:31:15.267Z"
   updated_by: "TESTER"
-  note: "PASS with immutable evidence scope: source and managed task artifacts pass range whitespace validation at 0af1c1a64."
+  note: "PASS: semantic verification target remains stable through full closure history."
   attempts: 0
 quality_review:
   state: "rework"
@@ -137,8 +137,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T15:31:15.267Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: semantic verification target remains stable through full closure history."
 doc_version: 3
-doc_updated_at: "2026-07-31T14:29:00.456Z"
+doc_updated_at: "2026-07-31T15:31:18.268Z"
 doc_updated_by: "CODER"
 description: "Record task verification implementation_sha from the same semantic quality-review target used by EVALUATOR when lifecycle-only task artifacts follow the implementation commit. Preserve exact provenance so evaluator evidence cannot contradict the frozen evaluated SHA. Add regression coverage for post-code verification commits without weakening review freshness."
 sections:
@@ -343,9 +349,62 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-31T15:31:15.267Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: semantic verification target remains stable through full closure history.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:29:00.456Z, excerpt_hash=sha256:652b4ebeca3d23477a5f7d18c6209cba69f4a74d077fa1f5fef8c47ae3447428
+
+    Details:
+
+    Command: bunx vitest run evaluator qualification, closure runtime, and quality-review-target focused checks
+    Result: pass
+    Evidence: qualification 1/1, complete pre-merge and included-batch closure 2/2, resolver 14/14 at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1
+    Scope: exact semantic target selection across primary, included batch, and qualification dependency history
+
+    Command: bunx vitest run seven related evaluator, verification, batch ownership, integration, resolver, and qualification files
+    Result: pass
+    Evidence: 7 files and 74 tests passed at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1
+    Scope: direct, branch_pr, stale-record, runtime-evidence, batch, integration, and qualification behavior
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 critical CLI chunks passed at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1
+    Scope: critical agent-efficiency, replay, exit, Git, protected-path, scope, symlink, and trust-boundary regressions
+
+    Command: bun run typecheck; bun run format:check; git diff --check HEAD^ HEAD
+    Result: pass
+    Evidence: TypeScript build, repository Prettier check, and final semantic diff whitespace validation passed
+    Scope: static correctness and formatting contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311404-P746PE-bind-verification-records-to-semantic-review-tar/.agentplane/tasks/202607311404-P746PE/blueprint/resolved-snapshot.json
+    - old_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+    - current_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311404-P746PE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the verification-target resolver change and its focused tests. Existing verification records remain readable; no schema or persisted task migration is introduced."
-  Findings: ""
+  Findings: |-
+    - Observation: Qualification dependencies were incorrectly treated as lifecycle-compressible task artifacts, so their quality-review changes could be hidden behind a primary-task README mismatch.
+      Impact: A release qualification packet could report an aggregate README mismatch instead of the precise stale dependency review and fail the intended gate.
+      Resolution: Lifecycle compression is now scoped to the primary and included batch tasks; qualification dependencies remain semantic review inputs.
 extensions:
   workflow_route_baseline:
     start_head_sha: "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e"
@@ -563,6 +622,56 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-31T15:31:15.267Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: semantic verification target remains stable through full closure history.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:29:00.456Z, excerpt_hash=sha256:652b4ebeca3d23477a5f7d18c6209cba69f4a74d077fa1f5fef8c47ae3447428
+
+Details:
+
+Command: bunx vitest run evaluator qualification, closure runtime, and quality-review-target focused checks
+Result: pass
+Evidence: qualification 1/1, complete pre-merge and included-batch closure 2/2, resolver 14/14 at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1
+Scope: exact semantic target selection across primary, included batch, and qualification dependency history
+
+Command: bunx vitest run seven related evaluator, verification, batch ownership, integration, resolver, and qualification files
+Result: pass
+Evidence: 7 files and 74 tests passed at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1
+Scope: direct, branch_pr, stale-record, runtime-evidence, batch, integration, and qualification behavior
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 critical CLI chunks passed at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1
+Scope: critical agent-efficiency, replay, exit, Git, protected-path, scope, symlink, and trust-boundary regressions
+
+Command: bun run typecheck; bun run format:check; git diff --check HEAD^ HEAD
+Result: pass
+Evidence: TypeScript build, repository Prettier check, and final semantic diff whitespace validation passed
+Scope: static correctness and formatting contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311404-P746PE-bind-verification-records-to-semantic-review-tar/.agentplane/tasks/202607311404-P746PE/blueprint/resolved-snapshot.json
+- old_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+- current_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311404-P746PE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -570,3 +679,7 @@ DecisionContextRef:
 Revert the verification-target resolver change and its focused tests. Existing verification records remain readable; no schema or persisted task migration is introduced.
 
 ## Findings
+
+- Observation: Qualification dependencies were incorrectly treated as lifecycle-compressible task artifacts, so their quality-review changes could be hidden behind a primary-task README mismatch.
+  Impact: A release qualification packet could report an aggregate README mismatch instead of the precise stale dependency review and fail the intended gate.
+  Resolution: Lifecycle compression is now scoped to the primary and included batch tasks; qualification dependencies remain semantic review inputs.

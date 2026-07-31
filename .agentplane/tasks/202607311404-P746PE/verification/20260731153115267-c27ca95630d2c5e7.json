@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run evaluator qualification, closure runtime, and quality-review-target focused checks\nResult: pass\nEvidence: qualification 1/1, complete pre-merge and included-batch closure 2/2, resolver 14/14 at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1\nScope: exact semantic target selection across primary, included batch, and qualification dependency history\n\nCommand: bunx vitest run seven related evaluator, verification, batch ownership, integration, resolver, and qualification files\nResult: pass\nEvidence: 7 files and 74 tests passed at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1\nScope: direct, branch_pr, stale-record, runtime-evidence, batch, integration, and qualification behavior\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 critical CLI chunks passed at 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1\nScope: critical agent-efficiency, replay, exit, Git, protected-path, scope, symlink, and trust-boundary regressions\n\nCommand: bun run typecheck; bun run format:check; git diff --check HEAD^ HEAD\nResult: pass\nEvidence: TypeScript build, repository Prettier check, and final semantic diff whitespace validation passed\nScope: static correctness and formatting contract",
+  "digest": "sha256:c27ca95630d2c5e7dde5ddae1c63a7c4c0f0f9f7e7341a33a2032b1556796ccc",
+  "implementation_sha": "9d4b182abb337d2849f7e25760ef4b2ad3d99aa1",
+  "kind": "task_verification_record",
+  "note": "PASS: semantic verification target remains stable through full closure history.",
+  "recorded_at": "2026-07-31T15:31:15.267Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused verification-record tests that create an implementation commit followed by lifecycle-only task artifacts, then record verification. Expected: the generated record implementation_sha equals the semantic implementation commit, not the later lifecycle HEAD.\n2. Prepare an evaluator work order for the same fixture. Expected: evaluated_sha and the frozen verification record implementation_sha are byte-for-byte equal, and the record remains accepted.\n3. Run the relevant evaluator runtime-evidence and verification command suites. Expected: existing direct-mode, branch_pr, stale-record, and runtime-evidence behavior remains green.\n4. Run bun run test:critical. Expected: all critical CLI chunks pass.\n5. Review the final diff and structured verification evidence. Expected: changes are limited to verification target resolution and focused tests; quality freshness and fail-closed behavior are not weakened.",
+  "scope_digest": "sha256:652b4ebeca3d23477a5f7d18c6209cba69f4a74d077fa1f5fef8c47ae3447428",
+  "task_id": "202607311404-P746PE",
+  "verification_command": "agentplane verify 202607311404-P746PE --ok --by TESTER",
+  "verifier": "TESTER"
+}

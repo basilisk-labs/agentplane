@@ -13,7 +13,7 @@ Created: 2026-07-31T14:05:33.781Z
 ## Verification
 
 - State: ok
-- Note: PASS with immutable evidence scope: source and managed task artifacts pass range whitespace validation at 0af1c1a64.
+- Note: PASS: semantic verification target remains stable through full closure history.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
