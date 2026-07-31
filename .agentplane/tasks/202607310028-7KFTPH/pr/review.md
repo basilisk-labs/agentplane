@@ -6,7 +6,7 @@ Created: 2026-07-31T00:29:18.768Z
 
 - Task: `202607310028-7KFTPH`
 - Title: Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607310028-7KFTPH/re-qualify-the-agentplane-0-7-0-beta-2-milestone`
 - Canonical task record: `.agentplane/tasks/202607310028-7KFTPH/README.md`
 
