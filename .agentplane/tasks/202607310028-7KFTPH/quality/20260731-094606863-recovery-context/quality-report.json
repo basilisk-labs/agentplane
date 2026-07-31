@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607310028-7KFTPH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T09:46:08.157Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "8e92bbc0923d0c6a960a7c842abc89af9c63b7ba",
+  "blueprint_digest": "a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162",
+  "findings": [
+    "PASS task outcome, FAIL release gate: the live 50-run/55-episode capture is bound to product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878 and fails harness setup latency, first-mutation sample coverage, and verified-result latency.",
+    "The automatic qualification packet remains conservative but embeds the older b587054 candidate measurement; the current live measurement is preserved separately in rf04-live-candidate-summary.v1.json.",
+    "The runtime-bridge rematerialization command is blocked because authoritative sanitized bridge envelopes are absent; this is a reproducibility defect for the next implementation wave, not a reason to publish beta.2."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The committed matched-baseline summary is treated as authoritative for the manual current-candidate comparison because its raw runtime-bridge envelopes are absent."
+  ],
+  "residual_risks": []
+}
