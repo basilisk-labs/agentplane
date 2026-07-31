@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-2NDXVB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T23:37:15.697Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The task/lifecycle/route slice satisfies the approved boundary: command declarations are capability-explicit, local route evaluation stays provider-lazy, lifecycle mutation is denied outside declared sessions, and task begin no longer intercepts global stdout.",
+  "evaluated_sha": "777a3cc1049be9be0117174db3c406a59979faf6",
+  "blueprint_digest": "6da3bd6e284423315e176aa3e368fb2af9851d74b332cbeff5f6e150e24d64ec",
+  "findings": [
+    "Catalog profiles and narrow loaders consistently replace the legacy CommandNeeds adapter for the in-scope command families; deliberately excluded runner, hosted-close, normalization, and Obsidian surfaces remain on their owning slices.",
+    "Status, brief, and next-action select local versus remote context from parsed intent, so provider preparation does not occur for local routing."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-2NDXVB/verification/task-lifecycle-route-migration.md",
+    "777a3cc1049be9be0117174db3c406a59979faf6"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "CommandContext remains a compatibility value and therefore field-level isolation depends on the RF-24 fan-in after all command-family migrations."
+  ],
+  "residual_risks": [
+    "The full fast suite can exceed per-test timeouts under concurrent load; isolated task-branch and clean-main replay-security controls both pass."
+  ]
+}
