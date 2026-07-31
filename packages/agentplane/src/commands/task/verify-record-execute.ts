@@ -216,6 +216,7 @@ async function recordVerificationResult(opts: {
         workflowDir: config.paths.workflow_dir,
         taskId: current.id,
         taskIds: qualityReviewTaskIds,
+        lifecycleTaskIds: batchTaskIds,
         previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
       });
       if (
