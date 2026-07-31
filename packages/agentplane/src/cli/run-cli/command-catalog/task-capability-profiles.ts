@@ -38,8 +38,17 @@ export const TASK_ROUTE_REQUIREMENTS = [
   "provider",
 ] as const satisfies readonly CommandCapability[];
 
+export const TASK_ROUTE_LIFECYCLE_REQUIREMENTS = [
+  ...TASK_LIFECYCLE_REQUIREMENTS,
+  "route.remote",
+  "provider",
+] as const satisfies readonly CommandCapability[];
+
 export type TaskReadSession = CommandSession<(typeof TASK_READ_REQUIREMENTS)[number]>;
 export type TaskWriteSession = CommandSession<(typeof TASK_WRITE_REQUIREMENTS)[number]>;
 export type TaskLifecycleSession = CommandSession<(typeof TASK_LIFECYCLE_REQUIREMENTS)[number]>;
 export type TaskRouteLocalSession = CommandSession<(typeof TASK_ROUTE_LOCAL_REQUIREMENTS)[number]>;
 export type TaskRouteSession = CommandSession<(typeof TASK_ROUTE_REQUIREMENTS)[number]>;
+export type TaskRouteLifecycleSession = CommandSession<
+  (typeof TASK_ROUTE_LIFECYCLE_REQUIREMENTS)[number]
+>;

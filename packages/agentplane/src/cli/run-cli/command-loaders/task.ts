@@ -8,6 +8,7 @@ import {
 import type {
   TaskLifecycleSession,
   TaskReadSession,
+  TaskRouteLifecycleSession,
   TaskRouteLocalSession,
   TaskRouteSession,
   TaskWriteSession,
@@ -25,6 +26,16 @@ function getSessionContext<
 }
 
 function getTaskRouteContexts(session: TaskRouteSession) {
+  return {
+    getLocalContext: getSessionContext(session, "route.local"),
+    getRemoteContext: async (command: string) => {
+      await session.require("route.remote", command);
+      return await session.require("provider", command);
+    },
+  };
+}
+
+function getTaskAuthorityRouteContexts(session: TaskRouteLifecycleSession) {
   return {
     getLocalContext: getSessionContext(session, "route.local"),
     getRemoteContext: async (command: string) => {
@@ -87,9 +98,9 @@ export const loadTaskAnswerSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/answer.command.js").then((m) =>
     m.makeRunTaskAnswerHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskAuthorityGrantSpec = (session: TaskLifecycleSession) =>
+export const loadTaskAuthorityGrantSpec = (session: TaskRouteLifecycleSession) =>
   import("../../../commands/task/authority-grant.command.js").then((m) =>
-    m.makeRunTaskAuthorityGrantHandler(getSessionContext(session, "route.local")),
+    m.makeRunTaskAuthorityGrantHandler(getTaskAuthorityRouteContexts(session)),
   );
 export const loadTaskListSpec = (session: TaskReadSession) =>
   import("../../../commands/task/list.run.js").then((m) =>
@@ -215,9 +226,9 @@ export const loadTaskObservationsCheckSpec = (session: TaskReadSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
     m.makeRunTaskObservationsCheckHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskObservationsTriageSpec = (session: TaskWriteSession) =>
+export const loadTaskObservationsTriageSpec = (session: TaskReadSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
-    m.makeRunTaskObservationsTriageHandler(getSessionContext(session, "task.write")),
+    m.makeRunTaskObservationsTriageHandler(getSessionContext(session, "task.read")),
   );
 export const loadTaskObservationsHarvestSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>

@@ -1,10 +1,28 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { parseCommandArgv } from "../../cli/spec/parse.js";
+import type { CommandCtx } from "../../cli/spec/spec.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
-import { taskAuthorityGrantSpec } from "./authority-grant.command.js";
+const mocks = vi.hoisted(() => ({
+  buildTaskRouteDecision: vi.fn(),
+}));
+
+vi.mock("../shared/route-decision.js", () => ({
+  buildTaskRouteDecision: mocks.buildTaskRouteDecision,
+}));
+
+import {
+  makeRunTaskAuthorityGrantHandler,
+  taskAuthorityGrantSpec,
+} from "./authority-grant.command.js";
 
 describe("task authority grant", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.buildTaskRouteDecision.mockRejectedValue(new Error("stop after context selection"));
+  });
+
   it("preserves the explicit hosted-route context emitted by task next-action", () => {
     expect(
       parseCommandArgv(taskAuthorityGrantSpec, [
@@ -29,4 +47,33 @@ describe("task authority grant", () => {
       },
     });
   });
+
+  it.each([
+    { remote: false, selected: "local" },
+    { remote: true, selected: "remote" },
+  ] as const)(
+    "selects the $selected route context before rebuilding authority",
+    async (testCase) => {
+      const commandContext = {} as CommandContext;
+      const getLocalContext = vi.fn(() => Promise.resolve(commandContext));
+      const getRemoteContext = vi.fn(() => Promise.resolve(commandContext));
+      const run = makeRunTaskAuthorityGrantHandler({ getLocalContext, getRemoteContext });
+
+      await expect(
+        run({ cwd: "/repo", rootOverride: null } as CommandCtx, {
+          taskId: "T-1",
+          operationId: "pr.open",
+          operationDigest: "sha256:operation",
+          stateFingerprintDigest: "sha256:fingerprint",
+          stateScopeDigest: "sha256:scope",
+          by: "USER",
+          ttlMinutes: 15,
+          remote: testCase.remote,
+        }),
+      ).rejects.toThrow("stop after context selection");
+
+      expect(getLocalContext).toHaveBeenCalledTimes(testCase.remote ? 0 : 1);
+      expect(getRemoteContext).toHaveBeenCalledTimes(testCase.remote ? 1 : 0);
+    },
+  );
 });
