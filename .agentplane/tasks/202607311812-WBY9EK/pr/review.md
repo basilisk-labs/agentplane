@@ -29,10 +29,10 @@ Created: 2026-07-31T18:13:29.527Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-conflict-rework.test.ts    | 132 +++++++++++++++++++++
- .../src/commands/pr/conflict-rework.test.ts        |  29 +++++
- .../agentplane/src/commands/pr/conflict-rework.ts  |  42 ++++---
- 3 files changed, 189 insertions(+), 14 deletions(-)
+ .../run-cli.core.pr-conflict-publication.test.ts   | 279 +++++++++++++++++++++
+ .../src/commands/pr/conflict-rework.test.ts        |  29 +++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  42 ++--
+ 3 files changed, 336 insertions(+), 14 deletions(-)
 ```
 
 </details>

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema",
   "created_at": "2026-07-31T18:13:29.527Z",
-  "diffstat_sha256": "sha256:c078f5ef607f482bf82d19eab8334aeaec10d2b0dac9e1eb26a87a241a522973",
+  "diffstat_sha256": "sha256:6365fb2c136116996003a6ad2331f04a8835906ca4409404be03570f1819664d",
   "last_verified_at": "2026-07-31T18:19:56.955Z",
   "last_verified_diffstat_sha256": "sha256:c078f5ef607f482bf82d19eab8334aeaec10d2b0dac9e1eb26a87a241a522973",
   "pr_number": 4710,
