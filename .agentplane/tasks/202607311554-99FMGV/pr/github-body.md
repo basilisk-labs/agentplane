@@ -16,13 +16,7 @@ When an OPEN protected-base PR reports conflicts but the local task branch is a 
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21,
-conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing,
-and real CT2725 route projection passed.
-```
+- Note: PASS: structured verification for semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4.
 - Canonical workflow state lives in the task README.
 
 <details>
