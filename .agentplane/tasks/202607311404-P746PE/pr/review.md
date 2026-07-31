@@ -32,6 +32,7 @@ Created: 2026-07-31T14:05:33.781Z
  .../evaluator-qualification-packet.test.ts         |   1 +
  .../evaluator/evaluator-qualification-review.ts    |   4 +-
  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+ .../evaluator/evaluator-run.command.test.ts        |   7 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   | 290 ++++++++++++++++++++-
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../commands/pr/internal/sync-batch-ownership.ts   |  22 ++
@@ -39,7 +40,7 @@ Created: 2026-07-31T14:05:33.781Z
  .../src/commands/shared/quality-review-target.ts   |   9 +-
  .../task/qualification-packet-dependencies.ts      |   7 +-
  .../src/commands/task/verify-record-execute.ts     |  22 +-
- 10 files changed, 362 insertions(+), 20 deletions(-)
+ 11 files changed, 366 insertions(+), 23 deletions(-)
 ```
 
 </details>
