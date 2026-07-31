@@ -28,7 +28,7 @@ incident clearance, and task-registry readiness also pass.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T11:44:30.841Z
+- Updated: 2026-07-31T12:49:53.167Z
 - Branch: task/202607311143-YT435C/release-v0-6-26
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
