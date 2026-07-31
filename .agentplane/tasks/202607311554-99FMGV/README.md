@@ -4,7 +4,7 @@ title: "Allow fast-forward publication before conflict rework"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T16:16:14.973Z"
+  updated_by: "TESTER"
+  note: "PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed."
   attempts: 0
 commit:
   hash: "a2c70c4504b3d3729e0cc0767e64b796d9d951ba"
@@ -57,8 +57,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation recorded: guarded publication now requires a clean strict descendant and preserves CODER semantic conflict rework after provider alignment."
+  -
+    type: "verify"
+    at: "2026-07-31T16:16:14.973Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed."
 doc_version: 3
-doc_updated_at: "2026-07-31T16:15:48.580Z"
+doc_updated_at: "2026-07-31T16:16:16.546Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
@@ -78,11 +84,44 @@ sections:
     5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T16:16:14.973Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T16:15:48.580Z, excerpt_hash=sha256:c1fbf1ebd599a5379cf93aa75fd17b0e1cba6aebd0ef736022215ce82b4fe0a5
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311554-99FMGV-allow-fast-forward-publication-before-conflict-r/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json
+    - old_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+    - current_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311554-99FMGV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607311554-99FMGV
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The prior route stopped on provider/local head mismatch. The repaired route selected approval.pr.head.publish for CT2725 with provider c1a783b40e9d6c622e583e5e1dfebb8f23f088bb and clean local ff68dc96afa7b5e086440d332bd50b3b5623232e.
+      Impact: A clean strict descendant can now be published without CLI semantic conflict resolution; divergent, dirty, unknown, and branch-mismatch states remain fail-closed.
+      Resolution: Verified guarded ancestry, current verified open-PR rework eligibility, provider-base ancestry, CODER handoff after alignment, and no rebase/merge/force-push/hunk-selection contract.
 extensions:
   workflow_route_baseline:
     start_head_sha: "3a42f9534b567fb4e86387bbbf6b2984a753bf6f"
@@ -115,6 +154,36 @@ When an OPEN protected-base PR reports conflicts but the local task branch is a 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T16:16:14.973Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T16:15:48.580Z, excerpt_hash=sha256:c1fbf1ebd599a5379cf93aa75fd17b0e1cba6aebd0ef736022215ce82b4fe0a5
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311554-99FMGV-allow-fast-forward-publication-before-conflict-r/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json
+- old_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+- current_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311554-99FMGV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607311554-99FMGV
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -123,3 +192,7 @@ When an OPEN protected-base PR reports conflicts but the local task branch is a 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The prior route stopped on provider/local head mismatch. The repaired route selected approval.pr.head.publish for CT2725 with provider c1a783b40e9d6c622e583e5e1dfebb8f23f088bb and clean local ff68dc96afa7b5e086440d332bd50b3b5623232e.
+  Impact: A clean strict descendant can now be published without CLI semantic conflict resolution; divergent, dirty, unknown, and branch-mismatch states remain fail-closed.
+  Resolution: Verified guarded ancestry, current verified open-PR rework eligibility, provider-base ancestry, CODER handoff after alignment, and no rebase/merge/force-push/hunk-selection contract.
