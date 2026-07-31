@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Implementation 7a6a2ee8f3ec records the required 3 cold and 5 warm runs per compiler, exact timing and RSS calculations, and a measured 4.46x to 4.93x speedup without a memory regression.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Diagnostic and emit drift are classified: supported root and website paths are green after bounded candidate config changes, JavaScript emit is unchanged, declaration drift is order-only or parenthesis-only, and pre-existing non-gating config failures are explicit.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The side-by-side resolution proof and passing lint, trust-boundary, no-console, compatibility, frozen-install, typecheck, format, routing, task-state, syntax, and diff gates support the GO decision without prematurely landing the migration.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The local Apple M4 result predicts hosted benefit; the contract therefore keeps Linux and Windows hosted checks as hard DRYTNK gates."
+  ]
+}

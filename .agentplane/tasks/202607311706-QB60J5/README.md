@@ -4,7 +4,7 @@ title: "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -30,16 +30,47 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the TypeScript 7 evidence gate for AgentPlane 0.7."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T17:51:03.105Z"
+  updated_by: "TESTER"
+  note: "Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T17:51:38.698Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "7a6a2ee8f3ec8d8055136c45d5e53b3e0679f456"
+  blueprint_digest: "0a853313c2d88fe649ee7750dae792ecf78a7e4696e56067b8885330da375514"
+  evidence_refs:
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311706-QB60J5/README.md"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311706-QB60J5/quality/20260731-175138576-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Implementation 7a6a2ee8f3ec records the required 3 cold and 5 warm runs per compiler, exact timing and RSS calculations, and a measured 4.46x to 4.93x speedup without a memory regression."
+    - "Diagnostic and emit drift are classified: supported root and website paths are green after bounded candidate config changes, JavaScript emit is unchanged, declaration drift is order-only or parenthesis-only, and pre-existing non-gating config failures are explicit."
+    - "The side-by-side resolution proof and passing lint, trust-boundary, no-console, compatibility, frozen-install, typecheck, format, routing, task-state, syntax, and diff gates support the GO decision without prematurely landing the migration."
+commit:
+  hash: "7a6a2ee8f3ec8d8055136c45d5e53b3e0679f456"
+  message: "🧪 QB60J5 benchmark: freeze TypeScript 7 adoption contract"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "TESTER"
+    body: "Implementation target: TypeScript 7 benchmark evidence and frozen adoption contract."
 events:
   -
     type: "status"
@@ -48,8 +79,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-31T17:50:50.260Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation target: TypeScript 7 benchmark evidence and frozen adoption contract."
+  -
+    type: "verify"
+    at: "2026-07-31T17:51:03.105Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed."
 doc_version: 3
-doc_updated_at: "2026-07-31T17:47:05.196Z"
+doc_updated_at: "2026-07-31T17:51:03.949Z"
 doc_updated_by: "TESTER"
 description: "Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration."
 sections:
@@ -74,6 +118,36 @@ sections:
     5. Record a go/no-go decision that freezes exact package aliases and versions, checker/builder concurrency, CI resource limits, rollback command, residual risks, and the implementation task handoff.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T17:51:03.105Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T17:50:50.260Z, excerpt_hash=sha256:edd26f13b67347bbe224437f2883b183c775e8f1c03f1e5411b759c1d0fcb26a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311706-QB60J5-benchmark-typescript-7-and-freeze-the-agentplane/.agentplane/tasks/202607311706-QB60J5/blueprint/resolved-snapshot.json
+    - old_digest: 0a853313c2d88fe649ee7750dae792ecf78a7e4696e56067b8885330da375514
+    - current_digest: 0a853313c2d88fe649ee7750dae792ecf78a7e4696e56067b8885330da375514
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311706-QB60J5
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +156,10 @@ sections:
     - Observation: TypeScript 7.0.2 completed the root graph 4.46x to 4.93x faster than TypeScript 6.0.3 with 8.6% to 14.4% lower peak RSS after the required baseUrl compatibility changes.
       Impact: AgentPlane 0.7 should adopt the native compiler for typechecking, but TypeScript 7 cannot replace the compiler API used by ESLint and trust-boundary scripts.
       Resolution: Freeze the side-by-side contract in benchmark/typescript-7-adoption-contract.md and hand implementation to 202607311707-DRYTNK.
+
+    - Observation: TypeScript 7 is viable only as a side-by-side native typecheck compiler; root and Docusaurus baseUrl usage require bounded compatibility changes.
+      Impact: The v0.7 migration can reduce typecheck latency materially without moving compiler-API consumers off TypeScript 6.
+      Resolution: Proceed through DRYTNK with exact pins, hosted Windows/Linux gates, declaration drift guard, and the TypeScript 6 rollback override.
 extensions:
   workflow_route_baseline:
     start_head_sha: "54c1d90ac8cd30ea28d165c8e41fcdc1542e740c"
@@ -118,6 +196,36 @@ Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T17:51:03.105Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T17:50:50.260Z, excerpt_hash=sha256:edd26f13b67347bbe224437f2883b183c775e8f1c03f1e5411b759c1d0fcb26a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311706-QB60J5-benchmark-typescript-7-and-freeze-the-agentplane/.agentplane/tasks/202607311706-QB60J5/blueprint/resolved-snapshot.json
+- old_digest: 0a853313c2d88fe649ee7750dae792ecf78a7e4696e56067b8885330da375514
+- current_digest: 0a853313c2d88fe649ee7750dae792ecf78a7e4696e56067b8885330da375514
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311706-QB60J5
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -130,3 +238,7 @@ Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all 
 - Observation: TypeScript 7.0.2 completed the root graph 4.46x to 4.93x faster than TypeScript 6.0.3 with 8.6% to 14.4% lower peak RSS after the required baseUrl compatibility changes.
   Impact: AgentPlane 0.7 should adopt the native compiler for typechecking, but TypeScript 7 cannot replace the compiler API used by ESLint and trust-boundary scripts.
   Resolution: Freeze the side-by-side contract in benchmark/typescript-7-adoption-contract.md and hand implementation to 202607311707-DRYTNK.
+
+- Observation: TypeScript 7 is viable only as a side-by-side native typecheck compiler; root and Docusaurus baseUrl usage require bounded compatibility changes.
+  Impact: The v0.7 migration can reduce typecheck latency materially without moving compiler-API consumers off TypeScript 6.
+  Resolution: Proceed through DRYTNK with exact pins, hosted Windows/Linux gates, declaration drift guard, and the TypeScript 6 rollback override.

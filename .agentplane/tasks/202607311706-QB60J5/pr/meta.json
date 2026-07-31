@@ -3,11 +3,12 @@
   "branch": "task/202607311706-QB60J5/benchmark-typescript-7-and-freeze-the-agentplane",
   "created_at": "2026-07-31T17:28:35.470Z",
   "diffstat_sha256": "sha256:8035fd6ebd0753291e01423c76d7fb2d44be6a8d0e59a8243db13d836dd97346",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-31T17:51:03.105Z",
+  "last_verified_diffstat_sha256": "sha256:8035fd6ebd0753291e01423c76d7fb2d44be6a8d0e59a8243db13d836dd97346",
   "schema_version": 1,
   "task_id": "202607311706-QB60J5",
   "updated_at": "2026-07-31T17:28:35.470Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
