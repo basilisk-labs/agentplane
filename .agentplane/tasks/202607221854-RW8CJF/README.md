@@ -1,10 +1,11 @@
 ---
 id: "202607221854-RW8CJF"
 title: "Define granular CommandSession capabilities and migrate a pilot slice"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -63,11 +64,16 @@ quality_review:
     - "New session handlers cannot request undeclared capabilities at compile time, while unsafe casts and legacy overreach fail with typed E_INTERNAL before the target resolver runs."
     - "Catalog entries expose granular requirements, preparation nodes, and compatibility mode; AGENTPLANE_TRACE emits per-node duration and resolution status."
     - "Representative output, project, config, task-read, local/remote route, and provider commands migrated without a big-bang catalog rewrite."
-commit: null
+commit:
+  hash: "04e6b589abdac03f56c597baac8948920302dd55"
+  message: "🔎 RW8CJF task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -82,8 +88,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "CommandSession capability pilot passed typed denial, laziness, trace, architecture, critical CLI, typecheck, and bundle gates at implementation SHA 33e59899d."
+  -
+    type: "status"
+    at: "2026-07-31T20:24:41.627Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:22:46.232Z"
+doc_updated_at: "2026-07-31T20:24:41.643Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
@@ -131,6 +144,9 @@ sections:
       Impact: Requirements and access are typed and traceable, but field-level runtime isolation remains deferred.
       Resolution: Migrate underlying resolver slices incrementally in the downstream RC2 tasks while retaining the explicit legacy adapter.
 extensions:
+  implementation_commit:
+    hash: "33e59899d5cd381f089b96746fb715fa5c84a6a2"
+    message: "♻️ RW8CJF task: add granular command sessions"
   workflow_route_baseline:
     start_head_sha: "1adc9896b158719e908acc894b3651bfec2348c1"
     version: 1
