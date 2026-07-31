@@ -4,7 +4,7 @@ title: "Repair beta.2 guard and clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,8 @@ quality_review:
   findings:
     - "The clone baseline was refreshed, but the frozen evidence does not substantively review or classify the three absolute clone-metric increases."
 commit:
-  hash: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
-  message: "🧩 3C8V0X code: repair guard and clone baseline"
+  hash: "8250bd520904b4ad9e105fce32d303c0e89ae1ce"
+  message: "♻️ 3C8V0X code: remove clone drift"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: moved the shared record-guard repair and measured clone-baseline refresh into this bounded task; beta.2 qualification remains a separate evidence-only gate."
+  -
+    author: "CODER"
+    body: "Implemented: removed all three beta.2 clone-drift groups; source commit 8250bd520904."
 events:
   -
     type: "status"
@@ -89,8 +92,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
+  -
+    type: "status"
+    at: "2026-07-30T23:59:39.998Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: removed all three beta.2 clone-drift groups; source commit 8250bd520904."
 doc_version: 3
-doc_updated_at: "2026-07-30T23:41:49.014Z"
+doc_updated_at: "2026-07-30T23:59:39.998Z"
 doc_updated_by: "CODER"
 description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
 sections:
