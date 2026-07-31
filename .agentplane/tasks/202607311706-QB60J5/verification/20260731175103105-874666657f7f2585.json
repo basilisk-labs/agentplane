@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:874666657f7f25851071dc27be76ea0fbcf405d5bc32e9c702a59ebd10fb769d",
+  "implementation_sha": "7a6a2ee8f3ec8d8055136c45d5e53b3e0679f456",
+  "kind": "task_verification_record",
+  "note": "Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed.",
+  "recorded_at": "2026-07-31T17:51:03.105Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Capture the TypeScript 6.0.3 baseline with at least three isolated cold runs and five warm runs of the root project-reference typecheck; record wall time, peak memory, diagnostic count, machine/runner shape, and exact commands in a task artifact.\n2. Install TypeScript 7 side-by-side without replacing the TypeScript 6 API surface, then run every repository tsconfig/project-reference path. Zero unexplained diagnostic, declaration, or emit drift is required.\n3. Exercise ESLint/typescript-eslint and every scripts/** consumer that imports the TypeScript compiler API. They must continue to resolve the pinned TypeScript 6 compatibility API while typecheck commands resolve TypeScript 7.\n4. Compare at least three TypeScript 7 cold runs and five warm runs against the same baseline. Adoption requires no correctness regression, no material peak-memory regression on CI-sized runners, and a measured typecheck improvement or a documented reason the smaller local graph masks expected CI savings.\n5. Record a go/no-go decision that freezes exact package aliases and versions, checker/builder concurrency, CI resource limits, rollback command, residual risks, and the implementation task handoff.",
+  "scope_digest": "sha256:edd26f13b67347bbe224437f2883b183c775e8f1c03f1e5411b759c1d0fcb26a",
+  "task_id": "202607311706-QB60J5",
+  "verification_command": "agentplane verify 202607311706-QB60J5 --ok --by TESTER",
+  "verifier": "TESTER"
+}
