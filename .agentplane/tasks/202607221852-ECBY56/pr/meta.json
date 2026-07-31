@@ -8,10 +8,10 @@
   "pr_number": 4700,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4700",
   "pre_merge_closure": {
-    "basis_commit": "da76a705009eb5c14b583c3fbf53c716dbead232",
+    "basis_commit": "b7a671f8d1c47477ba5f7423f35966f11c0ca194",
     "branch": "task/202607221852-ECBY56/expose-phase-scoped-run-tool-apis",
     "pr_number": 4700,
-    "recorded_at": "2026-07-31T10:56:33.695Z",
+    "recorded_at": "2026-07-31T10:58:46.119Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
