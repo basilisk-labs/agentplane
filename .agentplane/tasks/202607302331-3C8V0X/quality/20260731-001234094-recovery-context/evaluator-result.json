@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The frozen verification record metadata names implementation SHA 28774245e9eb01138a53eb174ec579c2ede58fed, while its details and runtime evidence verify evaluated SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.",
+      "broken_invariant": "Verification evidence should bind consistently to the evaluated implementation SHA; the deterministic runtime evidence resolves the discrepancy for this review, but the record metadata remains internally inconsistent.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/verification/20260731001148678-c0522417eb70e987.json",
+          "sha256": "sha256:971eea6c239ef2e052f58d18ec52cd9d17dbb178bc90864111b30e912ae1fe2f"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json",
+          "sha256": "sha256:7207aa47d8392e430b36d3d355341eefb0ee6169ffab25431cf13561ab078a26"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The one-token increase inside an existing clone group is non-material because clone count and duplicated-line count returned to the pre-beta.2 baseline and the clone ratchet passed."
+  ]
+}
