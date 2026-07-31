@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7918470c2a839ab20509b57044a14a62c5df2a40b9ce38d87208afcd91edc016",
+  "implementation_sha": "d9fa4e76ef2e7860c17a6069e41ac30806e6157e",
+  "kind": "task_verification_record",
+  "note": "RC.1 qualification is blocked by active incident INC-20260731-01 after critical, workflow coverage, and lifecycle gates passed; release prepublish correctly rejected the unresolved runner receipt-observation race.",
+  "recorded_at": "2026-07-31T13:37:05.041Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-rc.1 is an ancestor and has merged verification/evaluator/hosted-close evidence.\n2. Run `bun run test:critical`, `bun run coverage:workflow-suite`, `bun run lifecycle:invariants`, `bun run release:prepublish:fast`. Expected: all milestone checks pass on one reviewed SHA.\n3. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements.\n4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.",
+  "scope_digest": "sha256:33d29f96d9cc9641447f15803b5287f16a629fe035597ae85782852d011b3be0",
+  "task_id": "202607221908-AB2SFC",
+  "verification_command": "agentplane verify 202607221908-AB2SFC --rework --by TESTER",
+  "verifier": "TESTER"
+}
