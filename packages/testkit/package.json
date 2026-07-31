@@ -74,7 +74,7 @@
   },
   "scripts": {
     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit",
     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project testkit"
   }
 }

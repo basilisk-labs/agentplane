@@ -19,7 +19,7 @@
     "check-social-images": "node scripts/generate-social-images.mjs --check",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",
@@ -40,7 +40,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "sharp": "^0.35.1",
-    "typescript": "~6.0.3"
+    "typescript": "6.0.3"
   },
   "browserslist": {
     "production": [

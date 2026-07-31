@@ -1,8 +1,7 @@
 {
   // This file is not used in compilation. It is here just for a nice editor experience.
-  "extends": "@docusaurus/tsconfig",
+  "extends": "./tsconfig.docusaurus.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "strictNullChecks": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"]

@@ -3,6 +3,13 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 const TSC_NODE_HEAP_OPTION = "--max-old-space-size=4096";
+const DEFAULT_TYPESCRIPT_PACKAGE = "@typescript/native";
+const FALLBACK_TYPESCRIPT_PACKAGE = "typescript";
+const allowedTypescriptPackages = new Set([
+  DEFAULT_TYPESCRIPT_PACKAGE,
+  FALLBACK_TYPESCRIPT_PACKAGE,
+]);
+
 function findUp(relativePath) {
   let current = process.cwd();
   while (true) {
@@ -14,11 +21,21 @@ function findUp(relativePath) {
   }
 }
 
-const localTscEntrypoint = findUp(path.join("node_modules", "typescript", "bin", "tsc"));
+const typescriptPackage = process.env.AGENTPLANE_TYPESCRIPT_PACKAGE || DEFAULT_TYPESCRIPT_PACKAGE;
+
+if (!allowedTypescriptPackages.has(typescriptPackage)) {
+  throw new Error(
+    `Unsupported AGENTPLANE_TYPESCRIPT_PACKAGE=${JSON.stringify(typescriptPackage)}. Expected ${DEFAULT_TYPESCRIPT_PACKAGE} or ${FALLBACK_TYPESCRIPT_PACKAGE}.`,
+  );
+}
+
+const localTscEntrypoint = findUp(
+  path.join("node_modules", ...typescriptPackage.split("/"), "bin", "tsc"),
+);
 
 if (localTscEntrypoint === null) {
   throw new Error(
-    "TypeScript entrypoint not found under node_modules/typescript/bin/tsc. Run the repository install step before retrying.",
+    `TypeScript entrypoint not found for ${typescriptPackage}. Run the repository install step before retrying.`,
   );
 }
 
@@ -28,7 +45,14 @@ const nodeOptions = existingNodeOptions.includes("--max-old-space-size")
   : [TSC_NODE_HEAP_OPTION, existingNodeOptions].filter(Boolean).join(" ");
 
 const cliArgs = process.argv.slice(2);
-const tscArgs = cliArgs[0] === "-p" || cliArgs[0] === "--project" ? cliArgs : ["-b", ...cliArgs];
+const directInvocation =
+  cliArgs[0] === "-p" ||
+  cliArgs[0] === "--project" ||
+  cliArgs[0] === "-v" ||
+  cliArgs[0] === "--version" ||
+  cliArgs[0] === "-h" ||
+  cliArgs[0] === "--help";
+const tscArgs = directInvocation ? cliArgs : ["-b", ...cliArgs];
 
 const result = spawnSync(process.execPath, [localTscEntrypoint, ...tscArgs], {
   cwd: process.cwd(),
