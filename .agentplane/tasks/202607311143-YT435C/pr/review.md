@@ -29,9 +29,9 @@ Created: 2026-07-31T11:44:30.841Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../agentplane/src/commands/pr/integrate/internal/finalize.test.ts  | 1 +
- packages/agentplane/src/commands/pr/integrate/internal/finalize.ts  | 6 +++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts | 1 +
+ packages/agentplane/src/commands/pr/integrate/internal/finalize.ts      | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 ```
 
 </details>

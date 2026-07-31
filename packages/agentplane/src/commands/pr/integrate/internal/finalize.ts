@@ -92,11 +92,7 @@ export async function finalizeIntegrate(opts: {
   });
   await writeJsonStableIfChanged(opts.metaPath, nextMeta);
 
-  const diffstat = await gitDiffStat(
-    opts.gitRoot,
-    opts.baseShaBeforeMerge,
-    opts.branchHeadSha,
-  );
+  const diffstat = await gitDiffStat(opts.gitRoot, opts.baseShaBeforeMerge, opts.branchHeadSha);
   await writeTextIfChanged(opts.diffstatPath, diffstat ? `${diffstat}\n` : "");
 
   const verifyDesc =

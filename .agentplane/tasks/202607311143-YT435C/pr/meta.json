@@ -2,7 +2,7 @@
   "base": "codex/fix-v0.6.24-closeout-route",
   "branch": "task/202607311143-YT435C/release-v0-6-26",
   "created_at": "2026-07-31T11:44:30.841Z",
-  "diffstat_sha256": "sha256:449dbff1ca787cf66f88f21e8f64ad58c1c991f6a7587a2f189904831429a9f0",
+  "diffstat_sha256": "sha256:85441a10e4bf26c5a47f732f9f0fdef9d1422deafe4cef47e6b230c62971ef0e",
   "last_verified_at": "2026-07-31T14:13:51.473Z",
   "last_verified_diffstat_sha256": "sha256:449dbff1ca787cf66f88f21e8f64ad58c1c991f6a7587a2f189904831429a9f0",
   "pr_number": 4703,
