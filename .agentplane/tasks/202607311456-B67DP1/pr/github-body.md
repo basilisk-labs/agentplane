@@ -15,8 +15,8 @@ Post-merge follow-up for v0.6.26: compute integration diffstat from the captured
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: 19 focused integration tests passed; typecheck, format, lint:core, and release:prepublish:fast passed.
 - Canonical workflow state lives in the task README.
 
 <details>

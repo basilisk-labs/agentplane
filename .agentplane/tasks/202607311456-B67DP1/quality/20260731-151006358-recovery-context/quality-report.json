@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311456-B67DP1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T15:10:06.358Z",
+  "verdict": "pass",
+  "summary": "Immutable integration finalization regression is covered and all local gates pass.",
+  "evaluated_sha": "5581c0a6d7f23f72a83d64f252dc0e3f5f4e2199",
+  "blueprint_digest": "928811618deb960f4dc645810e7755cfc6423103ca346d6a2adb94d773c707ae",
+  "findings": [
+    "finalizeIntegrate now computes diffstat from captured branchHeadSha, so post-merge branch cleanup cannot invalidate finalization."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311456-B67DP1/README.md",
+    "packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
