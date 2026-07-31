@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311143-YT435C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:31:07.524Z",
+  "verdict": "pass",
+  "summary": "v0.6.26 maintenance candidate is release-ready after eliminating direct routing loops, stale closeout routes, untracked task loss, and integration-lane environment leakage.",
+  "evaluated_sha": "a913b33383db5f5b7c167da51c4ba69cda14cd64",
+  "blueprint_digest": "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4",
+  "findings": [
+    "Verification subprocesses are isolated from ap-only presentation variables; exact regression and the full release matrix pass on a913b333."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311143-YT435C/README.md",
+    "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts",
+    "packages/agentplane/src/commands/shared/pr-meta.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+  ],
+  "missing_tests": [
+    "none"
+  ],
+  "hidden_assumptions": [
+    "Publish workflow must target the exact maintenance merge SHA, not main."
+  ],
+  "residual_risks": [
+    "Publication remains pending hosted checks and exact-SHA workflow completion."
+  ]
+}

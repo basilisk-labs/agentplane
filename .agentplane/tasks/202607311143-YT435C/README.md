@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -31,30 +31,30 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-31T13:12:53.437Z"
+  state: "ok"
+  updated_at: "2026-07-31T13:30:56.028Z"
   updated_by: "CODER"
-  note: "Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent presentation mode and failing output expectations."
-  attempts: 1
+  note: "v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-31T13:01:48.570Z"
+  updated_at: "2026-07-31T13:31:07.524Z"
   updated_by: "EVALUATOR"
-  note: "The lockfile review concern is disproved by the exact pinned installer and workflow command."
-  evaluated_sha: "1d297d1b128faf9cdc7c55805b5fd855197c980b"
+  note: "v0.6.26 maintenance candidate is release-ready after eliminating direct routing loops, stale closeout routes, untracked task loss, and integration-lane environment leakage."
+  evaluated_sha: "a913b33383db5f5b7c167da51c4ba69cda14cd64"
   blueprint_digest: "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4"
   evidence_refs:
     - ".agentplane/tasks/202607311143-YT435C/README.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-130148570-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-130148570-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-130148570-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-133107524-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-133107524-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-133107524-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json"
-    - ".github/workflows/prepublish.yml"
-    - ".github/workflows/publish.yml"
-    - "bun.lock"
+    - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+    - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
   findings:
-    - "Bun 1.3.6 force install produces no bun.lock diff for this workspace-only version bump."
-    - "Both prepublish and publish use Bun 1.3.6, and their exact frozen-install command passes on the candidate."
+    - "Verification subprocesses are isolated from ap-only presentation variables; exact regression and the full release matrix pass on a913b333."
 commit: null
 comments:
   -
@@ -154,8 +154,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: isolate integration verification subprocesses from AgentPlane presentation-mode environment."
+  -
+    type: "verify"
+    at: "2026-07-31T13:30:56.028Z"
+    author: "CODER"
+    state: "ok"
+    note: "v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:12:54.825Z"
+doc_updated_at: "2026-07-31T13:30:56.206Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -354,6 +360,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T13:30:56.028Z — VERIFY — ok
+
+    By: CODER
+
+    Note: v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:12:54.825Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -382,6 +418,10 @@ sections:
     - Observation: runShellCommand forwards the AgentPlane launcher presentation environment into arbitrary verification subprocesses.
       Impact: Verification behavior differs between direct execution and integration, producing false failures for valid suites.
       Resolution: Sanitize AgentPlane presentation-mode variables at the verification process boundary and add a focused regression.
+
+    - Observation: Integration-only release verification inherited AGENTPLANE_CLI_ALIAS and AGENTPLANE_AGENT_MODE from the ap launcher.
+      Impact: Child CLI output tests ran in agent presentation mode and failed despite the candidate passing outside the integration lane.
+      Resolution: runShellCommand now removes both launcher-only variables before starting verification subprocesses, with a regression assertion on the child environment.
 extensions:
   implementation_commit:
     hash: "1d297d1b128faf9cdc7c55805b5fd855197c980b"
@@ -593,6 +633,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T13:30:56.028Z — VERIFY — ok
+
+By: CODER
+
+Note: v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:12:54.825Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -625,3 +695,7 @@ DecisionContextRef:
 - Observation: runShellCommand forwards the AgentPlane launcher presentation environment into arbitrary verification subprocesses.
   Impact: Verification behavior differs between direct execution and integration, producing false failures for valid suites.
   Resolution: Sanitize AgentPlane presentation-mode variables at the verification process boundary and add a focused regression.
+
+- Observation: Integration-only release verification inherited AGENTPLANE_CLI_ALIAS and AGENTPLANE_AGENT_MODE from the ap launcher.
+  Impact: Child CLI output tests ran in agent presentation mode and failed despite the candidate passing outside the integration lane.
+  Resolution: runShellCommand now removes both launcher-only variables before starting verification subprocesses, with a regression assertion on the child environment.

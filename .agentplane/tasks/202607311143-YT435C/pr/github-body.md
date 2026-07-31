@@ -15,12 +15,14 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent
-presentation mode and failing output expectations.
+v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34,
+significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30,
+typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation
+env.
 ```
 - Canonical workflow state lives in the task README.
 
