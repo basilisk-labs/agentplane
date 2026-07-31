@@ -4,7 +4,7 @@ title: "Extend supervised execution to branch_pr"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "Every registry-backed mechanical operation is executed in-process, followed by route recomputation, and persisted under an idempotency key before effects."
     - "Provider uncertainty, queue contention, stale/conflict rework, deleted branches, and missing merge authority terminate as typed stops rather than implicit retries."
 commit:
-  hash: "49f4e7c7a0ece8c38018f8b69f826f035685f34f"
-  message: "🚧 71SCSW task: implement branch_pr supervision"
+  hash: "3d20b919de9b7d2deb161d8947a8df1d7000321e"
+  message: "🚧 71SCSW task: fix quality target receipt"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: 49f4e7c7a. CLI-owned branch_pr supervision now covers semantic work, verification, PR/provider operations, integration queue, hosted close, durable idempotency, and cleanup."
+  -
+    author: "CODER"
+    body: "Implementation committed: strict quality target handling for CLI lifecycle receipts."
 events:
   -
     type: "status"
@@ -96,8 +99,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed."
+  -
+    type: "status"
+    at: "2026-07-31T12:20:58.037Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: strict quality target handling for CLI lifecycle receipts."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:09:27.135Z"
+doc_updated_at: "2026-07-31T12:20:58.037Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
