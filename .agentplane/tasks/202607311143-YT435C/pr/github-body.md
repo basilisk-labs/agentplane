@@ -19,8 +19,8 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 - Note:
 
 ```text
-Hosted format failure resolved; format:check, final fast prepublish, focused routing 9/9, incidents,
-and registry checks pass on v0.6.26 state.
+PR review thread resolved with exact workflow evidence: Bun 1.3.6 force install produced no bun.lock
+diff and frozen install exited 0 on the v0.6.26 candidate.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -6,14 +6,14 @@ Created: 2026-07-31T11:44:30.841Z
 
 - Task: `202607311143-YT435C`
 - Title: Release AgentPlane v0.6.26
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607311143-YT435C/release-v0-6-26`
 - Canonical task record: `.agentplane/tasks/202607311143-YT435C/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Hosted format failure resolved; format:check, final fast prepublish, focused routing 9/9, incidents, and registry checks pass on v0.6.26 state.
+- Note: PR review thread resolved with exact workflow evidence: Bun 1.3.6 force install produced no bun.lock diff and frozen install exited 0 on the v0.6.26 candidate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

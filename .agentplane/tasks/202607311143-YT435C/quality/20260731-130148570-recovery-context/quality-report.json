@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311143-YT435C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:01:48.570Z",
+  "verdict": "pass",
+  "summary": "The lockfile review concern is disproved by the exact pinned installer and workflow command.",
+  "evaluated_sha": "1d297d1b128faf9cdc7c55805b5fd855197c980b",
+  "blueprint_digest": "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4",
+  "findings": [
+    "Bun 1.3.6 force install produces no bun.lock diff for this workspace-only version bump.",
+    "Both prepublish and publish use Bun 1.3.6, and their exact frozen-install command passes on the candidate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311143-YT435C/README.md",
+    ".github/workflows/prepublish.yml",
+    ".github/workflows/publish.yml",
+    "bun.lock"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
