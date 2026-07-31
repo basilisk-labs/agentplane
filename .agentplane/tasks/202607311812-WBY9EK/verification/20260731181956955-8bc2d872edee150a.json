@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:8bc2d872edee150a1017c68795ab48e01ad17abda405a3e8c41d857b9698af36",
+  "implementation_sha": "ec05273fe44825a864f54aef15865b80afeeb847",
+  "kind": "task_verification_record",
+  "note": "PASS at ec05273fe448 under the PLANNER-authored contract: 35 focused tests prove verified DONE/no-queue fast-forward publication and aligned-authority gating; all 12 critical chunks, typecheck, routing, format, and diff checks pass.",
+  "recorded_at": "2026-07-31T18:19:56.955Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts`. Expected: a verified DONE task without queue/handoff routes a clean strict provider-head descendant to guarded non-force publication; after heads align, unresolved conflicts still require semantic route authority; divergent, dirty, and unverified cases remain fail-closed.\n2. Run `bun run typecheck`, `node .agentplane/policy/check-routing.mjs`, and formatting/diff checks for touched files. Expected: all static and routing contracts pass without unrelated changes.\n3. Run `bun run test:critical`. Expected: all critical CLI chunks pass, including side-effect authority, route safety, and trust-boundary regressions.\n4. Review the final diff and task evidence. Expected: changes remain bounded to conflict-rework preparation ordering and its unit/CLI regression coverage; no force-push, automatic merge/rebase, queue mutation, or weakened semantic authority is introduced.",
+  "scope_digest": "sha256:5b10453a492623ff2849150259e77233cbfc8d36735121620706d48ff4a23cea",
+  "task_id": "202607311812-WBY9EK",
+  "verification_command": "agentplane verify 202607311812-WBY9EK --ok --by TESTER",
+  "verifier": "TESTER"
+}

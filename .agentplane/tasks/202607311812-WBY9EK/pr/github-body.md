@@ -15,8 +15,14 @@ When a verified DONE task has a clean local branch that strictly fast-forwards t
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS at ec05273fe448 under the PLANNER-authored contract: 35 focused tests prove verified
+DONE/no-queue fast-forward publication and aligned-authority gating; all 12 critical chunks,
+typecheck, routing, format, and diff checks pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
