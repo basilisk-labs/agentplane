@@ -1,16 +1,18 @@
- bun.lock                                           |  47 +++++++-
+ bun.lock                                           |  47 ++++++-
+ depcruise.config.cjs                               |   6 +-
  package.json                                       |   6 +-
  packages/agentplane/package.json                   |   2 +-
- ...tical.agent-efficiency-replay-hardening.test.ts |  29 +++++
+ ...tical.agent-efficiency-replay-hardening.test.ts |  29 ++++
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/testkit/package.json                      |   2 +-
- .../internal/agent-efficiency-anchor-runtime.mjs   |  78 +++++++++++-
+ .../internal/agent-efficiency-anchor-runtime.mjs   |  78 ++++++++++-
  .../agent-efficiency-dependency-manifest.mjs       |   4 +-
- scripts/checks/check-typescript-toolchain.mjs      | 134 +++++++++++++++++++++
+ scripts/checks/check-typescript-toolchain.mjs      | 148 +++++++++++++++++++++
  scripts/checks/run-typescript-build.mjs            |  30 ++++-
  tsconfig.base.json                                 |  31 ++---
+ tsconfig.depcruise.json                            |   6 +
  website/package.json                               |   4 +-
  website/tsconfig.docusaurus.json                   |  18 +++
  website/tsconfig.json                              |   3 +-
- 15 files changed, 359 insertions(+), 33 deletions(-)
+ 17 files changed, 383 insertions(+), 35 deletions(-)
