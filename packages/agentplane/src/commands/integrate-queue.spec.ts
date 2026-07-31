@@ -39,6 +39,7 @@ export type IntegrateQueueEnqueueParsed = {
   branch: string | null;
   base: string | null;
   priority: number;
+  quiet?: boolean;
 };
 
 export const integrateQueueEnqueueSpec: CommandSpec<IntegrateQueueEnqueueParsed> = {
@@ -209,6 +210,7 @@ export const integrateQueueReleaseSpec: CommandSpec<IntegrateQueueReleaseParsed>
 export type IntegrateQueueAdoptLegacyProtectedConflictParsed = {
   taskId: string;
   expectedAdoptionToken: string;
+  quiet?: boolean;
 };
 
 export const integrateQueueAdoptLegacyProtectedConflictSpec: CommandSpec<IntegrateQueueAdoptLegacyProtectedConflictParsed> =

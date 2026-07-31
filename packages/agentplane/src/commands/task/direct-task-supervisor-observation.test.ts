@@ -24,9 +24,12 @@ function lifecycle(verificationState: "observed_success" | "unverified" | "rejec
 
 describe("direct executor observation", () => {
   it("requires an observed-success receipt by default", () => {
-    expect(observeDirectExecutor(lifecycle("unverified"))).toMatchObject({
+    const observed = observeDirectExecutor(lifecycle("unverified"));
+    expect(observed).toMatchObject({
       stop: "runner_receipt_unobserved",
     });
+    expect("reason" in observed ? observed.reason : "").toContain("verification_state=unverified");
+    expect("reason" in observed ? observed.reason : "").toContain("will not replay the provider");
   });
 
   it("accepts an explicitly authorized danger receipt without relabeling it", () => {

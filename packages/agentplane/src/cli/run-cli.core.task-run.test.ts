@@ -242,7 +242,7 @@ describe("runCli task run", () => {
       );
       expect(bootstrap).toContain("Use bundle.json as the complete runner input.");
       expect(bootstrap).toContain(
-        "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+        "Do not attempt to write result_path. Return the AgentSemanticResult v2 object",
       );
     } finally {
       prepareSpy.mockRestore();

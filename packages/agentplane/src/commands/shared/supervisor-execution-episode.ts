@@ -404,6 +404,21 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     };
   }
 
+  const operationAlreadyCompleted = journal.operations.some(
+    (entry) => entry.status === "completed" && entry.effect_ref === operation.idempotencyKey,
+  );
+  if (operationAlreadyCompleted) {
+    return {
+      execution: stoppedExecution({
+        decision: opts.decision,
+        reason:
+          "supervisor episode already completed this idempotency key; refresh provider or route truth before another side effect",
+      }),
+      journal,
+      journal_path: store.path,
+    };
+  }
+
   const kind = operationKind(opts.decision);
   const started = startSupervisorExecutionEpisode({
     journal,
@@ -413,7 +428,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     precondition_fingerprint_digest: currentFingerprint,
     authority_ref: `workflow-operation:${operation.id}`,
     authority_digest: operation.preconditionFingerprint.digest,
-    effect_ref: operation.id === "runner.follow" ? operation.idempotencyKey : null,
+    effect_ref: operation.idempotencyKey,
   });
   journal = started.journal;
   await store.write(journal);

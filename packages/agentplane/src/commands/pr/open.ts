@@ -45,6 +45,7 @@ export async function cmdPrOpen(opts: {
   branch?: string;
   includeTaskIds?: string[];
   syncOnly?: boolean;
+  quiet?: boolean;
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -115,11 +116,13 @@ export async function cmdPrOpen(opts: {
           remoteMode: "auto",
         });
 
-    output.success(
-      "pr open",
-      path.relative(resolved.gitRoot, prDir),
-      prOpenOutcomeDetails(meta, openOutcome ?? null),
-    );
+    if (!opts.quiet) {
+      output.success(
+        "pr open",
+        path.relative(resolved.gitRoot, prDir),
+        prOpenOutcomeDetails(meta, openOutcome ?? null),
+      );
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

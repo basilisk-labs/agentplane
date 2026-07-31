@@ -1,7 +1,11 @@
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
-import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
+import {
+  WORKFLOW_OPERATION_REGISTRY,
+  workflowOperationMutatesState,
+  type WorkflowOperation,
+} from "./workflow-step.js";
 
 const WORKFLOW_SUPERVISOR_AUDIT_SCHEMA = "agentplane.workflow-supervisor-audit.v1" as const;
 
@@ -81,7 +85,7 @@ function stopReason(decision: TaskRouteDecision): string {
   if (step.execution.actionKind !== "local_command") {
     return "workflow supervisor may execute only local typed operations";
   }
-  if (!decision.executionPacket.safeToMutate) {
+  if (workflowOperationMutatesState(step.operation) && !decision.executionPacket.safeToMutate) {
     return "workflow supervisor refuses an operation outside the current mutation authority";
   }
   if (step.operation.preconditionFingerprint.digest !== step.preconditionFingerprint.digest) {

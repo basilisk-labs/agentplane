@@ -94,15 +94,16 @@ async function openHostedClosePr(opts: {
   taskId: string;
   branch?: string | null;
   repo?: string | null;
+  quiet?: boolean;
 }): Promise<number> {
   const precheck = await precheckHostedClosePr(opts);
   if (precheck.kind === "skip") {
-    reportHostedClosePrOutcome(precheck.outcome);
+    if (!opts.quiet) reportHostedClosePrOutcome(precheck.outcome);
     return 0;
   }
 
   const result = postcheckHostedClosePrResult(await executeHostedClosePrPlan(precheck.plan));
-  reportHostedClosePrExecutionResult(result);
+  if (!opts.quiet) reportHostedClosePrExecutionResult(result);
   return 0;
 }
 
@@ -118,6 +119,7 @@ export function makeRunTaskHostedClosePrHandler(getCtx: (cmd: string) => Promise
           taskId,
           branch: p.branch,
           repo: p.repo,
+          quiet: p.quiet,
         });
       }
       return 0;
