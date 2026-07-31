@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The closure commit changes no RF-23 implementation code; it records DONE, verification, evaluator evidence, PR metadata, and the pre-merge closure marker.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105722007-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "INC-20260731-01 accurately separates the direct-supervisor receipt race from the successful RF-23 broker execution and marks it repo-fixable for follow-up without invalidating current verification.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105722007-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The incident entry is byte-identical in .agentplane/policy/incidents.md and packages/agentplane/assets/policy/incidents.md, preserving source/template parity.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105722007-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The promoted incident is follow-up scope and does not require a provider retry or RF-23 implementation change before merge."
+  ]
+}
