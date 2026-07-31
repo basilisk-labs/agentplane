@@ -12,8 +12,8 @@ Created: 2026-07-31T00:29:18.768Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

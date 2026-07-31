@@ -4,7 +4,7 @@ title: "Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -37,10 +37,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T09:45:08.981Z"
+  updated_by: "TESTER"
+  note: "Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed."
   attempts: 0
 commit:
   hash: "a13b39307951b1214a36552362d62def09dec497"
@@ -67,8 +67,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implemented: initialized the corrected-main beta.2 qualification workspace, pinned the explicit quality-regression blueprint, and closed the malformed analysis-light intake as a duplicate. No product code changed."
+  -
+    type: "verify"
+    at: "2026-07-31T09:45:08.981Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed."
 doc_version: 3
-doc_updated_at: "2026-07-31T00:33:55.221Z"
+doc_updated_at: "2026-07-31T09:45:12.206Z"
 doc_updated_by: "CODER"
 description: "Re-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package."
 sections:
@@ -83,11 +89,74 @@ sections:
   Verify Steps: "1. Resolve the beta.2 dependency closure at the reviewed main SHA. Expected: every declared leaf, including 202607302331-3C8V0X, is DONE with passing verification, evaluator, and hosted-close evidence. 2. Run `node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH`. Expected: the exact 50-run, 10-scenario, 55-provider-episode RF-04 measurement is produced under the matched runtime profile. 3. Run `bun run test:critical`, `bun run typecheck`, and `bun run ci:contract`. Expected: all three pass on the same reviewed SHA. 4. Compare candidate outcome, safety, provider-token, and latency cells to frozen beta.2 guardrails. Expected: no failure is hidden by token improvement. 5. Record a SHA-bound qualification packet and independent evaluator verdict. Expected: the explicit publish or do-not-publish decision is reproducible from committed evidence."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T09:45:08.981Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T00:33:55.221Z, excerpt_hash=sha256:bfaaf6a04f89060157f3c554e2b24651f2634ea2d8dce47416ed8357098a58ec
+
+    Details:
+
+    Command: node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH
+    Result: pass
+    Evidence: rf04-current-rebuild.v1.json sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d; 50 runs, 70/70 outcomes, 27/27 token cells, 170/170 scalar cells
+    Scope: deterministic replay rebuild for product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878
+
+    Command: node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1
+    Result: fail
+    Evidence: rf04-live-candidate-summary.v1.json and raw sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c; no retry; latency guardrails failed
+    Scope: one live 50-run, 10-scenario, 55-provider-episode RF-04 candidate measurement on corrected main
+
+    Command: node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1 --runtime-bridge 0.146.0-alpha.3.1
+    Result: fail
+    Evidence: rf04-live-candidate-summary.v1.json reproduction_gap; authoritative runtime-bridge sanitized envelopes are absent
+    Scope: deterministic matched-profile rematerialization; no provider retry performed
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: run-typescript-build.mjs exit 0
+    Scope: TypeScript build on task branch before evidence-only commits
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli suite exit 0; 12/12 chunks passed
+    Scope: critical regression surface on task branch before evidence-only commits
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: ci:contract exit 0; policy, replay, lifecycle, architecture, clone, knip, and coverage guards passed
+    Scope: full local contract gate; no product code changed
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607310028-7KFTPH-re-qualify-the-agentplane-0-7-0-beta-2-milestone/.agentplane/tasks/202607310028-7KFTPH/blueprint/resolved-snapshot.json
+    - old_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+    - current_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607310028-7KFTPH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607310028-7KFTPH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The corrected-main live RF-04 capture still exceeds latency guardrails, and the runtime-bridge raw envelope bundle required for deterministic rematerialization is absent.
+      Impact: AgentPlane 0.7.0-beta.2 must not be published; a future qualification cannot be fully reproduced from committed raw bridge inputs.
+      Resolution: Keep the beta.2 gate closed, preserve this capture without retry, and route latency plus runtime-bridge evidence repair into the next implementation wave.
 extensions:
   workflow_route_baseline:
     start_head_sha: "25fbf2d836a94e9b190464da219a35efd4ebe878"
@@ -116,6 +185,66 @@ Re-run the beta.2 qualification gate from corrected main after the guard and clo
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T09:45:08.981Z — VERIFY — ok
+
+By: TESTER
+
+Note: Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T00:33:55.221Z, excerpt_hash=sha256:bfaaf6a04f89060157f3c554e2b24651f2634ea2d8dce47416ed8357098a58ec
+
+Details:
+
+Command: node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH
+Result: pass
+Evidence: rf04-current-rebuild.v1.json sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d; 50 runs, 70/70 outcomes, 27/27 token cells, 170/170 scalar cells
+Scope: deterministic replay rebuild for product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878
+
+Command: node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1
+Result: fail
+Evidence: rf04-live-candidate-summary.v1.json and raw sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c; no retry; latency guardrails failed
+Scope: one live 50-run, 10-scenario, 55-provider-episode RF-04 candidate measurement on corrected main
+
+Command: node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1 --runtime-bridge 0.146.0-alpha.3.1
+Result: fail
+Evidence: rf04-live-candidate-summary.v1.json reproduction_gap; authoritative runtime-bridge sanitized envelopes are absent
+Scope: deterministic matched-profile rematerialization; no provider retry performed
+
+Command: bun run typecheck
+Result: pass
+Evidence: run-typescript-build.mjs exit 0
+Scope: TypeScript build on task branch before evidence-only commits
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli suite exit 0; 12/12 chunks passed
+Scope: critical regression surface on task branch before evidence-only commits
+
+Command: bun run ci:contract
+Result: pass
+Evidence: ci:contract exit 0; policy, replay, lifecycle, architecture, clone, knip, and coverage guards passed
+Scope: full local contract gate; no product code changed
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607310028-7KFTPH-re-qualify-the-agentplane-0-7-0-beta-2-milestone/.agentplane/tasks/202607310028-7KFTPH/blueprint/resolved-snapshot.json
+- old_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+- current_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607310028-7KFTPH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607310028-7KFTPH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -124,3 +253,7 @@ Re-run the beta.2 qualification gate from corrected main after the guard and clo
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The corrected-main live RF-04 capture still exceeds latency guardrails, and the runtime-bridge raw envelope bundle required for deterministic rematerialization is absent.
+  Impact: AgentPlane 0.7.0-beta.2 must not be published; a future qualification cannot be fully reproduced from committed raw bridge inputs.
+  Resolution: Keep the beta.2 gate closed, preserve this capture without retry, and route latency plus runtime-bridge evidence repair into the next implementation wave.
