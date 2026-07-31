@@ -3,8 +3,8 @@
   "artifactKind": "agentplane.blueprint.resolved_snapshot",
   "resolverInput": {
     "taskId": "202607311338-CT2725",
-    "title": "Resolve successful runner receipt observation race",
-    "description": "Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.",
+    "title": "Preserve typed executor stops with unverified receipts",
+    "description": "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate.",
     "tags": [
       "code",
       "incident",
@@ -604,6 +604,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "6d4a098482b5298a5a47ecd951c903a8b1ef47fde9fbc278f35748c5d0912abd"
+    "value": "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4"
   }
 }
