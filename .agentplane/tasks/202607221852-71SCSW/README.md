@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "A completed integration.enqueue journal was converted to terminal stale_state when the later pr.head.publish step opened against a new fingerprint, so safe sequential branch_pr operations cannot resume across normal task/authority mutations."
 commit:
-  hash: "308ec8bc1a356bcd9a6f043b99b6ac8d71051145"
-  message: "🚧 71SCSW task: resume completed supervisor journal"
+  hash: "71491881a3ce7cba0e5555ae55695417b1137341"
+  message: "🚧 71SCSW task: satisfy journal recovery lint"
 comments:
   -
     author: "CODER"
@@ -105,6 +105,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: completed stale journals reopen only when the latest operation is durably completed; failed and ambiguous effects remain terminal."
+  -
+    author: "CODER"
+    body: "Implementation rework finalized: journal recovery regression and lint checks pass."
 events:
   -
     type: "status"
@@ -196,8 +199,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: completed stale journals reopen only when the latest operation is durably completed; failed and ambiguous effects remain terminal."
+  -
+    type: "status"
+    at: "2026-07-31T13:08:30.297Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework finalized: journal recovery regression and lint checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:06:18.817Z"
+doc_updated_at: "2026-07-31T13:08:30.297Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
