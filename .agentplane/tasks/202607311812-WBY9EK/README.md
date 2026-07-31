@@ -1,10 +1,11 @@
 ---
 id: "202607311812-WBY9EK"
 title: "Publish resolved DONE conflict heads before semantic rework gating"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -49,11 +50,16 @@ quality_review:
   findings:
     - "A clean verified DOING or DONE local head may be published only when the stale provider head is its strict ancestor; branch identity, protected base, clean worktree, status, and verification are checked first."
     - "After provider/local heads align, DONE tasks without current queue or handoff evidence remain ineligible for semantic conflict rework."
-commit: null
+commit:
+  hash: "8e1896a53274cf79fa3ae9acb53dc2d7bfe8f0a5"
+  message: "🔍 WBY9EK task: record verification and evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -74,8 +80,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at ec05273fe448 under the PLANNER-authored contract: 35 focused tests prove verified DONE/no-queue fast-forward publication and aligned-authority gating; all 12 critical chunks, typecheck, routing, format, and diff checks pass."
+  -
+    type: "status"
+    at: "2026-07-31T18:21:40.542Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T18:19:57.768Z"
+doc_updated_at: "2026-07-31T18:21:40.542Z"
 doc_updated_by: "CODER"
 description: "When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads."
 sections:
@@ -160,6 +173,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "ec05273fe44825a864f54aef15865b80afeeb847"
+    message: "🔧 WBY9EK task: publish resolved DONE conflict heads safely"
   workflow_route_baseline:
     start_head_sha: "9eb65c88341f2495a0a1f11865eb38c4978b2ef3"
     version: 1
