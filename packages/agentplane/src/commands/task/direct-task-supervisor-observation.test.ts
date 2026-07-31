@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 
+import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
 
 function lifecycle(
   verificationState: "observed_success" | "unverified" | "rejected",
   semanticStatus: "blocked" | "completed" | "failed" | "needs_context" = "completed",
-) {
+): TaskRunnerLifecycleResult {
   return {
     phase: "executed",
     invocation: { run_id: "rf10-run" },
@@ -22,7 +23,7 @@ function lifecycle(
         value: { kind: "agent_semantic_result", status: semanticStatus },
       },
     },
-  } as never;
+  } as TaskRunnerLifecycleResult;
 }
 
 describe("direct executor observation", () => {
@@ -54,10 +55,12 @@ describe("direct executor observation", () => {
 
   it("never accepts a missing receipt for a typed non-success result", () => {
     const withReceipt = lifecycle("unverified", "blocked");
-    const withoutReceipt = {
+    const result = withReceipt.result;
+    if (!result) throw new Error("test lifecycle result is missing");
+    const withoutReceipt: TaskRunnerLifecycleResult = {
       ...withReceipt,
-      result: { ...withReceipt.result, execution_receipt: undefined },
-    } as never;
+      result: { ...result, execution_receipt: undefined },
+    };
     expect(observeDirectExecutor(withoutReceipt)).toMatchObject({
       stop: "runner_receipt_unobserved",
     });
