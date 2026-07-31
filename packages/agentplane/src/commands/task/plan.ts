@@ -25,7 +25,12 @@ import {
 } from "./plan-shared.js";
 import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
 
-export async function cmdTaskPlanSet(opts: {
+export type TaskPlanSetResult = {
+  taskId: string;
+  readmePath: string;
+};
+
+export async function setTaskPlan(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
@@ -33,7 +38,7 @@ export async function cmdTaskPlanSet(opts: {
   text?: string;
   file?: string;
   updatedBy?: string;
-}): Promise<number> {
+}): Promise<TaskPlanSetResult> {
   try {
     const { ctx, backend } = await loadPlanBackend({
       ctx: opts.ctx,
@@ -148,12 +153,17 @@ export async function cmdTaskPlanSet(opts: {
       },
     });
 
-    process.stdout.write(`${readmePath}\n`);
-    return 0;
+    return { taskId: opts.taskId, readmePath };
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "task plan set", root: opts.rootOverride ?? null });
   }
+}
+
+export async function cmdTaskPlanSet(opts: Parameters<typeof setTaskPlan>[0]): Promise<number> {
+  const result = await setTaskPlan(opts);
+  process.stdout.write(`${result.readmePath}\n`);
+  return 0;
 }
 
 export async function cmdTaskPlanApprove(opts: {

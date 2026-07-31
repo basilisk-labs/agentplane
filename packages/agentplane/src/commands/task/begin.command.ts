@@ -4,7 +4,7 @@ import { createCliEmitter } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
-import { cmdTaskPlanApprove, cmdTaskPlanSet } from "./plan.js";
+import { cmdTaskPlanApprove, setTaskPlan } from "./plan.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 
 const output = createCliEmitter();
@@ -146,23 +146,6 @@ function defaultPlan(title: string): string {
   ].join("\n");
 }
 
-async function captureStdout(fn: () => Promise<number>): Promise<{ code: number; stdout: string }> {
-  const originalWrite = process.stdout.write.bind(process.stdout);
-  let stdout = "";
-  process.stdout.write = ((chunk: unknown, ...args: unknown[]) => {
-    stdout += typeof chunk === "string" ? chunk : Buffer.isBuffer(chunk) ? chunk.toString() : "";
-    void originalWrite;
-    void args;
-    return true;
-  }) as typeof process.stdout.write;
-  try {
-    const code = await fn();
-    return { code, stdout };
-  } finally {
-    process.stdout.write = originalWrite as typeof process.stdout.write;
-  }
-}
-
 export function makeRunTaskBeginHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,
 ): CommandHandler<TaskBeginParsed> {
@@ -197,16 +180,14 @@ export function makeRunTaskBeginHandler(
       },
     });
     const taskId = created.task_id;
-    await captureStdout(() =>
-      cmdTaskPlanSet({
-        ctx: command,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride,
-        taskId,
-        text: p.plan ?? defaultPlan(p.title),
-        updatedBy: "ORCHESTRATOR",
-      }),
-    );
+    await setTaskPlan({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      taskId,
+      text: p.plan ?? defaultPlan(p.title),
+      updatedBy: "ORCHESTRATOR",
+    });
     await cmdTaskPlanApprove({
       ctx: command,
       cwd: ctx.cwd,

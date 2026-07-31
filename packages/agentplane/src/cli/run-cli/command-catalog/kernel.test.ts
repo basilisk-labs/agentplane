@@ -6,6 +6,7 @@ import {
   type CommandCapability,
   type CommandSession,
 } from "./kernel.js";
+import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
 
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
@@ -135,5 +136,31 @@ describe("CommandSession", () => {
         resolvers: makeResolvers(),
       }),
     ).toThrow("require the config capability");
+  });
+
+  it("denies undeclared task-family Git and provider access before context preparation", async () => {
+    const readResolvers = makeResolvers();
+    const readSession = createCommandSession({
+      command: "task show",
+      requirements: TASK_READ_REQUIREMENTS,
+      resolvers: readResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(readSession.require("git.mutate", "task show")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(readResolvers.getCtx).not.toHaveBeenCalled();
+
+    const lifecycleResolvers = makeResolvers();
+    const lifecycleSession = createCommandSession({
+      command: "finish",
+      requirements: TASK_LIFECYCLE_REQUIREMENTS,
+      resolvers: lifecycleResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(lifecycleSession.require("provider", "finish")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(lifecycleResolvers.getCtx).not.toHaveBeenCalled();
   });
 });

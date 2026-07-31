@@ -43,9 +43,14 @@ export const taskBriefSpec: CommandSpec<TaskBriefParsed> = {
   }),
 };
 
-export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunTaskBriefHandler(session: {
+  getLocalContext: (cmd: string) => Promise<CommandContext>;
+  getRemoteContext: (cmd: string) => Promise<CommandContext>;
+}) {
   return async (ctx: CommandCtx, parsed: TaskBriefParsed): Promise<number> => {
-    const commandCtx = await getCtx("task brief");
+    const commandCtx = await (parsed.remote
+      ? session.getRemoteContext("task brief")
+      : session.getLocalContext("task brief"));
     const brief = await buildTaskBrief({
       commandCtx,
       cwd: ctx.cwd,

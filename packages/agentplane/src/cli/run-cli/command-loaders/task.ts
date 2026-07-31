@@ -1,18 +1,38 @@
-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import type { CommandContext } from "../../../commands/shared/task-backend.js";
+import {
+  commandModule,
+  type CommandCapability,
+  type CommandSession,
+  type RunDeps,
+} from "../command-catalog/kernel.js";
+import type {
+  TaskLifecycleSession,
+  TaskReadSession,
+  TaskRouteLocalSession,
+  TaskRouteSession,
+  TaskWriteSession,
+} from "../command-catalog/task-capability-profiles.js";
 
-type TaskReadSession = CommandSession<"project" | "config" | "backend.read" | "task.read">;
-type TaskRouteSession = CommandSession<
-  | "project"
-  | "config"
-  | "backend.read"
-  | "task.read"
-  | "git.head"
-  | "route.local"
-  | "route.remote"
-  | "policy"
-  | "approvals"
-  | "provider"
->;
+function getSessionContext<
+  TCapabilities extends CommandCapability,
+  TCapability extends Exclude<TCapabilities, "project" | "config" | "output">,
+>(session: CommandSession<TCapabilities>, capability: TCapability) {
+  return (command: string) =>
+    session.require(
+      capability as Exclude<TCapabilities, "output">,
+      command,
+    ) as Promise<CommandContext>;
+}
+
+function getTaskRouteContexts(session: TaskRouteSession) {
+  return {
+    getLocalContext: getSessionContext(session, "route.local"),
+    getRemoteContext: async (command: string) => {
+      await session.require("route.remote", command);
+      return await session.require("provider", command);
+    },
+  };
+}
 
 export const fromCommandsTaskTaskCommand = commandModule(
   () => import("../../../commands/task/task.command.js"),
@@ -55,55 +75,59 @@ export const loadTaskHostedClosePrSpec = (deps: RunDeps) =>
   import("../../../commands/task/hosted-close-pr.command.js").then((m) =>
     m.makeRunTaskHostedClosePrHandler(deps.getCtx),
   );
-export const loadTaskActiveSpec = (deps: RunDeps) =>
+export const loadTaskActiveSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/task/active.command.js").then((m) =>
-    m.makeRunTaskActiveHandler(deps.getCtx),
+    m.makeRunTaskActiveHandler(getSessionContext(session, "route.local")),
   );
-export const loadTaskAskSpec = (deps: RunDeps) =>
-  import("../../../commands/task/ask.command.js").then((m) => m.makeRunTaskAskHandler(deps.getCtx));
-export const loadTaskAnswerSpec = (deps: RunDeps) =>
+export const loadTaskAskSpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/ask.command.js").then((m) =>
+    m.makeRunTaskAskHandler(getSessionContext(session, "task.write")),
+  );
+export const loadTaskAnswerSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/answer.command.js").then((m) =>
-    m.makeRunTaskAnswerHandler(deps.getCtx),
+    m.makeRunTaskAnswerHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskAuthorityGrantSpec = (deps: RunDeps) =>
+export const loadTaskAuthorityGrantSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/authority-grant.command.js").then((m) =>
-    m.makeRunTaskAuthorityGrantHandler(deps.getCtx),
+    m.makeRunTaskAuthorityGrantHandler(getSessionContext(session, "route.local")),
   );
 export const loadTaskListSpec = (session: TaskReadSession) =>
   import("../../../commands/task/list.run.js").then((m) =>
     m.makeRunTaskListHandler((command) => session.require("task.read", command)),
   );
-export const loadTaskNextSpec = (deps: RunDeps) =>
-  import("../../../commands/task/next.run.js").then((m) => m.makeRunTaskNextHandler(deps.getCtx));
-export const loadTaskSearchSpec = (deps: RunDeps) =>
-  import("../../../commands/task/search.run.js").then((m) =>
-    m.makeRunTaskSearchHandler(deps.getCtx),
+export const loadTaskNextSpec = (session: TaskReadSession) =>
+  import("../../../commands/task/next.run.js").then((m) =>
+    m.makeRunTaskNextHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskShowSpec = (deps: RunDeps) =>
-  import("../../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx));
-export const loadTaskStatusSpec = (deps: RunDeps) =>
+export const loadTaskSearchSpec = (session: TaskReadSession) =>
+  import("../../../commands/task/search.run.js").then((m) =>
+    m.makeRunTaskSearchHandler(getSessionContext(session, "task.read")),
+  );
+export const loadTaskShowSpec = (session: TaskReadSession) =>
+  import("../../../commands/task/show.run.js").then((m) =>
+    m.makeRunTaskShowHandler(getSessionContext(session, "task.read")),
+  );
+export const loadTaskStatusSpec = (session: TaskRouteSession) =>
   import("../../../commands/task/status.command.js").then((m) =>
-    m.makeRunTaskStatusHandler(deps.getCtx),
+    m.makeRunTaskStatusHandler(getTaskRouteContexts(session)),
   );
 export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
   import("../../../commands/task/next-action.command.js").then((m) =>
     m.makeRunTaskNextActionHandler({
-      getLocalContext: (command) => session.require("route.local", command),
-      getRemoteContext: async (command) => {
-        await session.require("route.remote", command);
-        return await session.require("provider", command);
-      },
+      ...getTaskRouteContexts(session),
     }),
   );
-export const loadTaskNewSpec = (deps: RunDeps) =>
-  import("../../../commands/task/new.command.js").then((m) => m.makeRunTaskNewHandler(deps.getCtx));
-export const loadTaskBeginSpec = (deps: RunDeps) =>
-  import("../../../commands/task/begin.command.js").then((m) =>
-    m.makeRunTaskBeginHandler(deps.getCtx),
+export const loadTaskNewSpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/new.command.js").then((m) =>
+    m.makeRunTaskNewHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskBriefSpec = (deps: RunDeps) =>
+export const loadTaskBeginSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/begin.command.js").then((m) =>
+    m.makeRunTaskBeginHandler(getSessionContext(session, "git.mutate")),
+  );
+export const loadTaskBriefSpec = (session: TaskRouteSession) =>
   import("../../../commands/task/brief.command.js").then((m) =>
-    m.makeRunTaskBriefHandler(deps.getCtx),
+    m.makeRunTaskBriefHandler(getTaskRouteContexts(session)),
   );
 export const loadTaskRunSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) => m.makeRunTaskRunHandler(deps.getCtx));
@@ -135,83 +159,85 @@ export const loadTaskRunLogsSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunLogsHandler(deps.getCtx),
   );
-export const loadTaskCompleteSpec = (deps: RunDeps) =>
+export const loadTaskCompleteSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/complete.command.js").then((m) =>
-    m.makeRunTaskCompleteHandler(deps.getCtx),
+    m.makeRunTaskCompleteHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskDeriveSpec = (deps: RunDeps) =>
+export const loadTaskDeriveSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/derive.command.js").then((m) =>
-    m.makeRunTaskDeriveHandler(deps.getCtx),
+    m.makeRunTaskDeriveHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskEvidenceCheckSpec = (deps: RunDeps) =>
+export const loadTaskEvidenceCheckSpec = (session: TaskReadSession) =>
   import("../../../commands/task/evidence-check.command.js").then((m) =>
-    m.makeRunTaskEvidenceCheckHandler(deps.getCtx),
+    m.makeRunTaskEvidenceCheckHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskCloseDuplicateSpec = (deps: RunDeps) =>
+export const loadTaskCloseDuplicateSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/close-duplicate.command.js").then((m) =>
-    m.makeRunTaskCloseDuplicateHandler(deps.getCtx),
+    m.makeRunTaskCloseDuplicateHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskStartReadySpec = (deps: RunDeps) =>
+export const loadTaskStartReadySpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/start-ready.command.js").then((m) =>
-    m.makeRunTaskStartReadyHandler(deps.getCtx),
+    m.makeRunTaskStartReadyHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskCloseNoopSpec = (deps: RunDeps) =>
+export const loadTaskCloseNoopSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/close-noop.command.js").then((m) =>
-    m.makeRunTaskCloseNoopHandler(deps.getCtx),
+    m.makeRunTaskCloseNoopHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskAddSpec = (deps: RunDeps) =>
-  import("../../../commands/task/add.command.js").then((m) => m.makeRunTaskAddHandler(deps.getCtx));
-export const loadTaskUpdateSpec = (deps: RunDeps) =>
+export const loadTaskAddSpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/add.command.js").then((m) =>
+    m.makeRunTaskAddHandler(getSessionContext(session, "task.write")),
+  );
+export const loadTaskUpdateSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/update.command.js").then((m) =>
-    m.makeRunTaskUpdateHandler(deps.getCtx),
+    m.makeRunTaskUpdateHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskCommentSpec = (deps: RunDeps) =>
+export const loadTaskCommentSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/comment.command.js").then((m) =>
-    m.makeRunTaskCommentHandler(deps.getCtx),
+    m.makeRunTaskCommentHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskSetStatusSpec = (deps: RunDeps) =>
+export const loadTaskSetStatusSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/set-status.command.js").then((m) =>
-    m.makeRunTaskSetStatusHandler(deps.getCtx),
+    m.makeRunTaskSetStatusHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskFindingsAddSpec = (deps: RunDeps) =>
+export const loadTaskFindingsAddSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/findings-add.command.js").then((m) =>
-    m.makeRunTaskFindingsAddHandler(deps.getCtx),
+    m.makeRunTaskFindingsAddHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskObservationsAddSpec = (deps: RunDeps) =>
+export const loadTaskObservationsAddSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
-    m.makeRunTaskObservationsAddHandler(deps.getCtx),
+    m.makeRunTaskObservationsAddHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskObservationsListSpec = (deps: RunDeps) =>
+export const loadTaskObservationsListSpec = (session: TaskReadSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
-    m.makeRunTaskObservationsListHandler(deps.getCtx),
+    m.makeRunTaskObservationsListHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskObservationsCheckSpec = (deps: RunDeps) =>
+export const loadTaskObservationsCheckSpec = (session: TaskReadSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
-    m.makeRunTaskObservationsCheckHandler(deps.getCtx),
+    m.makeRunTaskObservationsCheckHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskObservationsTriageSpec = (deps: RunDeps) =>
+export const loadTaskObservationsTriageSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
-    m.makeRunTaskObservationsTriageHandler(deps.getCtx),
+    m.makeRunTaskObservationsTriageHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskObservationsHarvestSpec = (deps: RunDeps) =>
+export const loadTaskObservationsHarvestSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/observations.command.js").then((m) =>
-    m.makeRunTaskObservationsHarvestHandler(deps.getCtx),
+    m.makeRunTaskObservationsHarvestHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskDocShowSpec = (deps: RunDeps) =>
+export const loadTaskDocShowSpec = (session: TaskReadSession) =>
   import("../../../commands/task/doc-show.command.js").then((m) =>
-    m.makeRunTaskDocShowHandler(deps.getCtx),
+    m.makeRunTaskDocShowHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskDocSetSpec = (deps: RunDeps) =>
+export const loadTaskDocSetSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/doc-set.command.js").then((m) =>
-    m.makeRunTaskDocSetHandler(deps.getCtx),
+    m.makeRunTaskDocSetHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskScrubSpec = (deps: RunDeps) =>
+export const loadTaskScrubSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/scrub.command.js").then((m) =>
-    m.makeRunTaskScrubHandler(deps.getCtx),
+    m.makeRunTaskScrubHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskScaffoldSpec = (deps: RunDeps) =>
+export const loadTaskScaffoldSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/scaffold.command.js").then((m) =>
-    m.makeRunTaskScaffoldHandler(deps.getCtx),
+    m.makeRunTaskScaffoldHandler(getSessionContext(session, "task.write")),
   );
 export const loadTaskNormalizeSpec = (deps: RunDeps) =>
   import("../../../commands/task/normalize.command.js").then((m) =>
@@ -225,40 +251,40 @@ export const loadTaskObsidianCleanSpec = () =>
   import("../../../commands/task/obsidian.command.js").then((m) =>
     m.makeRunTaskObsidianCleanHandler(),
   );
-export const loadTaskMigrateSpec = (deps: RunDeps) =>
+export const loadTaskMigrateSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/migrate.command.js").then((m) =>
-    m.makeRunTaskMigrateHandler(deps.getCtx),
+    m.makeRunTaskMigrateHandler(getSessionContext(session, "task.write")),
   );
 export const fromTaskPlanSpec = commandModule(
   () => import("../../../commands/task/plan.command.js"),
 );
-export const loadTaskPlanSetSpec = (deps: RunDeps) =>
+export const loadTaskPlanSetSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/plan-set.command.js").then((m) =>
-    m.makeRunTaskPlanSetHandler(deps.getCtx),
+    m.makeRunTaskPlanSetHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskPlanApproveSpec = (deps: RunDeps) =>
+export const loadTaskPlanApproveSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/plan-approve.command.js").then((m) =>
-    m.makeRunTaskPlanApproveHandler(deps.getCtx),
+    m.makeRunTaskPlanApproveHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskPlanRejectSpec = (deps: RunDeps) =>
+export const loadTaskPlanRejectSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/plan-reject.command.js").then((m) =>
-    m.makeRunTaskPlanRejectHandler(deps.getCtx),
+    m.makeRunTaskPlanRejectHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskVerifyOkSpec = (deps: RunDeps) =>
+export const loadTaskVerifyOkSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/verify-ok.command.js").then((m) =>
-    m.makeRunTaskVerifyOkHandler(deps.getCtx),
+    m.makeRunTaskVerifyOkHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskVerifyReworkSpec = (deps: RunDeps) =>
+export const loadTaskVerifyReworkSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/verify-rework.command.js").then((m) =>
-    m.makeRunTaskVerifyReworkHandler(deps.getCtx),
+    m.makeRunTaskVerifyReworkHandler(getSessionContext(session, "git.mutate")),
   );
-export const loadTaskVerifyShowSpec = (deps: RunDeps) =>
+export const loadTaskVerifyShowSpec = (session: TaskReadSession) =>
   import("../../../commands/task/verify-show.command.js").then((m) =>
-    m.makeRunTaskVerifyShowHandler(deps.getCtx),
+    m.makeRunTaskVerifyShowHandler(getSessionContext(session, "task.read")),
   );
-export const loadTaskRebuildIndexSpec = (deps: RunDeps) =>
+export const loadTaskRebuildIndexSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/rebuild-index.command.js").then((m) =>
-    m.makeRunTaskRebuildIndexHandler(deps.getCtx),
+    m.makeRunTaskRebuildIndexHandler(getSessionContext(session, "task.write")),
   );
 export const fromTaskReclaimSpec = commandModule(
   () => import("../../../commands/task/reclaim.command.js"),
