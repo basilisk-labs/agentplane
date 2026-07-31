@@ -253,6 +253,35 @@ describe("provider conflict rework packet", () => {
     expect(git.calls.diffNames).toBe(0);
   });
 
+  it("publishes a verified DONE descendant before requiring queue or handoff conflict authority", async () => {
+    const providerHeadSha = "2222222222222222222222222222222222222222";
+    const conflicting = providerBehindReport(providerHeadSha);
+    conflicting.queue = { present: false };
+    conflicting.handoff = { present: false };
+    const git = primeGit();
+    git.gitOps.mergeBase = (gitRoot, left, right) => {
+      git.calls.mergeBase.push([gitRoot, left, right]);
+      return Promise.resolve(providerHeadSha);
+    };
+
+    await expect(prepare({ report: conflicting, git })).resolves.toMatchObject({
+      state: "publication_required",
+      provider_head_sha: providerHeadSha,
+      local_head_sha: headSha,
+    });
+    expect(git.calls.mergeBase).toEqual([["/repo", providerHeadSha, headSha]]);
+    expect(git.calls.diffNames).toBe(0);
+  });
+
+  it("still requires conflict authority after a verified DONE provider head is aligned", async () => {
+    const conflicting = report({ queue: { present: false }, handoff: { present: false } });
+
+    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "conflict_rework_route_ineligible",
+    });
+  });
+
   it("invalidates a divergent local head", async () => {
     const prepared = await prepare({ report: providerBehindReport() });
     expect(prepared).toMatchObject({

@@ -283,20 +283,18 @@ export async function prepareConflictReworkPacket(opts: {
       `provider head branch differs from task branch: provider=${providerHeadRef} task=${taskBranch}`,
     );
   }
-  const routeEligibility = resolveConflictRouteEligibility({
-    report: opts.report,
-    identity: {
-      taskId: opts.taskId,
-      taskBranch,
-      providerHead,
-      base,
-      providerBase,
-      prNumber,
-    },
-    now: opts.now ?? new Date(),
-  });
-  if (routeEligibility.state === "ineligible") {
-    return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
+  const taskStatus = opts.report.task.status.trim().toUpperCase();
+  if (opts.report.task.verification !== "ok") {
+    return invalid(
+      "conflict_rework_route_ineligible",
+      "semantic conflict rework requires a current passing verification record",
+    );
+  }
+  if (taskStatus !== "DOING" && taskStatus !== "DONE") {
+    return invalid(
+      "conflict_rework_route_ineligible",
+      "semantic conflict rework requires a verified DOING or DONE task",
+    );
   }
   const baseProtection =
     opts.baseProtection ??
@@ -363,6 +361,22 @@ export async function prepareConflictReworkPacket(opts: {
       provider_head_sha: providerHead,
       local_head_sha: localHead,
     };
+  }
+
+  const routeEligibility = resolveConflictRouteEligibility({
+    report: opts.report,
+    identity: {
+      taskId: opts.taskId,
+      taskBranch,
+      providerHead,
+      base,
+      providerBase,
+      prNumber,
+    },
+    now: opts.now ?? new Date(),
+  });
+  if (routeEligibility.state === "ineligible") {
+    return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
   }
 
   const localBase = await resolveLocalRef({
