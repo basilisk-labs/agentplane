@@ -70,7 +70,7 @@
   },
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@agentplaneorg/core": "0.6.25"
+    "@agentplaneorg/core": "0.6.26"
   },
   "scripts": {
     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
