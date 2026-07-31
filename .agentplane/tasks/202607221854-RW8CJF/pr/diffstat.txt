@@ -1,4 +1,4 @@
- .../src/cli/run-cli.command-session.test.ts        |  38 +++
+ .../src/cli/run-cli.core.command-session.test.ts   |  38 +++
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  39 +++
  .../cli/run-cli/command-catalog/command-session.ts | 262 +++++++++++++++++++++

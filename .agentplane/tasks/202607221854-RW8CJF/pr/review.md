@@ -13,7 +13,7 @@ Created: 2026-07-31T19:53:56.576Z
 ## Verification
 
 - State: ok
-- Note: Hosted dead-code baseline rework passed: unused type re-exports removed, knip baseline unchanged at 545 entries, typecheck and 13 focused tests pass at 3bb947f75.
+- Note: Hosted test-routing rework passed: the trace test now follows the existing run-cli.core route; routing inventory, 23 focused tests, knip baseline, and typecheck pass at 2d69511cc.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,7 @@ Created: 2026-07-31T19:53:56.576Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.command-session.test.ts        |  38 +++
+ .../src/cli/run-cli.core.command-session.test.ts   |  38 +++
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  39 +++
  .../cli/run-cli/command-catalog/command-session.ts | 262 +++++++++++++++++++++
