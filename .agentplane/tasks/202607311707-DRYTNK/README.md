@@ -4,7 +4,7 @@ title: "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -40,7 +40,7 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-07-31T17:07:48.535Z"
+doc_updated_at: "2026-07-31T17:47:37.370Z"
 doc_updated_by: "PLANNER"
 description: "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path."
 sections:
@@ -67,9 +67,12 @@ sections:
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
-    - Revert task-related commit(s).
-    - Re-run required checks to confirm rollback safety.
-  Findings: ""
+    1. Run AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck to restore the pinned TypeScript 6 compiler immediately without changing the lockfile.
+    2. If the hosted migration itself must be removed, revert the single DRYTNK merge through a protected-base PR and rerun the root typecheck, package build, lint, trust, compatibility, installed-package, and Windows checks.
+  Findings: |-
+    - Observation: QB60J5 approved TypeScript 7.0.2 only as @typescript/native alongside pinned TypeScript 6.0.3; root baseUrl and the inherited Docusaurus 3.10.1 baseUrl are incompatible, and declaration emit has reviewed order-only drift.
+      Impact: DRYTNK must include the config bridge, deterministic emit classification, hosted platform resolution, and a runtime-selectable compiler rollback instead of a wholesale package replacement.
+      Resolution: Implement benchmark/typescript-7-adoption-contract.md exactly, including AGENTPLANE_TYPESCRIPT_PACKAGE=typescript as the rollback override and default automatic builder concurrency.
 id_source: "generated"
 ---
 ## Summary
@@ -106,7 +109,11 @@ Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 w
 
 ## Rollback Plan
 
-- Revert task-related commit(s).
-- Re-run required checks to confirm rollback safety.
+1. Run AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck to restore the pinned TypeScript 6 compiler immediately without changing the lockfile.
+2. If the hosted migration itself must be removed, revert the single DRYTNK merge through a protected-base PR and rerun the root typecheck, package build, lint, trust, compatibility, installed-package, and Windows checks.
 
 ## Findings
+
+- Observation: QB60J5 approved TypeScript 7.0.2 only as @typescript/native alongside pinned TypeScript 6.0.3; root baseUrl and the inherited Docusaurus 3.10.1 baseUrl are incompatible, and declaration emit has reviewed order-only drift.
+  Impact: DRYTNK must include the config bridge, deterministic emit classification, hosted platform resolution, and a runtime-selectable compiler rollback instead of a wholesale package replacement.
+  Resolution: Implement benchmark/typescript-7-adoption-contract.md exactly, including AGENTPLANE_TYPESCRIPT_PACKAGE=typescript as the rollback override and default automatic builder concurrency.
