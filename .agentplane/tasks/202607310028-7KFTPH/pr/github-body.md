@@ -22,12 +22,13 @@ Re-run the beta.2 qualification gate from corrected main after the guard and clo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T00:29:18.768Z
+- Updated: 2026-07-31T00:29:49.650Z
 - Branch: task/202607310028-7KFTPH/re-qualify-the-agentplane-0-7-0-beta-2-milestone
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607310026-4V5K9V/README.md | 122 ++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 ```
 
 </details>
