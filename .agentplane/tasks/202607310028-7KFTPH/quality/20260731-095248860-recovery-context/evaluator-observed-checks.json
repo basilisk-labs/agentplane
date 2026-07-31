@@ -1,0 +1,25 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T09:52:19.140Z",
+    "updated_by": "TESTER",
+    "note": "Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "path": ".agentplane/tasks/202607310028-7KFTPH/evidence/qualification-packet.v1.json",
+    "digest": "sha256:9707275a9f2d0fa259b0c0316b74b6ea1fa768d5d0fb1df32c3d4d25a7d799bc",
+    "implementation_sha": "380f3685b26eb60322191d0f780ffe039ed3989d",
+    "evidence_commit": "da187020a4e4c7c76a4d5f35e899c7465c17edbf"
+  }
+}

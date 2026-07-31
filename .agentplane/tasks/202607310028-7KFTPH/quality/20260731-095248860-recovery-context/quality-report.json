@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607310028-7KFTPH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T09:52:50.453Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "da187020a4e4c7c76a4d5f35e899c7465c17edbf",
+  "blueprint_digest": "a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162",
+  "findings": [
+    "ECBY56 depends directly on 7KFTPH; AB2SFC preserves 71SCSW and ECBY56 while replacing obsolete 0JP0ZZ with 7KFTPH.",
+    "The live 50-run/55-episode RF-04 capture still fails latency guardrails; the task passes as a qualification decision and beta.2 remains blocked from publication.",
+    "Concrete Verify Steps and command-level evidence cover dependency closure, RF-04, typecheck, critical tests, full contract CI, and the downstream fan-in repair."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-095248860-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Obsolete 0JP0ZZ is retained only for audit and no longer controls the executable downstream gate."
+  ],
+  "residual_risks": []
+}
