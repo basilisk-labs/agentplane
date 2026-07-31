@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "last_verified_at": "2026-07-31T19:22:01.191Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pr_number": 4711,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4711",
+  "pre_merge_closure": {
+    "basis_commit": "1aa85a597433c05339dcd9b42481d24c3cf3b47d",
+    "branch": "task/202607221908-AB2SFC/qualify-the-agentplane-0-7-0-rc-1-milestone",
+    "pr_number": 4711,
+    "recorded_at": "2026-07-31T19:27:07.442Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221908-AB2SFC",
-  "updated_at": "2026-07-31T13:35:14.209Z",
+  "updated_at": "2026-07-31T19:26:04.515Z",
   "verify": {
     "status": "pass"
   }
