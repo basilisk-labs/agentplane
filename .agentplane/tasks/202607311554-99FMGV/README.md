@@ -4,7 +4,7 @@ title: "Allow fast-forward publication before conflict rework"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,8 @@ quality_review:
     - "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the declared checks and concurrency-sensitive negative cases lack deterministic execution evidence."
   recovery_reason: "deterministic_evidence_gap"
 commit:
-  hash: "a2c70c4504b3d3729e0cc0767e64b796d9d951ba"
-  message: "🚧 99FMGV code: Unblock guarded conflict head publication"
+  hash: "5912dc86cc255d9401d0d96d534e23cd3250b0a4"
+  message: "🧪 99FMGV code: Distinguish divergent and unrelated heads"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: guarded publication now requires a clean strict descendant and preserves CODER semantic conflict rework after provider alignment."
+  -
+    author: "CODER"
+    body: "Implementation updated: explicit divergent and unrelated-history regression cases plus bounded integration-test timeout."
 events:
   -
     type: "status"
@@ -89,8 +92,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed."
+  -
+    type: "status"
+    at: "2026-07-31T16:21:51.662Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation updated: explicit divergent and unrelated-history regression cases plus bounded integration-test timeout."
 doc_version: 3
-doc_updated_at: "2026-07-31T16:16:16.546Z"
+doc_updated_at: "2026-07-31T16:21:51.662Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
