@@ -29,16 +29,16 @@ Created: 2026-07-31T15:55:48.023Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-conflict-rework.test.ts    | 220 ++++++++++++++++++++-
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 222 ++++++++++++++++++++-
  .../pr/conflict-rework-route-eligibility.ts        |  37 +++-
  .../src/commands/pr/conflict-rework.command.ts     |  18 ++
- .../src/commands/pr/conflict-rework.test.ts        | 134 ++++++++++++-
+ .../src/commands/pr/conflict-rework.test.ts        | 138 ++++++++++++-
  .../agentplane/src/commands/pr/conflict-rework.ts  | 212 +++++++++++++-------
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../shared/workflow-step-conflict-rework.ts        |  26 +++
  ...rkflow-step-projections.conflict-rework.test.ts |  67 ++++++-
  .../src/commands/shared/workflow-step.ts           |   1 +
- 9 files changed, 629 insertions(+), 87 deletions(-)
+ 9 files changed, 634 insertions(+), 88 deletions(-)
 ```
 
 </details>

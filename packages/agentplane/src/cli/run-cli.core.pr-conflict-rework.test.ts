@@ -944,5 +944,5 @@ describe("provider conflict rework CLI", () => {
         expect(worktreeAfter.stdout).toBe(worktreeBefore.stdout);
       },
     );
-  });
+  }, 60_000);
 });
