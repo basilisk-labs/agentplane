@@ -19,9 +19,9 @@ RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hos
 - Note:
 
 ```text
-Verified: completed-journal recovery is bounded to durably completed operations; focused regression,
-workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks
-passed.
+Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused
+adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants,
+and full contract checks passed.
 ```
 - Canonical workflow state lives in the task README.
 

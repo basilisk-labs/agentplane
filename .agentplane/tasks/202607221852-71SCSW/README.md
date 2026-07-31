@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on:
@@ -36,9 +36,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T13:12:09.146Z"
+  updated_at: "2026-07-31T13:21:22.824Z"
   updated_by: "TESTER"
-  note: "Verified: completed-journal recovery is bounded to durably completed operations; focused regression, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed."
+  note: "Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -222,8 +222,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: the in-process pre-merge close now matches CLI finish semantics and lets finish resolve the reviewed implementation behind task-artifact commits."
+  -
+    type: "verify"
+    at: "2026-07-31T13:21:22.824Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:16:28.745Z"
+doc_updated_at: "2026-07-31T13:21:24.325Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
@@ -308,6 +314,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-31T13:21:22.824Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:16:28.745Z, excerpt_hash=sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-71SCSW-extend-supervised-execution-to-branch-pr/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json
+    - old_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+    - current_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-71SCSW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Before PR open: remove only the task-owned clean worktree/branch through the AgentPlane cleanup route and restore the previous supervisor feature boundary.
@@ -323,6 +359,10 @@ sections:
     - Observation: A completed persisted operation can now open a distinct next operation after the route fingerprint changes, while the core reopen contract rejects failed or effect-in-doubt journals.
       Impact: The branch_pr supervisor can resume normal PR and queue steps across task/authority mutations without replaying ambiguous provider effects.
       Resolution: Accepted implementation commit 71491881a3ce7cba0e5555ae55695417b1137341; 22 focused tests, 52 workflow tests, all 12 critical chunks, and ci:contract passed.
+
+    - Observation: The adapter passes the task-artifact head only as commit and omits implementationCommit, preserving finish's reviewed-sha resolver.
+      Impact: A valid quality review remains authoritative during supervised pre-merge closure instead of being rejected against the artifact receipt head.
+      Resolution: Accepted implementation commit c64291cb7c9d88bd0115e1aa5c04de550e2defb7; 23 focused tests, 52 workflow tests, all 12 critical chunks, and ci:contract passed.
 extensions:
   implementation_commit:
     hash: "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea"
@@ -422,6 +462,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-31T13:21:22.824Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:16:28.745Z, excerpt_hash=sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-71SCSW-extend-supervised-execution-to-branch-pr/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json
+- old_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+- current_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-71SCSW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -441,3 +511,7 @@ DecisionContextRef:
 - Observation: A completed persisted operation can now open a distinct next operation after the route fingerprint changes, while the core reopen contract rejects failed or effect-in-doubt journals.
   Impact: The branch_pr supervisor can resume normal PR and queue steps across task/authority mutations without replaying ambiguous provider effects.
   Resolution: Accepted implementation commit 71491881a3ce7cba0e5555ae55695417b1137341; 22 focused tests, 52 workflow tests, all 12 critical chunks, and ci:contract passed.
+
+- Observation: The adapter passes the task-artifact head only as commit and omits implementationCommit, preserving finish's reviewed-sha resolver.
+  Impact: A valid quality review remains authoritative during supervised pre-merge closure instead of being rejected against the artifact receipt head.
+  Resolution: Accepted implementation commit c64291cb7c9d88bd0115e1aa5c04de550e2defb7; 23 focused tests, 52 workflow tests, all 12 critical chunks, and ci:contract passed.
