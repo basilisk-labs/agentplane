@@ -19,9 +19,8 @@ Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 w
 - Note:
 
 ```text
-Local migration verification passed: TS7/TS6 probes, root/workspace typechecks, rollback, build,
-critical tests, isolated concurrency tests, lint, architecture, Knip, package install, and docs
-build. Hosted full unit and Windows remain required before integration.
+Hosted verify-static rework verified locally against the exact CI build order; TypeScript 7 and
+TypeScript 6 rollback remain green.
 ```
 - Canonical workflow state lives in the task README.
 

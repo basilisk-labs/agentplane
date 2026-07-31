@@ -3,8 +3,8 @@
   "branch": "task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr",
   "created_at": "2026-07-31T20:59:44.719Z",
   "diffstat_sha256": "sha256:39e6e01debbd7559e2a604ccdf9d66cca327d1797378532b006d6be9ea9247bc",
-  "last_verified_at": "2026-07-31T21:46:15.293Z",
-  "last_verified_diffstat_sha256": "sha256:77fa30f54ccd6d75ab51c80bc2c5daff4fb60119e5ee00502fe545b9f828337a",
+  "last_verified_at": "2026-07-31T22:18:42.582Z",
+  "last_verified_diffstat_sha256": "sha256:39e6e01debbd7559e2a604ccdf9d66cca327d1797378532b006d6be9ea9247bc",
   "pr_number": 4713,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4713",
   "pre_merge_closure": {
