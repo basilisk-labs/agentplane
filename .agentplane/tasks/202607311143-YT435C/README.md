@@ -2,10 +2,10 @@
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -56,7 +56,9 @@ quality_review:
   findings:
     - "Generated ACR version data is formatted and release parity remains 0.6.26."
     - "Direct routing and stale closure regressions remain green after the candidate correction."
-commit: null
+commit:
+  hash: "7fef8fc76737db61faacf4653c2e6c588e020e78"
+  message: "✅ YT435C release: record hosted contract recheck"
 comments:
   -
     author: "CODER"
@@ -67,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: format the generated v0.6.26 ACR example and rerun candidate gates."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -107,8 +112,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted format failure resolved; format:check, final fast prepublish, focused routing 9/9, incidents, and registry checks pass on v0.6.26 state."
+  -
+    type: "status"
+    at: "2026-07-31T12:54:04.068Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:53:43.664Z"
+doc_updated_at: "2026-07-31T12:54:04.069Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -235,8 +247,8 @@ sections:
       Resolution: Formatted the generated JSON and retained all release gates.
 extensions:
   implementation_commit:
-    hash: "f4a967d3f4a54062d1f002ef3b8e49e33743f669"
-    message: "🔧 YT435C release: sync v0.6.26 artifacts"
+    hash: "1d297d1b128faf9cdc7c55805b5fd855197c980b"
+    message: "🧹 YT435C release: format v0.6.26 ACR example"
 id_source: "generated"
 ---
 ## Summary
