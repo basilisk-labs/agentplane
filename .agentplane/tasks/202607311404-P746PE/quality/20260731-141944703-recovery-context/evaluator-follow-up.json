@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607311404-P746PE-048a2a62840c2a306ff7be50",
+  "task_id": "202607311404-P746PE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Исправить разрешение полного набора задач пакета при verify для role=included и добавить симметричную проверку записи верификации и evaluator packet для included task; текущие зелёные проверки доказывают только primary-task путь.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Пакетный регрессионный тест проверяет запись верификации только для основной задачи; для включённой задачи новая логика формирует неполный набор taskIds и может привязать implementation_sha к более позднему lifecycle-коммиту всего пакета.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:9ba86f7a380ecbd3964ab1d4fe89a47cf8a2b4db1251779231fc75bc825e6652",
+          "section": "verify-record-execute.ts and included branch_pr batch regression"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/README.md",
+          "sha256": "sha256:709d3cc29db81fbbe249f7b0351453166673d3b08b07a1fc514e51dae7dc1119",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/workflow.branch_pr.md",
+          "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+          "section": "Related task batch worktrees"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-result.json"
+}
