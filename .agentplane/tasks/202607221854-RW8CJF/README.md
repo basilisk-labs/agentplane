@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -41,29 +41,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T20:22:46.211Z"
+  updated_at: "2026-07-31T20:30:21.131Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "33e59899d5cd381f089b96746fb715fa5c84a6a2"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "32da254a5accb6ee2e704d94a4e16e192a50de97"
   blueprint_digest: "db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221854-RW8CJF/README.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "New session handlers cannot request undeclared capabilities at compile time, while unsafe casts and legacy overreach fail with typed E_INTERNAL before the target resolver runs."
-    - "Catalog entries expose granular requirements, preparation nodes, and compatibility mode; AGENTPLANE_TRACE emits per-node duration and resolution status."
-    - "Representative output, project, config, task-read, local/remote route, and provider commands migrated without a big-bang catalog rewrite."
+    - "The hosted failure was test-placement debt only: no runtime or capability behavior changed."
+    - "The dedicated trace test preserves coverage while reducing run-cli.core.test.ts to its frozen 1046-line baseline."
 commit:
   hash: "04e6b589abdac03f56c597baac8948920302dd55"
   message: "🔎 RW8CJF task: record evaluator pass"
@@ -102,7 +101,7 @@ events:
     state: "ok"
     note: "Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:30:05.193Z"
+doc_updated_at: "2026-07-31T20:30:21.154Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
