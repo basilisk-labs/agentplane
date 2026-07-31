@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r",
+  "created_at": "2026-07-31T15:55:48.023Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607311554-99FMGV",
+  "updated_at": "2026-07-31T15:55:48.023Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

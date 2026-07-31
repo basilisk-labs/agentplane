@@ -1,0 +1,113 @@
+---
+id: "202607311554-99FMGV"
+title: "Allow fast-forward publication before conflict rework"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 5
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "branch-pr"
+  - "code"
+  - "conflict-rework"
+  - "routing"
+  - "v0.7"
+task_kind: "code"
+mutation_scope: "code"
+blueprint_request: "quality.regression"
+verify:
+  - "bun run test:critical"
+  - "bun run typecheck && bun run format:check && node .agentplane/policy/check-routing.mjs"
+  - "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-07-31T15:54:57.816Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-31T15:55:47.815Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+doc_version: 3
+doc_updated_at: "2026-07-31T15:55:47.815Z"
+doc_updated_by: "CODER"
+description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
+sections:
+  Summary: |-
+    Allow fast-forward publication before conflict rework
+
+    When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
+  Scope: |-
+    - In scope: When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
+    - Out of scope: unrelated refactors not required for "Allow fast-forward publication before conflict rework".
+  Plan: "1. Reproduce the provider-conflict/local-descendant route deadlock. 2. Add an explicit ancestry proof that selects guarded PR head publication only for a clean fast-forward local head. 3. Keep divergent, unknown, and dirty cases terminal and leave semantic conflict resolution to CODER after publication. 4. Add route and command-level regression coverage, run critical/static gates, independent evaluation, and protected-PR integration. 5. Resume CT2725 through the repaired route."
+  Verify Steps: |-
+    1. Reproduce an OPEN protected-base PR whose provider reports conflicts while the clean local task branch is a strict descendant of the provider head. Expected: next-action selects guarded PR head publication before conflict-packet preparation; no rebase, merge, force-push, or hunk selection occurs.
+    2. Cover divergent, unrelated, dirty-worktree, unknown-mergeability, and provider-branch-mismatch cases. Expected: each remains fail-closed and cannot receive publication authority through this route.
+    3. Publish the descendant head in the fixture and refresh provider truth. Expected: the provider/local identity matches, the bounded conflict packet can be prepared, and semantic resolution still routes to CODER with fresh verification required afterward.
+    4. Run `bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts`. Expected: route and publication regressions pass.
+    5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "3a42f9534b567fb4e86387bbbf6b2984a753bf6f"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Allow fast-forward publication before conflict rework
+
+When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
+
+## Scope
+
+- In scope: When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
+- Out of scope: unrelated refactors not required for "Allow fast-forward publication before conflict rework".
+
+## Plan
+
+1. Reproduce the provider-conflict/local-descendant route deadlock. 2. Add an explicit ancestry proof that selects guarded PR head publication only for a clean fast-forward local head. 3. Keep divergent, unknown, and dirty cases terminal and leave semantic conflict resolution to CODER after publication. 4. Add route and command-level regression coverage, run critical/static gates, independent evaluation, and protected-PR integration. 5. Resume CT2725 through the repaired route.
+
+## Verify Steps
+
+1. Reproduce an OPEN protected-base PR whose provider reports conflicts while the clean local task branch is a strict descendant of the provider head. Expected: next-action selects guarded PR head publication before conflict-packet preparation; no rebase, merge, force-push, or hunk selection occurs.
+2. Cover divergent, unrelated, dirty-worktree, unknown-mergeability, and provider-branch-mismatch cases. Expected: each remains fail-closed and cannot receive publication authority through this route.
+3. Publish the descendant head in the fixture and refresh provider truth. Expected: the provider/local identity matches, the bounded conflict packet can be prepared, and semantic resolution still routes to CODER with fresh verification required afterward.
+4. Run `bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts`. Expected: route and publication regressions pass.
+5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
