@@ -15,8 +15,8 @@ Post-merge follow-up for v0.6.26: if a hook already removed the task worktree/br
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: 20 focused cleanup/integration tests passed; typecheck, format, lint:core, and release:prepublish:fast passed.
 - Canonical workflow state lives in the task README.
 
 <details>

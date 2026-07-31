@@ -12,8 +12,8 @@ Created: 2026-07-31T15:29:40.734Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: 20 focused cleanup/integration tests passed; typecheck, format, lint:core, and release:prepublish:fast passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
