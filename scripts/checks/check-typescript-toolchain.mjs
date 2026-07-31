@@ -108,6 +108,20 @@ if (JSON.stringify(bridgeConfig.compilerOptions) !== JSON.stringify(expectedBrid
   );
 }
 
+const depcruiseConfig = readJson("tsconfig.depcruise.json");
+if (
+  depcruiseConfig.extends !== "./tsconfig.base.json" ||
+  depcruiseConfig.compilerOptions?.baseUrl !== "."
+) {
+  throw new Error(
+    "tsconfig.depcruise.json must isolate the TypeScript 6 baseUrl compatibility boundary.",
+  );
+}
+const depcruiseRuntimeConfig = readFileSync(path.join(root, "depcruise.config.cjs"), "utf8");
+if (!depcruiseRuntimeConfig.includes('fileName: "tsconfig.depcruise.json"')) {
+  throw new Error("dependency-cruiser must use the isolated TypeScript 6 config.");
+}
+
 const workspaces = [
   "packages/core/package.json",
   "packages/recipes/package.json",
