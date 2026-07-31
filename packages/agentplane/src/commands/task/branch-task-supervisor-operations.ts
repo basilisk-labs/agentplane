@@ -141,7 +141,6 @@ export async function executeBranchWorkflowOperation(opts: {
         body: operation.params.body,
         result: operation.params.result,
         commit: operation.params.commit,
-        implementationCommit: operation.params.commit,
         breaking: false,
         force: operation.params.force,
         yes: operation.params.force,

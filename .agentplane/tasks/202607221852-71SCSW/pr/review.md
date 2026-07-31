@@ -48,7 +48,8 @@ Created: 2026-07-31T11:14:18.745Z
  .../commands/shared/workflow-supervisor.test.ts    |  62 +-
  .../src/commands/shared/workflow-supervisor.ts     |   8 +-
  .../task/branch-task-supervisor-episodes.ts        | 598 +++++++++++++++++++
- .../task/branch-task-supervisor-operations.ts      | 278 +++++++++
+ .../task/branch-task-supervisor-operations.test.ts |  86 +++
+ .../task/branch-task-supervisor-operations.ts      | 277 +++++++++
  .../commands/task/branch-task-supervisor.test.ts   | 640 +++++++++++++++++++++
  .../src/commands/task/branch-task-supervisor.ts    | 462 +++++++++++++++
  .../direct-task-supervisor-observation.test.ts     |   5 +-
@@ -57,7 +58,7 @@ Created: 2026-07-31T11:14:18.745Z
  .../src/commands/task/hosted-close-pr.types.ts     |   1 +
  .../agentplane/src/commands/task/run-render.ts     |  84 ++-
  .../agentplane/src/commands/task/run.command.ts    |  87 ++-
- 28 files changed, 2950 insertions(+), 228 deletions(-)
+ 29 files changed, 3035 insertions(+), 228 deletions(-)
 ```
 
 </details>
