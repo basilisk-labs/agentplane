@@ -2,10 +2,10 @@
 id: "202607311055-ST7XZY"
 title: "Eliminate direct workflow state-neutral routing loops"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-31T11:25:24.973Z"
+  state: "needs_rework"
+  updated_at: "2026-07-31T11:29:57.552Z"
   updated_by: "CODER"
-  note: "Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed."
-  attempts: 0
+  note: "Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-31T11:25:27.562Z"
@@ -46,9 +46,7 @@ quality_review:
     - "DOING pending verification without runner state routes to task run after canonical task artifacts are persisted."
     - "Terminal runner state stops for verification evidence instead of repeating verify-show."
     - "Pre-merge closure must remain fresh relative to implementation HEAD; stale PR artifacts update before a new closure."
-commit:
-  hash: "661d4e0eb97bcbd50016b8d0703b1ee0f4f99b28"
-  message: "✅ ST7XZY task: record final routing verification"
+commit: null
 comments:
   -
     author: "CODER"
@@ -65,6 +63,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: fix hosted static lint failure without changing routing semantics."
 events:
   -
     type: "status"
@@ -131,8 +132,21 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T11:29:57.552Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe."
+  -
+    type: "status"
+    at: "2026-07-31T11:30:02.644Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: fix hosted static lint failure without changing routing semantics."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:25:55.564Z"
+doc_updated_at: "2026-07-31T11:30:02.644Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -307,6 +321,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T11:29:57.552Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:25:55.564Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+    - diagnostic_command: agentplane pr check 202607311055-ST7XZY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the routing/persistence implementation and regression commits on the maintenance branch.
@@ -340,6 +384,10 @@ sections:
     - Observation: Direct no-runner and stale pre-merge closure routes now require state-changing transitions.
       Impact: The reported state-neutral loop and analogous stale closure bypass are covered.
       Resolution: Route to task run or artifact persistence; require fresh basis-bound closure after implementation changes.
+
+    - Observation: The route blocker filtered directly from an awaited git status expression.
+      Impact: Lint blocked publication despite passing functional tests.
+      Resolution: Store awaited untracked paths before filtering, then rerun lint and full affected verification.
 extensions:
   implementation_commit:
     hash: "ccfacd7d9a18ecba73a9e3e687fe3625e38492be"
@@ -526,6 +574,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T11:29:57.552Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:25:55.564Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+- diagnostic_command: agentplane pr check 202607311055-ST7XZY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -563,3 +641,7 @@ DecisionContextRef:
 - Observation: Direct no-runner and stale pre-merge closure routes now require state-changing transitions.
   Impact: The reported state-neutral loop and analogous stale closure bypass are covered.
   Resolution: Route to task run or artifact persistence; require fresh basis-bound closure after implementation changes.
+
+- Observation: The route blocker filtered directly from an awaited git status expression.
+  Impact: Lint blocked publication despite passing functional tests.
+  Resolution: Store awaited untracked paths before filtering, then rerun lint and full affected verification.

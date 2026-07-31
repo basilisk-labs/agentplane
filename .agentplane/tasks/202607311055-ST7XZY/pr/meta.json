@@ -2,8 +2,8 @@
   "base": "codex/fix-v0.6.24-closeout-route",
   "branch": "task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing",
   "created_at": "2026-07-31T10:56:26.206Z",
-  "diffstat_sha256": "sha256:730d8e71c3a4a212778ec0ed946b64f08acde403d49e56c65f372e53bcdfd99f",
-  "last_verified_at": "2026-07-31T11:25:24.973Z",
+  "diffstat_sha256": "sha256:36abb9696b76ea3ce16c60895b456754dcf7ce81a2f33a1169bac63067441734",
+  "last_verified_at": "2026-07-31T11:29:57.552Z",
   "last_verified_diffstat_sha256": "sha256:730d8e71c3a4a212778ec0ed946b64f08acde403d49e56c65f372e53bcdfd99f",
   "pr_number": 4701,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4701",
@@ -19,6 +19,6 @@
   "task_id": "202607311055-ST7XZY",
   "updated_at": "2026-07-31T11:08:32.287Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

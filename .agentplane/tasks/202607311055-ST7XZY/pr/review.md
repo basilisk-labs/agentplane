@@ -6,14 +6,14 @@ Created: 2026-07-31T10:56:26.206Z
 
 - Task: `202607311055-ST7XZY`
 - Title: Eliminate direct workflow state-neutral routing loops
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing`
 - Canonical task record: `.agentplane/tasks/202607311055-ST7XZY/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed.
+- State: needs_rework
+- Note: Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,7 +33,7 @@ Created: 2026-07-31T10:56:26.206Z
  .../run-cli.core.route-decision.quality.test.ts    | 103 ++++++++++
  .../src/cli/run-cli.core.route-decision.test.ts    |   7 +-
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
- .../src/commands/shared/route-decision-blockers.ts |  44 +++-
+ .../src/commands/shared/route-decision-blockers.ts |  45 ++++-
  .../commands/shared/route-decision-next-action.ts  |  74 ++++---
  .../src/commands/shared/route-decision-repair.ts   |  10 +-
  .../src/commands/shared/route-execution-packet.ts  |   3 +
@@ -42,7 +42,7 @@ Created: 2026-07-31T10:56:26.206Z
  .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 13 files changed, 470 insertions(+), 56 deletions(-)
+ 13 files changed, 471 insertions(+), 56 deletions(-)
 ```
 
 </details>

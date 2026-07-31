@@ -15,13 +15,8 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot
-budget, doctor, and v0.6.26 release plan passed.
-```
+- State: needs_rework
+- Note: Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -36,7 +31,7 @@ budget, doctor, and v0.6.26 release plan passed.
  .../run-cli.core.route-decision.quality.test.ts    | 103 ++++++++++
  .../src/cli/run-cli.core.route-decision.test.ts    |   7 +-
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
- .../src/commands/shared/route-decision-blockers.ts |  44 +++-
+ .../src/commands/shared/route-decision-blockers.ts |  45 ++++-
  .../commands/shared/route-decision-next-action.ts  |  74 ++++---
  .../src/commands/shared/route-decision-repair.ts   |  10 +-
  .../src/commands/shared/route-execution-packet.ts  |   3 +
@@ -45,7 +40,7 @@ budget, doctor, and v0.6.26 release plan passed.
  .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 13 files changed, 470 insertions(+), 56 deletions(-)
+ 13 files changed, 471 insertions(+), 56 deletions(-)
 ```
 
 </details>

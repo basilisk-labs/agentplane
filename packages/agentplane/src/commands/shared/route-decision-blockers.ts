@@ -174,7 +174,8 @@ export async function deriveBlockers(opts: {
     !opts.resume.runner.run_id &&
     !opts.resume.runner.status
   ) {
-    const untrackedTaskArtifacts = (await opts.ctx.git.statusUntrackedPaths()).filter((relPath) =>
+    const untrackedPaths = await opts.ctx.git.statusUntrackedPaths();
+    const untrackedTaskArtifacts = untrackedPaths.filter((relPath) =>
       isTaskArtifactPath({
         workflowDir: opts.ctx.config.paths.workflow_dir,
         taskId: opts.task.id,
