@@ -41,7 +41,7 @@ const REPAIR_BY_BLOCKER_CODE = {
   dirty_task_artifacts: (decision) => ({
     code: "commit_direct_task_artifacts",
     command: `agentplane commit ${decision.task.id} --close --unstage-others`,
-    summary: "commit the tracked direct-workflow task artifacts left by manual close handling",
+    summary: "commit the direct-workflow task artifacts left by manual close handling",
     mutates: true,
   }),
   human_input_required: (decision) => ({
@@ -103,6 +103,14 @@ const REPAIR_BY_BLOCKER_CODE = {
     command: `agentplane task resume-context ${decision.task.id}`,
     summary: "inspect active runner state before reclaiming",
     mutates: false,
+  }),
+  untracked_task_artifacts: (decision) => ({
+    code: "persist_direct_task_artifacts",
+    command:
+      `agentplane commit ${decision.task.id} -m ` +
+      `"🧩 ${decision.task.id.split("-").at(-1) ?? decision.task.id} task: persist canonical task artifacts" --allow-tasks`,
+    summary: "persist the canonical direct-workflow task subtree before runner execution",
+    mutates: true,
   }),
 } satisfies Record<RouteBlockerCode, RepairFactory>;
 

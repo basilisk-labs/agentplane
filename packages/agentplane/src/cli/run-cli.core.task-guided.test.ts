@@ -46,7 +46,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     }
 
     expect(payload!.status).toBe("started");
-    expect(payload!.next_command).toContain("task verify-show");
+    expect(payload!.next_command).toBe(`agentplane task next-action ${payload!.task_id} --explain`);
     const readme = await readFile(
       path.join(root, ".agentplane", "tasks", payload!.task_id, "README.md"),
       "utf8",

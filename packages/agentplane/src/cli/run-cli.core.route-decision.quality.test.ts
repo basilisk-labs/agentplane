@@ -222,4 +222,107 @@ describe("runCli quality route decisions", () => {
       nextIo.restore();
     }
   });
+
+  it("requires a fresh pre-merge closure after implementation changes beyond its basis commit", async () => {
+    const root = await setupRoot();
+    const { branch, taskId } = await createVerifiedOpenPrFixture(
+      root,
+      "Exercise stale pre-merge closure routing.",
+    );
+    await runCliSilent([
+      "evaluator",
+      "run",
+      taskId,
+      "--verdict",
+      "pass",
+      "--summary",
+      "Initial quality review passed.",
+      "--finding",
+      "Initial implementation is ready for closure.",
+      "--evidence",
+      `.agentplane/tasks/${taskId}/README.md`,
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: initial quality artifacts"], { cwd: root });
+    const { stdout: basisCommit } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      metaPath,
+      `${JSON.stringify(
+        {
+          ...meta,
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch,
+            basis_commit: basisCommit.trim(),
+            recorded_at: "2026-01-01T00:00:00.000Z",
+            pr_number: 123,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: initial pre-merge closure"], { cwd: root });
+
+    await writeFile(path.join(root, "followup.txt"), "post-closure implementation change\n");
+    await execFileAsync("git", ["add", "followup.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "fix: post-closure implementation"], { cwd: root });
+    await runCliSilent([
+      "evaluator",
+      "run",
+      taskId,
+      "--verdict",
+      "pass",
+      "--summary",
+      "Follow-up quality review passed.",
+      "--finding",
+      "Follow-up implementation still needs a fresh closure marker.",
+      "--evidence",
+      "followup.txt",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: follow-up quality artifacts"], {
+      cwd: root,
+    });
+
+    const nextIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "next-action", taskId, "--json", "--root", root])).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string; command: string };
+        blockers: { code: string }[];
+      };
+      expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pre_merge_closure_missing");
+      expect(parsed.next_action.code).toBe("update_pr_artifacts");
+      expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
+    } finally {
+      nextIo.restore();
+    }
+
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+    const recomputeIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "next-action", taskId, "--json", "--root", root])).toBe(0);
+      const recomputed = JSON.parse(recomputeIo.stdout) as {
+        next_action: { code: string; command: string };
+        blockers: { code: string }[];
+      };
+      expect(recomputed.blockers.map((blocker) => blocker.code)).toContain(
+        "pre_merge_closure_missing",
+      );
+      expect(recomputed.next_action.code).toBe("record_pre_merge_closure");
+      expect(recomputed.next_action.command).toContain("--pre-merge-closure");
+    } finally {
+      recomputeIo.restore();
+    }
+  });
 });

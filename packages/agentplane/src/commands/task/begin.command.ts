@@ -243,7 +243,7 @@ export function makeRunTaskBeginHandler(
         quiet: true,
       });
       status = "started";
-      nextCommand = `agentplane task verify-show ${taskId}`;
+      nextCommand = `agentplane task next-action ${taskId} --explain`;
     }
 
     const payload = {

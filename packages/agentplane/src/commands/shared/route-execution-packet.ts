@@ -77,6 +77,9 @@ function evidenceMissingFor(opts: {
     if (blocker.code === "close_tail_missing") missing.add("close_tail_pr");
     if (blocker.code === "runner_alive") missing.add("runner_terminal_state");
     if (blocker.code === "dirty_task_artifacts") missing.add("task_artifact_cleanup_commit");
+    if (blocker.code === "untracked_task_artifacts") {
+      missing.add("task_artifact_persistence_commit");
+    }
     if (blocker.code === "quality_review_missing") missing.add("evaluator_quality_review");
     if (blocker.code === "quality_review_stale") missing.add("fresh_evaluator_quality_review");
     if (blocker.code === "pre_merge_closure_missing") missing.add("pre_merge_closure");

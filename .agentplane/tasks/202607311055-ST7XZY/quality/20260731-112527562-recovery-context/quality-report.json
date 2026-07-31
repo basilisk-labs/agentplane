@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311055-ST7XZY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T11:25:27.562Z",
+  "verdict": "pass",
+  "summary": "Direct workflow and closeout routing regressions pass on the maintenance branch.",
+  "evaluated_sha": "ccfacd7d9a18ecba73a9e3e687fe3625e38492be",
+  "blueprint_digest": "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d",
+  "findings": [
+    "DOING pending verification without runner state routes to task run after canonical task artifacts are persisted.",
+    "Terminal runner state stops for verification evidence instead of repeating verify-show.",
+    "Pre-merge closure must remain fresh relative to implementation HEAD; stale PR artifacts update before a new closure."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311055-ST7XZY/README.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
+    "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

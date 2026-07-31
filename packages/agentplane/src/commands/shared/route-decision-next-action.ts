@@ -44,28 +44,35 @@ function directTaskIsDoing(task: TaskData): boolean {
   return String(task.status).toUpperCase() === "DOING";
 }
 
-function directCurrentAgentCommand(
-  task: TaskData,
-  resume: TaskResumeContext,
-  taskId: string,
-): string {
-  if (resume.runner.run_id || resume.runner.status) {
-    return resume.runner.next_command ?? `agentplane task verify-show ${taskId}`;
-  }
-  if (!directTaskIsDoing(task)) {
-    return `agentplane task start-ready ${taskId} --author ${task.owner} --body "Start: continue direct-mode task in current checkout."`;
-  }
-  return `agentplane task verify-show ${taskId}`;
+function taskSuffix(taskId: string): string {
+  return taskId.split("-").at(-1) ?? taskId;
 }
 
-function directNextActionCode(task: TaskData, resume: TaskResumeContext): string {
-  if (resume.runner.run_id || resume.runner.status) {
-    return resume.runner.next_action ?? "continue_direct";
+function directRunnerAction(resume: TaskResumeContext, taskId: string): RouteNextAction {
+  if (resume.runner.next_action === "wait") {
+    return {
+      code: "wait_runner",
+      command: null,
+      summary: "wait for the active direct-workflow runner to reach a terminal state",
+      requiresApproval: false,
+    };
   }
-  if (!directTaskIsDoing(task)) {
-    return "start_direct";
+  if (resume.runner.next_action === "none") {
+    return {
+      code: "review_direct_verification",
+      command: null,
+      summary:
+        `runner work is complete; execute the declared Verify Steps, then record ` +
+        `agentplane verify ${taskId} --ok|--rework with evidence`,
+      requiresApproval: false,
+    };
   }
-  return "continue_direct";
+  return {
+    code: resume.runner.next_action ?? "run",
+    command: resume.runner.next_command ?? `agentplane task run ${taskId}`,
+    summary: "execute or recover the direct-workflow task through the configured runner",
+    requiresApproval: false,
+  };
 }
 
 export function deriveNextAction(opts: {
@@ -84,7 +91,7 @@ export function deriveNextAction(opts: {
         code: "commit_direct_task_artifacts",
         command: `agentplane commit ${id} --close --unstage-others`,
         summary:
-          "task is marked done but tracked task artifacts still need the deterministic cleanup commit",
+          "task is marked done but task artifacts still need the deterministic cleanup commit",
         requiresApproval: false,
       };
     }
@@ -160,12 +167,29 @@ export function deriveNextAction(opts: {
         requiresApproval: false,
       };
     }
-    return {
-      code: directNextActionCode(opts.task, opts.resume),
-      command: directCurrentAgentCommand(opts.task, opts.resume, id),
-      summary: "continue the direct-mode task from the current checkout",
-      requiresApproval: false,
-    };
+    if (
+      directTaskIsDoing(opts.task) &&
+      opts.blockers.some((blocker) => blocker.code === "untracked_task_artifacts")
+    ) {
+      return {
+        code: "persist_direct_task_artifacts",
+        command:
+          `agentplane commit ${id} -m ` +
+          `"🧩 ${taskSuffix(id)} task: persist canonical task artifacts" --allow-tasks`,
+        summary:
+          "persist the canonical task subtree before starting runner work so workspace recreation cannot discard it",
+        requiresApproval: false,
+      };
+    }
+    if (!directTaskIsDoing(opts.task)) {
+      return {
+        code: "start_direct",
+        command: `agentplane task start-ready ${id} --author ${opts.task.owner} --body "Start: continue direct-mode task in current checkout."`,
+        summary: "start the approved direct-mode task in the current checkout",
+        requiresApproval: false,
+      };
+    }
+    return directRunnerAction(opts.resume, id);
   }
   if (opts.batchOwnership.role === "included") {
     return opts.batchOwnership.nextOwnerAction;
