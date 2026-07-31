@@ -27,7 +27,7 @@ typecheck, and bundle gates at implementation SHA 33e59899d.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T19:53:56.576Z
+- Updated: 2026-07-31T20:23:47.343Z
 - Branch: task/202607221854-RW8CJF/define-granular-commandsession-capabilities-and
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
