@@ -1,3 +1,13 @@
- .../commands/shared/merged-branch-cleanup.test.ts  | 39 +++++++++++++++++
- .../src/commands/shared/merged-branch-cleanup.ts   | 49 +++++++++++++---------
- 2 files changed, 68 insertions(+), 20 deletions(-)
+ .agentplane/tasks/202607311529-773BXT/README.md    | 227 +++++++++++
+ .../blueprint/resolved-snapshot.json               | 454 +++++++++++++++++++++
+ .../tasks/202607311529-773BXT/pr/diffstat.txt      |   3 +
+ .../tasks/202607311529-773BXT/pr/github-body.md    |  35 ++
+ .../tasks/202607311529-773BXT/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202607311529-773BXT/pr/meta.json |  24 ++
+ .agentplane/tasks/202607311529-773BXT/pr/review.md |  38 ++
+ .../evaluator-opinion.md                           |  19 +
+ .../evaluator-prompt.md                            |  74 ++++
+ .../quality-report.json                            |  21 +
+ .../commands/shared/merged-branch-cleanup.test.ts  |  39 ++
+ .../src/commands/shared/merged-branch-cleanup.ts   |  49 ++-
+ 12 files changed, 964 insertions(+), 20 deletions(-)

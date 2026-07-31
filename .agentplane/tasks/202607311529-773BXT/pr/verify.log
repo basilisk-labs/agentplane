@@ -1,0 +1,22 @@
+[2026-07-31T15:41:24.493Z] sha=84b90b6c36d250f953fe31385df14e4a554ee9e9 $ bun run format:check
+Checking formatting...
+All matched files use Prettier code style!
+$ prettier . --check
+
+[2026-07-31T15:41:44.292Z] sha=84b90b6c36d250f953fe31385df14e4a554ee9e9 $ bun run test:project agentplane packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311529-773BXT-make-merged-worktree-cleanup-idempotent
+
+
+ Test Files  2 passed (2)
+      Tests  20 passed (20)
+   Start at  18:41:44
+   Duration  974ms (transform 575ms, setup 0ms, import 140ms, tests 781ms, environment 0ms)
+
+$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+
+[2026-07-31T15:41:45.783Z] sha=84b90b6c36d250f953fe31385df14e4a554ee9e9 $ bun run typecheck
+$ node scripts/checks/run-typescript-build.mjs
+
+[2026-07-31T15:41:46.326Z] ✅ verified_sha=84b90b6c36d250f953fe31385df14e4a554ee9e9
+
