@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "EXECUTOR/CODER semantic episodes cannot mutate task lifecycle; the supervisor measures and rejects non-zero lifecycle event deltas.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Every registry-backed mechanical operation is executed in-process, followed by route recomputation, and persisted under an idempotency key before effects.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Provider uncertainty, queue contention, stale/conflict rework, deleted branches, and missing merge authority terminate as typed stops rather than implicit retries.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "One durable supervisor journal serializes all task provider effects; effect-in-doubt recovery must remain explicit before any new side effect."
+  ]
+}

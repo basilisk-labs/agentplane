@@ -4,7 +4,7 @@ title: "Extend supervised execution to branch_pr"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -39,6 +39,32 @@ verification:
   updated_by: "TESTER"
   note: "Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T12:10:31.597Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "49f4e7c7a0ece8c38018f8b69f826f035685f34f"
+  blueprint_digest: "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363"
+  evidence_refs:
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-71SCSW/README.md"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-71SCSW/quality/20260731-121028393-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "EXECUTOR/CODER semantic episodes cannot mutate task lifecycle; the supervisor measures and rejects non-zero lifecycle event deltas."
+    - "Every registry-backed mechanical operation is executed in-process, followed by route recomputation, and persisted under an idempotency key before effects."
+    - "Provider uncertainty, queue contention, stale/conflict rework, deleted branches, and missing merge authority terminate as typed stops rather than implicit retries."
 commit:
   hash: "49f4e7c7a0ece8c38018f8b69f826f035685f34f"
   message: "🚧 71SCSW task: implement branch_pr supervision"
