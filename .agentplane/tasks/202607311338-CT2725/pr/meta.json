@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra",
+  "created_at": "2026-07-31T13:40:50.644Z",
+  "diffstat_sha256": "sha256:e6fb19783120c1b6443574124783b5202b3c79f12f900fbbaafe79637b528f32",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607311338-CT2725",
+  "updated_at": "2026-07-31T13:40:50.644Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
