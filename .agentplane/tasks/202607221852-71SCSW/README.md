@@ -2,10 +2,10 @@
 id: "202607221852-71SCSW"
 title: "Extend supervised execution to branch_pr"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -84,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Reopened for live integration queue checkout-boundary rework."
 events:
   -
     type: "status"
@@ -126,8 +129,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-31T12:39:48.571Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopened for live integration queue checkout-boundary rework."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:30:28.586Z"
+doc_updated_at: "2026-07-31T12:39:48.571Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
