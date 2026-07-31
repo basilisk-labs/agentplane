@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202607221854-RW8CJF/define-granular-commandsession-capabilities-and",
   "created_at": "2026-07-31T19:53:56.576Z",
-  "diffstat_sha256": "sha256:77fde8829d3818c5e73467cc479a79ffb9c40d3e9fbbca2f19158a6d50f0e91b",
-  "last_verified_at": "2026-07-31T20:30:04.393Z",
-  "last_verified_diffstat_sha256": "sha256:77fde8829d3818c5e73467cc479a79ffb9c40d3e9fbbca2f19158a6d50f0e91b",
+  "diffstat_sha256": "sha256:9eeb88394cdcb7a777e090bcee1159139c40ae96ad4126129ce0421878ecbb29",
+  "last_verified_at": "2026-07-31T20:40:26.156Z",
+  "last_verified_diffstat_sha256": "sha256:9eeb88394cdcb7a777e090bcee1159139c40ae96ad4126129ce0421878ecbb29",
   "pr_number": 4712,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4712",
   "pre_merge_closure": {
