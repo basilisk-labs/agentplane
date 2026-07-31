@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -51,8 +51,8 @@ quality_review:
     - "The original conflict route assertions remain in the existing file; the verified DONE publication scenario is isolated in a 294-line test file, keeping the pre-existing test below 1000 lines."
     - "Hotspot baseline passes at 10 oversized entries and 11418 total lines; focused 35 tests, all 12 critical chunks, lint, typecheck, routing, format, and diff checks pass on the current head."
 commit:
-  hash: "8e1896a53274cf79fa3ae9acb53dc2d7bfe8f0a5"
-  message: "🔍 WBY9EK task: record verification and evaluator pass"
+  hash: "588ab39dd0142fdc60501820217b4522ea928abb"
+  message: "🔍 WBY9EK task: record hotspot recovery review"
 comments:
   -
     author: "CODER"
@@ -60,6 +60,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -87,8 +90,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-31T18:34:49.094Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T18:21:40.542Z"
+doc_updated_at: "2026-07-31T18:34:49.094Z"
 doc_updated_by: "CODER"
 description: "When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads."
 sections:
@@ -174,8 +184,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "ec05273fe44825a864f54aef15865b80afeeb847"
-    message: "🔧 WBY9EK task: publish resolved DONE conflict heads safely"
+    hash: "2c5b0522fe7af65e6baffe759f913d0779e6ce45"
+    message: "🔧 WBY9EK task: split publication regression below hotspot budget"
   workflow_route_baseline:
     start_head_sha: "9eb65c88341f2495a0a1f11865eb38c4978b2ef3"
     version: 1
