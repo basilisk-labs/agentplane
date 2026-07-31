@@ -2,10 +2,10 @@
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -55,7 +55,9 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
   findings:
     - "Verification subprocesses are isolated from ap-only presentation variables; exact regression and the full release matrix pass on a913b333."
-commit: null
+commit:
+  hash: "511f717166e9a47ab72b6b3e69f92f53a6894b0d"
+  message: "✅ YT435C release: record final verification"
 comments:
   -
     author: "CODER"
@@ -75,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: isolate integration verification subprocesses from AgentPlane presentation-mode environment."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -160,8 +165,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env."
+  -
+    type: "status"
+    at: "2026-07-31T13:31:27.889Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:30:56.206Z"
+doc_updated_at: "2026-07-31T13:31:27.890Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -424,8 +436,8 @@ sections:
       Resolution: runShellCommand now removes both launcher-only variables before starting verification subprocesses, with a regression assertion on the child environment.
 extensions:
   implementation_commit:
-    hash: "1d297d1b128faf9cdc7c55805b5fd855197c980b"
-    message: "🧹 YT435C release: format v0.6.26 ACR example"
+    hash: "a913b33383db5f5b7c167da51c4ba69cda14cd64"
+    message: "🐛 YT435C release: isolate verify process environment"
 id_source: "generated"
 ---
 ## Summary
