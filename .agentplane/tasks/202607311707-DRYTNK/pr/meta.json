@@ -8,10 +8,10 @@
   "pr_number": 4713,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4713",
   "pre_merge_closure": {
-    "basis_commit": "29209fa53f2be11ba89d737f823402b4d197b855",
+    "basis_commit": "41763040243173eff12440f524acae1ef15b80eb",
     "branch": "task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr",
     "pr_number": 4713,
-    "recorded_at": "2026-07-31T22:20:38.507Z",
+    "recorded_at": "2026-07-31T22:48:02.639Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -62,7 +62,7 @@ quality_review:
   findings:
     - "The architecture runner now fails closed unless dependency-cruiser sees root TypeScript 6.0.3; no cycle rule, include scope, or runtime boundary was weakened, and full Linux/macOS graphs pass."
 commit:
-  hash: "29209fa53f2be11ba89d737f823402b4d197b855"
+  hash: "41763040243173eff12440f524acae1ef15b80eb"
   message: "🧪 DRYTNK task: pre-merge closure"
 comments:
   -
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -124,8 +127,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Linux isolated-linker rework verified: dependency-cruiser resolves TypeScript 6.0.3 explicitly, full macOS and Linux architecture graphs pass, and format/toolchain/full lint pass."
+  -
+    type: "status"
+    at: "2026-07-31T22:48:02.548Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T22:46:11.011Z"
+doc_updated_at: "2026-07-31T22:48:02.549Z"
 doc_updated_by: "CODER"
 description: "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path."
 sections:
@@ -262,8 +272,8 @@ sections:
       Resolution: Preload deterministic root TypeScript and its package manifest into dependency-cruiser's Node resolution, fail closed on --info unless TypeScript 6.0.3 is visible, and prove the complete graph in a Node 24 Linux container.
 extensions:
   implementation_commit:
-    hash: "09e721ea05184c57d00d751abf1fd395ecb25d26"
-    message: "🧪 DRYTNK task: make architecture resolution build-order invariant"
+    hash: "05de582e2cb8923c825f8ff4007135551bfe41b4"
+    message: "🐧 DRYTNK task: pin depcruise to TypeScript 6 on Linux"
   workflow_route_baseline:
     start_head_sha: "ae4f903e99126484dcbe54ae3ec152dd20ba667b"
     version: 1
