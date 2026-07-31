@@ -15,8 +15,15 @@ RF-23: provide run-bound report_result, report_blocker, request_knowledge, and r
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help
+operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical
+suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker,
+canonical result preservation, audit creation, token revocation, and broker cleanup.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

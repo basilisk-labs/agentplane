@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-ECBY56-e77fde90aae76feee677df93",
+  "prepared_at": "2026-07-31T10:55:42.612Z",
+  "task": {
+    "id": "202607221852-ECBY56",
+    "revision": 11,
+    "objective": "Expose phase-scoped run tool APIs\n\nRF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run schemas:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: phase/run token, tool schema and capability map, result/blocker/knowledge APIs, role-specific repository tool allowlists, typed denial, adapter capability negotiation, audit, expiry/revocation, and global-help non-reliance.\n- Out of scope: treating tool visibility as the only security boundary.",
+      "1. Define run-bound identity, phase, role, fingerprint, capability, expiry, and authority claims.\n2. Expose only the approved semantic/reporting/knowledge operations for each phase.\n3. Validate every call server-side and route lifecycle operations to the supervisor only.\n4. Report adapter enforcement gaps truthfully.\n5. Add token tamper, expiry, cross-run, wrong-role, denied-lifecycle, and capability-downgrade tests.",
+      "1. Invoke each allowed tool with a valid phase token. Expected: typed response, receipt/audit linkage, and no lifecycle authority leak.\n2. Call lifecycle or wrong-role tools, or tamper/expire/reuse a token. Expected: typed denial before effects.\n3. Use an adapter lacking a requested tool/enforcement feature. Expected: capability map and work order state the limitation.\n4. Hide global CLI help from the episode. Expected: the supported run API remains complete and secure.\n5. Run schema/tool/guard/type tests."
+    ]
+  },
+  "evaluated_sha": "da76a705009eb5c14b583c3fbf53c716dbead232",
+  "diff_base_sha": "402709cb633549245a4231d902813a473e6c4103",
+  "blueprint_digest": "06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-ECBY56/README.md",
+      "sha256": "sha256:a0741db2bc11f748ba1bfc2215a29802d03be81dc0a9247a5f328339e9cd9d10",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:793fc1429bba3871501bb51e552a763e37b551e4f9e76fd2730b8c265d03a9e7",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:70f2c7ffc02fec70a993abfecb747e28e5303878e1950ffcc78ee373740dc128",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d34fec7ba765690b87fa0f1b317a5fc2f16f53a6ae198ccd200fc3105062132a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
