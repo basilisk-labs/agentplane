@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202607221854-RW8CJF/define-granular-commandsession-capabilities-and",
   "created_at": "2026-07-31T19:53:56.576Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:92810f1605e9cf07695ca5aeb381caedd7d5d37fe56b58343d1b56fcf4b97391",
+  "last_verified_at": "2026-07-31T20:22:13.948Z",
+  "last_verified_diffstat_sha256": "sha256:92810f1605e9cf07695ca5aeb381caedd7d5d37fe56b58343d1b56fcf4b97391",
   "schema_version": 1,
   "task_id": "202607221854-RW8CJF",
   "updated_at": "2026-07-31T19:53:56.576Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
