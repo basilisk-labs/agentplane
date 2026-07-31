@@ -8,10 +8,10 @@
   "pr_number": 4710,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4710",
   "pre_merge_closure": {
-    "basis_commit": "8e1896a53274cf79fa3ae9acb53dc2d7bfe8f0a5",
+    "basis_commit": "588ab39dd0142fdc60501820217b4522ea928abb",
     "branch": "task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema",
     "pr_number": 4710,
-    "recorded_at": "2026-07-31T18:21:40.585Z",
+    "recorded_at": "2026-07-31T18:34:49.143Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
