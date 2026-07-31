@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:bcbfbad1e615e88513f68f7da90d7f7f63c8aa5832e8ea184bc9e4186db77fbe",
+  "implementation_sha": "f9c7673f4b3593f009aff4c59ff729bed1041beb",
+  "kind": "task_verification_record",
+  "note": "PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay.",
+  "recorded_at": "2026-07-31T18:59:51.710Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Inspect the preserved RF-23 live artifact. Expected: process, scope, Git, artifacts, protected-filesystem observation, and phase-tool audit pass; containment alone leaves the receipt unverified, while the typed result is blocked and the pre-fix outer stop is runner_receipt_unobserved.\n2. Run `bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts`. Expected: blocked, needs_context, and failed results with present unverified receipts preserve their typed stop without provider replay; completed-unverified, missing, and rejected receipts remain terminal and cannot authorize progress.\n3. Run `bun run test:critical`. Expected: all critical CLI chunks pass and provider execution remains at-most-once.\n4. Run `agentplane incidents collect 202607311338-CT2725 --check` and `bun run release:incidents:check`. Expected: INC-20260731-01 is resolved with task/commit evidence, source and packaged incident assets stay identical, and the release incident gate passes.\n5. Review the final diff and task evidence. Expected: changes remain bounded to semantic-stop observation ordering, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA.",
+  "scope_digest": "sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30",
+  "task_id": "202607311338-CT2725",
+  "verification_command": "agentplane verify 202607311338-CT2725 --ok --by TESTER",
+  "verifier": "TESTER"
+}

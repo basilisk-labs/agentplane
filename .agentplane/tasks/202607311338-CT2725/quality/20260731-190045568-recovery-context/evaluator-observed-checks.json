@@ -1,0 +1,23 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run release:incidents:check",
+    "bun run test:critical",
+    "bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T18:59:51.710Z",
+    "updated_by": "TESTER",
+    "note": "PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

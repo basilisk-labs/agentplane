@@ -19,8 +19,8 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 - Note:
 
 ```text
-PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical
-chunks, typecheck, incident collection, release incident gate, and source/asset parity passed
+PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12
+critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass
 without provider replay.
 ```
 - Canonical workflow state lives in the task README.
