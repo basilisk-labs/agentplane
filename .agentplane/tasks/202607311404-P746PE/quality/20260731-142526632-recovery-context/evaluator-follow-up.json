@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607311404-P746PE-1ab3b1c0896f3841b91bc75c",
+  "task_id": "202607311404-P746PE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Исправить завершающие пробелы в отслеживаемых исторических evaluator-diff артефактах либо обеспечить их генерацию без таких пробелов, затем повторить проверку на полном диапазоне от diff_base_sha до evaluated_sha и заморозить новое непротиворечивое свидетельство.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Замороженный итоговый diff не проходит заявленную проверку `git diff --check`: несколько ранее созданных `evaluator-diff.patch` содержат строки с завершающими пробелами. Запись верификации при этом утверждает, что проверка прошла после доработки.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-142526632-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:f66632cd0c4c36b3cc84edfd2ef03ef67bc63bbd9f2a4524c85a8c9a608128c5"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/verification/20260731142512465-1702fd856684f882.json",
+          "sha256": "sha256:25f92a92cd5d5fd00fbc080d9174e00cacc02e13cd0ae9f6a1a50be3750c1c92"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/README.md",
+          "sha256": "sha256:aaab5596a8b912d9049a5ea58bc0e3319555ad180704cfee9da03845d0c79572",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311404-P746PE/quality/20260731-142526632-recovery-context/evaluator-result.json"
+}

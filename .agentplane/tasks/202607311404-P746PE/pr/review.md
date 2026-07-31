@@ -6,14 +6,14 @@ Created: 2026-07-31T14:05:33.781Z
 
 - Task: `202607311404-P746PE`
 - Title: Bind verification records to semantic review targets
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311404-P746PE/bind-verification-records-to-semantic-review-tar`
 - Canonical task record: `.agentplane/tasks/202607311404-P746PE/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600.
+- Note: PASS with immutable evidence scope: source and managed task artifacts pass range whitespace validation at 0af1c1a64.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
