@@ -4,7 +4,7 @@ title: "Define granular CommandSession capabilities and migrate a pilot slice"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -37,6 +37,32 @@ verification:
   updated_by: "TESTER"
   note: "CommandSession capability pilot passed typed denial, laziness, trace, architecture, critical CLI, typecheck, and bundle gates at implementation SHA 33e59899d."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T20:22:46.211Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "33e59899d5cd381f089b96746fb715fa5c84a6a2"
+  blueprint_digest: "db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06"
+  evidence_refs:
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/README.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "New session handlers cannot request undeclared capabilities at compile time, while unsafe casts and legacy overreach fail with typed E_INTERNAL before the target resolver runs."
+    - "Catalog entries expose granular requirements, preparation nodes, and compatibility mode; AGENTPLANE_TRACE emits per-node duration and resolution status."
+    - "Representative output, project, config, task-read, local/remote route, and provider commands migrated without a big-bang catalog rewrite."
 commit: null
 comments:
   -
@@ -57,7 +83,7 @@ events:
     state: "ok"
     note: "CommandSession capability pilot passed typed denial, laziness, trace, architecture, critical CLI, typecheck, and bundle gates at implementation SHA 33e59899d."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:22:14.689Z"
+doc_updated_at: "2026-07-31T20:22:46.232Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:

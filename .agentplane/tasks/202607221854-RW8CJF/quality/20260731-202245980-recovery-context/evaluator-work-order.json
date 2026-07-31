@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221854-RW8CJF-b31e9e18f00f23baf7f36be0",
+  "prepared_at": "2026-07-31T20:22:45.980Z",
+  "task": {
+    "id": "202607221854-RW8CJF",
+    "revision": 8,
+    "objective": "Define granular CommandSession capabilities and migrate a pilot slice\n\nRF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bun run guards:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: capability type model, command catalog declaration, typed handler subsets, lazy resolver graph, preparation tracing hooks, and pilot migration of simple/read, task, route, and provider commands.\n- Out of scope: migrating every command family in one big-bang.",
+      "1. Define granular capability tokens and compile-time handler session subsets.\n2. Map legacy CommandNeeds to an explicit compatibility adapter.\n3. Make the resolver construct only declared lazy capabilities.\n4. Migrate representative low-, medium-, and high-dependency command slices.\n5. Add compile-time/runtime denial, laziness, and preparation trace tests.",
+      "1. Compile handlers against their declared sessions. Expected: undeclared task/Git/provider access is a type error or typed runtime denial at legacy boundaries.\n2. Run simple command fixtures. Expected: task, Git, route, and provider preparation nodes are never loaded.\n3. Run pilot task/route/provider commands. Expected: only declared capabilities load and output compatibility is unchanged.\n4. Inspect catalog and traces. Expected: requirements and preparation cost are visible per command.\n5. Run focused catalog/session tests, arch check, guards, and typecheck."
+    ]
+  },
+  "evaluated_sha": "33e59899d5cd381f089b96746fb715fa5c84a6a2",
+  "diff_base_sha": "1adc9896b158719e908acc894b3651bfec2348c1",
+  "blueprint_digest": "db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221854-RW8CJF/README.md",
+      "sha256": "sha256:4c181a0c58c70e78eb18455c22b213974ac98493214c528b88c23c17076e581f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:6b9ccebc6d33a851a88f61a93c729bee5ea0f41f80e830c08123965a5ed5ad7d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:77c1de2191fc77dfaefb90554609ea881869e233e7024a01904b344651a6fe0e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:433a4897fc4edf8ef6a684280ac56bc3a6e4b30f0f90d9c999c85b85850fe659",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
