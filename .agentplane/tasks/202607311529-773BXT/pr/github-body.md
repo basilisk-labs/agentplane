@@ -22,7 +22,7 @@ Post-merge follow-up for v0.6.26: if a hook already removed the task worktree/br
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T15:29:40.734Z
+- Updated: 2026-07-31T15:35:00.152Z
 - Branch: task/202607311529-773BXT/make-merged-worktree-cleanup-idempotent
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

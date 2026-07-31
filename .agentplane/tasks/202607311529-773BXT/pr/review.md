@@ -6,7 +6,7 @@ Created: 2026-07-31T15:29:40.734Z
 
 - Task: `202607311529-773BXT`
 - Title: Make merged worktree cleanup idempotent
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311529-773BXT/make-merged-worktree-cleanup-idempotent`
 - Canonical task record: `.agentplane/tasks/202607311529-773BXT/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-31T15:29:40.734Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T15:29:40.734Z
+- Updated: 2026-07-31T15:35:00.152Z
 - Branch: task/202607311529-773BXT/make-merged-worktree-cleanup-idempotent
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

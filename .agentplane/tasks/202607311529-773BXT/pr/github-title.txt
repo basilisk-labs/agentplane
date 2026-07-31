@@ -1,1 +1,1 @@
-🚧 773BXT task: Make merged worktree cleanup idempotent [202607311529-773BXT]
+✅ 773BXT task: Make merged worktree cleanup idempotent [202607311529-773BXT]

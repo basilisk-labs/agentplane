@@ -1,10 +1,11 @@
 ---
 id: "202607311529-773BXT"
 title: "Make merged worktree cleanup idempotent"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
   findings:
     - "Regression coverage proves stale hints are accepted only after live registration disappears."
-commit: null
+commit:
+  hash: "44e61b7c3b28bfaf4ac9323c3f5f8eaaa4996eeb"
+  message: "✅ 773BXT task: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: make merged worktree cleanup idempotent when post-merge hooks already removed the task worktree and branch."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -61,8 +67,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "20 focused cleanup/integration tests passed; typecheck, format, lint:core, and release:prepublish:fast passed."
+  -
+    type: "status"
+    at: "2026-07-31T15:35:31.045Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T15:34:37.370Z"
+doc_updated_at: "2026-07-31T15:35:31.047Z"
 doc_updated_by: "CODER"
 description: "Post-merge follow-up for v0.6.26: if a hook already removed the task worktree/branch, integration cleanup must treat that as completed instead of exiting non-zero after a successful merge."
 sections:
@@ -129,6 +142,10 @@ sections:
     - Observation: Post-merge hook cleanup can race with integration cleanup and remove the hinted worktree first.
       Impact: A successful merge returned exit 4/E_IO, misleading the agent into treating completed integration as failed.
       Resolution: After cleanup errors, re-check live worktree registration; accept the already-removed state and rethrow genuine registered-worktree failures.
+extensions:
+  implementation_commit:
+    hash: "13509c41f93a7d600c25e11adc5a7aa3d2894c14"
+    message: "🐛 773BXT post-merge: tolerate cleanup race"
 id_source: "generated"
 ---
 ## Summary
