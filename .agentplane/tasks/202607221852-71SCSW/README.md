@@ -4,7 +4,7 @@ title: "Extend supervised execution to branch_pr"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -39,11 +39,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "49f4e7c7a0ece8c38018f8b69f826f035685f34f"
+  message: "🚧 71SCSW task: implement branch_pr supervision"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: 49f4e7c7a. CLI-owned branch_pr supervision now covers semantic work, verification, PR/provider operations, integration queue, hosted close, durable idempotency, and cleanup."
 events:
   -
     type: "status"
@@ -52,8 +57,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-31T12:08:34.970Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 49f4e7c7a. CLI-owned branch_pr supervision now covers semantic work, verification, PR/provider operations, integration queue, hosted close, durable idempotency, and cleanup."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:14:18.514Z"
+doc_updated_at: "2026-07-31T12:08:34.970Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
