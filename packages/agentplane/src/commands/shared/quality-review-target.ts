@@ -27,6 +27,149 @@ function isDerivedTaskArtifact(relativePath: string): boolean {
   return MANAGED_TASK_ARTIFACT_DIRECTORIES.some((directory) => relativePath.startsWith(directory));
 }
 
+type ImplementationReceiptReadme = {
+  comparable: string;
+  commit: Record<string, unknown> | null;
+  comments: unknown[];
+  events: unknown[];
+  docUpdatedAt: unknown;
+  docUpdatedBy: unknown;
+  status: unknown;
+};
+
+function implementationReceiptReadme(markdown: string): ImplementationReceiptReadme | null {
+  try {
+    const parsed = parseTaskReadme(markdown);
+    const frontmatter = structuredClone(parsed.frontmatter);
+    const commit = isRecord(frontmatter.commit) ? structuredClone(frontmatter.commit) : null;
+    const comments = Array.isArray(frontmatter.comments)
+      ? structuredClone(frontmatter.comments)
+      : [];
+    const events = Array.isArray(frontmatter.events) ? structuredClone(frontmatter.events) : [];
+    const docUpdatedAt = frontmatter.doc_updated_at;
+    const docUpdatedBy = frontmatter.doc_updated_by;
+    const status = frontmatter.status;
+
+    for (const key of [
+      "revision",
+      "commit",
+      "comments",
+      "events",
+      "doc_updated_at",
+      "doc_updated_by",
+    ]) {
+      Reflect.deleteProperty(frontmatter, key);
+    }
+
+    return {
+      comparable: JSON.stringify(canonicalizeJson({ frontmatter, body: parsed.body })),
+      commit,
+      comments,
+      events,
+      docUpdatedAt,
+      docUpdatedBy,
+      status,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function sameCanonicalJson(left: unknown, right: unknown): boolean {
+  return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
+}
+
+type TaskReadmeAdvanceOptions = {
+  gitRoot: string;
+  parent: string;
+  current: string;
+  changed: readonly string[];
+  taskRelativePath: (name: string) => string | null;
+};
+
+async function changedTaskReadmes(
+  opts: TaskReadmeAdvanceOptions,
+): Promise<readonly (readonly [before: string, after: string])[] | null> {
+  if (
+    opts.changed.length === 0 ||
+    opts.changed.some((name) => opts.taskRelativePath(name) !== "README.md")
+  ) {
+    return null;
+  }
+
+  const readmes: Array<readonly [before: string, after: string]> = [];
+  for (const name of opts.changed) {
+    const pair = await Promise.all([
+      gitShowFile(opts.gitRoot, opts.parent, name).catch(() => null),
+      gitShowFile(opts.gitRoot, opts.current, name).catch(() => null),
+    ]);
+    if (pair[0] === null || pair[1] === null || pair[0] === pair[1]) return null;
+    readmes.push([pair[0], pair[1]]);
+  }
+  return readmes;
+}
+
+function appendedImplementationReceipt(opts: {
+  before: ImplementationReceiptReadme;
+  after: ImplementationReceiptReadme;
+  parent: string;
+}): boolean {
+  if (
+    opts.before.comparable !== opts.after.comparable ||
+    opts.before.status !== "DOING" ||
+    opts.after.status !== "DOING" ||
+    opts.after.commit?.hash !== opts.parent ||
+    typeof opts.after.commit.message !== "string" ||
+    opts.after.commit.message.trim().length === 0 ||
+    sameCanonicalJson(opts.before.commit, opts.after.commit) ||
+    opts.after.comments.length !== opts.before.comments.length + 1 ||
+    opts.after.events.length !== opts.before.events.length + 1 ||
+    !sameCanonicalJson(
+      opts.before.comments,
+      opts.after.comments.slice(0, opts.before.comments.length),
+    ) ||
+    !sameCanonicalJson(opts.before.events, opts.after.events.slice(0, opts.before.events.length))
+  ) {
+    return false;
+  }
+
+  const comment = opts.after.comments.at(-1);
+  const event = opts.after.events.at(-1);
+  return (
+    isRecord(comment) &&
+    isRecord(event) &&
+    event.type === "status" &&
+    event.from === "DOING" &&
+    event.to === "DOING" &&
+    typeof comment.author === "string" &&
+    comment.author === event.author &&
+    typeof comment.body === "string" &&
+    comment.body === event.note &&
+    event.at === opts.after.docUpdatedAt &&
+    comment.author === opts.after.docUpdatedBy
+  );
+}
+
+async function isImplementationReceiptTaskReadmeAdvance(
+  opts: TaskReadmeAdvanceOptions,
+): Promise<boolean> {
+  const readmes = await changedTaskReadmes(opts);
+  if (!readmes) return false;
+  for (const [beforeMarkdown, afterMarkdown] of readmes) {
+    const before = implementationReceiptReadme(beforeMarkdown);
+    const after = implementationReceiptReadme(afterMarkdown);
+    if (
+      !before ||
+      !after ||
+      !appendedImplementationReceipt({ before, after, parent: opts.parent })
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * Side-effect authority is formal lifecycle evidence. It is intentionally
  * excluded from semantic review freshness: otherwise a required authority
@@ -59,18 +202,9 @@ export async function isAuthorityOnlyTaskReadmeAdvance(opts: {
   changed: readonly string[];
   taskRelativePath: (name: string) => string | null;
 }): Promise<boolean> {
-  if (
-    opts.changed.length === 0 ||
-    opts.changed.some((name) => opts.taskRelativePath(name) !== "README.md")
-  ) {
-    return false;
-  }
-  for (const name of opts.changed) {
-    const [before, after] = await Promise.all([
-      gitShowFile(opts.gitRoot, opts.parent, name).catch(() => null),
-      gitShowFile(opts.gitRoot, opts.current, name).catch(() => null),
-    ]);
-    if (before === null || after === null || before === after) return false;
+  const readmes = await changedTaskReadmes(opts);
+  if (!readmes) return false;
+  for (const [before, after] of readmes) {
     const beforeComparable = authorityComparableTaskReadme(before);
     const afterComparable = authorityComparableTaskReadme(after);
     if (!beforeComparable || beforeComparable !== afterComparable) return false;
@@ -150,6 +284,18 @@ export async function resolveQualityReviewTargetSha(opts: {
     if (touchesOnlyCurrentTaskSet) {
       if (
         await isAuthorityOnlyTaskReadmeAdvance({
+          gitRoot: opts.gitRoot,
+          parent,
+          current,
+          changed,
+          taskRelativePath,
+        })
+      ) {
+        current = parent;
+        continue;
+      }
+      if (
+        await isImplementationReceiptTaskReadmeAdvance({
           gitRoot: opts.gitRoot,
           parent,
           current,
