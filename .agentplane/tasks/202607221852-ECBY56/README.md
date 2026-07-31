@@ -4,11 +4,11 @@ title: "Expose phase-scoped run tool APIs"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
-  - "202607221908-0JP0ZZ"
+  - "202607310028-7KFTPH"
 tags:
   - "authority"
   - "milestone-rc1"
