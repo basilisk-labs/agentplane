@@ -12,8 +12,8 @@ Created: 2026-07-31T10:56:26.206Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe.
+- State: ok
+- Note: Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

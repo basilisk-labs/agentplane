@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -21,31 +21,30 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-31T11:29:57.552Z"
+  state: "ok"
+  updated_at: "2026-07-31T11:35:10.568Z"
   updated_by: "CODER"
-  note: "Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe."
-  attempts: 1
+  note: "Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-31T11:25:27.562Z"
+  updated_at: "2026-07-31T11:35:12.585Z"
   updated_by: "EVALUATOR"
-  note: "Direct workflow and closeout routing regressions pass on the maintenance branch."
-  evaluated_sha: "ccfacd7d9a18ecba73a9e3e687fe3625e38492be"
+  note: "Hosted static finding is resolved without routing behavior changes."
+  evaluated_sha: "ff8da4148775ab58e495d13be3e770b4311bb445"
   blueprint_digest: "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d"
   evidence_refs:
     - ".agentplane/tasks/202607311055-ST7XZY/README.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-112527562-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-112527562-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-112527562-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-113512585-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-113512585-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-113512585-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
     - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
-    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
   findings:
-    - "DOING pending verification without runner state routes to task run after canonical task artifacts are persisted."
-    - "Terminal runner state stops for verification evidence instead of repeating verify-show."
-    - "Pre-merge closure must remain fresh relative to implementation HEAD; stale PR artifacts update before a new closure."
+    - "Full lint:core passes after separating the awaited status probe from filtering."
+    - "Direct closeout and stale pre-merge closure regressions remain green."
 commit: null
 comments:
   -
@@ -145,8 +144,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: fix hosted static lint failure without changing routing semantics."
+  -
+    type: "verify"
+    at: "2026-07-31T11:35:10.568Z"
+    author: "CODER"
+    state: "ok"
+    note: "Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:30:02.644Z"
+doc_updated_at: "2026-07-31T11:35:10.769Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -351,6 +356,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T11:35:10.568Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:30:02.644Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+    - diagnostic_command: agentplane pr check 202607311055-ST7XZY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the routing/persistence implementation and regression commits on the maintenance branch.
@@ -388,6 +423,10 @@ sections:
     - Observation: The route blocker filtered directly from an awaited git status expression.
       Impact: Lint blocked publication despite passing functional tests.
       Resolution: Store awaited untracked paths before filtering, then rerun lint and full affected verification.
+
+    - Observation: Awaited git status paths are stored before filtering.
+      Impact: Hosted verify-static no longer rejects the routing implementation.
+      Resolution: Applied semantics-preserving lint correction and reran affected checks.
 extensions:
   implementation_commit:
     hash: "ccfacd7d9a18ecba73a9e3e687fe3625e38492be"
@@ -604,6 +643,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T11:35:10.568Z — VERIFY — ok
+
+By: CODER
+
+Note: Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:30:02.644Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+- diagnostic_command: agentplane pr check 202607311055-ST7XZY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -645,3 +714,7 @@ DecisionContextRef:
 - Observation: The route blocker filtered directly from an awaited git status expression.
   Impact: Lint blocked publication despite passing functional tests.
   Resolution: Store awaited untracked paths before filtering, then rerun lint and full affected verification.
+
+- Observation: Awaited git status paths are stored before filtering.
+  Impact: Hosted verify-static no longer rejects the routing implementation.
+  Resolution: Applied semantics-preserving lint correction and reran affected checks.

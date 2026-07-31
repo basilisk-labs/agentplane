@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311055-ST7XZY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T11:35:12.585Z",
+  "verdict": "pass",
+  "summary": "Hosted static finding is resolved without routing behavior changes.",
+  "evaluated_sha": "ff8da4148775ab58e495d13be3e770b4311bb445",
+  "blueprint_digest": "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d",
+  "findings": [
+    "Full lint:core passes after separating the awaited status probe from filtering.",
+    "Direct closeout and stale pre-merge closure regressions remain green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311055-ST7XZY/README.md",
+    "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

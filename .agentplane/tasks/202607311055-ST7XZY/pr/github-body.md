@@ -15,8 +15,8 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-static found unicorn/no-await-expression-member in the new untracked-task artifact probe.
+- State: ok
+- Note: Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget.
 - Canonical workflow state lives in the task README.
 
 <details>
