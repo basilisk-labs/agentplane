@@ -242,6 +242,15 @@ describe("evaluator runtime evidence", () => {
       Array.isArray(verificationRecords) &&
         verificationRecords.some((entry) => hasStringPath(entry)),
     ).toBe(true);
+    const [verificationRecord] = Array.isArray(verificationRecords)
+      ? verificationRecords.filter(hasStringPath)
+      : [];
+    if (!verificationRecord) throw new Error("Missing lifecycle verification record.");
+    const frozenVerification = JSON.parse(
+      await readFile(path.join(root, verificationRecord.path), "utf8"),
+    ) as Record<string, unknown>;
+    expect(frozenVerification.implementation_sha).toBe(sourceSha);
+    expect(prepared.work_order.evaluated_sha).toBe(sourceSha);
     const runtimeEvidence = observed.runtime_evidence;
     expect(Array.isArray(runtimeEvidence)).toBe(true);
     expect(

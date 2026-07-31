@@ -22,12 +22,14 @@ Record task verification implementation_sha from the same semantic quality-revie
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T14:05:33.781Z
+- Updated: 2026-07-31T14:05:54.431Z
 - Branch: task/202607311404-P746PE/bind-verification-records-to-semantic-review-tar
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/evaluator/evaluator-runtime-evidence.test.ts |  9 +++++++++
+ .../agentplane/src/commands/task/verify-record-execute.ts     | 11 +++++++++--
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 ```
 
 </details>

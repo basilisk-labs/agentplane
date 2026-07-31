@@ -22,7 +22,8 @@ import {
 } from "../shared/route-guidance.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
-import { gitRevParse } from "../shared/git-ops.js";
+import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
+import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -183,7 +184,6 @@ async function recordVerificationResult(opts: {
   }
 
   const at = nowIso();
-  const evaluatedSha = await gitRevParse(resolved.gitRoot, ["HEAD"]).catch(() => null);
   await applyTaskMutation({
     ctx,
     taskId: opts.taskId,
@@ -200,6 +200,13 @@ async function recordVerificationResult(opts: {
         guidance: "fill it before running `agentplane verify ...`",
       });
       const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      const evaluatedSha = await resolveQualityReviewTargetSha({
+        gitRoot: resolved.gitRoot,
+        workflowDir: config.paths.workflow_dir,
+        taskId: current.id,
+        taskIds: [current.id, ...normalizeBranchPrBatchIncludedTaskIds(current, current.id)],
+        previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+      });
       if (
         opts.state === "ok" &&
         isQualificationTask(current) &&
