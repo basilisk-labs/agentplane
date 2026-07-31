@@ -45,8 +45,8 @@ episodes remain role-scoped; all declared gates passed.
  .../shared/supervisor-execution-episode.test.ts    |  35 ++
  .../shared/supervisor-execution-episode.ts         |  17 +-
  .../src/commands/shared/workflow-step-branch.ts    |  32 +-
- .../workflow-step-integration-projections.test.ts  |  33 ++
- .../shared/workflow-step-integration-queue.ts      |  96 ++++
+ .../workflow-step-integration-projections.test.ts  |  58 ++
+ .../shared/workflow-step-integration-queue.ts      | 114 ++++
  .../src/commands/shared/workflow-step.ts           |  16 +-
  .../commands/shared/workflow-supervisor.test.ts    |  62 +-
  .../src/commands/shared/workflow-supervisor.ts     |   8 +-
@@ -60,7 +60,7 @@ episodes remain role-scoped; all declared gates passed.
  .../src/commands/task/hosted-close-pr.types.ts     |   1 +
  .../agentplane/src/commands/task/run-render.ts     |  84 ++-
  .../agentplane/src/commands/task/run.command.ts    |  87 ++-
- 28 files changed, 2828 insertions(+), 219 deletions(-)
+ 28 files changed, 2871 insertions(+), 219 deletions(-)
 ```
 
 </details>

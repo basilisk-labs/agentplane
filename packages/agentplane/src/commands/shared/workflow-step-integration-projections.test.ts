@@ -223,6 +223,31 @@ describe("WorkflowStep integration projections", () => {
         queueStatus: "queued",
       },
     });
+
+    const staleQueueStep = reduceRouteState({
+      ...queuedState,
+      prFlow: {
+        ...queuedState.prFlow!,
+        queue: {
+          ...queuedState.prFlow!.queue,
+          present: true,
+          status: "queued",
+          headSha: "3333333333333333333333333333333333333333",
+        },
+      },
+    });
+    expect(staleQueueStep).toMatchObject({
+      id: "approval.integration.enqueue",
+      kind: "approval",
+      request: {
+        type: "side_effect",
+        operationId: "integration.enqueue",
+        operation: {
+          id: "integration.enqueue",
+          params: { taskId: task.id, branch: taskBranch },
+        },
+      },
+    });
   });
 
   it("recomputes provider refresh routes with live remote truth", () => {

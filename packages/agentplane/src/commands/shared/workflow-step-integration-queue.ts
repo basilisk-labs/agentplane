@@ -46,13 +46,24 @@ function integrationQueueWaitStep(
   };
 }
 
+function queueMatchesCurrentRoute(state: WorkflowRouteState): boolean {
+  const flow = state.prFlow;
+  const queue = flow?.queue;
+  if (!flow || !queue?.present || flow.pr.state === "not_found") return false;
+  return (
+    queue.branch === flow.branch.name &&
+    queue.headSha === flow.branch.headSha &&
+    queue.base === flow.pr.base &&
+    queue.prNumber === flow.pr.prNumber
+  );
+}
+
 export function integrationQueueStep(
   state: WorkflowRouteState,
   enqueueSummary: string,
 ): WorkflowStep {
   const queue = state.prFlow?.queue;
   if (queue?.present) {
-    if (queue.status === "rework") return implementationReworkStep(state);
     if (queue.status === "superseded") {
       return terminalStep({
         state,
@@ -66,7 +77,14 @@ export function integrationQueueStep(
         evidenceMissing: [],
       });
     }
-    return integrationQueueWaitStep(state, queue.status);
+    const identityMatches = queueMatchesCurrentRoute(state);
+    if (queue.status === "claimed" || queue.status === "handoff") {
+      return integrationQueueWaitStep(state, queue.status);
+    }
+    if (identityMatches) {
+      if (queue.status === "rework") return implementationReworkStep(state);
+      return integrationQueueWaitStep(state, queue.status);
+    }
   }
 
   const branch = state.prFlow?.branch.name;
