@@ -39,8 +39,17 @@ The migration implements the approved `202607311706-QB60J5` contract:
 - `bun run bench:agent-efficiency:replay:check`: pass; the historical 50-run/70-outcome RF-04 baseline remains unchanged.
 - `bun run release:parity`: pass.
 - `bun run test:critical`: pass, 12/12 routed chunks. The RF-04 exact-anchor runtime accepts only the frozen additive TypeScript 7 lock delta and still rejects any version or package-set drift as `ANCHOR_LOCK_MISMATCH`.
+- Isolated retry of every file that timed out during the overloaded full local Vitest run: pass, 7/7 files and 80/80 tests with one worker.
+- `bun run arch:check`: pass, zero dependency violations.
+- `bun run knip:check`: pass, baseline 545/545.
+- `bun run package:tarball:check`: pass for core, recipes, and agentplane.
+- `bun run package:install-smoke`: pass for locally packed packages.
+- `bun run docs:site:build:check`: pass, including the optimized Docusaurus production build.
+- `node scripts/checks/check-critical-test-route.mjs`: pass.
 
 The first plain `bun install` updated the lockfile and then hit an existing local Lefthook replacement error because `pre-commit.old` already existed. The deterministic install was repeated with `--frozen-lockfile --ignore-scripts` and passed; this is worktree hook infrastructure, not package-resolution failure.
+
+A full local `test:fast` attempt oversubscribed the machine and produced 18 observed wall-clock timeouts, all at the common 30-second limit in process/concurrency integration tests; no TypeScript diagnostic or assertion mismatch was observed. The run was stopped after the timing pattern was established. Every affected file was then rerun sequentially and passed 80/80 tests. Hosted `verify-unit` and Windows remain mandatory before integration.
 
 ## Rollback
 

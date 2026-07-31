@@ -2,15 +2,23 @@
   "base": "main",
   "branch": "task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr",
   "created_at": "2026-07-31T20:59:44.719Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:77fa30f54ccd6d75ab51c80bc2c5daff4fb60119e5ee00502fe545b9f828337a",
+  "last_verified_at": "2026-07-31T21:46:15.293Z",
+  "last_verified_diffstat_sha256": "sha256:77fa30f54ccd6d75ab51c80bc2c5daff4fb60119e5ee00502fe545b9f828337a",
   "pr_number": 4713,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4713",
+  "pre_merge_closure": {
+    "basis_commit": "9e2fb9caac3cfa5561a074c2ca846c38a90e61d6",
+    "branch": "task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr",
+    "pr_number": 4713,
+    "recorded_at": "2026-07-31T21:48:18.606Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607311707-DRYTNK",
   "updated_at": "2026-07-31T21:00:58.689Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

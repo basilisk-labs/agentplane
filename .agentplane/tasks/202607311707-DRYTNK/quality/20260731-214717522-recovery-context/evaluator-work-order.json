@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607311707-DRYTNK-1ff4f15bdedc31982e5709df",
+  "prepared_at": "2026-07-31T21:47:17.522Z",
+  "task": {
+    "id": "202607311707-DRYTNK",
+    "revision": 9,
+    "objective": "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility\n\nImplement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.",
+    "acceptance_criteria": [
+      "Root typecheck, package builds, lint, critical/unit tests, declaration/manifest checks, and Windows CI pass with deterministic checker/builder limits.",
+      "The benchmark-approved TypeScript 7 binary is the canonical root and package typecheck path, with exact versions and aliases frozen in package.json and bun.lock.",
+      "The task records before/after timing evidence and proves the documented one-command rollback restores the TypeScript 6 compiler path.",
+      "typescript-eslint and every repository script importing typescript continue to use the pinned TypeScript 6 compatibility API; trust-boundary and compatibility gates pass unchanged.",
+      "- In scope: Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.\n- Out of scope: unrelated refactors not required for \"Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility\".",
+      "1. Consume the approved package/version/concurrency contract from the TypeScript 7 benchmark task.\n2. Wire TypeScript 7 only into compiler/typecheck entrypoints while preserving TypeScript 6 API consumers.\n3. Update lockfile and CI deterministically across supported platforms.\n4. Run the focused compatibility matrix, then the full release-relevant gates.\n5. Record performance delta, rollback proof, residual risks, and installed-package evidence.",
+      "1. Apply only the package aliases, scripts, tsconfig adjustments, and CI concurrency settings frozen by 202607311706-QB60J5. The canonical root and package typecheck commands must invoke the pinned TypeScript 7 binary.\n2. Keep typescript-eslint and every scripts/** compiler-API consumer on the pinned TypeScript 6 compatibility package. ESLint, trust-boundary gates, compatibility baseline, schema/declaration emit, and package builds must pass without weakening checks.\n3. Run bun install --frozen-lockfile, root typecheck, package builds, lint, critical CLI tests, unit tests, format, routing, release parity, and the Windows CI matrix. All must pass with deterministic checker/builder limits appropriate to hosted runners.\n4. Record before/after benchmark evidence from 202607311706-QB60J5 and verify the documented rollback command restores the TypeScript 6 typecheck path without lockfile or generated-artifact drift.\n5. Confirm installed-package behavior and Node 20/24 support remain unchanged; no TypeScript 7 compiler API dependency may leak into runtime packages."
+    ]
+  },
+  "evaluated_sha": "9e2fb9caac3cfa5561a074c2ca846c38a90e61d6",
+  "diff_base_sha": "ae4f903e99126484dcbe54ae3ec152dd20ba667b",
+  "blueprint_digest": "1e52f772c7855fef3c6ae0acefd3152bb235fe4c84fc78f15a4b77e4c88100cc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607311707-DRYTNK/README.md",
+      "sha256": "sha256:e47a752ae25430e44b618d965bd706e75487c54814484e730cbec4106076fafb",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607311707-DRYTNK/quality/20260731-214717522-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:6adb1d8fdf798bd6e7c8a71a107fe0ed7b91ba2e0ca51a95786298a05193c6c2",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607311707-DRYTNK/quality/20260731-214717522-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:78334fe6fb8b3f345cf4b1351abca9b980445fad1236283e6d196228f5b619d5",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607311707-DRYTNK/quality/20260731-214717522-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:cc9be0612babe1de02bdb5ab3311cd20a94ca78d94a7578085fc6a448d71d15a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
