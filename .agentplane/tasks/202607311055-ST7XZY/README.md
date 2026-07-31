@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-31T11:17:47.894Z"
-  updated_by: "EVALUATOR"
-  note: "Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-31T11:22:28.604Z"
+  updated_by: "CODER"
+  note: "Rework: stale pre-merge closure accepted after implementation changes."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-31T11:17:50.290Z"
@@ -54,6 +54,9 @@ comments:
   -
     author: "CODER"
     body: "Start: apply the hosted contract rework by shrinking the route regression without changing production behavior or the oversized-test baseline."
+  -
+    author: "CODER"
+    body: "Rework: enforce fresh pre-merge closure after implementation changes."
 events:
   -
     type: "status"
@@ -94,8 +97,21 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged."
+  -
+    type: "verify"
+    at: "2026-07-31T11:22:28.604Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Rework: stale pre-merge closure accepted after implementation changes."
+  -
+    type: "status"
+    at: "2026-07-31T11:22:37.267Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: enforce fresh pre-merge closure after implementation changes."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:17:48.102Z"
+doc_updated_at: "2026-07-31T11:22:37.267Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -210,6 +226,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T11:22:28.604Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Rework: stale pre-merge closure accepted after implementation changes.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:17:48.102Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202607311055-ST7XZY --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 98366097cd7737b7398408d29427e3dd68554303 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the routing/persistence implementation and regression commits on the maintenance branch.
@@ -235,6 +281,10 @@ sections:
     - Observation: v0.6.25 used successful read-only verify-show output as an executable transition in absent and terminal runner states.
       Impact: Strict recompute rails could loop forever and active untracked task truth could be lost on workspace recreation.
       Resolution: Runner transitions now mutate or stop explicitly; untracked task truth gets a guarded persistence route before execution.
+
+    - Observation: Pre-merge closure freshness was based only on marker presence.
+      Impact: A reworked task could reach integration without a closure bound to the new implementation head.
+      Resolution: Validate marker basis_commit against HEAD using task-local-only ancestry, and cover the deterministic pr update then fresh closure route.
 extensions:
   implementation_commit:
     hash: "d60e737bb85a8252367b8203074719531811764b"
@@ -361,6 +411,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T11:22:28.604Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Rework: stale pre-merge closure accepted after implementation changes.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:17:48.102Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202607311055-ST7XZY --author CODER --body Verified: pre-merge closure packet is ready for the task PR. --result pre-merge closure --commit 98366097cd7737b7398408d29427e3dd68554303 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -390,3 +470,7 @@ DecisionContextRef:
 - Observation: v0.6.25 used successful read-only verify-show output as an executable transition in absent and terminal runner states.
   Impact: Strict recompute rails could loop forever and active untracked task truth could be lost on workspace recreation.
   Resolution: Runner transitions now mutate or stop explicitly; untracked task truth gets a guarded persistence route before execution.
+
+- Observation: Pre-merge closure freshness was based only on marker presence.
+  Impact: A reworked task could reach integration without a closure bound to the new implementation head.
+  Resolution: Validate marker basis_commit against HEAD using task-local-only ancestry, and cover the deterministic pr update then fresh closure route.

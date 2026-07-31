@@ -15,15 +15,8 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 
 ## Verification
 
-- State: ok
-- Note:
-
-```bash
-bun run hotspots:check; direct route-decision test file; bun run typecheck; node \
-  .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 \
-  lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract \
-  rework only; production routing diff unchanged.
-```
+- State: needs_rework
+- Note: Rework: stale pre-merge closure accepted after implementation changes.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -35,9 +28,10 @@ bun run hotspots:check; direct route-decision test file; bun run typecheck; node
 
 ```text
  ...cli.core.route-decision.direct-closeout.test.ts | 224 ++++++++++++++++++++-
+ .../run-cli.core.route-decision.quality.test.ts    | 103 ++++++++++
  .../src/cli/run-cli.core.route-decision.test.ts    |   7 +-
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
- .../src/commands/shared/route-decision-blockers.ts |  28 ++-
+ .../src/commands/shared/route-decision-blockers.ts |  44 +++-
  .../commands/shared/route-decision-next-action.ts  |  74 ++++---
  .../src/commands/shared/route-decision-repair.ts   |  10 +-
  .../src/commands/shared/route-execution-packet.ts  |   3 +
@@ -46,7 +40,7 @@ bun run hotspots:check; direct route-decision test file; bun run typecheck; node
  .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 12 files changed, 353 insertions(+), 54 deletions(-)
+ 13 files changed, 470 insertions(+), 56 deletions(-)
 ```
 
 </details>

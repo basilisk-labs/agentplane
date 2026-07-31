@@ -9,7 +9,7 @@ import { isRecord } from "../../shared/guards.js";
 import { getHumanInputState } from "../task/human-input.js";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
+import { parsePrMeta, readPreMergeClosureMarker } from "./pr-meta.js";
 
 function addBlocker(blockers: RouteBlocker[], code: RouteBlockerCode, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
@@ -71,7 +71,19 @@ async function readLocalPreMergeState(opts: {
   );
   try {
     const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
-    return { open: meta.status === "OPEN", closed: hasClosedPreMergeClosureMarker(meta) };
+    const marker = readPreMergeClosureMarker(meta);
+    const headSha = await opts.ctx.git.headCommit();
+    const closed =
+      marker !== null &&
+      (await isTaskSetLocalOnlyAdvance({
+        gitRoot: opts.ctx.resolvedProject.gitRoot,
+        workflowDir: opts.ctx.config.paths.workflow_dir,
+        tasksPath: opts.ctx.config.paths.tasks_path,
+        taskIds: [opts.taskId],
+        fromRef: marker.basisCommit,
+        toRef: headSha,
+      }).catch(() => false));
+    return { open: meta.status === "OPEN", closed };
   } catch {
     return { open: false, closed: false };
   }
