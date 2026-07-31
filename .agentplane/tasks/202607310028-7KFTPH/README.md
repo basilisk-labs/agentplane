@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -71,8 +71,8 @@ quality_review:
     - "The live 50-run/55-episode RF-04 capture still fails latency guardrails; the task passes as a qualification decision and beta.2 remains blocked from publication."
     - "Concrete Verify Steps and command-level evidence cover dependency closure, RF-04, typecheck, critical tests, full contract CI, and the downstream fan-in repair."
 commit:
-  hash: "83155090ef13ed454ff18ebf8953a81355592848"
-  message: "🧪 7KFTPH task: record evaluator verdict"
+  hash: "4906428eec09d1de34798636b0c063844db71c3e"
+  message: "🧪 7KFTPH task: review downstream rewiring"
 comments:
   -
     author: "TESTER"
@@ -83,6 +83,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "TESTER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -117,8 +120,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH."
+  -
+    type: "status"
+    at: "2026-07-31T09:53:44.158Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T09:52:23.136Z"
+doc_updated_at: "2026-07-31T09:53:44.158Z"
 doc_updated_by: "TESTER"
 description: "Re-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package."
 sections:
@@ -263,8 +273,8 @@ sections:
       Resolution: Keep the beta.2 gate closed, preserve this capture without retry, and route latency plus runtime-bridge evidence repair into the next implementation wave.
 extensions:
   implementation_commit:
-    hash: "8e92bbc0923d0c6a960a7c842abc89af9c63b7ba"
-    message: "🧪 7KFTPH task: record beta.2 qualification"
+    hash: "da187020a4e4c7c76a4d5f35e899c7465c17edbf"
+    message: "🧪 7KFTPH task: refresh reviewed qualification"
   workflow_route_baseline:
     start_head_sha: "25fbf2d836a94e9b190464da219a35efd4ebe878"
     version: 1
