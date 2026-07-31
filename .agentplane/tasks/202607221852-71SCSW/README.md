@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "executeBranchWorkflowOperation passes operation.params.commit as both commit and implementationCommit; this bypasses finish's task-artifact advance resolver and makes expected_sha equal the quality artifact commit instead of quality_review.evaluated_sha."
 commit:
-  hash: "71491881a3ce7cba0e5555ae55695417b1137341"
-  message: "🚧 71SCSW task: satisfy journal recovery lint"
+  hash: "c64291cb7c9d88bd0115e1aa5c04de550e2defb7"
+  message: "🚧 71SCSW task: align pre-merge finish adapter"
 comments:
   -
     author: "CODER"
@@ -108,6 +108,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework finalized: journal recovery regression and lint checks pass."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: the in-process pre-merge close now matches CLI finish semantics and lets finish resolve the reviewed implementation behind task-artifact commits."
 events:
   -
     type: "status"
@@ -212,8 +215,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: completed-journal recovery is bounded to durably completed operations; focused regression, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed."
+  -
+    type: "status"
+    at: "2026-07-31T13:16:28.745Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: the in-process pre-merge close now matches CLI finish semantics and lets finish resolve the reviewed implementation behind task-artifact commits."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:12:10.071Z"
+doc_updated_at: "2026-07-31T13:16:28.745Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
