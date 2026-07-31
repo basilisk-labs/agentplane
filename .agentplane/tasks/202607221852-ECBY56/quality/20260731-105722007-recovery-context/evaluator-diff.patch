@@ -1,0 +1,4188 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 3499a0898..7f4369de8 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,3 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
++- id: INC-20260731-01 | date: 2026-07-31 | scope: runner direct supervision | tags: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority | match: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority, direct, supervision, expose, phase, scoped, run, tool | failure: The outer direct-supervisor episode reported runner_receipt_unobserved even though the runner completed successfully and persisted a valid execution receipt. | advice: Keep RF-23 verification passing and track the receipt-observation race as a separate follow-up; no provider retry was used. | rule: Analogous runner direct supervision work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607221852-ECBY56; commit da76a705009e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/.agentplane/tasks/202607221852-ECBY56/README.md b/.agentplane/tasks/202607221852-ECBY56/README.md
+index 00aaa5a35..3bee0a47e 100644
+--- a/.agentplane/tasks/202607221852-ECBY56/README.md
++++ b/.agentplane/tasks/202607221852-ECBY56/README.md
+@@ -1,10 +1,11 @@
+ ---
+ id: "202607221852-ECBY56"
+ title: "Expose phase-scoped run tool APIs"
+-status: "TODO"
++result_summary: "pre-merge closure"
++status: "DONE"
+ priority: "high"
+ owner: "CODER"
+-revision: 6
++revision: 13
+ origin:
+   system: "manual"
+ depends_on:
+@@ -27,22 +28,86 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-31T10:00:26.508Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
+-  note: null
++  state: "ok"
++  updated_at: "2026-07-31T10:52:31.897Z"
++  updated_by: "TESTER"
++  note: "PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup."
+   attempts: 0
+-commit: null
+-comments: []
+-events: []
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-31T10:55:42.916Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 3 typed finding(s)."
++  evaluated_sha: "da76a705009eb5c14b583c3fbf53c716dbead232"
++  blueprint_digest: "06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d"
++  evidence_refs:
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607221852-ECBY56/README.md"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105542612-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The current HEAD contains no implementation delta beyond the reviewed signed phase-tool API; its additional commit records the implementation hash and CODER lifecycle evidence."
++    - "The reviewed implementation binds authority to run, work order, task, state fingerprint, phase, role, tool set, and expiry, and keeps lifecycle operations outside the executor token."
++    - "Native Codex evidence confirms accepted supervisor dispatch, durable audit, terminal revocation, canonical result preservation, and broker cleanup."
++commit:
++  hash: "da76a705009eb5c14b583c3fbf53c716dbead232"
++  message: "🚧 ECBY56 task: Record implementation evidence"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implemented signed phase-scoped run tool APIs with a supervisor-owned broker, typed capability limits, terminal revocation, compatibility ratchet, and focused coverage."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T10:00:55.408Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-31T10:42:56.625Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented signed phase-scoped run tool APIs with a supervisor-owned broker, typed capability limits, terminal revocation, compatibility ratchet, and focused coverage."
++  -
++    type: "verify"
++    at: "2026-07-31T10:52:31.897Z"
++    author: "TESTER"
++    state: "ok"
++    note: "PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup."
++  -
++    type: "status"
++    at: "2026-07-31T10:56:33.606Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:28.734Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-31T10:56:33.607Z"
++doc_updated_by: "CODER"
+ description: "RF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority."
+ sections:
+   Summary: |-
+@@ -66,12 +131,53 @@ sections:
+     5. Run schema/tool/guard/type tests.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-31T10:52:31.897Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T10:42:56.625Z, excerpt_hash=sha256:66196a24934ea27f66efd7730a221a2a063ad918f4764a2a6991570b9d96824e
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-ECBY56-expose-phase-scoped-run-tool-apis/.agentplane/tasks/202607221852-ECBY56/blueprint/resolved-snapshot.json
++    - old_digest: 06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d
++    - current_digest: 06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221852-ECBY56
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607221852-ECBY56
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+-  Findings: ""
++  Findings: |-
++    - Observation: The outer direct-supervisor episode reported runner_receipt_unobserved even though the runner completed successfully and persisted a valid execution receipt.
++      Impact: This may produce a false stopped outcome in the higher-level direct task supervision path, but it did not prevent or invalidate the RF-23 phase-tool call, audit, result, revocation, or cleanup.
++      Resolution: Keep RF-23 verification passing and track the receipt-observation race as a separate follow-up; no provider retry was used.
++      Promotion: incident-candidate
++      Fixability: repo-fixable
++      IncidentScope: runner direct supervision
++      IncidentTags: runner, receipt
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "402709cb633549245a4231d902813a473e6c4103"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+@@ -104,6 +210,36 @@ RF-23: provide run-bound report_result, report_blocker, request_knowledge, and r
+ ## Verification
+ 
+ <!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-31T10:52:31.897Z — VERIFY — ok
++
++By: TESTER
++
++Note: PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T10:42:56.625Z, excerpt_hash=sha256:66196a24934ea27f66efd7730a221a2a063ad918f4764a2a6991570b9d96824e
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-ECBY56-expose-phase-scoped-run-tool-apis/.agentplane/tasks/202607221852-ECBY56/blueprint/resolved-snapshot.json
++- old_digest: 06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d
++- current_digest: 06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221852-ECBY56
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607221852-ECBY56
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -113,3 +249,11 @@ RF-23: provide run-bound report_result, report_blocker, request_knowledge, and r
+ - Re-run equivalence, recall, lifecycle, and type checks.
+ 
+ ## Findings
++
++- Observation: The outer direct-supervisor episode reported runner_receipt_unobserved even though the runner completed successfully and persisted a valid execution receipt.
++  Impact: This may produce a false stopped outcome in the higher-level direct task supervision path, but it did not prevent or invalidate the RF-23 phase-tool call, audit, result, revocation, or cleanup.
++  Resolution: Keep RF-23 verification passing and track the receipt-observation race as a separate follow-up; no provider retry was used.
++  Promotion: incident-candidate
++  Fixability: repo-fixable
++  IncidentScope: runner direct supervision
++  IncidentTags: runner, receipt
+diff --git a/.agentplane/tasks/202607221852-ECBY56/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-ECBY56/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..7e30bb390
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-ECBY56",
++    "title": "Expose phase-scoped run tool APIs",
++    "description": "RF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority.",
++    "tags": [
++      "authority",
++      "milestone-rc1",
++      "refactor",
++      "rf-23",
++      "runner",
++      "tools",
++      "v0.7",
++      "wave-authority"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-ECBY56",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "06994c210493995daa176c6a0f33f623bbcad61117c9e8e81528f638b680b20d"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ECBY56/pr/diffstat.txt b/.agentplane/tasks/202607221852-ECBY56/pr/diffstat.txt
+new file mode 100644
+index 000000000..18022846f
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/pr/diffstat.txt
+@@ -0,0 +1,29 @@
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/cli/run-cli/command-catalog.test.ts        |   4 +
++ .../src/cli/run-cli/command-catalog/task.ts        |   8 +
++ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
++ .../src/commands/task/run-tool.command.ts          | 127 +++++
++ .../src/runner/adapters/codex-preparation.ts       |  32 ++
++ packages/agentplane/src/runner/adapters/codex.ts   |  13 +-
++ .../src/runner/adapters/custom-preparation.ts      |  32 ++
++ .../agentplane/src/runner/phase-tools/audit.ts     |  75 +++
++ .../src/runner/phase-tools/broker.test.ts          |  96 ++++
++ .../agentplane/src/runner/phase-tools/broker.ts    | 289 +++++++++++
++ .../src/runner/phase-tools/contract.test.ts        | 116 +++++
++ .../agentplane/src/runner/phase-tools/contract.ts  | 185 +++++++
++ .../src/runner/phase-tools/dispatch.test.ts        | 314 ++++++++++++
++ .../agentplane/src/runner/phase-tools/dispatch.ts  | 563 +++++++++++++++++++++
++ .../agentplane/src/runner/phase-tools/knowledge.ts |  87 ++++
++ .../agentplane/src/runner/phase-tools/token.ts     | 377 ++++++++++++++
++ packages/agentplane/src/runner/types.ts            |   8 +
++ .../agentplane/src/runner/types/capabilities.ts    |   3 +
++ packages/agentplane/src/runner/types/context.ts    |   2 +
++ .../agentplane/src/runner/types/phase-tools.ts     |  81 +++
++ .../task-run-bootstrap.result-examples.test.ts     |  74 ++-
++ .../src/runner/usecases/task-run-bootstrap.ts      |  37 +-
++ .../agentplane/src/runner/usecases/task-run.ts     |  16 +-
++ .../src/runtime/capabilities/resolve.test.ts       |  32 ++
++ .../agentplane/src/runtime/capabilities/runner.ts  |  31 ++
++ .../baselines/v0.7-compatibility-candidate.json    |  38 +-
++ .../check-compatibility-contract-baseline.mjs      |  15 +
++ 28 files changed, 2651 insertions(+), 15 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-ECBY56/pr/github-body.md b/.agentplane/tasks/202607221852-ECBY56/pr/github-body.md
+new file mode 100644
+index 000000000..94d10c2eb
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/pr/github-body.md
+@@ -0,0 +1,68 @@
++Task: `202607221852-ECBY56`
++Title: Expose phase-scoped run tool APIs
++Canonical task record: `.agentplane/tasks/202607221852-ECBY56/README.md`
++
++## Summary
++
++Expose phase-scoped run tool APIs
++
++RF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority.
++
++## Scope
++
++- In scope: phase/run token, tool schema and capability map, result/blocker/knowledge APIs, role-specific repository tool allowlists, typed denial, adapter capability negotiation, audit, expiry/revocation, and global-help non-reliance.
++- Out of scope: treating tool visibility as the only security boundary.
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help
++operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical
++suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker,
++canonical result preservation, audit creation, token revocation, and broker cleanup.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T10:01:38.967Z
++- Branch: task/202607221852-ECBY56/expose-phase-scoped-run-tool-apis
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/cli/run-cli/command-catalog.test.ts        |   4 +
++ .../src/cli/run-cli/command-catalog/task.ts        |   8 +
++ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
++ .../src/commands/task/run-tool.command.ts          | 127 +++++
++ .../src/runner/adapters/codex-preparation.ts       |  32 ++
++ packages/agentplane/src/runner/adapters/codex.ts   |  13 +-
++ .../src/runner/adapters/custom-preparation.ts      |  32 ++
++ .../agentplane/src/runner/phase-tools/audit.ts     |  75 +++
++ .../src/runner/phase-tools/broker.test.ts          |  96 ++++
++ .../agentplane/src/runner/phase-tools/broker.ts    | 289 +++++++++++
++ .../src/runner/phase-tools/contract.test.ts        | 116 +++++
++ .../agentplane/src/runner/phase-tools/contract.ts  | 185 +++++++
++ .../src/runner/phase-tools/dispatch.test.ts        | 314 ++++++++++++
++ .../agentplane/src/runner/phase-tools/dispatch.ts  | 563 +++++++++++++++++++++
++ .../agentplane/src/runner/phase-tools/knowledge.ts |  87 ++++
++ .../agentplane/src/runner/phase-tools/token.ts     | 377 ++++++++++++++
++ packages/agentplane/src/runner/types.ts            |   8 +
++ .../agentplane/src/runner/types/capabilities.ts    |   3 +
++ packages/agentplane/src/runner/types/context.ts    |   2 +
++ .../agentplane/src/runner/types/phase-tools.ts     |  81 +++
++ .../task-run-bootstrap.result-examples.test.ts     |  74 ++-
++ .../src/runner/usecases/task-run-bootstrap.ts      |  37 +-
++ .../agentplane/src/runner/usecases/task-run.ts     |  16 +-
++ .../src/runtime/capabilities/resolve.test.ts       |  32 ++
++ .../agentplane/src/runtime/capabilities/runner.ts  |  31 ++
++ .../baselines/v0.7-compatibility-candidate.json    |  38 +-
++ .../check-compatibility-contract-baseline.mjs      |  15 +
++ 28 files changed, 2651 insertions(+), 15 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-ECBY56/pr/github-title.txt b/.agentplane/tasks/202607221852-ECBY56/pr/github-title.txt
+new file mode 100644
+index 000000000..256e9228d
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 ECBY56 task: Expose phase-scoped run tool APIs [202607221852-ECBY56]
+diff --git a/.agentplane/tasks/202607221852-ECBY56/pr/meta.json b/.agentplane/tasks/202607221852-ECBY56/pr/meta.json
+new file mode 100644
+index 000000000..3b77285fe
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-ECBY56/expose-phase-scoped-run-tool-apis",
++  "created_at": "2026-07-31T10:00:55.558Z",
++  "diffstat_sha256": "sha256:92aef69e12e39374506306f7cfac4ecc5a1895c082f2b83dc40b50edc89fc48c",
++  "last_verified_at": "2026-07-31T10:52:31.897Z",
++  "last_verified_diffstat_sha256": "sha256:92aef69e12e39374506306f7cfac4ecc5a1895c082f2b83dc40b50edc89fc48c",
++  "pr_number": 4700,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4700",
++  "pre_merge_closure": {
++    "basis_commit": "da76a705009eb5c14b583c3fbf53c716dbead232",
++    "branch": "task/202607221852-ECBY56/expose-phase-scoped-run-tool-apis",
++    "pr_number": 4700,
++    "recorded_at": "2026-07-31T10:56:33.695Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-ECBY56",
++  "updated_at": "2026-07-31T10:01:38.967Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ECBY56/pr/review.md b/.agentplane/tasks/202607221852-ECBY56/pr/review.md
+new file mode 100644
+index 000000000..95732dc33
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/pr/review.md
+@@ -0,0 +1,64 @@
++# PR Review
++
++Created: 2026-07-31T10:00:55.558Z
++
++## Task
++
++- Task: `202607221852-ECBY56`
++- Title: Expose phase-scoped run tool APIs
++- Status: DOING
++- Branch: `task/202607221852-ECBY56/expose-phase-scoped-run-tool-apis`
++- Canonical task record: `.agentplane/tasks/202607221852-ECBY56/README.md`
++
++## Verification
++
++- State: ok
++- Note: PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T10:01:38.967Z
++- Branch: task/202607221852-ECBY56/expose-phase-scoped-run-tool-apis
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/cli/run-cli/command-catalog.test.ts        |   4 +
++ .../src/cli/run-cli/command-catalog/task.ts        |   8 +
++ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
++ .../src/commands/task/run-tool.command.ts          | 127 +++++
++ .../src/runner/adapters/codex-preparation.ts       |  32 ++
++ packages/agentplane/src/runner/adapters/codex.ts   |  13 +-
++ .../src/runner/adapters/custom-preparation.ts      |  32 ++
++ .../agentplane/src/runner/phase-tools/audit.ts     |  75 +++
++ .../src/runner/phase-tools/broker.test.ts          |  96 ++++
++ .../agentplane/src/runner/phase-tools/broker.ts    | 289 +++++++++++
++ .../src/runner/phase-tools/contract.test.ts        | 116 +++++
++ .../agentplane/src/runner/phase-tools/contract.ts  | 185 +++++++
++ .../src/runner/phase-tools/dispatch.test.ts        | 314 ++++++++++++
++ .../agentplane/src/runner/phase-tools/dispatch.ts  | 563 +++++++++++++++++++++
++ .../agentplane/src/runner/phase-tools/knowledge.ts |  87 ++++
++ .../agentplane/src/runner/phase-tools/token.ts     | 377 ++++++++++++++
++ packages/agentplane/src/runner/types.ts            |   8 +
++ .../agentplane/src/runner/types/capabilities.ts    |   3 +
++ packages/agentplane/src/runner/types/context.ts    |   2 +
++ .../agentplane/src/runner/types/phase-tools.ts     |  81 +++
++ .../task-run-bootstrap.result-examples.test.ts     |  74 ++-
++ .../src/runner/usecases/task-run-bootstrap.ts      |  37 +-
++ .../agentplane/src/runner/usecases/task-run.ts     |  16 +-
++ .../src/runtime/capabilities/resolve.test.ts       |  32 ++
++ .../agentplane/src/runtime/capabilities/runner.ts  |  31 ++
++ .../baselines/v0.7-compatibility-candidate.json    |  38 +-
++ .../check-compatibility-contract-baseline.mjs      |  15 +
++ 28 files changed, 2651 insertions(+), 15 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607221852-ECBY56/verification/20260731105231897-e92876f30c79df5b.json b/.agentplane/tasks/202607221852-ECBY56/verification/20260731105231897-e92876f30c79df5b.json
+new file mode 100644
+index 000000000..4850cdebc
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ECBY56/verification/20260731105231897-e92876f30c79df5b.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:e92876f30c79df5ba0dc0dd66c8b20379dba1f2f80879c1b78a51e430e19c45f",
++  "implementation_sha": "da76a705009eb5c14b583c3fbf53c716dbead232",
++  "kind": "task_verification_record",
++  "note": "PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup.",
++  "recorded_at": "2026-07-31T10:52:31.897Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Invoke each allowed tool with a valid phase token. Expected: typed response, receipt/audit linkage, and no lifecycle authority leak.\n2. Call lifecycle or wrong-role tools, or tamper/expire/reuse a token. Expected: typed denial before effects.\n3. Use an adapter lacking a requested tool/enforcement feature. Expected: capability map and work order state the limitation.\n4. Hide global CLI help from the episode. Expected: the supported run API remains complete and secure.\n5. Run schema/tool/guard/type tests.",
++  "scope_digest": "sha256:66196a24934ea27f66efd7730a221a2a063ad918f4764a2a6991570b9d96824e",
++  "task_id": "202607221852-ECBY56",
++  "verification_command": "agentplane verify 202607221852-ECBY56 --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 3499a0898..7f4369de8 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,3 +1,4 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
++- id: INC-20260731-01 | date: 2026-07-31 | scope: runner direct supervision | tags: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority | match: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority, direct, supervision, expose, phase, scoped, run, tool | failure: The outer direct-supervisor episode reported runner_receipt_unobserved even though the runner completed successfully and persisted a valid execution receipt. | advice: Keep RF-23 verification passing and track the receipt-observation race as a separate follow-up; no provider retry was used. | rule: Analogous runner direct supervision work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607221852-ECBY56; commit da76a705009e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index e7d456705..7305e9e37 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("254commands/175args/822options");
++      expect(compatibility.stdout).toContain("255commands/176args/822options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -185,13 +185,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607300150-MGCHE6",
+           "202607221852-YP9QCH",
+           "202607302125-Y61ZHN",
++          "202607221852-ECBY56",
+         ],
+         candidate: {
+-          surface_sha256: "57836414138578d277eebd4bc6d69bb9837c638afb6cda7ea60b9ba95760d481",
++          surface_sha256: "827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
++            cli_topology: "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index fc20edb30..ac0948be0 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -74,6 +74,7 @@ describe("command catalog graph", () => {
+     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
+     expect(findCommandEntry(["task", "normalize"])?.surface).toBe("internal");
+     expect(findCommandEntry(["task", "run"])?.surface).toBe("internal");
++    expect(findCommandEntry(["task", "run", "tool"])?.surface).toBe("internal");
+     expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
+     expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
+ 
+@@ -82,6 +83,7 @@ describe("command catalog graph", () => {
+     expect(normalHelpIds).not.toContain("task normalize");
+     expect(normalHelpIds).not.toContain("task run");
+     expect(normalHelpIds).not.toContain("task run status");
++    expect(normalHelpIds).not.toContain("task run tool");
+     expect(normalHelpIds).not.toContain("context harvest tasks");
+     expect(normalHelpIds).toContain("context learn tasks");
+     expect(normalHelpIds).toContain("context check");
+@@ -94,12 +96,14 @@ describe("command catalog graph", () => {
+     expect(frameworkHelpIds).toContain("release");
+     expect(frameworkHelpIds).not.toContain("task normalize");
+     expect(frameworkHelpIds).not.toContain("task run");
++    expect(frameworkHelpIds).not.toContain("task run tool");
+ 
+     const allHelpIds = getHelpCommandEntries("all").map((entry) => entry.spec.id.join(" "));
+     expect(allHelpIds).toContain("release");
+     expect(allHelpIds).toContain("task normalize");
+     expect(allHelpIds).toContain("task run");
+     expect(allHelpIds).toContain("task run status");
++    expect(allHelpIds).toContain("task run tool");
+     expect(allHelpIds).toContain("context harvest tasks");
+   });
+ });
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index c6eb6814a..194b8230b 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -56,6 +56,7 @@ import {
+   taskRunSpec,
+   taskRunStatusSpec,
+ } from "../../../commands/task/run.command.js";
++import { taskRunToolSpec } from "../../../commands/task/run-tool.command.js";
+ import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
+ import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
+ import { taskSearchSpec } from "../../../commands/task/search.spec.js";
+@@ -106,6 +107,7 @@ import {
+   loadTaskRunResolveEffectSpec,
+   loadTaskRunResumeEffectSpec,
+   loadTaskRunSpec,
++  loadTaskRunToolSpec,
+   loadTaskRunStatusSpec,
+   loadTaskCompleteSpec,
+   loadTaskDeriveSpec,
+@@ -228,6 +230,12 @@ export const TASK_COMMANDS = [
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
++  declareCommand(taskRunToolSpec, {
++    load: loadTaskRunToolSpec,
++    needs: "project",
++    surface: "internal",
++    helpGroup: "Maintenance",
++  }),
+   declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
+   declareCommand(taskDeriveSpec, {
+     load: loadTaskDeriveSpec,
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 50229d691..6c8b79219 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -85,6 +85,10 @@ export const loadTaskBriefSpec = (deps: RunDeps) =>
+   );
+ export const loadTaskRunSpec = (deps: RunDeps) =>
+   import("../../../commands/task/run.command.js").then((m) => m.makeRunTaskRunHandler(deps.getCtx));
++export const loadTaskRunToolSpec = (deps: RunDeps) =>
++  import("../../../commands/task/run-tool.command.js").then((m) =>
++    m.makeRunTaskRunToolHandler(deps.getResolvedProject),
++  );
+ export const loadTaskRunStatusSpec = (deps: RunDeps) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+     m.makeRunTaskRunStatusHandler(deps.getCtx),
+diff --git a/packages/agentplane/src/commands/task/run-tool.command.ts b/packages/agentplane/src/commands/task/run-tool.command.ts
+new file mode 100644
+index 000000000..15ca9d5df
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/run-tool.command.ts
+@@ -0,0 +1,127 @@
++import path from "node:path";
++
++import type { ResolvedProject } from "@agentplaneorg/core/project";
++
++import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import { createCliEmitter } from "../../cli/output.js";
++import {
++  RUNNER_PHASE_TOOL_BROKER_DIR_ENV,
++  RUNNER_PHASE_TOOL_TOKEN_ENV,
++} from "../../runner/phase-tools/contract.js";
++import { invokeRunnerPhaseToolThroughBroker } from "../../runner/phase-tools/broker.js";
++import type { RunnerPhaseToolResponse } from "../../runner/types.js";
++
++const MAX_PHASE_TOOL_INPUT_BYTES = 1024 * 1024;
++
++export type TaskRunToolParsed = {
++  tool: string;
++};
++
++export const taskRunToolSpec: CommandSpec<TaskRunToolParsed> = {
++  id: ["task", "run", "tool"],
++  group: "Task",
++  summary: "Invoke one signed run-scoped phase tool from the active agent episode.",
++  args: [{ name: "tool", required: true, valueHint: "<tool-name>" }],
++  options: [],
++  notes: [
++    "This internal command is bound to the signed token and run directory injected by the runner supervisor.",
++    "It reads exactly one JSON value from stdin. Command visibility is not an authority boundary.",
++  ],
++  parse: (raw) => ({
++    tool: String(raw.args.tool),
++  }),
++};
++
++async function readStdinJson(): Promise<unknown> {
++  if (process.stdin.isTTY) {
++    throw new Error("Run-scoped phase tools require one JSON value on stdin.");
++  }
++  const chunks: Buffer[] = [];
++  let bytes = 0;
++  for await (const chunk of process.stdin) {
++    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), "utf8");
++    bytes += buffer.byteLength;
++    if (bytes > MAX_PHASE_TOOL_INPUT_BYTES) {
++      throw new Error(`Run-scoped phase-tool input exceeds ${MAX_PHASE_TOOL_INPUT_BYTES} bytes.`);
++    }
++    chunks.push(buffer);
++  }
++  const text = Buffer.concat(chunks).toString("utf8").trim();
++  if (!text) throw new Error("Run-scoped phase tools require one JSON value on stdin.");
++  return JSON.parse(text) as unknown;
++}
++
++function localDenial(tool: string, message: string): RunnerPhaseToolResponse {
++  return {
++    schema_version: 1,
++    kind: "runner_phase_tool_response",
++    status: "denied",
++    code: "invalid_input",
++    tool,
++    run_id: null,
++    work_order_id: null,
++    data: { message },
++    audit: null,
++  };
++}
++
++export function makeRunTaskRunToolHandler(
++  getResolvedProject: (cmd: string) => Promise<ResolvedProject>,
++  deps: {
++    env?: NodeJS.ProcessEnv;
++    read_input?: () => Promise<unknown>;
++  } = {},
++) {
++  return async (_ctx: CommandCtx, parsed: TaskRunToolParsed): Promise<number> => {
++    const output = createCliEmitter();
++    const env = deps.env ?? process.env;
++    const token = env[RUNNER_PHASE_TOOL_TOKEN_ENV]?.trim() ?? "";
++    const brokerDirectory = env[RUNNER_PHASE_TOOL_BROKER_DIR_ENV]?.trim() ?? "";
++    let input: unknown;
++    try {
++      input = await (deps.read_input ?? readStdinJson)();
++    } catch (error) {
++      const response = localDenial(
++        parsed.tool,
++        error instanceof Error ? error.message : "Run-scoped phase-tool input is invalid.",
++      );
++      output.json(response);
++      return 2;
++    }
++    if (!token || !brokerDirectory) {
++      const response: RunnerPhaseToolResponse = {
++        ...localDenial(
++          parsed.tool,
++          "The runner supervisor did not provide a signed phase token and broker channel.",
++        ),
++        code: "invalid_token",
++      };
++      output.json(response);
++      return 2;
++    }
++    const project = await getResolvedProject("task run tool");
++    const expectedPrefix = path.join(project.gitRoot, ".agentplane", "tmp", "runner-phase-tools");
++    const relativeBrokerPath = path.relative(expectedPrefix, brokerDirectory);
++    if (
++      relativeBrokerPath === "" ||
++      relativeBrokerPath === ".." ||
++      relativeBrokerPath.startsWith(`..${path.sep}`) ||
++      path.isAbsolute(relativeBrokerPath)
++    ) {
++      const response: RunnerPhaseToolResponse = {
++        ...localDenial(parsed.tool, "The runner phase-tool broker path is outside this checkout."),
++        code: "invalid_token",
++      };
++      output.json(response);
++      return 2;
++    }
++    const response = await invokeRunnerPhaseToolThroughBroker({
++      directory: brokerDirectory,
++      token,
++      tool: parsed.tool,
++      input,
++    });
++    output.json(response);
++    return response.status === "ok" ? 0 : 2;
++  };
++}
+diff --git a/packages/agentplane/src/runner/adapters/codex-preparation.ts b/packages/agentplane/src/runner/adapters/codex-preparation.ts
+index 64464bec2..abfac99b7 100644
+--- a/packages/agentplane/src/runner/adapters/codex-preparation.ts
++++ b/packages/agentplane/src/runner/adapters/codex-preparation.ts
+@@ -55,6 +55,38 @@ export function codexInvocationHasExactFilesystemEffectSandbox(
+ 
+ export const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
+   adapter_id: "codex",
++  phase_tools: {
++    report_result: {
++      availability: "available",
++      transport: "run_scoped_command",
++      enforcement: "supervisor",
++      note: "Codex can invoke the exact run-scoped command; AgentPlane validates the signed token and owns the canonical result artifact.",
++    },
++    report_blocker: {
++      availability: "available",
++      transport: "run_scoped_command",
++      enforcement: "supervisor",
++      note: "Codex can invoke the exact run-scoped command; AgentPlane validates the signed token and owns the canonical result artifact.",
++    },
++    request_knowledge: {
++      availability: "available",
++      transport: "run_scoped_command",
++      enforcement: "supervisor",
++      note: "Codex can request bounded knowledge through the signed run-scoped command without lifecycle or unrestricted repository authority.",
++    },
++    knowledge_search: {
++      availability: "available",
++      transport: "run_scoped_command",
++      enforcement: "supervisor",
++      note: "Codex can search only the digest-bound knowledge references declared by the current work order.",
++    },
++    knowledge_show: {
++      availability: "available",
++      transport: "run_scoped_command",
++      enforcement: "supervisor",
++      note: "Codex can materialize only an exact digest-bound knowledge reference declared by the current work order.",
++    },
++  },
+   fields: {
+     sandbox: {
+       level: "native",
+diff --git a/packages/agentplane/src/runner/adapters/codex.ts b/packages/agentplane/src/runner/adapters/codex.ts
+index 823623efe..943d23a89 100644
+--- a/packages/agentplane/src/runner/adapters/codex.ts
++++ b/packages/agentplane/src/runner/adapters/codex.ts
+@@ -15,7 +15,7 @@ import {
+ import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
+ import type { SupervisedProcessResult } from "../process-supervision/run.js";
+ import { exitCodeForSignal } from "../process-supervision/signals.js";
+-import { applyRunnerResultManifest, type readRunnerResultManifest } from "../result-manifest.js";
++import { applyRunnerResultManifest, readRunnerResultManifest } from "../result-manifest.js";
+ import { assertAdapterBundle, assertAdapterInvocation } from "./base.js";
+ import {
+   buildCodexInvocation,
+@@ -187,6 +187,17 @@ export class CodexRunnerAdapter implements RunnerAdapter {
+         ) {
+           return;
+         }
++        const phaseToolResult = await readRunnerResultManifest(input.result_path, {
++          legacy_work_order_id: input.work_order_id,
++        });
++        if (phaseToolResult) {
++          if (phaseToolResult.semantic_result.value.work_order_id !== input.work_order_id) {
++            throw new Error(
++              "Run-scoped phase-tool semantic result does not match the supervised work order.",
++            );
++          }
++          return;
++        }
+         await materializeCodexResultTransport({
+           raw_text: resultEventCollector.readLastAgentMessage(),
+           result_path: input.result_path,
+diff --git a/packages/agentplane/src/runner/adapters/custom-preparation.ts b/packages/agentplane/src/runner/adapters/custom-preparation.ts
+index 1ce042d36..3a1294b19 100644
+--- a/packages/agentplane/src/runner/adapters/custom-preparation.ts
++++ b/packages/agentplane/src/runner/adapters/custom-preparation.ts
+@@ -32,6 +32,38 @@ export function buildCustomCapabilities(
+     `(platform=${JSON.stringify(enforcement.platform)}).`;
+   return {
+     adapter_id: adapterId,
++    phase_tools: {
++      report_result: {
++        availability: "available",
++        transport: "terminal_result",
++        enforcement: "adapter",
++        note: "The custom process may return AgentSemanticResult v2 through the existing terminal result manifest.",
++      },
++      report_blocker: {
++        availability: "available",
++        transport: "terminal_result",
++        enforcement: "adapter",
++        note: "The custom process may return a blocked AgentSemanticResult v2 through the existing terminal result manifest.",
++      },
++      request_knowledge: {
++        availability: "available",
++        transport: "terminal_result",
++        enforcement: "supervisor",
++        note: "The supervisor can serve a typed KnowledgeRequest only after the configured process returns a terminal result.",
++      },
++      knowledge_search: {
++        availability: "unavailable",
++        transport: "none",
++        enforcement: "advisory",
++        note: "A custom command does not declare a guaranteed interactive run-tool transport.",
++      },
++      knowledge_show: {
++        availability: "unavailable",
++        transport: "none",
++        enforcement: "advisory",
++        note: "A custom command does not declare a guaranteed interactive run-tool transport.",
++      },
++    },
+     filesystem_effect_containment: {
+       level: "advisory",
+       supported_sandboxes: [],
+diff --git a/packages/agentplane/src/runner/phase-tools/audit.ts b/packages/agentplane/src/runner/phase-tools/audit.ts
+new file mode 100644
+index 000000000..cc129f9c0
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/audit.ts
+@@ -0,0 +1,75 @@
++import { createHash, randomUUID } from "node:crypto";
++import { mkdir } from "node:fs/promises";
++import path from "node:path";
++
++import { writeNewStableRegularFileNoFollow } from "../stable-file.js";
++import type {
++  RunnerPhaseToolManifest,
++  RunnerPhaseToolResponse,
++  RunnerPhaseToolResponseCode,
++} from "../types.js";
++import type { RunnerPhaseToolGrantRecord } from "./token.js";
++
++type RunnerPhaseToolAudit = {
++  schema_version: 1;
++  kind: "runner_phase_tool_audit";
++  at: string;
++  token_id: string;
++  run_id: string;
++  work_order_id: string;
++  phase: string;
++  role: RunnerPhaseToolManifest["role"];
++  tool: string;
++  outcome: "ok" | "denied";
++  code: RunnerPhaseToolResponseCode;
++  input_digest: string;
++  output_digest: string;
++  digest: string;
++};
++
++function sha256Json(value: unknown): string {
++  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
++}
++
++export async function persistRunnerPhaseToolAudit(opts: {
++  manifest: RunnerPhaseToolManifest;
++  record: RunnerPhaseToolGrantRecord;
++  tool: string;
++  input: unknown;
++  response: RunnerPhaseToolResponse;
++  now?: Date;
++}): Promise<RunnerPhaseToolResponse> {
++  const base = {
++    schema_version: 1 as const,
++    kind: "runner_phase_tool_audit" as const,
++    at: (opts.now ?? new Date()).toISOString(),
++    token_id: opts.record.claims.token_id,
++    run_id: opts.record.claims.run_id,
++    work_order_id: opts.record.claims.work_order_id,
++    phase: opts.record.claims.phase,
++    role: opts.record.claims.role,
++    tool: opts.tool,
++    outcome: opts.response.status,
++    code: opts.response.code,
++    input_digest: sha256Json(opts.input),
++    output_digest: sha256Json(opts.response.data),
++  };
++  const audit: RunnerPhaseToolAudit = { ...base, digest: sha256Json(base) };
++  await mkdir(opts.manifest.audit_directory, { recursive: true, mode: 0o700 });
++  const filePath = path.join(
++    opts.manifest.audit_directory,
++    `${audit.at.replaceAll(":", "-").replaceAll(".", "-")}-${randomUUID()}.json`,
++  );
++  await writeNewStableRegularFileNoFollow(
++    filePath,
++    `${JSON.stringify(audit, null, 2)}\n`,
++    "runner phase-tool audit",
++  );
++  return {
++    ...opts.response,
++    audit: {
++      path: filePath,
++      digest: audit.digest,
++    },
++  };
++}
+diff --git a/packages/agentplane/src/runner/phase-tools/broker.test.ts b/packages/agentplane/src/runner/phase-tools/broker.test.ts
+new file mode 100644
+index 000000000..d4deccce9
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/broker.test.ts
+@@ -0,0 +1,96 @@
++import { access, mkdtemp, rm } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { afterEach, describe, expect, it } from "vitest";
++
++import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
++import { makeRunnerContextBundle, setRunnerBundleRunDir } from "@agentplane/testkit/runner";
++
++import { CODEX_RUN_PROFILE_CAPABILITIES } from "../adapters/codex-preparation.js";
++import { writePreparedRunnerArtifacts } from "../artifacts.js";
++import { readRunnerResultManifest } from "../result-manifest.js";
++import {
++  invokeRunnerPhaseToolThroughBroker,
++  runnerPhaseToolBrokerDirectory,
++  startRunnerPhaseToolBroker,
++} from "./broker.js";
++import { issueRunnerPhaseToolGrant } from "./token.js";
++
++const roots: string[] = [];
++
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map(async (root) => await rm(root, { recursive: true })));
++});
++
++describe("runner phase-tool broker", () => {
++  it("keeps protected result writes in the parent supervisor", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-phase-broker-"));
++    roots.push(root);
++    const workOrder = buildAgentWorkOrderV2ValidFixture();
++    const bundle = makeRunnerContextBundle({
++      gitRoot: root,
++      taskId: workOrder.task.id,
++      runId: "run-broker",
++      status: "DOING",
++      owner: "CODER",
++      mode: "execute",
++    });
++    bundle.work_order = workOrder;
++    bundle.execution.adapter_capabilities = CODEX_RUN_PROFILE_CAPABILITIES;
++    const runDir = path.join(
++      root,
++      ".git",
++      "agentplane",
++      "runner",
++      "tasks",
++      workOrder.task.id,
++      "runs",
++      bundle.execution.run_id,
++    );
++    setRunnerBundleRunDir(bundle, runDir);
++    const grant = await issueRunnerPhaseToolGrant({ bundle });
++    if (!grant) throw new Error("Expected a phase-tool grant.");
++    bundle.execution.phase_tools = grant.manifest;
++    await writePreparedRunnerArtifacts({ bundle });
++    const brokerDirectory = runnerPhaseToolBrokerDirectory({
++      repository_root: root,
++      run_id: bundle.execution.run_id,
++      token_id: grant.record.claims.token_id,
++    });
++    const broker = await startRunnerPhaseToolBroker({
++      repository_root: root,
++      run_dir: runDir,
++      directory: brokerDirectory,
++    });
++
++    const response = await invokeRunnerPhaseToolThroughBroker({
++      directory: brokerDirectory,
++      token: grant.token,
++      tool: "report_blocker",
++      input: {
++        summary: "The requested lifecycle operation is outside the delegated phase.",
++        recommended_action: "Return control to the parent workflow.",
++      },
++    });
++
++    expect(response).toMatchObject({
++      status: "ok",
++      code: "accepted",
++      tool: "report_blocker",
++    });
++    expect(response.audit?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
++    expect(
++      await readRunnerResultManifest(bundle.execution.artifact_paths.result_path),
++    ).toMatchObject({
++      semantic_result: {
++        value: {
++          work_order_id: workOrder.work_order_id,
++          status: "blocked",
++        },
++      },
++    });
++    await broker.stop();
++    await expect(access(brokerDirectory)).rejects.toMatchObject({ code: "ENOENT" });
++  });
++});
+diff --git a/packages/agentplane/src/runner/phase-tools/broker.ts b/packages/agentplane/src/runner/phase-tools/broker.ts
+new file mode 100644
+index 000000000..f5dcee7e0
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/broker.ts
+@@ -0,0 +1,289 @@
++import { randomUUID } from "node:crypto";
++import { link, mkdir, readdir, realpath, rm, unlink } from "node:fs/promises";
++import path from "node:path";
++
++import { isRecord } from "../../shared/guards.js";
++import {
++  readStableRegularTextNoFollow,
++  writeNewStableRegularFileNoFollow,
++} from "../stable-file.js";
++import type { RunnerContextBundle, RunnerInvocation, RunnerPhaseToolResponse } from "../types.js";
++import { RUNNER_PHASE_TOOL_BROKER_DIR_ENV, RUNNER_PHASE_TOOL_TOKEN_ENV } from "./contract.js";
++import { invokeRunnerPhaseTool } from "./dispatch.js";
++import type { RunnerPhaseToolGrant } from "./token.js";
++
++const REQUEST_SUFFIX = ".request.json";
++const RESPONSE_SUFFIX = ".response.json";
++const MAX_REQUEST_BYTES = 1024 * 1024;
++const MAX_BROKER_REQUESTS = 64;
++const CLIENT_TIMEOUT_MS = 120_000;
++const POLL_MS = 20;
++const REQUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
++
++type RunnerPhaseToolBrokerRequest = {
++  schema_version: 1;
++  kind: "runner_phase_tool_broker_request";
++  request_id: string;
++  token: string;
++  tool: string;
++  input: unknown;
++};
++
++export type RunnerPhaseToolBroker = {
++  directory: string;
++  stop: () => Promise<void>;
++};
++
++function delay(ms: number): Promise<void> {
++  return new Promise((resolve) => setTimeout(resolve, ms));
++}
++
++function requestPath(directory: string, requestId: string): string {
++  return path.join(directory, `${requestId}${REQUEST_SUFFIX}`);
++}
++
++function responsePath(directory: string, requestId: string): string {
++  return path.join(directory, `${requestId}${RESPONSE_SUFFIX}`);
++}
++
++function parseRequest(value: unknown, requestId: string): RunnerPhaseToolBrokerRequest {
++  if (
++    !isRecord(value) ||
++    value.schema_version !== 1 ||
++    value.kind !== "runner_phase_tool_broker_request" ||
++    value.request_id !== requestId ||
++    typeof value.token !== "string" ||
++    value.token.length === 0 ||
++    typeof value.tool !== "string" ||
++    value.tool.length === 0
++  ) {
++    throw new Error("Run-scoped phase-tool broker request is invalid.");
++  }
++  return value as RunnerPhaseToolBrokerRequest;
++}
++
++function parseResponse(value: unknown): RunnerPhaseToolResponse {
++  if (
++    !isRecord(value) ||
++    value.schema_version !== 1 ||
++    value.kind !== "runner_phase_tool_response" ||
++    (value.status !== "ok" && value.status !== "denied") ||
++    typeof value.code !== "string" ||
++    typeof value.tool !== "string"
++  ) {
++    throw new Error("Run-scoped phase-tool broker response is invalid.");
++  }
++  return value as RunnerPhaseToolResponse;
++}
++
++function brokerDenial(tool: string, message: string): RunnerPhaseToolResponse {
++  return {
++    schema_version: 1,
++    kind: "runner_phase_tool_response",
++    status: "denied",
++    code: "invalid_input",
++    tool,
++    run_id: null,
++    work_order_id: null,
++    data: { message },
++    audit: null,
++  };
++}
++
++async function removeBrokerFile(filePath: string): Promise<void> {
++  try {
++    await unlink(filePath);
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
++  }
++}
++
++async function publishBrokerFile(filePath: string, contents: string, label: string): Promise<void> {
++  const stagedPath = path.join(
++    path.dirname(filePath),
++    `.${path.basename(filePath)}.${randomUUID()}.tmp`,
++  );
++  await writeNewStableRegularFileNoFollow(stagedPath, contents, `${label} staging file`);
++  try {
++    await link(stagedPath, filePath);
++  } finally {
++    await removeBrokerFile(stagedPath);
++  }
++}
++
++export function runnerPhaseToolBrokerDirectory(opts: {
++  repository_root: string;
++  run_id: string;
++  token_id: string;
++}): string {
++  const segment = `${opts.run_id}-${opts.token_id}`;
++  if (
++    segment.includes("/") ||
++    segment.includes("\\") ||
++    segment.includes("\0") ||
++    path.basename(segment) !== segment
++  ) {
++    throw new Error("Run-scoped phase-tool broker identity must be one path segment.");
++  }
++  return path.join(opts.repository_root, ".agentplane", "tmp", "runner-phase-tools", segment);
++}
++
++export function attachRunnerPhaseToolBrokerEnv(opts: {
++  bundle: RunnerContextBundle;
++  invocation: RunnerInvocation;
++  grant: RunnerPhaseToolGrant | null;
++}): void {
++  if (!opts.grant || opts.grant.record.claims.allowed_tools.length === 0) return;
++  opts.invocation.env[RUNNER_PHASE_TOOL_TOKEN_ENV] = opts.grant.token;
++  opts.invocation.env[RUNNER_PHASE_TOOL_BROKER_DIR_ENV] = runnerPhaseToolBrokerDirectory({
++    repository_root: opts.bundle.repository.git_root,
++    run_id: opts.bundle.execution.run_id,
++    token_id: opts.grant.record.claims.token_id,
++  });
++}
++
++async function assertBrokerDirectory(directory: string, expectedRealPath: string): Promise<void> {
++  if ((await realpath(directory)) !== expectedRealPath) {
++    throw new Error("Run-scoped phase-tool broker directory changed during execution.");
++  }
++}
++
++export async function startRunnerPhaseToolBroker(opts: {
++  repository_root: string;
++  run_dir: string;
++  directory: string;
++}): Promise<RunnerPhaseToolBroker> {
++  await mkdir(opts.directory, { recursive: true, mode: 0o700 });
++  const expectedRealPath = await realpath(opts.directory);
++  let stopped = false;
++  let handled = 0;
++  const processed = new Set<string>();
++  const loop = (async () => {
++    while (!stopped) {
++      await assertBrokerDirectory(opts.directory, expectedRealPath);
++      const entries = await readdir(opts.directory, { withFileTypes: true });
++      const requests = entries
++        .filter((entry) => entry.isFile() && entry.name.endsWith(REQUEST_SUFFIX))
++        .map((entry) => entry.name.slice(0, -REQUEST_SUFFIX.length))
++        .filter((requestId) => REQUEST_ID_PATTERN.test(requestId) && !processed.has(requestId))
++        .toSorted();
++      for (const requestId of requests) {
++        processed.add(requestId);
++        handled += 1;
++        let response: RunnerPhaseToolResponse;
++        try {
++          if (handled > MAX_BROKER_REQUESTS) {
++            response = brokerDenial(
++              "unknown",
++              `Run-scoped phase-tool broker accepts at most ${MAX_BROKER_REQUESTS} calls.`,
++            );
++          } else {
++            const request = parseRequest(
++              JSON.parse(
++                await readStableRegularTextNoFollow(
++                  requestPath(opts.directory, requestId),
++                  "runner phase-tool broker request",
++                  { max_bytes: MAX_REQUEST_BYTES },
++                ),
++              ) as unknown,
++              requestId,
++            );
++            response = await invokeRunnerPhaseTool({
++              repository_root: opts.repository_root,
++              run_dir: opts.run_dir,
++              token: request.token,
++              tool: request.tool,
++              input: request.input,
++            });
++          }
++        } catch (error) {
++          response = brokerDenial(
++            "unknown",
++            error instanceof Error ? error.message : "Run-scoped phase-tool request failed.",
++          );
++        }
++
++        await assertBrokerDirectory(opts.directory, expectedRealPath);
++        await publishBrokerFile(
++          responsePath(opts.directory, requestId),
++          `${JSON.stringify(response)}\n`,
++          "runner phase-tool broker response",
++        );
++      }
++      if (!stopped) await delay(POLL_MS);
++    }
++  })();
++  return {
++    directory: opts.directory,
++    stop: async () => {
++      stopped = true;
++      await loop;
++      await assertBrokerDirectory(opts.directory, expectedRealPath);
++      await rm(opts.directory, { recursive: true });
++    },
++  };
++}
++
++export async function invokeRunnerPhaseToolThroughBroker(opts: {
++  directory: string;
++  token: string;
++  tool: string;
++  input: unknown;
++  timeout_ms?: number;
++}): Promise<RunnerPhaseToolResponse> {
++  const requestId = randomUUID();
++  const request: RunnerPhaseToolBrokerRequest = {
++    schema_version: 1,
++    kind: "runner_phase_tool_broker_request",
++    request_id: requestId,
++    token: opts.token,
++    tool: opts.tool,
++    input: opts.input,
++  };
++  const requestFile = requestPath(opts.directory, requestId);
++  const responseFile = responsePath(opts.directory, requestId);
++  await publishBrokerFile(
++    requestFile,
++    `${JSON.stringify(request)}\n`,
++    "runner phase-tool broker request",
++  );
++  const deadline = Date.now() + (opts.timeout_ms ?? CLIENT_TIMEOUT_MS);
++  try {
++    while (Date.now() < deadline) {
++      try {
++        return parseResponse(
++          JSON.parse(
++            await readStableRegularTextNoFollow(responseFile, "runner phase-tool broker response", {
++              max_bytes: MAX_REQUEST_BYTES,
++            }),
++          ) as unknown,
++        );
++      } catch (error) {
++        if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
++      }
++      await delay(POLL_MS);
++    }
++    throw new Error("Run-scoped phase-tool broker response timed out.");
++  } finally {
++    await Promise.all([removeBrokerFile(requestFile), removeBrokerFile(responseFile)]);
++  }
++}
++
++export async function executeWithRunnerPhaseToolBroker<T>(opts: {
++  invocation: RunnerInvocation;
++  execute: () => Promise<T>;
++}): Promise<T> {
++  const directory = opts.invocation.env[RUNNER_PHASE_TOOL_BROKER_DIR_ENV];
++  const token = opts.invocation.env[RUNNER_PHASE_TOOL_TOKEN_ENV];
++  if (!directory || !token) return await opts.execute();
++  const broker = await startRunnerPhaseToolBroker({
++    repository_root: opts.invocation.repository_root,
++    run_dir: opts.invocation.run_dir,
++    directory,
++  });
++  try {
++    return await opts.execute();
++  } finally {
++    await broker.stop();
++  }
++}
+diff --git a/packages/agentplane/src/runner/phase-tools/contract.test.ts b/packages/agentplane/src/runner/phase-tools/contract.test.ts
+new file mode 100644
+index 000000000..78a95c02e
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/contract.test.ts
+@@ -0,0 +1,116 @@
++import { describe, expect, it } from "vitest";
++
++import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
++import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
++
++import { CODEX_RUN_PROFILE_CAPABILITIES } from "../adapters/codex-preparation.js";
++import { buildCustomCapabilities } from "../adapters/custom-preparation.js";
++import { RUNNER_PHASE_TOOL_NAMES, type RunnerAdapterCapabilities } from "../types.js";
++import { buildRunnerPhaseToolManifest } from "./contract.js";
++
++const TOKEN = {
++  id: "token-1",
++  issued_at: "2026-07-31T00:00:00.000Z",
++  expires_at: "2026-07-31T00:30:00.000Z",
++  terminal_reports_revoke: true,
++} as const;
++
++function manifestFor(capabilities: RunnerAdapterCapabilities) {
++  const workOrder = buildAgentWorkOrderV2ValidFixture();
++  const bundle = makeRunnerContextBundle({
++    taskId: workOrder.task.id,
++    runId: "run-phase-tools",
++    status: "DOING",
++    owner: "CODER",
++    mode: "execute",
++  });
++  bundle.work_order = workOrder;
++  bundle.execution.adapter_capabilities = capabilities;
++  return buildRunnerPhaseToolManifest({
++    bundle,
++    token: TOKEN,
++    grant_path: "/protected/run/phase-tools/grant.json",
++    audit_directory: "/protected/run/phase-tools/audits",
++  });
++}
++
++describe("runner phase-tool contract", () => {
++  it("declares every Codex phase tool as an exact supervisor-enforced run command", () => {
++    const manifest = manifestFor(CODEX_RUN_PROFILE_CAPABILITIES);
++
++    expect(manifest).not.toBeNull();
++    expect(manifest?.global_help_required).toBe(false);
++    expect(manifest?.tools.map((tool) => tool.name)).toEqual(RUNNER_PHASE_TOOL_NAMES);
++    for (const [index, name] of RUNNER_PHASE_TOOL_NAMES.entries()) {
++      expect(manifest?.tools[index]).toMatchObject({
++        name,
++        allowed: true,
++        transport: "run_scoped_command",
++        enforcement: "supervisor",
++        invocation: `agentplane task run tool ${name}`,
++        input_mode: "stdin_json",
++        reason: null,
++      });
++    }
++    expect(manifest?.repository_tool_classes).toEqual([
++      "git_read",
++      "repository_read",
++      "run_checks",
++      "workspace_write",
++    ]);
++  });
++
++  it("states custom-adapter interactive limitations instead of implying support", () => {
++    const manifest = manifestFor(buildCustomCapabilities(undefined));
++    const byName = new Map(manifest?.tools.map((tool) => [tool.name, tool]));
++
++    expect(byName.get("report_result")).toMatchObject({
++      allowed: true,
++      transport: "terminal_result",
++      invocation: null,
++      input_mode: "terminal_result",
++    });
++    expect(byName.get("request_knowledge")).toMatchObject({
++      allowed: true,
++      transport: "terminal_result",
++      invocation: null,
++    });
++    for (const name of ["knowledge_search", "knowledge_show"] as const) {
++      expect(byName.get(name)).toMatchObject({
++        allowed: false,
++        transport: "none",
++        invocation: null,
++      });
++      expect(byName.get(name)?.reason).toContain("does not declare");
++    }
++  });
++
++  it("keeps work-order authority narrower than adapter capability", () => {
++    const workOrder = buildAgentWorkOrderV2ValidFixture();
++    workOrder.authority.allowed_tool_classes = workOrder.authority.allowed_tool_classes.filter(
++      (toolClass) => toolClass !== "report_blocker",
++    );
++    const bundle = makeRunnerContextBundle({
++      taskId: workOrder.task.id,
++      runId: "run-narrow-authority",
++      mode: "execute",
++    });
++    bundle.work_order = workOrder;
++    bundle.execution.adapter_capabilities = CODEX_RUN_PROFILE_CAPABILITIES;
++
++    const manifest = buildRunnerPhaseToolManifest({
++      bundle,
++      token: TOKEN,
++      grant_path: "/protected/run/phase-tools/grant.json",
++      audit_directory: "/protected/run/phase-tools/audits",
++    });
++    const reportBlocker = manifest?.tools.find((tool) => tool.name === "report_blocker");
++
++    expect(reportBlocker).toMatchObject({
++      allowed: false,
++      transport: "run_scoped_command",
++      invocation: null,
++    });
++    expect(reportBlocker?.reason).toContain("does not grant report_blocker");
++  });
++});
+diff --git a/packages/agentplane/src/runner/phase-tools/contract.ts b/packages/agentplane/src/runner/phase-tools/contract.ts
+new file mode 100644
+index 000000000..0af987c60
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/contract.ts
+@@ -0,0 +1,185 @@
++import {
++  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
++  type AgentWorkOrderV2,
++} from "@agentplaneorg/core/schemas";
++
++import {
++  RUNNER_PHASE_TOOL_NAMES,
++  type RunnerAdapterCapabilities,
++  type RunnerContextBundle,
++  type RunnerPhaseToolDescriptor,
++  type RunnerPhaseToolManifest,
++  type RunnerPhaseToolName,
++} from "../types.js";
++
++export const RUNNER_PHASE_TOOL_TOKEN_ENV = "AGENTPLANE_RUNNER_PHASE_TOOL_TOKEN";
++export const RUNNER_PHASE_TOOL_BROKER_DIR_ENV = "AGENTPLANE_RUNNER_PHASE_TOOL_BROKER_DIR";
++export const RUNNER_PHASE_TOOL_GRANT_RELATIVE_PATH = "phase-tools/grant.json";
++export const RUNNER_PHASE_TOOL_AUDIT_RELATIVE_DIRECTORY = "phase-tools/audits";
++
++const TOOL_CLASS_BY_NAME: Record<
++  RunnerPhaseToolName,
++  AgentWorkOrderV2["authority"]["allowed_tool_classes"][number]
++> = {
++  report_result: "report_result",
++  report_blocker: "report_blocker",
++  request_knowledge: "knowledge_request",
++  knowledge_search: "knowledge_read",
++  knowledge_show: "knowledge_read",
++};
++
++const REPOSITORY_TOOL_CLASSES = new Set([
++  "repository_read",
++  "workspace_write",
++  "git_read",
++  "git_write",
++  "run_checks",
++]);
++
++const NON_EMPTY_STRING = {
++  type: "string",
++  minLength: 1,
++} as const;
++
++const STRING_ARRAY = {
++  type: "array",
++  items: { type: "string" },
++} as const;
++
++function inputSchema(tool: RunnerPhaseToolName): Record<string, unknown> {
++  if (tool === "report_result") {
++    return {
++      $ref: "https://agentplane.org/schemas/agent-semantic-result.schema.json",
++    };
++  }
++  if (tool === "report_blocker") {
++    return {
++      type: "object",
++      additionalProperties: false,
++      properties: {
++        summary: NON_EMPTY_STRING,
++        recommended_action: NON_EMPTY_STRING,
++        findings: STRING_ARRAY,
++        uncertainty: STRING_ARRAY,
++      },
++      required: ["summary"],
++    };
++  }
++  if (tool === "request_knowledge") {
++    return {
++      type: "object",
++      additionalProperties: false,
++      properties: {
++        query: NON_EMPTY_STRING,
++        reason: NON_EMPTY_STRING,
++        desired_kind: {
++          type: "string",
++          enum: [...KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES],
++        },
++        blocking: { type: "boolean" },
++      },
++      required: ["query", "reason", "desired_kind", "blocking"],
++    };
++  }
++  if (tool === "knowledge_search") {
++    return {
++      type: "object",
++      additionalProperties: false,
++      properties: {
++        query: NON_EMPTY_STRING,
++        desired_kind: {
++          type: "string",
++          enum: [...KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES],
++        },
++      },
++      required: ["query"],
++    };
++  }
++  return {
++    type: "object",
++    additionalProperties: false,
++    properties: {
++      ref: NON_EMPTY_STRING,
++      digest: {
++        type: "string",
++        pattern: "^sha256:[0-9a-f]{64}$",
++      },
++    },
++    required: ["ref", "digest"],
++  };
++}
++
++function descriptor(opts: {
++  tool: RunnerPhaseToolName;
++  work_order: AgentWorkOrderV2;
++  capabilities: RunnerAdapterCapabilities | undefined;
++}): RunnerPhaseToolDescriptor {
++  const requested = opts.work_order.authority.allowed_tool_classes.includes(
++    TOOL_CLASS_BY_NAME[opts.tool],
++  );
++  const capability = opts.capabilities?.phase_tools?.[opts.tool];
++  const available = capability?.availability === "available";
++  const allowed = requested && available;
++  const transport = capability?.transport ?? "none";
++  const runScoped = transport === "run_scoped_command";
++  const reason = requested
++    ? available
++      ? null
++      : (capability?.note ?? "The adapter does not expose this phase tool.")
++    : `The work order does not grant ${TOOL_CLASS_BY_NAME[opts.tool]}.`;
++  return {
++    name: opts.tool,
++    allowed,
++    transport,
++    enforcement: capability?.enforcement ?? "advisory",
++    invocation: allowed && runScoped ? `agentplane task run tool ${opts.tool}` : null,
++    input_mode: runScoped ? "stdin_json" : "terminal_result",
++    input_schema: inputSchema(opts.tool),
++    reason,
++  };
++}
++
++export function buildRunnerPhaseToolManifest(opts: {
++  bundle: RunnerContextBundle;
++  token: RunnerPhaseToolManifest["token"];
++  grant_path: string;
++  audit_directory: string;
++}): RunnerPhaseToolManifest | null {
++  const workOrder = opts.bundle.work_order;
++  const task = opts.bundle.task;
++  if (!workOrder || !task) return null;
++  const phase = opts.bundle.route_decision?.oracle.phase ?? "semantic_episode";
++  const tools = RUNNER_PHASE_TOOL_NAMES.map((tool) =>
++    descriptor({
++      tool,
++      work_order: workOrder,
++      capabilities: opts.bundle.execution.adapter_capabilities,
++    }),
++  );
++  return {
++    schema_version: 1,
++    kind: "runner_phase_tool_manifest",
++    run_id: opts.bundle.execution.run_id,
++    work_order_id: workOrder.work_order_id,
++    task_id: task.metadata.task_id,
++    phase,
++    role: workOrder.role,
++    global_help_required: false,
++    token: opts.token,
++    tools,
++    repository_tool_classes: workOrder.authority.allowed_tool_classes
++      .filter((toolClass) => REPOSITORY_TOOL_CLASSES.has(toolClass))
++      .toSorted(),
++    grant_path: opts.grant_path,
++    audit_directory: opts.audit_directory,
++  };
++}
++
++export function runScopedPhaseToolNames(manifest: RunnerPhaseToolManifest): RunnerPhaseToolName[] {
++  return manifest.tools
++    .filter(
++      (tool): tool is RunnerPhaseToolDescriptor & { name: RunnerPhaseToolName } =>
++        tool.allowed && tool.transport === "run_scoped_command",
++    )
++    .map((tool) => tool.name);
++}
+diff --git a/packages/agentplane/src/runner/phase-tools/dispatch.test.ts b/packages/agentplane/src/runner/phase-tools/dispatch.test.ts
+new file mode 100644
+index 000000000..34a60f9e3
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/dispatch.test.ts
+@@ -0,0 +1,314 @@
++import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { afterEach, describe, expect, it } from "vitest";
++
++import {
++  buildAgentSemanticResultV2ValidFixtures,
++  buildAgentWorkOrderV2ValidFixture,
++} from "@agentplaneorg/core/schemas";
++import { makeRunnerContextBundle, setRunnerBundleRunDir } from "@agentplane/testkit/runner";
++
++import { writePreparedRunnerArtifacts } from "../artifacts.js";
++import { CODEX_RUN_PROFILE_CAPABILITIES } from "../adapters/codex-preparation.js";
++import { readRunnerResultManifest } from "../result-manifest.js";
++import type {
++  RunnerContextBundle,
++  RunnerPhaseToolName,
++  RunnerPhaseToolResponse,
++} from "../types.js";
++import { invokeRunnerPhaseTool } from "./dispatch.js";
++import {
++  issueRunnerPhaseToolGrant,
++  readRunnerPhaseToolGrant,
++  type RunnerPhaseToolGrant,
++} from "./token.js";
++
++const roots: string[] = [];
++const ISSUED_AT = new Date("2026-07-31T00:00:00.000Z");
++const INVOKED_AT = new Date("2026-07-31T00:00:01.000Z");
++
++type PreparedPhaseToolRun = {
++  root: string;
++  run_dir: string;
++  bundle: RunnerContextBundle;
++  grant: RunnerPhaseToolGrant;
++};
++
++async function preparePhaseToolRun(
++  opts: {
++    ttl_ms?: number;
++    mutate_after_grant?: (bundle: RunnerContextBundle) => void;
++  } = {},
++): Promise<PreparedPhaseToolRun> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-phase-tools-"));
++  roots.push(root);
++  const workOrder = buildAgentWorkOrderV2ValidFixture();
++  const bundle = makeRunnerContextBundle({
++    gitRoot: root,
++    taskId: workOrder.task.id,
++    runId: `run-${roots.length}`,
++    status: "DOING",
++    owner: "CODER",
++    mode: "execute",
++  });
++  bundle.work_order = workOrder;
++  bundle.execution.adapter_capabilities = structuredClone(CODEX_RUN_PROFILE_CAPABILITIES);
++  const runDir = path.join(
++    root,
++    ".agentplane",
++    "tasks",
++    workOrder.task.id,
++    "runs",
++    bundle.execution.run_id,
++  );
++  setRunnerBundleRunDir(bundle, runDir);
++  const grant = await issueRunnerPhaseToolGrant({
++    bundle,
++    now: ISSUED_AT,
++    ttl_ms: opts.ttl_ms ?? 60_000,
++  });
++  if (!grant) throw new Error("Expected a phase-tool grant.");
++  bundle.execution.phase_tools = grant.manifest;
++  opts.mutate_after_grant?.(bundle);
++  await writePreparedRunnerArtifacts({
++    bundle,
++    created_at: ISSUED_AT.toISOString(),
++  });
++  return { root, run_dir: runDir, bundle, grant };
++}
++
++async function invoke(
++  prepared: PreparedPhaseToolRun,
++  tool: string,
++  input: unknown,
++  opts: { token?: string; now?: Date; repository_root?: string } = {},
++): Promise<RunnerPhaseToolResponse> {
++  return await invokeRunnerPhaseTool({
++    repository_root: opts.repository_root ?? prepared.root,
++    run_dir: prepared.run_dir,
++    token: opts.token ?? prepared.grant.token,
++    tool,
++    input,
++    now: opts.now ?? INVOKED_AT,
++  });
++}
++
++async function expectLinkedAudit(
++  response: RunnerPhaseToolResponse,
++  tool: RunnerPhaseToolName,
++): Promise<void> {
++  expect(response).toMatchObject({
++    status: "ok",
++    code: "accepted",
++    tool,
++  });
++  expect(response.audit).not.toBeNull();
++  expect(response.audit?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
++  const audit = JSON.parse(await readFile(response.audit!.path, "utf8")) as Record<string, unknown>;
++  expect(audit).toMatchObject({
++    kind: "runner_phase_tool_audit",
++    tool,
++    outcome: "ok",
++    code: "accepted",
++    digest: response.audit!.digest,
++  });
++}
++
++function tamperSignature(token: string): string {
++  const [prefix, payload, signature] = token.split(".");
++  if (!prefix || !payload || !signature) throw new Error("Expected a signed phase-tool token.");
++  const first = signature.startsWith("a") ? "b" : "a";
++  return `${prefix}.${payload}.${first}${signature.slice(1)}`;
++}
++
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map(async (root) => await rm(root, { recursive: true })));
++});
++
++describe("runner phase-tool dispatch", () => {
++  it.each([
++    [
++      "request_knowledge",
++      {
++        query: "execution boundary",
++        reason: "Need the prepared execution boundary.",
++        desired_kind: "wiki",
++        blocking: false,
++      },
++    ],
++    ["knowledge_search", { query: "execution boundary", desired_kind: "wiki" }],
++  ] as const)("serves %s through bounded typed context with linked audits", async (tool, input) => {
++    const prepared = await preparePhaseToolRun();
++
++    const response = await invoke(prepared, tool, input);
++
++    await expectLinkedAudit(response, tool);
++    expect(response.data).toMatchObject({
++      response: {
++        kind: "task_knowledge_response",
++        run: {
++          run_id: prepared.bundle.execution.run_id,
++          work_order_id: prepared.bundle.work_order?.work_order_id,
++        },
++      },
++    });
++    expect(
++      await readRunnerResultManifest(prepared.bundle.execution.artifact_paths.result_path),
++    ).toBeNull();
++  });
++
++  it("shows only an exact digest-bound work-order knowledge reference", async () => {
++    const prepared = await preparePhaseToolRun();
++    const knowledgeRef = prepared.bundle.work_order!.knowledge_refs[0]!;
++
++    const response = await invoke(prepared, "knowledge_show", {
++      ref: knowledgeRef.ref,
++      digest: knowledgeRef.digest,
++    });
++
++    await expectLinkedAudit(response, "knowledge_show");
++    expect(response.data).toMatchObject({
++      knowledge_ref: knowledgeRef,
++      excerpt: {
++        kind: "prepared_knowledge_excerpt",
++      },
++    });
++  });
++
++  it("writes one completed result, audits it, and revokes the token", async () => {
++    const prepared = await preparePhaseToolRun();
++    const semantic = buildAgentSemanticResultV2ValidFixtures(
++      prepared.bundle.work_order!.work_order_id,
++    ).completed;
++
++    const response = await invoke(prepared, "report_result", semantic);
++
++    await expectLinkedAudit(response, "report_result");
++    expect(response.data).toMatchObject({ status: "completed", token_revoked: true });
++    expect(
++      await readRunnerResultManifest(prepared.bundle.execution.artifact_paths.result_path),
++    ).toMatchObject({
++      semantic_result: { value: semantic },
++    });
++    expect(await readRunnerPhaseToolGrant(prepared.run_dir)).toMatchObject({
++      revoked_at: INVOKED_AT.toISOString(),
++      revoke_reason: "terminal_report",
++    });
++
++    const reused = await invoke(prepared, "report_result", semantic);
++    expect(reused).toMatchObject({
++      status: "denied",
++      code: "token_revoked",
++      audit: null,
++    });
++  });
++
++  it("writes a typed blocked result and revokes the token", async () => {
++    const prepared = await preparePhaseToolRun();
++
++    const response = await invoke(prepared, "report_blocker", {
++      summary: "The required provider action is outside the delegated scope.",
++      recommended_action: "Return control to the parent workflow.",
++      findings: ["No lifecycle operation was attempted."],
++      uncertainty: [],
++    });
++
++    await expectLinkedAudit(response, "report_blocker");
++    expect(
++      await readRunnerResultManifest(prepared.bundle.execution.artifact_paths.result_path),
++    ).toMatchObject({
++      semantic_result: {
++        value: {
++          work_order_id: prepared.bundle.work_order?.work_order_id,
++          status: "blocked",
++        },
++      },
++    });
++  });
++
++  it.each([
++    ["tampered token", "invalid_token"],
++    ["expired token", "token_expired"],
++    ["lifecycle tool", "tool_not_allowed"],
++  ] as const)("denies a %s before target effects", async (scenario, expectedCode) => {
++    const prepared = await preparePhaseToolRun({
++      ttl_ms: scenario === "expired token" ? 1000 : 60_000,
++    });
++    const token =
++      scenario === "tampered token" ? tamperSignature(prepared.grant.token) : prepared.grant.token;
++    const now = scenario === "expired token" ? new Date(ISSUED_AT.getTime() + 2000) : INVOKED_AT;
++    const tool = scenario === "lifecycle tool" ? "finish" : "report_result";
++
++    const response = await invoke(prepared, tool, {}, { token, now });
++
++    expect(response).toMatchObject({
++      status: "denied",
++      code: expectedCode,
++      audit: null,
++    });
++    expect(
++      await readRunnerResultManifest(prepared.bundle.execution.artifact_paths.result_path),
++    ).toBeNull();
++  });
++
++  it("denies role drift after grant issuance", async () => {
++    const prepared = await preparePhaseToolRun({
++      mutate_after_grant: (bundle) => {
++        bundle.work_order!.role = "EVALUATOR";
++      },
++    });
++
++    const response = await invoke(prepared, "knowledge_search", {
++      query: "execution boundary",
++    });
++
++    expect(response).toMatchObject({
++      status: "denied",
++      code: "role_forbidden",
++    });
++    expect(
++      await readRunnerResultManifest(prepared.bundle.execution.artifact_paths.result_path),
++    ).toBeNull();
++  });
++
++  it("denies state-fingerprint drift after grant issuance", async () => {
++    const prepared = await preparePhaseToolRun({
++      mutate_after_grant: (bundle) => {
++        bundle.work_order!.state_fingerprint.digest = `sha256:${"2".repeat(64)}`;
++      },
++    });
++
++    const response = await invoke(prepared, "knowledge_search", {
++      query: "execution boundary",
++    });
++
++    expect(response).toMatchObject({
++      status: "denied",
++      code: "state_fingerprint_mismatch",
++    });
++  });
++
++  it("closes every phase tool when a terminal result already exists", async () => {
++    const prepared = await preparePhaseToolRun();
++    const semantic = buildAgentSemanticResultV2ValidFixtures(
++      prepared.bundle.work_order!.work_order_id,
++    ).completed;
++    await writeFile(
++      prepared.bundle.execution.artifact_paths.result_path,
++      `${JSON.stringify(semantic)}\n`,
++      "utf8",
++    );
++
++    const response = await invoke(prepared, "knowledge_search", {
++      query: "execution boundary",
++    });
++
++    expect(response).toMatchObject({
++      status: "denied",
++      code: "terminal_result_exists",
++      audit: null,
++    });
++  });
++});
+diff --git a/packages/agentplane/src/runner/phase-tools/dispatch.ts b/packages/agentplane/src/runner/phase-tools/dispatch.ts
+new file mode 100644
+index 000000000..bafc403a2
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/dispatch.ts
+@@ -0,0 +1,563 @@
++import { realpath } from "node:fs/promises";
++import path from "node:path";
++
++import {
++  AGENT_SEMANTIC_RESULT_KIND,
++  AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
++  KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
++  KNOWLEDGE_REQUEST_KIND,
++  KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++  validateAgentSemanticResultForWorkOrder,
++  type AgentSemanticResult,
++  type AgentSemanticResultKnowledgeRequest,
++  type AgentWorkOrderV2,
++} from "@agentplaneorg/core/schemas";
++import { z } from "zod";
++
++import { prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
++import { isRecord } from "../../shared/guards.js";
++import { readRunnerRunState } from "../artifacts.js";
++import { readRunnerResultManifest } from "../result-manifest.js";
++import { RUNNER_BUNDLE_FILENAME, RUNNER_STATE_FILENAME } from "../task-run-paths.js";
++import {
++  readStableRegularTextNoFollow,
++  writeNewStableRegularFileNoFollow,
++} from "../stable-file.js";
++import type {
++  RunnerContextBundle,
++  RunnerPhaseToolManifest,
++  RunnerPhaseToolResponse,
++  RunnerPhaseToolResponseCode,
++} from "../types.js";
++import { serveRunnerPhaseToolKnowledgeRequest } from "./knowledge.js";
++import {
++  runnerPhaseToolManifestDigest,
++  revokeRunnerPhaseToolGrant,
++  validateRunnerPhaseToolToken,
++  type RunnerPhaseToolGrantRecord,
++} from "./token.js";
++import { persistRunnerPhaseToolAudit } from "./audit.js";
++
++const REPORT_BLOCKER_SCHEMA = z
++  .object({
++    summary: z.string().trim().min(1),
++    recommended_action: z.string().trim().min(1).optional(),
++    findings: z.array(z.string()).optional(),
++    uncertainty: z.array(z.string()).optional(),
++  })
++  .strict();
++
++const KNOWLEDGE_REQUEST_INPUT_SCHEMA = z
++  .object({
++    query: z.string().trim().min(1),
++    reason: z.string().trim().min(1),
++    desired_kind: z.enum(KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES),
++    blocking: z.boolean(),
++  })
++  .strict();
++
++const KNOWLEDGE_SEARCH_INPUT_SCHEMA = z
++  .object({
++    query: z.string().trim().min(1),
++    desired_kind: z.enum(KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES).optional(),
++  })
++  .strict();
++
++const KNOWLEDGE_SHOW_INPUT_SCHEMA = z
++  .object({
++    ref: z.string().trim().min(1),
++    digest: z.string().regex(/^sha256:[0-9a-f]{64}$/u),
++  })
++  .strict();
++
++type LoadedPhaseToolRun = {
++  bundle: RunnerContextBundle;
++  manifest: RunnerPhaseToolManifest;
++  work_order: AgentWorkOrderV2;
++  record: RunnerPhaseToolGrantRecord;
++};
++
++function denied(opts: {
++  code: RunnerPhaseToolResponseCode;
++  tool: string;
++  message: string;
++  run_id?: string | null;
++  work_order_id?: string | null;
++}): RunnerPhaseToolResponse {
++  return {
++    schema_version: 1,
++    kind: "runner_phase_tool_response",
++    status: "denied",
++    code: opts.code,
++    tool: opts.tool,
++    run_id: opts.run_id ?? null,
++    work_order_id: opts.work_order_id ?? null,
++    data: { message: opts.message },
++    audit: null,
++  };
++}
++
++function accepted(opts: {
++  tool: string;
++  run_id: string;
++  work_order_id: string;
++  data: unknown;
++}): RunnerPhaseToolResponse {
++  return {
++    schema_version: 1,
++    kind: "runner_phase_tool_response",
++    status: "ok",
++    code: "accepted",
++    tool: opts.tool,
++    run_id: opts.run_id,
++    work_order_id: opts.work_order_id,
++    data: opts.data,
++    audit: null,
++  };
++}
++
++function isPhaseToolResponse(
++  value: LoadedPhaseToolRun | RunnerPhaseToolResponse,
++): value is RunnerPhaseToolResponse {
++  return "status" in value && value.kind === "runner_phase_tool_response";
++}
++
++async function loadBundle(runDir: string): Promise<RunnerContextBundle> {
++  const bundle = JSON.parse(
++    await readStableRegularTextNoFollow(
++      path.join(runDir, RUNNER_BUNDLE_FILENAME),
++      "runner phase-tool bundle",
++    ),
++  ) as unknown;
++  if (!isRecord(bundle) || !isRecord(bundle.execution)) {
++    throw new Error("Runner phase-tool bundle is invalid.");
++  }
++  return bundle as unknown as RunnerContextBundle;
++}
++
++async function validateRunBinding(opts: {
++  repository_root: string;
++  run_dir: string;
++  tool: string;
++  token: string;
++  now?: Date;
++}): Promise<LoadedPhaseToolRun | RunnerPhaseToolResponse> {
++  const tokenValidation = await validateRunnerPhaseToolToken({
++    run_dir: opts.run_dir,
++    token: opts.token,
++    tool: opts.tool,
++    now: opts.now,
++  });
++  if (tokenValidation.status === "denied") {
++    return denied({
++      code: tokenValidation.code,
++      tool: opts.tool,
++      message: tokenValidation.message,
++      run_id: tokenValidation.record?.claims.run_id,
++      work_order_id: tokenValidation.record?.claims.work_order_id,
++    });
++  }
++  let bundle: RunnerContextBundle;
++  try {
++    bundle = await loadBundle(opts.run_dir);
++  } catch {
++    return denied({
++      code: "storage_error",
++      tool: opts.tool,
++      message: "The prepared runner bundle is missing or invalid.",
++      run_id: tokenValidation.claims.run_id,
++      work_order_id: tokenValidation.claims.work_order_id,
++    });
++  }
++  const manifest = bundle.execution.phase_tools;
++  const workOrder = bundle.work_order;
++  if (
++    !manifest ||
++    !workOrder ||
++    tokenValidation.record.manifest_digest !== runnerPhaseToolManifestDigest(manifest)
++  ) {
++    return denied({
++      code: "invalid_token",
++      tool: opts.tool,
++      message: "The signed phase-tool grant does not match the prepared runner manifest.",
++      run_id: tokenValidation.claims.run_id,
++      work_order_id: tokenValidation.claims.work_order_id,
++    });
++  }
++  const claims = tokenValidation.claims;
++  if (
++    claims.run_id !== bundle.execution.run_id ||
++    claims.run_id !== manifest.run_id ||
++    path.resolve(bundle.execution.artifact_paths.run_dir) !== path.resolve(opts.run_dir)
++  ) {
++    return denied({
++      code: "invalid_token",
++      tool: opts.tool,
++      message: "The run-scoped phase token does not match the prepared run.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  if (
++    claims.work_order_id !== workOrder.work_order_id ||
++    claims.work_order_id !== manifest.work_order_id
++  ) {
++    return denied({
++      code: "work_order_mismatch",
++      tool: opts.tool,
++      message: "The run-scoped phase token does not match the prepared work order.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  if (claims.state_fingerprint_digest !== workOrder.state_fingerprint.digest) {
++    return denied({
++      code: "state_fingerprint_mismatch",
++      tool: opts.tool,
++      message: "The run-scoped phase token does not match the prepared state fingerprint.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  if (claims.role !== workOrder.role || claims.role !== manifest.role) {
++    return denied({
++      code: "role_forbidden",
++      tool: opts.tool,
++      message: "The run-scoped phase token role does not match the prepared work order.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  if (
++    claims.phase !== manifest.phase ||
++    claims.phase !== (bundle.route_decision?.oracle.phase ?? "semantic_episode")
++  ) {
++    return denied({
++      code: "invalid_token",
++      tool: opts.tool,
++      message: "The run-scoped phase token does not match the active route phase.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  const declaredTool = manifest.tools.find((candidate) => candidate.name === opts.tool);
++  if (
++    !declaredTool?.allowed ||
++    declaredTool.transport !== "run_scoped_command" ||
++    declaredTool.invocation === null
++  ) {
++    return denied({
++      code: "tool_not_allowed",
++      tool: opts.tool,
++      message: "The prepared adapter/work-order capability map does not allow this phase tool.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  let currentRoot: string;
++  let preparedRoot: string;
++  try {
++    [currentRoot, preparedRoot] = await Promise.all([
++      realpath(opts.repository_root),
++      realpath(bundle.repository.git_root),
++    ]);
++  } catch {
++    return denied({
++      code: "storage_error",
++      tool: opts.tool,
++      message: "The repository binding for the run-scoped phase tool is unavailable.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  if (currentRoot !== preparedRoot) {
++    return denied({
++      code: "invalid_token",
++      tool: opts.tool,
++      message: "The run-scoped phase token cannot be used from another repository checkout.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  const state = await readRunnerRunState(path.join(opts.run_dir, RUNNER_STATE_FILENAME));
++  const stateStatus = state?.status;
++  if (
++    state?.run_id !== claims.run_id ||
++    (stateStatus !== "prepared" && stateStatus !== "running")
++  ) {
++    return denied({
++      code: "run_not_active",
++      tool: opts.tool,
++      message: "Run-scoped phase tools are available only while the bound run is active.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  try {
++    if (await readRunnerResultManifest(bundle.execution.artifact_paths.result_path)) {
++      return denied({
++        code: "terminal_result_exists",
++        tool: opts.tool,
++        message: "Run-scoped phase tools are closed after a terminal semantic result exists.",
++        run_id: claims.run_id,
++        work_order_id: claims.work_order_id,
++      });
++    }
++  } catch {
++    return denied({
++      code: "storage_error",
++      tool: opts.tool,
++      message: "The terminal semantic result state is unreadable.",
++      run_id: claims.run_id,
++      work_order_id: claims.work_order_id,
++    });
++  }
++  return {
++    bundle,
++    manifest,
++    work_order: workOrder,
++    record: tokenValidation.record,
++  };
++}
++
++async function executeTool(opts: {
++  loaded: LoadedPhaseToolRun;
++  repository_root: string;
++  run_dir: string;
++  tool: string;
++  input: unknown;
++  now?: Date;
++}): Promise<RunnerPhaseToolResponse> {
++  const binding = {
++    tool: opts.tool,
++    run_id: opts.loaded.manifest.run_id,
++    work_order_id: opts.loaded.work_order.work_order_id,
++  };
++  if (opts.tool === "report_result") {
++    let semantic: AgentSemanticResult;
++    try {
++      semantic = validateAgentSemanticResultForWorkOrder({
++        work_order: opts.loaded.work_order,
++        semantic_result: opts.input,
++      });
++    } catch (error) {
++      return denied({
++        ...binding,
++        code: "invalid_input",
++        message: error instanceof Error ? error.message : "Invalid semantic result.",
++      });
++    }
++    if (semantic.status !== "completed" && semantic.status !== "failed") {
++      return denied({
++        ...binding,
++        code: "invalid_input",
++        message: "report_result accepts only completed or failed semantic results.",
++      });
++    }
++    if (await readRunnerResultManifest(opts.loaded.bundle.execution.artifact_paths.result_path)) {
++      return denied({
++        ...binding,
++        code: "terminal_result_exists",
++        message: "A terminal semantic result already exists for this run.",
++      });
++    }
++    await writeNewStableRegularFileNoFollow(
++      opts.loaded.bundle.execution.artifact_paths.result_path,
++      `${JSON.stringify(semantic, null, 2)}\n`,
++      "runner phase-tool semantic result",
++    );
++    await revokeRunnerPhaseToolGrant({
++      run_dir: opts.run_dir,
++      record: opts.loaded.record,
++      at: opts.now,
++      reason: "terminal_report",
++    });
++    return accepted({
++      ...binding,
++      data: {
++        result_path: opts.loaded.bundle.execution.artifact_paths.result_path,
++        status: semantic.status,
++        token_revoked: true,
++      },
++    });
++  }
++  if (opts.tool === "report_blocker") {
++    const parsed = REPORT_BLOCKER_SCHEMA.safeParse(opts.input);
++    if (!parsed.success) {
++      return denied({
++        ...binding,
++        code: "invalid_input",
++        message: parsed.error.issues.map((issue) => issue.message).join("; "),
++      });
++    }
++    const semantic: AgentSemanticResult = {
++      schema_version: AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
++      kind: AGENT_SEMANTIC_RESULT_KIND,
++      work_order_id: opts.loaded.work_order.work_order_id,
++      status: "blocked",
++      summary: parsed.data.summary,
++      findings: parsed.data.findings ?? [],
++      uncertainty: parsed.data.uncertainty ?? [],
++      blocker: {
++        summary: parsed.data.summary,
++        ...(parsed.data.recommended_action
++          ? { recommended_action: parsed.data.recommended_action }
++          : {}),
++      },
++    };
++    if (await readRunnerResultManifest(opts.loaded.bundle.execution.artifact_paths.result_path)) {
++      return denied({
++        ...binding,
++        code: "terminal_result_exists",
++        message: "A terminal semantic result already exists for this run.",
++      });
++    }
++    await writeNewStableRegularFileNoFollow(
++      opts.loaded.bundle.execution.artifact_paths.result_path,
++      `${JSON.stringify(semantic, null, 2)}\n`,
++      "runner phase-tool blocker result",
++    );
++    await revokeRunnerPhaseToolGrant({
++      run_dir: opts.run_dir,
++      record: opts.loaded.record,
++      at: opts.now,
++      reason: "terminal_report",
++    });
++    return accepted({
++      ...binding,
++      data: {
++        result_path: opts.loaded.bundle.execution.artifact_paths.result_path,
++        status: semantic.status,
++        token_revoked: true,
++      },
++    });
++  }
++  if (opts.tool === "request_knowledge" || opts.tool === "knowledge_search") {
++    let request: AgentSemanticResultKnowledgeRequest;
++    if (opts.tool === "request_knowledge") {
++      const parsed = KNOWLEDGE_REQUEST_INPUT_SCHEMA.safeParse(opts.input);
++      if (!parsed.success) {
++        return denied({
++          ...binding,
++          code: "invalid_input",
++          message: parsed.error.issues.map((issue) => issue.message).join("; "),
++        });
++      }
++      request = {
++        schema_version: KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++        kind: KNOWLEDGE_REQUEST_KIND,
++        query: parsed.data.query,
++        reason: parsed.data.reason,
++        desired_kind: parsed.data.desired_kind,
++        scope: "task_context",
++        blocking: parsed.data.blocking,
++      };
++    } else {
++      const parsed = KNOWLEDGE_SEARCH_INPUT_SCHEMA.safeParse(opts.input);
++      if (!parsed.success) {
++        return denied({
++          ...binding,
++          code: "invalid_input",
++          message: parsed.error.issues.map((issue) => issue.message).join("; "),
++        });
++      }
++      request = {
++        schema_version: KNOWLEDGE_REQUEST_SCHEMA_VERSION,
++        kind: KNOWLEDGE_REQUEST_KIND,
++        query: parsed.data.query,
++        reason: "Run-scoped knowledge_search request.",
++        desired_kind: parsed.data.desired_kind ?? "any",
++        scope: "task_context",
++        blocking: false,
++      };
++    }
++    const served = await serveRunnerPhaseToolKnowledgeRequest({
++      manifest: opts.loaded.manifest,
++      work_order: opts.loaded.work_order,
++      repository_root: opts.repository_root,
++      run_dir: opts.run_dir,
++      request,
++    });
++    return accepted({
++      ...binding,
++      data: {
++        response: served.response,
++        knowledge_audit: served.audit,
++      },
++    });
++  }
++  if (opts.tool === "knowledge_show") {
++    const parsed = KNOWLEDGE_SHOW_INPUT_SCHEMA.safeParse(opts.input);
++    if (!parsed.success) {
++      return denied({
++        ...binding,
++        code: "invalid_input",
++        message: parsed.error.issues.map((issue) => issue.message).join("; "),
++      });
++    }
++    const knowledgeRef = opts.loaded.work_order.knowledge_refs.find(
++      (candidate) => candidate.ref === parsed.data.ref && candidate.digest === parsed.data.digest,
++    );
++    if (!knowledgeRef) {
++      return denied({
++        ...binding,
++        code: "invalid_input",
++        message: "knowledge_show accepts only an exact digest-bound work-order KnowledgeRef.",
++      });
++    }
++    const excerpt = await prepareKnowledgeExcerpt({
++      repository_root: opts.repository_root,
++      knowledge_ref: knowledgeRef,
++      max_bytes: 2048,
++      max_lines: 60,
++    });
++    return accepted({
++      ...binding,
++      data: { knowledge_ref: knowledgeRef, excerpt },
++    });
++  }
++  return denied({
++    ...binding,
++    code: "tool_not_allowed",
++    message: "Lifecycle and undeclared operations are not available through the phase-tool API.",
++  });
++}
++
++export async function invokeRunnerPhaseTool(opts: {
++  repository_root: string;
++  run_dir: string;
++  token: string;
++  tool: string;
++  input: unknown;
++  now?: Date;
++}): Promise<RunnerPhaseToolResponse> {
++  const binding = await validateRunBinding(opts);
++  if (isPhaseToolResponse(binding)) return binding;
++  let response: RunnerPhaseToolResponse;
++  try {
++    response = await executeTool({ ...opts, loaded: binding });
++  } catch (error) {
++    response = denied({
++      code: "storage_error",
++      tool: opts.tool,
++      message: error instanceof Error ? error.message : "The phase-tool operation failed.",
++      run_id: binding.manifest.run_id,
++      work_order_id: binding.work_order.work_order_id,
++    });
++  }
++  try {
++    return await persistRunnerPhaseToolAudit({
++      manifest: binding.manifest,
++      record: binding.record,
++      tool: opts.tool,
++      input: opts.input,
++      response,
++      now: opts.now,
++    });
++  } catch {
++    return {
++      ...response,
++      audit: null,
++    };
++  }
++}
+diff --git a/packages/agentplane/src/runner/phase-tools/knowledge.ts b/packages/agentplane/src/runner/phase-tools/knowledge.ts
+new file mode 100644
+index 000000000..497af16c8
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/knowledge.ts
+@@ -0,0 +1,87 @@
++import {
++  AGENT_SEMANTIC_RESULT_KIND,
++  AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
++  type AgentSemanticResult,
++  type AgentSemanticResultKnowledgeRequest,
++  type AgentWorkOrderV2,
++} from "@agentplaneorg/core/schemas";
++import path from "node:path";
++
++import type { RunnerPhaseToolManifest } from "../types.js";
++import {
++  loadTaskKnowledgeRequestAudits,
++  persistTaskKnowledgeRequestAudit,
++  serveTaskKnowledgeRequest,
++  taskKnowledgeRequestAuditPath,
++  taskKnowledgeRequestReservationUnavailableResponse,
++  withTaskKnowledgeRequestAuditReservation,
++} from "../usecases/task-knowledge-request.js";
++
++function knowledgeRequestSemanticResult(opts: {
++  work_order_id: string;
++  request: AgentSemanticResultKnowledgeRequest;
++}): AgentSemanticResult {
++  return {
++    schema_version: AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
++    kind: AGENT_SEMANTIC_RESULT_KIND,
++    work_order_id: opts.work_order_id,
++    status: "needs_context",
++    summary: opts.request.reason,
++    findings: [],
++    uncertainty: [],
++    knowledge_request: opts.request,
++  };
++}
++
++export async function serveRunnerPhaseToolKnowledgeRequest(opts: {
++  manifest: RunnerPhaseToolManifest;
++  work_order: AgentWorkOrderV2;
++  repository_root: string;
++  run_dir: string;
++  request: AgentSemanticResultKnowledgeRequest;
++}) {
++  const invocation = {
++    run_id: opts.manifest.run_id,
++    work_order_id: opts.work_order.work_order_id,
++    state_fingerprint_digest: opts.work_order.state_fingerprint.digest,
++  };
++  const semanticResult = knowledgeRequestSemanticResult({
++    work_order_id: opts.work_order.work_order_id,
++    request: opts.request,
++  });
++  const reservation = await withTaskKnowledgeRequestAuditReservation({
++    invocation,
++    repository_root: opts.repository_root,
++    role: opts.work_order.role,
++    work: async () => {
++      const prior = await loadTaskKnowledgeRequestAudits({
++        runs_dir: path.dirname(opts.run_dir),
++        invocation,
++        role: opts.work_order.role,
++      });
++      const response = await serveTaskKnowledgeRequest({
++        repository_root: opts.repository_root,
++        invocation,
++        work_order: opts.work_order,
++        semantic_result: semanticResult,
++        prior_audits: prior,
++      });
++      const auditPath = taskKnowledgeRequestAuditPath({
++        run_dir: opts.run_dir,
++        audit: response,
++      });
++      await persistTaskKnowledgeRequestAudit({ file_path: auditPath, audit: response });
++      return {
++        response,
++        audit: { path: auditPath, digest: response.digest },
++      };
++    },
++  });
++  if (reservation.status === "reserved") return reservation.value;
++  const response = taskKnowledgeRequestReservationUnavailableResponse({
++    invocation,
++    semantic_result: semanticResult,
++    work_order: opts.work_order,
++  });
++  return { response, audit: null };
++}
+diff --git a/packages/agentplane/src/runner/phase-tools/token.ts b/packages/agentplane/src/runner/phase-tools/token.ts
+new file mode 100644
+index 000000000..c3e880baf
+--- /dev/null
++++ b/packages/agentplane/src/runner/phase-tools/token.ts
+@@ -0,0 +1,377 @@
++import {
++  createHash,
++  createPublicKey,
++  generateKeyPairSync,
++  type KeyObject,
++  randomUUID,
++  sign,
++  verify,
++} from "node:crypto";
++import { mkdir } from "node:fs/promises";
++import path from "node:path";
++
++import { atomicWriteFile } from "@agentplaneorg/core/fs";
++
++import { isRecord } from "../../shared/guards.js";
++import {
++  readStableRegularTextNoFollow,
++  writeNewStableRegularFileNoFollow,
++} from "../stable-file.js";
++import type {
++  RunnerContextBundle,
++  RunnerPhaseToolManifest,
++  RunnerPhaseToolName,
++  RunnerPhaseToolResponseCode,
++} from "../types.js";
++import {
++  buildRunnerPhaseToolManifest,
++  RUNNER_PHASE_TOOL_AUDIT_RELATIVE_DIRECTORY,
++  RUNNER_PHASE_TOOL_GRANT_RELATIVE_PATH,
++  runScopedPhaseToolNames,
++} from "./contract.js";
++
++const TOKEN_PREFIX = "apt1";
++const DEFAULT_TOKEN_TTL_MS = 30 * 60 * 1000;
++const MIN_TOKEN_TTL_MS = 5 * 60 * 1000;
++const MAX_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
++
++type RunnerPhaseToolTokenClaims = {
++  schema_version: 1;
++  kind: "runner_phase_tool_token";
++  token_id: string;
++  run_id: string;
++  work_order_id: string;
++  task_id: string;
++  state_fingerprint_digest: string;
++  phase: string;
++  role: RunnerPhaseToolManifest["role"];
++  allowed_tools: RunnerPhaseToolName[];
++  issued_at: string;
++  expires_at: string;
++};
++
++export type RunnerPhaseToolGrantRecord = {
++  schema_version: 1;
++  kind: "runner_phase_tool_grant";
++  public_key_spki: string;
++  claims: RunnerPhaseToolTokenClaims;
++  manifest_digest: string;
++  revoked_at: string | null;
++  revoke_reason: "terminal_report" | "supervisor_revoke" | null;
++  digest: string;
++};
++
++export type RunnerPhaseToolGrant = {
++  manifest: RunnerPhaseToolManifest;
++  token: string;
++  record: RunnerPhaseToolGrantRecord;
++};
++
++export type RunnerPhaseToolTokenValidation =
++  | {
++      status: "valid";
++      claims: RunnerPhaseToolTokenClaims;
++      record: RunnerPhaseToolGrantRecord;
++    }
++  | {
++      status: "denied";
++      code: Extract<
++        RunnerPhaseToolResponseCode,
++        "invalid_token" | "token_expired" | "token_revoked" | "tool_not_allowed"
++      >;
++      message: string;
++      record: RunnerPhaseToolGrantRecord | null;
++    };
++
++function sha256Json(value: unknown): string {
++  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
++}
++
++function clampTokenTtl(bundle: RunnerContextBundle): number {
++  const wallClockMs = bundle.execution.timeout_policy.wall_clock_ms;
++  const graceMs = bundle.execution.timeout_policy.terminate_grace_ms;
++  const requested =
++    wallClockMs > 0 ? wallClockMs + Math.max(0, graceMs) + 60_000 : DEFAULT_TOKEN_TTL_MS;
++  return Math.min(MAX_TOKEN_TTL_MS, Math.max(MIN_TOKEN_TTL_MS, requested));
++}
++
++function recordDigest(
++  value: Omit<RunnerPhaseToolGrantRecord, "digest">,
++): RunnerPhaseToolGrantRecord {
++  return { ...value, digest: sha256Json(value) };
++}
++
++function encodeClaims(claims: RunnerPhaseToolTokenClaims): string {
++  return Buffer.from(JSON.stringify(claims), "utf8").toString("base64url");
++}
++
++function signedToken(opts: { claims: RunnerPhaseToolTokenClaims; private_key: KeyObject }): string {
++  const payload = encodeClaims(opts.claims);
++  const signature = sign(null, Buffer.from(payload, "utf8"), opts.private_key).toString(
++    "base64url",
++  );
++  return `${TOKEN_PREFIX}.${payload}.${signature}`;
++}
++
++function grantPath(runDir: string): string {
++  return path.join(runDir, RUNNER_PHASE_TOOL_GRANT_RELATIVE_PATH);
++}
++
++function auditDirectory(runDir: string): string {
++  return path.join(runDir, RUNNER_PHASE_TOOL_AUDIT_RELATIVE_DIRECTORY);
++}
++
++function validClaims(value: unknown): value is RunnerPhaseToolTokenClaims {
++  if (!isRecord(value)) return false;
++  return (
++    value.schema_version === 1 &&
++    value.kind === "runner_phase_tool_token" &&
++    typeof value.token_id === "string" &&
++    value.token_id.length > 0 &&
++    typeof value.run_id === "string" &&
++    value.run_id.length > 0 &&
++    typeof value.work_order_id === "string" &&
++    value.work_order_id.length > 0 &&
++    typeof value.task_id === "string" &&
++    value.task_id.length > 0 &&
++    typeof value.state_fingerprint_digest === "string" &&
++    /^sha256:[0-9a-f]{64}$/u.test(value.state_fingerprint_digest) &&
++    typeof value.phase === "string" &&
++    value.phase.length > 0 &&
++    (value.role === "PLANNER" ||
++      value.role === "CURATOR" ||
++      value.role === "EXECUTOR" ||
++      value.role === "EVALUATOR") &&
++    Array.isArray(value.allowed_tools) &&
++    value.allowed_tools.every(
++      (tool) =>
++        tool === "report_result" ||
++        tool === "report_blocker" ||
++        tool === "request_knowledge" ||
++        tool === "knowledge_search" ||
++        tool === "knowledge_show",
++    ) &&
++    typeof value.issued_at === "string" &&
++    Number.isFinite(Date.parse(value.issued_at)) &&
++    typeof value.expires_at === "string" &&
++    Number.isFinite(Date.parse(value.expires_at))
++  );
++}
++
++function parseGrant(value: unknown): RunnerPhaseToolGrantRecord {
++  if (!isRecord(value)) throw new Error("Run phase-tool grant must be an object.");
++  const { digest, ...unsigned } = value;
++  if (
++    value.schema_version !== 1 ||
++    value.kind !== "runner_phase_tool_grant" ||
++    typeof value.public_key_spki !== "string" ||
++    value.public_key_spki.length === 0 ||
++    !validClaims(value.claims) ||
++    typeof value.manifest_digest !== "string" ||
++    !/^sha256:[0-9a-f]{64}$/u.test(value.manifest_digest) ||
++    (value.revoked_at !== null &&
++      (typeof value.revoked_at !== "string" || !Number.isFinite(Date.parse(value.revoked_at)))) ||
++    (value.revoke_reason !== null &&
++      value.revoke_reason !== "terminal_report" &&
++      value.revoke_reason !== "supervisor_revoke") ||
++    typeof digest !== "string" ||
++    digest !== sha256Json(unsigned)
++  ) {
++    throw new Error("Run phase-tool grant is malformed or its digest is invalid.");
++  }
++  return value as RunnerPhaseToolGrantRecord;
++}
++
++export async function issueRunnerPhaseToolGrant(opts: {
++  bundle: RunnerContextBundle;
++  now?: Date;
++  ttl_ms?: number;
++}): Promise<RunnerPhaseToolGrant | null> {
++  const workOrder = opts.bundle.work_order;
++  const task = opts.bundle.task;
++  if (!workOrder || !task) return null;
++  const issuedAt = opts.now ?? new Date();
++  const ttlMs = opts.ttl_ms ?? clampTokenTtl(opts.bundle);
++  const tokenId = randomUUID();
++  const tokenSummary = {
++    id: tokenId,
++    issued_at: issuedAt.toISOString(),
++    expires_at: new Date(issuedAt.getTime() + ttlMs).toISOString(),
++    terminal_reports_revoke: true as const,
++  };
++  const manifest = buildRunnerPhaseToolManifest({
++    bundle: opts.bundle,
++    token: tokenSummary,
++    grant_path: grantPath(opts.bundle.execution.artifact_paths.run_dir),
++    audit_directory: auditDirectory(opts.bundle.execution.artifact_paths.run_dir),
++  });
++  if (!manifest) return null;
++  const claims: RunnerPhaseToolTokenClaims = {
++    schema_version: 1,
++    kind: "runner_phase_tool_token",
++    token_id: tokenId,
++    run_id: manifest.run_id,
++    work_order_id: manifest.work_order_id,
++    task_id: manifest.task_id,
++    state_fingerprint_digest: workOrder.state_fingerprint.digest,
++    phase: manifest.phase,
++    role: manifest.role,
++    allowed_tools: runScopedPhaseToolNames(manifest),
++    issued_at: tokenSummary.issued_at,
++    expires_at: tokenSummary.expires_at,
++  };
++  const keyPair = generateKeyPairSync("ed25519");
++  const publicKeySpki = keyPair.publicKey
++    .export({ format: "der", type: "spki" })
++    .toString("base64");
++  const record = recordDigest({
++    schema_version: 1,
++    kind: "runner_phase_tool_grant",
++    public_key_spki: publicKeySpki,
++    claims,
++    manifest_digest: sha256Json(manifest),
++    revoked_at: null,
++    revoke_reason: null,
++  });
++  const filePath = grantPath(opts.bundle.execution.artifact_paths.run_dir);
++  await mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 });
++  await mkdir(auditDirectory(opts.bundle.execution.artifact_paths.run_dir), {
++    recursive: true,
++    mode: 0o700,
++  });
++  await writeNewStableRegularFileNoFollow(
++    filePath,
++    `${JSON.stringify(record, null, 2)}\n`,
++    "runner phase-tool grant",
++  );
++  return {
++    manifest,
++    token: signedToken({ claims, private_key: keyPair.privateKey }),
++    record,
++  };
++}
++
++export async function readRunnerPhaseToolGrant(
++  runDir: string,
++): Promise<RunnerPhaseToolGrantRecord> {
++  return parseGrant(
++    JSON.parse(
++      await readStableRegularTextNoFollow(grantPath(runDir), "runner phase-tool grant"),
++    ) as unknown,
++  );
++}
++
++export async function validateRunnerPhaseToolToken(opts: {
++  run_dir: string;
++  token: string;
++  tool: string;
++  now?: Date;
++}): Promise<RunnerPhaseToolTokenValidation> {
++  let record: RunnerPhaseToolGrantRecord;
++  try {
++    record = await readRunnerPhaseToolGrant(opts.run_dir);
++  } catch {
++    return {
++      status: "denied",
++      code: "invalid_token",
++      message: "The run-scoped phase-tool grant is missing or invalid.",
++      record: null,
++    };
++  }
++  const parts = opts.token.split(".");
++  if (parts.length !== 3 || parts[0] !== TOKEN_PREFIX) {
++    return {
++      status: "denied",
++      code: "invalid_token",
++      message: "The run-scoped phase token has an invalid envelope.",
++      record,
++    };
++  }
++  let claims: unknown;
++  try {
++    claims = JSON.parse(Buffer.from(parts[1]!, "base64url").toString("utf8")) as unknown;
++  } catch {
++    claims = null;
++  }
++  if (!validClaims(claims) || JSON.stringify(claims) !== JSON.stringify(record.claims)) {
++    return {
++      status: "denied",
++      code: "invalid_token",
++      message: "The run-scoped phase token claims do not match the durable grant.",
++      record,
++    };
++  }
++  let signatureValid = false;
++  try {
++    const publicKey = createPublicKey({
++      key: Buffer.from(record.public_key_spki, "base64"),
++      format: "der",
++      type: "spki",
++    });
++    signatureValid = verify(
++      null,
++      Buffer.from(parts[1]!, "utf8"),
++      publicKey,
++      Buffer.from(parts[2]!, "base64url"),
++    );
++  } catch {
++    signatureValid = false;
++  }
++  if (!signatureValid) {
++    return {
++      status: "denied",
++      code: "invalid_token",
++      message: "The run-scoped phase token signature is invalid.",
++      record,
++    };
++  }
++  if (record.revoked_at !== null) {
++    return {
++      status: "denied",
++      code: "token_revoked",
++      message: "The run-scoped phase token was revoked.",
++      record,
++    };
++  }
++  if ((opts.now ?? new Date()).getTime() >= Date.parse(claims.expires_at)) {
++    return {
++      status: "denied",
++      code: "token_expired",
++      message: "The run-scoped phase token has expired.",
++      record,
++    };
++  }
++  if (!claims.allowed_tools.includes(opts.tool as RunnerPhaseToolName)) {
++    return {
++      status: "denied",
++      code: "tool_not_allowed",
++      message: `The current run-scoped phase token does not allow ${JSON.stringify(opts.tool)}.`,
++      record,
++    };
++  }
++  return { status: "valid", claims, record };
++}
++
++export async function revokeRunnerPhaseToolGrant(opts: {
++  run_dir: string;
++  record: RunnerPhaseToolGrantRecord;
++  at?: Date;
++  reason: NonNullable<RunnerPhaseToolGrantRecord["revoke_reason"]>;
++}): Promise<RunnerPhaseToolGrantRecord> {
++  if (opts.record.revoked_at !== null) return opts.record;
++  const revoked = recordDigest({
++    schema_version: opts.record.schema_version,
++    kind: opts.record.kind,
++    public_key_spki: opts.record.public_key_spki,
++    claims: opts.record.claims,
++    manifest_digest: opts.record.manifest_digest,
++    revoked_at: (opts.at ?? new Date()).toISOString(),
++    revoke_reason: opts.reason,
++  });
++  await atomicWriteFile(grantPath(opts.run_dir), `${JSON.stringify(revoked, null, 2)}\n`, "utf8");
++  return revoked;
++}
++
++export function runnerPhaseToolManifestDigest(manifest: RunnerPhaseToolManifest): string {
++  return sha256Json(manifest);
++}
+diff --git a/packages/agentplane/src/runner/types.ts b/packages/agentplane/src/runner/types.ts
+index 286602066..7142ec88e 100644
+--- a/packages/agentplane/src/runner/types.ts
++++ b/packages/agentplane/src/runner/types.ts
+@@ -6,6 +6,14 @@ export {
+ export type { RunnerTarget } from "./types/target.js";
+ export type { RunnerPromptBlock, RunnerPromptRole } from "./types/prompts.js";
+ export type { RunnerAdapterCapabilities } from "./types/capabilities.js";
++export {
++  RUNNER_PHASE_TOOL_NAMES,
++  type RunnerPhaseToolDescriptor,
++  type RunnerPhaseToolManifest,
++  type RunnerPhaseToolName,
++  type RunnerPhaseToolResponse,
++  type RunnerPhaseToolResponseCode,
++} from "./types/phase-tools.js";
+ export {
+   RUNNER_DANGER_FULL_ACCESS_SANDBOX,
+   RUNNER_READ_ONLY_SANDBOX,
+diff --git a/packages/agentplane/src/runner/types/capabilities.ts b/packages/agentplane/src/runner/types/capabilities.ts
+index a8a6e4731..7820a13f6 100644
+--- a/packages/agentplane/src/runner/types/capabilities.ts
++++ b/packages/agentplane/src/runner/types/capabilities.ts
+@@ -1,3 +1,5 @@
++import type { RunnerPhaseToolCapability, RunnerPhaseToolName } from "./phase-tools.js";
++
+ export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsupported";
+ 
+ export type RunnerCapabilityChannel = "argv" | "env" | "result" | "none";
+@@ -22,4 +24,5 @@ export type RunnerAdapterCapabilities = {
+   adapter_id: string;
+   fields: Record<string, RunnerCapabilityDescriptor>;
+   filesystem_effect_containment?: RunnerFilesystemEffectContainmentCapability;
++  phase_tools?: Partial<Record<RunnerPhaseToolName, RunnerPhaseToolCapability>>;
+ };
+diff --git a/packages/agentplane/src/runner/types/context.ts b/packages/agentplane/src/runner/types/context.ts
+index 21231de1e..3078837e9 100644
+--- a/packages/agentplane/src/runner/types/context.ts
++++ b/packages/agentplane/src/runner/types/context.ts
+@@ -22,6 +22,7 @@ import type { AgentWorkOrderPreparationView } from "../usecases/agent-work-order
+ 
+ import type { RunnerAdapterCapabilities } from "./capabilities.js";
+ import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
++import type { RunnerPhaseToolManifest } from "./phase-tools.js";
+ import type { RunnerExecutionPlaybookContract } from "./playbooks.js";
+ import type {
+   RunnerPolicyDecision,
+@@ -174,6 +175,7 @@ export type RunnerExecutionContract = {
+   evaluator_skepticism_level?: EvaluatorSkepticismLevel;
+   adapter_capabilities?: RunnerAdapterCapabilities;
+   adapter_capability_registry?: AgentplaneCapabilityRegistry;
++  phase_tools?: RunnerPhaseToolManifest;
+   policy_decision?: RunnerPolicyDecision;
+   sandbox_policy?: RunnerSandboxPolicy;
+   write_scope?: RunnerWriteScopePolicy;
+diff --git a/packages/agentplane/src/runner/types/phase-tools.ts b/packages/agentplane/src/runner/types/phase-tools.ts
+new file mode 100644
+index 000000000..1c11603ac
+--- /dev/null
++++ b/packages/agentplane/src/runner/types/phase-tools.ts
+@@ -0,0 +1,81 @@
++import type { AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
++
++export const RUNNER_PHASE_TOOL_NAMES = [
++  "report_result",
++  "report_blocker",
++  "request_knowledge",
++  "knowledge_search",
++  "knowledge_show",
++] as const;
++
++export type RunnerPhaseToolName = (typeof RUNNER_PHASE_TOOL_NAMES)[number];
++
++type RunnerPhaseToolTransport = "run_scoped_command" | "terminal_result" | "none";
++
++export type RunnerPhaseToolCapability = {
++  availability: "available" | "unavailable";
++  transport: RunnerPhaseToolTransport;
++  enforcement: "supervisor" | "adapter" | "advisory";
++  note: string;
++};
++
++export type RunnerPhaseToolDescriptor = {
++  name: RunnerPhaseToolName;
++  allowed: boolean;
++  transport: RunnerPhaseToolTransport;
++  enforcement: RunnerPhaseToolCapability["enforcement"];
++  invocation: string | null;
++  input_mode: "stdin_json" | "terminal_result";
++  input_schema: Record<string, unknown>;
++  reason: string | null;
++};
++
++export type RunnerPhaseToolManifest = {
++  schema_version: 1;
++  kind: "runner_phase_tool_manifest";
++  run_id: string;
++  work_order_id: string;
++  task_id: string;
++  phase: string;
++  role: AgentWorkOrderRole;
++  global_help_required: false;
++  token: {
++    id: string;
++    issued_at: string;
++    expires_at: string;
++    terminal_reports_revoke: true;
++  };
++  tools: RunnerPhaseToolDescriptor[];
++  repository_tool_classes: string[];
++  grant_path: string;
++  audit_directory: string;
++};
++
++export type RunnerPhaseToolResponseCode =
++  | "accepted"
++  | "invalid_input"
++  | "invalid_token"
++  | "token_expired"
++  | "token_revoked"
++  | "run_not_active"
++  | "tool_not_allowed"
++  | "role_forbidden"
++  | "work_order_mismatch"
++  | "state_fingerprint_mismatch"
++  | "terminal_result_exists"
++  | "storage_error";
++
++export type RunnerPhaseToolResponse = {
++  schema_version: 1;
++  kind: "runner_phase_tool_response";
++  status: "ok" | "denied";
++  code: RunnerPhaseToolResponseCode;
++  tool: string;
++  run_id: string | null;
++  work_order_id: string | null;
++  data: unknown;
++  audit: {
++    path: string;
++    digest: string;
++  } | null;
++};
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index a8f0b2fb8..f051d1d50 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
+ import {
+   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
+   AGENT_SEMANTIC_RESULT_V2_INVALID_FIXTURES,
++  buildAgentWorkOrderV2ValidFixture,
+ } from "@agentplaneorg/core/schemas";
+ import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
+ 
+@@ -105,7 +106,7 @@ describe("runner bootstrap result examples", () => {
+     expect(bootstrap).toContain("Do not attempt to write result_path.");
+     expect(bootstrap).toContain("the supervisor writes and validates result_path");
+     expect(bootstrap).toContain(
+-      "The parent CLI owns those actions; use a CLI command only when its behavior is the explicit semantic implementation target",
++      "The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
+     );
+     expect(bootstrap).not.toContain(
+       "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+@@ -119,6 +120,77 @@ describe("runner bootstrap result examples", () => {
+     );
+   });
+ 
++  it("renders the complete exact run-scoped API without depending on global help", () => {
++    const bundle = makeRunnerContextBundle({ runId: "phase-tool-bootstrap" });
++    const workOrder = buildAgentWorkOrderV2ValidFixture();
++    bundle.work_order = workOrder;
++    bundle.execution.phase_tools = {
++      schema_version: 1,
++      kind: "runner_phase_tool_manifest",
++      run_id: bundle.execution.run_id,
++      work_order_id: workOrder.work_order_id,
++      task_id: bundle.task!.metadata.task_id,
++      phase: "semantic_episode",
++      role: workOrder.role,
++      global_help_required: false,
++      token: {
++        id: "token-1",
++        issued_at: "2026-07-31T00:00:00.000Z",
++        expires_at: "2026-07-31T00:30:00.000Z",
++        terminal_reports_revoke: true,
++      },
++      tools: [
++        {
++          name: "report_result",
++          allowed: true,
++          transport: "run_scoped_command",
++          enforcement: "supervisor",
++          invocation: "agentplane task run tool report_result",
++          input_mode: "stdin_json",
++          input_schema: {
++            $ref: "https://agentplane.org/schemas/agent-semantic-result.schema.json",
++          },
++          reason: null,
++        },
++        {
++          name: "knowledge_show",
++          allowed: false,
++          transport: "none",
++          enforcement: "advisory",
++          invocation: null,
++          input_mode: "terminal_result",
++          input_schema: { type: "object" },
++          reason: "The adapter does not expose this phase tool.",
++        },
++      ],
++      repository_tool_classes: ["repository_read", "workspace_write"],
++      grant_path: "/protected/run/phase-tools/grant.json",
++      audit_directory: "/protected/run/phase-tools/audits",
++    };
++
++    const bootstrap = renderTaskRunnerBootstrap(bundle);
++
++    expect(bootstrap).toContain("Run-scoped phase tool contract:");
++    expect(bootstrap).toContain("- global_help_required: false");
++    expect(bootstrap).toContain(
++      "report_result: transport=run_scoped_command enforcement=supervisor invocation=agentplane task run tool report_result",
++    );
++    expect(bootstrap).toContain("knowledge_show: unavailable");
++    expect(bootstrap).toContain("Never print the token or pass it on argv.");
++    expect(bootstrap).not.toContain("agentplane help");
++
++    const reportResult = bundle.execution.phase_tools.tools[0]!;
++    reportResult.transport = "terminal_result";
++    reportResult.enforcement = "adapter";
++    reportResult.invocation = null;
++    reportResult.input_mode = "terminal_result";
++    const terminalOnlyBootstrap = renderTaskRunnerBootstrap(bundle);
++    expect(terminalOnlyBootstrap).toContain("This adapter exposes no run_scoped_command transport");
++    expect(terminalOnlyBootstrap).not.toContain(
++      "The supervisor injects the signed token and a checkout-local broker channel",
++    );
++  });
++
+   it.each([
+     [
+       "blocked without blocker",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index e5c264c2f..22971a732 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -69,6 +69,40 @@ function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
+   );
+ }
+ 
++function renderPhaseToolLines(bundle: RunnerContextBundle): string[] {
++  const manifest = bundle.execution.phase_tools;
++  if (!manifest) return [];
++  const allowed = manifest.tools.filter((tool) => tool.allowed);
++  const runScoped = allowed.filter((tool) => tool.transport === "run_scoped_command");
++  const unavailable = manifest.tools.filter((tool) => !tool.allowed);
++  return [
++    "",
++    "Run-scoped phase tool contract:",
++    `- phase: ${manifest.phase}`,
++    `- role: ${manifest.role}`,
++    `- global_help_required: ${String(manifest.global_help_required)}`,
++    `- repository_tool_classes: ${JSON.stringify(manifest.repository_tool_classes)}`,
++    ...(runScoped.length > 0
++      ? [
++          "- The supervisor injects the signed token and a checkout-local broker channel through the process environment. Never print the token or pass it on argv.",
++          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation below. Input schemas are in bundle.execution.phase_tools.tools.",
++        ]
++      : [
++          "- This adapter exposes no run_scoped_command transport, so no phase-tool token or broker channel is injected. Use only the declared terminal result transport.",
++        ]),
++    ...allowed.map(
++      (tool) =>
++        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"}`,
++    ),
++    ...unavailable.map(
++      (tool) =>
++        `- ${tool.name}: unavailable (${tool.reason ?? "adapter/work-order capability not granted"})`,
++    ),
++    "- Lifecycle operations are never phase tools. An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
++    "- report_result and report_blocker are terminal: an accepted call revokes the token. request_knowledge, knowledge_search, and knowledge_show remain bounded to the current work-order context.",
++  ];
++}
++
+ export function renderTaskRunnerBootstrap(
+   bundle: RunnerContextBundle,
+   invocation?: RunnerInvocation,
+@@ -105,7 +139,7 @@ export function renderTaskRunnerBootstrap(
+     "- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task metadata edits.",
+     "- Keep lifecycle authority with the parent AgentPlane workflow; do not open PRs, merge, release, push publication artifacts, or clean worktrees unless the bundle explicitly delegates that action.",
+     "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane recipes scenario execute` from inside this run.",
+-    "- Do not invoke `ap` or `agentplane` for lifecycle, context preparation, repository diagnosis, or formal verification. The parent CLI owns those actions; use a CLI command only when its behavior is the explicit semantic implementation target of this work order.",
++    "- Do not invoke `ap` or `agentplane` for lifecycle, context preparation, repository diagnosis, or formal verification. The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
+     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the result manifest instead of resolving them speculatively.",
+     "- Open bundle.json immediately, execute the requested work directly, and stop when the requested outcome is satisfied.",
+     "",
+@@ -154,6 +188,7 @@ export function renderTaskRunnerBootstrap(
+           "Do not use repository search or lifecycle commands to fill that gap; the parent CLI validates the request, retrieves digest-valid references, and records its audit.",
+         ]
+       : []),
++    ...renderPhaseToolLines(bundle),
+     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked semantic result with blocker.summary and blocker.recommended_action; the supervisor owns path and conflict observation.",
+     "",
+     ...renderEvaluatorSkepticismLines(evaluatorSkepticismLevel),
+diff --git a/packages/agentplane/src/runner/usecases/task-run.ts b/packages/agentplane/src/runner/usecases/task-run.ts
+index ac1b627f4..de3135d5b 100644
+--- a/packages/agentplane/src/runner/usecases/task-run.ts
++++ b/packages/agentplane/src/runner/usecases/task-run.ts
+@@ -1,6 +1,11 @@
+ import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+ import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
++import {
++  attachRunnerPhaseToolBrokerEnv,
++  executeWithRunnerPhaseToolBroker,
++} from "../phase-tools/broker.js";
++import { issueRunnerPhaseToolGrant } from "../phase-tools/token.js";
+ import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
+ import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/index.js";
+ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+@@ -246,6 +251,10 @@ export async function prepareTaskRunnerExecution(opts: {
+   await repository.createFreshDirectory({
+     run_id: bundle.execution.run_id,
+   });
++  const phaseToolGrant = await issueRunnerPhaseToolGrant({ bundle });
++  if (phaseToolGrant) {
++    bundle.execution.phase_tools = phaseToolGrant.manifest;
++  }
+   let invocation: RunnerInvocation;
+   try {
+     assertRunnerPolicyCompatibility(bundle);
+@@ -255,6 +264,7 @@ export async function prepareTaskRunnerExecution(opts: {
+     });
+     await repository.assertBoundary("after writing the blueprint snapshot");
+     invocation = await adapter.prepare(bundle);
++    attachRunnerPhaseToolBrokerEnv({ bundle, invocation, grant: phaseToolGrant });
+   } catch (err) {
+     if (err instanceof CliError) {
+       bundle.execution.policy_decision = applyRunnerPolicyRefusal({
+@@ -479,7 +489,11 @@ export async function executeTaskRunnerExecution(opts: {
+             state_fingerprint: stateFingerprint,
+           });
+         },
+-        apply: async (invocation) => await adapter.execute(invocation),
++        apply: async (invocation) =>
++          await executeWithRunnerPhaseToolBroker({
++            invocation,
++            execute: async () => await adapter.execute(invocation),
++          }),
+       });
+     } catch (error) {
+       if (!(error instanceof RunnerStateFingerprintCliError)) throw error;
+diff --git a/packages/agentplane/src/runtime/capabilities/resolve.test.ts b/packages/agentplane/src/runtime/capabilities/resolve.test.ts
+index 04875576e..bf4462dd1 100644
+--- a/packages/agentplane/src/runtime/capabilities/resolve.test.ts
++++ b/packages/agentplane/src/runtime/capabilities/resolve.test.ts
+@@ -9,6 +9,8 @@ import {
+   resolveRunnerAdapterCapabilityRegistry,
+   resolveTaskBackendCapabilityRegistry,
+ } from "./index.js";
++import { CODEX_RUN_PROFILE_CAPABILITIES } from "../../runner/adapters/codex-preparation.js";
++import { buildCustomCapabilities } from "../../runner/adapters/custom-preparation.js";
+ 
+ describe("runtime capability registry", () => {
+   it("enumerates backend capabilities and marks disabled features unavailable", () => {
+@@ -210,6 +212,36 @@ describe("runtime capability registry", () => {
+     });
+   });
+ 
++  it("publishes phase-tool availability and adapter limitations as typed capabilities", () => {
++    const codex = resolveRunnerAdapterCapabilityRegistry({
++      adapter_id: "codex",
++      capabilities: CODEX_RUN_PROFILE_CAPABILITIES,
++    });
++    const custom = resolveRunnerAdapterCapabilityRegistry({
++      adapter_id: "custom",
++      capabilities: buildCustomCapabilities(undefined),
++    });
++
++    expect(
++      getCapabilityEntries(codex, "runner.adapter.codex.phase_tool.knowledge_search")[0],
++    ).toMatchObject({
++      availability: "available",
++      metadata: {
++        transport: "run_scoped_command",
++        enforcement: "supervisor",
++      },
++    });
++    expect(
++      getCapabilityEntries(custom, "runner.adapter.custom.phase_tool.knowledge_search")[0],
++    ).toMatchObject({
++      availability: "unavailable",
++      metadata: {
++        transport: "none",
++        enforcement: "advisory",
++      },
++    });
++  });
++
+   it("deduplicates merged registries and supports filtered listing", () => {
+     const left = createCapabilityRegistry([
+       {
+diff --git a/packages/agentplane/src/runtime/capabilities/runner.ts b/packages/agentplane/src/runtime/capabilities/runner.ts
+index a218f5528..6c67ab587 100644
+--- a/packages/agentplane/src/runtime/capabilities/runner.ts
++++ b/packages/agentplane/src/runtime/capabilities/runner.ts
+@@ -1,4 +1,5 @@
+ import type { RunnerAdapterCapabilities } from "../../runner/types.js";
++import { RUNNER_PHASE_TOOL_NAMES } from "../../runner/types.js";
+ 
+ import { createCapabilityRegistry } from "./registry.js";
+ import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./model.js";
+@@ -22,6 +23,10 @@ function filesystemEffectContainmentCapabilityId(adapterId: string): string {
+   return `runner.adapter.${adapterId}.filesystem_effect_containment`;
+ }
+ 
++function phaseToolCapabilityId(adapterId: string, toolName: string): string {
++  return `runner.adapter.${adapterId}.phase_tool.${toolName}`;
++}
++
+ export function resolveRunnerAdapterCapabilityRegistry(opts: {
+   adapter_id: string;
+   capabilities: RunnerAdapterCapabilities | undefined;
+@@ -74,6 +79,32 @@ export function resolveRunnerAdapterCapabilityRegistry(opts: {
+     });
+   }
+ 
++  for (const toolName of RUNNER_PHASE_TOOL_NAMES) {
++    const capability = opts.capabilities?.phase_tools?.[toolName];
++    const available = capability?.availability === "available";
++    entries.push({
++      id: phaseToolCapabilityId(adapterId, toolName),
++      kind: "tool",
++      availability: available ? "available" : "unavailable",
++      source: source(adapterId),
++      summary: `Run-scoped phase tool ${toolName}`,
++      ...(available
++        ? {}
++        : {
++            reason:
++              capability?.note ??
++              "The adapter does not declare a transport for this run-scoped phase tool.",
++          }),
++      metadata: {
++        adapter_id: adapterId,
++        tool: toolName,
++        transport: capability?.transport ?? "none",
++        enforcement: capability?.enforcement ?? "advisory",
++        ...(capability?.note ? { note: capability.note } : {}),
++      },
++    });
++  }
++
+   for (const [fieldName, capability] of Object.entries(opts.capabilities?.fields ?? {})) {
+     const hasRequest = Object.hasOwn(requested, fieldName);
+     const requestedValue = hasRequest ? requested[fieldName] : undefined;
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 75abfe43e..ac30817c4 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -23,7 +23,8 @@
+     "202607291449-FTHNAR",
+     "202607300150-MGCHE6",
+     "202607221852-YP9QCH",
+-    "202607302125-Y61ZHN"
++    "202607302125-Y61ZHN",
++    "202607221852-ECBY56"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -32,9 +33,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "57836414138578d277eebd4bc6d69bb9837c638afb6cda7ea60b9ba95760d481",
++    "surface_sha256": "827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064",
+     "section_digests": {
+-      "cli_topology": "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
++      "cli_topology": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -372,20 +373,21 @@
+         "202607260532-9M7RNH",
+         "202607281655-YMPY8Y",
+         "202607300150-MGCHE6",
+-        "202607302125-Y61ZHN"
++        "202607302125-Y61ZHN",
++        "202607221852-ECBY56"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
++      "to_sha256": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
+       "classification": "additive",
+-      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, and a backward-compatible semantic-supersession release outcome; no command or option is removed.",
++      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, a backward-compatible semantic-supersession release outcome, and one hidden signed run-scoped phase-tool command; no command or option is removed.",
+       "evidence": {
+         "command_count": {
+           "from": 243,
+-          "to": 254
++          "to": 255
+         },
+         "positional_count": {
+           "from": 165,
+-          "to": 175
++          "to": 176
+         },
+         "option_count": {
+           "from": 767,
+@@ -402,6 +404,7 @@
+           "task run reconcile",
+           "task run resolve-effect",
+           "task run resume-effect",
++          "task run tool",
+           "workflow migrate"
+         ],
+         "removed_commands": [],
+@@ -800,6 +803,20 @@
+               }
+             ]
+           },
++          {
++            "id": ["task", "run", "tool"],
++            "visibility": "internal",
++            "group": "Task",
++            "args": [
++              {
++                "name": "tool",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<tool-name>"
++              }
++            ],
++            "options": []
++          },
+           {
+             "id": ["workflow", "migrate"],
+             "visibility": "user",
+@@ -1272,6 +1289,11 @@
+             "command": "task run resume-effect",
+             "source_task": "202607242158-QV09NA"
+           },
++          {
++            "kind": "command",
++            "command": "task run tool",
++            "source_task": "202607221852-ECBY56"
++          },
+           {
+             "kind": "command",
+             "command": "workflow migrate",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index ed0a4a897..b0f6faf38 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -326,6 +326,7 @@ function validateReviewedCandidate({
+     "202607281655-YMPY8Y",
+     "202607300150-MGCHE6",
+     "202607302125-Y61ZHN",
++    "202607221852-ECBY56",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -350,6 +351,7 @@ function validateReviewedCandidate({
+     "202607300150-MGCHE6",
+     "202607221852-YP9QCH",
+     "202607302125-Y61ZHN",
++    "202607221852-ECBY56",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -1201,6 +1203,13 @@ function validateReviewedCandidate({
+       options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
+     },
+     ...effectResolutionCommandDescriptors,
++    {
++      id: ["task", "run", "tool"],
++      visibility: "internal",
++      group: "Task",
++      args: [{ name: "tool", required: true, variadic: false, valueHint: "<tool-name>" }],
++      options: [],
++    },
+     {
+       id: ["workflow", "migrate"],
+       visibility: "user",
+@@ -1499,6 +1508,11 @@ function validateReviewedCandidate({
+       source_task: "202607221846-9XC1H0",
+     },
+     ...effectResolutionCommandSources,
++    {
++      kind: "command",
++      command: "task run tool",
++      source_task: "202607221852-ECBY56",
++    },
+     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
+     {
+       kind: "option",
+@@ -1777,6 +1791,7 @@ function validateReviewedCandidate({
+         "task run reconcile",
+         "task run resolve-effect",
+         "task run resume-effect",
++        "task run tool",
+         "workflow migrate",
+       ]),
+     "unexpected CLI addition",
