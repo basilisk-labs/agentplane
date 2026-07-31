@@ -4,7 +4,7 @@ title: "Allow fast-forward publication before conflict rework"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,32 @@ verification:
   updated_by: "TESTER"
   note: "PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed."
   attempts: 0
+quality_review:
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T16:17:48.759Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "a2c70c4504b3d3729e0cc0767e64b796d9d951ba"
+  blueprint_digest: "0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f"
+  evidence_refs:
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607311554-99FMGV/README.md"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the declared checks and concurrency-sensitive negative cases lack deterministic execution evidence."
+  recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "a2c70c4504b3d3729e0cc0767e64b796d9d951ba"
   message: "🚧 99FMGV code: Unblock guarded conflict head publication"

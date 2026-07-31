@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the declared checks and concurrency-sensitive negative cases lack deterministic execution evidence.",
+      "broken_invariant": "Pass requires verification evidence covering relevant positive, negative, and concurrency-sensitive paths; a summary assertion without deterministic check records does not establish those results.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:dbfe427718b36e9c0318a2ceb2e6ca0b8a2e3c7c401b00228540de58821bc0ac",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Persist deterministic results for the focused conflict/publication test matrix, critical suite, typecheck, format check, and routing validation at evaluated SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes checks that ran against the evaluated SHA despite no frozen runner or runtime records.",
+    "The focused test execution covered divergent and unrelated histories distinctly, not only unavailable ancestry."
+  ],
+  "recovery_context": "Attach frozen deterministic check records for the evaluated SHA, including the focused positive and fail-closed matrix and all declared static/critical gates, then repeat the semantic evaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607311554-99FMGV-3f8a7e9a3e259ae56c9b2dab",
+  "task_id": "202607311554-99FMGV",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Attach frozen deterministic check records for the evaluated SHA, including the focused positive and fail-closed matrix and all declared static/critical gates, then repeat the semantic evaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the declared checks and concurrency-sensitive negative cases lack deterministic execution evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:dbfe427718b36e9c0318a2ceb2e6ca0b8a2e3c7c401b00228540de58821bc0ac",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-result.json"
+}
