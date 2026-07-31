@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -42,29 +42,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-07-31T23:37:15.697Z"
+  updated_at: "2026-07-31T23:51:42.183Z"
   updated_by: "HUMAN"
-  note: "The task/lifecycle/route slice satisfies the approved boundary: command declarations are capability-explicit, local route evaluation stays provider-lazy, lifecycle mutation is denied outside declared sessions, and task begin no longer intercepts global stdout."
-  evaluated_sha: "777a3cc1049be9be0117174db3c406a59979faf6"
+  note: "Both PR capability-boundary findings are corrected on the current head: remote authority grants use a declared remote/provider session selected by parsed intent, while observation triage uses the read-only profile."
+  evaluated_sha: "24e064bc3161bf5fab78e620a22894ce38e45f6a"
   blueprint_digest: "6da3bd6e284423315e176aa3e368fb2af9851d74b332cbeff5f6e150e24d64ec"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221908-2NDXVB/README.md"
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-233715575-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-2NDXVB/quality/20260731-235142000-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
     - ".agentplane/tasks/202607221908-2NDXVB/verification/task-lifecycle-route-migration.md"
-    - "777a3cc1049be9be0117174db3c406a59979faf6"
+    - "24e064bc3161bf5fab78e620a22894ce38e45f6a"
   findings:
-    - "Catalog profiles and narrow loaders consistently replace the legacy CommandNeeds adapter for the in-scope command families; deliberately excluded runner, hosted-close, normalization, and Obsidian surfaces remain on their owning slices."
-    - "Status, brief, and next-action select local versus remote context from parsed intent, so provider preparation does not occur for local routing."
+    - "The authority-grant profile is the union of lifecycle mutation and remote route capabilities; local grants remain provider-lazy and remote grants are now visible to capability enforcement and tracing."
+    - "Observation triage now matches its implementation, which only reads and summarizes observation entries."
 commit:
   hash: "777a3cc1049be9be0117174db3c406a59979faf6"
   message: "♻️ 2NDXVB task: migrate task lifecycle command sessions"
@@ -107,7 +107,7 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T23:37:55.763Z"
+doc_updated_at: "2026-07-31T23:51:42.207Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessions, typed workflow results, and centralized renderers without reconstructing route state or parsing stdout."
 sections:
