@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "executeBranchWorkflowOperation passes operation.params.commit as both commit and implementationCommit; this bypasses finish's task-artifact advance resolver and makes expected_sha equal the quality artifact commit instead of quality_review.evaluated_sha.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-131446651-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "In-process task.pre_merge_close must omit explicit implementationCommit so finish resolves a task-artifact head to the reviewed semantic commit."
+  ],
+  "hidden_assumptions": [],
+  "recovery_context": "Make the in-process adapter match the projected CLI argv: pass the close commit as commit, omit implementationCommit, and add a focused option-forwarding regression."
+}
