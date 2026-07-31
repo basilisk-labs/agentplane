@@ -139,12 +139,25 @@
       "202607302331-3C8V0X"
     ]
   },
-  "digest": "sha256:9b78d4608833434db7b473c37df675ef89deca4afacdf2f5f9f1507fb6ff21a9",
+  "digest": "sha256:f0201707d052ff1aa6f379b4cb6db3c31a9de17e80558caa2176937a5aea5a9c",
   "implementation_sha": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
   "kind": "task_qualification_packet",
   "prepared_at": "2026-07-31T19:22:01.191Z",
   "rf04": {
     "candidate_measurement": {
+      "attribution": {
+        "claims_established_for_reviewed_implementation": [],
+        "measured_subject_matches_reviewed_implementation": false,
+        "publication_precondition": "Capture a live provider measurement whose subject SHA equals the release-candidate SHA before publishing a package or tag.",
+        "reviewed_implementation_sha": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+        "status": "historical_beta1_reference_only",
+        "unestablished_claims": [
+          "live_outcome_stability",
+          "live_safety_stability",
+          "live_token_stability",
+          "live_latency_stability"
+        ]
+      },
       "baseline_runtime_profile": {
         "adapter_id": "codex-exec-jsonl-supervisor",
         "cache_mode": "ephemeral-provider-default",
