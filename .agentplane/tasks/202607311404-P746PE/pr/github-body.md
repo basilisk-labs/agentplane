@@ -16,12 +16,7 @@ Record task verification implementation_sha from the same semantic quality-revie
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-PASS with immutable evidence scope: source and managed task artifacts pass range whitespace
-validation at 0af1c1a64.
-```
+- Note: PASS: semantic verification target remains stable through full closure history.
 - Canonical workflow state lives in the task README.
 
 <details>
