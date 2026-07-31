@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "New session handlers cannot request undeclared capabilities at compile time, while unsafe casts and legacy overreach fail with typed E_INTERNAL before the target resolver runs.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Catalog entries expose granular requirements, preparation nodes, and compatibility mode; AGENTPLANE_TRACE emits per-node duration and resolution status.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Representative output, project, config, task-read, local/remote route, and provider commands migrated without a big-bang catalog rewrite.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-202245980-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The pilot intentionally treats the existing CommandContext as one compatibility preparation node; capability declarations do not yet imply field-level object isolation."
+  ]
+}
