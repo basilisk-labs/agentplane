@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:01e0278f537ba32e1588bf0d535a3ff279c00cd35e33ab3a545229831ab8dd36",
   "pr_number": 4699,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4699",
+  "pre_merge_closure": {
+    "basis_commit": "83155090ef13ed454ff18ebf8953a81355592848",
+    "branch": "task/202607310028-7KFTPH/re-qualify-the-agentplane-0-7-0-beta-2-milestone",
+    "pr_number": 4699,
+    "recorded_at": "2026-07-31T09:46:54.540Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607310028-7KFTPH",

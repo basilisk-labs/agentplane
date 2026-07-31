@@ -1,10 +1,11 @@
 ---
 id: "202607310028-7KFTPH"
 title: "Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -70,8 +71,8 @@ quality_review:
     - "The automatic qualification packet remains conservative but embeds the older b587054 candidate measurement; the current live measurement is preserved separately in rf04-live-candidate-summary.v1.json."
     - "The runtime-bridge rematerialization command is blocked because authoritative sanitized bridge envelopes are absent; this is a reproducibility defect for the next implementation wave, not a reason to publish beta.2."
 commit:
-  hash: "a13b39307951b1214a36552362d62def09dec497"
-  message: "🧪 7KFTPH task: initialize beta.2 requalification"
+  hash: "83155090ef13ed454ff18ebf8953a81355592848"
+  message: "🧪 7KFTPH task: record evaluator verdict"
 comments:
   -
     author: "TESTER"
@@ -79,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: initialized the corrected-main beta.2 qualification workspace, pinned the explicit quality-regression blueprint, and closed the malformed analysis-light intake as a duplicate. No product code changed."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -100,9 +104,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed."
+  -
+    type: "status"
+    at: "2026-07-31T09:46:54.472Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T09:45:12.206Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-31T09:46:54.472Z"
+doc_updated_by: "TESTER"
 description: "Re-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package."
 sections:
   Summary: |-
@@ -185,6 +196,9 @@ sections:
       Impact: AgentPlane 0.7.0-beta.2 must not be published; a future qualification cannot be fully reproduced from committed raw bridge inputs.
       Resolution: Keep the beta.2 gate closed, preserve this capture without retry, and route latency plus runtime-bridge evidence repair into the next implementation wave.
 extensions:
+  implementation_commit:
+    hash: "8e92bbc0923d0c6a960a7c842abc89af9c63b7ba"
+    message: "🧪 7KFTPH task: record beta.2 qualification"
   workflow_route_baseline:
     start_head_sha: "25fbf2d836a94e9b190464da219a35efd4ebe878"
     version: 1
