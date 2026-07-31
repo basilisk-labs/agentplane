@@ -6,7 +6,7 @@ Created: 2026-07-31T13:40:50.644Z
 
 - Task: `202607311338-CT2725`
 - Title: Preserve typed executor stops with unverified receipts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra`
 - Canonical task record: `.agentplane/tasks/202607311338-CT2725/README.md`
 
