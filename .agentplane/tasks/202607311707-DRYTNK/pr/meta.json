@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr",
   "created_at": "2026-07-31T20:59:44.719Z",
-  "diffstat_sha256": "sha256:39e6e01debbd7559e2a604ccdf9d66cca327d1797378532b006d6be9ea9247bc",
+  "diffstat_sha256": "sha256:50f5f216c05fd6ae4075b56cc51dc74ff70a0ee32608eb52bc77f4d8e2229352",
   "last_verified_at": "2026-07-31T22:18:42.582Z",
   "last_verified_diffstat_sha256": "sha256:39e6e01debbd7559e2a604ccdf9d66cca327d1797378532b006d6be9ea9247bc",
   "pr_number": 4713,

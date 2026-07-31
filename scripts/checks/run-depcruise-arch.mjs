@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import depcruiseConfig from "../../depcruise.config.cjs";
 
@@ -9,6 +10,9 @@ void depcruiseConfig;
 const AGENTPLANE_SRC = "packages/agentplane/src";
 const AGENTPLANE_COMMANDS = "packages/agentplane/src/commands";
 const DEPCRUISE_NODE_HEAP_OPTION = "--max-old-space-size=4096";
+const TYPESCRIPT_RESOLUTION_PRELOAD = pathToFileURL(
+  path.resolve("scripts/checks/register-typescript-6-resolution.mjs"),
+).href;
 
 function assertSupportedNodeVersion() {
   const major = Number.parseInt(process.versions.node.split(".")[0] ?? "", 10);
@@ -36,13 +40,34 @@ function isTypeScriptFile(filePath) {
 
 function depcruiseEnv() {
   const existingNodeOptions = process.env.NODE_OPTIONS ?? "";
-  const nodeOptions = existingNodeOptions.includes("--max-old-space-size")
-    ? existingNodeOptions
-    : [DEPCRUISE_NODE_HEAP_OPTION, existingNodeOptions].filter(Boolean).join(" ");
+  const requiredNodeOptions = [];
+  if (!existingNodeOptions.includes("--max-old-space-size")) {
+    requiredNodeOptions.push(DEPCRUISE_NODE_HEAP_OPTION);
+  }
+  if (!existingNodeOptions.includes(TYPESCRIPT_RESOLUTION_PRELOAD)) {
+    requiredNodeOptions.push(`--import=${TYPESCRIPT_RESOLUTION_PRELOAD}`);
+  }
+  const nodeOptions = [...requiredNodeOptions, existingNodeOptions].filter(Boolean).join(" ");
   return {
     ...process.env,
     NODE_OPTIONS: nodeOptions,
   };
+}
+
+function assertDependencyCruiserTypeScriptResolution() {
+  const result = spawnSync(path.join("node_modules", ".bin", "depcruise"), ["--info"], {
+    encoding: "utf8",
+    env: depcruiseEnv(),
+  });
+  if (result.error) throw result.error;
+  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
+  if (result.status !== 0 || !output.includes("typescript@6.0.3")) {
+    process.stderr.write(output);
+    throw new Error(
+      "dependency-cruiser must resolve the pinned TypeScript 6.0.3 compiler API before architecture analysis.",
+    );
+  }
+  process.stdout.write("dependency-cruiser compiler API: typescript@6.0.3\n");
 }
 
 const agentplaneTopLevelGroups = childPaths(AGENTPLANE_SRC)
@@ -101,6 +126,7 @@ function runForGroup(group) {
   }
 }
 
+assertDependencyCruiserTypeScriptResolution();
 for (const group of ROOT_GROUPS) {
   runForGroup(group);
 }

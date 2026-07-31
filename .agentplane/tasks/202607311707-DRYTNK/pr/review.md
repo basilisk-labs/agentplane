@@ -29,7 +29,7 @@ Created: 2026-07-31T20:59:44.719Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- bun.lock                                           |  47 ++++++-
+ bun.lock                                           |  47 +++++-
  depcruise.config.cjs                               |   4 +-
  package.json                                       |   6 +-
  packages/agentplane/package.json                   |   2 +-
@@ -37,16 +37,18 @@ Created: 2026-07-31T20:59:44.719Z
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/testkit/package.json                      |   2 +-
- .../internal/agent-efficiency-anchor-runtime.mjs   |  78 ++++++++++-
+ .../internal/agent-efficiency-anchor-runtime.mjs   |  78 +++++++++-
  .../agent-efficiency-dependency-manifest.mjs       |   4 +-
- scripts/checks/check-typescript-toolchain.mjs      | 153 +++++++++++++++++++++
+ scripts/checks/check-typescript-toolchain.mjs      | 160 +++++++++++++++++++++
+ .../checks/register-typescript-6-resolution.mjs    |  19 +++
+ scripts/checks/run-depcruise-arch.mjs              |  32 ++++-
  scripts/checks/run-typescript-build.mjs            |  30 +++-
- tsconfig.base.json                                 |  31 +++--
+ tsconfig.base.json                                 |  31 ++--
  tsconfig.depcruise.json                            |   8 ++
  website/package.json                               |   4 +-
  website/tsconfig.docusaurus.json                   |  18 +++
  website/tsconfig.json                              |   3 +-
- 17 files changed, 389 insertions(+), 34 deletions(-)
+ 19 files changed, 444 insertions(+), 37 deletions(-)
 ```
 
 </details>
