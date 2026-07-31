@@ -1,0 +1,1 @@
+🚧 71SCSW task: Extend supervised execution to branch_pr [202607221852-71SCSW]
