@@ -2,11 +2,11 @@
  .../evaluator/evaluator-qualification-review.ts    |   4 +-
  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
  .../evaluator/evaluator-run.command.test.ts        |   7 +-
- .../evaluator/evaluator-runtime-evidence.test.ts   | 290 ++++++++++++++++++++-
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 405 ++++++++++++++++++++-
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../commands/pr/internal/sync-batch-ownership.ts   |  22 ++
- .../commands/shared/quality-review-target.test.ts  |  19 ++
- .../src/commands/shared/quality-review-target.ts   |   9 +-
+ .../commands/shared/quality-review-target.test.ts  |  19 +
+ .../src/commands/shared/quality-review-target.ts   |  78 +++-
  .../task/qualification-packet-dependencies.ts      |   7 +-
  .../src/commands/task/verify-record-execute.ts     |  22 +-
- 11 files changed, 366 insertions(+), 23 deletions(-)
+ 11 files changed, 550 insertions(+), 23 deletions(-)

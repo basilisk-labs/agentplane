@@ -3,6 +3,8 @@ import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
+const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
+const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 const MANAGED_TASK_ARTIFACT_DIRECTORIES = [
   "quality/",
   "pr/",
@@ -77,6 +79,50 @@ function implementationReceiptReadme(markdown: string): ImplementationReceiptRea
 
 function sameCanonicalJson(left: unknown, right: unknown): boolean {
   return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
+}
+
+function stripManagedVerificationResults(value: string): string {
+  return value.replaceAll(
+    /<!-- BEGIN VERIFICATION RESULTS -->[\s\S]*?<!-- END VERIFICATION RESULTS -->/gu,
+    `${VERIFICATION_RESULTS_BEGIN}\n${VERIFICATION_RESULTS_END}`,
+  );
+}
+
+function lifecycleComparableTaskReadme(markdown: string): string | null {
+  try {
+    const parsed = parseTaskReadme(markdown);
+    const frontmatter = structuredClone(parsed.frontmatter);
+    for (const key of [
+      "revision",
+      "result_summary",
+      "status",
+      "verification",
+      "quality_review",
+      "commit",
+      "comments",
+      "events",
+      "doc_updated_at",
+      "doc_updated_by",
+    ]) {
+      Reflect.deleteProperty(frontmatter, key);
+    }
+    if (isRecord(frontmatter.sections)) {
+      frontmatter.sections = Object.fromEntries(
+        Object.entries(frontmatter.sections).map(([key, value]) => [
+          key,
+          typeof value === "string" ? stripManagedVerificationResults(value) : value,
+        ]),
+      );
+    }
+    return JSON.stringify(
+      canonicalizeJson({
+        frontmatter,
+        body: stripManagedVerificationResults(parsed.body),
+      }),
+    );
+  } catch {
+    return null;
+  }
 }
 
 type TaskReadmeAdvanceOptions = {
@@ -167,6 +213,17 @@ async function isImplementationReceiptTaskReadmeAdvance(
     }
   }
 
+  return true;
+}
+
+async function isLifecycleOnlyTaskReadmeAdvance(opts: TaskReadmeAdvanceOptions): Promise<boolean> {
+  const readmes = await changedTaskReadmes(opts);
+  if (!readmes) return false;
+  for (const [before, after] of readmes) {
+    const beforeComparable = lifecycleComparableTaskReadme(before);
+    const afterComparable = lifecycleComparableTaskReadme(after);
+    if (!beforeComparable || beforeComparable !== afterComparable) return false;
+  }
   return true;
 }
 
@@ -295,6 +352,18 @@ export async function resolveQualityReviewTargetSha(opts: {
       }
       if (
         await isImplementationReceiptTaskReadmeAdvance({
+          gitRoot: opts.gitRoot,
+          parent,
+          current,
+          changed,
+          taskRelativePath,
+        })
+      ) {
+        current = parent;
+        continue;
+      }
+      if (
+        await isLifecycleOnlyTaskReadmeAdvance({
           gitRoot: opts.gitRoot,
           parent,
           current,
