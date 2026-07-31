@@ -1,10 +1,11 @@
 ---
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -57,11 +58,16 @@ quality_review:
     - "Untracked canonical task artifacts are persisted before execution without staging unrelated untracked files."
     - "Pre-merge closure freshness is bound to implementation HEAD and stale markers route through PR refresh to a new closure."
     - "Full release prepublish, final fast prepublish, focused regressions, incidents, registry, parity, pack, and install-smoke checks pass."
-commit: null
+commit:
+  hash: "65996eee5827b1b2d834869d1199fc0df938ea51"
+  message: "✅ YT435C release: record v0.6.26 verification"
 comments:
   -
     author: "CODER"
     body: "Start: prepare and publish v0.6.26 exclusively from the v0.6.24 maintenance branch, with exact-SHA hosted verification and no main integration."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -76,8 +82,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34, significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9, incident clearance, and task-registry readiness also pass."
+  -
+    type: "status"
+    at: "2026-07-31T12:50:14.226Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:49:40.426Z"
+doc_updated_at: "2026-07-31T12:50:14.226Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -134,6 +147,10 @@ sections:
     - Observation: The final candidate includes synchronized v0.6.26 workflow and generated documentation assets.
       Impact: Version parity and release artifacts are consistent on the maintenance-only candidate branch.
       Resolution: Publish only the exact merged maintenance SHA after hosted checks pass.
+extensions:
+  implementation_commit:
+    hash: "f4a967d3f4a54062d1f002ef3b8e49e33743f669"
+    message: "🔧 YT435C release: sync v0.6.26 artifacts"
 id_source: "generated"
 ---
 ## Summary
