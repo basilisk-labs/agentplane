@@ -28,7 +28,7 @@ live latency evidence.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T13:35:14.209Z
+- Updated: 2026-07-31T19:26:04.515Z
 - Branch: task/202607221908-AB2SFC/qualify-the-agentplane-0-7-0-rc-1-milestone
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
