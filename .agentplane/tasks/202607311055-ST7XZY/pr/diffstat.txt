@@ -1,14 +1,33 @@
- ...cli.core.route-decision.direct-closeout.test.ts | 224 ++++++++++++++++++++-
- .../run-cli.core.route-decision.quality.test.ts    | 103 ++++++++++
+ .agentplane/tasks/202607311055-ST7XZY/README.md    | 732 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 456 +++++++++++++
+ .../tasks/202607311055-ST7XZY/pr/diffstat.txt      |  14 +
+ .../tasks/202607311055-ST7XZY/pr/github-body.md    |  46 ++
+ .../tasks/202607311055-ST7XZY/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202607311055-ST7XZY/pr/meta.json |  24 +
+ .agentplane/tasks/202607311055-ST7XZY/pr/review.md |  49 ++
+ .../evaluator-opinion.md                           |  21 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  23 +
+ .../evaluator-opinion.md                           |  20 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  22 +
+ .../evaluator-opinion.md                           |  23 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  25 +
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ ...cli.core.route-decision.direct-closeout.test.ts | 224 ++++++-
+ .../run-cli.core.route-decision.quality.test.ts    | 103 +++
  .../src/cli/run-cli.core.route-decision.test.ts    |   7 +-
  .../src/cli/run-cli.core.task-guided.test.ts       |   2 +-
- .../src/commands/shared/route-decision-blockers.ts |  45 ++++-
- .../commands/shared/route-decision-next-action.ts  |  74 ++++---
+ .../src/commands/shared/route-decision-blockers.ts |  45 +-
+ .../commands/shared/route-decision-next-action.ts  |  74 ++-
  .../src/commands/shared/route-decision-repair.ts   |  10 +-
  .../src/commands/shared/route-execution-packet.ts  |   3 +
  .../agentplane/src/commands/shared/route-oracle.ts |  15 +-
- .../src/commands/shared/task-handoff.test.ts       |  36 ++++
+ .../src/commands/shared/task-handoff.test.ts       |  36 +
  .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   4 +-
- 13 files changed, 471 insertions(+), 56 deletions(-)
+ 32 files changed, 2269 insertions(+), 56 deletions(-)
