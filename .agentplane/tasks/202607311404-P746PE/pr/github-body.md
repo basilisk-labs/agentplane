@@ -16,7 +16,12 @@ Record task verification implementation_sha from the same semantic quality-revie
 ## Verification
 
 - State: ok
-- Note: PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600.
+- Note:
+
+```text
+PASS with immutable evidence scope: source and managed task artifacts pass range whitespace
+validation at 0af1c1a64.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

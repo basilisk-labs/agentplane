@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311404-P746PE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T14:26:27.126Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac",
+  "blueprint_digest": "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597",
+  "findings": [
+    "Замороженный итоговый diff не проходит заявленную проверку `git diff --check`: несколько ранее созданных `evaluator-diff.patch` содержат строки с завершающими пробелами. Запись верификации при этом утверждает, что проверка прошла после доработки."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311404-P746PE/quality/20260731-142526632-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607311404-P746PE/verification/20260731142512465-1702fd856684f882.json",
+    ".agentplane/tasks/202607311404-P746PE/README.md"
+  ],
+  "missing_tests": [
+    "Запускать `git diff --check <diff_base_sha> <evaluated_sha>` после добавления всех lifecycle- и quality-артефактов и сохранять его фактический результат в замороженном свидетельстве."
+  ],
+  "hidden_assumptions": [
+    "Проверка `git diff --check`, выполненная до создания последующих lifecycle- и quality-артефактов, считается доказательством чистоты окончательного evaluated SHA."
+  ],
+  "residual_risks": [
+    "Исправить завершающие пробелы в отслеживаемых исторических evaluator-diff артефактах либо обеспечить их генерацию без таких пробелов, затем повторить проверку на полном диапазоне от diff_base_sha до evaluated_sha и заморозить новое непротиворечивое свидетельство."
+  ]
+}

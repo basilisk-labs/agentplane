@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607311404-P746PE-b917a58e431d8bad924dd128",
+  "prepared_at": "2026-07-31T14:27:34.197Z",
+  "task": {
+    "id": "202607311404-P746PE",
+    "revision": 16,
+    "objective": "Bind verification records to semantic review targets\n\nRecord task verification implementation_sha from the same semantic quality-review target used by EVALUATOR when lifecycle-only task artifacts follow the implementation commit. Preserve exact provenance so evaluator evidence cannot contradict the frozen evaluated SHA. Add regression coverage for post-code verification commits without weakening review freshness.",
+    "acceptance_criteria": [
+      "Review the final diff. Expected: change is limited to verification target resolution plus focused regression coverage; no quality gate is weakened.",
+      "Run bun run test:critical. Expected: all critical chunks pass.",
+      "Run focused verification-record and evaluator runtime-evidence tests. Expected: verification after lifecycle-only task commits records the exact semantic implementation SHA and is accepted by evaluator preparation.",
+      "- In scope: Record task verification implementation_sha from the same semantic quality-review target used by EVALUATOR when lifecycle-only task artifacts follow the implementation commit. Preserve exact provenance so evaluator evidence cannot contradict the frozen evaluated SHA. Add regression coverage for post-code verification commits without weakening review freshness.\n- Out of scope: unrelated refactors not required for \"Bind verification records to semantic review targets\".",
+      "1. Reproduce the mismatch where task-only lifecycle commits follow the implementation. 2. Make verify resolve implementation_sha through the semantic quality-review target resolver. 3. Add focused regression coverage proving the verification record and evaluator packet use the same exact SHA. 4. Run focused tests and the critical suite; record structured evidence. 5. Pass independent EVALUATOR review and merge through the hosted queue.",
+      "1. Run the focused verification-record tests that create an implementation commit followed by lifecycle-only task artifacts, then record verification. Expected: the generated record implementation_sha equals the semantic implementation commit, not the later lifecycle HEAD.\n2. Prepare an evaluator work order for the same fixture. Expected: evaluated_sha and the frozen verification record implementation_sha are byte-for-byte equal, and the record remains accepted.\n3. Run the relevant evaluator runtime-evidence and verification command suites. Expected: existing direct-mode, branch_pr, stale-record, and runtime-evidence behavior remains green.\n4. Run bun run test:critical. Expected: all critical CLI chunks pass.\n5. Review the final diff and structured verification evidence. Expected: changes are limited to verification target resolution and focused tests; quality freshness and fail-closed behavior are not weakened."
+    ]
+  },
+  "evaluated_sha": "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac",
+  "diff_base_sha": "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e",
+  "blueprint_digest": "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607311404-P746PE/README.md",
+      "sha256": "sha256:9b346e44aba2d4db4e66c61b9b94c0126670f1184b5219438554d9ec181538ba",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:f66632cd0c4c36b3cc84edfd2ef03ef67bc63bbd9f2a4524c85a8c9a608128c5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:6ba481aedc926f7eb96b8d1dcc83e7e01fe4b4c23050f34459b25e70fcbec18a",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607311404-P746PE/verification/20260731142716722-659dd4194bef6b6a.json",
+      "sha256": "sha256:2a2f883ace5d0b2fe8dcb0584021486385bfcbc2ec86f23054f8f11c471acb48",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:dfca7c21c481e3173ee6814db710bc5140efe60b755284701fae3a4a430901dc",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
