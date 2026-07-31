@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts\nResult: pass\nEvidence: 3 files and 26 tests passed at 6141e3600; exact-SHA assertions cover direct lifecycle descendants, branch_pr lifecycle descendants, included-task batches, and later semantic changes\nScope: verification target provenance across direct, branch_pr, batch, stale-record, runtime-evidence, and semantic-advance paths\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 of 12 critical CLI chunks passed at 6141e3600\nScope: critical agent-efficiency, replay, exit, Git, protected-path, scope, symlink, and trust-boundary regressions\n\nCommand: bun run typecheck and bun run format:check and git diff --check\nResult: pass\nEvidence: TypeScript build, Prettier check, and diff whitespace validation passed for the reworked source\nScope: static correctness and formatting contract",
+  "digest": "sha256:53983ebee233fda322dd15be1b0cfde634e55c7a80166d9c8661afb90a9a754c",
+  "implementation_sha": "6141e36008a7eb1c81b59234dfa11e6863824154",
+  "kind": "task_verification_record",
+  "note": "PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600.",
+  "recorded_at": "2026-07-31T14:19:29.916Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused verification-record tests that create an implementation commit followed by lifecycle-only task artifacts, then record verification. Expected: the generated record implementation_sha equals the semantic implementation commit, not the later lifecycle HEAD.\n2. Prepare an evaluator work order for the same fixture. Expected: evaluated_sha and the frozen verification record implementation_sha are byte-for-byte equal, and the record remains accepted.\n3. Run the relevant evaluator runtime-evidence and verification command suites. Expected: existing direct-mode, branch_pr, stale-record, and runtime-evidence behavior remains green.\n4. Run bun run test:critical. Expected: all critical CLI chunks pass.\n5. Review the final diff and structured verification evidence. Expected: changes are limited to verification target resolution and focused tests; quality freshness and fail-closed behavior are not weakened.",
+  "scope_digest": "sha256:652b4ebeca3d23477a5f7d18c6209cba69f4a74d077fa1f5fef8c47ae3447428",
+  "task_id": "202607311404-P746PE",
+  "verification_command": "agentplane verify 202607311404-P746PE --ok --by TESTER",
+  "verifier": "TESTER"
+}

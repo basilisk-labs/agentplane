@@ -16,7 +16,7 @@ Record task verification implementation_sha from the same semantic quality-revie
 ## Verification
 
 - State: ok
-- Note: PASS: semantic verification provenance is exact and all focused plus critical checks pass at 58d0fc2a6.
+- Note: PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,13 @@ Record task verification implementation_sha from the same semantic quality-revie
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-runtime-evidence.test.ts   | 232 ++++++++++++++++++++-
+ .../evaluator/evaluator-qualification-review.ts    |   4 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 289 ++++++++++++++++++++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
+ .../commands/pr/internal/sync-batch-ownership.ts   |  22 ++
  .../src/commands/task/verify-record-execute.ts     |  11 +-
- 2 files changed, 235 insertions(+), 8 deletions(-)
+ 6 files changed, 320 insertions(+), 14 deletions(-)
 ```
 
 </details>

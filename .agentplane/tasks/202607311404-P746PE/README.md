@@ -4,7 +4,7 @@ title: "Bind verification records to semantic review targets"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -28,39 +28,39 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T14:10:23.126Z"
+  updated_at: "2026-07-31T14:19:29.916Z"
   updated_by: "TESTER"
-  note: "PASS: semantic verification provenance is exact and all focused plus critical checks pass at 58d0fc2a6."
+  note: "PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T14:14:54.257Z"
+  updated_at: "2026-07-31T14:20:54.946Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "58d0fc2a61fddfe924885cac410bfcfc7d27616c"
+  evaluated_sha: "6141e36008a7eb1c81b59234dfa11e6863824154"
   blueprint_digest: "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597"
   evidence_refs:
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607311404-P746PE/README.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607311404-P746PE/verification/20260731141023126-d38fcecccff2d826.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311404-P746PE/verification/20260731141929916-53983ebee233fda3.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Regression coverage does not prove the new verification-target binding across the required branch_pr and batch-task paths."
+    - "Пакетный регрессионный тест проверяет запись верификации только для основной задачи; для включённой задачи новая логика формирует неполный набор taskIds и может привязать implementation_sha к более позднему lifecycle-коммиту всего пакета."
 commit:
-  hash: "58d0fc2a61fddfe924885cac410bfcfc7d27616c"
-  message: "🚧 P746PE code: Align verification target SHA"
+  hash: "6141e36008a7eb1c81b59234dfa11e6863824154"
+  message: "🧪 P746PE quality: Cover review target boundaries"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: resolve verification provenance through the semantic review target and assert exact evaluator SHA parity."
+  -
+    author: "CODER"
+    body: "Implementation rework: add branch_pr, included-task batch, and semantic-advance provenance regressions."
 events:
   -
     type: "status"
@@ -89,8 +92,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: semantic verification provenance is exact and all focused plus critical checks pass at 58d0fc2a6."
+  -
+    type: "status"
+    at: "2026-07-31T14:18:06.207Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: add branch_pr, included-task batch, and semantic-advance provenance regressions."
+  -
+    type: "verify"
+    at: "2026-07-31T14:19:29.916Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600."
 doc_version: 3
-doc_updated_at: "2026-07-31T14:10:23.877Z"
+doc_updated_at: "2026-07-31T14:19:30.731Z"
 doc_updated_by: "CODER"
 description: "Record task verification implementation_sha from the same semantic quality-review target used by EVALUATOR when lifecycle-only task artifacts follow the implementation commit. Preserve exact provenance so evaluator evidence cannot contradict the frozen evaluated SHA. Add regression coverage for post-code verification commits without weakening review freshness."
 sections:
@@ -149,6 +165,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607311404-P746PE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-31T14:19:29.916Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:18:06.207Z, excerpt_hash=sha256:652b4ebeca3d23477a5f7d18c6209cba69f4a74d077fa1f5fef8c47ae3447428
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+    Result: pass
+    Evidence: 3 files and 26 tests passed at 6141e3600; exact-SHA assertions cover direct lifecycle descendants, branch_pr lifecycle descendants, included-task batches, and later semantic changes
+    Scope: verification target provenance across direct, branch_pr, batch, stale-record, runtime-evidence, and semantic-advance paths
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 critical CLI chunks passed at 6141e3600
+    Scope: critical agent-efficiency, replay, exit, Git, protected-path, scope, symlink, and trust-boundary regressions
+
+    Command: bun run typecheck and bun run format:check and git diff --check
+    Result: pass
+    Evidence: TypeScript build, Prettier check, and diff whitespace validation passed for the reworked source
+    Scope: static correctness and formatting contract
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311404-P746PE-bind-verification-records-to-semantic-review-tar/.agentplane/tasks/202607311404-P746PE/blueprint/resolved-snapshot.json
+    - old_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+    - current_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311404-P746PE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -229,6 +290,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607311404-P746PE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-31T14:19:29.916Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS after rework: branch_pr, batch, semantic-advance, focused, and critical checks pass at 6141e3600.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:18:06.207Z, excerpt_hash=sha256:652b4ebeca3d23477a5f7d18c6209cba69f4a74d077fa1f5fef8c47ae3447428
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+Result: pass
+Evidence: 3 files and 26 tests passed at 6141e3600; exact-SHA assertions cover direct lifecycle descendants, branch_pr lifecycle descendants, included-task batches, and later semantic changes
+Scope: verification target provenance across direct, branch_pr, batch, stale-record, runtime-evidence, and semantic-advance paths
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 critical CLI chunks passed at 6141e3600
+Scope: critical agent-efficiency, replay, exit, Git, protected-path, scope, symlink, and trust-boundary regressions
+
+Command: bun run typecheck and bun run format:check and git diff --check
+Result: pass
+Evidence: TypeScript build, Prettier check, and diff whitespace validation passed for the reworked source
+Scope: static correctness and formatting contract
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311404-P746PE-bind-verification-records-to-semantic-review-tar/.agentplane/tasks/202607311404-P746PE/blueprint/resolved-snapshot.json
+- old_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+- current_digest: d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311404-P746PE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

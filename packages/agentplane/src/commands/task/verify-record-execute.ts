@@ -22,7 +22,7 @@ import {
 } from "../shared/route-guidance.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
-import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
+import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
@@ -204,7 +204,7 @@ async function recordVerificationResult(opts: {
         gitRoot: resolved.gitRoot,
         workflowDir: config.paths.workflow_dir,
         taskId: current.id,
-        taskIds: [current.id, ...normalizeBranchPrBatchIncludedTaskIds(current, current.id)],
+        taskIds: normalizeBranchPrBatchTaskIds(current, current.id),
         previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
       });
       if (

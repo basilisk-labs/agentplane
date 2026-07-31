@@ -102,6 +102,22 @@ async function setPrimaryBatchOwnership(
       }),
     }),
   });
+  await applyTaskMutation({
+    ctx,
+    taskId: includedTaskId,
+    build: (current) => ({
+      intents: setTaskFieldsIntent({
+        extensions: {
+          ...current.extensions,
+          branch_pr_batch: {
+            role: "included",
+            primary_task_id: primaryTaskId,
+            included_task_ids: [includedTaskId],
+          },
+        },
+      }),
+    }),
+  });
 }
 
 describe("evaluator runtime evidence", () => {
@@ -414,6 +430,47 @@ describe("evaluator runtime evidence", () => {
 
     const record = await readVerificationRecord(root, taskId);
     expect(record.implementation_sha).toBe(sourceSha);
+    await cmdVerifyParsed({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      taskId: includedTaskId,
+      state: "ok",
+      by: "TESTER",
+      note: "Included batch lifecycle descendant verification passed.",
+      details:
+        "Command: bunx vitest run evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: included batch lifecycle fixture passed\nScope: included branch_pr semantic verification target",
+      quiet: true,
+    });
+    const includedRecord = await readVerificationRecord(root, includedTaskId);
+    expect(includedRecord.implementation_sha).toBe(sourceSha);
+
+    const includedPrMetaPath = path.join(root, `.agentplane/tasks/${includedTaskId}/pr/meta.json`);
+    await mkdir(path.dirname(includedPrMetaPath), { recursive: true });
+    await writeFile(
+      includedPrMetaPath,
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: includedTaskId,
+        branch: `task/${taskId}/fixture`,
+        base: sourceSha,
+        created_at: "2026-05-24T09:00:00.000Z",
+        updated_at: "2026-05-24T09:00:00.000Z",
+        status: "OPEN",
+      })}\n`,
+      "utf8",
+    );
+    const includedTask = await loadTaskFromContext({ ctx: command, taskId: includedTaskId });
+    const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+    const evaluator = catalog.find((entry) => entry.id === "recovery-context");
+    if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
+    const prepared = await prepareEvaluatorReview({
+      ctx: command,
+      task: includedTask,
+      evaluator,
+      provenance: "evaluator_supplied",
+    });
+    expect(prepared.work_order.evaluated_sha).toBe(sourceSha);
   });
 
   it("advances verification provenance after a later semantic change", async () => {

@@ -1,3 +1,7 @@
- .../evaluator/evaluator-runtime-evidence.test.ts   | 232 ++++++++++++++++++++-
+ .../evaluator/evaluator-qualification-review.ts    |   4 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 289 ++++++++++++++++++++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
+ .../commands/pr/internal/sync-batch-ownership.ts   |  22 ++
  .../src/commands/task/verify-record-execute.ts     |  11 +-
- 2 files changed, 235 insertions(+), 8 deletions(-)
+ 6 files changed, 320 insertions(+), 14 deletions(-)
