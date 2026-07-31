@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,8 @@ quality_review:
   findings:
     - "Implementation and frozen verification evidence consistently bind verification records and evaluator preparation to the same semantic target SHA across lifecycle-only closure history."
 commit:
-  hash: "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac"
-  message: "🚧 P746PE code: Resolve included batch targets"
+  hash: "949ccd0470a303577e72f1041b0fee0abcc11fb4"
+  message: "✅ P746PE task: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -143,8 +146,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: semantic verification target remains stable through full closure history."
+  -
+    type: "status"
+    at: "2026-07-31T15:38:12.518Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T15:31:18.268Z"
+doc_updated_at: "2026-07-31T15:38:12.519Z"
 doc_updated_by: "CODER"
 description: "Record task verification implementation_sha from the same semantic quality-review target used by EVALUATOR when lifecycle-only task artifacts follow the implementation commit. Preserve exact provenance so evaluator evidence cannot contradict the frozen evaluated SHA. Add regression coverage for post-code verification commits without weakening review freshness."
 sections:
@@ -406,6 +416,9 @@ sections:
       Impact: A release qualification packet could report an aggregate README mismatch instead of the precise stale dependency review and fail the intended gate.
       Resolution: Lifecycle compression is now scoped to the primary and included batch tasks; qualification dependencies remain semantic review inputs.
 extensions:
+  implementation_commit:
+    hash: "9d4b182abb337d2849f7e25760ef4b2ad3d99aa1"
+    message: "🐛 P746PE task: scope lifecycle target compression"
   workflow_route_baseline:
     start_head_sha: "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e"
     version: 1

@@ -8,10 +8,10 @@
   "pr_number": 4705,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4705",
   "pre_merge_closure": {
-    "basis_commit": "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac",
+    "basis_commit": "949ccd0470a303577e72f1041b0fee0abcc11fb4",
     "branch": "task/202607311404-P746PE/bind-verification-records-to-semantic-review-tar",
     "pr_number": 4705,
-    "recorded_at": "2026-07-31T14:29:00.516Z",
+    "recorded_at": "2026-07-31T15:38:12.591Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
