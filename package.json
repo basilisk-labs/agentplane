@@ -36,7 +36,7 @@
     "clone:report": "node scripts/checks/check-clone-baseline.mjs --report",
     "clone:baseline:update": "node scripts/checks/check-clone-baseline.mjs --update-baseline",
     "ci": "bun run ci:contract && bun run ci:test",
-    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check",
+    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check",
     "ci:test": "bun run typecheck && bun run coverage && bun run coverage:significant",
     "ci:local": "node scripts/checks/run-local-ci.mjs --mode fast",
     "ci:local:smoke": "node scripts/checks/run-local-ci.mjs --mode smoke",
@@ -115,6 +115,7 @@
     "spec:examples:check": "node scripts/checks/check-spec-examples.mjs",
     "hotspots:check": "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000",
     "check:types-files": "node scripts/checks/check-types-files.mjs",
+    "typescript:toolchain:check": "node scripts/checks/check-typescript-toolchain.mjs",
     "vitest:projects:check": "node scripts/checks/check-vitest-projects.mjs",
     "coverage:significant": "node scripts/checks/check-significant-coverage.mjs",
     "coverage:workflow-harness": "node scripts/checks/check-workflow-harness-coverage.mjs",
@@ -188,7 +189,8 @@
     "prettier": "^3.8.4",
     "tsup": "^8.5.1",
     "turbo": "^2.9.18",
-    "typescript": "^6.0.3",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "typescript": "6.0.3",
     "vitest": "4.1.9"
   }
 }

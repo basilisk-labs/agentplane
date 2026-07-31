@@ -48,7 +48,7 @@
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "node ../../scripts/checks/run-typescript-build.mjs && bun run build:bundle",
     "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .",
-    "typecheck": "tsc -b",
+    "typecheck": "node ../../scripts/checks/run-typescript-build.mjs",
     "prepack": "bun run clean && bun run build && node ../../scripts/release/manifest.mjs sanitize .",
     "postpack": "node ../../scripts/release/manifest.mjs build .",
     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack",
