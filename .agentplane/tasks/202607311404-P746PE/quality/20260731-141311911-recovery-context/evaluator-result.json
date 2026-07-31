@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "medium",
+      "summary": "Regression coverage does not prove the new verification-target binding across the required branch_pr and batch-task paths.",
+      "broken_invariant": "The approved Verify Steps require focused verification-record coverage for direct-mode and branch_pr behavior, while pass requires positive, negative, and concurrency-sensitive paths. The patch adds exact-SHA assertions only to a direct-runtime-evidence fixture; it does not add a branch_pr lifecycle-descendant test, included-task batch test, or a negative stale-semantic-change test for the new resolver call.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:beb5b4cae8707ff775c617d55a3d9c3768cb65d6d7c21c36732ea9ebd8605d77",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts and packages/agentplane/src/commands/task/verify-record-execute.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/README.md",
+          "sha256": "sha256:abaed5055f5948f6ba143047b40726a294157eeec25cd7de060066b72a4eb779",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7662b511a5aee3249ab8045c01e462a2716b80fe8f8b3849ac6caaef64ef0e5a",
+          "section": "declared_checks and verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A branch_pr fixture with an implementation commit followed by task-only lifecycle commits, asserting the verification record implementation_sha and evaluator evaluated_sha both equal the implementation commit.",
+    "An included-task batch fixture proving normalizeBranchPrBatchIncludedTaskIds causes lifecycle artifacts for every included task to be skipped consistently.",
+    "A negative fixture proving a semantic code change after an earlier quality review advances implementation_sha instead of reusing the prior evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The direct-runtime-evidence fixture is assumed to represent branch_pr provenance behavior even though it does not exercise branch_pr metadata or included-task batches.",
+    "Passing existing broad critical tests is assumed to validate exact SHA selection, although the frozen evidence identifies no exact-SHA assertion outside the added direct fixture."
+  ],
+  "recovery_context": "Add focused branch_pr, included-task batch, and semantic-change regression cases around verification record creation, then rerun the focused evaluator/verification suites and the critical suite with structured evidence."
+}
