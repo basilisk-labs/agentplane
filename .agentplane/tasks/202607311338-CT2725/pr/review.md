@@ -32,10 +32,10 @@ Created: 2026-07-31T13:40:50.644Z
  .agentplane/policy/incidents.md                    |  1 -
  docs/developer/incident-archive.mdx                |  4 ++
  packages/agentplane/assets/policy/incidents.md     |  1 -
- .../direct-task-supervisor-observation.test.ts     | 31 +++++++++++++-
+ .../direct-task-supervisor-observation.test.ts     | 36 ++++++++++++++--
  .../task/direct-task-supervisor-observation.ts     | 23 +++++++++--
  .../commands/task/direct-task-supervisor.test.ts   | 48 ++++++++++++++++++++++
- 6 files changed, 100 insertions(+), 8 deletions(-)
+ 6 files changed, 104 insertions(+), 9 deletions(-)
 ```
 
 </details>
