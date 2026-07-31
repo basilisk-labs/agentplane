@@ -15,14 +15,20 @@ RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessi
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Passed: granular capability denial, lazy remote provider resolution, typed lifecycle rendering,
+invariants, guards, typecheck, architecture, critical and focused matrices. Full-suite timeout
+classified against clean main.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T23:00:26.855Z
+- Updated: 2026-07-31T23:35:34.211Z
 - Branch: task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

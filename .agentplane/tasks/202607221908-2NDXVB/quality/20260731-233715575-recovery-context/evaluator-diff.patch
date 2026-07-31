@@ -1,0 +1,2055 @@
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/README.md b/.agentplane/tasks/202607221908-2NDXVB/README.md
+index 77f688788..ec5b06c85 100644
+--- a/.agentplane/tasks/202607221908-2NDXVB/README.md
++++ b/.agentplane/tasks/202607221908-2NDXVB/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221908-2NDXVB"
+ title: "Migrate task, lifecycle, and route command boundaries"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 8
+ origin:
+   system: "manual"
+ depends_on:
+@@ -28,9 +28,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-31T22:59:56.898Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -39,11 +39,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T23:00:26.665Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T19:08:15.375Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-31T23:26:56.376Z"
++doc_updated_by: "CODER"
+ description: "RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessions, typed workflow results, and centralized renderers without reconstructing route state or parsing stdout."
+ sections:
+   Summary: |-
+@@ -71,7 +81,14 @@ sections:
+     - Revert this family to explicit compatibility adapters without changing persisted task truth.
+     - Restore the prior renderer only for the affected commands.
+     - Re-run lifecycle and backend parity fixtures.
+-  Findings: ""
++  Findings: |-
++    - Observation: Granular task and lifecycle requirements still resolve to the shared CommandContext compatibility value.
++      Impact: Session access, provider laziness, and catalog requirements are enforced now, but field-level context isolation cannot be removed until the other four command-family slices converge.
++      Resolution: Keep the compatibility value explicit in this slice; remove it in RF-24 fan-in after all family loaders use CommandSession profiles.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "68b71790527489b13f868deede5a8de4552117cb"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+@@ -112,3 +129,7 @@ RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessi
+ - Re-run lifecycle and backend parity fixtures.
+ 
+ ## Findings
++
++- Observation: Granular task and lifecycle requirements still resolve to the shared CommandContext compatibility value.
++  Impact: Session access, provider laziness, and catalog requirements are enforced now, but field-level context isolation cannot be removed until the other four command-family slices converge.
++  Resolution: Keep the compatibility value explicit in this slice; remove it in RF-24 fan-in after all family loaders use CommandSession profiles.
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221908-2NDXVB/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..6a25f894e
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/blueprint/resolved-snapshot.json
+@@ -0,0 +1,609 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221908-2NDXVB",
++    "title": "Migrate task, lifecycle, and route command boundaries",
++    "description": "RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessions, typed workflow results, and centralized renderers without reconstructing route state or parsing stdout.",
++    "tags": [
++      "milestone-rc2",
++      "refactor",
++      "rf-24",
++      "rf-25",
++      "v0.7",
++      "vertical-slice",
++      "wave-internals"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "quality.regression"
++  },
++  "selectedBlueprint": {
++    "id": "quality.regression",
++    "version": 1,
++    "title": "Quality regression",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "quality.regression",
++    "blueprintVersion": 1,
++    "title": "Quality regression",
++    "taskId": "202607221908-2NDXVB",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "quality.regression"
++    },
++    "whySelected": [
++      "explicit blueprint requested: quality.regression",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest",
++          "artifact"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "check_result"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "weak_links"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "regression.original_failure",
++        "kind": "artifact",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Original failure log or check output."
++      },
++      {
++        "id": "regression.reproduction",
++        "kind": "check_result",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Local reproduction or explicit non-reproduction result."
++      },
++      {
++        "id": "regression.focused_check",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Focused regression check."
++      },
++      {
++        "id": "regression.matrix_or_scope",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Affected test/check matrix or bounded scope."
++      },
++      {
++        "id": "regression.full_gate",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Full relevant gate or hosted check evidence."
++      },
++      {
++        "id": "regression.flake_classification",
++        "kind": "weak_links",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Flake classification or residual risk."
++      },
++      {
++        "id": "regression.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "regression.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "affected matrix or full relevant gate",
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "failure reproduction command",
++      "focused regression check",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest",
++        "artifact"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "check_result"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "weak_links"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "regression.original_failure",
++      "kind": "artifact",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Original failure log or check output."
++    },
++    {
++      "id": "regression.reproduction",
++      "kind": "check_result",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Local reproduction or explicit non-reproduction result."
++    },
++    {
++      "id": "regression.focused_check",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Focused regression check."
++    },
++    {
++      "id": "regression.matrix_or_scope",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Affected test/check matrix or bounded scope."
++    },
++    {
++      "id": "regression.full_gate",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Full relevant gate or hosted check evidence."
++    },
++    {
++      "id": "regression.flake_classification",
++      "kind": "weak_links",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Flake classification or residual risk."
++    },
++    {
++      "id": "regression.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "regression.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "affected matrix or full relevant gate",
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "failure reproduction command",
++    "focused regression check",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: quality.regression",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "6da3bd6e284423315e176aa3e368fb2af9851d74b332cbeff5f6e150e24d64ec"
++  }
++}
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/pr/diffstat.txt b/.agentplane/tasks/202607221908-2NDXVB/pr/diffstat.txt
+new file mode 100644
+index 000000000..94ec6a250
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/pr/diffstat.txt
+@@ -0,0 +1,13 @@
++ .../src/cli/run-cli.core.command-session.test.ts   |  57 +++++-
++ .../src/cli/run-cli/command-catalog.test.ts        |  83 ++++++++
++ .../src/cli/run-cli/command-catalog/kernel.test.ts |  27 +++
++ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  27 ++-
++ .../command-catalog/task-capability-profiles.ts    |  45 +++++
++ .../src/cli/run-cli/command-catalog/task.ts        | 169 +++++++++++-----
++ .../src/cli/run-cli/command-loaders/lifecycle.ts   |  49 +++--
++ .../src/cli/run-cli/command-loaders/task.ts        | 220 ++++++++++++---------
++ .../agentplane/src/commands/task/begin.command.ts  |  37 +---
++ .../agentplane/src/commands/task/brief.command.ts  |   9 +-
++ packages/agentplane/src/commands/task/plan.ts      |  18 +-
++ .../agentplane/src/commands/task/status.command.ts |   9 +-
++ 12 files changed, 545 insertions(+), 205 deletions(-)
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/pr/github-body.md b/.agentplane/tasks/202607221908-2NDXVB/pr/github-body.md
+new file mode 100644
+index 000000000..4d6e58dcc
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/pr/github-body.md
+@@ -0,0 +1,45 @@
++Task: `202607221908-2NDXVB`
++Title: Migrate task, lifecycle, and route command boundaries
++Canonical task record: `.agentplane/tasks/202607221908-2NDXVB/README.md`
++
++## Summary
++
++Migrate task, lifecycle, and route command boundaries
++
++RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessions, typed workflow results, and centralized renderers without reconstructing route state or parsing stdout.
++
++## Scope
++
++- In scope: task read/write, plan/start/verify/finish, brief/next-action/status, worktree/PR route projections, granular backend/Git/route/policy capabilities, typed results/errors, and human/JSON compatibility rendering.
++- Out of scope: context, runner/Hermes, and provider/release operation execution.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T23:00:26.855Z
++- Branch: task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/cli/run-cli.core.command-session.test.ts   |  57 +++++-
++ .../src/cli/run-cli/command-catalog.test.ts        |  83 ++++++++
++ .../src/cli/run-cli/command-catalog/kernel.test.ts |  27 +++
++ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  27 ++-
++ .../command-catalog/task-capability-profiles.ts    |  45 +++++
++ .../src/cli/run-cli/command-catalog/task.ts        | 169 +++++++++++-----
++ .../src/cli/run-cli/command-loaders/lifecycle.ts   |  49 +++--
++ .../src/cli/run-cli/command-loaders/task.ts        | 220 ++++++++++++---------
++ .../agentplane/src/commands/task/begin.command.ts  |  37 +---
++ .../agentplane/src/commands/task/brief.command.ts  |   9 +-
++ packages/agentplane/src/commands/task/plan.ts      |  18 +-
++ .../agentplane/src/commands/task/status.command.ts |   9 +-
++ 12 files changed, 545 insertions(+), 205 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/pr/github-title.txt b/.agentplane/tasks/202607221908-2NDXVB/pr/github-title.txt
+new file mode 100644
+index 000000000..452f16657
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 2NDXVB task: Migrate task, lifecycle, and route command boundaries [202607221908-2NDXVB]
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/pr/meta.json b/.agentplane/tasks/202607221908-2NDXVB/pr/meta.json
+new file mode 100644
+index 000000000..dd0ad9833
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/pr/meta.json
+@@ -0,0 +1,13 @@
++{
++  "base": "main",
++  "branch": "task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar",
++  "created_at": "2026-07-31T23:00:26.855Z",
++  "diffstat_sha256": "sha256:f8231da448374cb23558c0a5f62a0e982f003a4bd8da92a375c296ed359189b8",
++  "last_verified_at": null,
++  "schema_version": 1,
++  "task_id": "202607221908-2NDXVB",
++  "updated_at": "2026-07-31T23:00:26.855Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/pr/review.md b/.agentplane/tasks/202607221908-2NDXVB/pr/review.md
+new file mode 100644
+index 000000000..800cea985
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/pr/review.md
+@@ -0,0 +1,48 @@
++# PR Review
++
++Created: 2026-07-31T23:00:26.855Z
++
++## Task
++
++- Task: `202607221908-2NDXVB`
++- Title: Migrate task, lifecycle, and route command boundaries
++- Status: DOING
++- Branch: `task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar`
++- Canonical task record: `.agentplane/tasks/202607221908-2NDXVB/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T23:00:26.855Z
++- Branch: task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/cli/run-cli.core.command-session.test.ts   |  57 +++++-
++ .../src/cli/run-cli/command-catalog.test.ts        |  83 ++++++++
++ .../src/cli/run-cli/command-catalog/kernel.test.ts |  27 +++
++ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  27 ++-
++ .../command-catalog/task-capability-profiles.ts    |  45 +++++
++ .../src/cli/run-cli/command-catalog/task.ts        | 169 +++++++++++-----
++ .../src/cli/run-cli/command-loaders/lifecycle.ts   |  49 +++--
++ .../src/cli/run-cli/command-loaders/task.ts        | 220 ++++++++++++---------
++ .../agentplane/src/commands/task/begin.command.ts  |  37 +---
++ .../agentplane/src/commands/task/brief.command.ts  |   9 +-
++ packages/agentplane/src/commands/task/plan.ts      |  18 +-
++ .../agentplane/src/commands/task/status.command.ts |   9 +-
++ 12 files changed, 545 insertions(+), 205 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607221908-2NDXVB/verification/task-lifecycle-route-migration.md b/.agentplane/tasks/202607221908-2NDXVB/verification/task-lifecycle-route-migration.md
+new file mode 100644
+index 000000000..3b9abe58e
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-2NDXVB/verification/task-lifecycle-route-migration.md
+@@ -0,0 +1,36 @@
++# Task, lifecycle, and route capability migration
++
++## Scope implemented
++
++- Replaced the legacy `CommandNeeds` adapter for the task read, task write, lifecycle, and route command families with explicit `CommandSession` profiles.
++- Kept runner/Hermes, hosted-close/provider operations, normalization sync, and Obsidian commands on their owning downstream slices.
++- Added separate local and remote route context resolvers for `task status`, `task brief`, and `task next-action`; provider preparation now occurs only when `--remote` is selected.
++- Replaced `task begin` stdout interception with the typed `setTaskPlan()` use-case result. The standalone `task plan set` renderer preserves its existing stdout contract.
++- Added catalog, undeclared-capability denial, local-route laziness, and guided lifecycle coverage.
++
++## Verification
++
++- `bun run typecheck`: passed.
++- `bun run format:check`: passed.
++- `bun run lint:core`: passed.
++- `bun run arch:check`: passed; dependency-cruiser used `typescript@6.0.3` and reported zero violations.
++- `bun run knip:check`: passed at the existing 545-entry baseline.
++- `bun run guards:check`: passed, including the trust-boundary ratchet.
++- `bun run lifecycle:invariants`: passed, 8 invariants.
++- `bun run test:critical`: passed, 12/12 chunks.
++- Focused catalog/session/route/workflow/mutation matrix: passed, 91 tests.
++- Focused `task begin` direct and branch_pr fixtures: passed, 2 tests.
++- Focused plan/catalog/session suite under Vitest: passed, 28 tests.
++- `bun run test:fast`: 510/511 files and 3577/3579 tests passed; two cases in `task-run-lifecycle-replay-security.test.ts` exceeded the shared 30-second timeout under full-suite load.
++- Isolated replay-security rerun on this task branch: passed, 10/10 tests.
++- Isolated replay-security control rerun on clean `main` at `68b71790527489b13f868deede5a8de4552117cb`: passed, 10/10 tests with the same approximately 44-second aggregate test runtime.
++
++## Baseline classification
++
++`run-cli.core.task-guided.test.ts` case `task complete records verification and finishes a direct task` fails before the changed completion path because its temporary repository omits `.agentplane/policy/dod.code.md`, which the evaluator now freezes as required policy evidence. The same case reproduces on clean `main` at `68b71790527489b13f868deede5a8de4552117cb`; it is not introduced by this task. The changed `task begin` direct and branch_pr cases pass independently.
++
++The two `test:fast` replay-security failures were timeout-only under concurrent full-suite load. Both the task branch and clean `main` pass the entire file in isolation, so they are classified as suite-load flakiness rather than a behavioral regression in this slice.
++
++## Residual boundary
++
++Granular requirements now deny undeclared session access before command-context preparation and keep remote provider resolution lazy. The shared `CommandContext` remains the compatibility value behind declared context capabilities until all five vertical slices converge and the RF-24 fan-in task removes the coarse compatibility layer.
+diff --git a/packages/agentplane/src/cli/run-cli.core.command-session.test.ts b/packages/agentplane/src/cli/run-cli.core.command-session.test.ts
+index 373f5bc45..ae8263d3f 100644
+--- a/packages/agentplane/src/cli/run-cli.core.command-session.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.command-session.test.ts
+@@ -1,9 +1,16 @@
+ import { rm } from "node:fs/promises";
+ import path from "node:path";
+ 
+-import { captureStdIO, installRunCliIntegrationHarness, mkTempDir } from "@agentplane/testkit";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRoot,
++  mkTempDir,
++  writeConfig,
++} from "@agentplane/testkit";
+ import { describe, expect, it } from "vitest";
+ 
++import { defaultConfig } from "./core-imports.js";
+ import { runCli } from "./run-cli.js";
+ 
+ installRunCliIntegrationHarness();
+@@ -35,4 +42,52 @@ describe("runCli CommandSession", () => {
+       await rm(root, { force: true, recursive: true });
+     }
+   });
++
++  it("keeps local task routes lazy and does not resolve provider capabilities", async () => {
++    const root = await mkGitRepoRoot();
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++
++    const createIo = captureStdIO();
++    let taskId = "";
++    try {
++      const code = await runCli([
++        "task",
++        "new",
++        "--title",
++        "Inspect local route laziness",
++        "--description",
++        "Keep remote preparation lazy.",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--root",
++        root,
++      ]);
++      expect(code).toBe(0);
++      taskId = createIo.stdout.trim();
++    } finally {
++      createIo.restore();
++    }
++
++    const previousTrace = process.env.AGENTPLANE_TRACE;
++    process.env.AGENTPLANE_TRACE = "1";
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["task", "status", taskId, "--route", "--root", root]);
++      expect(code).toBe(0);
++      expect(io.stderr).toContain('"capability":"route.local"');
++      expect(io.stderr).not.toContain('"capability":"route.remote"');
++      expect(io.stderr).not.toContain('"capability":"provider"');
++    } finally {
++      if (previousTrace === undefined) {
++        delete process.env.AGENTPLANE_TRACE;
++      } else {
++        process.env.AGENTPLANE_TRACE = previousTrace;
++      }
++      io.restore();
++    }
++  });
+ });
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index 7947d665b..3f7ff13db 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -108,6 +108,89 @@ describe("command catalog graph", () => {
+     expect(findCommandEntry(["pr", "check"])?.compatibility).toBeNull();
+   });
+ 
++  it("publishes exact task, lifecycle, and route capability profiles", () => {
++    const taskReadCommands = [
++      ["task", "list"],
++      ["task", "next"],
++      ["task", "search"],
++      ["task", "show"],
++      ["task", "verify-show"],
++      ["ready"],
++    ];
++    for (const id of taskReadCommands) {
++      const entry = findCommandEntry(id);
++      expect(entry?.compatibility, id.join(" ")).toBeNull();
++      expect(entry?.requirements, id.join(" ")).toEqual([
++        "project",
++        "config",
++        "backend.read",
++        "task.read",
++      ]);
++    }
++
++    const taskWriteCommands = [
++      ["task", "new"],
++      ["task", "comment"],
++      ["task", "plan", "set"],
++      ["task", "plan", "approve"],
++      ["task", "doc", "set"],
++    ];
++    for (const id of taskWriteCommands) {
++      const entry = findCommandEntry(id);
++      expect(entry?.compatibility, id.join(" ")).toBeNull();
++      expect(entry?.requirements, id.join(" ")).toEqual([
++        "project",
++        "config",
++        "backend.read",
++        "task.read",
++        "backend.write",
++        "task.write",
++        "policy",
++        "approvals",
++      ]);
++    }
++
++    const lifecycleCommands = [
++      ["commit"],
++      ["start"],
++      ["block"],
++      ["verify"],
++      ["finish"],
++      ["task", "begin"],
++      ["task", "complete"],
++      ["task", "start-ready"],
++    ];
++    for (const id of lifecycleCommands) {
++      const entry = findCommandEntry(id);
++      expect(entry?.compatibility, id.join(" ")).toBeNull();
++      expect(entry?.requirements, id.join(" ")).toEqual(
++        expect.arrayContaining([
++          "task.read",
++          "task.write",
++          "git.head",
++          "git.diff",
++          "git.mutate",
++          "route.local",
++          "policy",
++          "approvals",
++        ]),
++      );
++      expect(entry?.requirements, id.join(" ")).not.toContain("provider");
++    }
++
++    for (const id of [
++      ["task", "status"],
++      ["task", "brief"],
++      ["task", "next-action"],
++    ]) {
++      const entry = findCommandEntry(id);
++      expect(entry?.compatibility, id.join(" ")).toBeNull();
++      expect(entry?.requirements, id.join(" ")).toEqual(
++        expect.arrayContaining(["route.local", "route.remote", "provider"]),
++      );
++    }
++  });
++
+   it("keeps framework and internal commands out of normal help without removing dispatch", () => {
+     expect(findCommandEntry(["release"])?.surface).toBe("framework");
+     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+index e711b4e93..9547e209b 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+@@ -6,6 +6,7 @@ import {
+   type CommandCapability,
+   type CommandSession,
+ } from "./kernel.js";
++import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
+ 
+ const commandContext = { marker: "command-context" };
+ const project = { marker: "project" };
+@@ -136,4 +137,30 @@ describe("CommandSession", () => {
+       }),
+     ).toThrow("require the config capability");
+   });
++
++  it("denies undeclared task-family Git and provider access before context preparation", async () => {
++    const readResolvers = makeResolvers();
++    const readSession = createCommandSession({
++      command: "task show",
++      requirements: TASK_READ_REQUIREMENTS,
++      resolvers: readResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(readSession.require("git.mutate", "task show")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    expect(readResolvers.getCtx).not.toHaveBeenCalled();
++
++    const lifecycleResolvers = makeResolvers();
++    const lifecycleSession = createCommandSession({
++      command: "finish",
++      requirements: TASK_LIFECYCLE_REQUIREMENTS,
++      resolvers: lifecycleResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(lifecycleSession.require("provider", "finish")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    expect(lifecycleResolvers.getCtx).not.toHaveBeenCalled();
++  });
+ });
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+index faf34913c..fad26ba4c 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+@@ -17,6 +17,7 @@ import { verifySpec } from "../../../commands/verify.spec.js";
+ import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
+ 
+ import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
++import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
+ import {
+   fromCommandsHooksHooksCommand,
+   fromCommandsHooksInstallCommand,
+@@ -38,18 +39,32 @@ import {
+ } from "../command-loaders/lifecycle.js";
+ 
+ export const LIFECYCLE_COMMANDS = [
+-  declareCommand(commitSpec, { load: loadCommitSpec }),
+-  declareCommand(startSpec, { load: loadStartSpec }),
+-  declareCommand(blockSpec, { load: loadBlockSpec }),
+-  declareCommand(verifySpec, {
++  declareSessionCommand(commitSpec, {
++    load: loadCommitSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(startSpec, {
++    load: loadStartSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(blockSpec, {
++    load: loadBlockSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(verifySpec, {
+     load: loadVerifySpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["verify"]),
+   }),
+-  declareCommand(finishSpec, {
++  declareSessionCommand(finishSpec, {
+     load: loadFinishSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["finish"]),
+   }),
+-  declareCommand(readySpec, { load: loadReadySpec }),
++  declareSessionCommand(readySpec, {
++    load: loadReadySpec,
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
+   declareSessionCommand(docsCliSpec, {
+     load: loadDocsCliSpec,
+     requirements: ["output"],
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task-capability-profiles.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task-capability-profiles.ts
+new file mode 100644
+index 000000000..400e85144
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task-capability-profiles.ts
+@@ -0,0 +1,45 @@
++import type { CommandCapability, CommandSession } from "./command-session.js";
++
++export const TASK_READ_REQUIREMENTS = [
++  "project",
++  "config",
++  "backend.read",
++  "task.read",
++] as const satisfies readonly CommandCapability[];
++
++export const TASK_WRITE_REQUIREMENTS = [
++  ...TASK_READ_REQUIREMENTS,
++  "backend.write",
++  "task.write",
++  "policy",
++  "approvals",
++] as const satisfies readonly CommandCapability[];
++
++export const TASK_LIFECYCLE_REQUIREMENTS = [
++  ...TASK_WRITE_REQUIREMENTS,
++  "git.head",
++  "git.diff",
++  "git.mutate",
++  "route.local",
++] as const satisfies readonly CommandCapability[];
++
++export const TASK_ROUTE_LOCAL_REQUIREMENTS = [
++  ...TASK_READ_REQUIREMENTS,
++  "git.head",
++  "git.diff",
++  "route.local",
++  "policy",
++  "approvals",
++] as const satisfies readonly CommandCapability[];
++
++export const TASK_ROUTE_REQUIREMENTS = [
++  ...TASK_ROUTE_LOCAL_REQUIREMENTS,
++  "route.remote",
++  "provider",
++] as const satisfies readonly CommandCapability[];
++
++export type TaskReadSession = CommandSession<(typeof TASK_READ_REQUIREMENTS)[number]>;
++export type TaskWriteSession = CommandSession<(typeof TASK_WRITE_REQUIREMENTS)[number]>;
++export type TaskLifecycleSession = CommandSession<(typeof TASK_LIFECYCLE_REQUIREMENTS)[number]>;
++export type TaskRouteLocalSession = CommandSession<(typeof TASK_ROUTE_LOCAL_REQUIREMENTS)[number]>;
++export type TaskRouteSession = CommandSession<(typeof TASK_ROUTE_REQUIREMENTS)[number]>;
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 40df2ebde..84b9d2086 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -74,6 +74,13 @@ import { taskVerifySpec } from "../../../commands/task/verify.command.js";
+ import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
+ 
+ import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
++import {
++  TASK_LIFECYCLE_REQUIREMENTS,
++  TASK_READ_REQUIREMENTS,
++  TASK_ROUTE_LOCAL_REQUIREMENTS,
++  TASK_ROUTE_REQUIREMENTS,
++  TASK_WRITE_REQUIREMENTS,
++} from "./task-capability-profiles.js";
+ import {
+   fromCommandsTaskTaskCommand,
+   fromCommandsTaskHandoffCommand,
+@@ -169,47 +176,63 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskActiveSpec, { load: loadTaskActiveSpec }),
+-  declareCommand(taskAskSpec, { load: loadTaskAskSpec }),
+-  declareCommand(taskAnswerSpec, { load: loadTaskAnswerSpec }),
+-  declareCommand(taskAuthorityGrantSpec, {
++  declareSessionCommand(taskActiveSpec, {
++    load: loadTaskActiveSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskAskSpec, {
++    load: loadTaskAskSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskAnswerSpec, {
++    load: loadTaskAnswerSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskAuthorityGrantSpec, {
+     load: loadTaskAuthorityGrantSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   declareSessionCommand(taskListSpec, {
+     load: loadTaskListSpec,
+-    requirements: ["project", "config", "backend.read", "task.read"],
++    requirements: TASK_READ_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "list"]),
+   }),
+-  declareCommand(taskNextSpec, { load: loadTaskNextSpec }),
+-  declareCommand(taskSearchSpec, { load: loadTaskSearchSpec }),
+-  declareCommand(taskShowSpec, {
++  declareSessionCommand(taskNextSpec, {
++    load: loadTaskNextSpec,
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskSearchSpec, {
++    load: loadTaskSearchSpec,
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskShowSpec, {
+     load: loadTaskShowSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "show"]),
+   }),
+-  declareCommand(taskStatusSpec, { load: loadTaskStatusSpec }),
++  declareSessionCommand(taskStatusSpec, {
++    load: loadTaskStatusSpec,
++    requirements: TASK_ROUTE_REQUIREMENTS,
++  }),
+   declareSessionCommand(taskNextActionSpec, {
+     load: loadTaskNextActionSpec,
+-    requirements: [
+-      "project",
+-      "config",
+-      "backend.read",
+-      "task.read",
+-      "git.head",
+-      "route.local",
+-      "route.remote",
+-      "policy",
+-      "approvals",
+-      "provider",
+-    ],
+-  }),
+-  declareCommand(taskNewSpec, {
++    requirements: TASK_ROUTE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskNewSpec, {
+     load: loadTaskNewSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "new"]),
+   }),
+-  declareCommand(taskBeginSpec, { load: loadTaskBeginSpec }),
+-  declareCommand(taskBriefSpec, { load: loadTaskBriefSpec }),
++  declareSessionCommand(taskBeginSpec, {
++    load: loadTaskBeginSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskBriefSpec, {
++    load: loadTaskBriefSpec,
++    requirements: TASK_ROUTE_REQUIREMENTS,
++  }),
+   declareCommand(taskRunStatusSpec, {
+     load: loadTaskRunStatusSpec,
+     surface: "internal",
+@@ -251,44 +274,58 @@ export const TASK_COMMANDS = [
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
+-  declareCommand(taskDeriveSpec, {
++  declareSessionCommand(taskCompleteSpec, {
++    load: loadTaskCompleteSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskDeriveSpec, {
+     load: loadTaskDeriveSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskEvidenceCheckSpec, {
++  declareSessionCommand(taskEvidenceCheckSpec, {
+     load: loadTaskEvidenceCheckSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskCloseDuplicateSpec, {
++  declareSessionCommand(taskCloseDuplicateSpec, {
+     load: loadTaskCloseDuplicateSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskStartReadySpec, {
++  declareSessionCommand(taskStartReadySpec, {
+     load: loadTaskStartReadySpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "start-ready"]),
+   }),
+-  declareCommand(taskCloseNoopSpec, {
++  declareSessionCommand(taskCloseNoopSpec, {
+     load: loadTaskCloseNoopSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskAddSpec, {
++  declareSessionCommand(taskAddSpec, {
+     load: loadTaskAddSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskUpdateSpec, {
++  declareSessionCommand(taskUpdateSpec, {
+     load: loadTaskUpdateSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskCommentSpec, { load: loadTaskCommentSpec }),
+-  declareCommand(taskSetStatusSpec, {
++  declareSessionCommand(taskCommentSpec, {
++    load: loadTaskCommentSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskSetStatusSpec, {
+     load: loadTaskSetStatusSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -297,8 +334,9 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskFindingsAddSpec, {
++  declareSessionCommand(taskFindingsAddSpec, {
+     load: loadTaskFindingsAddSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -307,41 +345,54 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskObservationsAddSpec, {
++  declareSessionCommand(taskObservationsAddSpec, {
+     load: loadTaskObservationsAddSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskObservationsListSpec, {
++  declareSessionCommand(taskObservationsListSpec, {
+     load: loadTaskObservationsListSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskObservationsCheckSpec, {
++  declareSessionCommand(taskObservationsCheckSpec, {
+     load: loadTaskObservationsCheckSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskObservationsTriageSpec, {
++  declareSessionCommand(taskObservationsTriageSpec, {
+     load: loadTaskObservationsTriageSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskObservationsHarvestSpec, {
++  declareSessionCommand(taskObservationsHarvestSpec, {
+     load: loadTaskObservationsHarvestSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", { needs: "none" }),
+-  declareCommand(taskDocShowSpec, { load: loadTaskDocShowSpec }),
+-  declareCommand(taskDocSetSpec, { load: loadTaskDocSetSpec }),
+-  declareCommand(taskScrubSpec, {
++  declareSessionCommand(taskDocShowSpec, {
++    load: loadTaskDocShowSpec,
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskDocSetSpec, {
++    load: loadTaskDocSetSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskScrubSpec, {
+     load: loadTaskScrubSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskScaffoldSpec, {
++  declareSessionCommand(taskScaffoldSpec, {
+     load: loadTaskScaffoldSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -364,8 +415,9 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskMigrateSpec, {
++  declareSessionCommand(taskMigrateSpec, {
+     load: loadTaskMigrateSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+@@ -374,28 +426,39 @@ export const TASK_COMMANDS = [
+     helpGroup: "Maintenance",
+   }),
+   fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", { needs: "none" }),
+-  declareCommand(taskPlanSetSpec, {
++  declareSessionCommand(taskPlanSetSpec, {
+     load: loadTaskPlanSetSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "plan", "set"]),
+   }),
+-  declareCommand(taskPlanApproveSpec, {
++  declareSessionCommand(taskPlanApproveSpec, {
+     load: loadTaskPlanApproveSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "plan", "approve"]),
+   }),
+-  declareCommand(taskPlanRejectSpec, {
++  declareSessionCommand(taskPlanRejectSpec, {
+     load: loadTaskPlanRejectSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", { needs: "none" }),
+-  declareCommand(taskVerifyOkSpec, { load: loadTaskVerifyOkSpec }),
+-  declareCommand(taskVerifyReworkSpec, { load: loadTaskVerifyReworkSpec }),
+-  declareCommand(taskVerifyShowSpec, {
++  declareSessionCommand(taskVerifyOkSpec, {
++    load: loadTaskVerifyOkSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskVerifyReworkSpec, {
++    load: loadTaskVerifyReworkSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskVerifyShowSpec, {
+     load: loadTaskVerifyShowSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["task", "verify-show"]),
+   }),
+-  declareCommand(taskRebuildIndexSpec, {
++  declareSessionCommand(taskRebuildIndexSpec, {
+     load: loadTaskRebuildIndexSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+index d4b2e9564..eb5f69896 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+@@ -1,4 +1,17 @@
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
+ import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
++import type {
++  TaskLifecycleSession,
++  TaskReadSession,
++} from "../command-catalog/task-capability-profiles.js";
++
++function getLifecycleContext(session: TaskLifecycleSession) {
++  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
++}
++
++function getTaskReadContext(session: TaskReadSession) {
++  return (command: string) => session.require("task.read", command) as Promise<CommandContext>;
++}
+ 
+ export const fromCommandsHooksHooksCommand = commandModule(
+   () => import("../../../commands/hooks/hooks.command.js"),
+@@ -15,18 +28,30 @@ export const fromCommandsGuardGuardCommand = commandModule(
+ export const fromCommandsGuardCleanCommand = commandModule(
+   () => import("../../../commands/guard/clean.command.js"),
+ );
+-export const loadCommitSpec = (deps: RunDeps) =>
+-  import("../../../commands/commit.command.js").then((m) => m.makeRunCommitHandler(deps.getCtx));
+-export const loadStartSpec = (deps: RunDeps) =>
+-  import("../../../commands/start.run.js").then((m) => m.makeRunStartHandler(deps.getCtx));
+-export const loadBlockSpec = (deps: RunDeps) =>
+-  import("../../../commands/block.run.js").then((m) => m.makeRunBlockHandler(deps.getCtx));
+-export const loadVerifySpec = (deps: RunDeps) =>
+-  import("../../../commands/verify.run.js").then((m) => m.makeRunVerifyHandler(deps.getCtx));
+-export const loadFinishSpec = (deps: RunDeps) =>
+-  import("../../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx));
+-export const loadReadySpec = (deps: RunDeps) =>
+-  import("../../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx));
++export const loadCommitSpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/commit.command.js").then((m) =>
++    m.makeRunCommitHandler(getLifecycleContext(session)),
++  );
++export const loadStartSpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/start.run.js").then((m) =>
++    m.makeRunStartHandler(getLifecycleContext(session)),
++  );
++export const loadBlockSpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/block.run.js").then((m) =>
++    m.makeRunBlockHandler(getLifecycleContext(session)),
++  );
++export const loadVerifySpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/verify.run.js").then((m) =>
++    m.makeRunVerifyHandler(getLifecycleContext(session)),
++  );
++export const loadFinishSpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/finish.run.js").then((m) =>
++    m.makeRunFinishHandler(getLifecycleContext(session)),
++  );
++export const loadReadySpec = (session: TaskReadSession) =>
++  import("../../../commands/ready.command.js").then((m) =>
++    m.makeRunReadyHandler(getTaskReadContext(session)),
++  );
+ export const loadDocsCliSpec = (session: CommandSession<"output">) =>
+   import("../../../commands/docs/cli.command.js").then((m) =>
+     m.makeRunDocsCliHandler(session.getHelpJsonForDocs),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 35090ea5b..a1da5a234 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -1,18 +1,38 @@
+-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
++import {
++  commandModule,
++  type CommandCapability,
++  type CommandSession,
++  type RunDeps,
++} from "../command-catalog/kernel.js";
++import type {
++  TaskLifecycleSession,
++  TaskReadSession,
++  TaskRouteLocalSession,
++  TaskRouteSession,
++  TaskWriteSession,
++} from "../command-catalog/task-capability-profiles.js";
+ 
+-type TaskReadSession = CommandSession<"project" | "config" | "backend.read" | "task.read">;
+-type TaskRouteSession = CommandSession<
+-  | "project"
+-  | "config"
+-  | "backend.read"
+-  | "task.read"
+-  | "git.head"
+-  | "route.local"
+-  | "route.remote"
+-  | "policy"
+-  | "approvals"
+-  | "provider"
+->;
++function getSessionContext<
++  TCapabilities extends CommandCapability,
++  TCapability extends Exclude<TCapabilities, "project" | "config" | "output">,
++>(session: CommandSession<TCapabilities>, capability: TCapability) {
++  return (command: string) =>
++    session.require(
++      capability as Exclude<TCapabilities, "output">,
++      command,
++    ) as Promise<CommandContext>;
++}
++
++function getTaskRouteContexts(session: TaskRouteSession) {
++  return {
++    getLocalContext: getSessionContext(session, "route.local"),
++    getRemoteContext: async (command: string) => {
++      await session.require("route.remote", command);
++      return await session.require("provider", command);
++    },
++  };
++}
+ 
+ export const fromCommandsTaskTaskCommand = commandModule(
+   () => import("../../../commands/task/task.command.js"),
+@@ -55,55 +75,59 @@ export const loadTaskHostedClosePrSpec = (deps: RunDeps) =>
+   import("../../../commands/task/hosted-close-pr.command.js").then((m) =>
+     m.makeRunTaskHostedClosePrHandler(deps.getCtx),
+   );
+-export const loadTaskActiveSpec = (deps: RunDeps) =>
++export const loadTaskActiveSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/task/active.command.js").then((m) =>
+-    m.makeRunTaskActiveHandler(deps.getCtx),
++    m.makeRunTaskActiveHandler(getSessionContext(session, "route.local")),
++  );
++export const loadTaskAskSpec = (session: TaskWriteSession) =>
++  import("../../../commands/task/ask.command.js").then((m) =>
++    m.makeRunTaskAskHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskAskSpec = (deps: RunDeps) =>
+-  import("../../../commands/task/ask.command.js").then((m) => m.makeRunTaskAskHandler(deps.getCtx));
+-export const loadTaskAnswerSpec = (deps: RunDeps) =>
++export const loadTaskAnswerSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/answer.command.js").then((m) =>
+-    m.makeRunTaskAnswerHandler(deps.getCtx),
++    m.makeRunTaskAnswerHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskAuthorityGrantSpec = (deps: RunDeps) =>
++export const loadTaskAuthorityGrantSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/authority-grant.command.js").then((m) =>
+-    m.makeRunTaskAuthorityGrantHandler(deps.getCtx),
++    m.makeRunTaskAuthorityGrantHandler(getSessionContext(session, "route.local")),
+   );
+ export const loadTaskListSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/list.run.js").then((m) =>
+     m.makeRunTaskListHandler((command) => session.require("task.read", command)),
+   );
+-export const loadTaskNextSpec = (deps: RunDeps) =>
+-  import("../../../commands/task/next.run.js").then((m) => m.makeRunTaskNextHandler(deps.getCtx));
+-export const loadTaskSearchSpec = (deps: RunDeps) =>
++export const loadTaskNextSpec = (session: TaskReadSession) =>
++  import("../../../commands/task/next.run.js").then((m) =>
++    m.makeRunTaskNextHandler(getSessionContext(session, "task.read")),
++  );
++export const loadTaskSearchSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/search.run.js").then((m) =>
+-    m.makeRunTaskSearchHandler(deps.getCtx),
++    m.makeRunTaskSearchHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskShowSpec = (deps: RunDeps) =>
+-  import("../../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx));
+-export const loadTaskStatusSpec = (deps: RunDeps) =>
++export const loadTaskShowSpec = (session: TaskReadSession) =>
++  import("../../../commands/task/show.run.js").then((m) =>
++    m.makeRunTaskShowHandler(getSessionContext(session, "task.read")),
++  );
++export const loadTaskStatusSpec = (session: TaskRouteSession) =>
+   import("../../../commands/task/status.command.js").then((m) =>
+-    m.makeRunTaskStatusHandler(deps.getCtx),
++    m.makeRunTaskStatusHandler(getTaskRouteContexts(session)),
+   );
+ export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
+   import("../../../commands/task/next-action.command.js").then((m) =>
+     m.makeRunTaskNextActionHandler({
+-      getLocalContext: (command) => session.require("route.local", command),
+-      getRemoteContext: async (command) => {
+-        await session.require("route.remote", command);
+-        return await session.require("provider", command);
+-      },
++      ...getTaskRouteContexts(session),
+     }),
+   );
+-export const loadTaskNewSpec = (deps: RunDeps) =>
+-  import("../../../commands/task/new.command.js").then((m) => m.makeRunTaskNewHandler(deps.getCtx));
+-export const loadTaskBeginSpec = (deps: RunDeps) =>
++export const loadTaskNewSpec = (session: TaskWriteSession) =>
++  import("../../../commands/task/new.command.js").then((m) =>
++    m.makeRunTaskNewHandler(getSessionContext(session, "task.write")),
++  );
++export const loadTaskBeginSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/begin.command.js").then((m) =>
+-    m.makeRunTaskBeginHandler(deps.getCtx),
++    m.makeRunTaskBeginHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskBriefSpec = (deps: RunDeps) =>
++export const loadTaskBriefSpec = (session: TaskRouteSession) =>
+   import("../../../commands/task/brief.command.js").then((m) =>
+-    m.makeRunTaskBriefHandler(deps.getCtx),
++    m.makeRunTaskBriefHandler(getTaskRouteContexts(session)),
+   );
+ export const loadTaskRunSpec = (deps: RunDeps) =>
+   import("../../../commands/task/run.command.js").then((m) => m.makeRunTaskRunHandler(deps.getCtx));
+@@ -135,83 +159,85 @@ export const loadTaskRunLogsSpec = (deps: RunDeps) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+     m.makeRunTaskRunLogsHandler(deps.getCtx),
+   );
+-export const loadTaskCompleteSpec = (deps: RunDeps) =>
++export const loadTaskCompleteSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/complete.command.js").then((m) =>
+-    m.makeRunTaskCompleteHandler(deps.getCtx),
++    m.makeRunTaskCompleteHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskDeriveSpec = (deps: RunDeps) =>
++export const loadTaskDeriveSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/derive.command.js").then((m) =>
+-    m.makeRunTaskDeriveHandler(deps.getCtx),
++    m.makeRunTaskDeriveHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskEvidenceCheckSpec = (deps: RunDeps) =>
++export const loadTaskEvidenceCheckSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/evidence-check.command.js").then((m) =>
+-    m.makeRunTaskEvidenceCheckHandler(deps.getCtx),
++    m.makeRunTaskEvidenceCheckHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskCloseDuplicateSpec = (deps: RunDeps) =>
++export const loadTaskCloseDuplicateSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/close-duplicate.command.js").then((m) =>
+-    m.makeRunTaskCloseDuplicateHandler(deps.getCtx),
++    m.makeRunTaskCloseDuplicateHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskStartReadySpec = (deps: RunDeps) =>
++export const loadTaskStartReadySpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/start-ready.command.js").then((m) =>
+-    m.makeRunTaskStartReadyHandler(deps.getCtx),
++    m.makeRunTaskStartReadyHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskCloseNoopSpec = (deps: RunDeps) =>
++export const loadTaskCloseNoopSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/close-noop.command.js").then((m) =>
+-    m.makeRunTaskCloseNoopHandler(deps.getCtx),
++    m.makeRunTaskCloseNoopHandler(getSessionContext(session, "git.mutate")),
++  );
++export const loadTaskAddSpec = (session: TaskWriteSession) =>
++  import("../../../commands/task/add.command.js").then((m) =>
++    m.makeRunTaskAddHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskAddSpec = (deps: RunDeps) =>
+-  import("../../../commands/task/add.command.js").then((m) => m.makeRunTaskAddHandler(deps.getCtx));
+-export const loadTaskUpdateSpec = (deps: RunDeps) =>
++export const loadTaskUpdateSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/update.command.js").then((m) =>
+-    m.makeRunTaskUpdateHandler(deps.getCtx),
++    m.makeRunTaskUpdateHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskCommentSpec = (deps: RunDeps) =>
++export const loadTaskCommentSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/comment.command.js").then((m) =>
+-    m.makeRunTaskCommentHandler(deps.getCtx),
++    m.makeRunTaskCommentHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskSetStatusSpec = (deps: RunDeps) =>
++export const loadTaskSetStatusSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/set-status.command.js").then((m) =>
+-    m.makeRunTaskSetStatusHandler(deps.getCtx),
++    m.makeRunTaskSetStatusHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskFindingsAddSpec = (deps: RunDeps) =>
++export const loadTaskFindingsAddSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/findings-add.command.js").then((m) =>
+-    m.makeRunTaskFindingsAddHandler(deps.getCtx),
++    m.makeRunTaskFindingsAddHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskObservationsAddSpec = (deps: RunDeps) =>
++export const loadTaskObservationsAddSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/observations.command.js").then((m) =>
+-    m.makeRunTaskObservationsAddHandler(deps.getCtx),
++    m.makeRunTaskObservationsAddHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskObservationsListSpec = (deps: RunDeps) =>
++export const loadTaskObservationsListSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/observations.command.js").then((m) =>
+-    m.makeRunTaskObservationsListHandler(deps.getCtx),
++    m.makeRunTaskObservationsListHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskObservationsCheckSpec = (deps: RunDeps) =>
++export const loadTaskObservationsCheckSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/observations.command.js").then((m) =>
+-    m.makeRunTaskObservationsCheckHandler(deps.getCtx),
++    m.makeRunTaskObservationsCheckHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskObservationsTriageSpec = (deps: RunDeps) =>
++export const loadTaskObservationsTriageSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/observations.command.js").then((m) =>
+-    m.makeRunTaskObservationsTriageHandler(deps.getCtx),
++    m.makeRunTaskObservationsTriageHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskObservationsHarvestSpec = (deps: RunDeps) =>
++export const loadTaskObservationsHarvestSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/observations.command.js").then((m) =>
+-    m.makeRunTaskObservationsHarvestHandler(deps.getCtx),
++    m.makeRunTaskObservationsHarvestHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskDocShowSpec = (deps: RunDeps) =>
++export const loadTaskDocShowSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/doc-show.command.js").then((m) =>
+-    m.makeRunTaskDocShowHandler(deps.getCtx),
++    m.makeRunTaskDocShowHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskDocSetSpec = (deps: RunDeps) =>
++export const loadTaskDocSetSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/doc-set.command.js").then((m) =>
+-    m.makeRunTaskDocSetHandler(deps.getCtx),
++    m.makeRunTaskDocSetHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskScrubSpec = (deps: RunDeps) =>
++export const loadTaskScrubSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/scrub.command.js").then((m) =>
+-    m.makeRunTaskScrubHandler(deps.getCtx),
++    m.makeRunTaskScrubHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskScaffoldSpec = (deps: RunDeps) =>
++export const loadTaskScaffoldSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/scaffold.command.js").then((m) =>
+-    m.makeRunTaskScaffoldHandler(deps.getCtx),
++    m.makeRunTaskScaffoldHandler(getSessionContext(session, "task.write")),
+   );
+ export const loadTaskNormalizeSpec = (deps: RunDeps) =>
+   import("../../../commands/task/normalize.command.js").then((m) =>
+@@ -225,40 +251,40 @@ export const loadTaskObsidianCleanSpec = () =>
+   import("../../../commands/task/obsidian.command.js").then((m) =>
+     m.makeRunTaskObsidianCleanHandler(),
+   );
+-export const loadTaskMigrateSpec = (deps: RunDeps) =>
++export const loadTaskMigrateSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/migrate.command.js").then((m) =>
+-    m.makeRunTaskMigrateHandler(deps.getCtx),
++    m.makeRunTaskMigrateHandler(getSessionContext(session, "task.write")),
+   );
+ export const fromTaskPlanSpec = commandModule(
+   () => import("../../../commands/task/plan.command.js"),
+ );
+-export const loadTaskPlanSetSpec = (deps: RunDeps) =>
++export const loadTaskPlanSetSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/plan-set.command.js").then((m) =>
+-    m.makeRunTaskPlanSetHandler(deps.getCtx),
++    m.makeRunTaskPlanSetHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskPlanApproveSpec = (deps: RunDeps) =>
++export const loadTaskPlanApproveSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/plan-approve.command.js").then((m) =>
+-    m.makeRunTaskPlanApproveHandler(deps.getCtx),
++    m.makeRunTaskPlanApproveHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskPlanRejectSpec = (deps: RunDeps) =>
++export const loadTaskPlanRejectSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/plan-reject.command.js").then((m) =>
+-    m.makeRunTaskPlanRejectHandler(deps.getCtx),
++    m.makeRunTaskPlanRejectHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskVerifyOkSpec = (deps: RunDeps) =>
++export const loadTaskVerifyOkSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/verify-ok.command.js").then((m) =>
+-    m.makeRunTaskVerifyOkHandler(deps.getCtx),
++    m.makeRunTaskVerifyOkHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskVerifyReworkSpec = (deps: RunDeps) =>
++export const loadTaskVerifyReworkSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/verify-rework.command.js").then((m) =>
+-    m.makeRunTaskVerifyReworkHandler(deps.getCtx),
++    m.makeRunTaskVerifyReworkHandler(getSessionContext(session, "git.mutate")),
+   );
+-export const loadTaskVerifyShowSpec = (deps: RunDeps) =>
++export const loadTaskVerifyShowSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/verify-show.command.js").then((m) =>
+-    m.makeRunTaskVerifyShowHandler(deps.getCtx),
++    m.makeRunTaskVerifyShowHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskRebuildIndexSpec = (deps: RunDeps) =>
++export const loadTaskRebuildIndexSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/rebuild-index.command.js").then((m) =>
+-    m.makeRunTaskRebuildIndexHandler(deps.getCtx),
++    m.makeRunTaskRebuildIndexHandler(getSessionContext(session, "task.write")),
+   );
+ export const fromTaskReclaimSpec = commandModule(
+   () => import("../../../commands/task/reclaim.command.js"),
+diff --git a/packages/agentplane/src/commands/task/begin.command.ts b/packages/agentplane/src/commands/task/begin.command.ts
+index 770b08a27..d7ac229f0 100644
+--- a/packages/agentplane/src/commands/task/begin.command.ts
++++ b/packages/agentplane/src/commands/task/begin.command.ts
+@@ -4,7 +4,7 @@ import { createCliEmitter } from "../../cli/output.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
+-import { cmdTaskPlanApprove, cmdTaskPlanSet } from "./plan.js";
++import { cmdTaskPlanApprove, setTaskPlan } from "./plan.js";
+ import { cmdTaskStartReady } from "./start-ready.js";
+ 
+ const output = createCliEmitter();
+@@ -146,23 +146,6 @@ function defaultPlan(title: string): string {
+   ].join("\n");
+ }
+ 
+-async function captureStdout(fn: () => Promise<number>): Promise<{ code: number; stdout: string }> {
+-  const originalWrite = process.stdout.write.bind(process.stdout);
+-  let stdout = "";
+-  process.stdout.write = ((chunk: unknown, ...args: unknown[]) => {
+-    stdout += typeof chunk === "string" ? chunk : Buffer.isBuffer(chunk) ? chunk.toString() : "";
+-    void originalWrite;
+-    void args;
+-    return true;
+-  }) as typeof process.stdout.write;
+-  try {
+-    const code = await fn();
+-    return { code, stdout };
+-  } finally {
+-    process.stdout.write = originalWrite as typeof process.stdout.write;
+-  }
+-}
+-
+ export function makeRunTaskBeginHandler(
+   getCtx: (cmd: string) => Promise<CommandContext>,
+ ): CommandHandler<TaskBeginParsed> {
+@@ -197,16 +180,14 @@ export function makeRunTaskBeginHandler(
+       },
+     });
+     const taskId = created.task_id;
+-    await captureStdout(() =>
+-      cmdTaskPlanSet({
+-        ctx: command,
+-        cwd: ctx.cwd,
+-        rootOverride: ctx.rootOverride,
+-        taskId,
+-        text: p.plan ?? defaultPlan(p.title),
+-        updatedBy: "ORCHESTRATOR",
+-      }),
+-    );
++    await setTaskPlan({
++      ctx: command,
++      cwd: ctx.cwd,
++      rootOverride: ctx.rootOverride,
++      taskId,
++      text: p.plan ?? defaultPlan(p.title),
++      updatedBy: "ORCHESTRATOR",
++    });
+     await cmdTaskPlanApprove({
+       ctx: command,
+       cwd: ctx.cwd,
+diff --git a/packages/agentplane/src/commands/task/brief.command.ts b/packages/agentplane/src/commands/task/brief.command.ts
+index e7aec1dc3..01772d8c9 100644
+--- a/packages/agentplane/src/commands/task/brief.command.ts
++++ b/packages/agentplane/src/commands/task/brief.command.ts
+@@ -43,9 +43,14 @@ export const taskBriefSpec: CommandSpec<TaskBriefParsed> = {
+   }),
+ };
+ 
+-export function makeRunTaskBriefHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
++export function makeRunTaskBriefHandler(session: {
++  getLocalContext: (cmd: string) => Promise<CommandContext>;
++  getRemoteContext: (cmd: string) => Promise<CommandContext>;
++}) {
+   return async (ctx: CommandCtx, parsed: TaskBriefParsed): Promise<number> => {
+-    const commandCtx = await getCtx("task brief");
++    const commandCtx = await (parsed.remote
++      ? session.getRemoteContext("task brief")
++      : session.getLocalContext("task brief"));
+     const brief = await buildTaskBrief({
+       commandCtx,
+       cwd: ctx.cwd,
+diff --git a/packages/agentplane/src/commands/task/plan.ts b/packages/agentplane/src/commands/task/plan.ts
+index 90e4372ee..9dea13cd4 100644
+--- a/packages/agentplane/src/commands/task/plan.ts
++++ b/packages/agentplane/src/commands/task/plan.ts
+@@ -25,7 +25,12 @@ import {
+ } from "./plan-shared.js";
+ import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
+ 
+-export async function cmdTaskPlanSet(opts: {
++export type TaskPlanSetResult = {
++  taskId: string;
++  readmePath: string;
++};
++
++export async function setTaskPlan(opts: {
+   ctx?: CommandContext;
+   cwd: string;
+   rootOverride?: string;
+@@ -33,7 +38,7 @@ export async function cmdTaskPlanSet(opts: {
+   text?: string;
+   file?: string;
+   updatedBy?: string;
+-}): Promise<number> {
++}): Promise<TaskPlanSetResult> {
+   try {
+     const { ctx, backend } = await loadPlanBackend({
+       ctx: opts.ctx,
+@@ -148,14 +153,19 @@ export async function cmdTaskPlanSet(opts: {
+       },
+     });
+ 
+-    process.stdout.write(`${readmePath}\n`);
+-    return 0;
++    return { taskId: opts.taskId, readmePath };
+   } catch (err) {
+     if (err instanceof CliError) throw err;
+     throw mapBackendError(err, { command: "task plan set", root: opts.rootOverride ?? null });
+   }
+ }
+ 
++export async function cmdTaskPlanSet(opts: Parameters<typeof setTaskPlan>[0]): Promise<number> {
++  const result = await setTaskPlan(opts);
++  process.stdout.write(`${result.readmePath}\n`);
++  return 0;
++}
++
+ export async function cmdTaskPlanApprove(opts: {
+   ctx?: CommandContext;
+   cwd: string;
+diff --git a/packages/agentplane/src/commands/task/status.command.ts b/packages/agentplane/src/commands/task/status.command.ts
+index 9c934ff00..ae12c4be5 100644
+--- a/packages/agentplane/src/commands/task/status.command.ts
++++ b/packages/agentplane/src/commands/task/status.command.ts
+@@ -52,9 +52,14 @@ export const taskStatusSpec: CommandSpec<TaskStatusParsed> = {
+   }),
+ };
+ 
+-export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
++export function makeRunTaskStatusHandler(session: {
++  getLocalContext: (cmd: string) => Promise<CommandContext>;
++  getRemoteContext: (cmd: string) => Promise<CommandContext>;
++}) {
+   return async (ctx: CommandCtx, parsed: TaskStatusParsed): Promise<number> => {
+-    const commandCtx = await getCtx("task status");
++    const commandCtx = await (parsed.remote
++      ? session.getRemoteContext("task status")
++      : session.getLocalContext("task status"));
+     const decision = await buildTaskRouteDecision({
+       ctx: commandCtx,
+       cwd: ctx.cwd,

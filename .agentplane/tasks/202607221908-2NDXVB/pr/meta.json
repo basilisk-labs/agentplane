@@ -3,11 +3,22 @@
   "branch": "task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar",
   "created_at": "2026-07-31T23:00:26.855Z",
   "diffstat_sha256": "sha256:f8231da448374cb23558c0a5f62a0e982f003a4bd8da92a375c296ed359189b8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-31T23:36:22.971Z",
+  "last_verified_diffstat_sha256": "sha256:f8231da448374cb23558c0a5f62a0e982f003a4bd8da92a375c296ed359189b8",
+  "pr_number": 4714,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4714",
+  "pre_merge_closure": {
+    "basis_commit": "777a3cc1049be9be0117174db3c406a59979faf6",
+    "branch": "task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar",
+    "pr_number": 4714,
+    "recorded_at": "2026-07-31T23:37:55.804Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221908-2NDXVB",
-  "updated_at": "2026-07-31T23:00:26.855Z",
+  "updated_at": "2026-07-31T23:35:34.211Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
