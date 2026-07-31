@@ -1,0 +1,39 @@
+Command: dependency closure review
+Result: pass
+Evidence: qualification-packet.v1.json records DONE, verification ok, evaluator pass, merged provider PR, successful hosted close, and ancestor proof for 71SCSW, ECBY56, 7KFTPH, and CT2725.
+Scope: RC1 dependency fan-in on the reviewed implementation SHA.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed.
+Scope: deterministic critical safety, route, replay, protected-path, scope, symlink, and trust-boundary regressions on the reviewed implementation SHA.
+
+Command: bun run coverage:workflow-suite
+Result: pass
+Evidence: 14 test files and 52 tests passed; workflow harness contract covered 5 source targets.
+Scope: deterministic workflow runtime and harness coverage on the reviewed implementation SHA.
+
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: all 8 lifecycle invariants passed.
+Scope: task and integration lifecycle state guarantees on the reviewed implementation SHA.
+
+Command: bun run release:prepublish:fast
+Result: pass
+Evidence: incident, ACR example, generated docs, package build, tarball policy, and blueprint release gates passed without publishing.
+Scope: deterministic prerelease packaging readiness on the reviewed implementation SHA.
+
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: 10 RF-04 scenarios and 10 measured cost metrics passed with structural digest a9b855c5; this proves frozen pre-0.7 baseline integrity only.
+Scope: frozen baseline artifact integrity; not a live RC1 performance claim.
+
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: the frozen replay rebuilt 50 runs, 70 of 70 outcomes, 27 of 27 provider token cells, and 170 of 170 scalar cells with structural digest 006ddc6d.
+Scope: exact deterministic rebuild of the historical beta.1 packet; not evidence for live RC1 outcome, safety, token, or latency stability.
+
+Command: frozen golden metric comparison
+Result: pass
+Evidence: the 50-run and 55-provider-episode measurement is bound to beta.1 subject b58705432c46df612a89348ef28ea268fdcc2b04, not the reviewed RC1 implementation. Its improvements and two latency regressions are historical context only. No live RC1 metric attribution is made, and publication is explicitly do_not_publish until a provider measurement is captured for the release candidate SHA.
+Scope: honest RC1 qualification boundary and residual-risk disclosure.
