@@ -1,10 +1,11 @@
 ---
 id: "202607311554-99FMGV"
 title: "Allow fast-forward publication before conflict rework"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -58,8 +59,8 @@ quality_review:
   findings:
     - "The frozen diff and structured verification record consistently cover guarded fast-forward publication, fail-closed negative cases, and the post-publication CODER handoff; no contract divergence was identified."
 commit:
-  hash: "5912dc86cc255d9401d0d96d534e23cd3250b0a4"
-  message: "🧪 99FMGV code: Distinguish divergent and unrelated heads"
+  hash: "2bd765be7322e2bcf393da221f0c8e1a0d07a045"
+  message: "🔍 99FMGV task: Record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -70,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation updated: explicit divergent and unrelated-history regression cases plus bounded integration-test timeout."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -104,8 +108,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: structured verification for semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4."
+  -
+    type: "status"
+    at: "2026-07-31T16:27:05.274Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T16:24:33.872Z"
+doc_updated_at: "2026-07-31T16:27:05.275Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
@@ -233,6 +244,9 @@ sections:
       Impact: Without structured details, the evaluator could not freeze deterministic verification evidence despite green checks.
       Resolution: Recorded all commands, pass results, concrete evidence counts, scopes, distinct divergent/unrelated tests, and live CT2725 route proof.
 extensions:
+  implementation_commit:
+    hash: "5912dc86cc255d9401d0d96d534e23cd3250b0a4"
+    message: "🧪 99FMGV code: Distinguish divergent and unrelated heads"
   workflow_route_baseline:
     start_head_sha: "3a42f9534b567fb4e86387bbbf6b2984a753bf6f"
     version: 1
