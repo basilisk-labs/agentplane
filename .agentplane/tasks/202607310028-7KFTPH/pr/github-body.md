@@ -32,8 +32,10 @@ do_not_publish because latency guardrails failed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/tasks/202607221852-ECBY56/README.md |   4 +-
+ .agentplane/tasks/202607221908-AB2SFC/README.md |   4 +-
  .agentplane/tasks/202607310026-4V5K9V/README.md | 122 ++++++++++++++++++++++++
- 1 file changed, 122 insertions(+)
+ 3 files changed, 126 insertions(+), 4 deletions(-)
 ```
 
 </details>

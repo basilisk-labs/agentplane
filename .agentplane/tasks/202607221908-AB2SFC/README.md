@@ -4,13 +4,13 @@ title: "Qualify the AgentPlane 0.7.0-rc.1 milestone"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
   - "202607221852-71SCSW"
   - "202607221852-ECBY56"
-  - "202607221908-0JP0ZZ"
+  - "202607310028-7KFTPH"
 tags:
   - "milestone-0-7-0-rc-1"
   - "quality"
