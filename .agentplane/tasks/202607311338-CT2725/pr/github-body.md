@@ -15,8 +15,14 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS at c3b5d08d: preserved RF-23 evidence proves containment-only unverified receipt; 20 focused
+supervisor tests, all 12 critical chunks, typecheck, full ci:contract, release prepublish, incident
+archive parity, routing, and doctor pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

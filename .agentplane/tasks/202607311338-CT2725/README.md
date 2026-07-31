@@ -4,7 +4,7 @@ title: "Preserve typed executor stops with unverified receipts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T13:53:45.582Z"
+  updated_by: "TESTER"
+  note: "PASS at c3b5d08d: preserved RF-23 evidence proves containment-only unverified receipt; 20 focused supervisor tests, all 12 critical chunks, typecheck, full ci:contract, release prepublish, incident archive parity, routing, and doctor pass."
   attempts: 0
+quality_review:
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T13:55:19.538Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "c3b5d08db2960cc4722230f91d34f5fd17c16229"
+  blueprint_digest: "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4"
+  evidence_refs:
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607311338-CT2725/README.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the claimed focused, critical, incident-parity, and at-most-once results cannot be independently evaluated."
+  recovery_reason: "deterministic_evidence_gap"
 commit: null
 comments:
   -
@@ -48,8 +74,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-07-31T13:53:45.582Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at c3b5d08d: preserved RF-23 evidence proves containment-only unverified receipt; 20 focused supervisor tests, all 12 critical chunks, typecheck, full ci:contract, release prepublish, incident archive parity, routing, and doctor pass."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:45:12.332Z"
+doc_updated_at: "2026-07-31T13:53:46.376Z"
 doc_updated_by: "CODER"
 description: "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate."
 sections:
@@ -74,6 +106,36 @@ sections:
     5. Review the final diff and task evidence. Expected: changes remain bounded to semantic-stop observation ordering, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T13:53:45.582Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at c3b5d08d: preserved RF-23 evidence proves containment-only unverified receipt; 20 focused supervisor tests, all 12 critical chunks, typecheck, full ci:contract, release prepublish, incident archive parity, routing, and doctor pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:45:12.332Z, excerpt_hash=sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311338-CT2725-resolve-successful-runner-receipt-observation-ra/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+    - old_digest: 6d4a098482b5298a5a47ecd951c903a8b1ef47fde9fbc278f35748c5d0912abd
+    - current_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311338-CT2725
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +144,10 @@ sections:
     - Observation: The preserved RF-23 receipt is structurally valid but intentionally unverified only because POSIX process-group supervision cannot prove containment of descendants that create a new session; the same run contains an accepted supervisor-owned report_blocker audit and a typed blocked semantic result.
       Impact: The outer supervisor reported runner_receipt_unobserved before inspecting the non-success semantic result, hiding the actionable blocker even though no completed work or lifecycle progress should be authorized.
       Resolution: Require a present non-rejected receipt, then surface blocked, needs_context, and failed semantic stops before the observed-success gate; keep completed-unverified, missing, and rejected receipts unable to authorize progress.
+
+    - Observation: The final implementation preserves typed blocked, needs_context, and failed stops from present non-rejected unverified receipts while completed-unverified, missing, and rejected receipts remain unable to authorize progress.
+      Impact: The outer supervisor now reports the actionable semantic stop without provider replay or weakening completed-execution trust requirements.
+      Resolution: Keep the focused observation and outer-supervisor regressions plus the release incident gate as permanent enforcement.
 extensions:
   workflow_route_baseline:
     start_head_sha: "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e"
@@ -118,6 +184,36 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T13:53:45.582Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at c3b5d08d: preserved RF-23 evidence proves containment-only unverified receipt; 20 focused supervisor tests, all 12 critical chunks, typecheck, full ci:contract, release prepublish, incident archive parity, routing, and doctor pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:45:12.332Z, excerpt_hash=sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311338-CT2725-resolve-successful-runner-receipt-observation-ra/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+- old_digest: 6d4a098482b5298a5a47ecd951c903a8b1ef47fde9fbc278f35748c5d0912abd
+- current_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311338-CT2725
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -130,3 +226,7 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 - Observation: The preserved RF-23 receipt is structurally valid but intentionally unverified only because POSIX process-group supervision cannot prove containment of descendants that create a new session; the same run contains an accepted supervisor-owned report_blocker audit and a typed blocked semantic result.
   Impact: The outer supervisor reported runner_receipt_unobserved before inspecting the non-success semantic result, hiding the actionable blocker even though no completed work or lifecycle progress should be authorized.
   Resolution: Require a present non-rejected receipt, then surface blocked, needs_context, and failed semantic stops before the observed-success gate; keep completed-unverified, missing, and rejected receipts unable to authorize progress.
+
+- Observation: The final implementation preserves typed blocked, needs_context, and failed stops from present non-rejected unverified receipts while completed-unverified, missing, and rejected receipts remain unable to authorize progress.
+  Impact: The outer supervisor now reports the actionable semantic stop without provider replay or weakening completed-execution trust requirements.
+  Resolution: Keep the focused observation and outer-supervisor regressions plus the release incident gate as permanent enforcement.
