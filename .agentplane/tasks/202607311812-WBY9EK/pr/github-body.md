@@ -28,7 +28,7 @@ typecheck, routing, format, and diff checks pass.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T18:13:29.527Z
+- Updated: 2026-07-31T18:20:52.699Z
 - Branch: task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -6,7 +6,7 @@ Created: 2026-07-31T18:13:29.527Z
 
 - Task: `202607311812-WBY9EK`
 - Title: Publish resolved DONE conflict heads before semantic rework gating
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema`
 - Canonical task record: `.agentplane/tasks/202607311812-WBY9EK/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-31T18:13:29.527Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T18:13:29.527Z
+- Updated: 2026-07-31T18:20:52.699Z
 - Branch: task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
