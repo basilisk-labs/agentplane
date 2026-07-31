@@ -1,10 +1,11 @@
 ---
 id: "202607311338-CT2725"
 title: "Preserve typed executor stops with unverified receipts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -61,8 +62,8 @@ quality_review:
     - "Typed blocked, needs_context, and failed executor results with present non-rejected unverified receipts preserve their semantic stop; completed-unverified, missing, and rejected receipts remain terminal."
     - "The prior provenance mismatch is closed: task commit and fresh structured verification both target 21b11aaef435c0c8b23c9627e17634447cd42da7."
 commit:
-  hash: "21b11aaef435c0c8b23c9627e17634447cd42da7"
-  message: "🔧 CT2725 task: resolve main conflict semantically"
+  hash: "78151f0bbc4b6818b23dbf764214b177907a481f"
+  message: "🔍 CT2725 task: record post-conflict verification"
 comments:
   -
     author: "CODER"
@@ -70,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation target: semantic conflict resolution on current main."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -115,8 +119,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay."
+  -
+    type: "status"
+    at: "2026-07-31T18:09:03.571Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T18:07:41.222Z"
+doc_updated_at: "2026-07-31T18:09:03.571Z"
 doc_updated_by: "CODER"
 description: "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate."
 sections:
@@ -381,6 +392,9 @@ sections:
       Impact: Treating every unverified receipt as runner_receipt_unobserved discards valid semantic stops and falsely blocks RC.1 qualification.
       Resolution: The observation boundary now preserves typed non-success outcomes with a present contained receipt and keeps completed, missing, mismatched, and rejected receipts terminal.
 extensions:
+  implementation_commit:
+    hash: "21b11aaef435c0c8b23c9627e17634447cd42da7"
+    message: "🔧 CT2725 task: resolve main conflict semantically"
   workflow_route_baseline:
     start_head_sha: "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e"
     version: 1

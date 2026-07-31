@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:245f730016f6e1c725493e22a8d100d40c73076e90d52e641717b18c1f86add4",
   "pr_number": 4704,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4704",
+  "pre_merge_closure": {
+    "basis_commit": "78151f0bbc4b6818b23dbf764214b177907a481f",
+    "branch": "task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra",
+    "pr_number": 4704,
+    "recorded_at": "2026-07-31T18:09:03.624Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607311338-CT2725",
