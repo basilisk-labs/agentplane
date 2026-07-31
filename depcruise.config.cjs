@@ -58,7 +58,7 @@ module.exports = {
         "agentplane runtime source must not import @agentplane/testkit or testkit implementation artifacts.",
       from: {
         path: "^packages/agentplane/src/",
-        pathNot: "(\\.test\\.ts$|\\.testkit\\.ts$)",
+        pathNot: "\\.test\\.ts$",
       },
       to: {
         path: "^(packages/testkit/(src|dist)/|@agentplane/testkit($|/))",
@@ -76,8 +76,8 @@ module.exports = {
       extensions: [".ts", ".tsx", ".js", ".mjs", ".cjs", ".json"],
     },
     tsConfig: {
-      // dependency-cruiser uses the pinned TypeScript 6 compiler API. Keep its
-      // workspace alias resolution isolated from the TypeScript 7 build graph.
+      // Do not inherit compiler-only project references or workspace path aliases:
+      // dependency-cruiser resolves package boundaries from built manifests.
       fileName: "tsconfig.depcruise.json",
     },
   },
