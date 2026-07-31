@@ -1,0 +1,1 @@
+✅ WBY9EK task: Publish resolved DONE conflict heads before semantic rework gating [202607311812-WBY9EK]

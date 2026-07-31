@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311812-WBY9EK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T18:33:33.478Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "2c5b0522fe7af65e6baffe759f913d0779e6ce45",
+  "blueprint_digest": "811859237d1e336a22045da7dbb31a7f329f2ca34c058ea0ecc8483282d8ea04",
+  "findings": [
+    "The original conflict route assertions remain in the existing file; the verified DONE publication scenario is isolated in a 294-line test file, keeping the pre-existing test below 1000 lines.",
+    "Hotspot baseline passes at 10 oversized entries and 11418 total lines; focused 35 tests, all 12 critical chunks, lint, typecheck, routing, format, and diff checks pass on the current head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311812-WBY9EK/quality/20260731-183333265-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

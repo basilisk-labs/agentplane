@@ -1,0 +1,1053 @@
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/README.md b/.agentplane/tasks/202607311812-WBY9EK/README.md
+new file mode 100644
+index 000000000..6cbaa240a
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/README.md
+@@ -0,0 +1,105 @@
++---
++id: "202607311812-WBY9EK"
++title: "Publish resolved DONE conflict heads before semantic rework gating"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 4
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "workflow.routing"
++verify:
++  - "Critical CLI suite and typecheck pass."
++  - "Focused conflict-rework and route projection tests pass."
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-31T18:12:29.998Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T18:13:29.425Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++doc_version: 3
++doc_updated_at: "2026-07-31T18:13:29.425Z"
++doc_updated_by: "CODER"
++description: "When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads."
++sections:
++  Summary: |-
++    Publish resolved DONE conflict heads before semantic rework gating
++
++    When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.
++  Scope: |-
++    - In scope: When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.
++    - Out of scope: unrelated refactors not required for "Publish resolved DONE conflict heads before semantic rework gating".
++  Plan: "1. Reproduce the verified DONE/no-queue stale provider conflict where the clean local head strictly fast-forwards the provider head. 2. Move only guarded fast-forward publication ahead of semantic route eligibility while retaining verification/status, protected-base, clean-worktree, branch identity, and ancestry checks. 3. Add unit and CLI route regressions for the resolved-conflict closeout path plus fail-closed divergent/unverified cases. 4. Run focused route tests, typecheck, and critical CLI checks; record independent verification and evaluator evidence. 5. Merge the repair, then resume CT2725 publication from live provider truth."
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Publish resolved DONE conflict heads before semantic rework gating". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Publish resolved DONE conflict heads before semantic rework gating". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "9eb65c88341f2495a0a1f11865eb38c4978b2ef3"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Publish resolved DONE conflict heads before semantic rework gating
++
++When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.
++
++## Scope
++
++- In scope: When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.
++- Out of scope: unrelated refactors not required for "Publish resolved DONE conflict heads before semantic rework gating".
++
++## Plan
++
++1. Reproduce the verified DONE/no-queue stale provider conflict where the clean local head strictly fast-forwards the provider head. 2. Move only guarded fast-forward publication ahead of semantic route eligibility while retaining verification/status, protected-base, clean-worktree, branch identity, and ancestry checks. 3. Add unit and CLI route regressions for the resolved-conflict closeout path plus fail-closed divergent/unverified cases. 4. Run focused route tests, typecheck, and critical CLI checks; record independent verification and evaluator evidence. 5. Merge the repair, then resume CT2725 publication from live provider truth.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Publish resolved DONE conflict heads before semantic rework gating". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Publish resolved DONE conflict heads before semantic rework gating". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607311812-WBY9EK/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..0a6b57251
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/blueprint/resolved-snapshot.json
+@@ -0,0 +1,570 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607311812-WBY9EK",
++    "title": "Publish resolved DONE conflict heads before semantic rework gating",
++    "description": "When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.",
++    "tags": [
++      "workflow.routing"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607311812-WBY9EK",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "811859237d1e336a22045da7dbb31a7f329f2ca34c058ea0ecc8483282d8ea04"
++  }
++}
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/pr/diffstat.txt b/.agentplane/tasks/202607311812-WBY9EK/pr/diffstat.txt
+new file mode 100644
+index 000000000..45613b1bf
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/pr/diffstat.txt
+@@ -0,0 +1,4 @@
++ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 132 +++++++++++++++++++++
++ .../src/commands/pr/conflict-rework.test.ts        |  29 +++++
++ .../agentplane/src/commands/pr/conflict-rework.ts  |  42 ++++---
++ 3 files changed, 189 insertions(+), 14 deletions(-)
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/pr/github-body.md b/.agentplane/tasks/202607311812-WBY9EK/pr/github-body.md
+new file mode 100644
+index 000000000..78acd6d6e
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/pr/github-body.md
+@@ -0,0 +1,36 @@
++Task: `202607311812-WBY9EK`
++Title: Publish resolved DONE conflict heads before semantic rework gating
++Canonical task record: `.agentplane/tasks/202607311812-WBY9EK/README.md`
++
++## Summary
++
++Publish resolved DONE conflict heads before semantic rework gating
++
++When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.
++
++## Scope
++
++- In scope: When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.
++- Out of scope: unrelated refactors not required for "Publish resolved DONE conflict heads before semantic rework gating".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T18:13:29.527Z
++- Branch: task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 132 +++++++++++++++++++++
++ .../src/commands/pr/conflict-rework.test.ts        |  29 +++++
++ .../agentplane/src/commands/pr/conflict-rework.ts  |  42 ++++---
++ 3 files changed, 189 insertions(+), 14 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/pr/github-title.txt b/.agentplane/tasks/202607311812-WBY9EK/pr/github-title.txt
+new file mode 100644
+index 000000000..71b6d574d
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 WBY9EK task: Publish resolved DONE conflict heads before semantic rework gating [202607311812-WBY9EK]
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/pr/meta.json b/.agentplane/tasks/202607311812-WBY9EK/pr/meta.json
+new file mode 100644
+index 000000000..8c58d55ee
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/pr/meta.json
+@@ -0,0 +1,13 @@
++{
++  "base": "main",
++  "branch": "task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema",
++  "created_at": "2026-07-31T18:13:29.527Z",
++  "diffstat_sha256": "sha256:c078f5ef607f482bf82d19eab8334aeaec10d2b0dac9e1eb26a87a241a522973",
++  "last_verified_at": null,
++  "schema_version": 1,
++  "task_id": "202607311812-WBY9EK",
++  "updated_at": "2026-07-31T18:13:29.527Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607311812-WBY9EK/pr/review.md b/.agentplane/tasks/202607311812-WBY9EK/pr/review.md
+new file mode 100644
+index 000000000..e47e9898b
+--- /dev/null
++++ b/.agentplane/tasks/202607311812-WBY9EK/pr/review.md
+@@ -0,0 +1,39 @@
++# PR Review
++
++Created: 2026-07-31T18:13:29.527Z
++
++## Task
++
++- Task: `202607311812-WBY9EK`
++- Title: Publish resolved DONE conflict heads before semantic rework gating
++- Status: DOING
++- Branch: `task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema`
++- Canonical task record: `.agentplane/tasks/202607311812-WBY9EK/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T18:13:29.527Z
++- Branch: task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 132 +++++++++++++++++++++
++ .../src/commands/pr/conflict-rework.test.ts        |  29 +++++
++ .../agentplane/src/commands/pr/conflict-rework.ts  |  42 ++++---
++ 3 files changed, 189 insertions(+), 14 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+index 3ef9a83ad..ba2bed7d9 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+@@ -378,6 +378,138 @@ describe("provider conflict rework CLI", () => {
+     );
+   });
+ 
++  it("publishes a verified DONE descendant before requiring queue or handoff conflict evidence", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
++    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed DONE publication fixture"], {
++      cwd: root,
++    });
++
++    const taskId = await createBranchPrTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Publish the resolved DONE head before semantic conflict eligibility is reconsidered.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++
++    const slug = "publish-resolved-done-head";
++    const branch = `task/${taskId}/${slug}`;
++    await runCliSilent([
++      "work",
++      "start",
++      taskId,
++      "--agent",
++      "CODER",
++      "--slug",
++      slug,
++      "--worktree",
++      "--root",
++      root,
++    ]);
++    const worktree = await worktreeForBranch(root, branch);
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: reproduce the resolved DONE publication route.",
++      "--root",
++      worktree,
++    ]);
++    await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
++    await execFileAsync("git", ["add", "-A"], { cwd: worktree });
++    await execFileAsync("git", ["commit", "-m", "test: provider-visible DONE conflict head"], {
++      cwd: worktree,
++    });
++
++    const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
++    const taskReadme = await readFile(taskReadmePath, "utf8");
++    await writeFile(
++      taskReadmePath,
++      taskReadme
++        .replace('status: "DOING"', 'status: "DONE"')
++        .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
++      "utf8",
++    );
++    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
++    await execFileAsync("git", ["commit", "-m", "test: freeze verified DONE provider head"], {
++      cwd: worktree,
++    });
++    const { stdout: providerHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: worktree,
++    });
++    const providerHeadSha = providerHeadRaw.trim();
++
++    await writeFile(path.join(worktree, "resolution.txt"), "semantic resolution\n", "utf8");
++    await execFileAsync("git", ["add", "resolution.txt"], { cwd: worktree });
++    await execFileAsync("git", ["commit", "-m", "test: resolved DONE strict descendant"], {
++      cwd: worktree,
++    });
++    const { stdout: localHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: worktree,
++    });
++    const localHeadSha = localHeadRaw.trim();
++
++    await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
++    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: base side of DONE publication conflict"], {
++      cwd: root,
++    });
++    const { stdout: baseRaw } = await execFileAsync("git", ["rev-parse", "main"], { cwd: root });
++    const baseSha = baseRaw.trim();
++    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
++      cwd: root,
++    });
++
++    await withFakeGh(
++      root,
++      fakeGithubProviderSource({
++        number: 4626,
++        html_url: "https://github.example/acme/agentplane/pull/4626",
++        state: "open",
++        merged_at: null,
++        merge_commit_sha: null,
++        mergeable: false,
++        mergeable_state: "dirty",
++        head: { ref: branch, sha: providerHeadSha },
++        base: { ref: "main", sha: baseSha },
++      }),
++      async () => {
++        const route = await readRemoteRoute(root, taskId);
++        expect(route.conflict_rework).toMatchObject({
++          state: "publication_required",
++          provider_head_sha: providerHeadSha,
++          local_head_sha: localHeadSha,
++        });
++        expect(route.workflow_step).toMatchObject({
++          kind: "approval",
++          id: "approval.pr.head.publish",
++          authoritativeCheckout: "task_worktree",
++          compatibility: { code: "publish_conflict_pr_head" },
++        });
++        expect(route.blockers.map((blocker) => blocker.code)).not.toContain(
++          "provider_conflict_context_invalid",
++        );
++      },
++    );
++  });
++
+   it("routes a live GitHub conflict to CODER with a fresh read-only packet", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.test.ts b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+index e82b6dbfc..99a6f97df 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+@@ -253,6 +253,35 @@ describe("provider conflict rework packet", () => {
+     expect(git.calls.diffNames).toBe(0);
+   });
+ 
++  it("publishes a verified DONE descendant before requiring queue or handoff conflict authority", async () => {
++    const providerHeadSha = "2222222222222222222222222222222222222222";
++    const conflicting = providerBehindReport(providerHeadSha);
++    conflicting.queue = { present: false };
++    conflicting.handoff = { present: false };
++    const git = primeGit();
++    git.gitOps.mergeBase = (gitRoot, left, right) => {
++      git.calls.mergeBase.push([gitRoot, left, right]);
++      return Promise.resolve(providerHeadSha);
++    };
++
++    await expect(prepare({ report: conflicting, git })).resolves.toMatchObject({
++      state: "publication_required",
++      provider_head_sha: providerHeadSha,
++      local_head_sha: headSha,
++    });
++    expect(git.calls.mergeBase).toEqual([["/repo", providerHeadSha, headSha]]);
++    expect(git.calls.diffNames).toBe(0);
++  });
++
++  it("still requires conflict authority after a verified DONE provider head is aligned", async () => {
++    const conflicting = report({ queue: { present: false }, handoff: { present: false } });
++
++    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
++      state: "invalid",
++      reason_code: "conflict_rework_route_ineligible",
++    });
++  });
++
+   it("invalidates a divergent local head", async () => {
+     const prepared = await prepare({ report: providerBehindReport() });
+     expect(prepared).toMatchObject({
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.ts b/packages/agentplane/src/commands/pr/conflict-rework.ts
+index 03a1052ef..fad72f6cc 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.ts
+@@ -283,20 +283,18 @@ export async function prepareConflictReworkPacket(opts: {
+       `provider head branch differs from task branch: provider=${providerHeadRef} task=${taskBranch}`,
+     );
+   }
+-  const routeEligibility = resolveConflictRouteEligibility({
+-    report: opts.report,
+-    identity: {
+-      taskId: opts.taskId,
+-      taskBranch,
+-      providerHead,
+-      base,
+-      providerBase,
+-      prNumber,
+-    },
+-    now: opts.now ?? new Date(),
+-  });
+-  if (routeEligibility.state === "ineligible") {
+-    return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
++  const taskStatus = opts.report.task.status.trim().toUpperCase();
++  if (opts.report.task.verification !== "ok") {
++    return invalid(
++      "conflict_rework_route_ineligible",
++      "semantic conflict rework requires a current passing verification record",
++    );
++  }
++  if (taskStatus !== "DOING" && taskStatus !== "DONE") {
++    return invalid(
++      "conflict_rework_route_ineligible",
++      "semantic conflict rework requires a verified DOING or DONE task",
++    );
+   }
+   const baseProtection =
+     opts.baseProtection ??
+@@ -365,6 +363,22 @@ export async function prepareConflictReworkPacket(opts: {
+     };
+   }
+ 
++  const routeEligibility = resolveConflictRouteEligibility({
++    report: opts.report,
++    identity: {
++      taskId: opts.taskId,
++      taskBranch,
++      providerHead,
++      base,
++      providerBase,
++      prNumber,
++    },
++    now: opts.now ?? new Date(),
++  });
++  if (routeEligibility.state === "ineligible") {
++    return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
++  }
++
+   const localBase = await resolveLocalRef({
+     gitRoot: opts.gitRoot,
+     gitOps,
