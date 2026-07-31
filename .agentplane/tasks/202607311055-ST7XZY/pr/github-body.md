@@ -15,14 +15,23 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run
+test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane
+doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests,
+significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor
+errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical
+task persistence, release readiness.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T10:56:26.206Z
+- Updated: 2026-07-31T11:08:32.287Z
 - Branch: task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311055-ST7XZY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T11:12:06.577Z",
+  "verdict": "pass",
+  "summary": "Direct routing and task persistence regressions pass for the v0.6.26 maintenance patch.",
+  "evaluated_sha": "d60e737bb85a8252367b8203074719531811764b",
+  "blueprint_digest": "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d",
+  "findings": [
+    "No state-neutral verify-show command remains in runner transition hints or direct next-action routes.",
+    "Untracked active and DONE canonical task artifacts now receive deterministic task-scoped persistence or cleanup commands."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311055-ST7XZY/README.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/commands/shared/task-handoff.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

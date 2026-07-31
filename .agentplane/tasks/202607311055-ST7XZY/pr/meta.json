@@ -3,11 +3,15 @@
   "branch": "task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing",
   "created_at": "2026-07-31T10:56:26.206Z",
   "diffstat_sha256": "sha256:2072063e79237581278cd7776a3fb8817f601c5ef0deb5d29347caa6a4951327",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-31T11:12:03.380Z",
+  "last_verified_diffstat_sha256": "sha256:2072063e79237581278cd7776a3fb8817f601c5ef0deb5d29347caa6a4951327",
+  "pr_number": 4701,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4701",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607311055-ST7XZY",
-  "updated_at": "2026-07-31T10:56:26.206Z",
+  "updated_at": "2026-07-31T11:08:32.287Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

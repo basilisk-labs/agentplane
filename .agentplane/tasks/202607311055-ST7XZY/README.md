@@ -4,7 +4,7 @@ title: "Eliminate direct workflow state-neutral routing loops"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,29 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T11:12:03.380Z"
+  updated_by: "EVALUATOR"
+  note: "Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-31T11:12:06.577Z"
+  updated_by: "EVALUATOR"
+  note: "Direct routing and task persistence regressions pass for the v0.6.26 maintenance patch."
+  evaluated_sha: "d60e737bb85a8252367b8203074719531811764b"
+  blueprint_digest: "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d"
+  evidence_refs:
+    - ".agentplane/tasks/202607311055-ST7XZY/README.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111206577-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111206577-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111206577-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+    - "packages/agentplane/src/commands/shared/task-handoff.test.ts"
+  findings:
+    - "No state-neutral verify-show command remains in runner transition hints or direct next-action routes."
+    - "Untracked active and DONE canonical task artifacts now receive deterministic task-scoped persistence or cleanup commands."
 commit: null
 comments:
   -
@@ -38,8 +56,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: audit direct route transitions, eliminate state-neutral loops, and add deterministic task artifact persistence recovery for the v0.6.26 maintenance patch."
+  -
+    type: "verify"
+    at: "2026-07-31T11:12:03.380Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:07:50.558Z"
+doc_updated_at: "2026-07-31T11:12:03.627Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -64,6 +88,36 @@ sections:
     5. Verify GitHub/npm/tag after publication. Expected: v0.6.26 tag, GitHub release, publish workflow, and npm `gitHead` resolve to the same maintenance SHA; that SHA is not an ancestor of main.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T11:12:03.380Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:07:50.558Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+    - diagnostic_command: agentplane pr check 202607311055-ST7XZY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the routing/persistence implementation and regression commits on the maintenance branch.
@@ -85,6 +139,10 @@ sections:
     - Observation: The guided task begin shortcut bypassed next-action and returned verify-show directly.
       Impact: The documented fast path reproduced the same diagnostic-as-transition category mismatch.
       Resolution: Direct task begin now hands control to task next-action --explain so persistence, runner, verification, and closeout gates stay centralized.
+
+    - Observation: v0.6.25 used successful read-only verify-show output as an executable transition in absent and terminal runner states.
+      Impact: Strict recompute rails could loop forever and active untracked task truth could be lost on workspace recreation.
+      Resolution: Runner transitions now mutate or stop explicitly; untracked task truth gets a guarded persistence route before execution.
 id_source: "generated"
 ---
 ## Summary
@@ -117,6 +175,36 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T11:12:03.380Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:07:50.558Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+- diagnostic_command: agentplane pr check 202607311055-ST7XZY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -142,3 +230,7 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 - Observation: The guided task begin shortcut bypassed next-action and returned verify-show directly.
   Impact: The documented fast path reproduced the same diagnostic-as-transition category mismatch.
   Resolution: Direct task begin now hands control to task next-action --explain so persistence, runner, verification, and closeout gates stay centralized.
+
+- Observation: v0.6.25 used successful read-only verify-show output as an executable transition in absent and terminal runner states.
+  Impact: Strict recompute rails could loop forever and active untracked task truth could be lost on workspace recreation.
+  Resolution: Runner transitions now mutate or stop explicitly; untracked task truth gets a guarded persistence route before execution.
