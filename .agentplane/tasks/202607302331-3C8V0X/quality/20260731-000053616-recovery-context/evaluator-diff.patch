@@ -1,0 +1,1454 @@
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/README.md b/.agentplane/tasks/202607302331-3C8V0X/README.md
+new file mode 100644
+index 000000000..278b43a1f
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/README.md
+@@ -0,0 +1,270 @@
++---
++id: "202607302331-3C8V0X"
++title: "Repair beta.2 guard and clone baseline drift"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 7
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "quality"
++  - "refactor"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run ci:contract"
++  - "bun run guards:check && bun run clone:check"
++  - "bun run typecheck"
++  - "bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T23:32:09.215Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-30T23:41:47.406Z"
++  updated_by: "TESTER"
++  note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
++  attempts: 0
++quality_review:
++  state: "rework"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-30T23:43:29.813Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned rework with 1 typed finding(s)."
++  evaluated_sha: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
++  blueprint_digest: "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b"
++  evidence_refs:
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-follow-up.json"
++    - ".agentplane/tasks/202607302331-3C8V0X/README.md"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json"
++    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The clone baseline was refreshed, but the frozen evidence does not substantively review or classify the three absolute clone-metric increases."
++commit:
++  hash: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
++  message: "🧩 3C8V0X code: repair guard and clone baseline"
++comments:
++  -
++    author: "CODER"
++    body: "Start: reproduce the guard and clone-baseline gate failures in a dedicated bounded repair task, preserving beta.2 qualification as a separate evidence-only gate."
++  -
++    author: "CODER"
++    body: "Implemented: moved the shared record-guard repair and measured clone-baseline refresh into this bounded task; beta.2 qualification remains a separate evidence-only gate."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T23:32:41.563Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: reproduce the guard and clone-baseline gate failures in a dedicated bounded repair task, preserving beta.2 qualification as a separate evidence-only gate."
++  -
++    type: "status"
++    at: "2026-07-30T23:35:56.474Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented: moved the shared record-guard repair and measured clone-baseline refresh into this bounded task; beta.2 qualification remains a separate evidence-only gate."
++  -
++    type: "verify"
++    at: "2026-07-30T23:41:47.406Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
++doc_version: 3
++doc_updated_at: "2026-07-30T23:41:49.014Z"
++doc_updated_by: "CODER"
++description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
++sections:
++  Summary: |-
++    Repair beta.2 guard and clone baseline drift
++
++    Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.
++  Scope: |-
++    - In scope: Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.
++    - Out of scope: unrelated refactors not required for "Repair beta.2 guard and clone baseline drift".
++  Plan: "1. Reproduce the beta.2 gate failures against main and classify the shared-guard violation plus clone-baseline drift without changing qualification evidence. 2. Replace only the local isRecord guard with the canonical shared guard, regenerate the measured clone baseline, and format the generated JSON. 3. Run the focused semantic-escalation test, shared-guard and clone checks, typecheck, and full ci:contract. 4. Record structured verification and an independent evaluator review; do not publish a release. 5. Open, verify, and integrate one bounded repair PR, then make beta.2 qualification depend on the merged repair."
++  Verify Steps: |-
++    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
++    2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.
++    3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
++    4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.
++    5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
++    6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-30T23:41:47.406Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T23:35:56.474Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
++
++    Details:
++
++    Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts
++    Result: pass
++    Evidence: 9 tests passed, 0 failed, 35 expectations at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
++    Scope: shared record-guard behavior and semantic retrieval fallback paths
++
++    Command: bun run guards:check && bun run clone:check
++    Result: pass
++    Evidence: shared guards passed; clone baseline is current at sources=1274, clones=93, duplicatedLines=1462, duplicatedTokens=10292, percentage=0.6321670097030285
++    Scope: canonical guard ownership and reviewed clone-drift boundary
++
++    Command: bun run typecheck
++    Result: pass
++    Evidence: TypeScript build completed with exit code 0 at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
++    Scope: repository type contract
++
++    Command: bun run ci:contract
++    Result: pass
++    Evidence: format, schemas, compatibility, RF-04 replay, hotspots, lifecycle, guard, lint, architecture, clone, Knip, and coverage gates passed
++    Scope: full repository contract for the bounded repair
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
++    - old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
++    - current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607302331-3C8V0X
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: Beta.2 qualification detected a local isRecord duplicate and an absolute clone-baseline drift after repository source growth.
++      Impact: The guard blocked ci:contract and qualification could not proceed without a separately traceable repair.
++      Resolution: This task isolates the two-file repair; beta.2 remains a separate qualification gate and must consume the merged repair through dependency closure.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "9b299bedb15d2efdbf92b83567660e65aa3451a9"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Repair beta.2 guard and clone baseline drift
++
++Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.
++
++## Scope
++
++- In scope: Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.
++- Out of scope: unrelated refactors not required for "Repair beta.2 guard and clone baseline drift".
++
++## Plan
++
++1. Reproduce the beta.2 gate failures against main and classify the shared-guard violation plus clone-baseline drift without changing qualification evidence. 2. Replace only the local isRecord guard with the canonical shared guard, regenerate the measured clone baseline, and format the generated JSON. 3. Run the focused semantic-escalation test, shared-guard and clone checks, typecheck, and full ci:contract. 4. Record structured verification and an independent evaluator review; do not publish a release. 5. Open, verify, and integrate one bounded repair PR, then make beta.2 qualification depend on the merged repair.
++
++## Verify Steps
++
++PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
++2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.
++3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
++4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.
++5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
++6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-30T23:41:47.406Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T23:35:56.474Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
++
++Details:
++
++Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts
++Result: pass
++Evidence: 9 tests passed, 0 failed, 35 expectations at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
++Scope: shared record-guard behavior and semantic retrieval fallback paths
++
++Command: bun run guards:check && bun run clone:check
++Result: pass
++Evidence: shared guards passed; clone baseline is current at sources=1274, clones=93, duplicatedLines=1462, duplicatedTokens=10292, percentage=0.6321670097030285
++Scope: canonical guard ownership and reviewed clone-drift boundary
++
++Command: bun run typecheck
++Result: pass
++Evidence: TypeScript build completed with exit code 0 at 2f127f86086217e2b984f7c8c2fa94506a54bdc6
++Scope: repository type contract
++
++Command: bun run ci:contract
++Result: pass
++Evidence: format, schemas, compatibility, RF-04 replay, hotspots, lifecycle, guard, lint, architecture, clone, Knip, and coverage gates passed
++Scope: full repository contract for the bounded repair
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
++- old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
++- current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607302331-3C8V0X
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: Beta.2 qualification detected a local isRecord duplicate and an absolute clone-baseline drift after repository source growth.
++  Impact: The guard blocked ci:contract and qualification could not proceed without a separately traceable repair.
++  Resolution: This task isolates the two-file repair; beta.2 remains a separate qualification gate and must consume the merged repair through dependency closure.
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..f2ed75109
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+@@ -0,0 +1,580 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607302331-3C8V0X",
++    "title": "Repair beta.2 guard and clone baseline drift",
++    "description": "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.",
++    "tags": [
++      "code",
++      "quality",
++      "refactor",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607302331-3C8V0X",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b"
++  }
++}
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/evidence/clone-drift-review.md b/.agentplane/tasks/202607302331-3C8V0X/evidence/clone-drift-review.md
+new file mode 100644
+index 000000000..6d7db4a67
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/evidence/clone-drift-review.md
+@@ -0,0 +1,48 @@
++# Clone drift review
++
++## Purpose
++
++This task must not accept the beta.2 clone increase merely by refreshing the
++baseline. The review classifies every newly reported clone pair and records
++the source-level removal that preserves the affected output contract.
++
++## Measurements
++
++| Snapshot | Sources | Clones | Duplicated lines | Duplicated tokens |
++| --- | ---: | ---: | ---: | ---: |
++| Pre-beta.2 baseline (`8d8add355`) | 1253 | 90 | 1431 | 9976 |
++| Beta.2 candidate before this repair | 1274 | 93 | 1462 | 10292 |
++| This repair after source-level deduplication | 1274 | 90 | 1431 | 9977 |
++
++The candidate added three clone groups, 31 duplicated lines, and 316 duplicated
++tokens. The repair removes all three groups; clone count and duplicated lines
++return to the pre-beta.2 level. The one-token difference is within an existing
++remaining clone group after the canonical helper rename; it is not an accepted
++new group and does not increase clone count or duplicated lines.
++
++## Reviewed groups and disposition
++
++1. `packages/agentplane/src/context/reindex-projection.ts` had two copies of
++   the projection-window construction loop (16 lines, 139 tokens). They differed
++   only by the literal row kind: `text-window` versus `json-window`. The shared
++   `appendWindowRows` helper retains each caller's row kind, path reference,
++   content hash, content type, source references, text fields, and byte count.
++   Existing projection tests cover text and JSONL window output.
++2. `packages/agentplane/src/context/sqlite.ts` had two copies of the common
++   SQLite projection-row mapping (9 lines, 86 tokens), in read and search
++   results. `projectionRowFields` now constructs only those shared fields.
++   The read path retains `search_text` and `preview_text`; the search path
++   retains `preview_text`, rank, and highlight. Existing SQLite tests cover
++   both read and scoped FTS search output.
++3. `packages/agentplane/src/runner/usecases/task-knowledge-request-scope.ts`
++   and `task-knowledge-retrieval.ts` independently inferred a canonical
++   knowledge kind from a reference (9 lines, 90 tokens). The retrieval path
++   now calls `canonicalKnowledgeKind` from the request-scope module. The new
++   focused test covers all five accepted kinds and malformed/unsupported refs.
++
++## Verification
++
++Run `bun run clone:check` to validate the regenerated baseline. Focused
++projection, SQLite, request-scope, and task-knowledge request tests validate
++the affected output contracts. Full type and contract verification remains a
++separate gate before evaluator review.
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/pr/diffstat.txt b/.agentplane/tasks/202607302331-3C8V0X/pr/diffstat.txt
+new file mode 100644
+index 000000000..15ce1dd13
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/pr/diffstat.txt
+@@ -0,0 +1,9 @@
++ .../agentplane/src/context/reindex-projection.ts   | 57 ++++++++++------------
++ packages/agentplane/src/context/sqlite.ts          | 43 ++++++++++------
++ .../usecases/task-knowledge-request-scope.test.ts  | 20 ++++++++
++ .../usecases/task-knowledge-request-scope.ts       |  4 +-
++ .../runner/usecases/task-knowledge-request.test.ts |  3 +-
++ .../runner/usecases/task-knowledge-retrieval.ts    | 19 ++------
++ .../usecases/task-knowledge-semantic-escalation.ts |  5 +-
++ scripts/baselines/clone-baseline.json              | 32 ++++++------
++ 8 files changed, 98 insertions(+), 85 deletions(-)
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/pr/github-body.md b/.agentplane/tasks/202607302331-3C8V0X/pr/github-body.md
+new file mode 100644
+index 000000000..be13300a8
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/pr/github-body.md
+@@ -0,0 +1,46 @@
++Task: `202607302331-3C8V0X`
++Title: Repair beta.2 guard and clone baseline drift
++Canonical task record: `.agentplane/tasks/202607302331-3C8V0X/README.md`
++
++## Summary
++
++Repair beta.2 guard and clone baseline drift
++
++Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.
++
++## Scope
++
++- In scope: Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on.
++- Out of scope: unrelated refactors not required for "Repair beta.2 guard and clone baseline drift".
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the
++measured clone baseline is current, and all declared focused and full contract checks pass.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T23:35:43.550Z
++- Branch: task/202607302331-3C8V0X/repair-beta-2-guard-and-clone-baseline-drift
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../agentplane/src/context/reindex-projection.ts   | 57 ++++++++++------------
++ packages/agentplane/src/context/sqlite.ts          | 43 ++++++++++------
++ .../usecases/task-knowledge-request-scope.test.ts  | 20 ++++++++
++ .../usecases/task-knowledge-request-scope.ts       |  4 +-
++ .../runner/usecases/task-knowledge-request.test.ts |  3 +-
++ .../runner/usecases/task-knowledge-retrieval.ts    | 19 ++------
++ .../usecases/task-knowledge-semantic-escalation.ts |  5 +-
++ scripts/baselines/clone-baseline.json              | 32 ++++++------
++ 8 files changed, 98 insertions(+), 85 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/pr/github-title.txt b/.agentplane/tasks/202607302331-3C8V0X/pr/github-title.txt
+new file mode 100644
+index 000000000..72dc5acf6
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 3C8V0X task: Repair beta.2 guard and clone baseline drift [202607302331-3C8V0X]
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/pr/meta.json b/.agentplane/tasks/202607302331-3C8V0X/pr/meta.json
+new file mode 100644
+index 000000000..5a10f0a64
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/pr/meta.json
+@@ -0,0 +1,17 @@
++{
++  "base": "main",
++  "branch": "task/202607302331-3C8V0X/repair-beta-2-guard-and-clone-baseline-drift",
++  "created_at": "2026-07-30T23:32:41.818Z",
++  "diffstat_sha256": "sha256:739a35a0cf51c4d07e9212d5d81b2b27f90da7a42900d802477acf6914b2655d",
++  "last_verified_at": "2026-07-30T23:41:47.406Z",
++  "last_verified_diffstat_sha256": "sha256:dfd3d35d1777b841bf07b3c59cef41993ba278102b41fba7731bc9006d0f8d9b",
++  "pr_number": 4698,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4698",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607302331-3C8V0X",
++  "updated_at": "2026-07-30T23:35:43.550Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/pr/review.md b/.agentplane/tasks/202607302331-3C8V0X/pr/review.md
+new file mode 100644
+index 000000000..eb949dc11
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/pr/review.md
+@@ -0,0 +1,44 @@
++# PR Review
++
++Created: 2026-07-30T23:32:41.818Z
++
++## Task
++
++- Task: `202607302331-3C8V0X`
++- Title: Repair beta.2 guard and clone baseline drift
++- Status: DOING
++- Branch: `task/202607302331-3C8V0X/repair-beta-2-guard-and-clone-baseline-drift`
++- Canonical task record: `.agentplane/tasks/202607302331-3C8V0X/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T23:35:43.550Z
++- Branch: task/202607302331-3C8V0X/repair-beta-2-guard-and-clone-baseline-drift
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../agentplane/src/context/reindex-projection.ts   | 57 ++++++++++------------
++ packages/agentplane/src/context/sqlite.ts          | 43 ++++++++++------
++ .../usecases/task-knowledge-request-scope.test.ts  | 20 ++++++++
++ .../usecases/task-knowledge-request-scope.ts       |  4 +-
++ .../runner/usecases/task-knowledge-request.test.ts |  3 +-
++ .../runner/usecases/task-knowledge-retrieval.ts    | 19 ++------
++ .../usecases/task-knowledge-semantic-escalation.ts |  5 +-
++ scripts/baselines/clone-baseline.json              | 32 ++++++------
++ 8 files changed, 98 insertions(+), 85 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json b/.agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json
+new file mode 100644
+index 000000000..ade66a6a5
+--- /dev/null
++++ b/.agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts\nResult: pass\nEvidence: 9 tests passed, 0 failed, 35 expectations at 2f127f86086217e2b984f7c8c2fa94506a54bdc6\nScope: shared record-guard behavior and semantic retrieval fallback paths\n\nCommand: bun run guards:check && bun run clone:check\nResult: pass\nEvidence: shared guards passed; clone baseline is current at sources=1274, clones=93, duplicatedLines=1462, duplicatedTokens=10292, percentage=0.6321670097030285\nScope: canonical guard ownership and reviewed clone-drift boundary\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0 at 2f127f86086217e2b984f7c8c2fa94506a54bdc6\nScope: repository type contract\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: format, schemas, compatibility, RF-04 replay, hotspots, lifecycle, guard, lint, architecture, clone, Knip, and coverage gates passed\nScope: full repository contract for the bounded repair",
++  "digest": "sha256:c32868d9d5751c2277b77e9ca76d031f093b013826d91fb8059ebeeeee38ea76",
++  "implementation_sha": "2f127f86086217e2b984f7c8c2fa94506a54bdc6",
++  "kind": "task_verification_record",
++  "note": "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass.",
++  "recorded_at": "2026-07-30T23:41:47.406Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
++  "scope_digest": "sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6",
++  "task_id": "202607302331-3C8V0X",
++  "verification_command": "agentplane verify 202607302331-3C8V0X --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/src/context/reindex-projection.ts b/packages/agentplane/src/context/reindex-projection.ts
+index ea5fb44bd..f6c7410d3 100644
+--- a/packages/agentplane/src/context/reindex-projection.ts
++++ b/packages/agentplane/src/context/reindex-projection.ts
+@@ -183,6 +183,31 @@ function projectMarkdownRows(
+   return rows;
+ }
+ 
++function appendWindowRows(
++  rows: ProjectionSourceRow[],
++  filePath: string,
++  rel: string,
++  lines: string[],
++  kind: "text-window" | "json-window",
++): void {
++  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
++    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
++    if (!body.trim()) continue;
++    const startLine = start + 1;
++    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
++    const ref = lineWindowRef(rel, startLine, endLine);
++    rows.push({
++      path: ref,
++      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
++      content_type: deriveContentType(filePath),
++      kind,
++      source_refs: [ref],
++      ...projectionTextFields(body),
++      size_bytes: byteLength(body),
++    });
++  }
++}
++
+ function projectPlainTextRows(
+   filePath: string,
+   content: string,
+@@ -201,21 +226,7 @@ function projectPlainTextRows(
+       size_bytes: byteLength(content),
+     },
+   ];
+-  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
+-    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
+-    if (!body.trim()) continue;
+-    const startLine = start + 1;
+-    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
+-    rows.push({
+-      path: lineWindowRef(rel, startLine, endLine),
+-      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
+-      content_type: deriveContentType(filePath),
+-      kind: "text-window",
+-      source_refs: [lineWindowRef(rel, startLine, endLine)],
+-      ...projectionTextFields(body),
+-      size_bytes: byteLength(body),
+-    });
+-  }
++  appendWindowRows(rows, filePath, rel, lines, "text-window");
+   return rows;
+ }
+ 
+@@ -238,21 +249,7 @@ function projectStructuredJsonRows(
+       size_bytes: byteLength(content),
+     },
+   ];
+-  for (let start = 0; start < lines.length; start += PROJECTION_WINDOW_MAX_LINES) {
+-    const body = lines.slice(start, start + PROJECTION_WINDOW_MAX_LINES).join("\n");
+-    if (!body.trim()) continue;
+-    const startLine = start + 1;
+-    const endLine = Math.min(lines.length, start + PROJECTION_WINDOW_MAX_LINES);
+-    rows.push({
+-      path: lineWindowRef(rel, startLine, endLine),
+-      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
+-      content_type: deriveContentType(filePath),
+-      kind: "json-window",
+-      source_refs: [lineWindowRef(rel, startLine, endLine)],
+-      ...projectionTextFields(body),
+-      size_bytes: byteLength(body),
+-    });
+-  }
++  appendWindowRows(rows, filePath, rel, lines, "json-window");
+   return rows;
+ }
+ 
+diff --git a/packages/agentplane/src/context/sqlite.ts b/packages/agentplane/src/context/sqlite.ts
+index 9ae4f521b..0451b1f0a 100644
+--- a/packages/agentplane/src/context/sqlite.ts
++++ b/packages/agentplane/src/context/sqlite.ts
+@@ -133,6 +133,31 @@ function parseRefs(raw: unknown): string[] {
+   }
+ }
+ 
++function projectionRowFields(
++  row: SqliteProjectionRowRecord,
++): Pick<
++  SqliteProjectionRow,
++  | "path"
++  | "sha256"
++  | "content_type"
++  | "projection_version"
++  | "indexed_at"
++  | "size_bytes"
++  | "kind"
++  | "source_refs"
++> {
++  return {
++    path: String(row.path ?? ""),
++    sha256: String(row.sha256 ?? ""),
++    content_type: String(row.content_type ?? ""),
++    projection_version: Number(row.projection_version ?? 0),
++    indexed_at: String(row.indexed_at ?? ""),
++    size_bytes: Number(row.size_bytes ?? 0),
++    kind: String(row.kind ?? ""),
++    source_refs: parseRefs(row.source_refs),
++  };
++}
++
+ function ftsTokens(query: string): string[] {
+   return query.match(/[\p{L}\p{N}_]+/gu)?.filter(Boolean) ?? [];
+ }
+@@ -468,16 +493,9 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
+     return {
+       metadata: metadataFromRow(metadata),
+       rows: rows.map((row) => ({
+-        path: String(row.path ?? ""),
+-        sha256: String(row.sha256 ?? ""),
+-        content_type: String(row.content_type ?? ""),
+-        projection_version: Number(row.projection_version ?? 0),
+-        indexed_at: String(row.indexed_at ?? ""),
+-        size_bytes: Number(row.size_bytes ?? 0),
+-        kind: String(row.kind ?? ""),
++        ...projectionRowFields(row),
+         search_text: String(row.search_text ?? ""),
+         preview_text: String(row.preview_text ?? ""),
+-        source_refs: parseRefs(row.source_refs),
+       })),
+     };
+   } catch {
+@@ -523,15 +541,8 @@ export async function searchSqliteProjection(
+     return {
+       metadata: metadataFromRow(metadata),
+       rows: records.map((row) => ({
+-        path: String(row.path ?? ""),
+-        sha256: String(row.sha256 ?? ""),
+-        content_type: String(row.content_type ?? ""),
+-        projection_version: Number(row.projection_version ?? 0),
+-        indexed_at: String(row.indexed_at ?? ""),
+-        size_bytes: Number(row.size_bytes ?? 0),
+-        kind: String(row.kind ?? ""),
++        ...projectionRowFields(row),
+         preview_text: String(row.preview_text ?? ""),
+-        source_refs: parseRefs(row.source_refs),
+         rank: Number(row.rank ?? 0),
+         highlight: String(row.highlight ?? ""),
+       })),
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.test.ts b/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.test.ts
+new file mode 100644
+index 000000000..99a7c997c
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.test.ts
+@@ -0,0 +1,20 @@
++import { describe, expect, it } from "vitest";
++
++import { canonicalKnowledgeKind } from "./task-knowledge-request-scope.js";
++
++describe("canonicalKnowledgeKind", () => {
++  it.each([
++    ["context/wiki/architecture.md", "wiki"],
++    ["context/raw/AGENTS.md", "source"],
++    [".agentplane/context/derived/facts/facts.jsonl#fact=fact:runtime:contract", "fact"],
++    [".agentplane/context/derived/graph/entities.jsonl#entity=entity:runtime", "entity"],
++    [".agentplane/context/derived/graph/edges.jsonl#edge=edge:runtime", "edge"],
++  ] as const)("classifies %s as %s", (ref, expected) => {
++    expect(canonicalKnowledgeKind(ref)).toBe(expected);
++  });
++
++  it("rejects malformed and unsupported canonical refs", () => {
++    expect(canonicalKnowledgeKind(" context/wiki/architecture.md")).toBeNull();
++    expect(canonicalKnowledgeKind("context/raw/AGENTS.md#entity=entity:runtime")).toBeNull();
++  });
++});
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.ts b/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.ts
+index 5f611ffca..4c1d5cdc1 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-request-scope.ts
+@@ -40,7 +40,7 @@ export function taskContextReferences(
+   return workOrder.knowledge_refs;
+ }
+ 
+-function kindForRef(ref: string): KnowledgeRef["kind"] | null {
++export function canonicalKnowledgeKind(ref: string): KnowledgeRef["kind"] | null {
+   try {
+     const parsed = parseCanonicalKnowledgeRef(ref);
+     if (parsed.path.startsWith("context/wiki/")) return "wiki";
+@@ -68,7 +68,7 @@ export function matchTaskContextReferences(opts: {
+         (opts.desired_kind === "any" || knowledge.kind === opts.desired_kind),
+     );
+     if (matchingContext.length > 0) return matchingContext;
+-    const candidateKind = kindForRef(candidateRef);
++    const candidateKind = canonicalKnowledgeKind(candidateRef);
+     if (!candidateKind || opts.desired_kind === "any" || candidateKind === opts.desired_kind) {
+       outOfScopeCandidateCount += 1;
+     }
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts b/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
+index 368b17465..65e128d58 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
+@@ -264,13 +264,14 @@ describe("bounded task knowledge requests", () => {
+     await write(root, "context/wiki/drift.md", "# Drift\n\nChanged content after work order.\n");
+ 
+     const rejected = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
++    const omissionDetail = rejected.omissions[0]?.detail;
+ 
+     expect(rejected).toMatchObject({
+       outcome: "unresolved",
+       knowledge_refs: [],
+       omissions: [expect.objectContaining({ code: "excerpt_not_included" })],
+     });
+-    expect(rejected.omissions[0]?.detail).toContain("digest_mismatch");
++    expect(omissionDetail).toMatch(/digest_mismatch/u);
+   });
+ 
+   it("keeps six long task-context candidates, metadata, and omission receipts within the response budget", async () => {
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+index 99673bf04..afd707379 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
+ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+-import { parseCanonicalKnowledgeRef, type KnowledgeRef } from "@agentplaneorg/core/schemas";
++import { type KnowledgeRef } from "@agentplaneorg/core/schemas";
+ 
+ import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
+ import type { CommandContext } from "../../commands/shared/task-backend.js";
+@@ -23,6 +23,7 @@ import {
+   selectSemanticRetrievalCandidates,
+   type SemanticRetrievalSelector,
+ } from "./task-knowledge-semantic-escalation.js";
++import { canonicalKnowledgeKind } from "./task-knowledge-request-scope.js";
+ 
+ export type {
+   TaskKnowledgeRetrieval,
+@@ -141,20 +142,6 @@ function encoded(value: string): string {
+   return encodeURIComponent(value).replaceAll("%3A", ":");
+ }
+ 
+-function canonicalKind(ref: string): KnowledgeRef["kind"] | null {
+-  try {
+-    const parsed = parseCanonicalKnowledgeRef(ref);
+-    if (parsed.path.startsWith("context/wiki/")) return "wiki";
+-    if (parsed.path.startsWith("context/raw/")) return "source";
+-    if (parsed.selector?.key === "fact") return "fact";
+-    if (parsed.selector?.key === "entity") return "entity";
+-    if (parsed.selector?.key === "edge") return "edge";
+-    return null;
+-  } catch {
+-    return null;
+-  }
+-}
+-
+ function addCandidate(candidates: Map<string, Candidate>, candidate: Candidate): void {
+   const current = candidates.get(candidate.ref);
+   if (!current) {
+@@ -180,7 +167,7 @@ function candidateFromRef(opts: {
+   score: number;
+   reason: string;
+ }): Candidate | null {
+-  const kind = canonicalKind(opts.ref);
++  const kind = canonicalKnowledgeKind(opts.ref);
+   return kind
+     ? { ref: opts.ref, kind, retrieval: opts.retrieval, score: opts.score, reasons: [opts.reason] }
+     : null;
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts b/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts
+index 3bb96f64f..eb68353f2 100644
+--- a/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.ts
+@@ -1,5 +1,6 @@
+ import { createHash } from "node:crypto";
+ 
++import { isRecord } from "../../shared/guards.js";
+ import type { RetrievalAdapter, RetrievalSignal } from "./task-knowledge-retrieval-query.js";
+ 
+ const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
+@@ -280,10 +281,6 @@ function receipt(opts: {
+   };
+ }
+ 
+-function isRecord(value: unknown): value is Record<string, unknown> {
+-  return value !== null && typeof value === "object" && !Array.isArray(value);
+-}
+-
+ function usageFrom(response: unknown):
+   | {
+       ok: true;
+diff --git a/scripts/baselines/clone-baseline.json b/scripts/baselines/clone-baseline.json
+index 28b721528..8a4f24bbd 100644
+--- a/scripts/baselines/clone-baseline.json
++++ b/scripts/baselines/clone-baseline.json
+@@ -29,14 +29,14 @@
+     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
+   },
+   "metrics": {
+-    "sources": 1253,
+-    "lines": 223799,
+-    "tokens": 1281608,
++    "sources": 1274,
++    "lines": 231263,
++    "tokens": 1323710,
+     "clones": 90,
+     "duplicatedLines": 1431,
+-    "duplicatedTokens": 9976,
+-    "percentage": 0.6394130447410399,
+-    "percentageTokens": 0.7783971385946404
++    "duplicatedTokens": 9977,
++    "percentage": 0.6187760255639683,
++    "percentageTokens": 0.7537149375618527
+   },
+   "top_duplicates": [
+     {
+@@ -44,8 +44,8 @@
+       "tokens": 103,
+       "firstFile": {
+         "path": "packages/core/src/index.ts",
+-        "start": 365,
+-        "end": 403
++        "start": 369,
++        "end": 407
+       },
+       "secondFile": {
+         "path": "packages/core/src/tasks/index.ts",
+@@ -161,8 +161,8 @@
+       },
+       "secondFile": {
+         "path": "packages/testkit/src/cli-harness.ts",
+-        "start": 619,
+-        "end": 637
++        "start": 673,
++        "end": 691
+       }
+     },
+     {
+@@ -343,8 +343,8 @@
+       },
+       "secondFile": {
+         "path": "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts",
+-        "start": 35,
+-        "end": 54
++        "start": 36,
++        "end": 55
+       }
+     },
+     {
+@@ -618,13 +618,13 @@
+       "tokens": 147,
+       "firstFile": {
+         "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
+-        "start": 190,
+-        "end": 206
++        "start": 194,
++        "end": 210
+       },
+       "secondFile": {
+         "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
+-        "start": 341,
+-        "end": 360
++        "start": 439,
++        "end": 458
+       }
+     },
+     {

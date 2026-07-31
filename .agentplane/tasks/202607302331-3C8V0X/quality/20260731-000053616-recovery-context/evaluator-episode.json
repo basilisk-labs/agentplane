@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607302331-3C8V0X-e0621aeacee3899bbd55403b",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/quality/20260731-000053616-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-31T00:00:54.556Z",
+  "ended_at": "2026-07-31T00:01:56.600Z",
+  "stdout_bytes": 131254,
+  "stderr_bytes": 5441,
+  "provider_usage": {
+    "input_tokens": 203479,
+    "output_tokens": 2470,
+    "total_tokens": 205949
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:c280eefe343491656064462552cd43a02e8059ca1e00f6a67814b5bd4db88273"
+}

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b9a687fd2de16e099b1f70410d897a9aae957570a1cd20aa1ce14c714b43d3aa",
+  "implementation_sha": "7b98413caecc2a1f2745fc12d5dd535f531c7a41",
+  "kind": "task_verification_record",
+  "note": "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass.",
+  "recorded_at": "2026-07-31T00:07:49.495Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6",
+  "task_id": "202607302331-3C8V0X",
+  "verification_command": "agentplane verify 202607302331-3C8V0X --ok --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}

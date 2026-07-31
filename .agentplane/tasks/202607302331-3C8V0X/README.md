@@ -4,7 +4,7 @@ title: "Repair beta.2 guard and clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -28,36 +28,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T23:41:47.406Z"
-  updated_by: "TESTER"
-  note: "Verified bounded repair at 2f127f86: local isRecord was replaced by the shared canonical guard, the measured clone baseline is current, and all declared focused and full contract checks pass."
+  updated_at: "2026-07-31T00:07:49.495Z"
+  updated_by: "EVALUATOR"
+  note: "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass."
   attempts: 0
 quality_review:
-  state: "rework"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T23:43:29.813Z"
+  state: "pass"
+  updated_at: "2026-07-31T00:07:49.495Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "fe3e7f4145cb5d38be4591c336b064b9dee6f237"
+  note: "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass."
+  evaluated_sha: "7b98413caecc2a1f2745fc12d5dd535f531c7a41"
   blueprint_digest: "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b"
   evidence_refs:
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607302331-3C8V0X/README.md"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607302331-3C8V0X/verification/20260730234147406-c32868d9d5751c22.json"
-    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260730-234224069-recovery-context/evaluator-blueprint.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "The clone baseline was refreshed, but the frozen evidence does not substantively review or classify the three absolute clone-metric increases."
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json"
+  findings: []
 commit:
   hash: "8250bd520904b4ad9e105fce32d303c0e89ae1ce"
   message: "♻️ 3C8V0X code: remove clone drift"
@@ -99,8 +84,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implemented: removed all three beta.2 clone-drift groups; source commit 8250bd520904."
+  -
+    type: "verify"
+    at: "2026-07-31T00:07:49.495Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass."
 doc_version: 3
-doc_updated_at: "2026-07-30T23:59:39.998Z"
+doc_updated_at: "2026-07-31T00:07:51.299Z"
 doc_updated_by: "CODER"
 description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
 sections:
@@ -173,6 +164,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-31T00:07:49.495Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T23:59:39.998Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+    - old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+    - current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -181,6 +202,10 @@ sections:
     - Observation: Beta.2 qualification detected a local isRecord duplicate and an absolute clone-baseline drift after repository source growth.
       Impact: The guard blocked ci:contract and qualification could not proceed without a separately traceable repair.
       Resolution: This task isolates the two-file repair; beta.2 remains a separate qualification gate and must consume the merged repair through dependency closure.
+
+    - Observation: 33 focused tests plus semantic escalation, guards, clone baseline, typecheck, and ci:contract passed at 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+      Impact: The repaired guard and all three clone-group removals are covered at the evaluated implementation revision.
+      Resolution: Submit a fresh evaluator packet with this verification record.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9b299bedb15d2efdbf92b83567660e65aa3451a9"
@@ -266,6 +291,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-31T00:07:49.495Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T23:59:39.998Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+- old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+- current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -278,3 +333,7 @@ DecisionContextRef:
 - Observation: Beta.2 qualification detected a local isRecord duplicate and an absolute clone-baseline drift after repository source growth.
   Impact: The guard blocked ci:contract and qualification could not proceed without a separately traceable repair.
   Resolution: This task isolates the two-file repair; beta.2 remains a separate qualification gate and must consume the merged repair through dependency closure.
+
+- Observation: 33 focused tests plus semantic escalation, guards, clone baseline, typecheck, and ci:contract passed at 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+  Impact: The repaired guard and all three clone-group removals are covered at the evaluated implementation revision.
+  Resolution: Submit a fresh evaluator packet with this verification record.

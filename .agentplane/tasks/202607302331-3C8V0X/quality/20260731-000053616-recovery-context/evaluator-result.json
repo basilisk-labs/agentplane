@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen verification predates the implementation that removes the three clone groups and therefore does not validate the evaluated SHA.",
+      "broken_invariant": "All changed implementation behavior must be covered by recorded verification for the reviewed revision; pass requires evidence covering the relevant positive, negative, and concurrency-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000053616-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:eac2dd1ccf755bf55c1fcde25abd8f58f1e1a50267ba5b83b8df245265a8d014"
+        },
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000053616-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:255098223994a4cf0e747828a6c15fbb5fc8f5be44942ef9be6a9e2854e4d0db",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
+          "sha256": "sha256:9d02d2af7856af536231d0fde44d9666d224a75e8ba79165edb9d71068c106a5",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Re-run and record every declared verification command against evaluated SHA f3cae203ed4289a4cfe8ca340dfd0493e939e406.",
+    "Run focused projection and SQLite tests covering both consumers of the new shared helpers, plus the new canonicalKnowledgeKind test and affected task-knowledge request tests, against the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "Passing checks at implementation SHA 2f127f86086217e2b984f7c8c2fa94506a54bdc6 are assumed to remain valid after subsequent source refactors that removed the three clone groups.",
+    "The extracted projection and SQLite helpers are assumed to preserve all caller-specific fields and output semantics without fresh runtime evidence.",
+    "The evaluated worktree is assumed to have no concurrent or unrelated drift beyond the frozen diff; the observed checks contain no runtime or runner-history evidence establishing that classification."
+  ],
+  "recovery_context": "The prior clone-drift finding is substantively addressed by the review artifact and removal of all three clone groups, but the recorded verification is stale: it targets 2f127f86086217e2b984f7c8c2fa94506a54bdc6, while this evaluation targets f3cae203ed4289a4cfe8ca340dfd0493e939e406 and includes later implementation changes. Re-run the declared and focused affected-path checks at the evaluated revision, record their evidence, and submit a fresh frozen evaluator packet."
+}

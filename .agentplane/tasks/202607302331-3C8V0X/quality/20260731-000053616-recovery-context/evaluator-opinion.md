@@ -1,0 +1,26 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 1 typed finding(s).
+
+## Findings
+- The frozen verification predates the implementation that removes the three clone groups and therefore does not validate the evaluated SHA.
+
+## Evidence
+- .agentplane/tasks/202607302331-3C8V0X/quality/20260731-000053616-recovery-context/evaluator-diff.patch
+- .agentplane/tasks/202607302331-3C8V0X/quality/20260731-000053616-recovery-context/evaluator-observed-checks.json
+- .agentplane/tasks/202607302331-3C8V0X/README.md
+- .agentplane/policy/dod.code.md
+
+## Missing Tests
+- Re-run and record every declared verification command against evaluated SHA f3cae203ed4289a4cfe8ca340dfd0493e939e406.
+- Run focused projection and SQLite tests covering both consumers of the new shared helpers, plus the new canonicalKnowledgeKind test and affected task-knowledge request tests, against the evaluated SHA.
+
+## Hidden Assumptions
+- Passing checks at implementation SHA 2f127f86086217e2b984f7c8c2fa94506a54bdc6 are assumed to remain valid after subsequent source refactors that removed the three clone groups.
+- The extracted projection and SQLite helpers are assumed to preserve all caller-specific fields and output semantics without fresh runtime evidence.
+- The evaluated worktree is assumed to have no concurrent or unrelated drift beyond the frozen diff; the observed checks contain no runtime or runner-history evidence establishing that classification.
+
+## Residual Risks
+- The prior clone-drift finding is substantively addressed by the review artifact and removal of all three clone groups, but the recorded verification is stale: it targets 2f127f86086217e2b984f7c8c2fa94506a54bdc6, while this evaluation targets f3cae203ed4289a4cfe8ca340dfd0493e939e406 and includes later implementation changes. Re-run the declared and focused affected-path checks at the evaluated revision, record their evidence, and submit a fresh frozen evaluator packet.
