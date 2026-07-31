@@ -6,7 +6,7 @@ Created: 2026-07-31T19:53:56.576Z
 
 - Task: `202607221854-RW8CJF`
 - Title: Define granular CommandSession capabilities and migrate a pilot slice
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221854-RW8CJF/define-granular-commandsession-capabilities-and`
 - Canonical task record: `.agentplane/tasks/202607221854-RW8CJF/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-31T19:53:56.576Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T19:53:56.576Z
+- Updated: 2026-07-31T20:23:47.343Z
 - Branch: task/202607221854-RW8CJF/define-granular-commandsession-capabilities-and
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
