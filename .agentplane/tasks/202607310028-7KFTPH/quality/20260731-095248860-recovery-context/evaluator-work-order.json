@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607310028-7KFTPH-36920e417f586cf64586a302",
+  "prepared_at": "2026-07-31T09:52:48.860Z",
+  "task": {
+    "id": "202607310028-7KFTPH",
+    "revision": 10,
+    "objective": "Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main\n\nRe-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: Re-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package.\n- Out of scope: unrelated refactors not required for \"Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main\".",
+      "1. Pin corrected main and verify the dependency closure, including 202607302331-3C8V0X, has merged verification, evaluator, and hosted-close evidence. 2. Rebuild the exact RF-04 qualification measurement (50 runs and 55 provider episodes) on that SHA; preserve command-level evidence. 3. Run test:critical, typecheck, and ci:contract, and compare outcome, safety, token, and latency metrics against frozen beta.2 guardrails. 4. Produce a qualification packet and independent evaluator review. 5. Record publish or do-not-publish explicitly; do not modify product code or publish a package.",
+      "1. Resolve the beta.2 dependency closure at the reviewed main SHA. Expected: every declared leaf, including 202607302331-3C8V0X, is DONE with passing verification, evaluator, and hosted-close evidence. 2. Run `node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH`. Expected: the exact 50-run, 10-scenario, 55-provider-episode RF-04 measurement is produced under the matched runtime profile. 3. Run `bun run test:critical`, `bun run typecheck`, and `bun run ci:contract`. Expected: all three pass on the same reviewed SHA. 4. Compare candidate outcome, safety, provider-token, and latency cells to frozen beta.2 guardrails. Expected: no failure is hidden by token improvement. 5. Record a SHA-bound qualification packet and independent evaluator verdict. Expected: the explicit publish or do-not-publish decision is reproducible from committed evidence."
+    ]
+  },
+  "evaluated_sha": "da187020a4e4c7c76a4d5f35e899c7465c17edbf",
+  "diff_base_sha": "25fbf2d836a94e9b190464da219a35efd4ebe878",
+  "blueprint_digest": "a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607310028-7KFTPH/README.md",
+      "sha256": "sha256:6ab4c5c294e9a42daf48f518a1398c0ec0c07fe065997f9fa3d9d10417804db9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-095248860-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d09d33d7f4cec834a9d95f53ccc146b43892bde8ae648929d86f1c5ed8254769",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-095248860-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:408fc94ac4c153d32db7faa1f12baa2bbb42061e3341fb26f9b690d0c8a88aa3",
+      "required": true
+    },
+    {
+      "id": "qualification-packet",
+      "kind": "qualification_packet",
+      "path": ".agentplane/tasks/202607310028-7KFTPH/evidence/qualification-packet.v1.json",
+      "sha256": "sha256:6ca5092be27d6676842f16931cfaccbaa11ff107e8453b75fd58198828c305c5",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-095248860-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:0b76982f081ae56a79f87c5fd2d275d6f50e1432725da5fbc1d5499d5375a0b5",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
