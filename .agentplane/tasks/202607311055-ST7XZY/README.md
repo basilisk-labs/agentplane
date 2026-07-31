@@ -2,10 +2,10 @@
 id: "202607311055-ST7XZY"
 title: "Eliminate direct workflow state-neutral routing loops"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -46,7 +46,9 @@ quality_review:
     - "DOING pending verification without runner state routes to task run after canonical task artifacts are persisted."
     - "Terminal runner state stops for verification evidence instead of repeating verify-show."
     - "Pre-merge closure must remain fresh relative to implementation HEAD; stale PR artifacts update before a new closure."
-commit: null
+commit:
+  hash: "661d4e0eb97bcbd50016b8d0703b1ee0f4f99b28"
+  message: "✅ ST7XZY task: record final routing verification"
 comments:
   -
     author: "CODER"
@@ -60,6 +62,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: enforce fresh pre-merge closure after implementation changes."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -119,8 +124,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed."
+  -
+    type: "status"
+    at: "2026-07-31T11:25:55.562Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:25:25.163Z"
+doc_updated_at: "2026-07-31T11:25:55.564Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -330,8 +342,8 @@ sections:
       Resolution: Route to task run or artifact persistence; require fresh basis-bound closure after implementation changes.
 extensions:
   implementation_commit:
-    hash: "d60e737bb85a8252367b8203074719531811764b"
-    message: "🐛 ST7XZY routing: eliminate state-neutral direct loops"
+    hash: "ccfacd7d9a18ecba73a9e3e687fe3625e38492be"
+    message: "🐛 ST7XZY routing: reject stale pre-merge closure"
 id_source: "generated"
 ---
 ## Summary

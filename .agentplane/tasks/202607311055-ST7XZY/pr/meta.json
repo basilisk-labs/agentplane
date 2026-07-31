@@ -8,10 +8,10 @@
   "pr_number": 4701,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4701",
   "pre_merge_closure": {
-    "basis_commit": "666b99486bd6fc90355445552a154be6651850f1",
+    "basis_commit": "661d4e0eb97bcbd50016b8d0703b1ee0f4f99b28",
     "branch": "task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing",
     "pr_number": 4701,
-    "recorded_at": "2026-07-31T11:12:31.559Z",
+    "recorded_at": "2026-07-31T11:25:55.620Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
