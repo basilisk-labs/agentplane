@@ -109,12 +109,17 @@ if (JSON.stringify(bridgeConfig.compilerOptions) !== JSON.stringify(expectedBrid
 }
 
 const depcruiseConfig = readJson("tsconfig.depcruise.json");
+const expectedDepcruiseOptions = {
+  module: "NodeNext",
+  moduleResolution: "NodeNext",
+  target: "ES2022",
+  types: ["node"],
+};
 if (
-  depcruiseConfig.extends !== "./tsconfig.base.json" ||
-  depcruiseConfig.compilerOptions?.baseUrl !== "."
+  JSON.stringify(depcruiseConfig) !== JSON.stringify({ compilerOptions: expectedDepcruiseOptions })
 ) {
   throw new Error(
-    "tsconfig.depcruise.json must isolate the TypeScript 6 baseUrl compatibility boundary.",
+    "tsconfig.depcruise.json must stay isolated from compiler project references and path aliases.",
   );
 }
 const depcruiseRuntimeConfig = readFileSync(path.join(root, "depcruise.config.cjs"), "utf8");

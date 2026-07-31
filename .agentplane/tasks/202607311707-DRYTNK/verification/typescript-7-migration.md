@@ -20,7 +20,7 @@ The migration implements the approved `202607311706-QB60J5` contract:
 - Root and workspace typecheck scripts use `scripts/checks/run-typescript-build.mjs`.
 - The wrapper defaults to `@typescript/native` and accepts only the documented `typescript` fallback.
 - Root `baseUrl` was removed and every path mapping is explicitly relative.
-- `dependency-cruiser` keeps its former TypeScript 6 `baseUrl` semantics in an isolated config, so clean package builds cannot change workspace import resolution.
+- `dependency-cruiser` uses an isolated config without compiler-only project references or workspace path aliases, so clean package builds cannot change the architecture graph.
 - The Docusaurus 3.10.1 config is mirrored by a checked compatibility bridge with only `baseUrl` removed.
 - TypeScript 7 remains a root development dependency and is absent from runtime package dependencies.
 
@@ -42,7 +42,7 @@ The migration implements the approved `202607311706-QB60J5` contract:
 - `bun run test:critical`: pass, 12/12 routed chunks. The RF-04 exact-anchor runtime accepts only the frozen additive TypeScript 7 lock delta and still rejects any version or package-set drift as `ANCHOR_LOCK_MISMATCH`.
 - Isolated retry of every file that timed out during the overloaded full local Vitest run: pass, 7/7 files and 80/80 tests with one worker.
 - `bun run arch:check`: pass, zero dependency violations.
-- Clean-CI reproduction (`bun install --frozen-lockfile --ignore-scripts`, all four package builds, then `bun run arch:check`): pass after isolating the dependency-cruiser config; `*.testkit.ts` helpers remain test-only while runtime imports from testkit are still forbidden.
+- A fresh checkout reproduced the hosted failure after frozen install and all four package builds. After the fix, the same post-build `agentplane` dist shape (1127 files) and the full `bun run arch:check` passed with zero violations.
 - `bun run knip:check`: pass, baseline 545/545.
 - `bun run package:tarball:check`: pass for core, recipes, and agentplane.
 - `bun run package:install-smoke`: pass for locally packed packages.
@@ -57,8 +57,7 @@ A full local `test:fast` attempt oversubscribed the machine and produced 18 obse
 
 - First hosted run: Windows, unit, critical CLI, workflow, contract, coverage, package-runtime, docs, dependency review, and CodeQL checks passed.
 - The first `verify-static` run exposed build-order-dependent dependency-cruiser resolution after root `baseUrl` removal. The clean sequence was reproduced locally.
-- Resolution: architecture analysis now uses `tsconfig.depcruise.json` through the pinned TypeScript 6 API. The main TypeScript 7 graph remains free of `baseUrl`.
-- The runtime/testkit rule was narrowed only for `*.testkit.ts` test helpers; production source imports from `@agentplane/testkit` remain forbidden.
+- Resolution: architecture analysis now uses `tsconfig.depcruise.json` without following compiler project references or workspace source aliases. The main TypeScript 7 graph remains free of `baseUrl`, and no architecture rule was weakened.
 - Fresh hosted `verify-static`, aggregate PR verification, and all required checks remain mandatory on the rework commit.
 
 ## Rollback
