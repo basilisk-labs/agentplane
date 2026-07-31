@@ -30,6 +30,28 @@ export function normalizeBranchPrBatchIncludedTaskIds(
   );
 }
 
+export function normalizeBranchPrBatchTaskIds(task: TaskData, taskId: string): string[] {
+  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
+  const primaryTaskId =
+    typeof batch?.primary_task_id === "string" ? batch.primary_task_id.trim() : "";
+  if (!primaryTaskId || (batch?.role !== "primary" && batch?.role !== "included")) {
+    return [taskId];
+  }
+  const includedTaskIds = Array.isArray(batch.included_task_ids)
+    ? normalizeRelatedTaskIds(
+        batch.included_task_ids.filter((entry): entry is string => typeof entry === "string"),
+        primaryTaskId,
+      )
+    : [];
+  if (
+    (batch.role === "primary" && taskId === primaryTaskId) ||
+    (batch.role === "included" && includedTaskIds.includes(taskId))
+  ) {
+    return [primaryTaskId, ...includedTaskIds];
+  }
+  return [taskId];
+}
+
 function withBranchPrBatchExtension(opts: {
   task: TaskData;
   role: "primary" | "included";

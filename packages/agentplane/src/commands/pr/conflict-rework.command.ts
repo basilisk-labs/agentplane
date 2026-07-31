@@ -15,6 +15,24 @@ function packetFailure(
   taskId: string,
   preparation: Exclude<ConflictReworkPreparation, { state: "ready" }>,
 ): CliError {
+  if (preparation.state === "publication_required") {
+    const command = `agentplane task next-action ${taskId} --remote --explain`;
+    return new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Cannot prepare semantic conflict rework for ${taskId}: ${preparation.reason}. ` +
+        `Publish the guarded fast-forward head through the route oracle first: ${command}. ` +
+        "No branch, worktree, PR, provider, queue, or task-state mutation was performed.",
+      context: {
+        reason_code: "provider_head_publication_required",
+        task_id: taskId,
+        provider_head_sha: preparation.provider_head_sha,
+        local_head_sha: preparation.local_head_sha,
+        next_command: command,
+      },
+    });
+  }
   if (preparation.state === "adoption_required") {
     const command =
       `agentplane integrate queue adopt-legacy-protected-conflict ${taskId} ` +

@@ -8,7 +8,11 @@ function sortedUnique(values: readonly string[]): string[] {
 export async function resolveQualificationDependencyLeaves(opts: {
   taskId: string;
   loadTask: (taskId: string) => Promise<TaskData | null>;
-}): Promise<{ rootDependencyIds: string[]; terminalLeaves: TaskData[] }> {
+}): Promise<{
+  rootDependencyIds: string[];
+  dependencyTaskIds: string[];
+  terminalLeaves: TaskData[];
+}> {
   const rootTask = await opts.loadTask(opts.taskId);
   if (!rootTask) {
     throw new CliError({
@@ -52,6 +56,7 @@ export async function resolveQualificationDependencyLeaves(opts: {
   for (const dependencyId of rootDependencyIds) await visit(dependencyId);
   return {
     rootDependencyIds,
+    dependencyTaskIds: [...visited].toSorted(),
     terminalLeaves: [...terminalLeaves.values()].toSorted((a, b) => a.id.localeCompare(b.id)),
   };
 }

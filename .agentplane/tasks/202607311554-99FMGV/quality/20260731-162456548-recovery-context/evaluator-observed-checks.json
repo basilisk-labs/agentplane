@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck && bun run format:check && node .agentplane/policy/check-routing.mjs",
+    "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T16:24:31.821Z",
+    "updated_by": "TESTER",
+    "note": "PASS: structured verification for semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607311554-99FMGV/verification/20260731162431821-aa6efa3315fd2c51.json",
+      "sha256": "sha256:f141d737cbc5b483c87777251b8c623ed625af005ec78705d394cfaa8f1c54f7"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

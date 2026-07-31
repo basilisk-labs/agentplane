@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Implementation and frozen verification evidence consistently bind verification records and evaluator preparation to the same semantic target SHA across lifecycle-only closure history.",
+      "broken_invariant": "No invariant is broken; evaluated_sha and verification implementation_sha are both 9d4b182abb337d2849f7e25760ef4b2ad3d99aa1, with focused coverage for direct, branch_pr, included-batch, qualification, stale-record, and semantic-advance paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0b01202735a47053b1ad2af13a55f92c456be15571d428c6014557b75f7baefe"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:8afbc80ae930268015dc70bf64ad9ead6f3520c7eb8d4b61a375715f630ac049"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/verification/20260731153115267-c27ca95630d2c5e7.json",
+          "sha256": "sha256:b6b1532ff27222a02736d213471244437b8dadf0877aec48f7fc18ed01e37a97"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

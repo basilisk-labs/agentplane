@@ -1,0 +1,1506 @@
+diff --git a/.agentplane/tasks/202607221854-4FNZPG/README.md b/.agentplane/tasks/202607221854-4FNZPG/README.md
+index 091eef656..b409a24e9 100644
+--- a/.agentplane/tasks/202607221854-4FNZPG/README.md
++++ b/.agentplane/tasks/202607221854-4FNZPG/README.md
+@@ -4,11 +4,12 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
+ status: "TODO"
+ priority: "high"
+ owner: "TESTER"
+-revision: 5
++revision: 6
+ origin:
+   system: "manual"
+ depends_on:
+   - "202607221908-PWFH5K"
++  - "202607311707-DRYTNK"
+ tags:
+   - "migration"
+   - "milestone-rc2"
+diff --git a/.agentplane/tasks/202607311706-5N483Q/README.md b/.agentplane/tasks/202607311706-5N483Q/README.md
+new file mode 100644
+index 000000000..853029492
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-5N483Q/README.md
+@@ -0,0 +1,125 @@
++---
++id: "202607311706-5N483Q"
++title: "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract"
++result_summary: "No-op closure recorded."
++risk_level: "low"
++breaking: false
++status: "DONE"
++priority: "high"
++owner: "TESTER"
++revision: 2
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "benchmark"
++  - "milestone-rc2"
++  - "performance"
++  - "toolchain"
++  - "typescript7"
++  - "v0.7"
++task_kind: "analysis"
++mutation_scope: "none"
++blueprint_request: "performance.benchmark"
++verify:
++  - "Exercise typescript-eslint plus trust-boundary and compatibility scripts that import the TypeScript compiler API with the side-by-side TypeScript 6 package."
++  - "Measure repeated warm and cold TypeScript 6 and TypeScript 7 typecheck runs for the root project graph and record wall time, peak memory, and diagnostic counts."
++  - "Record a go/no-go decision with exact package aliases, pinned versions, checker/builder settings, CI resource limits, and a one-command rollback path."
++  - "Run TypeScript 7 against every repository tsconfig/project-reference path and classify every diagnostic or emit difference; unresolved correctness drift fails the adoption gate."
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "PLANNER"
++    body: |-
++      Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.
++
++      Note: Superseded immediately because the explicit performance blueprint requires a code-scoped benchmark task; no implementation work started.
++events:
++  -
++    type: "status"
++    at: "2026-07-31T17:06:55.292Z"
++    author: "PLANNER"
++    from: "TODO"
++    to: "DONE"
++    note: |-
++      Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.
++
++      Note: Superseded immediately because the explicit performance blueprint requires a code-scoped benchmark task; no implementation work started.
++doc_version: 3
++doc_updated_at: "2026-07-31T17:06:55.292Z"
++doc_updated_by: "PLANNER"
++description: "Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration."
++sections:
++  Summary: |-
++    Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++
++    Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++  Scope: |-
++    - In scope: Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++    - Out of scope: unrelated refactors not required for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++  Plan: |-
++    1. Implement the change for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++
++Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++
++## Scope
++
++- In scope: Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++- Out of scope: unrelated refactors not required for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++
++## Plan
++
++1. Implement the change for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607311706-QB60J5/README.md b/.agentplane/tasks/202607311706-QB60J5/README.md
+new file mode 100644
+index 000000000..353d87e5e
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/README.md
+@@ -0,0 +1,132 @@
++---
++id: "202607311706-QB60J5"
++title: "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract"
++status: "DOING"
++priority: "high"
++owner: "TESTER"
++revision: 6
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "benchmark"
++  - "code"
++  - "milestone-rc2"
++  - "performance"
++  - "toolchain"
++  - "typescript7"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "performance.benchmark"
++verify:
++  - "Exercise typescript-eslint plus trust-boundary and compatibility scripts that import the TypeScript compiler API with the side-by-side TypeScript 6 package."
++  - "Measure repeated warm and cold TypeScript 6 and TypeScript 7 typecheck runs for the root project graph and record wall time, peak memory, and diagnostic counts."
++  - "Record a go/no-go decision with exact package aliases, pinned versions, checker/builder settings, CI resource limits, and a one-command rollback path."
++  - "Run TypeScript 7 against every repository tsconfig/project-reference path and classify every diagnostic or emit difference; unresolved correctness drift fails the adoption gate."
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-31T17:07:29.290Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Approved as the TypeScript 7 evidence gate for AgentPlane 0.7."
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "TESTER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T17:28:35.361Z"
++    author: "TESTER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++doc_version: 3
++doc_updated_at: "2026-07-31T17:47:05.196Z"
++doc_updated_by: "TESTER"
++description: "Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration."
++sections:
++  Summary: |-
++    Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++
++    Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++  Scope: |-
++    - In scope: Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++    - Out of scope: unrelated refactors not required for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++  Plan: |-
++    1. Freeze a reproducible TypeScript 6 baseline and benchmark method.
++    2. Add a worktree-local side-by-side TypeScript 7 candidate and exercise all compiler entrypoints.
++    3. Prove compiler-API consumers remain on TypeScript 6 and classify every parity difference.
++    4. Benchmark the candidate under local and hosted CI resource shapes.
++    5. Publish a bounded adoption contract or a no-go decision with rollback and residual risks.
++  Verify Steps: |-
++    1. Capture the TypeScript 6.0.3 baseline with at least three isolated cold runs and five warm runs of the root project-reference typecheck; record wall time, peak memory, diagnostic count, machine/runner shape, and exact commands in a task artifact.
++    2. Install TypeScript 7 side-by-side without replacing the TypeScript 6 API surface, then run every repository tsconfig/project-reference path. Zero unexplained diagnostic, declaration, or emit drift is required.
++    3. Exercise ESLint/typescript-eslint and every scripts/** consumer that imports the TypeScript compiler API. They must continue to resolve the pinned TypeScript 6 compatibility API while typecheck commands resolve TypeScript 7.
++    4. Compare at least three TypeScript 7 cold runs and five warm runs against the same baseline. Adoption requires no correctness regression, no material peak-memory regression on CI-sized runners, and a measured typecheck improvement or a documented reason the smaller local graph masks expected CI savings.
++    5. Record a go/no-go decision that freezes exact package aliases and versions, checker/builder concurrency, CI resource limits, rollback command, residual risks, and the implementation task handoff.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: TypeScript 7.0.2 completed the root graph 4.46x to 4.93x faster than TypeScript 6.0.3 with 8.6% to 14.4% lower peak RSS after the required baseUrl compatibility changes.
++      Impact: AgentPlane 0.7 should adopt the native compiler for typechecking, but TypeScript 7 cannot replace the compiler API used by ESLint and trust-boundary scripts.
++      Resolution: Freeze the side-by-side contract in benchmark/typescript-7-adoption-contract.md and hand implementation to 202607311707-DRYTNK.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "54c1d90ac8cd30ea28d165c8e41fcdc1542e740c"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++
++Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++
++## Scope
++
++- In scope: Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++- Out of scope: unrelated refactors not required for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++
++## Plan
++
++1. Freeze a reproducible TypeScript 6 baseline and benchmark method.
++2. Add a worktree-local side-by-side TypeScript 7 candidate and exercise all compiler entrypoints.
++3. Prove compiler-API consumers remain on TypeScript 6 and classify every parity difference.
++4. Benchmark the candidate under local and hosted CI resource shapes.
++5. Publish a bounded adoption contract or a no-go decision with rollback and residual risks.
++
++## Verify Steps
++
++1. Capture the TypeScript 6.0.3 baseline with at least three isolated cold runs and five warm runs of the root project-reference typecheck; record wall time, peak memory, diagnostic count, machine/runner shape, and exact commands in a task artifact.
++2. Install TypeScript 7 side-by-side without replacing the TypeScript 6 API surface, then run every repository tsconfig/project-reference path. Zero unexplained diagnostic, declaration, or emit drift is required.
++3. Exercise ESLint/typescript-eslint and every scripts/** consumer that imports the TypeScript compiler API. They must continue to resolve the pinned TypeScript 6 compatibility API while typecheck commands resolve TypeScript 7.
++4. Compare at least three TypeScript 7 cold runs and five warm runs against the same baseline. Adoption requires no correctness regression, no material peak-memory regression on CI-sized runners, and a measured typecheck improvement or a documented reason the smaller local graph masks expected CI savings.
++5. Record a go/no-go decision that freezes exact package aliases and versions, checker/builder concurrency, CI resource limits, rollback command, residual risks, and the implementation task handoff.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: TypeScript 7.0.2 completed the root graph 4.46x to 4.93x faster than TypeScript 6.0.3 with 8.6% to 14.4% lower peak RSS after the required baseUrl compatibility changes.
++  Impact: AgentPlane 0.7 should adopt the native compiler for typechecking, but TypeScript 7 cannot replace the compiler API used by ESLint and trust-boundary scripts.
++  Resolution: Freeze the side-by-side contract in benchmark/typescript-7-adoption-contract.md and hand implementation to 202607311707-DRYTNK.
+diff --git a/.agentplane/tasks/202607311706-QB60J5/benchmark/compare-diagnostics.mjs b/.agentplane/tasks/202607311706-QB60J5/benchmark/compare-diagnostics.mjs
+new file mode 100644
+index 000000000..2ec1b68dd
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/benchmark/compare-diagnostics.mjs
+@@ -0,0 +1,107 @@
++import { spawnSync } from "node:child_process";
++import path from "node:path";
++
++const root = process.cwd();
++const compilers = {
++  typescript6: path.join(root, "node_modules", "typescript", "bin", "tsc"),
++  typescript7: path.join(root, "node_modules", "@typescript", "native", "bin", "tsc"),
++};
++const checks = [
++  { args: ["-b", "--force", "--pretty", "false"], config: "tsconfig.json" },
++  { args: ["-p", "tsconfig.eslint.json", "--noEmit", "--pretty", "false"], config: "tsconfig.eslint.json" },
++  {
++    args: ["-p", "website/tsconfig.json", "--noEmit", "--pretty", "false"],
++    config: "website/tsconfig.json",
++  },
++  {
++    args: ["-p", "website/tsconfig.eslint.json", "--noEmit", "--pretty", "false"],
++    config: "website/tsconfig.eslint.json",
++  },
++  {
++    args: ["-p", "packages/agentplane/tsconfig.tsup.json", "--noEmit", "--pretty", "false"],
++    config: "packages/agentplane/tsconfig.tsup.json",
++  },
++  {
++    args: ["-p", "packages/core/tsconfig.tsup.json", "--noEmit", "--pretty", "false"],
++    config: "packages/core/tsconfig.tsup.json",
++  },
++  {
++    args: ["-p", "packages/recipes/tsconfig.tsup.json", "--noEmit", "--pretty", "false"],
++    config: "packages/recipes/tsconfig.tsup.json",
++  },
++];
++
++function run(binary, args) {
++  const result = spawnSync(binary, args, {
++    cwd: root,
++    encoding: "utf8",
++    maxBuffer: 32 * 1024 * 1024,
++  });
++  if (result.error) throw result.error;
++  const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
++  const diagnostics = [...output.matchAll(/^(.+?)\((\d+),(\d+)\): error (TS\d+):/gm)].map(
++    ([, file, line, column, code]) => `${file}:${line}:${column}:${code}`,
++  );
++  const codeCounts = Object.fromEntries(
++    Object.entries(Object.groupBy(diagnostics, (diagnostic) => diagnostic.split(":").at(-1))).map(
++      ([code, entries]) => [code, entries.length],
++    ),
++  );
++  return {
++    codeCounts,
++    diagnostics: [...new Set(diagnostics)].sort(),
++    exitCode: result.status ?? 1,
++  };
++}
++
++const report = checks.map(({ args, config }) => {
++  const typescript6 = run(compilers.typescript6, args);
++  const typescript7 = run(compilers.typescript7, args);
++  const typescript6Set = new Set(typescript6.diagnostics);
++  const typescript7Set = new Set(typescript7.diagnostics);
++  const typescript6Locations = new Set(
++    typescript6.diagnostics.map((diagnostic) => diagnostic.slice(0, diagnostic.lastIndexOf(":"))),
++  );
++  const typescript7Locations = new Set(
++    typescript7.diagnostics.map((diagnostic) => diagnostic.slice(0, diagnostic.lastIndexOf(":"))),
++  );
++  const typescript6Only = typescript6.diagnostics.filter(
++    (diagnostic) => !typescript7Set.has(diagnostic),
++  );
++  const typescript7Only = typescript7.diagnostics.filter(
++    (diagnostic) => !typescript6Set.has(diagnostic),
++  );
++  const typescript6OnlyLocations = [...typescript6Locations]
++    .filter((location) => !typescript7Locations.has(location))
++    .sort();
++  const typescript7OnlyLocations = [...typescript7Locations]
++    .filter((location) => !typescript6Locations.has(location))
++    .sort();
++  return {
++    config,
++    typescript6: {
++      codeCounts: typescript6.codeCounts,
++      diagnosticCount: typescript6.diagnostics.length,
++      exitCode: typescript6.exitCode,
++    },
++    typescript7: {
++      codeCounts: typescript7.codeCounts,
++      diagnosticCount: typescript7.diagnostics.length,
++      exitCode: typescript7.exitCode,
++    },
++    locationAndCodeDrift: {
++      typescript6OnlyCount: typescript6Only.length,
++      typescript6OnlySample: typescript6Only.slice(0, 20),
++      typescript7OnlyCount: typescript7Only.length,
++      typescript7OnlySample: typescript7Only.slice(0, 20),
++    },
++    locationDrift: {
++      typescript6OnlyCount: typescript6OnlyLocations.length,
++      typescript6OnlySample: typescript6OnlyLocations.slice(0, 20),
++      typescript7OnlyCount: typescript7OnlyLocations.length,
++      typescript7OnlySample: typescript7OnlyLocations.slice(0, 20),
++    },
++  };
++});
++
++console.log(JSON.stringify(report, null, 2));
+diff --git a/.agentplane/tasks/202607311706-QB60J5/benchmark/compare-emits.mjs b/.agentplane/tasks/202607311706-QB60J5/benchmark/compare-emits.mjs
+new file mode 100644
+index 000000000..84a770dbc
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/benchmark/compare-emits.mjs
+@@ -0,0 +1,122 @@
++import { execFileSync } from "node:child_process";
++import { createHash } from "node:crypto";
++import { readdirSync, readFileSync } from "node:fs";
++import path from "node:path";
++
++const root = process.cwd();
++const packagesDir = path.join(root, "packages");
++
++function run(command, args) {
++  execFileSync(command, args, { cwd: root, stdio: "inherit" });
++}
++
++function collectFiles(directory, files = []) {
++  for (const entry of readdirSync(directory, { withFileTypes: true })) {
++    const absolutePath = path.join(directory, entry.name);
++    if (entry.isDirectory()) {
++      collectFiles(absolutePath, files);
++    } else if (absolutePath.includes(`${path.sep}dist${path.sep}`)) {
++      files.push(absolutePath);
++    }
++  }
++  return files;
++}
++
++function snapshot() {
++  return new Map(
++    collectFiles(packagesDir)
++      .sort()
++      .map((absolutePath) => {
++        const relativePath = path.relative(root, absolutePath);
++        const content = readFileSync(absolutePath);
++        const digest = createHash("sha256").update(content).digest("hex");
++        return [relativePath, { content: content.toString("utf8"), digest }];
++      }),
++  );
++}
++
++run(process.execPath, ["scripts/checks/run-typescript-build.mjs", "--clean"]);
++run(process.execPath, ["scripts/checks/run-typescript-build.mjs"]);
++const typescript6 = snapshot();
++
++const typescript7Binary = path.join(
++  root,
++  "node_modules",
++  "@typescript",
++  "native",
++  "bin",
++  "tsc",
++);
++run(typescript7Binary, ["-b", "--clean"]);
++run(typescript7Binary, ["-b"]);
++const typescript7 = snapshot();
++
++const allPaths = [...new Set([...typescript6.keys(), ...typescript7.keys()])].sort();
++const added = allPaths.filter((file) => !typescript6.has(file));
++const removed = allPaths.filter((file) => !typescript7.has(file));
++const changed = allPaths.filter(
++  (file) =>
++    typescript6.has(file) &&
++    typescript7.has(file) &&
++    typescript6.get(file).digest !== typescript7.get(file).digest,
++);
++
++function classify(file) {
++  if (file.endsWith(".tsbuildinfo")) return "tsbuildinfo";
++  if (file.endsWith(".d.ts.map")) return "declaration_map";
++  if (file.endsWith(".d.ts")) return "declaration";
++  if (file.endsWith(".js.map")) return "javascript_map";
++  if (file.endsWith(".js")) return "javascript";
++  return "other";
++}
++
++const changedByKind = Object.groupBy(changed, classify);
++
++function tokenMultiset(content) {
++  return extractTokens(content).sort().join("\n");
++}
++
++function extractTokens(content) {
++  return (
++    content.match(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[A-Za-z_$][\w$]*|\d+(?:\.\d+)?|=>|[^\s]/g) ??
++    []
++  );
++}
++
++function tokenCountDelta(before, after) {
++  const counts = new Map();
++  for (const token of extractTokens(before)) counts.set(token, (counts.get(token) ?? 0) - 1);
++  for (const token of extractTokens(after)) counts.set(token, (counts.get(token) ?? 0) + 1);
++  return Object.fromEntries([...counts.entries()].filter(([, delta]) => delta !== 0).sort());
++}
++
++const changedDeclarations = changed.filter((file) => file.endsWith(".d.ts"));
++const declarationTokenMultisetMismatch = changedDeclarations.filter(
++  (file) =>
++    tokenMultiset(typescript6.get(file).content) !== tokenMultiset(typescript7.get(file).content),
++);
++const declarationTokenCountDelta = Object.fromEntries(
++  declarationTokenMultisetMismatch.map((file) => [
++    file,
++    tokenCountDelta(typescript6.get(file).content, typescript7.get(file).content),
++  ]),
++);
++console.log(
++  JSON.stringify(
++    {
++      typescript6Files: typescript6.size,
++      typescript7Files: typescript7.size,
++      added,
++      removed,
++      changedCount: changed.length,
++      changedByKind: Object.fromEntries(
++        Object.entries(changedByKind).map(([kind, files]) => [kind, files.length]),
++      ),
++      changedSample: changed.slice(0, 40),
++      declarationTokenMultisetMismatch,
++      declarationTokenCountDelta,
++    },
++    null,
++    2,
++  ),
++);
+diff --git a/.agentplane/tasks/202607311706-QB60J5/benchmark/typescript-7-adoption-contract.md b/.agentplane/tasks/202607311706-QB60J5/benchmark/typescript-7-adoption-contract.md
+new file mode 100644
+index 000000000..fff1ec4bf
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/benchmark/typescript-7-adoption-contract.md
+@@ -0,0 +1,113 @@
++# TypeScript 7 adoption contract
++
++Date: 2026-07-31  
++Task: `202607311706-QB60J5`  
++Decision: **GO for the bounded `202607311707-DRYTNK` migration; NO-GO for replacing the TypeScript 6 compiler API package.**
++
++## Frozen toolchain contract
++
++- Typecheck compiler: `@typescript/native: npm:typescript@7.0.2`.
++- Compiler API compatibility package: `typescript: 6.0.3`.
++- Root and workspace `tsc` entrypoints must resolve TypeScript 7.0.2.
++- `typescript-eslint` and every repository script importing `typescript` must resolve TypeScript 6.0.3.
++- The root typecheck wrapper must accept `AGENTPLANE_TYPESCRIPT_PACKAGE=typescript` as the immediate rollback override. The exact rollback command is `AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck`.
++- Keep TypeScript 7 project concurrency at its default automatic setting. Single samples with `--builders 1`, `2`, and `4` were 1.24 s, 1.40 s, and 1.39 s respectively; an explicit limit provided no measured benefit for this four-project graph.
++- Hosted jobs need at least 4 GiB memory. The migration gate is peak RSS at or below 1536 MiB for the root forced build and completion within 120 seconds on each supported hosted runner.
++- TypeScript 7 remains a development/CI dependency only. No TypeScript 7 API import may enter runtime packages.
++
++TypeScript 7 is the native Go compiler announced by the TypeScript team. Its 7.0 release intentionally does not provide the old programmatic compiler API, so the packages must remain side-by-side. Sources: [TypeScript 7.0 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) and [native compiler repository](https://github.com/microsoft/typescript-go).
++
++## Benchmark environment
++
++- Base commit: `54c1d90ac8cd30ea28d165c8e41fcdc1542e740c`
++- CPU: Apple M4, 10 logical CPUs
++- Memory: 24 GiB
++- Node.js: 26.5.0
++- Bun: 1.3.6
++- Baseline: TypeScript 6.0.3
++- Candidate: TypeScript 7.0.2 installed as `@typescript/native`
++- Diagnostic count for every root benchmark run: 0
++
++Cold runs clean project-reference outputs before the measured build. Warm runs use `--force` with the filesystem cache already populated. Each measurement is a new compiler process.
++
++```text
++TypeScript 6 cold:
++node scripts/checks/run-typescript-build.mjs --clean && /usr/bin/time -lp node scripts/checks/run-typescript-build.mjs
++
++TypeScript 6 warm:
++/usr/bin/time -lp node scripts/checks/run-typescript-build.mjs --force
++
++TypeScript 7 cold:
++./node_modules/@typescript/native/bin/tsc -b --clean && /usr/bin/time -lp ./node_modules/@typescript/native/bin/tsc -b
++
++TypeScript 7 warm:
++/usr/bin/time -lp ./node_modules/@typescript/native/bin/tsc -b --force
++```
++
++## Results
++
++| Compiler | Shape | Wall times, seconds | Mean wall | Mean peak RSS | Relative result |
++| --- | --- | --- | ---: | ---: | --- |
++| TypeScript 6.0.3 | cold | 5.90, 6.05, 5.95 | 5.967 s | 1181.6 MiB | baseline |
++| TypeScript 7.0.2 | cold | 1.21, 1.25, 1.17 | 1.210 s | 1011.3 MiB | 4.93x faster, 14.4% less RSS |
++| TypeScript 6.0.3 | warm | 6.03, 6.03, 6.10, 6.04, 6.08 | 6.056 s | 1131.9 MiB | baseline |
++| TypeScript 7.0.2 | warm | 1.33, 1.42, 1.32, 1.43, 1.29 | 1.358 s | 1034.7 MiB | 4.46x faster, 8.6% less RSS |
++
++The repository is large enough for the native compiler to produce a material local and CI-relevant improvement. Memory does not regress.
++
++## Compatibility findings
++
++### Configuration
++
++The current configuration is not a drop-in TypeScript 7 input:
++
++1. `tsconfig.base.json` uses the removed `baseUrl` option. Removing it and making every `paths` target explicitly relative allows both TypeScript 6 and 7 to build the four root project references with zero diagnostics.
++2. `website/tsconfig.json` extends Docusaurus 3.10.1, whose published config also uses `baseUrl`. A local TypeScript 7-compatible Docusaurus bridge config is required unless Docusaurus publishes a compatible config before `DRYTNK` lands.
++3. The supported root project graph and website typecheck pass under both compilers after those candidate adjustments.
++
++`tsconfig.eslint.json` is not a green compiler gate today: TypeScript 6 reports 717 existing diagnostics and TypeScript 7 reports 719. The two additional TypeScript 7 diagnostics are secondary errors on lines already rejected in the new conflict-rework tests; 63 existing locations change diagnostic category. This does not affect the actual ESLint gate, which passes, but the config must not be represented as a green standalone typecheck.
++
++Two other direct config invocations have identical pre-existing failures in both compilers: `website/tsconfig.eslint.json` has one `TS7016`, and `packages/agentplane/tsconfig.tsup.json --noEmit` has one `TS6304`. The normal website, tsup, ESLint, and root build commands remain the acceptance surface.
++
++### Emit parity
++
++Both compilers emit the same 3622-file set. There are no added, removed, JavaScript, or JavaScript-map differences.
++
++- 137 declaration maps differ because TypeScript 7 reorders generated declaration members.
++- 29 declarations differ. For 28, the lexical token multiset is identical and only order changes. The remaining declaration differs only by one added pair of parentheses.
++- No public symbol or lexical token is added or removed.
++
++The migration must record this deterministic declaration-order drift and ensure no release check treats compiler-specific ordering as a semantic API change.
++
++### TypeScript 6 API consumers
++
++With the alias installed, `node_modules/.bin/tsc` and `bunx tsc` resolve TypeScript 7.0.2, while `require("typescript")` resolves 6.0.3. Resolution from `@typescript-eslint/parser` also returns TypeScript 6.0.3.
++
++The following gates passed with the side-by-side installation:
++
++- `bun run lint:core`
++- `bun run logging:check`
++- `bun run trust:ratchet:check`
++- `bun run bench:compatibility:check`
++
++This covers the ESLint parser plus the repository AST, trust-boundary, no-console, and compatibility-contract consumers that import the TypeScript compiler API.
++
++## Implementation handoff: DRYTNK
++
++`202607311707-DRYTNK` must:
++
++1. Pin the two exact packages above and update the lockfile.
++2. Make the root wrapper select `@typescript/native` by default and `typescript` only when `AGENTPLANE_TYPESCRIPT_PACKAGE=typescript` is set.
++3. Remove root `baseUrl`, make root path mappings relative, and add the bounded website compatibility bridge.
++4. Add probes proving root/workspace `tsc` is 7.0.2 while compiler-API consumers are 6.0.3.
++5. Run root and workspace builds, ESLint, trust/compatibility gates, declaration classification, critical/unit tests, installed-package checks, and Linux/macOS/Windows hosted checks.
++6. Demonstrate the exact rollback command and prove it produces a clean TypeScript 6 build without generated-artifact drift.
++
++## Residual risks and stop rules
++
++- Stop if any supported build gains a TypeScript 7-only diagnostic.
++- Stop if a declaration difference changes its lexical token multiset beyond the reviewed parenthesis-only case.
++- Stop if Bun, npm packaging, or Windows resolves the TypeScript 7 native optional package differently from the lockfile contract.
++- Stop if any runtime package imports `@typescript/native` or if an API consumer resolves TypeScript 7.
++- Stop if hosted peak RSS exceeds 1536 MiB or the compiler exits by signal on the smallest supported runner.
++- TypeScript 7 and 6 use different non-zero exit codes for some invalid configs. Automation must treat any non-zero exit as failure and must not key behavior to the exact numeric code.
+diff --git a/.agentplane/tasks/202607311706-QB60J5/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607311706-QB60J5/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..4ee78f8c4
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/blueprint/resolved-snapshot.json
+@@ -0,0 +1,605 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607311706-QB60J5",
++    "title": "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract",
++    "description": "Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.",
++    "tags": [
++      "benchmark",
++      "code",
++      "milestone-rc2",
++      "performance",
++      "toolchain",
++      "typescript7",
++      "v0.7"
++    ],
++    "owner": "TESTER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "performance.benchmark"
++  },
++  "selectedBlueprint": {
++    "id": "performance.benchmark",
++    "version": 1,
++    "title": "Performance benchmark",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "performance.benchmark",
++    "blueprintVersion": 1,
++    "title": "Performance benchmark",
++    "taskId": "202607311706-QB60J5",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "performance.benchmark"
++    },
++    "whySelected": [
++      "explicit blueprint requested: performance.benchmark",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "final_output"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "benchmark.baseline",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Baseline measurement artifact."
++      },
++      {
++        "id": "benchmark.method",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Benchmark method, environment, and warm/cold mode."
++      },
++      {
++        "id": "benchmark.runs",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Run count and raw measurement results."
++      },
++      {
++        "id": "benchmark.threshold",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Accepted threshold or noise tolerance."
++      },
++      {
++        "id": "benchmark.comparison",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Before/after comparison result."
++      },
++      {
++        "id": "benchmark.verdict",
++        "kind": "final_output",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Faster, slower, unchanged, or noisy verdict."
++      },
++      {
++        "id": "benchmark.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "benchmark.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "benchmark baseline command",
++      "benchmark comparison command",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "final_output"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "benchmark.baseline",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Baseline measurement artifact."
++    },
++    {
++      "id": "benchmark.method",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Benchmark method, environment, and warm/cold mode."
++    },
++    {
++      "id": "benchmark.runs",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Run count and raw measurement results."
++    },
++    {
++      "id": "benchmark.threshold",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Accepted threshold or noise tolerance."
++    },
++    {
++      "id": "benchmark.comparison",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Before/after comparison result."
++    },
++    {
++      "id": "benchmark.verdict",
++      "kind": "final_output",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Faster, slower, unchanged, or noisy verdict."
++    },
++    {
++      "id": "benchmark.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "benchmark.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "benchmark baseline command",
++    "benchmark comparison command",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: performance.benchmark",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "0a853313c2d88fe649ee7750dae792ecf78a7e4696e56067b8885330da375514"
++  }
++}
+diff --git a/.agentplane/tasks/202607311706-QB60J5/pr/diffstat.txt b/.agentplane/tasks/202607311706-QB60J5/pr/diffstat.txt
+new file mode 100644
+index 000000000..5502b53ca
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/pr/diffstat.txt
+@@ -0,0 +1,4 @@
++ .agentplane/tasks/202607221854-4FNZPG/README.md |   3 +-
++ .agentplane/tasks/202607311706-5N483Q/README.md | 125 ++++++++++++++++++++++++
++ .agentplane/tasks/202607311707-DRYTNK/README.md | 119 ++++++++++++++++++++++
++ 3 files changed, 246 insertions(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607311706-QB60J5/pr/github-body.md b/.agentplane/tasks/202607311706-QB60J5/pr/github-body.md
+new file mode 100644
+index 000000000..5ee9e0447
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/pr/github-body.md
+@@ -0,0 +1,36 @@
++Task: `202607311706-QB60J5`
++Title: Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++Canonical task record: `.agentplane/tasks/202607311706-QB60J5/README.md`
++
++## Summary
++
++Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++
++Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++
++## Scope
++
++- In scope: Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration.
++- Out of scope: unrelated refactors not required for "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T17:28:35.470Z
++- Branch: task/202607311706-QB60J5/benchmark-typescript-7-and-freeze-the-agentplane
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/tasks/202607221854-4FNZPG/README.md |   3 +-
++ .agentplane/tasks/202607311706-5N483Q/README.md | 125 ++++++++++++++++++++++++
++ .agentplane/tasks/202607311707-DRYTNK/README.md | 119 ++++++++++++++++++++++
++ 3 files changed, 246 insertions(+), 1 deletion(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607311706-QB60J5/pr/github-title.txt b/.agentplane/tasks/202607311706-QB60J5/pr/github-title.txt
+new file mode 100644
+index 000000000..7d93fdd76
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 QB60J5 task: Benchmark TypeScript 7 and freeze the AgentPlane adoption contract [202607311706-QB60J5]
+diff --git a/.agentplane/tasks/202607311706-QB60J5/pr/meta.json b/.agentplane/tasks/202607311706-QB60J5/pr/meta.json
+new file mode 100644
+index 000000000..72af2455e
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/pr/meta.json
+@@ -0,0 +1,13 @@
++{
++  "base": "main",
++  "branch": "task/202607311706-QB60J5/benchmark-typescript-7-and-freeze-the-agentplane",
++  "created_at": "2026-07-31T17:28:35.470Z",
++  "diffstat_sha256": "sha256:8035fd6ebd0753291e01423c76d7fb2d44be6a8d0e59a8243db13d836dd97346",
++  "last_verified_at": null,
++  "schema_version": 1,
++  "task_id": "202607311706-QB60J5",
++  "updated_at": "2026-07-31T17:28:35.470Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607311706-QB60J5/pr/review.md b/.agentplane/tasks/202607311706-QB60J5/pr/review.md
+new file mode 100644
+index 000000000..0e901ae3c
+--- /dev/null
++++ b/.agentplane/tasks/202607311706-QB60J5/pr/review.md
+@@ -0,0 +1,39 @@
++# PR Review
++
++Created: 2026-07-31T17:28:35.470Z
++
++## Task
++
++- Task: `202607311706-QB60J5`
++- Title: Benchmark TypeScript 7 and freeze the AgentPlane adoption contract
++- Status: DOING
++- Branch: `task/202607311706-QB60J5/benchmark-typescript-7-and-freeze-the-agentplane`
++- Canonical task record: `.agentplane/tasks/202607311706-QB60J5/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T17:28:35.470Z
++- Branch: task/202607311706-QB60J5/benchmark-typescript-7-and-freeze-the-agentplane
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/tasks/202607221854-4FNZPG/README.md |   3 +-
++ .agentplane/tasks/202607311706-5N483Q/README.md | 125 ++++++++++++++++++++++++
++ .agentplane/tasks/202607311707-DRYTNK/README.md | 119 ++++++++++++++++++++++
++ 3 files changed, 246 insertions(+), 1 deletion(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/README.md b/.agentplane/tasks/202607311707-DRYTNK/README.md
+new file mode 100644
+index 000000000..33f81cdf0
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/README.md
+@@ -0,0 +1,119 @@
++---
++id: "202607311707-DRYTNK"
++title: "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility"
++status: "TODO"
++priority: "high"
++owner: "CODER"
++revision: 6
++origin:
++  system: "manual"
++depends_on:
++  - "202607311706-QB60J5"
++tags:
++  - "code"
++  - "migration"
++  - "milestone-rc2"
++  - "performance"
++  - "toolchain"
++  - "typescript7"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "Root typecheck, package builds, lint, critical/unit tests, declaration/manifest checks, and Windows CI pass with deterministic checker/builder limits."
++  - "The benchmark-approved TypeScript 7 binary is the canonical root and package typecheck path, with exact versions and aliases frozen in package.json and bun.lock."
++  - "The task records before/after timing evidence and proves the documented one-command rollback restores the TypeScript 6 compiler path."
++  - "typescript-eslint and every repository script importing typescript continue to use the pinned TypeScript 6 compatibility API; trust-boundary and compatibility gates pass unchanged."
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-31T17:07:48.886Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Approved after the benchmark gate; implementation must retain TypeScript 6 API compatibility."
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-07-31T17:47:37.370Z"
++doc_updated_by: "PLANNER"
++description: "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path."
++sections:
++  Summary: |-
++    Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility
++
++    Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.
++  Scope: |-
++    - In scope: Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.
++    - Out of scope: unrelated refactors not required for "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility".
++  Plan: |-
++    1. Consume the approved package/version/concurrency contract from the TypeScript 7 benchmark task.
++    2. Wire TypeScript 7 only into compiler/typecheck entrypoints while preserving TypeScript 6 API consumers.
++    3. Update lockfile and CI deterministically across supported platforms.
++    4. Run the focused compatibility matrix, then the full release-relevant gates.
++    5. Record performance delta, rollback proof, residual risks, and installed-package evidence.
++  Verify Steps: |-
++    1. Apply only the package aliases, scripts, tsconfig adjustments, and CI concurrency settings frozen by 202607311706-QB60J5. The canonical root and package typecheck commands must invoke the pinned TypeScript 7 binary.
++    2. Keep typescript-eslint and every scripts/** compiler-API consumer on the pinned TypeScript 6 compatibility package. ESLint, trust-boundary gates, compatibility baseline, schema/declaration emit, and package builds must pass without weakening checks.
++    3. Run bun install --frozen-lockfile, root typecheck, package builds, lint, critical CLI tests, unit tests, format, routing, release parity, and the Windows CI matrix. All must pass with deterministic checker/builder limits appropriate to hosted runners.
++    4. Record before/after benchmark evidence from 202607311706-QB60J5 and verify the documented rollback command restores the TypeScript 6 typecheck path without lockfile or generated-artifact drift.
++    5. Confirm installed-package behavior and Node 20/24 support remain unchanged; no TypeScript 7 compiler API dependency may leak into runtime packages.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    1. Run AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck to restore the pinned TypeScript 6 compiler immediately without changing the lockfile.
++    2. If the hosted migration itself must be removed, revert the single DRYTNK merge through a protected-base PR and rerun the root typecheck, package build, lint, trust, compatibility, installed-package, and Windows checks.
++  Findings: |-
++    - Observation: QB60J5 approved TypeScript 7.0.2 only as @typescript/native alongside pinned TypeScript 6.0.3; root baseUrl and the inherited Docusaurus 3.10.1 baseUrl are incompatible, and declaration emit has reviewed order-only drift.
++      Impact: DRYTNK must include the config bridge, deterministic emit classification, hosted platform resolution, and a runtime-selectable compiler rollback instead of a wholesale package replacement.
++      Resolution: Implement benchmark/typescript-7-adoption-contract.md exactly, including AGENTPLANE_TYPESCRIPT_PACKAGE=typescript as the rollback override and default automatic builder concurrency.
++id_source: "generated"
++---
++## Summary
++
++Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility
++
++Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.
++
++## Scope
++
++- In scope: Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.
++- Out of scope: unrelated refactors not required for "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility".
++
++## Plan
++
++1. Consume the approved package/version/concurrency contract from the TypeScript 7 benchmark task.
++2. Wire TypeScript 7 only into compiler/typecheck entrypoints while preserving TypeScript 6 API consumers.
++3. Update lockfile and CI deterministically across supported platforms.
++4. Run the focused compatibility matrix, then the full release-relevant gates.
++5. Record performance delta, rollback proof, residual risks, and installed-package evidence.
++
++## Verify Steps
++
++1. Apply only the package aliases, scripts, tsconfig adjustments, and CI concurrency settings frozen by 202607311706-QB60J5. The canonical root and package typecheck commands must invoke the pinned TypeScript 7 binary.
++2. Keep typescript-eslint and every scripts/** compiler-API consumer on the pinned TypeScript 6 compatibility package. ESLint, trust-boundary gates, compatibility baseline, schema/declaration emit, and package builds must pass without weakening checks.
++3. Run bun install --frozen-lockfile, root typecheck, package builds, lint, critical CLI tests, unit tests, format, routing, release parity, and the Windows CI matrix. All must pass with deterministic checker/builder limits appropriate to hosted runners.
++4. Record before/after benchmark evidence from 202607311706-QB60J5 and verify the documented rollback command restores the TypeScript 6 typecheck path without lockfile or generated-artifact drift.
++5. Confirm installed-package behavior and Node 20/24 support remain unchanged; no TypeScript 7 compiler API dependency may leak into runtime packages.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++1. Run AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck to restore the pinned TypeScript 6 compiler immediately without changing the lockfile.
++2. If the hosted migration itself must be removed, revert the single DRYTNK merge through a protected-base PR and rerun the root typecheck, package build, lint, trust, compatibility, installed-package, and Windows checks.
++
++## Findings
++
++- Observation: QB60J5 approved TypeScript 7.0.2 only as @typescript/native alongside pinned TypeScript 6.0.3; root baseUrl and the inherited Docusaurus 3.10.1 baseUrl are incompatible, and declaration emit has reviewed order-only drift.
++  Impact: DRYTNK must include the config bridge, deterministic emit classification, hosted platform resolution, and a runtime-selectable compiler rollback instead of a wholesale package replacement.
++  Resolution: Implement benchmark/typescript-7-adoption-contract.md exactly, including AGENTPLANE_TYPESCRIPT_PACKAGE=typescript as the rollback override and default automatic builder concurrency.

@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Review the final diff. Expected: change is limited to verification target resolution plus focused regression coverage; no quality gate is weakened.",
+    "Run bun run test:critical. Expected: all critical chunks pass.",
+    "Run focused verification-record and evaluator runtime-evidence tests. Expected: verification after lifecycle-only task commits records the exact semantic implementation SHA and is accepted by evaluator preparation."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T14:25:12.465Z",
+    "updated_by": "TESTER",
+    "note": "PASS after included-task rework: all provenance, batch, integrate, and critical checks pass at 0af1c1a64."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607311404-P746PE/verification/20260731142512465-1702fd856684f882.json",
+      "sha256": "sha256:25f92a92cd5d5fd00fbc080d9174e00cacc02e13cd0ae9f6a1a50be3750c1c92"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

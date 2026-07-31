@@ -22,7 +22,8 @@ import {
 } from "../shared/route-guidance.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
-import { gitRevParse } from "../shared/git-ops.js";
+import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
+import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -37,6 +38,7 @@ import {
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
+import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import { parseVerificationCheckDetails } from "../shared/verification-details.js";
 import type {
   ExecuteVerifyRecordCommandOptions,
@@ -183,7 +185,6 @@ async function recordVerificationResult(opts: {
   }
 
   const at = nowIso();
-  const evaluatedSha = await gitRevParse(resolved.gitRoot, ["HEAD"]).catch(() => null);
   await applyTaskMutation({
     ctx,
     taskId: opts.taskId,
@@ -200,6 +201,24 @@ async function recordVerificationResult(opts: {
         guidance: "fill it before running `agentplane verify ...`",
       });
       const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
+      const qualificationDependencies = isQualificationTask(current)
+        ? await resolveQualificationDependencyLeaves({
+            taskId: current.id,
+            loadTask: (taskId) => ctx.taskBackend.getTask(taskId),
+          })
+        : null;
+      const qualityReviewTaskIds = qualificationDependencies
+        ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
+        : batchTaskIds;
+      const evaluatedSha = await resolveQualityReviewTargetSha({
+        gitRoot: resolved.gitRoot,
+        workflowDir: config.paths.workflow_dir,
+        taskId: current.id,
+        taskIds: qualityReviewTaskIds,
+        lifecycleTaskIds: batchTaskIds,
+        previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+      });
       if (
         opts.state === "ok" &&
         isQualificationTask(current) &&

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311404-P746PE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T14:14:54.257Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "58d0fc2a61fddfe924885cac410bfcfc7d27616c",
+  "blueprint_digest": "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597",
+  "findings": [
+    "Regression coverage does not prove the new verification-target binding across the required branch_pr and batch-task paths."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607311404-P746PE/README.md",
+    ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "A branch_pr fixture with an implementation commit followed by task-only lifecycle commits, asserting the verification record implementation_sha and evaluator evaluated_sha both equal the implementation commit.",
+    "An included-task batch fixture proving normalizeBranchPrBatchIncludedTaskIds causes lifecycle artifacts for every included task to be skipped consistently.",
+    "A negative fixture proving a semantic code change after an earlier quality review advances implementation_sha instead of reusing the prior evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The direct-runtime-evidence fixture is assumed to represent branch_pr provenance behavior even though it does not exercise branch_pr metadata or included-task batches.",
+    "Passing existing broad critical tests is assumed to validate exact SHA selection, although the frozen evidence identifies no exact-SHA assertion outside the added direct fixture."
+  ],
+  "residual_risks": [
+    "Add focused branch_pr, included-task batch, and semantic-change regression cases around verification record creation, then rerun the focused evaluator/verification suites and the critical suite with structured evidence."
+  ]
+}

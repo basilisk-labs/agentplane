@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607311404-P746PE-a2ac3e1a1a96a00f8c1b6ad4",
+  "task_id": "202607311404-P746PE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework semantic target resolution against the complete closure history from 0af1c1a648db15f88a72571b7411cd5ebe8ca7ac through 8a7f4e640022b355662b36f6b50ac8bf7a3aa65f. Identify which lifecycle artifact is treated as independently reviewable, preserve freshness for genuine semantic task metadata, and add an end-to-end assertion that verification implementation_sha, evaluator evaluated_sha, and the frozen verification record remain identical and non-empty.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen evaluator target is 8a7f4e640022b355662b36f6b50ac8bf7a3aa65f, while the latest recorded verification targets 0af1c1a648db15f88a72571b7411cd5ebe8ca7ac; evaluator preparation consequently freezes no verification records.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/README.md",
+          "sha256": "sha256:9d8cd3be66785e03a53ec33996c61c3b321963f9fbbe1166003e501785d157bd",
+          "section": "verification and quality_review"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:0381fb3443301fa2ca1f2dff8bc578ec2bf4938bc8edf23a8cd5f2bc06a3e3ab",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d093b2238e1182abcd3640b75eb241db355ca8b2a3099d75ac95f0ea77abd443",
+          "section": "quality-review target resolution and verification regression changes"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-result.json"
+}

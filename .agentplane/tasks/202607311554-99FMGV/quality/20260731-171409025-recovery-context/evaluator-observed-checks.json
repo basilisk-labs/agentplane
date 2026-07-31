@@ -1,0 +1,28 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck && bun run format:check && node .agentplane/policy/check-routing.mjs",
+    "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T17:13:42.586Z",
+    "updated_by": "TESTER",
+    "note": "PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607311554-99FMGV/verification/20260731171342586-31b7a02c345efe29.json",
+      "sha256": "sha256:e0422204ea61beb04720ecfebac74ea62d087024a174ade833a9e35a6653984e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

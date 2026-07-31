@@ -5,6 +5,29 @@ import {
   routeBlockerFor,
   terminalStep,
 } from "./workflow-step-factory.js";
+import { primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
+
+function conflictHeadPublicationStep(state: WorkflowRouteState): WorkflowStep {
+  const preparation = state.conflictRework;
+  if (preparation?.state !== "publication_required") {
+    throw new Error(
+      "conflictHeadPublicationStep requires a publication-required conflict preparation",
+    );
+  }
+  return cliOperationStep({
+    state,
+    operationId: "pr.head.publish",
+    params: {
+      taskId: state.task.id,
+      author: state.task.owner,
+      includeTaskIds: primaryIncludeTaskIds(state),
+    },
+    code: "publish_conflict_pr_head",
+    summary:
+      "publish the clean fast-forward task head so provider/local identity can be frozen before semantic conflict rework",
+    selectedBlocker: routeBlockerFor(state, "pr_head_unpublished", "hosted_pr_head_mismatch"),
+  });
+}
 
 function providerConflictReworkStep(state: WorkflowRouteState): WorkflowStep {
   const preparation = state.conflictRework;
@@ -89,6 +112,9 @@ function conflictReworkContextInvalidStep(state: WorkflowRouteState): WorkflowSt
 }
 
 export function conflictReworkRouteStep(state: WorkflowRouteState): WorkflowStep | null {
+  if (state.conflictRework?.state === "publication_required") {
+    return conflictHeadPublicationStep(state);
+  }
   if (
     state.blockers.some((blocker) => blocker.code === "legacy_protected_conflict_adoption_required")
   ) {

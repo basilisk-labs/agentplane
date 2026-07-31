@@ -12,7 +12,7 @@ import {
   checkTaskBlueprintSnapshotDrift,
   buildTaskBlueprintResolvedSnapshot,
 } from "../blueprint/snapshot-artifact.js";
-import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
+import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
@@ -235,7 +235,7 @@ export async function prepareEvaluatorReview(opts: {
   const recordPaths = await verificationRecordPaths(taskRoot, opts.task, evaluatedSha, {
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+    taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
   });
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>

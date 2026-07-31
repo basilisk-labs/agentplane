@@ -265,7 +265,7 @@ describe("evaluator run command", () => {
     ).toContain('provenance: "human_supplied"');
   });
 
-  it("records the last non-task-artifact commit as evaluated_sha", async () => {
+  it("records current task metadata layered over implementation as evaluated_sha", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202605240900-EV01";
@@ -276,7 +276,7 @@ describe("evaluator run command", () => {
       "implementation",
       "feat: add feature",
     );
-    await commitPath(
+    const metadataSha = await commitPath(
       root,
       `.agentplane/tasks/${taskId}/manual-note.md`,
       "task artifact",
@@ -301,7 +301,8 @@ describe("evaluator run command", () => {
       },
     );
 
-    expect(await readEvaluatedSha(root, taskId)).toBe(implementationSha);
+    expect(metadataSha).not.toBe(implementationSha);
+    expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
   });
 
   it("anchors a task-artifact-only work unit before unrelated workflow history", async () => {

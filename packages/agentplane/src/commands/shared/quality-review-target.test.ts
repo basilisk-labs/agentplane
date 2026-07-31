@@ -345,6 +345,25 @@ describe("quality review target resolver", () => {
     );
   });
 
+  it("selects current task metadata layered over a semantic base before the first review", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-FIRST-METADATA";
+    await commitPath(
+      root,
+      "src/feature.ts",
+      "export const value = 1;\n",
+      "feat: establish semantic base",
+    );
+    const metadataSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/manual-note.md`,
+      "first review metadata\n",
+      "docs: add first review metadata",
+    );
+
+    await expect(resolveTarget({ root, taskId })).resolves.toBe(metadataSha);
+  });
+
   it("does not use an unrelated task artifact as the current task target", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-CURRENT";

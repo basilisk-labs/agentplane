@@ -1,6 +1,6 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
+import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
@@ -42,7 +42,7 @@ export async function resolveEvaluatorReviewTarget(opts: {
         gitRoot,
         workflowDir,
         taskId: opts.task.id,
-        taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+        taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
         previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
       });
   return {

@@ -3,6 +3,8 @@ import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
+const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
+const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 const MANAGED_TASK_ARTIFACT_DIRECTORIES = [
   "quality/",
   "pr/",
@@ -77,6 +79,50 @@ function implementationReceiptReadme(markdown: string): ImplementationReceiptRea
 
 function sameCanonicalJson(left: unknown, right: unknown): boolean {
   return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
+}
+
+function stripManagedVerificationResults(value: string): string {
+  return value.replaceAll(
+    /<!-- BEGIN VERIFICATION RESULTS -->[\s\S]*?<!-- END VERIFICATION RESULTS -->/gu,
+    `${VERIFICATION_RESULTS_BEGIN}\n${VERIFICATION_RESULTS_END}`,
+  );
+}
+
+function lifecycleComparableTaskReadme(markdown: string): string | null {
+  try {
+    const parsed = parseTaskReadme(markdown);
+    const frontmatter = structuredClone(parsed.frontmatter);
+    for (const key of [
+      "revision",
+      "result_summary",
+      "status",
+      "verification",
+      "quality_review",
+      "commit",
+      "comments",
+      "events",
+      "doc_updated_at",
+      "doc_updated_by",
+    ]) {
+      Reflect.deleteProperty(frontmatter, key);
+    }
+    if (isRecord(frontmatter.sections)) {
+      frontmatter.sections = Object.fromEntries(
+        Object.entries(frontmatter.sections).map(([key, value]) => [
+          key,
+          typeof value === "string" ? stripManagedVerificationResults(value) : value,
+        ]),
+      );
+    }
+    return JSON.stringify(
+      canonicalizeJson({
+        frontmatter,
+        body: stripManagedVerificationResults(parsed.body),
+      }),
+    );
+  } catch {
+    return null;
+  }
 }
 
 type TaskReadmeAdvanceOptions = {
@@ -170,6 +216,17 @@ async function isImplementationReceiptTaskReadmeAdvance(
   return true;
 }
 
+async function isLifecycleOnlyTaskReadmeAdvance(opts: TaskReadmeAdvanceOptions): Promise<boolean> {
+  const readmes = await changedTaskReadmes(opts);
+  if (!readmes) return false;
+  for (const [before, after] of readmes) {
+    const beforeComparable = lifecycleComparableTaskReadme(before);
+    const afterComparable = lifecycleComparableTaskReadme(after);
+    if (!beforeComparable || beforeComparable !== afterComparable) return false;
+  }
+  return true;
+}
+
 /**
  * Side-effect authority is formal lifecycle evidence. It is intentionally
  * excluded from semantic review freshness: otherwise a required authority
@@ -225,6 +282,7 @@ export async function resolveQualityReviewTargetSha(opts: {
   workflowDir: string;
   taskId: string;
   taskIds?: readonly string[];
+  lifecycleTaskIds?: readonly string[];
   headSha?: string | null;
   previousEvaluatedSha?: string | null;
 }): Promise<string | null> {
@@ -237,11 +295,17 @@ export async function resolveQualityReviewTargetSha(opts: {
 
   const workflowDir = normalizeWorkflowDir(opts.workflowDir);
   const taskIds = [...new Set([opts.taskId, ...(opts.taskIds ?? [])])];
-  const taskArtifactPrefixes = taskIds.map((taskId) => `${workflowDir}/${taskId}/`);
+  const taskArtifactPrefixes = taskIds.map((taskId) => ({
+    taskId,
+    prefix: `${workflowDir}/${taskId}/`,
+  }));
+  const lifecycleTaskIdSet = new Set(opts.lifecycleTaskIds ?? taskIds);
   const workflowArtifactPrefix = `${workflowDir}/`;
+  const taskIdForPath = (name: string): string | null =>
+    taskArtifactPrefixes.find((candidate) => name.startsWith(candidate.prefix))?.taskId ?? null;
   const taskRelativePath = (name: string): string | null => {
-    const prefix = taskArtifactPrefixes.find((candidate) => name.startsWith(candidate));
-    return prefix ? name.slice(prefix.length) : null;
+    const match = taskArtifactPrefixes.find((candidate) => name.startsWith(candidate.prefix));
+    return match ? name.slice(match.prefix.length) : null;
   };
   const previousEvaluatedSha = await (async (): Promise<string | null> => {
     const candidate = opts.previousEvaluatedSha?.trim();
@@ -263,12 +327,12 @@ export async function resolveQualityReviewTargetSha(opts: {
     try {
       parent = await gitRevParse(opts.gitRoot, [`${current}^`]);
     } catch {
-      return current;
+      return currentTaskArtifactHead ?? current;
     }
 
     const changed = await gitDiffNames(opts.gitRoot, parent, current);
     if (changed.length === 0) {
-      return current;
+      return currentTaskArtifactHead ?? current;
     }
 
     const touchesCurrentTaskSet = changed.some((name) => taskRelativePath(name) !== null);
@@ -276,9 +340,8 @@ export async function resolveQualityReviewTargetSha(opts: {
     const touchesOnlyWorkflowArtifacts = changed.every((name) =>
       name.startsWith(workflowArtifactPrefix),
     );
-
     if (!touchesOnlyCurrentTaskSet && !touchesOnlyWorkflowArtifacts) {
-      return current;
+      return currentTaskArtifactHead ?? current;
     }
 
     if (touchesOnlyCurrentTaskSet) {
@@ -306,6 +369,22 @@ export async function resolveQualityReviewTargetSha(opts: {
         current = parent;
         continue;
       }
+      if (
+        changed.every((name) => {
+          const taskId = taskIdForPath(name);
+          return taskId !== null && lifecycleTaskIdSet.has(taskId);
+        }) &&
+        (await isLifecycleOnlyTaskReadmeAdvance({
+          gitRoot: opts.gitRoot,
+          parent,
+          current,
+          changed,
+          taskRelativePath,
+        }))
+      ) {
+        current = parent;
+        continue;
+      }
       const taskRelativePaths = changed.flatMap((name) => {
         const relativePath = taskRelativePath(name);
         return relativePath === null ? [] : [relativePath];
@@ -314,7 +393,7 @@ export async function resolveQualityReviewTargetSha(opts: {
       const touchesOnlyManagedArtifacts = taskRelativePaths.every((name) =>
         isManagedTaskArtifact(name),
       );
-      if (previousEvaluatedSha && touchesDerivedArtifacts && touchesOnlyManagedArtifacts) {
+      if (touchesDerivedArtifacts && touchesOnlyManagedArtifacts) {
         current = parent;
         continue;
       }

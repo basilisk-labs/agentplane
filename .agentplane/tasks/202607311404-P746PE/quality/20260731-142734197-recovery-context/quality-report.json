@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311404-P746PE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T14:28:27.179Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac",
+  "blueprint_digest": "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597",
+  "findings": [
+    "No contract divergence found in the frozen implementation and verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607311404-P746PE/verification/20260731142716722-659dd4194bef6b6a.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Included branch_pr task metadata is kept synchronized with the primary task's complete included_task_ids set before verification, evaluator preparation, or integration resolves the semantic target."
+  ],
+  "residual_risks": []
+}

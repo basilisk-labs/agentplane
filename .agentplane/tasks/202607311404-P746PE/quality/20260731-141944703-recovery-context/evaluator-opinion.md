@@ -1,0 +1,23 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 1 typed finding(s).
+
+## Findings
+- Пакетный регрессионный тест проверяет запись верификации только для основной задачи; для включённой задачи новая логика формирует неполный набор taskIds и может привязать implementation_sha к более позднему lifecycle-коммиту всего пакета.
+
+## Evidence
+- .agentplane/tasks/202607311404-P746PE/quality/20260731-141944703-recovery-context/evaluator-diff.patch
+- .agentplane/tasks/202607311404-P746PE/README.md
+- .agentplane/policy/workflow.branch_pr.md
+
+## Missing Tests
+- Добавить branch_pr batch-тест, который запускает verify для included task после lifecycle-only коммита, затрагивающего primary и included task artifacts, и проверяет, что implementation_sha равен исходному семантическому SHA, а evaluator evaluated_sha совпадает с ним.
+
+## Hidden Assumptions
+- Предполагается, что в пакетном сценарии верифицируется только primary task, хотя политика требует отдельный verification result для каждой included task.
+- Предполагается, что normalizeBranchPrBatchIncludedTaskIds применим к задаче с role=included; представленная проверка покрывает только role=primary.
+
+## Residual Risks
+- Исправить разрешение полного набора задач пакета при verify для role=included и добавить симметричную проверку записи верификации и evaluator packet для included task; текущие зелёные проверки доказывают только primary-task путь.
