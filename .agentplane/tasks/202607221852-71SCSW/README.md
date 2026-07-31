@@ -2,10 +2,10 @@
 id: "202607221852-71SCSW"
 title: "Extend supervised execution to branch_pr"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on:
@@ -67,8 +67,8 @@ quality_review:
     - "PASS: the focused regression asserts the adapter omits implementationCommit and retains the expected task, commit, and preMergeClosure arguments."
     - "PASS: the change is narrower than the failed behavior and does not weaken quality freshness or allow an unreviewed implementation head."
 commit:
-  hash: "c64291cb7c9d88bd0115e1aa5c04de550e2defb7"
-  message: "🚧 71SCSW task: align pre-merge finish adapter"
+  hash: "0bde456a2dfc9023249333ae88cbd9bf98fce5ac"
+  message: "🧭 71SCSW task: pass finish adapter rework"
 comments:
   -
     author: "CODER"
@@ -112,6 +112,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: the in-process pre-merge close now matches CLI finish semantics and lets finish resolve the reviewed implementation behind task-artifact commits."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -229,8 +232,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed."
+  -
+    type: "status"
+    at: "2026-07-31T13:23:25.525Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:21:24.325Z"
+doc_updated_at: "2026-07-31T13:23:25.525Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
@@ -366,8 +376,8 @@ sections:
       Resolution: Accepted implementation commit c64291cb7c9d88bd0115e1aa5c04de550e2defb7; 23 focused tests, 52 workflow tests, all 12 critical chunks, and ci:contract passed.
 extensions:
   implementation_commit:
-    hash: "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea"
-    message: "🚧 71SCSW task: bind queue wait to current head"
+    hash: "c64291cb7c9d88bd0115e1aa5c04de550e2defb7"
+    message: "🚧 71SCSW task: align pre-merge finish adapter"
   workflow_route_baseline:
     start_head_sha: "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c"
     version: 1
