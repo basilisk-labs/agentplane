@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-71SCSW-4abc3b8fd698c2e552ee2a3c",
+  "task_id": "202607221852-71SCSW",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Wait only when queue branch, head SHA, base, and PR identity match current route truth; refresh an inactive stale entry with one typed enqueue and never overwrite claimed/handoff work.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "The existing queued entry references an older task head; treating any present queue entry as terminal wait would strand the newly verified head.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-result.json"
+}

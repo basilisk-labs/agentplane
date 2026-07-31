@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T12:53:39.918Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "9c86ab0143d1296a6a53df65a338f29c1ff288ef",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "The existing queued entry references an older task head; treating any present queue entry as terminal wait would strand the newly verified head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Stale queued head versus current provider/task head is not covered."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Wait only when queue branch, head SHA, base, and PR identity match current route truth; refresh an inactive stale entry with one typed enqueue and never overwrite claimed/handoff work."
+  ]
+}

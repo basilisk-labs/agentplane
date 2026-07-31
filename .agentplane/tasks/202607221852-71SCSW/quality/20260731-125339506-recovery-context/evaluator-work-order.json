@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-71SCSW-4abc3b8fd698c2e552ee2a3c",
+  "prepared_at": "2026-07-31T12:53:39.506Z",
+  "task": {
+    "id": "202607221852-71SCSW",
+    "revision": 20,
+    "objective": "Extend supervised execution to branch_pr\n\nRF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run coverage:workflow-suite",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "- In scope: branch_pr pre/post operations, task worktree recovery, PR artifacts/provider truth, hosted-check stabilization, integration queue, merge authority, pre-merge closure, hosted close, cleanup, retries, and golden metrics.\n- Out of scope: bypassing protected main, assuming provider state from local projections, or granting merge/publish authority implicitly.",
+      "1. Map branch_pr lifecycle phases to typed supervisor operations and provider ports.\n2. Reuse direct episode/receipt/evaluator boundaries inside the task worktree.\n3. Add PR open/update, check wait, queue, merge, hosted close, and cleanup with authority and freshness.\n4. Handle provider latency, stale branch, merge conflicts, deleted branch, pre-merge close, and recovery idempotently.\n5. Compare agent lifecycle calls, wrong-checkout errors, and verified success to baseline.",
+      "1. Run a protected-main branch_pr golden task. Expected: EXECUTOR performs zero lifecycle calls; supervisor owns worktree through cleanup and uses provider truth.\n2. Exercise late checks, stale head, merge conflict, deleted branch, queue contention, and hosted-close retry. Expected: safe typed waits/rework/recovery without duplicate PR/merge.\n3. Remove merge authority. Expected: an approval step; no provider action is imitated.\n4. Verify actual PR/check/merge receipts and final main SHA in integration fixtures.\n5. Run branch_pr workflow coverage, lifecycle invariants, contract CI, and focused tests."
+    ]
+  },
+  "evaluated_sha": "9c86ab0143d1296a6a53df65a338f29c1ff288ef",
+  "diff_base_sha": "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-71SCSW/README.md",
+      "sha256": "sha256:dd043892eaced68acbfd95fcf012c821ec706a311a91d4153a5b6940753a2711",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:4f68ee22b5a2a8f48de0b3fb369b65da741badd37aa9f42c0d6ef130fb260cc4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:7233230c865da3d99caa6a4f9d4afd259f128fbe2d417ea53a68373df5f68d82",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:96f9d59978cf33cb0b3c9f1a4e621b84ff385e41965b783679675a79fcc879e0",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
