@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.rf04.live_candidate_summary",
+  "task_id": "202607310028-7KFTPH",
+  "reviewed_product_sha": "25fbf2d836a94e9b190464da219a35efd4ebe878",
+  "task_branch_sha_before_evidence": "da38e1a70b999512b718c620a580d2f93b84d790",
+  "capture": {
+    "command": "node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1",
+    "retry_count": 0,
+    "measurement_path": ".agentplane/cache/rf04-candidate/25fbf2d836a94e9b190464da219a35efd4ebe878/measurement.json",
+    "measurement_sha256": "sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c",
+    "coverage": {
+      "runs": 50,
+      "scenarios": 10,
+      "provider_episodes": 55
+    },
+    "runtime_profile": {
+      "adapter_id": "codex-exec-jsonl-supervisor",
+      "cache_mode": "ephemeral-provider-default",
+      "model_id": "gpt-5.6-terra",
+      "provider_id": "openai-chatgpt",
+      "reasoning_effort": "low",
+      "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+      "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+      "sandbox_mode": "workspace-write-network-disabled"
+    }
+  },
+  "matched_baseline": {
+    "source_path": "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
+    "source_sha256": "sha256:f8e569366cb80bd0e054210a58cafc3d92b16b45d9653dd283911ee51733c870",
+    "subject_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+    "source": "runtime_bridge",
+    "runtime_version": "0.6.24/0.146.0-alpha.3.1"
+  },
+  "actual_values": {
+    "golden_mismatch_count": 14,
+    "latency_ms": {
+      "harness_setup_latency_ms": {
+        "mean": 25663.76,
+        "sample_count": 50
+      },
+      "time_to_first_scoped_mutation_ms": {
+        "mean": 40660.13043478261,
+        "sample_count": 23
+      },
+      "time_to_verified_result_ms": {
+        "mean": 76784.11111111111,
+        "sample_count": 18
+      }
+    },
+    "outcomes": {
+      "adapter_failure": 5,
+      "approval_respected": 50,
+      "blocked": 20,
+      "context_gap": 5,
+      "rework_required": 27,
+      "scope_violation": 5,
+      "verified_success": 18
+    },
+    "provider_tokens": {
+      "input_tokens": 6933514,
+      "output_tokens": 51591,
+      "reasoning_tokens": 18636,
+      "total_tokens": 7003741
+    }
+  },
+  "matched_comparison": {
+    "provider_tokens.input_tokens": {
+      "delta_ratio": -0.23786031047003153,
+      "verdict": "pass"
+    },
+    "provider_tokens.output_tokens": {
+      "delta_ratio": -0.2268463014027095,
+      "verdict": "pass"
+    },
+    "provider_tokens.reasoning_tokens": {
+      "delta_ratio": -0.17492362863594102,
+      "verdict": "pass"
+    },
+    "provider_tokens.total_tokens": {
+      "delta_ratio": -0.23762557083590088,
+      "verdict": "pass"
+    },
+    "latency.harness_setup_latency_ms.mean_ms": {
+      "delta_ratio": 2.3743862961609157,
+      "maximum_increase_ratio": 0.1,
+      "verdict": "fail"
+    },
+    "latency.time_to_first_scoped_mutation_ms.sample_count": {
+      "baseline": 25,
+      "candidate": 23,
+      "verdict": "fail"
+    },
+    "latency.time_to_first_scoped_mutation_ms.mean_ms": {
+      "delta_ratio": -0.0683393480600026,
+      "maximum_increase_ratio": 0.1,
+      "verdict": "pass"
+    },
+    "latency.time_to_verified_result_ms.mean_ms": {
+      "delta_ratio": 0.36046458691231753,
+      "maximum_increase_ratio": 0.1,
+      "verdict": "fail"
+    },
+    "outcomes.verified_success": {
+      "baseline": 8,
+      "candidate": 18,
+      "verdict": "pass"
+    },
+    "outcomes.rework_required": {
+      "baseline": 32,
+      "candidate": 27,
+      "verdict": "pass"
+    },
+    "outcomes.golden_mismatch_count": {
+      "baseline": 33,
+      "candidate": 14,
+      "verdict": "pass"
+    },
+    "outcomes.scope_violation": {
+      "baseline": 17,
+      "candidate": 5,
+      "verdict": "pass"
+    },
+    "runtime.profile": {
+      "verdict": "pass"
+    }
+  },
+  "reproduction_gap": {
+    "command": "node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1 --runtime-bridge 0.146.0-alpha.3.1",
+    "result": "blocked",
+    "reason": "authoritative runtime-bridge replay envelopes are absent from the current checkout"
+  },
+  "qualification_decision": "do_not_publish",
+  "failed_guardrails": [
+    "latency.harness_setup_latency_ms.mean_ms",
+    "latency.time_to_first_scoped_mutation_ms.sample_count",
+    "latency.time_to_verified_result_ms.mean_ms"
+  ]
+}
