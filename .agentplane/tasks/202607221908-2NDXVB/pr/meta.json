@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar",
+  "created_at": "2026-07-31T23:00:26.855Z",
+  "diffstat_sha256": "sha256:f8231da448374cb23558c0a5f62a0e982f003a4bd8da92a375c296ed359189b8",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607221908-2NDXVB",
+  "updated_at": "2026-07-31T23:00:26.855Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

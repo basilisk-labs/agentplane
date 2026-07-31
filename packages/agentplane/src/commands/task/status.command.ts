@@ -52,9 +52,14 @@ export const taskStatusSpec: CommandSpec<TaskStatusParsed> = {
   }),
 };
 
-export function makeRunTaskStatusHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunTaskStatusHandler(session: {
+  getLocalContext: (cmd: string) => Promise<CommandContext>;
+  getRemoteContext: (cmd: string) => Promise<CommandContext>;
+}) {
   return async (ctx: CommandCtx, parsed: TaskStatusParsed): Promise<number> => {
-    const commandCtx = await getCtx("task status");
+    const commandCtx = await (parsed.remote
+      ? session.getRemoteContext("task status")
+      : session.getLocalContext("task status"));
     const decision = await buildTaskRouteDecision({
       ctx: commandCtx,
       cwd: ctx.cwd,

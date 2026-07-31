@@ -108,6 +108,89 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["pr", "check"])?.compatibility).toBeNull();
   });
 
+  it("publishes exact task, lifecycle, and route capability profiles", () => {
+    const taskReadCommands = [
+      ["task", "list"],
+      ["task", "next"],
+      ["task", "search"],
+      ["task", "show"],
+      ["task", "verify-show"],
+      ["ready"],
+    ];
+    for (const id of taskReadCommands) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual([
+        "project",
+        "config",
+        "backend.read",
+        "task.read",
+      ]);
+    }
+
+    const taskWriteCommands = [
+      ["task", "new"],
+      ["task", "comment"],
+      ["task", "plan", "set"],
+      ["task", "plan", "approve"],
+      ["task", "doc", "set"],
+    ];
+    for (const id of taskWriteCommands) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual([
+        "project",
+        "config",
+        "backend.read",
+        "task.read",
+        "backend.write",
+        "task.write",
+        "policy",
+        "approvals",
+      ]);
+    }
+
+    const lifecycleCommands = [
+      ["commit"],
+      ["start"],
+      ["block"],
+      ["verify"],
+      ["finish"],
+      ["task", "begin"],
+      ["task", "complete"],
+      ["task", "start-ready"],
+    ];
+    for (const id of lifecycleCommands) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual(
+        expect.arrayContaining([
+          "task.read",
+          "task.write",
+          "git.head",
+          "git.diff",
+          "git.mutate",
+          "route.local",
+          "policy",
+          "approvals",
+        ]),
+      );
+      expect(entry?.requirements, id.join(" ")).not.toContain("provider");
+    }
+
+    for (const id of [
+      ["task", "status"],
+      ["task", "brief"],
+      ["task", "next-action"],
+    ]) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual(
+        expect.arrayContaining(["route.local", "route.remote", "provider"]),
+      );
+    }
+  });
+
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {
     expect(findCommandEntry(["release"])?.surface).toBe("framework");
     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");

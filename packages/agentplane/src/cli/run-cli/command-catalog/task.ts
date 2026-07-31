@@ -75,6 +75,13 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
 
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
+  TASK_LIFECYCLE_REQUIREMENTS,
+  TASK_READ_REQUIREMENTS,
+  TASK_ROUTE_LOCAL_REQUIREMENTS,
+  TASK_ROUTE_REQUIREMENTS,
+  TASK_WRITE_REQUIREMENTS,
+} from "./task-capability-profiles.js";
+import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
   fromCommandsTaskHandoffRecordCommand,
@@ -169,47 +176,63 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskActiveSpec, { load: loadTaskActiveSpec }),
-  declareCommand(taskAskSpec, { load: loadTaskAskSpec }),
-  declareCommand(taskAnswerSpec, { load: loadTaskAnswerSpec }),
-  declareCommand(taskAuthorityGrantSpec, {
+  declareSessionCommand(taskActiveSpec, {
+    load: loadTaskActiveSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskAskSpec, {
+    load: loadTaskAskSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskAnswerSpec, {
+    load: loadTaskAnswerSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskAuthorityGrantSpec, {
     load: loadTaskAuthorityGrantSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   declareSessionCommand(taskListSpec, {
     load: loadTaskListSpec,
-    requirements: ["project", "config", "backend.read", "task.read"],
+    requirements: TASK_READ_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "list"]),
   }),
-  declareCommand(taskNextSpec, { load: loadTaskNextSpec }),
-  declareCommand(taskSearchSpec, { load: loadTaskSearchSpec }),
-  declareCommand(taskShowSpec, {
+  declareSessionCommand(taskNextSpec, {
+    load: loadTaskNextSpec,
+    requirements: TASK_READ_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskSearchSpec, {
+    load: loadTaskSearchSpec,
+    requirements: TASK_READ_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskShowSpec, {
     load: loadTaskShowSpec,
+    requirements: TASK_READ_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "show"]),
   }),
-  declareCommand(taskStatusSpec, { load: loadTaskStatusSpec }),
+  declareSessionCommand(taskStatusSpec, {
+    load: loadTaskStatusSpec,
+    requirements: TASK_ROUTE_REQUIREMENTS,
+  }),
   declareSessionCommand(taskNextActionSpec, {
     load: loadTaskNextActionSpec,
-    requirements: [
-      "project",
-      "config",
-      "backend.read",
-      "task.read",
-      "git.head",
-      "route.local",
-      "route.remote",
-      "policy",
-      "approvals",
-      "provider",
-    ],
+    requirements: TASK_ROUTE_REQUIREMENTS,
   }),
-  declareCommand(taskNewSpec, {
+  declareSessionCommand(taskNewSpec, {
     load: loadTaskNewSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
   }),
-  declareCommand(taskBeginSpec, { load: loadTaskBeginSpec }),
-  declareCommand(taskBriefSpec, { load: loadTaskBriefSpec }),
+  declareSessionCommand(taskBeginSpec, {
+    load: loadTaskBeginSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskBriefSpec, {
+    load: loadTaskBriefSpec,
+    requirements: TASK_ROUTE_REQUIREMENTS,
+  }),
   declareCommand(taskRunStatusSpec, {
     load: loadTaskRunStatusSpec,
     surface: "internal",
@@ -251,44 +274,58 @@ export const TASK_COMMANDS = [
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
-  declareCommand(taskDeriveSpec, {
+  declareSessionCommand(taskCompleteSpec, {
+    load: loadTaskCompleteSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskEvidenceCheckSpec, {
+  declareSessionCommand(taskEvidenceCheckSpec, {
     load: loadTaskEvidenceCheckSpec,
+    requirements: TASK_READ_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskCloseDuplicateSpec, {
+  declareSessionCommand(taskCloseDuplicateSpec, {
     load: loadTaskCloseDuplicateSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskStartReadySpec, {
+  declareSessionCommand(taskStartReadySpec, {
     load: loadTaskStartReadySpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "start-ready"]),
   }),
-  declareCommand(taskCloseNoopSpec, {
+  declareSessionCommand(taskCloseNoopSpec, {
     load: loadTaskCloseNoopSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskAddSpec, {
+  declareSessionCommand(taskAddSpec, {
     load: loadTaskAddSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskUpdateSpec, {
+  declareSessionCommand(taskUpdateSpec, {
     load: loadTaskUpdateSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskCommentSpec, { load: loadTaskCommentSpec }),
-  declareCommand(taskSetStatusSpec, {
+  declareSessionCommand(taskCommentSpec, {
+    load: loadTaskCommentSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskSetStatusSpec, {
     load: loadTaskSetStatusSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -297,8 +334,9 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskFindingsAddSpec, {
+  declareSessionCommand(taskFindingsAddSpec, {
     load: loadTaskFindingsAddSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -307,41 +345,54 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskObservationsAddSpec, {
+  declareSessionCommand(taskObservationsAddSpec, {
     load: loadTaskObservationsAddSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskObservationsListSpec, {
+  declareSessionCommand(taskObservationsListSpec, {
     load: loadTaskObservationsListSpec,
+    requirements: TASK_READ_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskObservationsCheckSpec, {
+  declareSessionCommand(taskObservationsCheckSpec, {
     load: loadTaskObservationsCheckSpec,
+    requirements: TASK_READ_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskObservationsTriageSpec, {
+  declareSessionCommand(taskObservationsTriageSpec, {
     load: loadTaskObservationsTriageSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskObservationsHarvestSpec, {
+  declareSessionCommand(taskObservationsHarvestSpec, {
     load: loadTaskObservationsHarvestSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", { needs: "none" }),
-  declareCommand(taskDocShowSpec, { load: loadTaskDocShowSpec }),
-  declareCommand(taskDocSetSpec, { load: loadTaskDocSetSpec }),
-  declareCommand(taskScrubSpec, {
+  declareSessionCommand(taskDocShowSpec, {
+    load: loadTaskDocShowSpec,
+    requirements: TASK_READ_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskDocSetSpec, {
+    load: loadTaskDocSetSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskScrubSpec, {
     load: loadTaskScrubSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskScaffoldSpec, {
+  declareSessionCommand(taskScaffoldSpec, {
     load: loadTaskScaffoldSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -364,8 +415,9 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskMigrateSpec, {
+  declareSessionCommand(taskMigrateSpec, {
     load: loadTaskMigrateSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
@@ -374,28 +426,39 @@ export const TASK_COMMANDS = [
     helpGroup: "Maintenance",
   }),
   fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", { needs: "none" }),
-  declareCommand(taskPlanSetSpec, {
+  declareSessionCommand(taskPlanSetSpec, {
     load: loadTaskPlanSetSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "plan", "set"]),
   }),
-  declareCommand(taskPlanApproveSpec, {
+  declareSessionCommand(taskPlanApproveSpec, {
     load: loadTaskPlanApproveSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "plan", "approve"]),
   }),
-  declareCommand(taskPlanRejectSpec, {
+  declareSessionCommand(taskPlanRejectSpec, {
     load: loadTaskPlanRejectSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", { needs: "none" }),
-  declareCommand(taskVerifyOkSpec, { load: loadTaskVerifyOkSpec }),
-  declareCommand(taskVerifyReworkSpec, { load: loadTaskVerifyReworkSpec }),
-  declareCommand(taskVerifyShowSpec, {
+  declareSessionCommand(taskVerifyOkSpec, {
+    load: loadTaskVerifyOkSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskVerifyReworkSpec, {
+    load: loadTaskVerifyReworkSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskVerifyShowSpec, {
     load: loadTaskVerifyShowSpec,
+    requirements: TASK_READ_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "verify-show"]),
   }),
-  declareCommand(taskRebuildIndexSpec, {
+  declareSessionCommand(taskRebuildIndexSpec, {
     load: loadTaskRebuildIndexSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),

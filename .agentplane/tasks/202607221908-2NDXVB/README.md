@@ -1,10 +1,10 @@
 ---
 id: "202607221908-2NDXVB"
 title: "Migrate task, lifecycle, and route command boundaries"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -28,9 +28,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-31T22:59:56.898Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -39,11 +39,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-31T23:00:26.665Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:08:15.375Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-31T23:26:56.376Z"
+doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessions, typed workflow results, and centralized renderers without reconstructing route state or parsing stdout."
 sections:
   Summary: |-
@@ -71,7 +81,14 @@ sections:
     - Revert this family to explicit compatibility adapters without changing persisted task truth.
     - Restore the prior renderer only for the affected commands.
     - Re-run lifecycle and backend parity fixtures.
-  Findings: ""
+  Findings: |-
+    - Observation: Granular task and lifecycle requirements still resolve to the shared CommandContext compatibility value.
+      Impact: Session access, provider laziness, and catalog requirements are enforced now, but field-level context isolation cannot be removed until the other four command-family slices converge.
+      Resolution: Keep the compatibility value explicit in this slice; remove it in RF-24 fan-in after all family loaders use CommandSession profiles.
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "68b71790527489b13f868deede5a8de4552117cb"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
@@ -112,3 +129,7 @@ RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessi
 - Re-run lifecycle and backend parity fixtures.
 
 ## Findings
+
+- Observation: Granular task and lifecycle requirements still resolve to the shared CommandContext compatibility value.
+  Impact: Session access, provider laziness, and catalog requirements are enforced now, but field-level context isolation cannot be removed until the other four command-family slices converge.
+  Resolution: Keep the compatibility value explicit in this slice; remove it in RF-24 fan-in after all family loaders use CommandSession profiles.

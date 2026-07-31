@@ -17,6 +17,7 @@ import { verifySpec } from "../../../commands/verify.spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
 import {
   fromCommandsHooksHooksCommand,
   fromCommandsHooksInstallCommand,
@@ -38,18 +39,32 @@ import {
 } from "../command-loaders/lifecycle.js";
 
 export const LIFECYCLE_COMMANDS = [
-  declareCommand(commitSpec, { load: loadCommitSpec }),
-  declareCommand(startSpec, { load: loadStartSpec }),
-  declareCommand(blockSpec, { load: loadBlockSpec }),
-  declareCommand(verifySpec, {
+  declareSessionCommand(commitSpec, {
+    load: loadCommitSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(startSpec, {
+    load: loadStartSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(blockSpec, {
+    load: loadBlockSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
+  declareSessionCommand(verifySpec, {
     load: loadVerifySpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["verify"]),
   }),
-  declareCommand(finishSpec, {
+  declareSessionCommand(finishSpec, {
     load: loadFinishSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["finish"]),
   }),
-  declareCommand(readySpec, { load: loadReadySpec }),
+  declareSessionCommand(readySpec, {
+    load: loadReadySpec,
+    requirements: TASK_READ_REQUIREMENTS,
+  }),
   declareSessionCommand(docsCliSpec, {
     load: loadDocsCliSpec,
     requirements: ["output"],

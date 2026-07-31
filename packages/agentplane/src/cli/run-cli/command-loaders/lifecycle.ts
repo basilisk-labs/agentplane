@@ -1,4 +1,17 @@
+import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import type {
+  TaskLifecycleSession,
+  TaskReadSession,
+} from "../command-catalog/task-capability-profiles.js";
+
+function getLifecycleContext(session: TaskLifecycleSession) {
+  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
+}
+
+function getTaskReadContext(session: TaskReadSession) {
+  return (command: string) => session.require("task.read", command) as Promise<CommandContext>;
+}
 
 export const fromCommandsHooksHooksCommand = commandModule(
   () => import("../../../commands/hooks/hooks.command.js"),
@@ -15,18 +28,30 @@ export const fromCommandsGuardGuardCommand = commandModule(
 export const fromCommandsGuardCleanCommand = commandModule(
   () => import("../../../commands/guard/clean.command.js"),
 );
-export const loadCommitSpec = (deps: RunDeps) =>
-  import("../../../commands/commit.command.js").then((m) => m.makeRunCommitHandler(deps.getCtx));
-export const loadStartSpec = (deps: RunDeps) =>
-  import("../../../commands/start.run.js").then((m) => m.makeRunStartHandler(deps.getCtx));
-export const loadBlockSpec = (deps: RunDeps) =>
-  import("../../../commands/block.run.js").then((m) => m.makeRunBlockHandler(deps.getCtx));
-export const loadVerifySpec = (deps: RunDeps) =>
-  import("../../../commands/verify.run.js").then((m) => m.makeRunVerifyHandler(deps.getCtx));
-export const loadFinishSpec = (deps: RunDeps) =>
-  import("../../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx));
-export const loadReadySpec = (deps: RunDeps) =>
-  import("../../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx));
+export const loadCommitSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/commit.command.js").then((m) =>
+    m.makeRunCommitHandler(getLifecycleContext(session)),
+  );
+export const loadStartSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/start.run.js").then((m) =>
+    m.makeRunStartHandler(getLifecycleContext(session)),
+  );
+export const loadBlockSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/block.run.js").then((m) =>
+    m.makeRunBlockHandler(getLifecycleContext(session)),
+  );
+export const loadVerifySpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/verify.run.js").then((m) =>
+    m.makeRunVerifyHandler(getLifecycleContext(session)),
+  );
+export const loadFinishSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/finish.run.js").then((m) =>
+    m.makeRunFinishHandler(getLifecycleContext(session)),
+  );
+export const loadReadySpec = (session: TaskReadSession) =>
+  import("../../../commands/ready.command.js").then((m) =>
+    m.makeRunReadyHandler(getTaskReadContext(session)),
+  );
 export const loadDocsCliSpec = (session: CommandSession<"output">) =>
   import("../../../commands/docs/cli.command.js").then((m) =>
     m.makeRunDocsCliHandler(session.getHelpJsonForDocs),
