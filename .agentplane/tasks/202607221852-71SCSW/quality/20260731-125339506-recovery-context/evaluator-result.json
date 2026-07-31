@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The existing queued entry references an older task head; treating any present queue entry as terminal wait would strand the newly verified head.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-125339506-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Stale queued head versus current provider/task head is not covered."
+  ],
+  "hidden_assumptions": [],
+  "recovery_context": "Wait only when queue branch, head SHA, base, and PR identity match current route truth; refresh an inactive stale entry with one typed enqueue and never overwrite claimed/handoff work."
+}
