@@ -4,13 +4,15 @@ Verified implementation SHA: `33e59899d5cd381f089b96746fb715fa5c84a6a2`.
 
 ## 1. Typed capability boundary and lazy resolution
 
-Command: `bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.test.ts`
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.command-session.test.ts`
 
-Result: pass (3 files, 56 tests).
+Result: pass (3 files, 13 tests).
 
 Evidence: the session tests cover compile-time capability narrowing, typed `E_INTERNAL` denial before an undeclared resolver runs, lazy node reuse, explicit legacy compatibility, and preparation trace visibility. The CLI integration test proves that `docs cli` resolves only the `output` node.
 
 Scope: Verify steps 1-4; `CommandSession`, the command catalog, the registry bridge, and representative simple/read/task/route/provider commands.
+
+The trace integration case lives in a dedicated test file so the existing oversized `run-cli.core.test.ts` baseline does not grow.
 
 ## 2. Architecture and trust boundaries
 
