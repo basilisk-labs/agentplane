@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "INC-20260731-01 accurately separates the direct-supervisor receipt race from the successful RF-23 broker execution and marks it repo-fixable for follow-up without invalidating current verification."
     - "The incident entry is byte-identical in .agentplane/policy/incidents.md and packages/agentplane/assets/policy/incidents.md, preserving source/template parity."
 commit:
-  hash: "da76a705009eb5c14b583c3fbf53c716dbead232"
-  message: "🚧 ECBY56 task: Record implementation evidence"
+  hash: "b7a671f8d1c47477ba5f7423f35966f11c0ca194"
+  message: "🧪 ECBY56 task: Record final quality review"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -105,8 +108,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-31T10:58:46.035Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T10:56:33.607Z"
+doc_updated_at: "2026-07-31T10:58:46.036Z"
 doc_updated_by: "CODER"
 description: "RF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority."
 sections:
@@ -175,6 +185,9 @@ sections:
       IncidentScope: runner direct supervision
       IncidentTags: runner, receipt
 extensions:
+  implementation_commit:
+    hash: "659534b44ed327e52a1b62d1db297f5e71a619ce"
+    message: "🚧 ECBY56 task: pre-merge closure"
   workflow_route_baseline:
     start_head_sha: "402709cb633549245a4231d902813a473e6c4103"
     version: 1
