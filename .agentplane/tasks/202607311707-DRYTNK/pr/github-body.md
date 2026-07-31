@@ -19,8 +19,8 @@ Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 w
 - Note:
 
 ```text
-Hosted verify-static rework verified locally against the exact CI build order; TypeScript 7 and
-TypeScript 6 rollback remain green.
+Linux isolated-linker rework verified: dependency-cruiser resolves TypeScript 6.0.3 explicitly, full
+macOS and Linux architecture graphs pass, and format/toolchain/full lint pass.
 ```
 - Canonical workflow state lives in the task README.
 

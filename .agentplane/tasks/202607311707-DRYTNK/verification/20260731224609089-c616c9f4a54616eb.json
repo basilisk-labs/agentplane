@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c616c9f4a54616eb2c34d72434d799ac54c95369c105ffe20ca67f429fa7961d",
+  "implementation_sha": "05de582e2cb8923c825f8ff4007135551bfe41b4",
+  "kind": "task_verification_record",
+  "note": "Linux isolated-linker rework verified: dependency-cruiser resolves TypeScript 6.0.3 explicitly, full macOS and Linux architecture graphs pass, and format/toolchain/full lint pass.",
+  "recorded_at": "2026-07-31T22:46:09.089Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Apply only the package aliases, scripts, tsconfig adjustments, and CI concurrency settings frozen by 202607311706-QB60J5. The canonical root and package typecheck commands must invoke the pinned TypeScript 7 binary.\n2. Keep typescript-eslint and every scripts/** compiler-API consumer on the pinned TypeScript 6 compatibility package. ESLint, trust-boundary gates, compatibility baseline, schema/declaration emit, and package builds must pass without weakening checks.\n3. Run bun install --frozen-lockfile, root typecheck, package builds, lint, critical CLI tests, unit tests, format, routing, release parity, and the Windows CI matrix. All must pass with deterministic checker/builder limits appropriate to hosted runners.\n4. Record before/after benchmark evidence from 202607311706-QB60J5 and verify the documented rollback command restores the TypeScript 6 typecheck path without lockfile or generated-artifact drift.\n5. Confirm installed-package behavior and Node 20/24 support remain unchanged; no TypeScript 7 compiler API dependency may leak into runtime packages.",
+  "scope_digest": "sha256:5a20a91b25029c8acc169ce6a343a01002be798f90a72af3e510cb3a003c169b",
+  "task_id": "202607311707-DRYTNK",
+  "verification_command": "agentplane verify 202607311707-DRYTNK --ok --by CODER",
+  "verifier": "CODER"
+}
