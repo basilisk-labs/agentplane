@@ -27,10 +27,7 @@ export function observeDirectExecutor(
     return { stop: "runner_failed", reason: "The EXECUTOR runner did not complete successfully." };
   }
   const receipt = lifecycle.result.execution_receipt;
-  const acceptableReceipt =
-    receipt?.verification_state === "observed_success" ||
-    (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
-  if (!acceptableReceipt) {
+  if (!receipt || receipt.verification_state === "rejected") {
     const observedState = receipt?.verification_state ?? "missing";
     const receiptRef = receipt?.path?.trim() ?? "none";
     return {
@@ -48,6 +45,10 @@ export function observeDirectExecutor(
       reason: "The EXECUTOR result has no current typed semantic result.",
     };
   }
+  // A typed non-success result cannot authorize implementation or lifecycle
+  // progress. Surface it even when process containment leaves the receipt
+  // unverified so the supervisor preserves the real semantic stop without
+  // replaying the provider. Completed work still requires an accepted receipt.
   if (semantic.status === "needs_context") {
     return {
       stop: "missing_knowledge",
@@ -61,6 +62,20 @@ export function observeDirectExecutor(
     return {
       stop: "executor_semantic_failed",
       reason: "The EXECUTOR returned a typed semantic failure.",
+    };
+  }
+  const acceptableReceipt =
+    receipt?.verification_state === "observed_success" ||
+    (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
+  if (!acceptableReceipt) {
+    const observedState = receipt?.verification_state ?? "missing";
+    const receiptRef = receipt?.path?.trim() ?? "none";
+    return {
+      stop: "runner_receipt_unobserved",
+      reason:
+        "The EXECUTOR result has no receipt accepted for the current authority " +
+        `(verification_state=${observedState}, receipt_ref=${receiptRef}). ` +
+        "The supervisor preserves this terminal observation and will not replay the provider.",
     };
   }
   return {
