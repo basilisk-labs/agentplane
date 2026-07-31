@@ -140,6 +140,7 @@ describe("pr/integrate/internal/finalize", () => {
         verifyCommands: ["bun test"],
       }),
     );
+    expect(mocks.gitDiffStat).toHaveBeenCalledWith("/repo", "cafebabe", "deadbeef");
     expect(mocks.writeTextIfChanged).toHaveBeenCalledWith(
       "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
       " src/app.ts | 1 +\n",
