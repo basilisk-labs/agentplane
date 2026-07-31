@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c1143dbac88857f5aea3919167f6115b60153046f6c3a2ab6f6b78f2c5406150",
+  "implementation_sha": "11e9307777415e5d8334aa734c486fc970bbb3b6",
+  "kind": "task_verification_record",
+  "note": "Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed.",
+  "recorded_at": "2026-07-31T12:09:21.598Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run a protected-main branch_pr golden task. Expected: EXECUTOR performs zero lifecycle calls; supervisor owns worktree through cleanup and uses provider truth.\n2. Exercise late checks, stale head, merge conflict, deleted branch, queue contention, and hosted-close retry. Expected: safe typed waits/rework/recovery without duplicate PR/merge.\n3. Remove merge authority. Expected: an approval step; no provider action is imitated.\n4. Verify actual PR/check/merge receipts and final main SHA in integration fixtures.\n5. Run branch_pr workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7",
+  "task_id": "202607221852-71SCSW",
+  "verification_command": "agentplane verify 202607221852-71SCSW --ok --by TESTER",
+  "verifier": "TESTER"
+}
