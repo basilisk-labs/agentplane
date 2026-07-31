@@ -78,6 +78,7 @@ import {
   TASK_LIFECYCLE_REQUIREMENTS,
   TASK_READ_REQUIREMENTS,
   TASK_ROUTE_LOCAL_REQUIREMENTS,
+  TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
   TASK_ROUTE_REQUIREMENTS,
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
@@ -190,7 +191,7 @@ export const TASK_COMMANDS = [
   }),
   declareSessionCommand(taskAuthorityGrantSpec, {
     load: loadTaskAuthorityGrantSpec,
-    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+    requirements: TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -365,7 +366,7 @@ export const TASK_COMMANDS = [
   }),
   declareSessionCommand(taskObservationsTriageSpec, {
     load: loadTaskObservationsTriageSpec,
-    requirements: TASK_WRITE_REQUIREMENTS,
+    requirements: TASK_READ_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),

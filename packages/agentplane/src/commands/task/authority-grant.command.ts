@@ -129,9 +129,14 @@ function requestedOperation(decision: Awaited<ReturnType<typeof buildTaskRouteDe
   return request;
 }
 
-export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunTaskAuthorityGrantHandler(session: {
+  getLocalContext: (cmd: string) => Promise<CommandContext>;
+  getRemoteContext: (cmd: string) => Promise<CommandContext>;
+}) {
   return async (ctx: CommandCtx, parsed: TaskAuthorityGrantParsed): Promise<number> => {
-    const commandCtx = await getCtx("task authority grant");
+    const commandCtx = await (parsed.remote
+      ? session.getRemoteContext("task authority grant")
+      : session.getLocalContext("task authority grant"));
     const decision = await buildTaskRouteDecision({
       ctx: commandCtx,
       cwd: ctx.cwd,

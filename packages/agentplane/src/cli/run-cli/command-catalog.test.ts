@@ -115,6 +115,7 @@ describe("command catalog graph", () => {
       ["task", "search"],
       ["task", "show"],
       ["task", "verify-show"],
+      ["task", "observations", "triage"],
       ["ready"],
     ];
     for (const id of taskReadCommands) {
@@ -189,6 +190,18 @@ describe("command catalog graph", () => {
         expect.arrayContaining(["route.local", "route.remote", "provider"]),
       );
     }
+
+    const authorityGrant = findCommandEntry(["task", "authority", "grant"]);
+    expect(authorityGrant?.compatibility).toBeNull();
+    expect(authorityGrant?.requirements).toEqual(
+      expect.arrayContaining([
+        "task.write",
+        "git.mutate",
+        "route.local",
+        "route.remote",
+        "provider",
+      ]),
+    );
   });
 
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {

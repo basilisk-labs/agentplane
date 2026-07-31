@@ -34,3 +34,10 @@ The two `test:fast` replay-security failures were timeout-only under concurrent 
 ## Residual boundary
 
 Granular requirements now deny undeclared session access before command-context preparation and keep remote provider resolution lazy. The shared `CommandContext` remains the compatibility value behind declared context capabilities until all five vertical slices converge and the RF-24 fan-in task removes the coarse compatibility layer.
+
+## Review feedback correction
+
+- PR review identified that `task authority grant --remote` rebuilt hosted state from a lifecycle-only session. The command now declares a combined lifecycle/remote profile and chooses local or remote context from the parsed `--remote` flag before rebuilding the route.
+- PR review identified that `task observations triage` is read-only. Its catalog and loader now use the task-read profile and `task.read` capability.
+- Added exact catalog assertions for both corrected profiles and a handler regression covering local versus remote authority context selection.
+- Review-fix checks passed: formatting, typecheck, core lint, 17 focused catalog/kernel/authority tests, and 2 CLI session tests.
