@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "The existing queued entry references an older task head; treating any present queue entry as terminal wait would strand the newly verified head."
 commit:
-  hash: "9c86ab0143d1296a6a53df65a338f29c1ff288ef"
-  message: "♻️ 71SCSW task: extract integration queue routing"
+  hash: "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea"
+  message: "🚧 71SCSW task: bind queue wait to current head"
 comments:
   -
     author: "CODER"
@@ -93,6 +93,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework finalized: integration queue routing extracted below hotspot limit."
+  -
+    author: "CODER"
+    body: "Implementation rework finalized: queue waits are bound to current branch, head, base, and PR identity."
 events:
   -
     type: "status"
@@ -156,8 +159,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework finalized: integration queue routing extracted below hotspot limit."
+  -
+    type: "status"
+    at: "2026-07-31T12:54:46.712Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework finalized: queue waits are bound to current branch, head, base, and PR identity."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:50:10.329Z"
+doc_updated_at: "2026-07-31T12:54:46.712Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
