@@ -6,14 +6,14 @@ Created: 2026-07-31T11:44:30.841Z
 
 - Task: `202607311143-YT435C`
 - Title: Release AgentPlane v0.6.26
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607311143-YT435C/release-v0-6-26`
 - Canonical task record: `.agentplane/tasks/202607311143-YT435C/README.md`
 
 ## Verification
 
-- State: ok
-- Note: v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34, significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9, incident clearance, and task-registry readiness also pass.
+- State: needs_rework
+- Note: Hosted verify-contract found the generated v0.6.26 ACR example was not formatted after candidate version mutation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -51,11 +51,11 @@ Created: 2026-07-31T11:44:30.841Z
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +++++++---
+ packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.26.png    | Bin 0 -> 55079 bytes
  website/static/img/social/manifest.json            |   8 ++++
- 26 files changed, 112 insertions(+), 46 deletions(-)
+ 26 files changed, 98 insertions(+), 42 deletions(-)
 ```
 
 </details>
