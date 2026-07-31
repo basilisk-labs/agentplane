@@ -4,7 +4,7 @@ title: "Expose phase-scoped run tool APIs"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -37,11 +37,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "2be2aa10b09ac7618cdcfd5fe93faf9602842c82"
+  message: "🚧 ECBY56 task: Implement phase-scoped run tool APIs"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented signed phase-scoped run tool APIs with a supervisor-owned broker, typed capability limits, terminal revocation, compatibility ratchet, and focused coverage."
 events:
   -
     type: "status"
@@ -50,8 +55,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-31T10:42:56.625Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented signed phase-scoped run tool APIs with a supervisor-owned broker, typed capability limits, terminal revocation, compatibility ratchet, and focused coverage."
 doc_version: 3
-doc_updated_at: "2026-07-31T10:00:55.408Z"
+doc_updated_at: "2026-07-31T10:42:56.625Z"
 doc_updated_by: "CODER"
 description: "RF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority."
 sections:
