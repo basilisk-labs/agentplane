@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311143-YT435C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T12:49:41.515Z",
+  "verdict": "pass",
+  "summary": "v0.6.26 maintenance candidate is release-ready after full and final-state gates.",
+  "evaluated_sha": "f4a967d3f4a54062d1f002ef3b8e49e33743f669",
+  "blueprint_digest": "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4",
+  "findings": [
+    "The direct pending/no-runner route transitions to task run and terminal runner state stops for verification evidence.",
+    "Untracked canonical task artifacts are persisted before execution without staging unrelated untracked files.",
+    "Pre-merge closure freshness is bound to implementation HEAD and stale markers route through PR refresh to a new closure.",
+    "Full release prepublish, final fast prepublish, focused regressions, incidents, registry, parity, pack, and install-smoke checks pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311143-YT435C/README.md",
+    "docs/releases/v0.6.26.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
+    ".agentplane/workflows/last-known-good.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311143-YT435C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:50:09.108Z",
+  "verdict": "pass",
+  "summary": "The direct-workflow fixes and v0.6.26 candidate are verified; verification subprocess semantics are now independent of the invoking AgentPlane runtime.",
+  "evaluated_sha": "020dfcd89e6b4535896e1b211c58806d20e5aa84",
+  "blueprint_digest": "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4",
+  "findings": [
+    "Exact reproduction with AGENTPLANE_RUNTIME_ACTIVE_BIN pointing at 0.6.25 passes 43/43 and resolves candidate version 0.6.26 after sanitization."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311143-YT435C/README.md",
+    "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts",
+    "packages/agentplane/src/commands/shared/pr-meta.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.test.ts"
+  ],
+  "missing_tests": [
+    "none"
+  ],
+  "hidden_assumptions": [
+    "Hosted publication must still use the exact maintenance merge SHA."
+  ],
+  "residual_risks": [
+    "A final full integration-lane release:prepublish remains required before publication."
+  ]
+}
