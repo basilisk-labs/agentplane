@@ -36,7 +36,9 @@ The migration implements the approved `202607311706-QB60J5` contract:
 - `bun run guards:check`: pass.
 - `bun run logging:check`: pass.
 - `bun run bench:compatibility:check`: pass.
+- `bun run bench:agent-efficiency:replay:check`: pass; the historical 50-run/70-outcome RF-04 baseline remains unchanged.
 - `bun run release:parity`: pass.
+- `bun run test:critical`: pass, 12/12 routed chunks. The RF-04 exact-anchor runtime accepts only the frozen additive TypeScript 7 lock delta and still rejects any version or package-set drift as `ANCHOR_LOCK_MISMATCH`.
 
 The first plain `bun install` updated the lockfile and then hit an existing local Lefthook replacement error because `pre-commit.old` already existed. The deterministic install was repeated with `--frozen-lockfile --ignore-scripts` and passed; this is worktree hook infrastructure, not package-resolution failure.
 
@@ -49,3 +51,7 @@ AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck
 ```
 
 The command resolves TypeScript 6.0.3 through the same wrapper and completed successfully after the TypeScript 7 build.
+
+## RF-04 anchor isolation
+
+The RF-04 subject remains the exact pre-0.7 commit and still builds with TypeScript 6.0.3. Its lock gate now projects away only the approved root `@typescript/native` alias, the exact 7.0.2 platform package set, and the semver-range-to-pin changes that keep the same TypeScript 6.0.3 API package. The comparison remains fail-closed for any other lockfile difference. This avoids falsely treating an unused development-only compiler as a semantic change to the historical benchmark while preserving the original anchor and evidence.
