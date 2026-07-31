@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311529-773BXT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T15:34:38.864Z",
+  "verdict": "pass",
+  "summary": "Merged-worktree cleanup race is idempotent without hiding genuine failures.",
+  "evaluated_sha": "13509c41f93a7d600c25e11adc5a7aa3d2894c14",
+  "blueprint_digest": "71d0efdc00c7dce41dfc166c3fcaf5e17dc441f74153342906a8da2e40fc6af7",
+  "findings": [
+    "Regression coverage proves stale hints are accepted only after live registration disappears."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311529-773BXT/README.md",
+    "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
