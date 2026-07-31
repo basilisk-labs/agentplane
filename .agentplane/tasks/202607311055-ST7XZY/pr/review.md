@@ -12,8 +12,8 @@ Created: 2026-07-31T10:56:26.206Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification.
+- State: ok
+- Note: Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

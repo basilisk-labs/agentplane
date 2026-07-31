@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311055-ST7XZY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T11:17:50.290Z",
+  "verdict": "pass",
+  "summary": "Hosted contract rework passed without changing the production routing fix or oversized-test baseline.",
+  "evaluated_sha": "1997cf25e0076fe47889c3b3576d789c8f8f8993",
+  "blueprint_digest": "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d",
+  "findings": [
+    "The oversized route test is now below its existing 1171-line baseline and the full file passes 11/11 tests.",
+    "Production routing evidence remains covered by the prior 57 focused, 204 significant, and 16 release-critical passing tests."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311055-ST7XZY/README.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

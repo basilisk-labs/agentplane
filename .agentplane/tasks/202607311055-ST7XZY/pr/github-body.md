@@ -15,13 +15,14 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
-```text
-Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2
-lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce
-the test without updating the baseline, then rerun verification.
+```bash
+bun run hotspots:check; direct route-decision test file; bun run typecheck; node \
+  .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 \
+  lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract \
+  rework only; production routing diff unchanged.
 ```
 - Canonical workflow state lives in the task README.
 

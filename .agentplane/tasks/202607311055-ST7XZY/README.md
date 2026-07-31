@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -21,22 +21,28 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-31T11:17:00.628Z"
+  state: "ok"
+  updated_at: "2026-07-31T11:17:47.894Z"
   updated_by: "EVALUATOR"
-  note: "Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification."
-  attempts: 1
+  note: "Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged."
+  attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-07-31T11:17:00.628Z"
+  state: "pass"
+  updated_at: "2026-07-31T11:17:50.290Z"
   updated_by: "EVALUATOR"
-  note: "Hosted verify-contract found only an oversized-test budget regression: route-decision.test.ts grew 2 lines beyond its existing baseline. Production behavior and focused tests remained correct; reduce the test without updating the baseline, then rerun verification."
-  evaluated_sha: "4249b38e6c8e3e8c5c9497f2c4c44f7d86114a4e"
+  note: "Hosted contract rework passed without changing the production routing fix or oversized-test baseline."
+  evaluated_sha: "1997cf25e0076fe47889c3b3576d789c8f8f8993"
   blueprint_digest: "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d"
   evidence_refs:
     - ".agentplane/tasks/202607311055-ST7XZY/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111750290-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111750290-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111750290-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+  findings:
+    - "The oversized route test is now below its existing 1171-line baseline and the full file passes 11/11 tests."
+    - "Production routing evidence remains covered by the prior 57 focused, 204 significant, and 16 release-critical passing tests."
 commit: null
 comments:
   -
@@ -82,8 +88,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: apply the hosted contract rework by shrinking the route regression without changing production behavior or the oversized-test baseline."
+  -
+    type: "verify"
+    at: "2026-07-31T11:17:47.894Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:17:04.207Z"
+doc_updated_at: "2026-07-31T11:17:48.102Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -146,6 +158,36 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:12:31.521Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+    - diagnostic_command: agentplane pr check 202607311055-ST7XZY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-31T11:17:47.894Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:17:04.207Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
 
     Details:
 
@@ -267,6 +309,36 @@ Note: Hosted verify-contract found only an oversized-test budget regression: rou
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:12:31.521Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+- diagnostic_command: agentplane pr check 202607311055-ST7XZY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-31T11:17:47.894Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Command: bun run hotspots:check; direct route-decision test file; bun run typecheck; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: oversized baseline OK at 1170 lines/11423 total, route-decision 11/11, typecheck and routing OK. Scope: hosted verify-contract rework only; production routing diff unchanged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:17:04.207Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
 
 Details:
 
