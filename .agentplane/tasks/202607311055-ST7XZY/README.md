@@ -2,10 +2,10 @@
 id: "202607311055-ST7XZY"
 title: "Eliminate direct workflow state-neutral routing loops"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -45,7 +45,9 @@ quality_review:
   findings:
     - "Full lint:core passes after separating the awaited status probe from filtering."
     - "Direct closeout and stale pre-merge closure regressions remain green."
-commit: null
+commit:
+  hash: "fffe9fef10e9a296086066a72d12590aadfe2286"
+  message: "✅ ST7XZY task: record static recheck"
 comments:
   -
     author: "CODER"
@@ -65,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: fix hosted static lint failure without changing routing semantics."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -150,8 +155,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted static lint fix passed lint:core, affected routing regressions 9/9, typecheck, and hotspot budget."
+  -
+    type: "status"
+    at: "2026-07-31T11:35:34.918Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:35:10.769Z"
+doc_updated_at: "2026-07-31T11:35:34.919Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -429,8 +441,8 @@ sections:
       Resolution: Applied semantics-preserving lint correction and reran affected checks.
 extensions:
   implementation_commit:
-    hash: "ccfacd7d9a18ecba73a9e3e687fe3625e38492be"
-    message: "🐛 ST7XZY routing: reject stale pre-merge closure"
+    hash: "ff8da4148775ab58e495d13be3e770b4311bb445"
+    message: "🧹 ST7XZY routing: satisfy static lint"
 id_source: "generated"
 ---
 ## Summary
