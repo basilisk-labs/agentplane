@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-71SCSW-b23d91af74fea26e5e25e30c",
+  "task_id": "202607221852-71SCSW",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Keep task and quality truth anchored to the task worktree while resolving integration queue truth from the authoritative base checkout; add regression coverage and repeat the live queued transition.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "integration.enqueue persisted the queue entry under the base checkout, but supervisor refresh switched task loading to the stale base README while task-worktree refresh could not observe the base queue cache.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-123645347-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-123645347-recovery-context/evaluator-result.json"
+}
