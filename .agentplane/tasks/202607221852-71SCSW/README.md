@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "integration.enqueue persisted the queue entry under the base checkout, but supervisor refresh switched task loading to the stale base README while task-worktree refresh could not observe the base queue cache."
 commit:
-  hash: "286f9cf605befcca215fd417dab0baf7109ffb57"
-  message: "🚧 71SCSW task: bind queue truth to base checkout"
+  hash: "9c86ab0143d1296a6a53df65a338f29c1ff288ef"
+  message: "♻️ 71SCSW task: extract integration queue routing"
 comments:
   -
     author: "CODER"
@@ -90,6 +90,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: task truth remains in task worktree while queue truth comes from base checkout."
+  -
+    author: "CODER"
+    body: "Implementation rework finalized: integration queue routing extracted below hotspot limit."
 events:
   -
     type: "status"
@@ -146,8 +149,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: task truth remains in task worktree while queue truth comes from base checkout."
+  -
+    type: "status"
+    at: "2026-07-31T12:50:10.329Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework finalized: integration queue routing extracted below hotspot limit."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:47:57.474Z"
+doc_updated_at: "2026-07-31T12:50:10.329Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
