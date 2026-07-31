@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run release:incidents:check",
+    "bun run test:critical",
+    "bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T14:01:14.185Z",
+    "updated_by": "TESTER",
+    "note": "Structured deterministic verification evidence refreshed for implementation c3b5d08db2960cc4722230f91d34f5fd17c16229 after PR #4704 linkage."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607311338-CT2725/verification/20260731140114185-d1a0af6efccfd7bb.json",
+      "sha256": "sha256:41f707ff043300dfdfc27adaa47e1ddde6159c598fd602972ec61d4f66e736df"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

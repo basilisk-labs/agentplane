@@ -1,0 +1,1085 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 7f4369de8..3499a0898 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260731-01 | date: 2026-07-31 | scope: runner direct supervision | tags: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority | match: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority, direct, supervision, expose, phase, scoped, run, tool | failure: The outer direct-supervisor episode reported runner_receipt_unobserved even though the runner completed successfully and persisted a valid execution receipt. | advice: Keep RF-23 verification passing and track the receipt-observation race as a separate follow-up; no provider retry was used. | rule: Analogous runner direct supervision work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607221852-ECBY56; commit da76a705009e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/.agentplane/tasks/202607311338-CT2725/README.md b/.agentplane/tasks/202607311338-CT2725/README.md
+index 3428d54f2..77dd4a73a 100644
+--- a/.agentplane/tasks/202607311338-CT2725/README.md
++++ b/.agentplane/tasks/202607311338-CT2725/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607311338-CT2725"
+-title: "Resolve successful runner receipt observation race"
+-status: "TODO"
++title: "Preserve typed executor stops with unverified receipts"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 3
++revision: 10
+ origin:
+   system: "manual"
+ depends_on:
+@@ -25,9 +25,9 @@ verify:
+   - "bun run test:critical"
+   - "bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-31T13:44:48.861Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -36,12 +36,22 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T13:40:50.476Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-31T13:39:35.419Z"
+-doc_updated_by: "PLANNER"
+-description: "Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate."
++doc_updated_at: "2026-07-31T13:45:12.332Z"
++doc_updated_by: "CODER"
++description: "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate."
+ sections:
+   Summary: |-
+     Resolve successful runner receipt observation race
+@@ -51,24 +61,31 @@ sections:
+     - In scope: Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.
+     - Out of scope: unrelated refactors not required for "Resolve successful runner receipt observation race".
+   Plan: |-
+-    1. Reproduce the outer-supervisor false runner_receipt_unobserved outcome at the lifecycle/receipt boundary and identify the exact stale or missing observation transition.
+-    2. Implement the narrowest durable receipt reconciliation that accepts only the matching run/task receipt and never replays the provider.
+-    3. Add deterministic positive and adversarial regression coverage for matching, missing, mismatched, unverified, and rejected receipts.
+-    4. Run focused coverage and the critical suite, then resolve INC-20260731-01 through the canonical incident workflow with source/asset parity.
+-    5. Record independent verification and evaluator evidence, integrate the repair, then rerun the RC.1 qualification gate.
++    1. Use the preserved RF-23 live artifact to distinguish receipt integrity from containment verification and reproduce the false runner_receipt_unobserved classification.
++    2. Reorder direct executor observation so a present non-rejected receipt can carry typed blocked, needs_context, or failed stops, while completed execution still requires observed_success or explicit unverified authority.
++    3. Add focused unit and outer-supervisor regression coverage, including missing/rejected receipt and completed-unverified safeguards.
++    4. Run focused and critical gates, then resolve INC-20260731-01 through the canonical incident workflow with source/asset parity.
++    5. Record independent verification and evaluator evidence, integrate the repair, then rerun RC.1 qualification.
+   Verify Steps: |-
+-    1. Reproduce the incident with a successful EXECUTOR whose matching observed-success receipt is durably persisted before the outer supervisor observes completion. Expected: the pre-fix path returns runner_receipt_unobserved without a provider retry.
+-    2. Run `bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts`. Expected: a matching persisted receipt is reconciled exactly once, while missing, mismatched, unverified without authority, and rejected receipts remain terminal.
++    1. Inspect the preserved RF-23 live artifact. Expected: process, scope, Git, artifacts, protected-filesystem observation, and phase-tool audit pass; containment alone leaves the receipt unverified, while the typed result is blocked and the pre-fix outer stop is runner_receipt_unobserved.
++    2. Run `bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts`. Expected: blocked, needs_context, and failed results with present unverified receipts preserve their typed stop without provider replay; completed-unverified, missing, and rejected receipts remain terminal and cannot authorize progress.
+     3. Run `bun run test:critical`. Expected: all critical CLI chunks pass and provider execution remains at-most-once.
+     4. Run `agentplane incidents collect 202607311338-CT2725 --check` and `bun run release:incidents:check`. Expected: INC-20260731-01 is resolved with task/commit evidence, source and packaged incident assets stay identical, and the release incident gate passes.
+-    5. Review the final diff and task evidence. Expected: changes remain bounded to receipt observation/reconciliation, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA.
++    5. Review the final diff and task evidence. Expected: changes remain bounded to semantic-stop observation ordering, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert task-related commit(s).
+     - Re-run required checks to confirm rollback safety.
+-  Findings: ""
++  Findings: |-
++    - Observation: The preserved RF-23 receipt is structurally valid but intentionally unverified only because POSIX process-group supervision cannot prove containment of descendants that create a new session; the same run contains an accepted supervisor-owned report_blocker audit and a typed blocked semantic result.
++      Impact: The outer supervisor reported runner_receipt_unobserved before inspecting the non-success semantic result, hiding the actionable blocker even though no completed work or lifecycle progress should be authorized.
++      Resolution: Require a present non-rejected receipt, then surface blocked, needs_context, and failed semantic stops before the observed-success gate; keep completed-unverified, missing, and rejected receipts unable to authorize progress.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+@@ -84,19 +101,19 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
+ 
+ ## Plan
+ 
+-1. Reproduce the outer-supervisor false runner_receipt_unobserved outcome at the lifecycle/receipt boundary and identify the exact stale or missing observation transition.
+-2. Implement the narrowest durable receipt reconciliation that accepts only the matching run/task receipt and never replays the provider.
+-3. Add deterministic positive and adversarial regression coverage for matching, missing, mismatched, unverified, and rejected receipts.
+-4. Run focused coverage and the critical suite, then resolve INC-20260731-01 through the canonical incident workflow with source/asset parity.
+-5. Record independent verification and evaluator evidence, integrate the repair, then rerun the RC.1 qualification gate.
++1. Use the preserved RF-23 live artifact to distinguish receipt integrity from containment verification and reproduce the false runner_receipt_unobserved classification.
++2. Reorder direct executor observation so a present non-rejected receipt can carry typed blocked, needs_context, or failed stops, while completed execution still requires observed_success or explicit unverified authority.
++3. Add focused unit and outer-supervisor regression coverage, including missing/rejected receipt and completed-unverified safeguards.
++4. Run focused and critical gates, then resolve INC-20260731-01 through the canonical incident workflow with source/asset parity.
++5. Record independent verification and evaluator evidence, integrate the repair, then rerun RC.1 qualification.
+ 
+ ## Verify Steps
+ 
+-1. Reproduce the incident with a successful EXECUTOR whose matching observed-success receipt is durably persisted before the outer supervisor observes completion. Expected: the pre-fix path returns runner_receipt_unobserved without a provider retry.
+-2. Run `bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts`. Expected: a matching persisted receipt is reconciled exactly once, while missing, mismatched, unverified without authority, and rejected receipts remain terminal.
++1. Inspect the preserved RF-23 live artifact. Expected: process, scope, Git, artifacts, protected-filesystem observation, and phase-tool audit pass; containment alone leaves the receipt unverified, while the typed result is blocked and the pre-fix outer stop is runner_receipt_unobserved.
++2. Run `bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts`. Expected: blocked, needs_context, and failed results with present unverified receipts preserve their typed stop without provider replay; completed-unverified, missing, and rejected receipts remain terminal and cannot authorize progress.
+ 3. Run `bun run test:critical`. Expected: all critical CLI chunks pass and provider execution remains at-most-once.
+ 4. Run `agentplane incidents collect 202607311338-CT2725 --check` and `bun run release:incidents:check`. Expected: INC-20260731-01 is resolved with task/commit evidence, source and packaged incident assets stay identical, and the release incident gate passes.
+-5. Review the final diff and task evidence. Expected: changes remain bounded to receipt observation/reconciliation, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA.
++5. Review the final diff and task evidence. Expected: changes remain bounded to semantic-stop observation ordering, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA.
+ 
+ ## Verification
+ 
+@@ -109,3 +126,7 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
+ - Re-run required checks to confirm rollback safety.
+ 
+ ## Findings
++
++- Observation: The preserved RF-23 receipt is structurally valid but intentionally unverified only because POSIX process-group supervision cannot prove containment of descendants that create a new session; the same run contains an accepted supervisor-owned report_blocker audit and a typed blocked semantic result.
++  Impact: The outer supervisor reported runner_receipt_unobserved before inspecting the non-success semantic result, hiding the actionable blocker even though no completed work or lifecycle progress should be authorized.
++  Resolution: Require a present non-rejected receipt, then surface blocked, needs_context, and failed semantic stops before the observed-success gate; keep completed-unverified, missing, and rejected receipts unable to authorize progress.
+diff --git a/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..4ad873f09
+--- /dev/null
++++ b/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+@@ -0,0 +1,609 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607311338-CT2725",
++    "title": "Resolve successful runner receipt observation race",
++    "description": "Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.",
++    "tags": [
++      "code",
++      "incident",
++      "milestone-rc1",
++      "receipt",
++      "runner",
++      "supervisor",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "quality.regression"
++  },
++  "selectedBlueprint": {
++    "id": "quality.regression",
++    "version": 1,
++    "title": "Quality regression",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "quality.regression",
++    "blueprintVersion": 1,
++    "title": "Quality regression",
++    "taskId": "202607311338-CT2725",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "quality.regression"
++    },
++    "whySelected": [
++      "explicit blueprint requested: quality.regression",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest",
++          "artifact"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "check_result"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "weak_links"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "regression.original_failure",
++        "kind": "artifact",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Original failure log or check output."
++      },
++      {
++        "id": "regression.reproduction",
++        "kind": "check_result",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Local reproduction or explicit non-reproduction result."
++      },
++      {
++        "id": "regression.focused_check",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Focused regression check."
++      },
++      {
++        "id": "regression.matrix_or_scope",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Affected test/check matrix or bounded scope."
++      },
++      {
++        "id": "regression.full_gate",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Full relevant gate or hosted check evidence."
++      },
++      {
++        "id": "regression.flake_classification",
++        "kind": "weak_links",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Flake classification or residual risk."
++      },
++      {
++        "id": "regression.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "regression.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "affected matrix or full relevant gate",
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "failure reproduction command",
++      "focused regression check",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest",
++        "artifact"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "check_result"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "weak_links"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "regression.original_failure",
++      "kind": "artifact",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Original failure log or check output."
++    },
++    {
++      "id": "regression.reproduction",
++      "kind": "check_result",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Local reproduction or explicit non-reproduction result."
++    },
++    {
++      "id": "regression.focused_check",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Focused regression check."
++    },
++    {
++      "id": "regression.matrix_or_scope",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Affected test/check matrix or bounded scope."
++    },
++    {
++      "id": "regression.full_gate",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Full relevant gate or hosted check evidence."
++    },
++    {
++      "id": "regression.flake_classification",
++      "kind": "weak_links",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Flake classification or residual risk."
++    },
++    {
++      "id": "regression.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "regression.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "affected matrix or full relevant gate",
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "failure reproduction command",
++    "focused regression check",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: quality.regression",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "6d4a098482b5298a5a47ecd951c903a8b1ef47fde9fbc278f35748c5d0912abd"
++  }
++}
+diff --git a/.agentplane/tasks/202607311338-CT2725/pr/diffstat.txt b/.agentplane/tasks/202607311338-CT2725/pr/diffstat.txt
+new file mode 100644
+index 000000000..a7e4e3402
+--- /dev/null
++++ b/.agentplane/tasks/202607311338-CT2725/pr/diffstat.txt
+@@ -0,0 +1,7 @@
++ .agentplane/policy/incidents.md                    |  1 -
++ docs/developer/incident-archive.mdx                |  4 ++
++ packages/agentplane/assets/policy/incidents.md     |  1 -
++ .../direct-task-supervisor-observation.test.ts     | 36 ++++++++++++++--
++ .../task/direct-task-supervisor-observation.ts     | 23 +++++++++--
++ .../commands/task/direct-task-supervisor.test.ts   | 48 ++++++++++++++++++++++
++ 6 files changed, 104 insertions(+), 9 deletions(-)
+diff --git a/.agentplane/tasks/202607311338-CT2725/pr/github-body.md b/.agentplane/tasks/202607311338-CT2725/pr/github-body.md
+new file mode 100644
+index 000000000..975c1932f
+--- /dev/null
++++ b/.agentplane/tasks/202607311338-CT2725/pr/github-body.md
+@@ -0,0 +1,39 @@
++Task: `202607311338-CT2725`
++Title: Preserve typed executor stops with unverified receipts
++Canonical task record: `.agentplane/tasks/202607311338-CT2725/README.md`
++
++## Summary
++
++Resolve successful runner receipt observation race
++
++Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.
++
++## Scope
++
++- In scope: Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.
++- Out of scope: unrelated refactors not required for "Resolve successful runner receipt observation race".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T13:40:50.644Z
++- Branch: task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/policy/incidents.md                    |  1 -
++ docs/developer/incident-archive.mdx                |  4 ++
++ packages/agentplane/assets/policy/incidents.md     |  1 -
++ .../direct-task-supervisor-observation.test.ts     | 36 ++++++++++++++--
++ .../task/direct-task-supervisor-observation.ts     | 23 +++++++++--
++ .../commands/task/direct-task-supervisor.test.ts   | 48 ++++++++++++++++++++++
++ 6 files changed, 104 insertions(+), 9 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607311338-CT2725/pr/github-title.txt b/.agentplane/tasks/202607311338-CT2725/pr/github-title.txt
+new file mode 100644
+index 000000000..ddb60ea5e
+--- /dev/null
++++ b/.agentplane/tasks/202607311338-CT2725/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 CT2725 task: Preserve typed executor stops with unverified receipts [202607311338-CT2725]
+diff --git a/.agentplane/tasks/202607311338-CT2725/pr/meta.json b/.agentplane/tasks/202607311338-CT2725/pr/meta.json
+new file mode 100644
+index 000000000..56959870e
+--- /dev/null
++++ b/.agentplane/tasks/202607311338-CT2725/pr/meta.json
+@@ -0,0 +1,13 @@
++{
++  "base": "main",
++  "branch": "task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra",
++  "created_at": "2026-07-31T13:40:50.644Z",
++  "diffstat_sha256": "sha256:245f730016f6e1c725493e22a8d100d40c73076e90d52e641717b18c1f86add4",
++  "last_verified_at": null,
++  "schema_version": 1,
++  "task_id": "202607311338-CT2725",
++  "updated_at": "2026-07-31T13:40:50.644Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607311338-CT2725/pr/review.md b/.agentplane/tasks/202607311338-CT2725/pr/review.md
+new file mode 100644
+index 000000000..e02af7e7c
+--- /dev/null
++++ b/.agentplane/tasks/202607311338-CT2725/pr/review.md
+@@ -0,0 +1,42 @@
++# PR Review
++
++Created: 2026-07-31T13:40:50.644Z
++
++## Task
++
++- Task: `202607311338-CT2725`
++- Title: Preserve typed executor stops with unverified receipts
++- Status: DOING
++- Branch: `task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra`
++- Canonical task record: `.agentplane/tasks/202607311338-CT2725/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T13:40:50.644Z
++- Branch: task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/policy/incidents.md                    |  1 -
++ docs/developer/incident-archive.mdx                |  4 ++
++ packages/agentplane/assets/policy/incidents.md     |  1 -
++ .../direct-task-supervisor-observation.test.ts     | 36 ++++++++++++++--
++ .../task/direct-task-supervisor-observation.ts     | 23 +++++++++--
++ .../commands/task/direct-task-supervisor.test.ts   | 48 ++++++++++++++++++++++
++ 6 files changed, 104 insertions(+), 9 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index 52282ee78..e25fe80d8 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,10 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-07-31 Direct Supervisor Semantic Stop Classification
++
++- id: INC-20260731-01 | date: 2026-07-31 | scope: runner direct supervision | tags: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority | match: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority, direct, supervision, expose, phase, scoped, run, tool | failure: The outer direct-supervisor episode reported `runner_receipt_unobserved` before preserving a typed blocked result from a successful process whose receipt was valid but containment-unverified. | advice: Require a present non-rejected receipt, then preserve typed `blocked`, `needs_context`, and `failed` stops before the observed-success gate; completed execution still requires `observed_success` or explicit unverified authority. | rule: Direct and branch supervisors MUST preserve typed non-success semantic stops without allowing an unverified receipt to authorize completed work or lifecycle progress. | evidence: source task `202607221852-ECBY56`, commit `da76a705009e`; preserved live receipt showed clean process, cleanup, scope, Git, artifacts, protected-filesystem observation, and accepted `report_blocker` audit with containment as the only unverified dimension; repair task `202607311338-CT2725`, implementation commit `36c4c2493ea1`; focused supervisor tests passed 20/20 and all 12 critical CLI chunks passed. | enforcement: direct executor observation implementation plus focused outer-supervisor regression tests and release-incident gate | fixability: repo-fixable | state: archived | archived_by: task `202607311338-CT2725` | archive_reason: the bounded fix preserves the actionable semantic stop without weakening completed-execution receipt requirements, and deterministic regression coverage prevents the original misclassification.
++
+ ## 2026-07-30 RF-04 Beta.1 Provider Mismatch Disposition
+ 
+ - id: INC-20260730-01 | date: 2026-07-30 | scope: Candidate-SHA RF-04 measurement for the beta.1 product SHA. | tags: benchmark, milestone-beta1, performance, quality, rf-04, v0.7 | failure: Candidate capture aborted at direct/run-01 before a provider episode with the deterministic `RF04_DRIVER_ERROR:CODEX_VERSION_MISMATCH` precondition. | advice: A future RF-04 capture must be preceded by a new incident review and use the pinned provider CLI environment before any provider episode; it must materialize a fresh candidate measurement and re-verify. | evidence: source task `202607292104-W03KZ0`, commit `c6a10db56506`; successor task `202607300553-CR9VTJ`, PR [#4681](https://github.com/basilisk-labs/agentplane/pull/4681), merged `bc873942fc1487a828cdc2705bc1220b2bda14ce`; its frozen qualification packet retained the original 50-run/55-provider-episode evidence, recorded `qualification_decision=do_not_publish` and `live_provider_measurement=not_run_by_packet_builder`, and made no provider retry or replacement capture. | enforcement: release-incident gate plus explicit incident review before any future capture | fixability: external | state: archived | archived_by: task `202607300654-0ANCWF` | archive_reason: externally mitigated for the closed beta.1 decision, not provider-resolved. The failed capture cannot characterize current product metrics, and the current-main successor explicitly chose `do_not_publish`; no active operator follow-up remains for that non-publication decision. Reopen as an active incident before any future RF-04 capture outside a pinned provider environment.
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 7f4369de8..3499a0898 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260731-01 | date: 2026-07-31 | scope: runner direct supervision | tags: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority | match: runner, receipt, authority, milestone-rc1, refactor, rf-23, tools, v0.7, wave-authority, direct, supervision, expose, phase, scoped, run, tool | failure: The outer direct-supervisor episode reported runner_receipt_unobserved even though the runner completed successfully and persisted a valid execution receipt. | advice: Keep RF-23 verification passing and track the receipt-observation race as a separate follow-up; no provider retry was used. | rule: Analogous runner direct supervision work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607221852-ECBY56; commit da76a705009e | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts
+index b0eb2206c..0e95576b1 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts
+@@ -1,8 +1,12 @@
+ import { describe, expect, it } from "vitest";
+ 
++import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+ import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
+ 
+-function lifecycle(verificationState: "observed_success" | "unverified" | "rejected") {
++function lifecycle(
++  verificationState: "observed_success" | "unverified" | "rejected",
++  semanticStatus: "blocked" | "completed" | "failed" | "needs_context" = "completed",
++): TaskRunnerLifecycleResult {
+   return {
+     phase: "executed",
+     invocation: { run_id: "rf10-run" },
+@@ -16,10 +20,10 @@ function lifecycle(verificationState: "observed_success" | "unverified" | "rejec
+       },
+       semantic_result: {
+         provenance: "agent_reported",
+-        value: { kind: "agent_semantic_result", status: "completed" },
++        value: { kind: "agent_semantic_result", status: semanticStatus },
+       },
+     },
+-  } as never;
++  } as TaskRunnerLifecycleResult;
+ }
+ 
+ describe("direct executor observation", () => {
+@@ -48,4 +52,30 @@ describe("direct executor observation", () => {
+       observeDirectExecutor(lifecycle("rejected"), { allow_unverified_receipt: true }),
+     ).toMatchObject({ stop: "runner_receipt_unobserved" });
+   });
++
++  it("never accepts a missing receipt for a typed non-success result", () => {
++    const withReceipt = lifecycle("unverified", "blocked");
++    const result = withReceipt.result;
++    if (!result) throw new Error("test lifecycle result is missing");
++    const withoutReceipt: TaskRunnerLifecycleResult = {
++      ...withReceipt,
++      result: { ...result, execution_receipt: undefined },
++    };
++    expect(observeDirectExecutor(withoutReceipt)).toMatchObject({
++      stop: "runner_receipt_unobserved",
++    });
++  });
++
++  it.each([
++    ["blocked", "executor_blocked"],
++    ["failed", "executor_semantic_failed"],
++    ["needs_context", "missing_knowledge"],
++  ] as const)(
++    "surfaces an unverified typed %s stop without accepting completed execution",
++    (semanticStatus, stop) => {
++      expect(observeDirectExecutor(lifecycle("unverified", semanticStatus))).toMatchObject({
++        stop,
++      });
++    },
++  );
+ });
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts
+index 21f315416..b832f496f 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts
+@@ -27,10 +27,7 @@ export function observeDirectExecutor(
+     return { stop: "runner_failed", reason: "The EXECUTOR runner did not complete successfully." };
+   }
+   const receipt = lifecycle.result.execution_receipt;
+-  const acceptableReceipt =
+-    receipt?.verification_state === "observed_success" ||
+-    (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
+-  if (!acceptableReceipt) {
++  if (!receipt || receipt.verification_state === "rejected") {
+     const observedState = receipt?.verification_state ?? "missing";
+     const receiptRef = receipt?.path?.trim() ?? "none";
+     return {
+@@ -48,6 +45,10 @@ export function observeDirectExecutor(
+       reason: "The EXECUTOR result has no current typed semantic result.",
+     };
+   }
++  // A typed non-success result cannot authorize implementation or lifecycle
++  // progress. Surface it even when process containment leaves the receipt
++  // unverified so the supervisor preserves the real semantic stop without
++  // replaying the provider. Completed work still requires an accepted receipt.
+   if (semantic.status === "needs_context") {
+     return {
+       stop: "missing_knowledge",
+@@ -63,6 +64,20 @@ export function observeDirectExecutor(
+       reason: "The EXECUTOR returned a typed semantic failure.",
+     };
+   }
++  const acceptableReceipt =
++    receipt?.verification_state === "observed_success" ||
++    (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
++  if (!acceptableReceipt) {
++    const observedState = receipt?.verification_state ?? "missing";
++    const receiptRef = receipt?.path?.trim() ?? "none";
++    return {
++      stop: "runner_receipt_unobserved",
++      reason:
++        "The EXECUTOR result has no receipt accepted for the current authority " +
++        `(verification_state=${observedState}, receipt_ref=${receiptRef}). ` +
++        "The supervisor preserves this terminal observation and will not replay the provider.",
++    };
++  }
+   return {
+     executor: {
+       run_id: lifecycle.invocation.run_id,
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+index e68103a31..ee253ad22 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+@@ -345,6 +345,54 @@ describe("direct task supervisor", () => {
+     expect(mocks.executeEvaluator).not.toHaveBeenCalled();
+   });
+ 
++  it("surfaces a typed blocker from an unverified contained run without replaying it", async () => {
++    const runner = decision({
++      id: "runner.follow",
++      code: "continue_direct",
++      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
++    });
++    const lifecycle = {
++      phase: "executed",
++      invocation: { run_id: "run-blocked-unverified" },
++      result: {
++        status: "success",
++        execution_receipt: {
++          path: "agentplane-run://tasks/rf10/run-blocked-unverified/execution-receipt.json",
++          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
++          verification_state: "unverified",
++          observed_by: "agentplane",
++        },
++        semantic_result: {
++          provenance: "agent_reported",
++          value: { kind: "agent_semantic_result", status: "blocked" },
++        },
++      },
++    } as never;
++    mocks.buildDecision.mockResolvedValue(runner);
++    mocks.supervise.mockResolvedValue({
++      journal,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      execution: {
++        executable: true,
++        result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
++        refreshed_decision: runner,
++      },
++    });
++    mocks.loadTask.mockResolvedValue({ id: TASK_ID, events: [] });
++
++    const result = await superviseDirectTaskRun({
++      ctx: { cwd: "/repo", rootOverride: null } as never,
++      command: { resolvedProject: { gitRoot: "/repo" } } as never,
++      task_id: TASK_ID,
++      include_remote: false,
++    });
++
++    expect(result).toMatchObject({ status: "stopped", stop: { code: "executor_blocked" } });
++    expect(mocks.supervise).toHaveBeenCalledTimes(1);
++    expect(mocks.recordEvidence).not.toHaveBeenCalled();
++    expect(mocks.executeEvaluator).not.toHaveBeenCalled();
++  });
++
+   it("turns an EXECUTOR adapter crash into a typed stop", async () => {
+     const runner = decision({
+       id: "runner.follow",

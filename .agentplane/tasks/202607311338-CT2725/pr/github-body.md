@@ -19,16 +19,15 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 - Note:
 
 ```text
-PASS at c3b5d08d: preserved RF-23 evidence proves containment-only unverified receipt; 20 focused
-supervisor tests, all 12 critical chunks, typecheck, full ci:contract, release prepublish, incident
-archive parity, routing, and doctor pass.
+Structured deterministic verification evidence refreshed for implementation
+c3b5d08db2960cc4722230f91d34f5fd17c16229 after PR #4704 linkage.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T13:40:50.644Z
+- Updated: 2026-07-31T13:58:02.416Z
 - Branch: task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
