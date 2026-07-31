@@ -4,11 +4,12 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
   - "202607221908-PWFH5K"
+  - "202607311707-DRYTNK"
 tags:
   - "migration"
   - "milestone-rc2"
