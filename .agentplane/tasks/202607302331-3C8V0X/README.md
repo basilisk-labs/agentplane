@@ -1,10 +1,11 @@
 ---
 id: "202607302331-3C8V0X"
 title: "Repair beta.2 guard and clone baseline drift"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +60,8 @@ quality_review:
   findings:
     - "The frozen verification record metadata names implementation SHA 28774245e9eb01138a53eb174ec579c2ede58fed, while its details and runtime evidence verify evaluated SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41."
 commit:
-  hash: "8250bd520904b4ad9e105fce32d303c0e89ae1ce"
-  message: "♻️ 3C8V0X code: remove clone drift"
+  hash: "792caabe60ba5de47356b56bee9123a3e7488fc2"
+  message: "📝 3C8V0X quality: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -71,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: removed all three beta.2 clone-drift groups; source commit 8250bd520904."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -111,8 +115,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command-level verification evidence is frozen for the repaired implementation."
+  -
+    type: "status"
+    at: "2026-07-31T00:14:40.388Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T00:11:50.442Z"
+doc_updated_at: "2026-07-31T00:14:40.389Z"
 doc_updated_by: "CODER"
 description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
 sections:
@@ -282,6 +293,9 @@ sections:
       Impact: A semantic review could not establish that declared checks covered the reviewed source revision.
       Resolution: Linked structured check details to a SHA-bound runtime evidence record.
 extensions:
+  implementation_commit:
+    hash: "7b98413caecc2a1f2745fc12d5dd535f531c7a41"
+    message: "📝 3C8V0X task: record clone drift review"
   workflow_route_baseline:
     start_head_sha: "9b299bedb15d2efdbf92b83567660e65aa3451a9"
     version: 1
