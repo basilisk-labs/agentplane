@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "The authority-grant profile is the union of lifecycle mutation and remote route capabilities; local grants remain provider-lazy and remote grants are now visible to capability enforcement and tracing."
     - "Observation triage now matches its implementation, which only reads and summarizes observation entries."
 commit:
-  hash: "777a3cc1049be9be0117174db3c406a59979faf6"
-  message: "♻️ 2NDXVB task: migrate task lifecycle command sessions"
+  hash: "3d0c443f35f59420efd5473ec0626d2264fb4c00"
+  message: "🧪 2NDXVB task: refresh review evidence"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -106,8 +109,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-31T23:52:56.850Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T23:51:42.207Z"
+doc_updated_at: "2026-07-31T23:52:56.865Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move task/lifecycle/route commands to granular sessions, typed workflow results, and centralized renderers without reconstructing route state or parsing stdout."
 sections:
@@ -167,6 +177,9 @@ sections:
       Impact: Session access, provider laziness, and catalog requirements are enforced now, but field-level context isolation cannot be removed until the other four command-family slices converge.
       Resolution: Keep the compatibility value explicit in this slice; remove it in RF-24 fan-in after all family loaders use CommandSession profiles.
 extensions:
+  implementation_commit:
+    hash: "24e064bc3161bf5fab78e620a22894ce38e45f6a"
+    message: "🛂 2NDXVB task: enforce route capability profiles"
   workflow_route_baseline:
     start_head_sha: "68b71790527489b13f868deede5a8de4552117cb"
     version: 1

@@ -8,10 +8,10 @@
   "pr_number": 4714,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4714",
   "pre_merge_closure": {
-    "basis_commit": "777a3cc1049be9be0117174db3c406a59979faf6",
+    "basis_commit": "3d0c443f35f59420efd5473ec0626d2264fb4c00",
     "branch": "task/202607221908-2NDXVB/migrate-task-lifecycle-and-route-command-boundar",
     "pr_number": 4714,
-    "recorded_at": "2026-07-31T23:37:55.804Z",
+    "recorded_at": "2026-07-31T23:52:56.900Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
