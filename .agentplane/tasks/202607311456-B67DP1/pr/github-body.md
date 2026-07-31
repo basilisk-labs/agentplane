@@ -22,7 +22,7 @@ Post-merge follow-up for v0.6.26: compute integration diffstat from the captured
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T14:59:40.807Z
+- Updated: 2026-07-31T15:10:59.989Z
 - Branch: task/202607311456-B67DP1/finalize-integration-from-immutable-branch-head
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

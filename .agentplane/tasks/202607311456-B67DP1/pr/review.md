@@ -6,7 +6,7 @@ Created: 2026-07-31T14:59:40.807Z
 
 - Task: `202607311456-B67DP1`
 - Title: Finalize integration from immutable branch head
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311456-B67DP1/finalize-integration-from-immutable-branch-head`
 - Canonical task record: `.agentplane/tasks/202607311456-B67DP1/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-31T14:59:40.807Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T14:59:40.807Z
+- Updated: 2026-07-31T15:10:59.989Z
 - Branch: task/202607311456-B67DP1/finalize-integration-from-immutable-branch-head
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -1,10 +1,11 @@
 ---
 id: "202607311456-B67DP1"
 title: "Finalize integration from immutable branch head"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ quality_review:
     - "packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts"
   findings:
     - "finalizeIntegrate now computes diffstat from captured branchHeadSha, so post-merge branch cleanup cannot invalidate finalization."
-commit: null
+commit:
+  hash: "0c8c242db1c5fc8ffd98761d307d26ae1c3bc6a7"
+  message: "✅ B67DP1 task: record verification"
 comments:
   -
     author: "CODER"
     body: "Start: use captured branchHeadSha for post-merge diffstat and add exact regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -61,8 +67,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "19 focused integration tests passed; typecheck, format, lint:core, and release:prepublish:fast passed."
+  -
+    type: "status"
+    at: "2026-07-31T15:11:34.804Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T15:09:54.988Z"
+doc_updated_at: "2026-07-31T15:11:34.805Z"
 doc_updated_by: "CODER"
 description: "Post-merge follow-up for v0.6.26: compute integration diffstat from the captured branchHeadSha so post-merge cleanup cannot invalidate finalization."
 sections:
@@ -129,6 +142,10 @@ sections:
     - Observation: Post-merge cleanup may delete the task branch before finalizeIntegrate computes diffstat.
       Impact: Integration can merge successfully yet fail closeout with an invalid branch ref.
       Resolution: Compute diffstat from the immutable branchHeadSha captured before merge and assert the exact SHA pair in regression coverage.
+extensions:
+  implementation_commit:
+    hash: "5581c0a6d7f23f72a83d64f252dc0e3f5f4e2199"
+    message: "🐛 B67DP1 integrate: finalize from immutable head"
 id_source: "generated"
 ---
 ## Summary
