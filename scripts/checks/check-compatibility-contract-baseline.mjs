@@ -326,6 +326,7 @@ function validateReviewedCandidate({
     "202607281655-YMPY8Y",
     "202607300150-MGCHE6",
     "202607302125-Y61ZHN",
+    "202607221852-ECBY56",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -350,6 +351,7 @@ function validateReviewedCandidate({
     "202607300150-MGCHE6",
     "202607221852-YP9QCH",
     "202607302125-Y61ZHN",
+    "202607221852-ECBY56",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1202,6 +1204,13 @@ function validateReviewedCandidate({
     },
     ...effectResolutionCommandDescriptors,
     {
+      id: ["task", "run", "tool"],
+      visibility: "internal",
+      group: "Task",
+      args: [{ name: "tool", required: true, variadic: false, valueHint: "<tool-name>" }],
+      options: [],
+    },
+    {
       id: ["workflow", "migrate"],
       visibility: "user",
       group: "Workflow",
@@ -1499,6 +1508,11 @@ function validateReviewedCandidate({
       source_task: "202607221846-9XC1H0",
     },
     ...effectResolutionCommandSources,
+    {
+      kind: "command",
+      command: "task run tool",
+      source_task: "202607221852-ECBY56",
+    },
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
       kind: "option",
@@ -1777,6 +1791,7 @@ function validateReviewedCandidate({
         "task run reconcile",
         "task run resolve-effect",
         "task run resume-effect",
+        "task run tool",
         "workflow migrate",
       ]),
     "unexpected CLI addition",

@@ -69,6 +69,40 @@ function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
   );
 }
 
+function renderPhaseToolLines(bundle: RunnerContextBundle): string[] {
+  const manifest = bundle.execution.phase_tools;
+  if (!manifest) return [];
+  const allowed = manifest.tools.filter((tool) => tool.allowed);
+  const runScoped = allowed.filter((tool) => tool.transport === "run_scoped_command");
+  const unavailable = manifest.tools.filter((tool) => !tool.allowed);
+  return [
+    "",
+    "Run-scoped phase tool contract:",
+    `- phase: ${manifest.phase}`,
+    `- role: ${manifest.role}`,
+    `- global_help_required: ${String(manifest.global_help_required)}`,
+    `- repository_tool_classes: ${JSON.stringify(manifest.repository_tool_classes)}`,
+    ...(runScoped.length > 0
+      ? [
+          "- The supervisor injects the signed token and a checkout-local broker channel through the process environment. Never print the token or pass it on argv.",
+          "- For run_scoped_command tools, send one JSON object on stdin to the exact invocation below. Input schemas are in bundle.execution.phase_tools.tools.",
+        ]
+      : [
+          "- This adapter exposes no run_scoped_command transport, so no phase-tool token or broker channel is injected. Use only the declared terminal result transport.",
+        ]),
+    ...allowed.map(
+      (tool) =>
+        `- ${tool.name}: transport=${tool.transport} enforcement=${tool.enforcement} invocation=${tool.invocation ?? "terminal AgentSemanticResult v2"}`,
+    ),
+    ...unavailable.map(
+      (tool) =>
+        `- ${tool.name}: unavailable (${tool.reason ?? "adapter/work-order capability not granted"})`,
+    ),
+    "- Lifecycle operations are never phase tools. An undeclared, expired, revoked, cross-run, cross-role, or tampered call returns a typed denial before target effects.",
+    "- report_result and report_blocker are terminal: an accepted call revokes the token. request_knowledge, knowledge_search, and knowledge_show remain bounded to the current work-order context.",
+  ];
+}
+
 export function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
   invocation?: RunnerInvocation,
@@ -105,7 +139,7 @@ export function renderTaskRunnerBootstrap(
     "- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task metadata edits.",
     "- Keep lifecycle authority with the parent AgentPlane workflow; do not open PRs, merge, release, push publication artifacts, or clean worktrees unless the bundle explicitly delegates that action.",
     "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane recipes scenario execute` from inside this run.",
-    "- Do not invoke `ap` or `agentplane` for lifecycle, context preparation, repository diagnosis, or formal verification. The parent CLI owns those actions; use a CLI command only when its behavior is the explicit semantic implementation target of this work order.",
+    "- Do not invoke `ap` or `agentplane` for lifecycle, context preparation, repository diagnosis, or formal verification. The parent CLI owns those actions. The only exception is an exact run-scoped phase-tool invocation listed below.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the result manifest instead of resolving them speculatively.",
     "- Open bundle.json immediately, execute the requested work directly, and stop when the requested outcome is satisfied.",
     "",
@@ -154,6 +188,7 @@ export function renderTaskRunnerBootstrap(
           "Do not use repository search or lifecycle commands to fill that gap; the parent CLI validates the request, retrieves digest-valid references, and records its audit.",
         ]
       : []),
+    ...renderPhaseToolLines(bundle),
     "If the requested work cannot be completed without widening lifecycle authority or touching likely sibling-owned files, stop and write a blocked semantic result with blocker.summary and blocker.recommended_action; the supervisor owns path and conflict observation.",
     "",
     ...renderEvaluatorSkepticismLines(evaluatorSkepticismLevel),

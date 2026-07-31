@@ -23,7 +23,8 @@
     "202607291449-FTHNAR",
     "202607300150-MGCHE6",
     "202607221852-YP9QCH",
-    "202607302125-Y61ZHN"
+    "202607302125-Y61ZHN",
+    "202607221852-ECBY56"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -32,9 +33,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "57836414138578d277eebd4bc6d69bb9837c638afb6cda7ea60b9ba95760d481",
+    "surface_sha256": "827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064",
     "section_digests": {
-      "cli_topology": "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
+      "cli_topology": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -372,20 +373,21 @@
         "202607260532-9M7RNH",
         "202607281655-YMPY8Y",
         "202607300150-MGCHE6",
-        "202607302125-Y61ZHN"
+        "202607302125-Y61ZHN",
+        "202607221852-ECBY56"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "7a6ac6c2ff9baa3df3c4fccac616ccef6500234aafe6e013e3d995790b09d1d4",
+      "to_sha256": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
       "classification": "additive",
-      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, and a backward-compatible semantic-supersession release outcome; no command or option is removed.",
+      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, a backward-compatible semantic-supersession release outcome, and one hidden signed run-scoped phase-tool command; no command or option is removed.",
       "evidence": {
         "command_count": {
           "from": 243,
-          "to": 254
+          "to": 255
         },
         "positional_count": {
           "from": 165,
-          "to": 175
+          "to": 176
         },
         "option_count": {
           "from": 767,
@@ -402,6 +404,7 @@
           "task run reconcile",
           "task run resolve-effect",
           "task run resume-effect",
+          "task run tool",
           "workflow migrate"
         ],
         "removed_commands": [],
@@ -799,6 +802,20 @@
                 "default": false
               }
             ]
+          },
+          {
+            "id": ["task", "run", "tool"],
+            "visibility": "internal",
+            "group": "Task",
+            "args": [
+              {
+                "name": "tool",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<tool-name>"
+              }
+            ],
+            "options": []
           },
           {
             "id": ["workflow", "migrate"],
@@ -1271,6 +1288,11 @@
             "kind": "command",
             "command": "task run resume-effect",
             "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "command",
+            "command": "task run tool",
+            "source_task": "202607221852-ECBY56"
           },
           {
             "kind": "command",

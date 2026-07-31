@@ -85,6 +85,10 @@ export const loadTaskBriefSpec = (deps: RunDeps) =>
   );
 export const loadTaskRunSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) => m.makeRunTaskRunHandler(deps.getCtx));
+export const loadTaskRunToolSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run-tool.command.js").then((m) =>
+    m.makeRunTaskRunToolHandler(deps.getResolvedProject),
+  );
 export const loadTaskRunStatusSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunStatusHandler(deps.getCtx),

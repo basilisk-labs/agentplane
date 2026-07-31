@@ -7,6 +7,14 @@ export type { RunnerTarget } from "./types/target.js";
 export type { RunnerPromptBlock, RunnerPromptRole } from "./types/prompts.js";
 export type { RunnerAdapterCapabilities } from "./types/capabilities.js";
 export {
+  RUNNER_PHASE_TOOL_NAMES,
+  type RunnerPhaseToolDescriptor,
+  type RunnerPhaseToolManifest,
+  type RunnerPhaseToolName,
+  type RunnerPhaseToolResponse,
+  type RunnerPhaseToolResponseCode,
+} from "./types/phase-tools.js";
+export {
   RUNNER_DANGER_FULL_ACCESS_SANDBOX,
   RUNNER_READ_ONLY_SANDBOX,
   RUNNER_SANDBOX_MODES,
