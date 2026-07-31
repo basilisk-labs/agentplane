@@ -2,10 +2,10 @@
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -54,7 +54,9 @@ quality_review:
     - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
   findings:
     - "Finalize diffstat uses branchHeadSha; focused integration tests 40/40 and release fast gates pass after the exact post-merge failure."
-commit: null
+commit:
+  hash: "4f2fdb93d843a1abe6389c660d2043b1d8c788b7"
+  message: "✅ YT435C release: verify immutable finalize"
 comments:
   -
     author: "CODER"
@@ -86,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: make integration finalization independent of cleaned branch refs."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -223,8 +228,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure."
+  -
+    type: "status"
+    at: "2026-07-31T14:14:16.146Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T14:13:51.606Z"
+doc_updated_at: "2026-07-31T14:14:16.147Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -615,8 +627,8 @@ sections:
       Resolution: Use the pre-merge captured branchHeadSha for diffstat and assert the immutable SHA in finalize regression coverage.
 extensions:
   implementation_commit:
-    hash: "020dfcd89e6b4535896e1b211c58806d20e5aa84"
-    message: "🐛 YT435C release: isolate runtime provenance"
+    hash: "e5059fc9cf68bf8fbdef324d68f5c9dce521b7ed"
+    message: "🐛 YT435C release: finalize from immutable head"
 id_source: "generated"
 ---
 ## Summary

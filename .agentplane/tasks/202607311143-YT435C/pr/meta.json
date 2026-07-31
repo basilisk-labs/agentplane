@@ -8,10 +8,10 @@
   "pr_number": 4703,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4703",
   "pre_merge_closure": {
-    "basis_commit": "5343f438ede7829c429d7773f4948f05e45471ab",
+    "basis_commit": "4f2fdb93d843a1abe6389c660d2043b1d8c788b7",
     "branch": "task/202607311143-YT435C/release-v0-6-26",
     "pr_number": 4703,
-    "recorded_at": "2026-07-31T13:50:48.055Z",
+    "recorded_at": "2026-07-31T14:14:16.175Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
