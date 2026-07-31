@@ -1,10 +1,10 @@
 ---
 id: "202607221852-ECBY56"
 title: "Expose phase-scoped run tool APIs"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-31T10:00:26.508Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-31T10:00:55.408Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:52:28.734Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-31T10:00:55.408Z"
+doc_updated_by: "CODER"
 description: "RF-23: provide run-bound report_result, report_blocker, request_knowledge, and read-only knowledge tools while keeping lifecycle operations exclusively under supervisor authority."
 sections:
   Summary: |-
@@ -72,6 +82,10 @@ sections:
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "402709cb633549245a4231d902813a473e6c4103"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
