@@ -439,19 +439,16 @@ export async function superviseBranchTaskRunWithPorts(
 export async function superviseBranchTaskRun(
   input: BranchTaskSupervisorOptions,
 ): Promise<BranchTaskSupervisorResult> {
-  let routeCwd = input.ctx.cwd;
-  let routeCommand = input.command;
+  const routeCwd = input.ctx.cwd;
   const decide = async () => {
-    routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
-    const decision = await buildTaskRouteDecision({
+    const routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
+    return await buildTaskRouteDecision({
       ctx: routeCommand,
       cwd: routeCwd,
       rootOverride: null,
       taskId: input.task_id,
       includeRemote: true,
     });
-    routeCwd = decision.workspace.baseCheckoutPath ?? routeCwd;
-    return decision;
   };
 
   return await superviseBranchTaskRunWithPorts({

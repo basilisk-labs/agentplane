@@ -59,8 +59,65 @@ function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep |
   });
 }
 
+function integrationQueueWaitStep(
+  state: WorkflowRouteState,
+  queueStatus: "queued" | "claimed" | "handoff" | "done",
+): WorkflowStep {
+  const summary =
+    queueStatus === "done"
+      ? "wait for merged provider truth after the integration queue completed"
+      : `wait for the integration queue entry to leave ${queueStatus}`;
+  return {
+    schemaVersion: 1,
+    id: "wait.integration_queue",
+    kind: "wait",
+    phase: "integration_queue_wait",
+    authoritativeCheckout: "base_checkout",
+    summary,
+    blockers: routeBlockerSnapshot(state),
+    selectedBlocker: null,
+    compatibility: {
+      code: "wait_integration_queue",
+      command: null,
+      summary,
+      requiresApproval: false,
+    },
+    preconditionFingerprint: state.preconditionFingerprint,
+    condition: {
+      type: "integration_queue_terminal",
+      taskId: state.task.id,
+      queueStatus,
+    },
+    execution: commonExecution({
+      actionKind: "wait",
+      role: "INTEGRATOR",
+      mustNot: [
+        "do not enqueue the same task again while its integration queue entry is active or completed",
+      ],
+    }),
+  };
+}
+
 function integrationEnqueueStep(state: WorkflowRouteState, summary: string): WorkflowStep {
   const id = state.task.id;
+  const queue = state.prFlow?.queue;
+  if (queue?.present) {
+    if (queue.status === "rework") return implementationReworkStep(state);
+    if (queue.status === "superseded") {
+      return terminalStep({
+        state,
+        id: "terminal.integration_superseded",
+        code: "integration_superseded",
+        phase: "integration_superseded",
+        checkout: "base_checkout",
+        role: "INTEGRATOR",
+        outcome: "superseded",
+        summary: queue.reason ?? "integration queue entry was superseded",
+        evidenceMissing: [],
+      });
+    }
+    return integrationQueueWaitStep(state, queue.status);
+  }
   const branch = state.prFlow?.branch.name;
   if (!branch) {
     return terminalStep({

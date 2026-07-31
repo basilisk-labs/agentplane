@@ -394,6 +394,7 @@ export async function buildTaskRouteDecision(opts: {
     run_id: opts.runnerRunId,
     include_runner_state: opts.includeRunnerState,
   });
+  const baseCheckoutPath = await findWorktreePath(ctx.resolvedProject.gitRoot, resume.base_branch);
   const localDiagnostics: string[] = [];
   const recordLocalDiagnostic = (message: string): void => {
     localDiagnostics.push(message);
@@ -406,6 +407,7 @@ export async function buildTaskRouteDecision(opts: {
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? undefined,
+        integrationQueueRoot: baseCheckoutPath,
         taskId: opts.taskId,
       });
     } catch (err) {
@@ -522,7 +524,6 @@ export async function buildTaskRouteDecision(opts: {
   const draftWorkflowStep = reduceRouteState(
     withBootstrapWorkflowFingerprint(finalRouteStateInput),
   );
-  const baseCheckoutPath = await findWorktreePath(ctx.resolvedProject.gitRoot, resume.base_branch);
   const taskWorktreePath =
     ctx.config.workflow_mode === "branch_pr" ? taskWorktreeCleanliness.worktreePath : null;
   const fingerprintPaths = {

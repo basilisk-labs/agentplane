@@ -76,6 +76,16 @@ async function createClosedPreMergeTask(): Promise<{
   const config = defaultConfig();
   config.workflow_mode = "branch_pr";
   await writeConfig(root, config);
+  const policyDir = path.join(root, ".agentplane", "policy");
+  await mkdir(policyDir, { recursive: true });
+  for (const policy of [
+    "dod.code.md",
+    "dod.core.md",
+    "security.must.md",
+    "workflow.branch_pr.md",
+  ]) {
+    await writeFile(path.join(policyDir, policy), `# ${policy}\n`, "utf8");
+  }
   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
   const { stdout: baseBranchRaw } = await execFileAsync("git", ["branch", "--show-current"], {
     cwd: root,
@@ -131,23 +141,34 @@ async function createClosedPreMergeTask(): Promise<{
     "--root",
     root,
   ]);
-  await runCliSilent([
-    "evaluator",
-    "run",
-    taskId,
-    "--provenance",
-    "evaluator_supplied",
-    "--verdict",
-    "pass",
-    "--summary",
-    "Quality review passed.",
-    "--finding",
-    "No blocking findings.",
-    "--evidence",
-    `.agentplane/tasks/${taskId}/README.md`,
-    "--root",
-    root,
-  ]);
+  const evaluatorIo = captureStdIO();
+  try {
+    const evaluatorCode = await runCli([
+      "evaluator",
+      "run",
+      taskId,
+      "--provenance",
+      "evaluator_supplied",
+      "--verdict",
+      "pass",
+      "--summary",
+      "Quality review passed.",
+      "--finding",
+      "No blocking findings.",
+      "--evidence",
+      `.agentplane/tasks/${taskId}/README.md`,
+      "--root",
+      root,
+    ]);
+    if (evaluatorCode !== 0) throw new Error(evaluatorIo.stderr);
+    expect(evaluatorCode).toBe(0);
+  } finally {
+    evaluatorIo.restore();
+  }
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "task: persist quality review"], {
+    cwd: root,
+  });
   await mkdir(path.join(root, ".agentplane", "tasks", taskId, "pr"), { recursive: true });
   await writeFile(
     path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
@@ -296,11 +317,13 @@ describe("pre-merge closure route decisions", () => {
           };
           expect(parsed.nextAction).toMatchObject({
             code: "refresh_remote_route",
-            command: `agentplane task next-action ${taskId} --remote --explain`,
           });
+          expect(parsed.nextAction.command).toContain(
+            `agentplane task authority grant ${taskId} --operation route.remote.refresh`,
+          );
           expect(parsed.oracle).toMatchObject({
-            phase: "remote_route_refresh_needed",
-            authoritativeCheckout: "base_checkout",
+            phase: "side_effect_authority_required",
+            authoritativeCheckout: "task_worktree",
           });
           expect(parsed.source_confidence.remote).toMatchObject({
             freshness: "remote_skipped",
@@ -397,10 +420,12 @@ describe("pre-merge closure route decisions", () => {
         });
         expect(parsed.nextAction).toMatchObject({
           code: "publish_pr_head",
-          command: `agentplane pr open ${taskId} --author CODER`,
         });
+        expect(parsed.nextAction.command).toContain(
+          `agentplane task authority grant ${taskId} --remote --operation pr.head.publish`,
+        );
         expect(parsed.oracle).toMatchObject({
-          phase: "pr_head_publication_needed",
+          phase: "side_effect_authority_required",
           authoritativeCheckout: "task_worktree",
         });
         expect(parsed.source_confidence.remote).toMatchObject({
@@ -495,20 +520,97 @@ describe("pre-merge closure route decisions", () => {
         expect(code).toBe(0);
         const parsed = JSON.parse(io.stdout) as {
           task: { status: string };
-          workflow_step: { operation: { id: string; params: { taskId: string; branch: string } } };
+          workflow_step: {
+            request: {
+              operation: { id: string; params: { taskId: string; branch: string } };
+            };
+          };
           next_action: { code: string; command: string };
           blockers: { code: string }[];
         };
         expect(parsed.task.status).toBe("DONE");
-        expect(parsed.workflow_step.operation).toMatchObject({
+        expect(parsed.workflow_step.request.operation).toMatchObject({
           id: "integration.enqueue",
           params: { taskId, branch: branchName },
         });
-        expect(parsed.next_action).toMatchObject({
-          code: "wait_hosted_checks",
-          command: `agentplane integrate queue enqueue ${taskId} --branch ${branchName}`,
-        });
+        expect(parsed.next_action.code).toBe("wait_hosted_checks");
+        expect(parsed.next_action.command).toContain(
+          `agentplane task authority grant ${taskId} --remote --operation integration.enqueue`,
+        );
         expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("plan_not_approved");
+
+        const { stdout: baseShaRaw } = await execFileAsync("git", ["rev-parse", baseBranch], {
+          cwd: root,
+        });
+        const queueDir = path.join(root, ".agentplane", "cache");
+        await mkdir(queueDir, { recursive: true });
+        await writeFile(
+          path.join(queueDir, "integration-queue.json"),
+          `${JSON.stringify({
+            schema_version: 1,
+            entries: [
+              {
+                task_id: taskId,
+                branch: branchName,
+                base: baseBranch,
+                head_sha: branchHeadSha,
+                base_sha: baseShaRaw.trim(),
+                changed_paths: [],
+                pr_number: 4402,
+                pr_url: "https://github.test/pull/4402",
+                priority: 0,
+                status: "queued",
+                enqueued_at: "2026-07-31T12:34:40.572Z",
+                updated_at: "2026-07-31T12:34:40.572Z",
+              },
+            ],
+          })}\n`,
+          "utf8",
+        );
+
+        const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-task-route-"));
+        const taskWorktree = path.join(worktreeParent, "task");
+        await execFileAsync("git", ["worktree", "add", taskWorktree, branchName], { cwd: root });
+        try {
+          const queuedIo = captureStdIO();
+          try {
+            const queuedCode = await runCli([
+              "task",
+              "next-action",
+              taskId,
+              "--json",
+              "--remote",
+              "--root",
+              taskWorktree,
+            ]);
+            if (queuedCode !== 0) process.stderr.write(queuedIo.stderr);
+            expect(queuedCode).toBe(0);
+            const queued = JSON.parse(queuedIo.stdout) as {
+              task: { status: string };
+              workflow_step: {
+                id: string;
+                kind: string;
+                condition: { type: string; queueStatus: string };
+              };
+            };
+            expect(queued.task.status).toBe("DONE");
+            expect(queued.workflow_step).toMatchObject({
+              id: "wait.integration_queue",
+              kind: "wait",
+              condition: {
+                type: "integration_queue_terminal",
+                queueStatus: "queued",
+              },
+            });
+          } finally {
+            queuedIo.restore();
+          }
+        } finally {
+          await execFileAsync("git", ["worktree", "remove", "--force", taskWorktree], {
+            cwd: root,
+          });
+          await rm(worktreeParent, { recursive: true, force: true });
+        }
       } finally {
         io.restore();
       }
