@@ -4,7 +4,7 @@ title: "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -49,7 +49,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-31T17:28:35.361Z"
+doc_updated_at: "2026-07-31T17:47:05.196Z"
 doc_updated_by: "TESTER"
 description: "Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration."
 sections:
@@ -78,7 +78,10 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: TypeScript 7.0.2 completed the root graph 4.46x to 4.93x faster than TypeScript 6.0.3 with 8.6% to 14.4% lower peak RSS after the required baseUrl compatibility changes.
+      Impact: AgentPlane 0.7 should adopt the native compiler for typechecking, but TypeScript 7 cannot replace the compiler API used by ESLint and trust-boundary scripts.
+      Resolution: Freeze the side-by-side contract in benchmark/typescript-7-adoption-contract.md and hand implementation to 202607311707-DRYTNK.
 extensions:
   workflow_route_baseline:
     start_head_sha: "54c1d90ac8cd30ea28d165c8e41fcdc1542e740c"
@@ -123,3 +126,7 @@ Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: TypeScript 7.0.2 completed the root graph 4.46x to 4.93x faster than TypeScript 6.0.3 with 8.6% to 14.4% lower peak RSS after the required baseUrl compatibility changes.
+  Impact: AgentPlane 0.7 should adopt the native compiler for typechecking, but TypeScript 7 cannot replace the compiler API used by ESLint and trust-boundary scripts.
+  Resolution: Freeze the side-by-side contract in benchmark/typescript-7-adoption-contract.md and hand implementation to 202607311707-DRYTNK.
