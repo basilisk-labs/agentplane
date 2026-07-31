@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
     - "The hosted failure was test-placement debt only: no runtime or capability behavior changed."
     - "The dedicated trace test preserves coverage while reducing run-cli.core.test.ts to its frozen 1046-line baseline."
 commit:
-  hash: "04e6b589abdac03f56c597baac8948920302dd55"
-  message: "🔎 RW8CJF task: record evaluator pass"
+  hash: "3c2735705af084189c02a50fca450c7a7c81f9f0"
+  message: "🔎 RW8CJF task: re-evaluate hosted CI rework"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -100,8 +103,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5."
+  -
+    type: "status"
+    at: "2026-07-31T20:31:10.713Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:30:21.154Z"
+doc_updated_at: "2026-07-31T20:31:10.728Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
@@ -166,8 +176,8 @@ sections:
       Resolution: Migrate underlying resolver slices incrementally in the downstream RC2 tasks while retaining the explicit legacy adapter.
 extensions:
   implementation_commit:
-    hash: "33e59899d5cd381f089b96746fb715fa5c84a6a2"
-    message: "♻️ RW8CJF task: add granular command sessions"
+    hash: "32da254a5accb6ee2e704d94a4e16e192a50de97"
+    message: "🧪 RW8CJF task: isolate command session trace test"
   workflow_route_baseline:
     start_head_sha: "1adc9896b158719e908acc894b3651bfec2348c1"
     version: 1
