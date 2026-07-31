@@ -1,10 +1,11 @@
 ---
 id: "202607221908-AB2SFC"
 title: "Qualify the AgentPlane 0.7.0-rc.1 milestone"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -63,11 +64,16 @@ quality_review:
     - "All declared RC1 roots are present in the canonical dependency closure, every terminal leaf is DONE with ok verification, pass evaluator evidence, pre-merge closure, and ancestor proof, and live provider checks confirm the four root PRs and hosted-close jobs succeeded."
     - "Critical 12/12, workflow coverage 14 files and 52 tests, eight lifecycle invariants, release prepublish, baseline integrity, and exact 50-run replay guards all pass on f669ed24a2433f1c2d6c36301c04a5a872d43fac."
     - "Qualification and publication are correctly separated: outcome, safety, and token cells do not regress, but harness setup and time-to-verified-result latency exceed the frozen threshold, so RC1 may unlock RC2 without publishing a package or tag."
-commit: null
+commit:
+  hash: "1aa85a597433c05339dcd9b42481d24c3cf3b47d"
+  message: "🔍 AB2SFC task: record RC1 evaluator verdict"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -88,8 +94,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at 81c9176f: RC1 dependency closure, critical, workflow coverage, lifecycle, release prepublish, and frozen RF-04 guards all pass; optional publication remains withheld by the latest live latency evidence."
+  -
+    type: "status"
+    at: "2026-07-31T19:27:07.392Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T19:22:02.755Z"
+doc_updated_at: "2026-07-31T19:27:07.392Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-rc.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -227,6 +240,9 @@ sections:
       Impact: RC1 is a valid internal checkpoint and unblocks the RC2 architecture graph, but publishing an optional RC1 package would overstate live performance readiness.
       Resolution: Committed a SHA-bound qualification packet with dependency/provider proof, exact gates, frozen RF-04 metrics, residual risks, and an explicit do_not_publish decision.
 extensions:
+  implementation_commit:
+    hash: "29d05601599ff1bce772480b6f823cfc4596e60d"
+    message: "🔍 AB2SFC task: seal RC1 verification evidence"
   workflow_route_baseline:
     start_head_sha: "d9fa4e76ef2e7860c17a6069e41ac30806e6157e"
     version: 1
