@@ -263,12 +263,12 @@ export async function resolveQualityReviewTargetSha(opts: {
     try {
       parent = await gitRevParse(opts.gitRoot, [`${current}^`]);
     } catch {
-      return current;
+      return currentTaskArtifactHead ?? current;
     }
 
     const changed = await gitDiffNames(opts.gitRoot, parent, current);
     if (changed.length === 0) {
-      return current;
+      return currentTaskArtifactHead ?? current;
     }
 
     const touchesCurrentTaskSet = changed.some((name) => taskRelativePath(name) !== null);
@@ -276,9 +276,8 @@ export async function resolveQualityReviewTargetSha(opts: {
     const touchesOnlyWorkflowArtifacts = changed.every((name) =>
       name.startsWith(workflowArtifactPrefix),
     );
-
     if (!touchesOnlyCurrentTaskSet && !touchesOnlyWorkflowArtifacts) {
-      return current;
+      return currentTaskArtifactHead ?? current;
     }
 
     if (touchesOnlyCurrentTaskSet) {
@@ -314,7 +313,7 @@ export async function resolveQualityReviewTargetSha(opts: {
       const touchesOnlyManagedArtifacts = taskRelativePaths.every((name) =>
         isManagedTaskArtifact(name),
       );
-      if (previousEvaluatedSha && touchesDerivedArtifacts && touchesOnlyManagedArtifacts) {
+      if (touchesDerivedArtifacts && touchesOnlyManagedArtifacts) {
         current = parent;
         continue;
       }

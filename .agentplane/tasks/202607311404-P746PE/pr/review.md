@@ -29,13 +29,17 @@ Created: 2026-07-31T14:05:33.781Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../evaluator-qualification-packet.test.ts         |   1 +
  .../evaluator/evaluator-qualification-review.ts    |   4 +-
  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   | 290 ++++++++++++++++++++-
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../commands/pr/internal/sync-batch-ownership.ts   |  22 ++
- .../src/commands/task/verify-record-execute.ts     |  11 +-
- 6 files changed, 321 insertions(+), 14 deletions(-)
+ .../commands/shared/quality-review-target.test.ts  |  19 ++
+ .../src/commands/shared/quality-review-target.ts   |   9 +-
+ .../task/qualification-packet-dependencies.ts      |   7 +-
+ .../src/commands/task/verify-record-execute.ts     |  22 +-
+ 10 files changed, 362 insertions(+), 20 deletions(-)
 ```
 
 </details>
