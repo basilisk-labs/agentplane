@@ -1,0 +1,22 @@
+[2026-07-31T15:18:26.503Z] sha=5fb503ced8a398947da459c44cd8fc28ee562f12 $ bun run format:check
+Checking formatting...
+All matched files use Prettier code style!
+$ prettier . --check
+
+[2026-07-31T15:19:17.254Z] sha=5fb503ced8a398947da459c44cd8fc28ee562f12 $ bun run test:project agentplane packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311456-B67DP1-finalize-integration-from-immutable-branch-head
+
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  18:19:17
+   Duration  2.20s (transform 1.61s, setup 0ms, import 413ms, tests 2.64s, environment 0ms)
+
+$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+
+[2026-07-31T15:19:20.333Z] sha=5fb503ced8a398947da459c44cd8fc28ee562f12 $ bun run typecheck
+$ node scripts/checks/run-typescript-build.mjs
+
+[2026-07-31T15:19:20.929Z] ✅ verified_sha=5fb503ced8a398947da459c44cd8fc28ee562f12
+

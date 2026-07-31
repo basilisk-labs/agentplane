@@ -1,10 +1,15 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-07-31T15:20:20.860Z",
   "base": "codex/fix-v0.6.24-closeout-route",
   "branch": "task/202607311456-B67DP1/finalize-integration-from-immutable-branch-head",
   "created_at": "2026-07-31T14:59:40.807Z",
   "diffstat_sha256": "sha256:85441a10e4bf26c5a47f732f9f0fdef9d1422deafe4cef47e6b230c62971ef0e",
-  "last_verified_at": "2026-07-31T15:09:54.365Z",
+  "last_verified_at": "2026-07-31T15:20:20.860Z",
   "last_verified_diffstat_sha256": "sha256:85441a10e4bf26c5a47f732f9f0fdef9d1422deafe4cef47e6b230c62971ef0e",
+  "merge_commit": "d450868704f02c0d6e9d8976ba6f0e145d9a227c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-07-31T15:20:20.860Z",
   "pr_number": 4706,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4706",
   "pre_merge_closure": {
@@ -15,9 +20,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202607311456-B67DP1",
-  "updated_at": "2026-07-31T15:10:59.989Z",
+  "updated_at": "2026-07-31T15:20:20.860Z",
   "verify": {
     "status": "pass"
   }

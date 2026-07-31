@@ -1,3 +1,13 @@
- packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts | 1 +
- packages/agentplane/src/commands/pr/integrate/internal/finalize.ts      | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ .agentplane/tasks/202607311456-B67DP1/README.md    | 227 +++++++++++
+ .../blueprint/resolved-snapshot.json               | 454 +++++++++++++++++++++
+ .../tasks/202607311456-B67DP1/pr/diffstat.txt      |   3 +
+ .../tasks/202607311456-B67DP1/pr/github-body.md    |  35 ++
+ .../tasks/202607311456-B67DP1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202607311456-B67DP1/pr/meta.json |  24 ++
+ .agentplane/tasks/202607311456-B67DP1/pr/review.md |  38 ++
+ .../evaluator-opinion.md                           |  19 +
+ .../evaluator-prompt.md                            |  74 ++++
+ .../quality-report.json                            |  21 +
+ .../pr/integrate/internal/finalize.test.ts         |   1 +
+ .../src/commands/pr/integrate/internal/finalize.ts |   2 +-
+ 12 files changed, 898 insertions(+), 1 deletion(-)
