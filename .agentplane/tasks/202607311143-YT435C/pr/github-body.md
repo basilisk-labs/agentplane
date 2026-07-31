@@ -15,13 +15,14 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN
-pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of
-0.6.26. Expanding child-process isolation to all transient launcher provenance variables.
+Transient launcher provenance is now removed from verification child environments. Exact
+integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and
+reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate
+pass.
 ```
 - Canonical workflow state lives in the task README.
 

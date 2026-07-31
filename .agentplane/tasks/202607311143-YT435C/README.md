@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -31,30 +31,29 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-31T13:49:21.168Z"
+  state: "ok"
+  updated_at: "2026-07-31T13:50:07.149Z"
   updated_by: "CODER"
-  note: "Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of 0.6.26. Expanding child-process isolation to all transient launcher provenance variables."
-  attempts: 1
+  note: "Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-31T13:31:07.524Z"
+  updated_at: "2026-07-31T13:50:09.108Z"
   updated_by: "EVALUATOR"
-  note: "v0.6.26 maintenance candidate is release-ready after eliminating direct routing loops, stale closeout routes, untracked task loss, and integration-lane environment leakage."
-  evaluated_sha: "a913b33383db5f5b7c167da51c4ba69cda14cd64"
+  note: "The direct-workflow fixes and v0.6.26 candidate are verified; verification subprocess semantics are now independent of the invoking AgentPlane runtime."
+  evaluated_sha: "020dfcd89e6b4535896e1b211c58806d20e5aa84"
   blueprint_digest: "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4"
   evidence_refs:
     - ".agentplane/tasks/202607311143-YT435C/README.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-133107524-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-133107524-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-133107524-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-135009108-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-135009108-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-135009108-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
     - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.test.ts"
   findings:
-    - "Verification subprocesses are isolated from ap-only presentation variables; exact regression and the full release matrix pass on a913b333."
+    - "Exact reproduction with AGENTPLANE_RUNTIME_ACTIVE_BIN pointing at 0.6.25 passes 43/43 and resolves candidate version 0.6.26 after sanitization."
 commit: null
 comments:
   -
@@ -186,8 +185,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: isolate verification from transient runtime provenance variables."
+  -
+    type: "verify"
+    at: "2026-07-31T13:50:07.149Z"
+    author: "CODER"
+    state: "ok"
+    note: "Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:49:22.776Z"
+doc_updated_at: "2026-07-31T13:50:07.347Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -446,6 +451,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T13:50:07.149Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:49:22.776Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -478,6 +513,10 @@ sections:
     - Observation: Integration-only release verification inherited AGENTPLANE_CLI_ALIAS and AGENTPLANE_AGENT_MODE from the ap launcher.
       Impact: Child CLI output tests ran in agent presentation mode and failed despite the candidate passing outside the integration lane.
       Resolution: runShellCommand now removes both launcher-only variables before starting verification subprocesses, with a regression assertion on the child environment.
+
+    - Observation: AGENTPLANE_RUNTIME_ACTIVE_BIN inherited from the maintenance controller redirected candidate package resolution to 0.6.25.
+      Impact: The merge-lane version test observed the controller version instead of the candidate version, making verification dependent on its parent launcher.
+      Resolution: Verification now strips presentation, runtime provenance, repo-local handoff, and transient dev-bootstrap carrier variables before spawning commands.
 extensions:
   implementation_commit:
     hash: "a913b33383db5f5b7c167da51c4ba69cda14cd64"
@@ -749,6 +788,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T13:50:07.149Z — VERIFY — ok
+
+By: CODER
+
+Note: Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:49:22.776Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -785,3 +854,7 @@ DecisionContextRef:
 - Observation: Integration-only release verification inherited AGENTPLANE_CLI_ALIAS and AGENTPLANE_AGENT_MODE from the ap launcher.
   Impact: Child CLI output tests ran in agent presentation mode and failed despite the candidate passing outside the integration lane.
   Resolution: runShellCommand now removes both launcher-only variables before starting verification subprocesses, with a regression assertion on the child environment.
+
+- Observation: AGENTPLANE_RUNTIME_ACTIVE_BIN inherited from the maintenance controller redirected candidate package resolution to 0.6.25.
+  Impact: The merge-lane version test observed the controller version instead of the candidate version, making verification dependent on its parent launcher.
+  Resolution: Verification now strips presentation, runtime provenance, repo-local handoff, and transient dev-bootstrap carrier variables before spawning commands.
