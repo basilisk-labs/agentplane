@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:14:47.194Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "71491881a3ce7cba0e5555ae55695417b1137341",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "executeBranchWorkflowOperation passes operation.params.commit as both commit and implementationCommit; this bypasses finish's task-artifact advance resolver and makes expected_sha equal the quality artifact commit instead of quality_review.evaluated_sha."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-131446651-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "In-process task.pre_merge_close must omit explicit implementationCommit so finish resolves a task-artifact head to the reviewed semantic commit."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Make the in-process adapter match the projected CLI argv: pass the close commit as commit, omit implementationCommit, and add a focused option-forwarding regression."
+  ]
+}
