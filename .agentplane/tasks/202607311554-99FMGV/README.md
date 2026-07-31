@@ -4,7 +4,7 @@ title: "Allow fast-forward publication before conflict rework"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "a2c70c4504b3d3729e0cc0767e64b796d9d951ba"
+  message: "🚧 99FMGV code: Unblock guarded conflict head publication"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation recorded: guarded publication now requires a clean strict descendant and preserves CODER semantic conflict rework after provider alignment."
 events:
   -
     type: "status"
@@ -45,8 +50,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-31T16:15:48.580Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: guarded publication now requires a clean strict descendant and preserves CODER semantic conflict rework after provider alignment."
 doc_version: 3
-doc_updated_at: "2026-07-31T15:55:47.815Z"
+doc_updated_at: "2026-07-31T16:15:48.580Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
