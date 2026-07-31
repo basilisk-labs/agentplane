@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:c078f5ef607f482bf82d19eab8334aeaec10d2b0dac9e1eb26a87a241a522973",
   "last_verified_at": "2026-07-31T18:19:56.955Z",
   "last_verified_diffstat_sha256": "sha256:c078f5ef607f482bf82d19eab8334aeaec10d2b0dac9e1eb26a87a241a522973",
+  "pr_number": 4710,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4710",
+  "pre_merge_closure": {
+    "basis_commit": "8e1896a53274cf79fa3ae9acb53dc2d7bfe8f0a5",
+    "branch": "task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema",
+    "pr_number": 4710,
+    "recorded_at": "2026-07-31T18:21:40.585Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607311812-WBY9EK",
-  "updated_at": "2026-07-31T18:13:29.527Z",
+  "updated_at": "2026-07-31T18:20:52.699Z",
   "verify": {
     "status": "pass"
   }
