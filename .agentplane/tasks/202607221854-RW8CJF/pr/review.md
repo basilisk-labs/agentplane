@@ -13,7 +13,7 @@ Created: 2026-07-31T19:53:56.576Z
 ## Verification
 
 - State: ok
-- Note: Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5.
+- Note: Hosted dead-code baseline rework passed: unused type re-exports removed, knip baseline unchanged at 545 entries, typecheck and 13 focused tests pass at 3bb947f75.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,11 +32,10 @@ Created: 2026-07-31T19:53:56.576Z
  .../src/cli/run-cli.command-session.test.ts        |  38 +++
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  39 +++
- .../agentplane/src/cli/run-cli/command-catalog.ts  |   9 +-
  .../cli/run-cli/command-catalog/command-session.ts | 262 +++++++++++++++++++++
  .../src/cli/run-cli/command-catalog/core.ts        |  11 +-
  .../src/cli/run-cli/command-catalog/kernel.test.ts | 139 +++++++++++
- .../src/cli/run-cli/command-catalog/kernel.ts      | 158 +++++++++++--
+ .../src/cli/run-cli/command-catalog/kernel.ts      | 156 ++++++++++--
  .../src/cli/run-cli/command-catalog/lifecycle.ts   |   6 +-
  .../src/cli/run-cli/command-catalog/project.ts     |  18 +-
  .../src/cli/run-cli/command-catalog/task.ts        |  21 +-
@@ -48,7 +47,7 @@ Created: 2026-07-31T19:53:56.576Z
  .../src/cli/run-cli/commands/core/agents.ts        |   4 +-
  .../agentplane/src/cli/run-cli/registry.run.ts     |  17 +-
  .../src/commands/task/next-action.command.ts       |  10 +-
- 19 files changed, 776 insertions(+), 55 deletions(-)
+ 18 files changed, 766 insertions(+), 54 deletions(-)
 ```
 
 </details>
