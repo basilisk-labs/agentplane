@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:00:55.955Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "PASS: stale inactive queue entries fall through to one typed integration.enqueue refresh, while matching queued/done entries and all claimed/handoff entries remain non-destructive waits.",
+    "PASS: the branch_pr supervisor keeps semantic EXECUTOR/EVALUATOR work role-scoped and routes worktree, verification, PR publication, queue, hosted-close, and cleanup through typed CLI operations with durable idempotency.",
+    "PASS: the real two-worktree regression proves a stale base README cannot override DONE task-branch truth and that base-owned queue state is observed from the task worktree."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130055501-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
