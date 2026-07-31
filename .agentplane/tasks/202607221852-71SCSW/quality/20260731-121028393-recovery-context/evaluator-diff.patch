@@ -1,0 +1,3614 @@
+diff --git a/.agentplane/tasks/202607221852-71SCSW/README.md b/.agentplane/tasks/202607221852-71SCSW/README.md
+index eb08f68c5..c49585515 100644
+--- a/.agentplane/tasks/202607221852-71SCSW/README.md
++++ b/.agentplane/tasks/202607221852-71SCSW/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-71SCSW"
+ title: "Extend supervised execution to branch_pr"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 6
++revision: 8
+ origin:
+   system: "manual"
+ depends_on:
+@@ -29,9 +29,9 @@ verify:
+   - "bun run lifecycle:invariants"
+   - "bun run test:critical"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-31T11:13:44.168Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -40,11 +40,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T11:14:18.514Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T19:09:39.842Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-31T11:14:18.514Z"
++doc_updated_by: "CODER"
+ description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
+ sections:
+   Summary: |-
+@@ -76,6 +86,10 @@ sections:
+     - After merge: never rewrite protected main; create a new follow-up task/PR and let hosted close reconcile the merged SHA.
+     - After hosted close: preserve closure evidence and use a new rollback release/task; cleanup only verified clean task-owned worktrees and branches.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..2dfde187e
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-71SCSW",
++    "title": "Extend supervised execution to branch_pr",
++    "description": "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority.",
++    "tags": [
++      "branch-pr",
++      "milestone-rc1",
++      "provider",
++      "refactor",
++      "rf-10",
++      "supervisor",
++      "v0.7",
++      "wave-authority"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-71SCSW",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-71SCSW/pr/diffstat.txt b/.agentplane/tasks/202607221852-71SCSW/pr/diffstat.txt
+new file mode 100644
+index 000000000..52e4d059f
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-71SCSW/pr/diffstat.txt
+@@ -0,0 +1,20 @@
++ .../src/cli/run-cli.core.task-run.test.ts          |   2 +-
++ .../agentplane/src/commands/branch/work-start.ts   |  17 +-
++ .../src/commands/integrate-queue.command.ts        | 111 ++--
++ .../src/commands/integrate-queue.spec.ts           |   2 +
++ packages/agentplane/src/commands/pr/open.ts        |  13 +-
++ .../shared/supervisor-execution-episode.test.ts    |  35 ++
++ .../shared/supervisor-execution-episode.ts         |  17 +-
++ .../commands/shared/workflow-supervisor.test.ts    |  62 +-
++ .../src/commands/shared/workflow-supervisor.ts     |   8 +-
++ .../task/branch-task-supervisor-episodes.ts        | 598 +++++++++++++++++++
++ .../task/branch-task-supervisor-operations.ts      | 278 +++++++++
++ .../commands/task/branch-task-supervisor.test.ts   | 640 +++++++++++++++++++++
++ .../src/commands/task/branch-task-supervisor.ts    | 465 +++++++++++++++
++ .../direct-task-supervisor-observation.test.ts     |   5 +-
++ .../task/direct-task-supervisor-observation.ts     |   6 +-
++ .../src/commands/task/hosted-close-pr.command.ts   |   6 +-
++ .../src/commands/task/hosted-close-pr.types.ts     |   1 +
++ .../agentplane/src/commands/task/run-render.ts     |  84 ++-
++ .../agentplane/src/commands/task/run.command.ts    |  87 ++-
++ 19 files changed, 2294 insertions(+), 143 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-71SCSW/pr/github-body.md b/.agentplane/tasks/202607221852-71SCSW/pr/github-body.md
+new file mode 100644
+index 000000000..50e8480c6
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-71SCSW/pr/github-body.md
+@@ -0,0 +1,52 @@
++Task: `202607221852-71SCSW`
++Title: Extend supervised execution to branch_pr
++Canonical task record: `.agentplane/tasks/202607221852-71SCSW/README.md`
++
++## Summary
++
++Extend supervised execution to branch_pr
++
++RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority.
++
++## Scope
++
++- In scope: branch_pr pre/post operations, task worktree recovery, PR artifacts/provider truth, hosted-check stabilization, integration queue, merge authority, pre-merge closure, hosted close, cleanup, retries, and golden metrics.
++- Out of scope: bypassing protected main, assuming provider state from local projections, or granting merge/publish authority implicitly.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T11:15:01.849Z
++- Branch: task/202607221852-71SCSW/extend-supervised-execution-to-branch-pr
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/cli/run-cli.core.task-run.test.ts          |   2 +-
++ .../agentplane/src/commands/branch/work-start.ts   |  17 +-
++ .../src/commands/integrate-queue.command.ts        | 111 ++--
++ .../src/commands/integrate-queue.spec.ts           |   2 +
++ packages/agentplane/src/commands/pr/open.ts        |  13 +-
++ .../shared/supervisor-execution-episode.test.ts    |  35 ++
++ .../shared/supervisor-execution-episode.ts         |  17 +-
++ .../commands/shared/workflow-supervisor.test.ts    |  62 +-
++ .../src/commands/shared/workflow-supervisor.ts     |   8 +-
++ .../task/branch-task-supervisor-episodes.ts        | 598 +++++++++++++++++++
++ .../task/branch-task-supervisor-operations.ts      | 278 +++++++++
++ .../commands/task/branch-task-supervisor.test.ts   | 640 +++++++++++++++++++++
++ .../src/commands/task/branch-task-supervisor.ts    | 465 +++++++++++++++
++ .../direct-task-supervisor-observation.test.ts     |   5 +-
++ .../task/direct-task-supervisor-observation.ts     |   6 +-
++ .../src/commands/task/hosted-close-pr.command.ts   |   6 +-
++ .../src/commands/task/hosted-close-pr.types.ts     |   1 +
++ .../agentplane/src/commands/task/run-render.ts     |  84 ++-
++ .../agentplane/src/commands/task/run.command.ts    |  87 ++-
++ 19 files changed, 2294 insertions(+), 143 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-71SCSW/pr/github-title.txt b/.agentplane/tasks/202607221852-71SCSW/pr/github-title.txt
+new file mode 100644
+index 000000000..a2c61cda2
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-71SCSW/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 71SCSW task: Extend supervised execution to branch_pr [202607221852-71SCSW]
+diff --git a/.agentplane/tasks/202607221852-71SCSW/pr/meta.json b/.agentplane/tasks/202607221852-71SCSW/pr/meta.json
+new file mode 100644
+index 000000000..472e56f03
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-71SCSW/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-71SCSW/extend-supervised-execution-to-branch-pr",
++  "created_at": "2026-07-31T11:14:18.745Z",
++  "diffstat_sha256": "sha256:ebe794e10f692485c248a5ee84913e6aa0326ae3eba32ee88c4099117d87d4de",
++  "last_verified_at": null,
++  "pr_number": 4702,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4702",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-71SCSW",
++  "updated_at": "2026-07-31T11:15:01.849Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-71SCSW/pr/review.md b/.agentplane/tasks/202607221852-71SCSW/pr/review.md
+new file mode 100644
+index 000000000..333c6ce12
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-71SCSW/pr/review.md
+@@ -0,0 +1,55 @@
++# PR Review
++
++Created: 2026-07-31T11:14:18.745Z
++
++## Task
++
++- Task: `202607221852-71SCSW`
++- Title: Extend supervised execution to branch_pr
++- Status: DOING
++- Branch: `task/202607221852-71SCSW/extend-supervised-execution-to-branch-pr`
++- Canonical task record: `.agentplane/tasks/202607221852-71SCSW/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T11:15:01.849Z
++- Branch: task/202607221852-71SCSW/extend-supervised-execution-to-branch-pr
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/cli/run-cli.core.task-run.test.ts          |   2 +-
++ .../agentplane/src/commands/branch/work-start.ts   |  17 +-
++ .../src/commands/integrate-queue.command.ts        | 111 ++--
++ .../src/commands/integrate-queue.spec.ts           |   2 +
++ packages/agentplane/src/commands/pr/open.ts        |  13 +-
++ .../shared/supervisor-execution-episode.test.ts    |  35 ++
++ .../shared/supervisor-execution-episode.ts         |  17 +-
++ .../commands/shared/workflow-supervisor.test.ts    |  62 +-
++ .../src/commands/shared/workflow-supervisor.ts     |   8 +-
++ .../task/branch-task-supervisor-episodes.ts        | 598 +++++++++++++++++++
++ .../task/branch-task-supervisor-operations.ts      | 278 +++++++++
++ .../commands/task/branch-task-supervisor.test.ts   | 640 +++++++++++++++++++++
++ .../src/commands/task/branch-task-supervisor.ts    | 465 +++++++++++++++
++ .../direct-task-supervisor-observation.test.ts     |   5 +-
++ .../task/direct-task-supervisor-observation.ts     |   6 +-
++ .../src/commands/task/hosted-close-pr.command.ts   |   6 +-
++ .../src/commands/task/hosted-close-pr.types.ts     |   1 +
++ .../agentplane/src/commands/task/run-render.ts     |  84 ++-
++ .../agentplane/src/commands/task/run.command.ts    |  87 ++-
++ 19 files changed, 2294 insertions(+), 143 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+index fc89ead4a..3dd5dc02e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+@@ -242,7 +242,7 @@ describe("runCli task run", () => {
+       );
+       expect(bootstrap).toContain("Use bundle.json as the complete runner input.");
+       expect(bootstrap).toContain(
+-        "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
++        "Do not attempt to write result_path. Return the AgentSemanticResult v2 object",
+       );
+     } finally {
+       prepareSpy.mockRestore();
+diff --git a/packages/agentplane/src/commands/branch/work-start.ts b/packages/agentplane/src/commands/branch/work-start.ts
+index 52e7a0e2d..a166c4d64 100644
+--- a/packages/agentplane/src/commands/branch/work-start.ts
++++ b/packages/agentplane/src/commands/branch/work-start.ts
+@@ -72,6 +72,7 @@ export async function cmdWorkStart(opts: {
+   agent: string;
+   slug: string;
+   worktree: boolean;
++  quiet?: boolean;
+ }): Promise<number> {
+   try {
+     const output = createCliEmitter();
+@@ -147,7 +148,9 @@ export async function cmdWorkStart(opts: {
+         started_at: new Date().toISOString(),
+       });
+ 
+-      output.success("work start", opts.taskId, `mode=direct branch=${currentBranch}`);
++      if (!opts.quiet) {
++        output.success("work start", opts.taskId, `mode=direct branch=${currentBranch}`);
++      }
+       return 0;
+     }
+ 
+@@ -241,11 +244,13 @@ export async function cmdWorkStart(opts: {
+       }
+     }
+ 
+-    output.success(
+-      "work start",
+-      branchName,
+-      opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
+-    );
++    if (!opts.quiet) {
++      output.success(
++        "work start",
++        branchName,
++        opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
++      );
++    }
+     return 0;
+   } catch (err) {
+     if (err instanceof CliError) throw err;
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 95d4d01db..05b823a23 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -62,6 +62,40 @@ import { waitForHostedChecks } from "./pr/hosted-checks.js";
+ const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
+ const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
+ 
++async function claimFreshIntegrationQueueEntry(opts: {
++  gitRoot: string;
++  worker: string;
++  leaseMs: number | null;
++}) {
++  return await withIntegrationQueueMutex(opts.gitRoot, async () => {
++    const queue = await readIntegrationQueue(opts.gitRoot);
++    const next = claimNextQueuedEntry(queue, {
++      worker: opts.worker,
++      ...(opts.leaseMs === null ? {} : { leaseMs: opts.leaseMs }),
++    });
++    if (!next.entry) {
++      await writeIntegrationQueue(opts.gitRoot, next.state);
++      return next;
++    }
++    const stale = await rejectIfQueuedEntryIsStale({
++      gitRoot: opts.gitRoot,
++      entry: next.entry,
++    });
++    if (stale) {
++      await writeIntegrationQueue(
++        opts.gitRoot,
++        markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
++      );
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: stale.reason ?? "queued entry stale",
++      });
++    }
++    await writeIntegrationQueue(opts.gitRoot, next.state);
++    return next;
++  });
++}
++
+ export {
+   integrateQueueAdoptLegacyProtectedConflictSpec,
+   integrateQueueClaimSpec,
+@@ -142,7 +176,13 @@ export function makeRunIntegrateQueueEnqueueHandler(
+       }
+       await writeIntegrationQueue(prepared.resolved.gitRoot, refreshed);
+     });
+-    createCliEmitter().success("queued integration", prepared.task.id, `branch=${prepared.branch}`);
++    if (!p.quiet) {
++      createCliEmitter().success(
++        "queued integration",
++        prepared.task.id,
++        `branch=${prepared.branch}`,
++      );
++    }
+     return 0;
+   };
+ }
+@@ -191,26 +231,10 @@ export function makeRunIntegrateQueueClaimHandler(
+   return async (_ctx: CommandCtx, p: IntegrateQueueClaimParsed): Promise<number> => {
+     const commandCtx = await getCtx("integrate queue claim");
+     const gitRoot = commandCtx.resolvedProject.gitRoot;
+-    const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
+-      const queue = await readIntegrationQueue(gitRoot);
+-      const next = claimNextQueuedEntry(queue, {
+-        worker: p.worker ?? defaultIntegrationQueueWorker(),
+-        ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+-      });
+-      if (!next.entry) {
+-        await writeIntegrationQueue(gitRoot, next.state);
+-        return next;
+-      }
+-      const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: next.entry });
+-      if (stale) {
+-        await writeIntegrationQueue(
+-          gitRoot,
+-          markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
+-        );
+-        throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
+-      }
+-      await writeIntegrationQueue(gitRoot, next.state);
+-      return next;
++    const claimed = await claimFreshIntegrationQueueEntry({
++      gitRoot,
++      worker: p.worker ?? defaultIntegrationQueueWorker(),
++      leaseMs: p.leaseMs,
+     });
+     const retainedEntry = await validateClaimedEntryPublication({ gitRoot, entry: claimed.entry });
+     if (!retainedEntry) {
+@@ -412,13 +436,15 @@ export function makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(
+       await writeIntegrationQueue(gitRoot, recordLegacyProtectedConflictAdoption(queue, receipt));
+       return { state: "recorded" as const };
+     });
+-    createCliEmitter().success(
+-      "legacy protected-conflict adoption",
+-      p.taskId,
+-      result.state === "already_recorded"
+-        ? "already recorded"
+-        : "recorded; recompute task next-action",
+-    );
++    if (!p.quiet) {
++      createCliEmitter().success(
++        "legacy protected-conflict adoption",
++        p.taskId,
++        result.state === "already_recorded"
++          ? "already recorded"
++          : "recorded; recompute task next-action",
++      );
++    }
+     return 0;
+   };
+ }
+@@ -436,31 +462,10 @@ export function makeRunIntegrateQueueRunNextHandler(
+     const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
+ 
+     do {
+-      const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
+-        const queue = await readIntegrationQueue(gitRoot);
+-        const next = claimNextQueuedEntry(queue, {
+-          worker: p.worker ?? defaultIntegrationQueueWorker(),
+-          ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+-        });
+-        if (!next.entry) {
+-          await writeIntegrationQueue(gitRoot, next.state);
+-          return next;
+-        }
+-
+-        const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: next.entry });
+-        if (stale) {
+-          await writeIntegrationQueue(
+-            gitRoot,
+-            markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
+-          );
+-          throw new CliError({
+-            code: "E_VALIDATION",
+-            message: stale.reason ?? "queued entry stale",
+-          });
+-        }
+-
+-        await writeIntegrationQueue(gitRoot, next.state);
+-        return next;
++      const claimed = await claimFreshIntegrationQueueEntry({
++        gitRoot,
++        worker: p.worker ?? defaultIntegrationQueueWorker(),
++        leaseMs: p.leaseMs,
+       });
+       const retainedEntry = await validateClaimedEntryPublication({
+         gitRoot,
+diff --git a/packages/agentplane/src/commands/integrate-queue.spec.ts b/packages/agentplane/src/commands/integrate-queue.spec.ts
+index 956d9acac..befea8a8d 100644
+--- a/packages/agentplane/src/commands/integrate-queue.spec.ts
++++ b/packages/agentplane/src/commands/integrate-queue.spec.ts
+@@ -39,6 +39,7 @@ export type IntegrateQueueEnqueueParsed = {
+   branch: string | null;
+   base: string | null;
+   priority: number;
++  quiet?: boolean;
+ };
+ 
+ export const integrateQueueEnqueueSpec: CommandSpec<IntegrateQueueEnqueueParsed> = {
+@@ -209,6 +210,7 @@ export const integrateQueueReleaseSpec: CommandSpec<IntegrateQueueReleaseParsed>
+ export type IntegrateQueueAdoptLegacyProtectedConflictParsed = {
+   taskId: string;
+   expectedAdoptionToken: string;
++  quiet?: boolean;
+ };
+ 
+ export const integrateQueueAdoptLegacyProtectedConflictSpec: CommandSpec<IntegrateQueueAdoptLegacyProtectedConflictParsed> =
+diff --git a/packages/agentplane/src/commands/pr/open.ts b/packages/agentplane/src/commands/pr/open.ts
+index 2e69e596d..fb2e94936 100644
+--- a/packages/agentplane/src/commands/pr/open.ts
++++ b/packages/agentplane/src/commands/pr/open.ts
+@@ -45,6 +45,7 @@ export async function cmdPrOpen(opts: {
+   branch?: string;
+   includeTaskIds?: string[];
+   syncOnly?: boolean;
++  quiet?: boolean;
+ }): Promise<number> {
+   try {
+     const output = createCliEmitter();
+@@ -115,11 +116,13 @@ export async function cmdPrOpen(opts: {
+           remoteMode: "auto",
+         });
+ 
+-    output.success(
+-      "pr open",
+-      path.relative(resolved.gitRoot, prDir),
+-      prOpenOutcomeDetails(meta, openOutcome ?? null),
+-    );
++    if (!opts.quiet) {
++      output.success(
++        "pr open",
++        path.relative(resolved.gitRoot, prDir),
++        prOpenOutcomeDetails(meta, openOutcome ?? null),
++      );
++    }
+     return 0;
+   } catch (err) {
+     if (err instanceof CliError) throw err;
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+index d5ea7fc79..ca8475dff 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts
+@@ -264,6 +264,41 @@ describe("persisted supervisor execution episodes", () => {
+     });
+   });
+ 
++  it("refuses to replay a completed CLI side effect with the same idempotency key", async () => {
++    const root = await mkGitRepoRoot();
++    const decision = fixtureDecision(root, 1);
++    const first = await supervisePersistedWorkflowEpisode({
++      decision,
++      git_root: root,
++      task_revision: 1,
++      execute: () =>
++        Promise.resolve({
++          status: "succeeded" as const,
++          observed_postconditions: ["runner_state_observed"],
++          detail: "fixture runner completed",
++          exit_code: 0,
++        }),
++      refresh: () => Promise.resolve(decision),
++    });
++    expect(first.execution.executable).toBe(true);
++
++    let executions = 0;
++    const replay = await supervisePersistedWorkflowEpisode({
++      decision,
++      git_root: root,
++      task_revision: 1,
++      execute: () => {
++        executions += 1;
++        return Promise.reject(new Error("completed side effect must not replay"));
++      },
++      refresh: () => Promise.resolve(decision),
++    });
++
++    expect(executions).toBe(0);
++    expect(replay.execution.executable).toBe(false);
++    expect(replay.execution.stop_reason).toContain("already completed this idempotency key");
++  });
++
+   it("projects supervisor-observed provider and execution usage into the journal", async () => {
+     const root = await mkGitRepoRoot();
+     const decision = fixtureDecision(root, 1);
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index f2ac1fc05..582ce2986 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -404,6 +404,21 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+     };
+   }
+ 
++  const operationAlreadyCompleted = journal.operations.some(
++    (entry) => entry.status === "completed" && entry.effect_ref === operation.idempotencyKey,
++  );
++  if (operationAlreadyCompleted) {
++    return {
++      execution: stoppedExecution({
++        decision: opts.decision,
++        reason:
++          "supervisor episode already completed this idempotency key; refresh provider or route truth before another side effect",
++      }),
++      journal,
++      journal_path: store.path,
++    };
++  }
++
+   const kind = operationKind(opts.decision);
+   const started = startSupervisorExecutionEpisode({
+     journal,
+@@ -413,7 +428,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
+     precondition_fingerprint_digest: currentFingerprint,
+     authority_ref: `workflow-operation:${operation.id}`,
+     authority_digest: operation.preconditionFingerprint.digest,
+-    effect_ref: operation.id === "runner.follow" ? operation.idempotencyKey : null,
++    effect_ref: operation.idempotencyKey,
+   });
+   journal = started.journal;
+   await store.write(journal);
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
+index 235410e40..c34ad971d 100644
+--- a/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
+@@ -12,6 +12,8 @@ const taskId = "202607270245-SUPV09";
+ function fixtureDecision(opts?: {
+   exactArgv?: string[] | null;
+   kind?: "approval" | "agent_episode" | "wait";
++  operation?: WorkflowOperation;
++  safeToMutate?: boolean;
+ }): TaskRouteDecision {
+   const component = {
+     state: "present",
+@@ -34,16 +36,18 @@ function fixtureDecision(opts?: {
+       authority: component,
+     },
+   });
+-  const operation: WorkflowOperation = {
+-    id: "runner.follow",
+-    type: "runner_follow",
+-    params: { mode: "run", taskId },
+-    preconditionFingerprint: fingerprint,
+-    authorityRef: `route:${taskId}:${fingerprint.digest}`,
+-    idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
+-    expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
+-    triggersGitHooks: false,
+-  };
++  const operation: WorkflowOperation =
++    opts?.operation ??
++    ({
++      id: "runner.follow",
++      type: "runner_follow",
++      params: { mode: "run", taskId },
++      preconditionFingerprint: fingerprint,
++      authorityRef: `route:${taskId}:${fingerprint.digest}`,
++      idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
++      expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
++      triggersGitHooks: false,
++    } satisfies WorkflowOperation);
+   const workflowStep = opts?.kind
+     ? ({
+         id: opts.kind,
+@@ -72,7 +76,7 @@ function fixtureDecision(opts?: {
+     workflowStep,
+     executionPacket: {
+       actionKind: "local_command",
+-      safeToMutate: true,
++      safeToMutate: opts?.safeToMutate ?? true,
+       exactArgv: opts?.exactArgv ?? projectWorkflowOperationArgv(operation),
+     },
+   } as TaskRouteDecision;
+@@ -197,6 +201,42 @@ describe("workflow supervisor", () => {
+     expect(refreshed).toBe(false);
+   });
+ 
++  it("executes a read-only provider refresh without mutation authority", async () => {
++    const base = fixtureDecision();
++    const fingerprint = base.workflowStep.preconditionFingerprint;
++    const operation: WorkflowOperation = {
++      id: "provider.pr.refresh",
++      type: "provider_refresh",
++      params: { taskId },
++      preconditionFingerprint: fingerprint,
++      authorityRef: `authority:${taskId}:provider-refresh`,
++      idempotencyKey: `provider.pr.refresh:${taskId}:${fingerprint.digest}:fixture`,
++      expectedPostconditions:
++        WORKFLOW_OPERATION_REGISTRY["provider.pr.refresh"].expectedPostconditions,
++      triggersGitHooks: false,
++    };
++    const decision = fixtureDecision({ operation, safeToMutate: false });
++    const execution = await superviseWorkflowStep({
++      decision,
++      execute: () =>
++        Promise.resolve({
++          status: "succeeded" as const,
++          observed_postconditions: ["provider_state_observed"],
++          detail: "provider state refreshed",
++          exit_code: 0,
++        }),
++      refresh: () => Promise.resolve(decision),
++    });
++
++    expect(execution.executable).toBe(true);
++    expect(execution.stop_reason).toBeNull();
++    expect(execution.audit.map((entry) => entry.event)).toEqual([
++      "decision_observed",
++      "operation_executed",
++      "route_refreshed",
++    ]);
++  });
++
+   it("refreshes state after executor failure or absent postconditions without a second operation", async () => {
+     const decision = fixtureDecision();
+     let refreshed = false;
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+index d899bd27b..16445fc6a 100644
+--- a/packages/agentplane/src/commands/shared/workflow-supervisor.ts
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+@@ -1,7 +1,11 @@
+ import type { TaskRouteDecision } from "./route-decision-types.js";
+ import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+ import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
+-import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
++import {
++  WORKFLOW_OPERATION_REGISTRY,
++  workflowOperationMutatesState,
++  type WorkflowOperation,
++} from "./workflow-step.js";
+ 
+ const WORKFLOW_SUPERVISOR_AUDIT_SCHEMA = "agentplane.workflow-supervisor-audit.v1" as const;
+ 
+@@ -81,7 +85,7 @@ function stopReason(decision: TaskRouteDecision): string {
+   if (step.execution.actionKind !== "local_command") {
+     return "workflow supervisor may execute only local typed operations";
+   }
+-  if (!decision.executionPacket.safeToMutate) {
++  if (workflowOperationMutatesState(step.operation) && !decision.executionPacket.safeToMutate) {
+     return "workflow supervisor refuses an operation outside the current mutation authority";
+   }
+   if (step.operation.preconditionFingerprint.digest !== step.preconditionFingerprint.digest) {
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+new file mode 100644
+index 000000000..87038446a
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts
+@@ -0,0 +1,598 @@
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  startSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++  type SupervisorExecutionUsage,
++} from "@agentplaneorg/core/schemas";
++
++import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
++import {
++  projectExecutedTaskRunnerLifecycleResult,
++  taskRunnerLifecycleExitCode,
++  type TaskRunnerLifecycleResult,
++} from "../../runner/usecases/task-run-lifecycle-result.js";
++import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
++import { cmdCommit } from "../guard/impl/commit.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import {
++  openSupervisorExecutionEpisode,
++  tryAcquireSupervisorExecutionLease,
++} from "../shared/supervisor-execution-episode.js";
++import {
++  loadCommandContext,
++  loadTaskFromContext,
++  type CommandContext,
++} from "../shared/task-backend.js";
++import type {
++  BranchEpisodeOutcome,
++  BranchEvaluatorEvidence,
++  BranchExecutorEvidence,
++  BranchTaskSupervisorOptions,
++  BranchTaskSupervisorStopCode,
++} from "./branch-task-supervisor.js";
++import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
++import { runAndApplyDirectTaskEvaluator } from "./direct-task-supervisor-evaluator.js";
++import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
++import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
++import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
++import type { JournalProjection } from "./direct-task-supervisor-result.js";
++import { journalProjection } from "./direct-task-supervisor-result.js";
++import { runDirectTaskVerification } from "./direct-task-verification.js";
++import { cmdTaskSetStatus } from "./set-status.js";
++import { cmdVerifyParsed } from "./verify-record.js";
++
++function operationId(decision: TaskRouteDecision): string | null {
++  return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
++}
++
++function usageFromLifecycle(
++  lifecycle: TaskRunnerLifecycleResult,
++): Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> {
++  if (lifecycle.phase !== "executed" || !lifecycle.result) return {};
++  const provider = readCodexProviderUsageForResult(lifecycle.result);
++  const duration = lifecycle.result.metrics?.duration_ms;
++  const changedFiles = lifecycle.result.evidence?.files_changed_count;
++  return {
++    ...(provider ?? {}),
++    ...(typeof duration === "number" && Number.isSafeInteger(duration) && duration >= 0
++      ? { wall_time_ms: duration }
++      : {}),
++    ...(typeof changedFiles === "number" && Number.isSafeInteger(changedFiles) && changedFiles >= 0
++      ? { changed_files: changedFiles }
++      : {}),
++  };
++}
++
++function stoppedEpisode(opts: {
++  decision: TaskRouteDecision;
++  code: BranchTaskSupervisorStopCode;
++  reason: string;
++  journal?: JournalProjection | null;
++  executor?: BranchExecutorEvidence;
++  evaluator?: BranchEvaluatorEvidence;
++  provider_episodes?: number;
++  lifecycle_calls?: number;
++  executor_lifecycle_event_delta?: number | null;
++}): BranchEpisodeOutcome {
++  return {
++    status: "stopped",
++    decision: opts.decision,
++    stop: {
++      code: opts.code,
++      reason: opts.reason,
++      route_step_id: opts.decision.workflowStep.id,
++      operation_id: operationId(opts.decision),
++    },
++    journal: opts.journal ?? null,
++    ...(opts.executor ? { executor: opts.executor } : {}),
++    ...(opts.evaluator ? { evaluator: opts.evaluator } : {}),
++    provider_episodes: opts.provider_episodes ?? 0,
++    lifecycle_calls: opts.lifecycle_calls ?? 0,
++    executor_lifecycle_event_delta: opts.executor_lifecycle_event_delta ?? null,
++  };
++}
++
++async function commitTaskArtifacts(opts: {
++  command: CommandContext;
++  cwd: string;
++  task_id: string;
++  message: string;
++}): Promise<void> {
++  const exitCode = await cmdCommit({
++    ctx: opts.command,
++    cwd: opts.cwd,
++    taskId: opts.task_id,
++    message: opts.message,
++    close: false,
++    allow: [],
++    autoAllow: false,
++    allowTasks: true,
++    allowBase: false,
++    allowPolicy: false,
++    allowConfig: false,
++    allowHooks: false,
++    allowCI: false,
++    requireClean: false,
++    quiet: true,
++    closeUnstageOthers: false,
++    closeCheckOnly: false,
++  });
++  if (exitCode !== 0) {
++    throw new Error(`Task artifact commit exited with ${exitCode}.`);
++  }
++}
++
++async function executeBranchImplementationEpisode(opts: {
++  input: BranchTaskSupervisorOptions;
++  decision: TaskRouteDecision;
++  decide: () => Promise<TaskRouteDecision>;
++}): Promise<BranchEpisodeOutcome> {
++  const checkout = opts.decision.executionPacket.mustRunFrom;
++  if (!checkout) {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "route_refresh_failed",
++      reason: "The implementation episode has no authoritative task worktree.",
++    });
++  }
++  const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
++  const task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: command.resolvedProject.gitRoot,
++    task_id: opts.input.task_id,
++    task_revision: task.revision ?? null,
++    state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
++    recover_intent: false,
++  });
++  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opened.journal_path });
++  if (!lease) {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "supervisor_stopped",
++      reason:
++        "Another supervisor owns the branch_pr provider window; no second EXECUTOR was started.",
++      journal: journalProjection(opened.journal, opened.journal_path),
++    });
++  }
++  try {
++    let journal = opened.journal;
++    if (journal.status !== "running" || journal.cursor.phase !== "ready") {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "supervisor_stopped",
++        reason:
++          "The branch_pr supervisor journal is not ready; resolve its completed, failed, or effect-in-doubt episode before another provider run.",
++        journal: journalProjection(journal, opened.journal_path),
++      });
++    }
++    const step = opts.decision.workflowStep;
++    if (step.kind !== "agent_episode") {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "unsupported_agent_episode",
++        reason: "The branch implementation executor received a non-agent route.",
++        journal: journalProjection(journal, opened.journal_path),
++      });
++    }
++    const started = startSupervisorExecutionEpisode({
++      journal,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: {
++        workflow_step_id: step.id,
++        purpose: step.episode.purpose,
++        task_id: opts.input.task_id,
++      },
++      precondition_fingerprint_digest: step.preconditionFingerprint.digest,
++      authority_ref: `branch-pr:${opts.input.task_id}:${step.id}`,
++      authority_digest: step.preconditionFingerprint.digest,
++      effect_ref: `branch-pr:${opts.input.task_id}:${step.preconditionFingerprint.digest}`,
++    });
++    if (started.status !== "started") {
++      await opened.store.write(started.journal);
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "supervisor_stopped",
++        reason:
++          started.status === "effect_in_doubt"
++            ? "The branch EXECUTOR effect is in doubt; no provider retry is allowed."
++            : `The branch EXECUTOR journal stopped: ${started.stop.reason}.`,
++        journal: journalProjection(started.journal, opened.journal_path),
++      });
++    }
++    if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "supervisor_stopped",
++        reason:
++          "The branch supervisor journal changed before provider intent was persisted; no EXECUTOR was started.",
++        journal: journalProjection(journal, opened.journal_path),
++      });
++    }
++    journal = started.journal;
++    const [executionBaseCommit, executionBaselineStatus] = await Promise.all([
++      readDirectTaskHead(checkout),
++      readDirectRepositoryStatus(checkout),
++    ]);
++    const eventsBefore = task.events?.length ?? 0;
++    let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
++    try {
++      executed = await executeTaskRunnerExecution({
++        ctx: command,
++        cwd: checkout,
++        task_id: opts.input.task_id,
++        include_remote: true,
++        execution_role: step.episode.role,
++        ...(opts.input.sandbox_override ? { sandbox_override: opts.input.sandbox_override } : {}),
++        ...(opts.input.danger_authority ? { danger_authority: opts.input.danger_authority } : {}),
++      });
++    } catch (error) {
++      journal = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: started.operation_key,
++        result: { error: error instanceof Error ? error.name : "unknown_error" },
++        failed: true,
++      });
++      await opened.store.write(journal);
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "executor_adapter_crash",
++        reason:
++          "The branch EXECUTOR adapter failed after durable intent; the provider will not be replayed automatically.",
++        journal: journalProjection(journal, opened.journal_path),
++        provider_episodes: 1,
++      });
++    }
++    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
++      task_id: opts.input.task_id,
++      execution: executed,
++    });
++    const exitCode = taskRunnerLifecycleExitCode(lifecycle);
++    journal = completeSupervisorExecutionEpisode({
++      journal,
++      operation_key: started.operation_key,
++      result: {
++        run_id: lifecycle.invocation.run_id,
++        work_order_id: lifecycle.invocation.work_order_id,
++        receipt: lifecycle.result?.execution_receipt ?? null,
++        semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
++      },
++      usage: usageFromLifecycle(lifecycle),
++      progress: lifecycle.lifecycle.state_fingerprint ?? {
++        run_id: lifecycle.invocation.run_id,
++        status: lifecycle.lifecycle.status,
++      },
++      failed: exitCode !== 0,
++    });
++    await opened.store.write(journal);
++    const journalRef = journalProjection(journal, opened.journal_path);
++    if (exitCode !== 0) {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "runner_failed",
++        reason:
++          "The branch EXECUTOR did not complete with a clean runner/active-claim terminal state.",
++        journal: journalRef,
++        provider_episodes: 1,
++      });
++    }
++    const observed = observeDirectExecutor(lifecycle, {
++      allow_unverified_receipt: opts.input.danger_authority?.danger_full_access_authorized === true,
++    });
++    if ("stop" in observed) {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: observed.stop,
++        reason: observed.reason,
++        journal: journalRef,
++        provider_episodes: 1,
++      });
++    }
++    const currentTask = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
++    const eventDelta = (currentTask.events?.length ?? 0) - eventsBefore;
++    if (eventDelta !== 0) {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code: "executor_lifecycle_mutation",
++        reason:
++          "The EXECUTOR changed task lifecycle events; branch_pr lifecycle remains CLI-owned.",
++        journal: journalRef,
++        executor_lifecycle_event_delta: eventDelta,
++        provider_episodes: 1,
++      });
++    }
++    const implementation = await prepareDirectImplementationEvidence({
++      command,
++      cwd: checkout,
++      task_id: opts.input.task_id,
++      execution_base_commit: executionBaseCommit,
++      execution_baseline_status: executionBaselineStatus,
++      allowed_paths: lifecycle.lifecycle.work_order_authority?.writable_roots ?? [],
++      observed_changed_paths:
++        lifecycle.result?.evidence?.provenance === "supervisor_observed"
++          ? (lifecycle.result.evidence.changed_paths ?? [])
++          : null,
++    });
++    if (implementation.status !== "ready") {
++      return stoppedEpisode({
++        decision: opts.decision,
++        code:
++          implementation.status === "scope_violation"
++            ? "implementation_scope_violation"
++            : "implementation_commit_missing",
++        reason: implementation.reason,
++        journal: journalRef,
++        provider_episodes: 1,
++        executor_lifecycle_event_delta: eventDelta,
++      });
++    }
++    const commit = implementation.evidence.implementation_commit;
++    await cmdTaskSetStatus({
++      ctx: command,
++      cwd: checkout,
++      taskId: opts.input.task_id,
++      status: "DOING",
++      author: "SUPERVISOR",
++      body:
++        `Implementation committed: ${commit.slice(0, 12)}. ` +
++        "CLI recorded the observed branch EXECUTOR receipt and committed work-unit identity.",
++      commit,
++      force: false,
++      yes: false,
++      commitFromComment: true,
++      commitAllow: [],
++      commitAutoAllow: false,
++      commitAllowTasks: true,
++      commitRequireClean: false,
++      confirmStatusCommit: true,
++      quiet: true,
++    });
++    const refreshed = await opts.decide();
++    if (journal.status === "running" && journal.cursor.phase === "completed") {
++      journal = advanceSupervisorExecutionEpisodeState({
++        journal,
++        state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
++        route_observation: { step_id: refreshed.workflowStep.id },
++      });
++      await opened.store.write(journal);
++    }
++    return {
++      status: "completed",
++      decision: refreshed,
++      executor: {
++        ...observed.executor,
++        implementation_commit: commit,
++      },
++      journal: journalProjection(journal, opened.journal_path),
++      provider_episodes: 1,
++      lifecycle_calls: 1,
++      executor_lifecycle_event_delta: eventDelta,
++    };
++  } finally {
++    await lease.release();
++  }
++}
++
++async function executeBranchVerificationEpisode(opts: {
++  input: BranchTaskSupervisorOptions;
++  decision: TaskRouteDecision;
++  decide: () => Promise<TaskRouteDecision>;
++}): Promise<BranchEpisodeOutcome> {
++  const checkout = opts.decision.executionPacket.mustRunFrom;
++  if (!checkout) {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "route_refresh_failed",
++      reason: "The verification episode has no authoritative task worktree.",
++    });
++  }
++  const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
++  const task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
++  let passed = false;
++  let failureReason = "A declared branch_pr verification check failed.";
++  try {
++    const formal = await recordDirectTaskFormalOperation({
++      git_root: command.resolvedProject.gitRoot,
++      task_id: opts.input.task_id,
++      id: "task_verify",
++      decision: opts.decide,
++      run: async () => {
++        const checks = await runDirectTaskVerification({
++          command,
++          task,
++          task_id: opts.input.task_id,
++          cwd: checkout,
++        });
++        passed = checks.status === "passed";
++        failureReason = checks.reason ?? failureReason;
++        const exitCode = await cmdVerifyParsed({
++          ctx: command,
++          cwd: checkout,
++          taskId: opts.input.task_id,
++          state: passed ? "ok" : "needs_rework",
++          by: "SUPERVISOR",
++          note: passed
++            ? "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
++            : `Rework: ${failureReason}`,
++          details: checks.checks
++            .map((check, index) =>
++              [
++                `Command: ${check.command}`,
++                `Result: ${check.exit_code === 0 ? "pass" : "fail"}`,
++                `Evidence: ${checks.artifact_path}#check-${String(index + 1)}`,
++                `Scope: branch_pr task ${opts.input.task_id} declared verification`,
++              ].join("\n"),
++            )
++            .join("\n\n"),
++          localOnly: false,
++          repoFixable: !passed,
++          incidentTags: [],
++          incidentMatch: [],
++          quiet: true,
++        });
++        if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
++        await commitTaskArtifacts({
++          command,
++          cwd: checkout,
++          task_id: opts.input.task_id,
++          message: passed
++            ? `✅ ${opts.input.task_id} supervisor: record branch verification`
++            : `🧪 ${opts.input.task_id} supervisor: record verification rework`,
++        });
++        return {
++          verification: passed ? "ok" : "needs_rework",
++          declared_checks: checks.artifact_path,
++        };
++      },
++    });
++    const journal = journalProjection(formal.journal, formal.journal_path);
++    if (!passed) {
++      return stoppedEpisode({
++        decision: formal.decision,
++        code: "verification_failed",
++        reason: failureReason,
++        journal,
++        lifecycle_calls: 1,
++      });
++    }
++    return {
++      status: "completed",
++      decision: formal.decision,
++      journal,
++      provider_episodes: 0,
++      lifecycle_calls: 1,
++    };
++  } catch (error) {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "verification_failed",
++      reason:
++        "The CLI could not complete and commit the branch verification operation " +
++        `(${error instanceof Error ? error.name : "unknown_error"}).`,
++    });
++  }
++}
++
++async function executeBranchEvaluatorEpisode(opts: {
++  input: BranchTaskSupervisorOptions;
++  decision: TaskRouteDecision;
++  decide: () => Promise<TaskRouteDecision>;
++}): Promise<BranchEpisodeOutcome> {
++  const checkout = opts.decision.executionPacket.mustRunFrom;
++  if (!checkout) {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "route_refresh_failed",
++      reason: "The EVALUATOR episode has no authoritative task worktree.",
++    });
++  }
++  const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
++  const task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
++  let episode: Awaited<ReturnType<typeof runAndApplyDirectTaskEvaluator>>;
++  try {
++    episode = await runAndApplyDirectTaskEvaluator({
++      ctx: { cwd: checkout },
++      command,
++      task,
++      task_id: opts.input.task_id,
++      evaluator_id: "recovery-context",
++    });
++    await commitTaskArtifacts({
++      command,
++      cwd: checkout,
++      task_id: opts.input.task_id,
++      message: `🧭 ${opts.input.task_id} supervisor: record evaluator verdict`,
++    });
++  } catch (error) {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "evaluator_adapter_crash",
++      reason:
++        "The independent EVALUATOR did not produce and commit a typed verdict " +
++        `(${error instanceof Error ? error.name : "unknown_error"}).`,
++      provider_episodes: 1,
++    });
++  }
++  const refreshed = await opts.decide();
++  let journal: SupervisorExecutionEpisodeJournal = episode.execution.journal;
++  if (journal.status === "running" && journal.cursor.phase === "completed") {
++    journal = advanceSupervisorExecutionEpisodeState({
++      journal,
++      state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
++      route_observation: { step_id: refreshed.workflowStep.id },
++    });
++    await episode.execution.store.write(journal);
++  }
++  const evaluator = episode.result;
++  const journalRef = journalProjection(journal, episode.execution.store.path);
++  if (evaluator.verdict !== "pass") {
++    return stoppedEpisode({
++      decision: refreshed,
++      code:
++        evaluator.verdict === "rework"
++          ? "evaluator_rework"
++          : evaluator.verdict === "human_review"
++            ? "evaluator_human_review"
++            : "evaluator_blocked",
++      reason: `EVALUATOR returned ${evaluator.verdict}; no PR side effect was attempted.`,
++      evaluator,
++      journal: journalRef,
++      provider_episodes: 1,
++      lifecycle_calls: 1,
++    });
++  }
++  if (journal.status !== "running") {
++    return stoppedEpisode({
++      decision: refreshed,
++      code: "evaluator_human_review",
++      reason:
++        "EVALUATOR produced a verdict, but the supervisor journal stopped before route advancement.",
++      evaluator,
++      journal: journalRef,
++      provider_episodes: 1,
++      lifecycle_calls: 1,
++    });
++  }
++  return {
++    status: "completed",
++    decision: refreshed,
++    evaluator,
++    journal: journalRef,
++    provider_episodes: 1,
++    lifecycle_calls: 1,
++  };
++}
++
++export async function executeProductionBranchEpisode(opts: {
++  input: BranchTaskSupervisorOptions;
++  decision: TaskRouteDecision;
++  decide: () => Promise<TaskRouteDecision>;
++}): Promise<BranchEpisodeOutcome> {
++  const step = opts.decision.workflowStep;
++  if (step.kind !== "agent_episode") {
++    return stoppedEpisode({
++      decision: opts.decision,
++      code: "unsupported_agent_episode",
++      reason: "The branch episode executor received a non-agent route.",
++    });
++  }
++  if (step.episode.purpose === "verification") {
++    return await executeBranchVerificationEpisode(opts);
++  }
++  if (step.episode.purpose === "quality_review") {
++    return await executeBranchEvaluatorEpisode(opts);
++  }
++  if (
++    step.episode.purpose === "implementation" ||
++    step.episode.purpose === "implementation_rework"
++  ) {
++    return await executeBranchImplementationEpisode(opts);
++  }
++  return stoppedEpisode({
++    decision: opts.decision,
++    code: "unsupported_agent_episode",
++    reason:
++      "Task-worktree intent resolution remains a semantic human/CODER stop; the CLI will not guess which changes to keep.",
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+new file mode 100644
+index 000000000..63638ad8a
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -0,0 +1,278 @@
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import { cmdWorkStart } from "../branch/work-start.js";
++import { cmdCleanupMerged } from "../branch/cleanup-merged.js";
++import { cmdCommit } from "../guard/impl/commit.js";
++import {
++  makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler,
++  makeRunIntegrateQueueEnqueueHandler,
++} from "../integrate-queue.command.js";
++import { resolvePrFlowStatus } from "../pr/flow-status.js";
++import { cmdPrOpen } from "../pr/open.js";
++import { cmdPrUpdate } from "../pr/update.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
++import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
++import type { WorkflowOperation } from "../shared/workflow-step.js";
++import { cmdFinish } from "./finish-command.js";
++import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
++import { cmdTaskStartReady } from "./start-ready.js";
++
++function observedPostconditions(operation: WorkflowOperation): string[] {
++  return operation.expectedPostconditions
++    .map((postcondition) => postcondition.id)
++    .filter((id) => id !== "route_state_recomputed");
++}
++
++function succeeded(
++  operation: WorkflowOperation,
++  detail: string,
++  exitCode = 0,
++): WorkflowSupervisorOperationResult {
++  return {
++    status: exitCode === 0 ? "succeeded" : "failed",
++    observed_postconditions: exitCode === 0 ? observedPostconditions(operation) : [],
++    detail,
++    exit_code: exitCode,
++  };
++}
++
++function checkoutFor(decision: TaskRouteDecision): string {
++  const checkout = decision.executionPacket.mustRunFrom?.trim() ?? "";
++  if (!checkout) {
++    throw new Error(
++      `Branch task supervisor has no authoritative checkout for ${decision.workflowStep.id}.`,
++    );
++  }
++  return checkout;
++}
++
++/**
++ * Execute the existing lifecycle use cases in-process. The branch supervisor
++ * never spawns an AgentPlane subprocess and never parses rendered stdout.
++ */
++export async function executeBranchWorkflowOperation(opts: {
++  decision: TaskRouteDecision;
++  operation: WorkflowOperation;
++}): Promise<WorkflowSupervisorOperationResult> {
++  const cwd = checkoutFor(opts.decision);
++  const command = await loadCommandContext({ cwd, rootOverride: null });
++  const cliContext: CommandCtx = { cwd };
++  const { operation } = opts;
++  let exitCode: number;
++
++  switch (operation.id) {
++    case "worktree.prepare": {
++      exitCode = await cmdWorkStart({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++        agent: operation.params.agent,
++        slug: operation.params.slug,
++        worktree: true,
++        quiet: true,
++      });
++      return succeeded(
++        operation,
++        `prepared task worktree for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "task.branch.start":
++    case "task.start": {
++      exitCode = await cmdTaskStartReady({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++        author: operation.params.author,
++        body: operation.params.body,
++        force: false,
++        yes: false,
++        quiet: true,
++      });
++      return succeeded(operation, `recorded task start for ${operation.params.taskId}`, exitCode);
++    }
++    case "pr.artifacts.update":
++    case "pr.sync_or_verify": {
++      exitCode = await cmdPrUpdate({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++        includeTaskIds: [...operation.params.includeTaskIds],
++        silent: true,
++      });
++      return succeeded(
++        operation,
++        `synchronized PR artifacts for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "pr.open":
++    case "pr.head.publish": {
++      exitCode = await cmdPrOpen({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++        author: operation.params.author,
++        includeTaskIds: [...operation.params.includeTaskIds],
++        quiet: true,
++      });
++      return succeeded(operation, `published PR state for ${operation.params.taskId}`, exitCode);
++    }
++    case "provider.pr.refresh":
++    case "route.remote.refresh": {
++      await resolvePrFlowStatus({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++      });
++      exitCode = 0;
++      return succeeded(
++        operation,
++        `observed provider PR state for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "task.pre_merge_close": {
++      exitCode = await cmdFinish({
++        ctx: command,
++        cwd,
++        taskIds: [operation.params.taskId],
++        author: operation.params.author,
++        body: operation.params.body,
++        result: operation.params.result,
++        commit: operation.params.commit,
++        implementationCommit: operation.params.commit,
++        breaking: false,
++        force: operation.params.force,
++        yes: operation.params.force,
++        commitFromComment: false,
++        commitAllow: [],
++        commitAutoAllow: false,
++        commitAllowTasks: true,
++        commitRequireClean: false,
++        statusCommit: false,
++        statusCommitAllow: [],
++        statusCommitAutoAllow: false,
++        statusCommitRequireClean: false,
++        confirmStatusCommit: false,
++        preMergeClosure: true,
++        quiet: true,
++      });
++      return succeeded(
++        operation,
++        `recorded pre-merge closure for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "integration.enqueue": {
++      const handler = makeRunIntegrateQueueEnqueueHandler(() => Promise.resolve(command));
++      exitCode = await handler(cliContext, {
++        taskId: operation.params.taskId,
++        branch: operation.params.branch,
++        base: null,
++        priority: 0,
++        quiet: true,
++      });
++      return succeeded(
++        operation,
++        `enqueued exact task branch head for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "integration.adopt_legacy_protected_conflict": {
++      const handler = makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(() =>
++        Promise.resolve(command),
++      );
++      exitCode = await handler(cliContext, {
++        taskId: operation.params.taskId,
++        expectedAdoptionToken: operation.params.expectedAdoptionToken,
++        quiet: true,
++      });
++      return succeeded(
++        operation,
++        `recorded legacy protected-conflict receipt for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "task.hosted_close.open": {
++      const handler = makeRunTaskHostedClosePrHandler(() => Promise.resolve(command));
++      exitCode = await handler(cliContext, {
++        taskIds: [operation.params.taskId],
++        branch: null,
++        repo: null,
++        quiet: true,
++      });
++      return succeeded(operation, `opened hosted close for ${operation.params.taskId}`, exitCode);
++    }
++    case "task.hosted_close.finalize":
++    case "task.worktree.cleanup": {
++      exitCode = await cmdCleanupMerged({
++        ctx: command,
++        cwd,
++        base: operation.params.base,
++        yes: false,
++        archive: false,
++        deleteRemoteBranches: false,
++        finalize: true,
++        fetch: false,
++        quiet: true,
++        taskIds: [operation.params.taskId],
++      });
++      return succeeded(
++        operation,
++        `finalized base sync and task-owned cleanup for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "task.artifacts.commit": {
++      exitCode = await cmdCommit({
++        ctx: command,
++        cwd,
++        taskId: operation.params.taskId,
++        message: "",
++        close: true,
++        allow: [],
++        autoAllow: false,
++        allowTasks: true,
++        allowBase: false,
++        allowPolicy: false,
++        allowConfig: false,
++        allowHooks: false,
++        allowCI: false,
++        requireClean: false,
++        quiet: true,
++        closeUnstageOthers: true,
++        closeCheckOnly: false,
++      });
++      return succeeded(
++        operation,
++        `committed task artifacts for ${operation.params.taskId}`,
++        exitCode,
++      );
++    }
++    case "task.verify.show":
++    case "batch.collect_included":
++    case "batch.follow_primary": {
++      await loadTaskFromContext({ ctx: command, taskId: operation.params.taskId });
++      return succeeded(operation, `loaded task state for ${operation.params.taskId}`);
++    }
++    case "batch.reconcile_included": {
++      return {
++        status: "failed",
++        observed_postconditions: [],
++        detail:
++          "Included-batch reconciliation remains an explicit release operation outside the single-task branch supervisor.",
++        exit_code: 2,
++      };
++    }
++    case "runner.follow": {
++      return {
++        status: "failed",
++        observed_postconditions: [],
++        detail:
++          "branch_pr semantic episodes use the dedicated EXECUTOR boundary, not runner.follow route substitution",
++        exit_code: 2,
++      };
++    }
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+new file mode 100644
+index 000000000..365a39170
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.test.ts
+@@ -0,0 +1,640 @@
++import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
++import { mkGitRepoRoot } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { projectWorkflowOperationArgv } from "../shared/workflow-operation-projection.js";
++import {
++  WORKFLOW_OPERATION_REGISTRY,
++  workflowOperationMutatesState,
++  type WorkflowOperation,
++  type WorkflowOperationId,
++  type WorkflowOperationParams,
++} from "../shared/workflow-step.js";
++import {
++  superviseBranchTaskRunWithPorts,
++  type BranchTaskSupervisorPorts,
++} from "./branch-task-supervisor.js";
++
++const taskId = "202607310001-BRANCH";
++const branch = `task/${taskId}/branch-supervisor`;
++
++function fingerprint(revision: number) {
++  const component = {
++    state: "present",
++    source: "branch_task_supervisor_test",
++    value: { taskId, revision },
++  } as const;
++  return buildStateFingerprint({
++    task_id: taskId,
++    task_revision: revision,
++    git_head: String(revision).padStart(40, "0"),
++    worktree: "/repo/task",
++    components: {
++      task: component,
++      git: component,
++      backend_projection: component,
++      policy: component,
++      blueprint: component,
++      knowledge: component,
++      provider: component,
++      authority: component,
++    },
++  });
++}
++
++function baseDecision(revision: number) {
++  return {
++    task: {
++      id: taskId,
++      title: "Branch supervisor fixture",
++      status: "DOING",
++      owner: "CODER",
++      planApproval: "approved",
++      verification: null,
++      commit: null,
++    },
++    workflowMode: "branch_pr",
++    workspace: {
++      root: "/repo",
++      branch,
++      baseBranch: "main",
++      headSha: String(revision).padStart(40, "0"),
++      prBranch: branch,
++      checkoutRole: "task_worktree",
++      baseCheckoutPath: "/repo",
++      taskWorktreePath: "/repo/task",
++    },
++    approval: {
++      runtime: { requirePlan: true, requireNetwork: true, requireVerify: true },
++      gatewayMutationApprovalRequired: true,
++      effectiveMutationApprovalRequired: false,
++      routeRequiresApproval: false,
++    },
++    batchOwnership: { role: "none" },
++    prFlow: {
++      branch: {
++        name: branch,
++        headSha: String(revision).padStart(40, "0"),
++        metaHeadSha: String(revision).padStart(40, "0"),
++      },
++      pr: {
++        provider: "github",
++        state: "OPEN",
++        source: "lookup",
++        prNumber: 4702,
++        prUrl: "https://github.test/pull/4702",
++        base: "main",
++        headSha: String(revision).padStart(40, "0"),
++        mergeCommit: null,
++      },
++      hostedChecks: { state: "success" },
++      queue: { present: false },
++      closeTail: { state: "not_applicable", reason: "implementation PR is open" },
++    },
++    conflictRework: null,
++    cleanupProbe: { state: "not_requested" },
++    cleanupCandidateCount: null,
++    blockers: [],
++    ambiguities: [],
++    repairPlan: [],
++    sourceConfidence: {},
++  } as unknown as TaskRouteDecision;
++}
++
++function cliDecision<Id extends WorkflowOperationId>(
++  revision: number,
++  id: Id,
++  params: WorkflowOperationParams[Id],
++): TaskRouteDecision {
++  const decision = baseDecision(revision);
++  const stateFingerprint = fingerprint(revision);
++  const spec = WORKFLOW_OPERATION_REGISTRY[id];
++  const operation = {
++    id,
++    type: spec.type,
++    params,
++    preconditionFingerprint: stateFingerprint,
++    authorityRef: `authority:${id}:${revision}`,
++    idempotencyKey: `${id}:${taskId}:${stateFingerprint.digest}`,
++    expectedPostconditions: spec.expectedPostconditions,
++    triggersGitHooks: spec.triggersGitHooks,
++  } as WorkflowOperation;
++  decision.workflowStep = {
++    schemaVersion: 1,
++    id,
++    kind: "cli_operation",
++    phase: spec.phase,
++    authoritativeCheckout: spec.checkout,
++    summary: `execute ${id}`,
++    blockers: [],
++    selectedBlocker: null,
++    compatibility: {
++      code: id,
++      command: null,
++      summary: `execute ${id}`,
++      requiresApproval: false,
++    },
++    preconditionFingerprint: stateFingerprint,
++    operation,
++    execution: {
++      actionKind: "local_command",
++      recommendedRole: spec.role,
++      semanticMutationAllowed: false,
++      mustNot: [],
++      returnControlWhen: "after refresh",
++      verificationCandidate: null,
++      evidenceMissing: [],
++      needsVerificationRecord: false,
++    },
++  };
++  decision.executionPacket = {
++    schemaVersion: 1,
++    actionKind: "local_command",
++    safeToMutate: workflowOperationMutatesState(operation),
++    requiresProviderAction: false,
++    recommendedRole: spec.role,
++    authoritativeCheckout: spec.checkout,
++    authoritativeCheckoutPath: spec.checkout === "base_checkout" ? "/repo" : "/repo/task",
++    mutationPathHint: workflowOperationMutatesState(operation)
++      ? spec.checkout === "base_checkout"
++        ? "/repo"
++        : "/repo/task"
++      : null,
++    mustRunFrom: spec.checkout === "base_checkout" ? "/repo" : "/repo/task",
++    exactArgv: projectWorkflowOperationArgv(operation),
++    mustNot: [],
++    returnControlWhen: "after refresh",
++    humanProviderAction: null,
++    staleStateCheck: `agentplane task next-action ${taskId} --explain`,
++    evidenceMissing: [],
++    verificationCandidate: null,
++    stopReason: null,
++  };
++  return decision;
++}
++
++function agentDecision(
++  revision: number,
++  purpose: "implementation" | "implementation_rework" | "verification" | "quality_review",
++): TaskRouteDecision {
++  const decision = baseDecision(revision);
++  const stateFingerprint = fingerprint(revision);
++  decision.workflowStep = {
++    schemaVersion: 1,
++    id: `agent.${purpose}`,
++    kind: "agent_episode",
++    phase: purpose,
++    authoritativeCheckout: "task_worktree",
++    summary: `run ${purpose}`,
++    blockers: [],
++    selectedBlocker: null,
++    compatibility: {
++      code: purpose,
++      command: null,
++      summary: `run ${purpose}`,
++      requiresApproval: false,
++    },
++    preconditionFingerprint: stateFingerprint,
++    episode: {
++      purpose,
++      role:
++        purpose === "quality_review"
++          ? "EVALUATOR"
++          : purpose === "verification"
++            ? "TESTER"
++            : "CODER",
++      taskId,
++      objective: `complete ${purpose}`,
++    },
++    execution: {
++      actionKind: "stop",
++      recommendedRole:
++        purpose === "quality_review"
++          ? "EVALUATOR"
++          : purpose === "verification"
++            ? "TESTER"
++            : "CODER",
++      semanticMutationAllowed: purpose === "implementation" || purpose === "implementation_rework",
++      mustNot: [],
++      returnControlWhen: "after episode",
++      verificationCandidate: null,
++      evidenceMissing: [],
++      needsVerificationRecord: purpose === "verification",
++    },
++  };
++  decision.executionPacket = {
++    schemaVersion: 1,
++    actionKind: "stop",
++    safeToMutate: purpose === "implementation" || purpose === "implementation_rework",
++    requiresProviderAction: false,
++    recommendedRole:
++      purpose === "quality_review" ? "EVALUATOR" : purpose === "verification" ? "TESTER" : "CODER",
++    authoritativeCheckout: "task_worktree",
++    authoritativeCheckoutPath: "/repo/task",
++    mutationPathHint:
++      purpose === "implementation" || purpose === "implementation_rework" ? "/repo/task" : null,
++    mustRunFrom: "/repo/task",
++    exactArgv: null,
++    mustNot: [],
++    returnControlWhen: "after episode",
++    humanProviderAction: null,
++    staleStateCheck: `agentplane task next-action ${taskId} --explain`,
++    evidenceMissing: [],
++    verificationCandidate: null,
++    stopReason: null,
++  };
++  return decision;
++}
++
++function stopDecision(revision: number, kind: "approval" | "wait" | "terminal"): TaskRouteDecision {
++  const decision = baseDecision(revision);
++  const stateFingerprint = fingerprint(revision);
++  decision.workflowStep =
++    kind === "approval"
++      ? ({
++          schemaVersion: 1,
++          id: "approval.integration.enqueue",
++          kind,
++          phase: "side_effect_authority_required",
++          authoritativeCheckout: "task_worktree",
++          summary: "merge authority is required",
++          blockers: [],
++          selectedBlocker: null,
++          compatibility: {
++            code: "wait_hosted_checks",
++            command: "agentplane task authority grant",
++            summary: "grant authority",
++            requiresApproval: true,
++          },
++          preconditionFingerprint: stateFingerprint,
++          request: {
++            type: "side_effect",
++            taskId,
++            authorityRef: `route:${stateFingerprint.digest}`,
++            operationId: "integration.enqueue",
++            operation: {
++              id: "integration.enqueue",
++              type: "integration_enqueue",
++              params: { taskId, branch },
++            },
++            operationDigest: stateFingerprint.digest,
++            stateFingerprintDigest: stateFingerprint.digest,
++            stateScopeDigest: stateFingerprint.digest,
++            policyRule: "workflow.external_high_risk",
++          },
++          execution: {
++            actionKind: "provider_action",
++            recommendedRole: "USER",
++            semanticMutationAllowed: false,
++            mustNot: [],
++            returnControlWhen: "after approval",
++            verificationCandidate: null,
++            evidenceMissing: [],
++            needsVerificationRecord: false,
++          },
++        } as TaskRouteDecision["workflowStep"])
++      : kind === "wait"
++        ? ({
++            schemaVersion: 1,
++            id: "wait.runner",
++            kind,
++            phase: "provider_wait",
++            authoritativeCheckout: "base_checkout",
++            summary: "wait for hosted merge truth",
++            blockers: [],
++            selectedBlocker: null,
++            compatibility: {
++              code: "wait_hosted_checks",
++              command: null,
++              summary: "wait",
++              requiresApproval: false,
++            },
++            preconditionFingerprint: stateFingerprint,
++            condition: { type: "runner_terminal", taskId, runId: null },
++            execution: {
++              actionKind: "wait",
++              recommendedRole: "INTEGRATOR",
++              semanticMutationAllowed: false,
++              mustNot: [],
++              returnControlWhen: "after provider changes",
++              verificationCandidate: null,
++              evidenceMissing: [],
++              needsVerificationRecord: false,
++            },
++          } as TaskRouteDecision["workflowStep"])
++        : ({
++            schemaVersion: 1,
++            id: "terminal.done",
++            kind,
++            phase: "done",
++            authoritativeCheckout: "base_checkout",
++            summary: "task is done",
++            blockers: [],
++            selectedBlocker: null,
++            compatibility: {
++              code: "done",
++              command: null,
++              summary: "done",
++              requiresApproval: false,
++            },
++            preconditionFingerprint: stateFingerprint,
++            outcome: { type: "done", taskId },
++            execution: {
++              actionKind: "stop",
++              recommendedRole: "INTEGRATOR",
++              semanticMutationAllowed: false,
++              mustNot: [],
++              returnControlWhen: "terminal",
++              verificationCandidate: null,
++              evidenceMissing: [],
++              needsVerificationRecord: false,
++            },
++          } as TaskRouteDecision["workflowStep"]);
++  return decision;
++}
++
++function terminalAttentionDecision(revision: number): TaskRouteDecision {
++  const decision = stopDecision(revision, "terminal");
++  if (decision.workflowStep.kind !== "terminal") {
++    throw new Error("terminal fixture must be terminal");
++  }
++  decision.workflowStep = {
++    ...decision.workflowStep,
++    id: "terminal.deleted_branch",
++    phase: "attention_required",
++    summary: "provider branch was deleted before hosted close",
++    outcome: { type: "attention_required", taskId },
++  };
++  return decision;
++}
++
++function sequencePorts(
++  gitRoot: string,
++  decisions: TaskRouteDecision[],
++  calls: string[],
++): BranchTaskSupervisorPorts {
++  let index = 0;
++  return {
++    git_root: gitRoot,
++    task_id: taskId,
++    decide: () => Promise.resolve(decisions[Math.min(index, decisions.length - 1)]!),
++    execute_operation: ({ operation }) => {
++      calls.push(operation.id);
++      index += 1;
++      return Promise.resolve({
++        status: "succeeded",
++        observed_postconditions: operation.expectedPostconditions
++          .map((postcondition) => postcondition.id)
++          .filter((id) => id !== "route_state_recomputed"),
++        detail: `executed ${operation.id}`,
++        exit_code: 0,
++      });
++    },
++    execute_episode: ({ decision }) => {
++      calls.push(decision.workflowStep.id);
++      index += 1;
++      const purpose =
++        decision.workflowStep.kind === "agent_episode"
++          ? decision.workflowStep.episode.purpose
++          : "implementation";
++      return Promise.resolve({
++        status: "completed",
++        decision: decisions[Math.min(index, decisions.length - 1)]!,
++        ...(purpose === "implementation" || purpose === "implementation_rework"
++          ? {
++              executor: {
++                run_id: "run-branch-golden",
++                receipt: {
++                  path: "agentplane-run://branch/receipt.json",
++                  sha256: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++                  verification_state: "observed_success" as const,
++                  observed_by: "agentplane",
++                },
++                semantic_status: "completed" as const,
++                implementation_commit: "a".repeat(40),
++              },
++              executor_lifecycle_event_delta: 0,
++            }
++          : {}),
++        ...(purpose === "quality_review"
++          ? {
++              evaluator: {
++                evaluator_id: "recovery-context",
++                verdict: "pass" as const,
++                result_path: "quality/result.json",
++                report_path: "quality/report.json",
++                receipt_path: "quality/evaluator-episode.json",
++              },
++            }
++          : {}),
++        journal: null,
++        provider_episodes: purpose === "verification" ? 0 : 1,
++        lifecycle_calls: 1,
++      });
++    },
++  };
++}
++
++describe("branch_pr task supervisor", () => {
++  it("runs semantic roles, opens one PR, enqueues one exact head, then stops on provider wait", async () => {
++    const root = await mkGitRepoRoot();
++    const decisions = [
++      agentDecision(1, "implementation"),
++      agentDecision(2, "verification"),
++      agentDecision(3, "quality_review"),
++      cliDecision(4, "pr.open", { taskId, author: "CODER", includeTaskIds: [] }),
++      cliDecision(5, "integration.enqueue", { taskId, branch }),
++      stopDecision(6, "wait"),
++    ];
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(sequencePorts(root, decisions, calls));
++
++    expect(result.status).toBe("stopped");
++    expect(result.stop?.code).toBe("wait_required");
++    expect(calls).toEqual([
++      "agent.implementation",
++      "agent.verification",
++      "agent.quality_review",
++      "pr.open",
++      "integration.enqueue",
++    ]);
++    expect(result.executor).toMatchObject({
++      implementation_commit: "a".repeat(40),
++      semantic_status: "completed",
++    });
++    expect(result.metrics.executor_lifecycle_event_delta).toBe(0);
++    expect(result.operation_receipts).toHaveLength(2);
++    expect(result.operation_receipts[0]).toMatchObject({
++      operation_id: "pr.open",
++      provider: { state: "OPEN", pr_number: 4702 },
++    });
++    expect(result.operation_receipts[1]).toMatchObject({
++      operation_id: "integration.enqueue",
++      branch,
++      task_head_sha: String(6).padStart(40, "0"),
++    });
++  });
++
++  it("returns merge authority to the user without imitating a provider action", async () => {
++    const root = await mkGitRepoRoot();
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(
++      sequencePorts(root, [stopDecision(1, "approval")], calls),
++    );
++
++    expect(result.stop?.code).toBe("approval_required");
++    expect(result.operation_receipts).toEqual([]);
++    expect(calls).toEqual([]);
++  });
++
++  it("finalizes only from explicit terminal provider and cleanup truth", async () => {
++    const root = await mkGitRepoRoot();
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(
++      sequencePorts(root, [stopDecision(1, "terminal")], calls),
++    );
++
++    expect(result).toMatchObject({
++      status: "finalized",
++      stop: null,
++      route: { step_id: "terminal.done" },
++    });
++    expect(calls).toEqual([]);
++  });
++
++  it("maps late checks to a typed wait without provider or lifecycle calls", async () => {
++    const root = await mkGitRepoRoot();
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(
++      sequencePorts(root, [stopDecision(1, "wait")], calls),
++    );
++
++    expect(result.stop).toMatchObject({
++      code: "wait_required",
++      route_step_id: "wait.runner",
++    });
++    expect(result.metrics).toMatchObject({ lifecycle_calls: 0, provider_episodes: 0 });
++    expect(calls).toEqual([]);
++  });
++
++  it("delegates stale-head or merge-conflict repair to one semantic rework episode", async () => {
++    const root = await mkGitRepoRoot();
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(
++      sequencePorts(
++        root,
++        [agentDecision(1, "implementation_rework"), stopDecision(2, "wait")],
++        calls,
++      ),
++    );
++
++    expect(result.stop?.code).toBe("wait_required");
++    expect(result.executor?.semantic_status).toBe("completed");
++    expect(result.metrics).toMatchObject({
++      lifecycle_calls: 1,
++      provider_episodes: 1,
++      executor_lifecycle_event_delta: 0,
++    });
++    expect(calls).toEqual(["agent.implementation_rework"]);
++  });
++
++  it("returns deleted provider branch truth as terminal attention", async () => {
++    const root = await mkGitRepoRoot();
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(
++      sequencePorts(root, [terminalAttentionDecision(1)], calls),
++    );
++
++    expect(result.status).toBe("stopped");
++    expect(result.stop).toMatchObject({
++      code: "terminal_attention",
++      route_step_id: "terminal.deleted_branch",
++    });
++    expect(calls).toEqual([]);
++  });
++
++  it("stops queue contention after one durable operation intent", async () => {
++    const root = await mkGitRepoRoot();
++    const calls: string[] = [];
++    const ports = sequencePorts(
++      root,
++      [cliDecision(1, "integration.enqueue", { taskId, branch }), stopDecision(2, "wait")],
++      calls,
++    );
++    ports.execute_operation = ({ operation }) => {
++      calls.push(operation.id);
++      throw new Error("queue_contention");
++    };
++    const result = await superviseBranchTaskRunWithPorts(ports);
++
++    expect(result.stop).toMatchObject({
++      code: "operation_failed",
++      operation_id: "integration.enqueue",
++    });
++    expect(result.operation_receipts).toEqual([]);
++    expect(calls).toEqual(["integration.enqueue"]);
++  });
++
++  it("does not replay a completed hosted-close side effect on supervisor restart", async () => {
++    const root = await mkGitRepoRoot();
++    const decision = cliDecision(1, "task.hosted_close.open", { taskId });
++    const firstCalls: string[] = [];
++    const first = await superviseBranchTaskRunWithPorts(
++      sequencePorts(root, [decision, stopDecision(2, "wait")], firstCalls),
++    );
++    const retryCalls: string[] = [];
++    const retry = await superviseBranchTaskRunWithPorts(
++      sequencePorts(root, [decision, stopDecision(2, "wait")], retryCalls),
++    );
++
++    expect(first.operation_receipts).toHaveLength(1);
++    expect(firstCalls).toEqual(["task.hosted_close.open"]);
++    expect(retry.stop?.code).toBe("supervisor_stopped");
++    expect(retryCalls).toEqual([]);
++  });
++
++  it("records merged provider truth and the final main head in cleanup receipts", async () => {
++    const root = await mkGitRepoRoot();
++    const terminal = stopDecision(2, "terminal");
++    const mainHead = "f".repeat(40);
++    const mergeCommit = "e".repeat(40);
++    terminal.workspace.headSha = mainHead;
++    if (terminal.prFlow) {
++      terminal.prFlow.pr = {
++        provider: "github",
++        state: "MERGED",
++        source: "lookup",
++        prNumber: 4702,
++        prUrl: "https://github.test/pull/4702",
++        base: "main",
++        headSha: String(1).padStart(40, "0"),
++        mergeCommit,
++      };
++      terminal.prFlow.closeTail = {
++        state: "satisfied",
++        reason: "hosted close and cleanup completed",
++      };
++    }
++    const calls: string[] = [];
++    const result = await superviseBranchTaskRunWithPorts(
++      sequencePorts(
++        root,
++        [cliDecision(1, "task.hosted_close.finalize", { taskId, base: "main" }), terminal],
++        calls,
++      ),
++    );
++
++    expect(result.status).toBe("finalized");
++    expect(result.operation_receipts[0]).toMatchObject({
++      operation_id: "task.hosted_close.finalize",
++      base_head_sha: mainHead,
++      provider: {
++        state: "MERGED",
++        pr_number: 4702,
++        merge_commit: mergeCommit,
++        close_tail_state: "satisfied",
++      },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor.ts b/packages/agentplane/src/commands/task/branch-task-supervisor.ts
+new file mode 100644
+index 000000000..741b04d93
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor.ts
+@@ -0,0 +1,465 @@
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
++import { CliError } from "../../shared/errors.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
++import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
++import type { WorkflowOperation } from "../shared/workflow-step.js";
++import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
++import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
++import type { JournalProjection } from "./direct-task-supervisor-result.js";
++import { journalProjection } from "./direct-task-supervisor-result.js";
++
++const BRANCH_TASK_SUPERVISION_SCHEMA = "agentplane.branch_pr_task_supervision.v1" as const;
++const MAX_BRANCH_SUPERVISOR_STEPS = 32;
++
++export type BranchTaskSupervisorStopCode =
++  | "approval_required"
++  | "human_input_required"
++  | "wait_required"
++  | "terminal_attention"
++  | "step_budget_exhausted"
++  | "unsupported_agent_episode"
++  | "operation_failed"
++  | "route_refresh_failed"
++  | "supervisor_stopped"
++  | "executor_adapter_crash"
++  | "runner_failed"
++  | "runner_receipt_unobserved"
++  | "executor_result_missing"
++  | "executor_blocked"
++  | "missing_knowledge"
++  | "executor_semantic_failed"
++  | "executor_lifecycle_mutation"
++  | "implementation_scope_violation"
++  | "implementation_commit_missing"
++  | "verification_failed"
++  | "evaluator_rework"
++  | "evaluator_human_review"
++  | "evaluator_blocked"
++  | "evaluator_adapter_crash";
++
++type BranchTaskSupervisorStop = {
++  code: BranchTaskSupervisorStopCode;
++  reason: string;
++  route_step_id: string;
++  operation_id: string | null;
++};
++
++type BranchWorkflowOperationReceipt = {
++  schema: "agentplane.branch_pr_operation_receipt.v1";
++  sequence: number;
++  operation_id: WorkflowOperation["id"];
++  idempotency_key: string;
++  before_fingerprint: string;
++  after_fingerprint: string;
++  checkout: string | null;
++  branch: string | null;
++  task_head_sha: string | null;
++  base_head_sha: string | null;
++  provider: {
++    source: string | null;
++    state: string | null;
++    pr_number: number | null;
++    head_sha: string | null;
++    merge_commit: string | null;
++    hosted_checks_state: string | null;
++    queue_status: string | null;
++    close_tail_state: string | null;
++  };
++};
++
++export type BranchExecutorEvidence = {
++  run_id: string;
++  receipt: NonNullable<NonNullable<TaskRunnerLifecycleResult["result"]>["execution_receipt"]>;
++  semantic_status: "completed";
++  implementation_commit: string;
++};
++
++export type BranchEvaluatorEvidence = {
++  evaluator_id: string;
++  verdict: "pass" | "rework" | "blocked" | "human_review";
++  result_path: string;
++  report_path: string;
++  receipt_path: string;
++};
++
++export type BranchTaskSupervisorResult = {
++  schema: typeof BRANCH_TASK_SUPERVISION_SCHEMA;
++  task_id: string;
++  workflow_mode: "branch_pr";
++  status: "finalized" | "stopped";
++  phase: string;
++  route: { step_id: string; code: string };
++  stop: BranchTaskSupervisorStop | null;
++  executor: BranchExecutorEvidence | null;
++  evaluator: BranchEvaluatorEvidence | null;
++  journal: JournalProjection | null;
++  operation_receipts: readonly BranchWorkflowOperationReceipt[];
++  metrics: {
++    lifecycle_calls: number;
++    provider_episodes: number;
++    executor_lifecycle_event_delta: number | null;
++  };
++};
++
++export type BranchEpisodeOutcome =
++  | {
++      status: "completed";
++      decision: TaskRouteDecision;
++      executor?: BranchExecutorEvidence;
++      evaluator?: BranchEvaluatorEvidence;
++      journal: JournalProjection | null;
++      provider_episodes: number;
++      lifecycle_calls: number;
++      executor_lifecycle_event_delta?: number | null;
++    }
++  | {
++      status: "stopped";
++      decision: TaskRouteDecision;
++      stop: BranchTaskSupervisorStop;
++      executor?: BranchExecutorEvidence;
++      evaluator?: BranchEvaluatorEvidence;
++      journal: JournalProjection | null;
++      provider_episodes: number;
++      lifecycle_calls: number;
++      executor_lifecycle_event_delta?: number | null;
++    };
++
++export type BranchTaskSupervisorPorts = {
++  git_root: string;
++  task_id: string;
++  decide: () => Promise<TaskRouteDecision>;
++  execute_operation: (opts: {
++    decision: TaskRouteDecision;
++    operation: WorkflowOperation;
++  }) => Promise<WorkflowSupervisorOperationResult>;
++  execute_episode: (opts: {
++    decision: TaskRouteDecision;
++    decide: () => Promise<TaskRouteDecision>;
++  }) => Promise<BranchEpisodeOutcome>;
++};
++
++export type BranchTaskSupervisorOptions = {
++  ctx: CommandCtx;
++  command: CommandContext;
++  task_id: string;
++  sandbox_override?: string;
++  danger_authority?: {
++    danger_full_access_authorized: true;
++    provenance: "explicit_operator";
++    source: string;
++  } | null;
++};
++
++type Progress = {
++  receipts: BranchWorkflowOperationReceipt[];
++  executor: BranchExecutorEvidence | null;
++  evaluator: BranchEvaluatorEvidence | null;
++  journal: JournalProjection | null;
++  lifecycle_calls: number;
++  provider_episodes: number;
++  executor_lifecycle_event_delta: number | null;
++};
++
++function routeCode(decision: TaskRouteDecision): string {
++  return decision.workflowStep.compatibility.code;
++}
++
++function operationId(decision: TaskRouteDecision): WorkflowOperation["id"] | null {
++  return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
++}
++
++function stopResult(
++  decision: TaskRouteDecision,
++  stop: BranchTaskSupervisorStop,
++  progress: Progress,
++): BranchTaskSupervisorResult {
++  return {
++    schema: BRANCH_TASK_SUPERVISION_SCHEMA,
++    task_id: decision.task.id,
++    workflow_mode: "branch_pr",
++    status: "stopped",
++    phase: decision.workflowStep.phase,
++    route: { step_id: decision.workflowStep.id, code: routeCode(decision) },
++    stop,
++    executor: progress.executor,
++    evaluator: progress.evaluator,
++    journal: progress.journal,
++    operation_receipts: progress.receipts,
++    metrics: {
++      lifecycle_calls: progress.lifecycle_calls,
++      provider_episodes: progress.provider_episodes,
++      executor_lifecycle_event_delta: progress.executor_lifecycle_event_delta,
++    },
++  };
++}
++
++function routeStop(decision: TaskRouteDecision): BranchTaskSupervisorStop {
++  const step = decision.workflowStep;
++  const code: BranchTaskSupervisorStopCode =
++    step.kind === "approval"
++      ? "approval_required"
++      : step.kind === "wait"
++        ? "wait_required"
++        : step.kind === "human_input"
++          ? "human_input_required"
++          : "terminal_attention";
++  return {
++    code,
++    reason: step.summary,
++    route_step_id: step.id,
++    operation_id: operationId(decision),
++  };
++}
++
++function hostedChecksState(decision: TaskRouteDecision): string | null {
++  const hosted = decision.prFlow?.hostedChecks;
++  if (!hosted) return null;
++  if ("state" in hosted && typeof hosted.state === "string") return hosted.state;
++  if ("status" in hosted && typeof hosted.status === "string") return hosted.status;
++  return null;
++}
++
++function operationReceipt(opts: {
++  sequence: number;
++  operation: WorkflowOperation;
++  before: TaskRouteDecision;
++  after: TaskRouteDecision;
++}): BranchWorkflowOperationReceipt {
++  const pr = opts.after.prFlow?.pr;
++  return {
++    schema: "agentplane.branch_pr_operation_receipt.v1",
++    sequence: opts.sequence,
++    operation_id: opts.operation.id,
++    idempotency_key: opts.operation.idempotencyKey,
++    before_fingerprint: opts.before.workflowStep.preconditionFingerprint.digest,
++    after_fingerprint: opts.after.workflowStep.preconditionFingerprint.digest,
++    checkout: opts.before.executionPacket.mustRunFrom,
++    branch: opts.after.prFlow?.branch.name ?? opts.after.workspace.prBranch,
++    task_head_sha: opts.after.prFlow?.branch.headSha ?? null,
++    base_head_sha: opts.after.workspace.headSha,
++    provider: {
++      source: pr && "source" in pr ? pr.source : null,
++      state: pr?.state ?? null,
++      pr_number: pr && "prNumber" in pr ? pr.prNumber : null,
++      head_sha: pr && "headSha" in pr ? pr.headSha : null,
++      merge_commit: pr && "mergeCommit" in pr ? pr.mergeCommit : null,
++      hosted_checks_state: hostedChecksState(opts.after),
++      queue_status:
++        opts.after.prFlow?.queue.present === true ? opts.after.prFlow.queue.status : null,
++      close_tail_state: opts.after.prFlow?.closeTail.state ?? null,
++    },
++  };
++}
++
++function finalizedResult(
++  decision: TaskRouteDecision,
++  progress: Progress,
++): BranchTaskSupervisorResult {
++  return {
++    schema: BRANCH_TASK_SUPERVISION_SCHEMA,
++    task_id: decision.task.id,
++    workflow_mode: "branch_pr",
++    status: "finalized",
++    phase: decision.workflowStep.phase,
++    route: { step_id: decision.workflowStep.id, code: routeCode(decision) },
++    stop: null,
++    executor: progress.executor,
++    evaluator: progress.evaluator,
++    journal: progress.journal,
++    operation_receipts: progress.receipts,
++    metrics: {
++      lifecycle_calls: progress.lifecycle_calls,
++      provider_episodes: progress.provider_episodes,
++      executor_lifecycle_event_delta: progress.executor_lifecycle_event_delta,
++    },
++  };
++}
++
++async function executeOperation(opts: {
++  ports: BranchTaskSupervisorPorts;
++  current: TaskRouteDecision;
++  progress: Progress;
++}): Promise<{ decision: TaskRouteDecision } | { result: BranchTaskSupervisorResult }> {
++  const step = opts.current.workflowStep;
++  if (step.kind !== "cli_operation") {
++    throw new Error("executeOperation requires a cli_operation route.");
++  }
++  const before = opts.current;
++  let persisted: Awaited<ReturnType<typeof supervisePersistedWorkflowEpisode>>;
++  try {
++    persisted = await supervisePersistedWorkflowEpisode({
++      decision: before,
++      git_root: opts.ports.git_root,
++      task_revision: null,
++      execute: async ({ operation }) =>
++        await opts.ports.execute_operation({ decision: before, operation }),
++      refresh: opts.ports.decide,
++    });
++  } catch (error) {
++    return {
++      result: stopResult(
++        before,
++        {
++          code: "operation_failed",
++          reason:
++            "The typed branch_pr operation failed after its durable intent was recorded " +
++            `(${error instanceof Error ? error.name : "unknown_error"}).`,
++          route_step_id: step.id,
++          operation_id: step.operation.id,
++        },
++        opts.progress,
++      ),
++    };
++  }
++  opts.progress.journal = journalProjection(persisted.journal, persisted.journal_path);
++  if (
++    persisted.execution.executable &&
++    (persisted.execution.result?.status === "failed" || persisted.execution.stop_reason !== null)
++  ) {
++    return {
++      result: stopResult(
++        before,
++        {
++          code: "operation_failed",
++          reason:
++            persisted.execution.result?.detail ??
++            persisted.execution.stop_reason ??
++            "The typed branch operation failed.",
++          route_step_id: step.id,
++          operation_id: step.operation.id,
++        },
++        opts.progress,
++      ),
++    };
++  }
++  if (!persisted.execution.executable || !persisted.execution.refreshed_decision) {
++    const code = persisted.execution.executable ? "route_refresh_failed" : "supervisor_stopped";
++    return {
++      result: stopResult(
++        before,
++        {
++          code,
++          reason:
++            persisted.execution.stop_reason ??
++            (code === "route_refresh_failed"
++              ? "The branch supervisor could not refresh route truth after the operation."
++              : "The shared workflow supervisor rejected the branch operation."),
++          route_step_id: step.id,
++          operation_id: step.operation.id,
++        },
++        opts.progress,
++      ),
++    };
++  }
++  const after = persisted.execution.refreshed_decision;
++  opts.progress.lifecycle_calls += 1;
++  opts.progress.receipts.push(
++    operationReceipt({
++      sequence: opts.progress.receipts.length + 1,
++      operation: step.operation,
++      before,
++      after,
++    }),
++  );
++  return { decision: after };
++}
++
++/**
++ * Bounded decide/execute/refresh loop for branch_pr. Semantic work remains in
++ * role-specific episode ports; mechanical operations use durable idempotency.
++ */
++export async function superviseBranchTaskRunWithPorts(
++  ports: BranchTaskSupervisorPorts,
++): Promise<BranchTaskSupervisorResult> {
++  let current = await ports.decide();
++  if (current.workflowMode !== "branch_pr") {
++    throw new CliError({
++      code: "E_USAGE",
++      message: "Branch task supervision requires workflow.mode=branch_pr.",
++    });
++  }
++  const progress: Progress = {
++    receipts: [],
++    executor: null,
++    evaluator: null,
++    journal: null,
++    lifecycle_calls: 0,
++    provider_episodes: 0,
++    executor_lifecycle_event_delta: null,
++  };
++
++  for (let stepCount = 0; stepCount < MAX_BRANCH_SUPERVISOR_STEPS; stepCount += 1) {
++    const step = current.workflowStep;
++    if (step.kind === "cli_operation") {
++      const outcome = await executeOperation({ ports, current, progress });
++      if ("result" in outcome) return outcome.result;
++      current = outcome.decision;
++      continue;
++    }
++    if (step.kind === "agent_episode") {
++      const outcome = await ports.execute_episode({ decision: current, decide: ports.decide });
++      current = outcome.decision;
++      progress.journal = outcome.journal ?? progress.journal;
++      progress.lifecycle_calls += outcome.lifecycle_calls;
++      progress.provider_episodes += outcome.provider_episodes;
++      progress.executor = outcome.executor ?? progress.executor;
++      progress.evaluator = outcome.evaluator ?? progress.evaluator;
++      progress.executor_lifecycle_event_delta =
++        outcome.executor_lifecycle_event_delta ?? progress.executor_lifecycle_event_delta;
++      if (outcome.status === "stopped") {
++        return stopResult(current, outcome.stop, progress);
++      }
++      continue;
++    }
++    if (
++      step.kind === "terminal" &&
++      (step.outcome.type === "done" || step.outcome.type === "superseded")
++    ) {
++      return finalizedResult(current, progress);
++    }
++    return stopResult(current, routeStop(current), progress);
++  }
++
++  return stopResult(
++    current,
++    {
++      code: "step_budget_exhausted",
++      reason: `Branch supervisor exceeded ${MAX_BRANCH_SUPERVISOR_STEPS} route steps.`,
++      route_step_id: current.workflowStep.id,
++      operation_id: operationId(current),
++    },
++    progress,
++  );
++}
++
++export async function superviseBranchTaskRun(
++  input: BranchTaskSupervisorOptions,
++): Promise<BranchTaskSupervisorResult> {
++  let routeCwd = input.ctx.cwd;
++  let routeCommand = input.command;
++  const decide = async () => {
++    routeCommand = await loadCommandContext({ cwd: routeCwd, rootOverride: null });
++    const decision = await buildTaskRouteDecision({
++      ctx: routeCommand,
++      cwd: routeCwd,
++      rootOverride: null,
++      taskId: input.task_id,
++      includeRemote: true,
++    });
++    routeCwd = decision.workspace.baseCheckoutPath ?? routeCwd;
++    return decision;
++  };
++
++  return await superviseBranchTaskRunWithPorts({
++    git_root: input.command.resolvedProject.gitRoot,
++    task_id: input.task_id,
++    decide,
++    execute_operation: executeBranchWorkflowOperation,
++    execute_episode: async ({ decision, decide: refresh }) =>
++      await executeProductionBranchEpisode({ input, decision, decide: refresh }),
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts
+index 6d08f4518..b0eb2206c 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts
+@@ -24,9 +24,12 @@ function lifecycle(verificationState: "observed_success" | "unverified" | "rejec
+ 
+ describe("direct executor observation", () => {
+   it("requires an observed-success receipt by default", () => {
+-    expect(observeDirectExecutor(lifecycle("unverified"))).toMatchObject({
++    const observed = observeDirectExecutor(lifecycle("unverified"));
++    expect(observed).toMatchObject({
+       stop: "runner_receipt_unobserved",
+     });
++    expect("reason" in observed ? observed.reason : "").toContain("verification_state=unverified");
++    expect("reason" in observed ? observed.reason : "").toContain("will not replay the provider");
+   });
+ 
+   it("accepts an explicitly authorized danger receipt without relabeling it", () => {
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts
+index c2f5c59e4..21f315416 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-observation.ts
+@@ -31,10 +31,14 @@ export function observeDirectExecutor(
+     receipt?.verification_state === "observed_success" ||
+     (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
+   if (!acceptableReceipt) {
++    const observedState = receipt?.verification_state ?? "missing";
++    const receiptRef = receipt?.path?.trim() ?? "none";
+     return {
+       stop: "runner_receipt_unobserved",
+       reason:
+-        "The EXECUTOR result has no supervisor-observed receipt accepted for the current authority.",
++        "The EXECUTOR result has no receipt accepted for the current authority " +
++        `(verification_state=${observedState}, receipt_ref=${receiptRef}). ` +
++        "The supervisor preserves this terminal observation and will not replay the provider.",
+     };
+   }
+   const semantic = lifecycle.result.semantic_result?.value;
+diff --git a/packages/agentplane/src/commands/task/hosted-close-pr.command.ts b/packages/agentplane/src/commands/task/hosted-close-pr.command.ts
+index 3b84f13dd..93135696d 100644
+--- a/packages/agentplane/src/commands/task/hosted-close-pr.command.ts
++++ b/packages/agentplane/src/commands/task/hosted-close-pr.command.ts
+@@ -94,15 +94,16 @@ async function openHostedClosePr(opts: {
+   taskId: string;
+   branch?: string | null;
+   repo?: string | null;
++  quiet?: boolean;
+ }): Promise<number> {
+   const precheck = await precheckHostedClosePr(opts);
+   if (precheck.kind === "skip") {
+-    reportHostedClosePrOutcome(precheck.outcome);
++    if (!opts.quiet) reportHostedClosePrOutcome(precheck.outcome);
+     return 0;
+   }
+ 
+   const result = postcheckHostedClosePrResult(await executeHostedClosePrPlan(precheck.plan));
+-  reportHostedClosePrExecutionResult(result);
++  if (!opts.quiet) reportHostedClosePrExecutionResult(result);
+   return 0;
+ }
+ 
+@@ -118,6 +119,7 @@ export function makeRunTaskHostedClosePrHandler(getCtx: (cmd: string) => Promise
+           taskId,
+           branch: p.branch,
+           repo: p.repo,
++          quiet: p.quiet,
+         });
+       }
+       return 0;
+diff --git a/packages/agentplane/src/commands/task/hosted-close-pr.types.ts b/packages/agentplane/src/commands/task/hosted-close-pr.types.ts
+index cdd24f7f5..2d241d754 100644
+--- a/packages/agentplane/src/commands/task/hosted-close-pr.types.ts
++++ b/packages/agentplane/src/commands/task/hosted-close-pr.types.ts
+@@ -4,6 +4,7 @@ export type TaskHostedClosePrParsed = {
+   taskIds: string[];
+   branch: string | null;
+   repo: string | null;
++  quiet?: boolean;
+ };
+ 
+ export type GithubPullRequestRecord = {
+diff --git a/packages/agentplane/src/commands/task/run-render.ts b/packages/agentplane/src/commands/task/run-render.ts
+index 26b8d1527..f027a2cd2 100644
+--- a/packages/agentplane/src/commands/task/run-render.ts
++++ b/packages/agentplane/src/commands/task/run-render.ts
+@@ -411,31 +411,48 @@ export async function loadRunnerLogText(
+   });
+ }
+ 
++function taskRunIdentityRows(
++  payload: TaskRunRendererPayload,
++  opts: { includeEffectResolution: boolean },
++) {
++  return [
++    { label: "task", value: payload.task_id },
++    { label: "mode", value: payload.mode },
++    { label: "adapter", value: payload.adapter_id },
++    { label: "run", value: payload.run_id },
++    ...("lifecycle_result" in payload
++      ? [
++          { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
++          { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
++          ...(opts.includeEffectResolution
++            ? [
++                {
++                  label: "effect_resolution",
++                  value: payload.lifecycle_result.lifecycle.effect.resolution?.verdict ?? null,
++                },
++              ]
++            : []),
++          {
++            label: "effect_authority",
++            value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
++          },
++          {
++            label: "effect_evidence",
++            value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
++          },
++          {
++            label: "effect_claim_generation",
++            value: payload.lifecycle_result.lifecycle.effect.claim_generation,
++          },
++        ]
++      : []),
++  ];
++}
++
+ export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
+   createCliEmitter().report(
+     [
+-      { label: "task", value: payload.task_id },
+-      { label: "mode", value: payload.mode },
+-      { label: "adapter", value: payload.adapter_id },
+-      { label: "run", value: payload.run_id },
+-      ...("lifecycle_result" in payload
+-        ? [
+-            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
+-            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
+-            {
+-              label: "effect_authority",
+-              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
+-            },
+-            {
+-              label: "effect_evidence",
+-              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
+-            },
+-            {
+-              label: "effect_claim_generation",
+-              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
+-            },
+-          ]
+-        : []),
++      ...taskRunIdentityRows(payload, { includeEffectResolution: false }),
+       { label: "bundle", value: payload.bundle_path },
+       { label: "bootstrap", value: payload.bootstrap_path },
+       { label: "result", value: payload.result_path },
+@@ -447,30 +464,9 @@ export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: s
+ export function reportExecutedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
+   createCliEmitter().report(
+     [
+-      { label: "task", value: payload.task_id },
+-      { label: "mode", value: payload.mode },
+-      { label: "adapter", value: payload.adapter_id },
+-      { label: "run", value: payload.run_id },
++      ...taskRunIdentityRows(payload, { includeEffectResolution: true }),
+       ...("lifecycle_result" in payload
+         ? [
+-            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
+-            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
+-            {
+-              label: "effect_resolution",
+-              value: payload.lifecycle_result.lifecycle.effect.resolution?.verdict ?? null,
+-            },
+-            {
+-              label: "effect_authority",
+-              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
+-            },
+-            {
+-              label: "effect_evidence",
+-              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
+-            },
+-            {
+-              label: "effect_claim_generation",
+-              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
+-            },
+             ...(payload.lifecycle_result.lifecycle.effect.source_resolution
+               ? [
+                   {
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index 659985fab..536d17e5d 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -30,6 +30,7 @@ import {
+   tailText,
+ } from "./run-render.js";
+ import { followRunnerLogs } from "./run-logs-follow.js";
++import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
+ import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
+ 
+ export {
+@@ -69,7 +70,7 @@ export type TaskRunReconcileParsed = {
+ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
+   id: ["task", "run"],
+   group: "Task",
+-  summary: "Supervise a direct task or run a prepared task through the configured runner adapter.",
++  summary: "Supervise a direct or branch_pr task through its typed lifecycle.",
+   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+   options: [
+     {
+@@ -112,7 +113,7 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
+   ],
+   notes: [
+     "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
+-    "In branch_pr workflow mode, the task must already be DOING; use `agentplane task start-ready ...` first.",
++    "In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.",
+     "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
+   ],
+   parse: (raw) => ({
+@@ -262,6 +263,39 @@ export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
+   }),
+ };
+ 
++function reportTaskSupervision(opts: {
++  output: ReturnType<typeof createCliEmitter>;
++  mode: "direct" | "branch_pr";
++  taskId: string;
++  result: {
++    task_id: string;
++    status: string;
++    phase: string;
++    route: { step_id: string };
++    executor: { run_id: string } | null;
++    evaluator: { evaluator_id: string; verdict: string } | null;
++    stop: { code: string } | null;
++    journal: { path: string } | null;
++  };
++  operations?: number;
++}): void {
++  const rows = [
++    { label: "task", value: opts.result.task_id },
++    { label: "status", value: opts.result.status },
++    { label: "phase", value: opts.result.phase },
++    { label: "route", value: opts.result.route.step_id },
++    { label: "executor_run", value: opts.result.executor?.run_id ?? null },
++    { label: "evaluator", value: opts.result.evaluator?.evaluator_id ?? null },
++    { label: "evaluator_verdict", value: opts.result.evaluator?.verdict ?? null },
++    ...(opts.operations === undefined ? [] : [{ label: "operations", value: opts.operations }]),
++    { label: "stop", value: opts.result.stop?.code ?? null },
++    { label: "journal", value: opts.result.journal?.path ?? null },
++  ];
++  opts.output.report(rows, {
++    header: infoMessage(`${opts.mode} task supervision: ${opts.taskId}`),
++  });
++}
++
+ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+   return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
+     const commandCtx = await getCtx("task run");
+@@ -309,20 +343,12 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+       if (parsed.json) {
+         output.json(supervised);
+       } else {
+-        output.report(
+-          [
+-            { label: "task", value: supervised.task_id },
+-            { label: "status", value: supervised.status },
+-            { label: "phase", value: supervised.phase },
+-            { label: "route", value: supervised.route.step_id },
+-            { label: "executor_run", value: supervised.executor?.run_id ?? null },
+-            { label: "evaluator", value: supervised.evaluator?.evaluator_id ?? null },
+-            { label: "evaluator_verdict", value: supervised.evaluator?.verdict ?? null },
+-            { label: "stop", value: supervised.stop?.code ?? null },
+-            { label: "journal", value: supervised.journal?.path ?? null },
+-          ],
+-          { header: infoMessage(`direct task supervision: ${parsed.taskId}`) },
+-        );
++        reportTaskSupervision({
++          output,
++          mode: "direct",
++          taskId: parsed.taskId,
++          result: supervised,
++        });
+       }
+       return supervised.stop?.code === "runner_failed" ||
+         supervised.stop?.code === "executor_adapter_crash" ||
+@@ -335,6 +361,35 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+         : 0;
+     }
+ 
++    if (commandCtx.config?.workflow_mode === "branch_pr") {
++      const supervised = await superviseBranchTaskRun({
++        ctx,
++        command: commandCtx,
++        task_id: parsed.taskId,
++        ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
++        ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
++      });
++      if (parsed.json) {
++        output.json(supervised);
++      } else {
++        reportTaskSupervision({
++          output,
++          mode: "branch_pr",
++          taskId: parsed.taskId,
++          result: supervised,
++          operations: supervised.operation_receipts.length,
++        });
++      }
++      return supervised.stop?.code === "approval_required" ||
++        supervised.stop?.code === "wait_required" ||
++        supervised.stop?.code === "human_input_required" ||
++        supervised.stop?.code === "terminal_attention"
++        ? 0
++        : supervised.status === "finalized"
++          ? 0
++          : 1;
++    }
++
+     const executed = await executeTaskRunnerExecution({
+       ctx: commandCtx,
+       cwd: ctx.cwd,
