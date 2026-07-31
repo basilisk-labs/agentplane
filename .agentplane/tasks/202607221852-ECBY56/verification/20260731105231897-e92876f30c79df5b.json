@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:e92876f30c79df5ba0dc0dd66c8b20379dba1f2f80879c1b78a51e430e19c45f",
+  "implementation_sha": "da76a705009eb5c14b583c3fbf53c716dbead232",
+  "kind": "task_verification_record",
+  "note": "PASS: 92 focused tests cover all declared tools, typed denials, adapter limitations, hidden-help operation, audit linkage, and terminal revocation; guards, schemas, typecheck, and all 12 critical suites pass. One native Codex episode additionally proved supervisor acceptance of report_blocker, canonical result preservation, audit creation, token revocation, and broker cleanup.",
+  "recorded_at": "2026-07-31T10:52:31.897Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke each allowed tool with a valid phase token. Expected: typed response, receipt/audit linkage, and no lifecycle authority leak.\n2. Call lifecycle or wrong-role tools, or tamper/expire/reuse a token. Expected: typed denial before effects.\n3. Use an adapter lacking a requested tool/enforcement feature. Expected: capability map and work order state the limitation.\n4. Hide global CLI help from the episode. Expected: the supported run API remains complete and secure.\n5. Run schema/tool/guard/type tests.",
+  "scope_digest": "sha256:66196a24934ea27f66efd7730a221a2a063ad918f4764a2a6991570b9d96824e",
+  "task_id": "202607221852-ECBY56",
+  "verification_command": "agentplane verify 202607221852-ECBY56 --ok --by TESTER",
+  "verifier": "TESTER"
+}

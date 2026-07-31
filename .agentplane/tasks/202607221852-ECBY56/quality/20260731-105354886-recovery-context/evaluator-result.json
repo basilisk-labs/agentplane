@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The checkout-local broker is only a transport: the child publishes a bounded request, while the parent validates the signed token and owns protected result and audit writes. Atomic hard-link publication prevents partial request reads, and the native Codex smoke proved this path under workspace-write sandboxing.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105354886-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Terminal result preservation is correct: a phase-tool result already written by the parent is not overwritten by the later Codex JSONL final response.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105354886-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Capability truth is adapter-specific: Codex exposes five supervisor-enforced run-scoped commands, while custom adapters disclose terminal-only and unavailable interactive behavior.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-ECBY56/quality/20260731-105354886-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The one authorized provider episode exercised report_blocker rather than report_result because the smoke artifact was placed under a protected task path; report_result remains covered by the same live broker path plus focused dispatch and adapter tests."
+  ],
+  "hidden_assumptions": [
+    "The threat model assumes the supervisor-owned per-run broker directory is not replaced by a hostile same-user process outside the managed runner boundary."
+  ]
+}
