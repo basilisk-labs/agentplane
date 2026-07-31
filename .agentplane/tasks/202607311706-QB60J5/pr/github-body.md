@@ -29,7 +29,7 @@ syntax, and diff checks passed.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T17:28:35.470Z
+- Updated: 2026-07-31T17:53:01.747Z
 - Branch: task/202607311706-QB60J5/benchmark-typescript-7-and-freeze-the-agentplane
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
