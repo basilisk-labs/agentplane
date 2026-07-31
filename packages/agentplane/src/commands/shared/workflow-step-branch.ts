@@ -4,6 +4,7 @@ import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import { preMergeCommit, primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
 import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
 import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
+import { integrationQueueStep } from "./workflow-step-integration-queue.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -56,90 +57,6 @@ function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep |
       code: "included_batch_verification_pending",
       summary: `included batch task ${pending.id} requires verification before primary PR mutation`,
     },
-  });
-}
-
-function integrationQueueWaitStep(
-  state: WorkflowRouteState,
-  queueStatus: "queued" | "claimed" | "handoff" | "done",
-): WorkflowStep {
-  const summary =
-    queueStatus === "done"
-      ? "wait for merged provider truth after the integration queue completed"
-      : `wait for the integration queue entry to leave ${queueStatus}`;
-  return {
-    schemaVersion: 1,
-    id: "wait.integration_queue",
-    kind: "wait",
-    phase: "integration_queue_wait",
-    authoritativeCheckout: "base_checkout",
-    summary,
-    blockers: routeBlockerSnapshot(state),
-    selectedBlocker: null,
-    compatibility: {
-      code: "wait_integration_queue",
-      command: null,
-      summary,
-      requiresApproval: false,
-    },
-    preconditionFingerprint: state.preconditionFingerprint,
-    condition: {
-      type: "integration_queue_terminal",
-      taskId: state.task.id,
-      queueStatus,
-    },
-    execution: commonExecution({
-      actionKind: "wait",
-      role: "INTEGRATOR",
-      mustNot: [
-        "do not enqueue the same task again while its integration queue entry is active or completed",
-      ],
-    }),
-  };
-}
-
-function integrationEnqueueStep(state: WorkflowRouteState, summary: string): WorkflowStep {
-  const id = state.task.id;
-  const queue = state.prFlow?.queue;
-  if (queue?.present) {
-    if (queue.status === "rework") return implementationReworkStep(state);
-    if (queue.status === "superseded") {
-      return terminalStep({
-        state,
-        id: "terminal.integration_superseded",
-        code: "integration_superseded",
-        phase: "integration_superseded",
-        checkout: "base_checkout",
-        role: "INTEGRATOR",
-        outcome: "superseded",
-        summary: queue.reason ?? "integration queue entry was superseded",
-        evidenceMissing: [],
-      });
-    }
-    return integrationQueueWaitStep(state, queue.status);
-  }
-  const branch = state.prFlow?.branch.name;
-  if (!branch) {
-    return terminalStep({
-      state,
-      id: "terminal.pr_branch_metadata_repair",
-      code: "repair_pr_branch_metadata",
-      phase: "pr_branch_metadata_missing",
-      checkout: "base_checkout",
-      role: "INTEGRATOR",
-      outcome: "repair_required",
-      summary:
-        "the hosted PR is open but structured task branch metadata is absent; refresh route metadata before integration",
-      evidenceMissing: ["task_branch"],
-    });
-  }
-  return cliOperationStep({
-    state,
-    operationId: "integration.enqueue",
-    params: { taskId: id, branch },
-    code: "wait_hosted_checks",
-    summary,
-    selectedBlocker: null,
   });
 }
 
@@ -344,7 +261,7 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.prFlow?.pr.state === "OPEN") {
-    return integrationEnqueueStep(
+    return integrationQueueStep(
       state,
       "pre-merge closure is recorded; wait for hosted checks and merge the task PR",
     );
@@ -638,7 +555,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.prFlow?.pr.state === "OPEN") {
-    return integrationEnqueueStep(
+    return integrationQueueStep(
       state,
       "enqueue the verified branch after hosted checks are stable",
     );
