@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -39,9 +39,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T09:45:08.981Z"
+  updated_at: "2026-07-31T09:52:19.140Z"
   updated_by: "TESTER"
-  note: "Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed."
+  note: "Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH."
   attempts: 0
 quality_review:
   state: "pass"
@@ -111,8 +111,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T09:52:19.140Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH."
 doc_version: 3
-doc_updated_at: "2026-07-31T09:46:54.472Z"
+doc_updated_at: "2026-07-31T09:52:23.136Z"
 doc_updated_by: "TESTER"
 description: "Re-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package."
 sections:
@@ -181,6 +187,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607310028-7KFTPH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-31T09:52:19.140Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T09:46:54.472Z, excerpt_hash=sha256:bfaaf6a04f89060157f3c554e2b24651f2634ea2d8dce47416ed8357098a58ec
+
+    Details:
+
+    Command: node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH
+    Result: pass
+    Evidence: rf04-current-rebuild.v1.json sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d; 50 runs and complete cells
+    Scope: deterministic replay rebuild for corrected product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878
+
+    Command: node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1
+    Result: fail
+    Evidence: rf04-live-candidate-summary.v1.json; raw sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c; retry_count=0
+    Scope: single live 50-run, 10-scenario, 55-provider-episode capture; latency gate failed
+
+    Command: agentplane task update 202607221852-ECBY56 and 202607221908-AB2SFC --replace-depends-on
+    Result: pass
+    Evidence: ECBY56 depends_on=[202607310028-7KFTPH]; AB2SFC depends_on=[202607221852-71SCSW,202607221852-ECBY56,202607310028-7KFTPH]
+    Scope: review-required task graph repair; obsolete 202607221908-0JP0ZZ removed from downstream executable fan-in
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: run-typescript-build.mjs exit 0
+    Scope: implementation code unchanged; task-artifact-only review repair
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli suite exit 0; 12/12 chunks passed
+    Scope: critical regression surface before task-artifact-only review repair
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: ci:contract exit 0; all contract guards passed
+    Scope: full local contract gate before task-artifact-only review repair
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607310028-7KFTPH-re-qualify-the-agentplane-0-7-0-beta-2-milestone/.agentplane/tasks/202607310028-7KFTPH/blueprint/resolved-snapshot.json
+    - old_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+    - current_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607310028-7KFTPH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -280,6 +346,66 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607310028-7KFTPH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-31T09:52:19.140Z — VERIFY — ok
+
+By: TESTER
+
+Note: Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T09:46:54.472Z, excerpt_hash=sha256:bfaaf6a04f89060157f3c554e2b24651f2634ea2d8dce47416ed8357098a58ec
+
+Details:
+
+Command: node scripts/bench/capture-agent-efficiency-replay.mjs --qualification-task-id 202607310028-7KFTPH
+Result: pass
+Evidence: rf04-current-rebuild.v1.json sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d; 50 runs and complete cells
+Scope: deterministic replay rebuild for corrected product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878
+
+Command: node scripts/bench/capture-agent-efficiency-candidate.mjs --subject 25fbf2d836a94e9b190464da219a35efd4ebe878 --codex-version 0.146.0-alpha.3.1
+Result: fail
+Evidence: rf04-live-candidate-summary.v1.json; raw sha256:384be52a1e17cf7864e9e41701bd915f6e8aea4244ac95e6e999caf3c24dc01c; retry_count=0
+Scope: single live 50-run, 10-scenario, 55-provider-episode capture; latency gate failed
+
+Command: agentplane task update 202607221852-ECBY56 and 202607221908-AB2SFC --replace-depends-on
+Result: pass
+Evidence: ECBY56 depends_on=[202607310028-7KFTPH]; AB2SFC depends_on=[202607221852-71SCSW,202607221852-ECBY56,202607310028-7KFTPH]
+Scope: review-required task graph repair; obsolete 202607221908-0JP0ZZ removed from downstream executable fan-in
+
+Command: bun run typecheck
+Result: pass
+Evidence: run-typescript-build.mjs exit 0
+Scope: implementation code unchanged; task-artifact-only review repair
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli suite exit 0; 12/12 chunks passed
+Scope: critical regression surface before task-artifact-only review repair
+
+Command: bun run ci:contract
+Result: pass
+Evidence: ci:contract exit 0; all contract guards passed
+Scope: full local contract gate before task-artifact-only review repair
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607310028-7KFTPH-re-qualify-the-agentplane-0-7-0-beta-2-milestone/.agentplane/tasks/202607310028-7KFTPH/blueprint/resolved-snapshot.json
+- old_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+- current_digest: a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607310028-7KFTPH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

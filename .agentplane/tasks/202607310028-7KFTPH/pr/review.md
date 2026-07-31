@@ -13,7 +13,7 @@ Created: 2026-07-31T00:29:18.768Z
 ## Verification
 
 - State: ok
-- Note: Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed.
+- Note: Qualification remains do_not_publish; downstream beta.2 and rc.1 dependencies are now rewired from obsolete 0JP0ZZ to 7KFTPH.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
