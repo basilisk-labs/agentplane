@@ -2,10 +2,10 @@
 id: "202607221852-71SCSW"
 title: "Extend supervised execution to branch_pr"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -67,8 +67,8 @@ quality_review:
     - "PASS: the branch_pr supervisor keeps semantic EXECUTOR/EVALUATOR work role-scoped and routes worktree, verification, PR publication, queue, hosted-close, and cleanup through typed CLI operations with durable idempotency."
     - "PASS: the real two-worktree regression proves a stale base README cannot override DONE task-branch truth and that base-owned queue state is observed from the task worktree."
 commit:
-  hash: "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea"
-  message: "🚧 71SCSW task: bind queue wait to current head"
+  hash: "2257c5a99a1e980b8ba0817a3f78e6c9ddf5cb55"
+  message: "🧭 71SCSW task: pass stale queue fix"
 comments:
   -
     author: "CODER"
@@ -97,6 +97,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework finalized: queue waits are bound to current branch, head, base, and PR identity."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -167,8 +170,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework finalized: queue waits are bound to current branch, head, base, and PR identity."
+  -
+    type: "status"
+    at: "2026-07-31T13:01:58.753Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:54:46.712Z"
+doc_updated_at: "2026-07-31T13:01:58.754Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
@@ -236,8 +246,8 @@ sections:
       Resolution: Accept implementation commit 49f4e7c7a with durable operation receipts, zero executor lifecycle mutation coverage, and final-main/provider truth fixtures.
 extensions:
   implementation_commit:
-    hash: "6cb5cdc7e6fc8cdacd1a0b00d8d2fcabba85178e"
-    message: "🚧 71SCSW task: satisfy receipt resolver lint"
+    hash: "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea"
+    message: "🚧 71SCSW task: bind queue wait to current head"
   workflow_route_baseline:
     start_head_sha: "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c"
     version: 1
