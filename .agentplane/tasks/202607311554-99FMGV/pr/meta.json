@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3468897ad5c1b0918e66fdfc1342ead5853c22cc2a7cd981ae85d0585108c435",
   "pr_number": 4708,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4708",
+  "pre_merge_closure": {
+    "basis_commit": "2bd765be7322e2bcf393da221f0c8e1a0d07a045",
+    "branch": "task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r",
+    "pr_number": 4708,
+    "recorded_at": "2026-07-31T16:27:05.343Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607311554-99FMGV",
