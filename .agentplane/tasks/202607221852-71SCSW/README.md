@@ -1,10 +1,10 @@
 ---
 id: "202607221852-71SCSW"
 title: "Extend supervised execution to branch_pr"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ verify:
   - "bun run lifecycle:invariants"
   - "bun run test:critical"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-31T11:13:44.168Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -40,11 +40,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-31T11:14:18.514Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:09:39.842Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-31T11:14:18.514Z"
+doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
   Summary: |-
@@ -76,6 +86,10 @@ sections:
     - After merge: never rewrite protected main; create a new follow-up task/PR and let hosted close reconcile the merged SHA.
     - After hosted close: preserve closure evidence and use a new rollback release/task; cleanup only verified clean task-owned worktrees and branches.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
