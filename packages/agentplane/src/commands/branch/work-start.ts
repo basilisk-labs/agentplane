@@ -72,6 +72,7 @@ export async function cmdWorkStart(opts: {
   agent: string;
   slug: string;
   worktree: boolean;
+  quiet?: boolean;
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -147,7 +148,9 @@ export async function cmdWorkStart(opts: {
         started_at: new Date().toISOString(),
       });
 
-      output.success("work start", opts.taskId, `mode=direct branch=${currentBranch}`);
+      if (!opts.quiet) {
+        output.success("work start", opts.taskId, `mode=direct branch=${currentBranch}`);
+      }
       return 0;
     }
 
@@ -241,11 +244,13 @@ export async function cmdWorkStart(opts: {
       }
     }
 
-    output.success(
-      "work start",
-      branchName,
-      opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
-    );
+    if (!opts.quiet) {
+      output.success(
+        "work start",
+        branchName,
+        opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
+      );
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

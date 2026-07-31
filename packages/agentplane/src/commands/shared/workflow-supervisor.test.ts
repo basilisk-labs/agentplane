@@ -12,6 +12,8 @@ const taskId = "202607270245-SUPV09";
 function fixtureDecision(opts?: {
   exactArgv?: string[] | null;
   kind?: "approval" | "agent_episode" | "wait";
+  operation?: WorkflowOperation;
+  safeToMutate?: boolean;
 }): TaskRouteDecision {
   const component = {
     state: "present",
@@ -34,16 +36,18 @@ function fixtureDecision(opts?: {
       authority: component,
     },
   });
-  const operation: WorkflowOperation = {
-    id: "runner.follow",
-    type: "runner_follow",
-    params: { mode: "run", taskId },
-    preconditionFingerprint: fingerprint,
-    authorityRef: `route:${taskId}:${fingerprint.digest}`,
-    idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
-    expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
-    triggersGitHooks: false,
-  };
+  const operation: WorkflowOperation =
+    opts?.operation ??
+    ({
+      id: "runner.follow",
+      type: "runner_follow",
+      params: { mode: "run", taskId },
+      preconditionFingerprint: fingerprint,
+      authorityRef: `route:${taskId}:${fingerprint.digest}`,
+      idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
+      expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
+      triggersGitHooks: false,
+    } satisfies WorkflowOperation);
   const workflowStep = opts?.kind
     ? ({
         id: opts.kind,
@@ -72,7 +76,7 @@ function fixtureDecision(opts?: {
     workflowStep,
     executionPacket: {
       actionKind: "local_command",
-      safeToMutate: true,
+      safeToMutate: opts?.safeToMutate ?? true,
       exactArgv: opts?.exactArgv ?? projectWorkflowOperationArgv(operation),
     },
   } as TaskRouteDecision;
@@ -195,6 +199,42 @@ describe("workflow supervisor", () => {
     expect(execution.executable).toBe(false);
     expect(execution.stop_reason).toContain("repeated idempotency key");
     expect(refreshed).toBe(false);
+  });
+
+  it("executes a read-only provider refresh without mutation authority", async () => {
+    const base = fixtureDecision();
+    const fingerprint = base.workflowStep.preconditionFingerprint;
+    const operation: WorkflowOperation = {
+      id: "provider.pr.refresh",
+      type: "provider_refresh",
+      params: { taskId },
+      preconditionFingerprint: fingerprint,
+      authorityRef: `authority:${taskId}:provider-refresh`,
+      idempotencyKey: `provider.pr.refresh:${taskId}:${fingerprint.digest}:fixture`,
+      expectedPostconditions:
+        WORKFLOW_OPERATION_REGISTRY["provider.pr.refresh"].expectedPostconditions,
+      triggersGitHooks: false,
+    };
+    const decision = fixtureDecision({ operation, safeToMutate: false });
+    const execution = await superviseWorkflowStep({
+      decision,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["provider_state_observed"],
+          detail: "provider state refreshed",
+          exit_code: 0,
+        }),
+      refresh: () => Promise.resolve(decision),
+    });
+
+    expect(execution.executable).toBe(true);
+    expect(execution.stop_reason).toBeNull();
+    expect(execution.audit.map((entry) => entry.event)).toEqual([
+      "decision_observed",
+      "operation_executed",
+      "route_refreshed",
+    ]);
   });
 
   it("refreshes state after executor failure or absent postconditions without a second operation", async () => {

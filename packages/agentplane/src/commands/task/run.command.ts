@@ -30,6 +30,7 @@ import {
   tailText,
 } from "./run-render.js";
 import { followRunnerLogs } from "./run-logs-follow.js";
+import { superviseBranchTaskRun } from "./branch-task-supervisor.js";
 import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
 
 export {
@@ -69,7 +70,7 @@ export type TaskRunReconcileParsed = {
 export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   id: ["task", "run"],
   group: "Task",
-  summary: "Supervise a direct task or run a prepared task through the configured runner adapter.",
+  summary: "Supervise a direct or branch_pr task through its typed lifecycle.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -112,7 +113,7 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   ],
   notes: [
     "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
-    "In branch_pr workflow mode, the task must already be DOING; use `agentplane task start-ready ...` first.",
+    "In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.",
     "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
   ],
   parse: (raw) => ({
@@ -262,6 +263,39 @@ export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
   }),
 };
 
+function reportTaskSupervision(opts: {
+  output: ReturnType<typeof createCliEmitter>;
+  mode: "direct" | "branch_pr";
+  taskId: string;
+  result: {
+    task_id: string;
+    status: string;
+    phase: string;
+    route: { step_id: string };
+    executor: { run_id: string } | null;
+    evaluator: { evaluator_id: string; verdict: string } | null;
+    stop: { code: string } | null;
+    journal: { path: string } | null;
+  };
+  operations?: number;
+}): void {
+  const rows = [
+    { label: "task", value: opts.result.task_id },
+    { label: "status", value: opts.result.status },
+    { label: "phase", value: opts.result.phase },
+    { label: "route", value: opts.result.route.step_id },
+    { label: "executor_run", value: opts.result.executor?.run_id ?? null },
+    { label: "evaluator", value: opts.result.evaluator?.evaluator_id ?? null },
+    { label: "evaluator_verdict", value: opts.result.evaluator?.verdict ?? null },
+    ...(opts.operations === undefined ? [] : [{ label: "operations", value: opts.operations }]),
+    { label: "stop", value: opts.result.stop?.code ?? null },
+    { label: "journal", value: opts.result.journal?.path ?? null },
+  ];
+  opts.output.report(rows, {
+    header: infoMessage(`${opts.mode} task supervision: ${opts.taskId}`),
+  });
+}
+
 export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
     const commandCtx = await getCtx("task run");
@@ -309,20 +343,12 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       if (parsed.json) {
         output.json(supervised);
       } else {
-        output.report(
-          [
-            { label: "task", value: supervised.task_id },
-            { label: "status", value: supervised.status },
-            { label: "phase", value: supervised.phase },
-            { label: "route", value: supervised.route.step_id },
-            { label: "executor_run", value: supervised.executor?.run_id ?? null },
-            { label: "evaluator", value: supervised.evaluator?.evaluator_id ?? null },
-            { label: "evaluator_verdict", value: supervised.evaluator?.verdict ?? null },
-            { label: "stop", value: supervised.stop?.code ?? null },
-            { label: "journal", value: supervised.journal?.path ?? null },
-          ],
-          { header: infoMessage(`direct task supervision: ${parsed.taskId}`) },
-        );
+        reportTaskSupervision({
+          output,
+          mode: "direct",
+          taskId: parsed.taskId,
+          result: supervised,
+        });
       }
       return supervised.stop?.code === "runner_failed" ||
         supervised.stop?.code === "executor_adapter_crash" ||
@@ -333,6 +359,35 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         supervised.stop?.code === "route_refresh_failed"
         ? 1
         : 0;
+    }
+
+    if (commandCtx.config?.workflow_mode === "branch_pr") {
+      const supervised = await superviseBranchTaskRun({
+        ctx,
+        command: commandCtx,
+        task_id: parsed.taskId,
+        ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
+        ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
+      });
+      if (parsed.json) {
+        output.json(supervised);
+      } else {
+        reportTaskSupervision({
+          output,
+          mode: "branch_pr",
+          taskId: parsed.taskId,
+          result: supervised,
+          operations: supervised.operation_receipts.length,
+        });
+      }
+      return supervised.stop?.code === "approval_required" ||
+        supervised.stop?.code === "wait_required" ||
+        supervised.stop?.code === "human_input_required" ||
+        supervised.stop?.code === "terminal_attention"
+        ? 0
+        : supervised.status === "finalized"
+          ? 0
+          : 1;
     }
 
     const executed = await executeTaskRunnerExecution({

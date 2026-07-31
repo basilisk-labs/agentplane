@@ -264,6 +264,41 @@ describe("persisted supervisor execution episodes", () => {
     });
   });
 
+  it("refuses to replay a completed CLI side effect with the same idempotency key", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const first = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "fixture runner completed",
+          exit_code: 0,
+        }),
+      refresh: () => Promise.resolve(decision),
+    });
+    expect(first.execution.executable).toBe(true);
+
+    let executions = 0;
+    const replay = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () => {
+        executions += 1;
+        return Promise.reject(new Error("completed side effect must not replay"));
+      },
+      refresh: () => Promise.resolve(decision),
+    });
+
+    expect(executions).toBe(0);
+    expect(replay.execution.executable).toBe(false);
+    expect(replay.execution.stop_reason).toContain("already completed this idempotency key");
+  });
+
   it("projects supervisor-observed provider and execution usage into the journal", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);

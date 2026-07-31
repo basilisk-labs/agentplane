@@ -4,6 +4,7 @@ export type TaskHostedClosePrParsed = {
   taskIds: string[];
   branch: string | null;
   repo: string | null;
+  quiet?: boolean;
 };
 
 export type GithubPullRequestRecord = {

@@ -411,31 +411,48 @@ export async function loadRunnerLogText(
   });
 }
 
+function taskRunIdentityRows(
+  payload: TaskRunRendererPayload,
+  opts: { includeEffectResolution: boolean },
+) {
+  return [
+    { label: "task", value: payload.task_id },
+    { label: "mode", value: payload.mode },
+    { label: "adapter", value: payload.adapter_id },
+    { label: "run", value: payload.run_id },
+    ...("lifecycle_result" in payload
+      ? [
+          { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
+          { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
+          ...(opts.includeEffectResolution
+            ? [
+                {
+                  label: "effect_resolution",
+                  value: payload.lifecycle_result.lifecycle.effect.resolution?.verdict ?? null,
+                },
+              ]
+            : []),
+          {
+            label: "effect_authority",
+            value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
+          },
+          {
+            label: "effect_evidence",
+            value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
+          },
+          {
+            label: "effect_claim_generation",
+            value: payload.lifecycle_result.lifecycle.effect.claim_generation,
+          },
+        ]
+      : []),
+  ];
+}
+
 export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
   createCliEmitter().report(
     [
-      { label: "task", value: payload.task_id },
-      { label: "mode", value: payload.mode },
-      { label: "adapter", value: payload.adapter_id },
-      { label: "run", value: payload.run_id },
-      ...("lifecycle_result" in payload
-        ? [
-            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
-            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
-            {
-              label: "effect_authority",
-              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
-            },
-            {
-              label: "effect_evidence",
-              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
-            },
-            {
-              label: "effect_claim_generation",
-              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
-            },
-          ]
-        : []),
+      ...taskRunIdentityRows(payload, { includeEffectResolution: false }),
       { label: "bundle", value: payload.bundle_path },
       { label: "bootstrap", value: payload.bootstrap_path },
       { label: "result", value: payload.result_path },
@@ -447,30 +464,9 @@ export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: s
 export function reportExecutedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
   createCliEmitter().report(
     [
-      { label: "task", value: payload.task_id },
-      { label: "mode", value: payload.mode },
-      { label: "adapter", value: payload.adapter_id },
-      { label: "run", value: payload.run_id },
+      ...taskRunIdentityRows(payload, { includeEffectResolution: true }),
       ...("lifecycle_result" in payload
         ? [
-            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
-            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
-            {
-              label: "effect_resolution",
-              value: payload.lifecycle_result.lifecycle.effect.resolution?.verdict ?? null,
-            },
-            {
-              label: "effect_authority",
-              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
-            },
-            {
-              label: "effect_evidence",
-              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
-            },
-            {
-              label: "effect_claim_generation",
-              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
-            },
             ...(payload.lifecycle_result.lifecycle.effect.source_resolution
               ? [
                   {

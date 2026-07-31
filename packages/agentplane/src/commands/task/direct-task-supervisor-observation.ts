@@ -31,10 +31,14 @@ export function observeDirectExecutor(
     receipt?.verification_state === "observed_success" ||
     (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
   if (!acceptableReceipt) {
+    const observedState = receipt?.verification_state ?? "missing";
+    const receiptRef = receipt?.path?.trim() ?? "none";
     return {
       stop: "runner_receipt_unobserved",
       reason:
-        "The EXECUTOR result has no supervisor-observed receipt accepted for the current authority.",
+        "The EXECUTOR result has no receipt accepted for the current authority " +
+        `(verification_state=${observedState}, receipt_ref=${receiptRef}). ` +
+        "The supervisor preserves this terminal observation and will not replay the provider.",
     };
   }
   const semantic = lifecycle.result.semantic_result?.value;
