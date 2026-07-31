@@ -6,7 +6,7 @@ Created: 2026-07-31T10:56:26.206Z
 
 - Task: `202607311055-ST7XZY`
 - Title: Eliminate direct workflow state-neutral routing loops
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing`
 - Canonical task record: `.agentplane/tasks/202607311055-ST7XZY/README.md`
 
