@@ -34,6 +34,8 @@ Created: 2026-07-31T11:14:18.745Z
  .../src/commands/integrate-queue.command.ts        | 111 ++--
  .../src/commands/integrate-queue.spec.ts           |   2 +
  packages/agentplane/src/commands/pr/open.ts        |  13 +-
+ .../commands/shared/quality-review-target.test.ts  | 102 ++++
+ .../src/commands/shared/quality-review-target.ts   | 170 +++++-
  .../shared/supervisor-execution-episode.test.ts    |  35 ++
  .../shared/supervisor-execution-episode.ts         |  17 +-
  .../commands/shared/workflow-supervisor.test.ts    |  62 +-
@@ -48,7 +50,7 @@ Created: 2026-07-31T11:14:18.745Z
  .../src/commands/task/hosted-close-pr.types.ts     |   1 +
  .../agentplane/src/commands/task/run-render.ts     |  84 ++-
  .../agentplane/src/commands/task/run.command.ts    |  87 ++-
- 19 files changed, 2294 insertions(+), 143 deletions(-)
+ 21 files changed, 2554 insertions(+), 155 deletions(-)
 ```
 
 </details>

@@ -67,7 +67,109 @@ function taskReadme(opts: {
     .join("\n");
 }
 
+function implementationReceiptReadme(opts: {
+  taskId: string;
+  revision: number;
+  title?: string;
+  implementationSha?: string;
+}): string {
+  const timestamp = "2026-07-31T12:00:00.000Z";
+  const receipt = opts.implementationSha
+    ? [
+        "commit:",
+        `  hash: ${opts.implementationSha}`,
+        '  message: "Implement reviewed task"',
+        "comments:",
+        "  - author: CODER",
+        '    body: "Implementation committed"',
+        "events:",
+        "  - type: status",
+        "    from: DOING",
+        "    to: DOING",
+        "    author: CODER",
+        '    note: "Implementation committed"',
+        `    at: "${timestamp}"`,
+        `doc_updated_at: "${timestamp}"`,
+        "doc_updated_by: CODER",
+      ].join("\n")
+    : "comments: []\nevents: []";
+  return [
+    "---",
+    `id: ${opts.taskId}`,
+    `title: ${opts.title ?? "Implementation receipt"}`,
+    "status: DOING",
+    `revision: ${opts.revision}`,
+    receipt,
+    "---",
+    "# Implementation receipt",
+    "",
+  ].join("\n");
+}
+
 describe("quality review target resolver", () => {
+  it("preserves the reviewed semantic target across a strict CLI implementation receipt", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-IMPLEMENTATION-RECEIPT";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      implementationReceiptReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const reviewedSha = await commitPath(
+      root,
+      "src/reviewed.ts",
+      "export const reviewed = true;\n",
+      "feat: implement reviewed task",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      implementationReceiptReadme({
+        taskId,
+        revision: 2,
+        implementationSha: reviewedSha,
+      }),
+      "chore: record implementation receipt",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      reviewedSha,
+    );
+  });
+
+  it("keeps semantic README changes in an implementation receipt commit reviewable", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-IMPLEMENTATION-CHANGE";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      implementationReceiptReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const reviewedSha = await commitPath(
+      root,
+      "src/reviewed.ts",
+      "export const reviewed = true;\n",
+      "feat: implement reviewed task",
+    );
+    const receiptSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      implementationReceiptReadme({
+        taskId,
+        revision: 2,
+        title: "Semantic title changed with receipt",
+        implementationSha: reviewedSha,
+      }),
+      "docs: change task while recording receipt",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      receiptSha,
+    );
+  });
+
   it("preserves the prior reviewed target across an authority-only README advance", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-AUTHORITY";
