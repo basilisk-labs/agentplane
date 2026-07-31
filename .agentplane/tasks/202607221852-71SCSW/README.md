@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "integration.enqueue persisted the queue entry under the base checkout, but supervisor refresh switched task loading to the stale base README while task-worktree refresh could not observe the base queue cache."
 commit:
-  hash: "863b5740d2b609342a955354be0d37ba22587bd0"
-  message: "🧭 71SCSW task: record final evaluator verdict"
+  hash: "286f9cf605befcca215fd417dab0baf7109ffb57"
+  message: "🚧 71SCSW task: bind queue truth to base checkout"
 comments:
   -
     author: "CODER"
@@ -87,6 +87,9 @@ comments:
   -
     author: "CODER"
     body: "Reopened for live integration queue checkout-boundary rework."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: task truth remains in task worktree while queue truth comes from base checkout."
 events:
   -
     type: "status"
@@ -136,8 +139,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Reopened for live integration queue checkout-boundary rework."
+  -
+    type: "status"
+    at: "2026-07-31T12:47:57.474Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: task truth remains in task worktree while queue truth comes from base checkout."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:39:48.571Z"
+doc_updated_at: "2026-07-31T12:47:57.474Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
