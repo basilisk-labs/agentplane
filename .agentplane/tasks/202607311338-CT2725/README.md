@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
     - "Present non-rejected but containment-unverified receipts preserve typed blocked, needs_context, and failed stops; completed-unverified, missing, and rejected receipts remain terminal."
     - "The new merge parent contributes only the already-reviewed WBY9EK publication-route repair; it does not modify CT2725 supervisor implementation or tests, and all declared checks pass at f9c7673f4b3593f009aff4c59ff729bed1041beb."
 commit:
-  hash: "78151f0bbc4b6818b23dbf764214b177907a481f"
-  message: "🔍 CT2725 task: record post-conflict verification"
+  hash: "83ca254177db35f13572a3462faec4326e67046c"
+  message: "🔍 CT2725 task: record current-main verification"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -132,8 +135,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay."
+  -
+    type: "status"
+    at: "2026-07-31T19:01:59.955Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T18:59:52.636Z"
+doc_updated_at: "2026-07-31T19:01:59.955Z"
 doc_updated_by: "CODER"
 description: "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate."
 sections:
@@ -433,8 +443,8 @@ sections:
       Resolution: Re-ran every declared Verify Step plus typecheck and incident asset parity at f9c7673f4b3593f009aff4c59ff729bed1041beb.
 extensions:
   implementation_commit:
-    hash: "21b11aaef435c0c8b23c9627e17634447cd42da7"
-    message: "🔧 CT2725 task: resolve main conflict semantically"
+    hash: "f9c7673f4b3593f009aff4c59ff729bed1041beb"
+    message: "🔄 CT2725 task: merge current main for protected-base eligibility"
   workflow_route_baseline:
     start_head_sha: "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e"
     version: 1
