@@ -1,3 +1,3 @@
- .../src/commands/evaluator/evaluator-runtime-evidence.test.ts |  9 +++++++++
- .../agentplane/src/commands/task/verify-record-execute.ts     | 11 +++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 232 ++++++++++++++++++++-
+ .../src/commands/task/verify-record-execute.ts     |  11 +-
+ 2 files changed, 235 insertions(+), 8 deletions(-)

@@ -12,8 +12,8 @@ Created: 2026-07-31T14:05:33.781Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS: semantic verification provenance is exact and all focused plus critical checks pass at 58d0fc2a6.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-07-31T14:05:33.781Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/evaluator/evaluator-runtime-evidence.test.ts |  9 +++++++++
- .../agentplane/src/commands/task/verify-record-execute.ts     | 11 +++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 232 ++++++++++++++++++++-
+ .../src/commands/task/verify-record-execute.ts     |  11 +-
+ 2 files changed, 235 insertions(+), 8 deletions(-)
 ```
 
 </details>

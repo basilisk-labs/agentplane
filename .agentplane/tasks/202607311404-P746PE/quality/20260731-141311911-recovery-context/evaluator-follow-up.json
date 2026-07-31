@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607311404-P746PE-ed037ee5fc7d8705a3fccc50",
+  "task_id": "202607311404-P746PE",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add focused branch_pr, included-task batch, and semantic-change regression cases around verification record creation, then rerun the focused evaluator/verification suites and the critical suite with structured evidence.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Regression coverage does not prove the new verification-target binding across the required branch_pr and batch-task paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:beb5b4cae8707ff775c617d55a3d9c3768cb65d6d7c21c36732ea9ebd8605d77",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts and packages/agentplane/src/commands/task/verify-record-execute.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/README.md",
+          "sha256": "sha256:abaed5055f5948f6ba143047b40726a294157eeec25cd7de060066b72a4eb779",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7662b511a5aee3249ab8045c01e462a2716b80fe8f8b3849ac6caaef64ef0e5a",
+          "section": "declared_checks and verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311404-P746PE/quality/20260731-141311911-recovery-context/evaluator-result.json"
+}
