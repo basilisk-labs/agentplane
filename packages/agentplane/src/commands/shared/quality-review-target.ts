@@ -282,6 +282,7 @@ export async function resolveQualityReviewTargetSha(opts: {
   workflowDir: string;
   taskId: string;
   taskIds?: readonly string[];
+  lifecycleTaskIds?: readonly string[];
   headSha?: string | null;
   previousEvaluatedSha?: string | null;
 }): Promise<string | null> {
@@ -294,11 +295,17 @@ export async function resolveQualityReviewTargetSha(opts: {
 
   const workflowDir = normalizeWorkflowDir(opts.workflowDir);
   const taskIds = [...new Set([opts.taskId, ...(opts.taskIds ?? [])])];
-  const taskArtifactPrefixes = taskIds.map((taskId) => `${workflowDir}/${taskId}/`);
+  const taskArtifactPrefixes = taskIds.map((taskId) => ({
+    taskId,
+    prefix: `${workflowDir}/${taskId}/`,
+  }));
+  const lifecycleTaskIdSet = new Set(opts.lifecycleTaskIds ?? taskIds);
   const workflowArtifactPrefix = `${workflowDir}/`;
+  const taskIdForPath = (name: string): string | null =>
+    taskArtifactPrefixes.find((candidate) => name.startsWith(candidate.prefix))?.taskId ?? null;
   const taskRelativePath = (name: string): string | null => {
-    const prefix = taskArtifactPrefixes.find((candidate) => name.startsWith(candidate));
-    return prefix ? name.slice(prefix.length) : null;
+    const match = taskArtifactPrefixes.find((candidate) => name.startsWith(candidate.prefix));
+    return match ? name.slice(match.prefix.length) : null;
   };
   const previousEvaluatedSha = await (async (): Promise<string | null> => {
     const candidate = opts.previousEvaluatedSha?.trim();
@@ -363,13 +370,17 @@ export async function resolveQualityReviewTargetSha(opts: {
         continue;
       }
       if (
-        await isLifecycleOnlyTaskReadmeAdvance({
+        changed.every((name) => {
+          const taskId = taskIdForPath(name);
+          return taskId !== null && lifecycleTaskIdSet.has(taskId);
+        }) &&
+        (await isLifecycleOnlyTaskReadmeAdvance({
           gitRoot: opts.gitRoot,
           parent,
           current,
           changed,
           taskRelativePath,
-        })
+        }))
       ) {
         current = parent;
         continue;

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607311404-P746PE/bind-verification-records-to-semantic-review-tar",
   "created_at": "2026-07-31T14:05:33.781Z",
-  "diffstat_sha256": "sha256:3388bbe23276f41b8fbc3dbf081bc1d7e8d95c3f2ab666d5ed06f79c0dec4d0a",
+  "diffstat_sha256": "sha256:e88e009aed952e9610a6435ba5c893546519ad37f2ddeab7bdfa6009b22977e5",
   "last_verified_at": "2026-07-31T14:27:16.722Z",
   "last_verified_diffstat_sha256": "sha256:6977da958d70f51a473d63ed00092e3e58aa22ebb9fd6107cc0c275f9b8e63cd",
   "pr_number": 4705,

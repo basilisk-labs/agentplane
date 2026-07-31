@@ -40,10 +40,10 @@ validation at 0af1c1a64.
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../commands/pr/internal/sync-batch-ownership.ts   |  22 ++
  .../commands/shared/quality-review-target.test.ts  |  19 +
- .../src/commands/shared/quality-review-target.ts   |  78 +++-
+ .../src/commands/shared/quality-review-target.ts   |  95 ++++-
  .../task/qualification-packet-dependencies.ts      |   7 +-
- .../src/commands/task/verify-record-execute.ts     |  22 +-
- 11 files changed, 550 insertions(+), 23 deletions(-)
+ .../src/commands/task/verify-record-execute.ts     |  23 +-
+ 11 files changed, 565 insertions(+), 26 deletions(-)
 ```
 
 </details>
