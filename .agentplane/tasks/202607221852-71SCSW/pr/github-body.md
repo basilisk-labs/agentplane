@@ -19,8 +19,9 @@ RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hos
 - Note:
 
 ```text
-Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic
-episodes remain role-scoped; all declared gates passed.
+Verified: completed-journal recovery is bounded to durably completed operations; focused regression,
+workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks
+passed.
 ```
 - Canonical workflow state lives in the task README.
 
