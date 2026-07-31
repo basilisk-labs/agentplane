@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T13:50:07.149Z"
-  updated_by: "CODER"
-  note: "Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass."
+  updated_at: "2026-07-31T14:30:58.713Z"
+  updated_by: "INTEGRATOR"
+  note: "Hosted checks pass on final candidate 8c166396; finalization uses immutable branch head and full merge-lane release verification already passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -203,8 +203,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T14:30:58.713Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Hosted checks pass on final candidate 8c166396; finalization uses immutable branch head and full merge-lane release verification already passed."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:50:48.029Z"
+doc_updated_at: "2026-07-31T14:30:58.971Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -477,6 +483,36 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-31T14:30:58.713Z — VERIFY — ok
+
+    By: INTEGRATOR
+
+    Note: Hosted checks pass on final candidate 8c166396; finalization uses immutable branch head and full merge-lane release verification already passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:50:48.029Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
     - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
     - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
     - route_changed: no
@@ -814,6 +850,36 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-31T14:30:58.713Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Hosted checks pass on final candidate 8c166396; finalization uses immutable branch head and full merge-lane release verification already passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:50:48.029Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
 - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
 - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
 - route_changed: no
