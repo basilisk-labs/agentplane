@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311707-DRYTNK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T22:18:57.991Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "09e721ea05184c57d00d751abf1fd395ecb25d26",
+  "blueprint_digest": "1e52f772c7855fef3c6ae0acefd3152bb235fe4c84fc78f15a4b77e4c88100cc",
+  "findings": [
+    "The dedicated dependency-cruiser config avoids compiler-only references and aliases without weakening no-circular or runtime/testkit rules; exact CI-order reproduction passes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311707-DRYTNK/quality/20260731-221857518-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
