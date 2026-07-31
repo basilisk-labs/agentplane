@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The dedicated dependency-cruiser config avoids compiler-only references and aliases without weakening no-circular or runtime/testkit rules; exact CI-order reproduction passes."
 commit:
-  hash: "9e2fb9caac3cfa5561a074c2ca846c38a90e61d6"
-  message: "🧪 DRYTNK task: preserve RF-04 anchor isolation"
+  hash: "29209fa53f2be11ba89d737f823402b4d197b855"
+  message: "🧪 DRYTNK task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -108,8 +111,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted verify-static rework verified locally against the exact CI build order; TypeScript 7 and TypeScript 6 rollback remain green."
+  -
+    type: "status"
+    at: "2026-07-31T22:20:38.438Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T22:18:44.406Z"
+doc_updated_at: "2026-07-31T22:20:38.439Z"
 doc_updated_by: "CODER"
 description: "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path."
 sections:
@@ -211,6 +221,9 @@ sections:
       Impact: The hosted architecture gate reported unrelated historical cycles even though product code and all platform checks passed.
       Resolution: Use a dedicated dependency-cruiser tsconfig with package-boundary resolution, guard that isolation in typescript:toolchain:check, and rerun frozen install, four package builds, format, typecheck, rollback, lint, and the full architecture graph.
 extensions:
+  implementation_commit:
+    hash: "09e721ea05184c57d00d751abf1fd395ecb25d26"
+    message: "🧪 DRYTNK task: make architecture resolution build-order invariant"
   workflow_route_baseline:
     start_head_sha: "ae4f903e99126484dcbe54ae3ec152dd20ba667b"
     version: 1
