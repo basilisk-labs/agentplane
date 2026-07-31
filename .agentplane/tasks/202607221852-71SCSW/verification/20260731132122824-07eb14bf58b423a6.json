@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:07eb14bf58b423a627144e1e3c49a21617d378846365ae9e3b62edb25adfcfb5",
+  "implementation_sha": "4c11aa23b7938d816680507486d5f48bb7091481",
+  "kind": "task_verification_record",
+  "note": "Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.",
+  "recorded_at": "2026-07-31T13:21:22.824Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run a protected-main branch_pr golden task. Expected: EXECUTOR performs zero lifecycle calls; supervisor owns worktree through cleanup and uses provider truth.\n2. Exercise late checks, stale head, merge conflict, deleted branch, queue contention, and hosted-close retry. Expected: safe typed waits/rework/recovery without duplicate PR/merge.\n3. Remove merge authority. Expected: an approval step; no provider action is imitated.\n4. Verify actual PR/check/merge receipts and final main SHA in integration fixtures.\n5. Run branch_pr workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7",
+  "task_id": "202607221852-71SCSW",
+  "verification_command": "agentplane verify 202607221852-71SCSW --ok --by TESTER",
+  "verifier": "TESTER"
+}

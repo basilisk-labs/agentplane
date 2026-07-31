@@ -13,7 +13,7 @@ Created: 2026-07-31T11:14:18.745Z
 ## Verification
 
 - State: ok
-- Note: Verified: completed-journal recovery is bounded to durably completed operations; focused regression, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.
+- Note: Verified: in-process pre-merge close now matches canonical CLI finish commit resolution; focused adapter/supervisor tests, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
