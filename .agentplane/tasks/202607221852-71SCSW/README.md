@@ -1,10 +1,11 @@
 ---
 id: "202607221852-71SCSW"
 title: "Extend supervised execution to branch_pr"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +67,8 @@ quality_review:
     - "Implementation receipt advances preserve the reviewed implementation SHA only when task semantics and prior comment/event history are unchanged and the recorded commit is the exact parent."
     - "Late checks, stale heads, merge conflicts, deleted branches, queue contention, hosted-close retry, merge authority, and final provider truth have explicit regression coverage."
 commit:
-  hash: "6cb5cdc7e6fc8cdacd1a0b00d8d2fcabba85178e"
-  message: "🚧 71SCSW task: satisfy receipt resolver lint"
+  hash: "863b5740d2b609342a955354be0d37ba22587bd0"
+  message: "🧭 71SCSW task: record final evaluator verdict"
 comments:
   -
     author: "CODER"
@@ -81,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: receipt resolver passes project lint."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -116,8 +120,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: receipt resolver passes project lint."
+  -
+    type: "status"
+    at: "2026-07-31T12:30:28.585Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:24:12.450Z"
+doc_updated_at: "2026-07-31T12:30:28.586Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
@@ -184,6 +195,9 @@ sections:
       Impact: Protected-main branch_pr execution now stops safely on waits, authority, stale provider state, and effect uncertainty without duplicate side effects.
       Resolution: Accept implementation commit 49f4e7c7a with durable operation receipts, zero executor lifecycle mutation coverage, and final-main/provider truth fixtures.
 extensions:
+  implementation_commit:
+    hash: "6cb5cdc7e6fc8cdacd1a0b00d8d2fcabba85178e"
+    message: "🚧 71SCSW task: satisfy receipt resolver lint"
   workflow_route_baseline:
     start_head_sha: "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c"
     version: 1
