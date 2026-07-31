@@ -24,7 +24,7 @@ export const configShowSpec: CommandSpec<ConfigShowParsed> = {
 async function cmdConfigShow(opts: {
   cwd: string;
   rootOverride?: string;
-  deps: RunDeps;
+  deps: Pick<RunDeps, "getLoadedConfig">;
 }): Promise<number> {
   return wrapCommand({ command: "config show", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("config show");
@@ -33,7 +33,9 @@ async function cmdConfigShow(opts: {
   });
 }
 
-export function makeRunConfigShowHandler(deps: RunDeps): CommandHandler<ConfigShowParsed> {
+export function makeRunConfigShowHandler(
+  deps: Pick<RunDeps, "getLoadedConfig">,
+): CommandHandler<ConfigShowParsed> {
   return (ctx) => cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
 }
 

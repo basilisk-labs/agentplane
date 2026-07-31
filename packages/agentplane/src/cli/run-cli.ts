@@ -24,6 +24,7 @@ import {
 import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 import { resolveAgentModeArgv } from "./run-cli/agent-mode.js";
+import { emitTraceEvent } from "../shared/trace-events.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json", "--all"]);
 
 type CliResolvedProject = Awaited<ReturnType<typeof resolveProject>>;
@@ -218,6 +219,18 @@ export async function runCli(argv: string[]): Promise<number> {
         getCtx: getCtxOrThrow,
         getResolvedProject,
         getLoadedConfig,
+        onPreparationTrace: (event) =>
+          emitTraceEvent({
+            component: "command-session",
+            event: "preparation_node",
+            details: {
+              command: event.command,
+              capability: event.capability,
+              node: event.node,
+              status: event.status,
+              duration_ms: event.durationMs,
+            },
+          }),
       });
     };
     let runtimeRegistryPromise: ReturnType<typeof buildRuntimeRegistry> | null = null;

@@ -49,7 +49,9 @@ function formatAgentsTableLines(
   ];
 }
 
-export function makeRunAgentsHandler(deps: RunDeps): CommandHandler<AgentsParsed> {
+export function makeRunAgentsHandler(
+  deps: Pick<RunDeps, "getResolvedProject">,
+): CommandHandler<AgentsParsed> {
   return async (ctx) =>
     wrapCommand({ command: "agents", rootOverride: ctx.rootOverride }, async () => {
       const resolved = await deps.getResolvedProject("agents");

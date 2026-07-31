@@ -50,23 +50,62 @@ describe("command catalog graph", () => {
 
   it("keeps dispatch metadata separate from handler loading", () => {
     expect(findCommandEntry(["ide", "sync"])?.needs).toBe("project");
+    expect(findCommandEntry(["ide", "sync"])?.requirements).toEqual(["project"]);
+    expect(findCommandEntry(["ide", "sync"])?.compatibility).toEqual({
+      mode: "legacy-command-needs",
+      needs: "project",
+    });
     expect(findCommandEntry(["ide", "sync"])?.dispatch).toEqual({
       project: true,
       loadedConfig: false,
       taskContext: false,
     });
     expect(findCommandEntry(["config", "show"])?.needs).toBe("project+config");
+    expect(findCommandEntry(["config", "show"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["config", "show"])?.preparationNodes).toEqual(["project", "config"]);
+    expect(findCommandEntry(["config", "show"])?.compatibility).toBeNull();
     expect(findCommandEntry(["config", "show"])?.dispatch).toEqual({
       project: true,
       loadedConfig: true,
       taskContext: false,
     });
     expect(findCommandEntry(["task"])?.needs).toBe("none");
+    expect(findCommandEntry(["task"])?.requirements).toEqual([]);
     expect(findCommandEntry(["task"])?.dispatch).toEqual({
       project: false,
       loadedConfig: false,
       taskContext: false,
     });
+  });
+
+  it("publishes granular requirements for the migrated pilot slices", () => {
+    expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
+    expect(findCommandEntry(["docs", "cli"])?.preparationNodes).toEqual(["output"]);
+    expect(findCommandEntry(["agents"])?.requirements).toEqual(["project"]);
+
+    expect(findCommandEntry(["task", "list"])?.requirements).toEqual([
+      "project",
+      "config",
+      "backend.read",
+      "task.read",
+    ]);
+    expect(findCommandEntry(["task", "list"])?.preparationNodes).toEqual([
+      "project",
+      "config",
+      "command_context",
+    ]);
+
+    const routeRequirements = findCommandEntry(["task", "next-action"])?.requirements ?? [];
+    expect(routeRequirements).toEqual(
+      expect.arrayContaining(["task.read", "git.head", "route.local", "route.remote", "provider"]),
+    );
+    expect(findCommandEntry(["task", "next-action"])?.compatibility).toBeNull();
+
+    const providerRequirements = findCommandEntry(["pr", "check"])?.requirements ?? [];
+    expect(providerRequirements).toEqual(
+      expect.arrayContaining(["task.read", "git.head", "git.diff", "route.remote", "provider"]),
+    );
+    expect(findCommandEntry(["pr", "check"])?.compatibility).toBeNull();
   });
 
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {

@@ -1,4 +1,17 @@
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+
+type PrCheckSession = CommandSession<
+  | "project"
+  | "config"
+  | "backend.read"
+  | "task.read"
+  | "git.head"
+  | "git.diff"
+  | "route.remote"
+  | "policy"
+  | "approvals"
+  | "provider"
+>;
 
 export const loadAcrSpec = (deps: RunDeps) =>
   import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
@@ -195,8 +208,13 @@ export const loadPrOpenSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrOpenHandler(deps.getCtx));
 export const loadPrUpdateSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrUpdateHandler(deps.getCtx));
-export const loadPrCheckSpec = (deps: RunDeps) =>
-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCheckHandler(deps.getCtx));
+export const loadPrCheckSpec = (session: PrCheckSession) =>
+  import("../../../commands/pr/pr.command.js").then((m) =>
+    m.makeRunPrCheckHandler(async (command) => {
+      await session.require("route.remote", command);
+      return await session.require("provider", command);
+    }),
+  );
 export const loadPrConflictReworkSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
     m.makeRunPrConflictReworkHandler(deps.getCtx),

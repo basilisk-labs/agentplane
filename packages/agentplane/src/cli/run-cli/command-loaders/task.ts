@@ -1,4 +1,18 @@
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+
+type TaskReadSession = CommandSession<"project" | "config" | "backend.read" | "task.read">;
+type TaskRouteSession = CommandSession<
+  | "project"
+  | "config"
+  | "backend.read"
+  | "task.read"
+  | "git.head"
+  | "route.local"
+  | "route.remote"
+  | "policy"
+  | "approvals"
+  | "provider"
+>;
 
 export const fromCommandsTaskTaskCommand = commandModule(
   () => import("../../../commands/task/task.command.js"),
@@ -55,8 +69,10 @@ export const loadTaskAuthorityGrantSpec = (deps: RunDeps) =>
   import("../../../commands/task/authority-grant.command.js").then((m) =>
     m.makeRunTaskAuthorityGrantHandler(deps.getCtx),
   );
-export const loadTaskListSpec = (deps: RunDeps) =>
-  import("../../../commands/task/list.run.js").then((m) => m.makeRunTaskListHandler(deps.getCtx));
+export const loadTaskListSpec = (session: TaskReadSession) =>
+  import("../../../commands/task/list.run.js").then((m) =>
+    m.makeRunTaskListHandler((command) => session.require("task.read", command)),
+  );
 export const loadTaskNextSpec = (deps: RunDeps) =>
   import("../../../commands/task/next.run.js").then((m) => m.makeRunTaskNextHandler(deps.getCtx));
 export const loadTaskSearchSpec = (deps: RunDeps) =>
@@ -69,9 +85,15 @@ export const loadTaskStatusSpec = (deps: RunDeps) =>
   import("../../../commands/task/status.command.js").then((m) =>
     m.makeRunTaskStatusHandler(deps.getCtx),
   );
-export const loadTaskNextActionSpec = (deps: RunDeps) =>
+export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
   import("../../../commands/task/next-action.command.js").then((m) =>
-    m.makeRunTaskNextActionHandler(deps.getCtx),
+    m.makeRunTaskNextActionHandler({
+      getLocalContext: (command) => session.require("route.local", command),
+      getRemoteContext: async (command) => {
+        await session.require("route.remote", command);
+        return await session.require("provider", command);
+      },
+    }),
   );
 export const loadTaskNewSpec = (deps: RunDeps) =>
   import("../../../commands/task/new.command.js").then((m) => m.makeRunTaskNewHandler(deps.getCtx));

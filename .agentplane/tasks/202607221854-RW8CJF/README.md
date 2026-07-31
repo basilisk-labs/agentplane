@@ -1,10 +1,10 @@
 ---
 id: "202607221854-RW8CJF"
 title: "Define granular CommandSession capabilities and migrate a pilot slice"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-31T19:53:14.538Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-31T19:53:56.469Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:17.691Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-31T19:53:56.469Z"
+doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
   Summary: |-
@@ -72,6 +82,10 @@ sections:
     - Keep the capability contract additive until the remaining migration task is complete.
     - Re-run command snapshots, architecture checks, and typecheck.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "1adc9896b158719e908acc894b3651bfec2348c1"
+    version: 1
 id_source: "generated"
 ---
 ## Summary

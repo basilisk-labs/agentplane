@@ -1,4 +1,4 @@
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
 
 export const fromCommandsHooksHooksCommand = commandModule(
   () => import("../../../commands/hooks/hooks.command.js"),
@@ -27,9 +27,9 @@ export const loadFinishSpec = (deps: RunDeps) =>
   import("../../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx));
 export const loadReadySpec = (deps: RunDeps) =>
   import("../../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx));
-export const loadDocsCliSpec = (deps: RunDeps) =>
+export const loadDocsCliSpec = (session: CommandSession<"output">) =>
   import("../../../commands/docs/cli.command.js").then((m) =>
-    m.makeRunDocsCliHandler(deps.getHelpJsonForDocs),
+    m.makeRunDocsCliHandler(session.getHelpJsonForDocs),
   );
 export const fromHooksUninstallSpec = commandModule(
   () => import("../../../commands/hooks/uninstall.command.js"),

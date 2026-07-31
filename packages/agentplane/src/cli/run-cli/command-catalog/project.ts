@@ -148,7 +148,7 @@ import {
   evaluatorSpec,
 } from "../../../commands/evaluator/evaluator.command.js";
 
-import { declareCommand, type CommandEntry } from "./kernel.js";
+import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsRecipesRecipesCommand,
   fromCommandsRecipesCacheCommand,
@@ -372,7 +372,21 @@ export const PROJECT_COMMANDS = [
   declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),
   declareCommand(prOpenSpec, { load: loadPrOpenSpec }),
   declareCommand(prUpdateSpec, { load: loadPrUpdateSpec }),
-  declareCommand(prCheckSpec, { load: loadPrCheckSpec }),
+  declareSessionCommand(prCheckSpec, {
+    load: loadPrCheckSpec,
+    requirements: [
+      "project",
+      "config",
+      "backend.read",
+      "task.read",
+      "git.head",
+      "git.diff",
+      "route.remote",
+      "policy",
+      "approvals",
+      "provider",
+    ],
+  }),
   declareCommand(prConflictReworkSpec, { load: loadPrConflictReworkSpec }),
   declareCommand(prFlowStatusSpec, { load: loadPrFlowStatusSpec }),
   declareCommand(prCloseSpec, { load: loadPrCloseSpec }),
