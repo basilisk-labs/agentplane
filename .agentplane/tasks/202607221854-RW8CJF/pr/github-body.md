@@ -19,8 +19,8 @@ RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/
 - Note:
 
 ```text
-CommandSession capability pilot passed typed denial, laziness, trace, architecture, critical CLI,
-typecheck, and bundle gates at implementation SHA 33e59899d.
+Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file;
+hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,7 +32,7 @@ typecheck, and bundle gates at implementation SHA 33e59899d.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- packages/agentplane/src/cli/run-cli.core.test.ts   |  27 +++
+ .../src/cli/run-cli.command-session.test.ts        |  38 +++
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  39 +++
  .../agentplane/src/cli/run-cli/command-catalog.ts  |   9 +-
@@ -51,7 +51,7 @@ typecheck, and bundle gates at implementation SHA 33e59899d.
  .../src/cli/run-cli/commands/core/agents.ts        |   4 +-
  .../agentplane/src/cli/run-cli/registry.run.ts     |  17 +-
  .../src/commands/task/next-action.command.ts       |  10 +-
- 19 files changed, 765 insertions(+), 55 deletions(-)
+ 19 files changed, 776 insertions(+), 55 deletions(-)
 ```
 
 </details>
