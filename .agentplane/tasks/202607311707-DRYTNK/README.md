@@ -1,10 +1,10 @@
 ---
 id: "202607311707-DRYTNK"
 title: "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -37,11 +37,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-31T20:59:44.608Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-31T17:47:37.370Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-31T20:59:44.608Z"
+doc_updated_by: "CODER"
 description: "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path."
 sections:
   Summary: |-
@@ -73,6 +83,10 @@ sections:
     - Observation: QB60J5 approved TypeScript 7.0.2 only as @typescript/native alongside pinned TypeScript 6.0.3; root baseUrl and the inherited Docusaurus 3.10.1 baseUrl are incompatible, and declaration emit has reviewed order-only drift.
       Impact: DRYTNK must include the config bridge, deterministic emit classification, hosted platform resolution, and a runtime-selectable compiler rollback instead of a wholesale package replacement.
       Resolution: Implement benchmark/typescript-7-adoption-contract.md exactly, including AGENTPLANE_TYPESCRIPT_PACKAGE=typescript as the rollback override and default automatic builder concurrency.
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "ae4f903e99126484dcbe54ae3ec152dd20ba667b"
+    version: 1
 id_source: "generated"
 ---
 ## Summary

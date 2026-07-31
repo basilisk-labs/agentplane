@@ -1,0 +1,1 @@
+🚧 DRYTNK task: Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility [202607311707-DRYTNK]
