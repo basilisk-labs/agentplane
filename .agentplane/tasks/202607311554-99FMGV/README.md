@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +59,8 @@ quality_review:
   findings:
     - "The evaluated change and SHA-matched deterministic verification cover guarded fast-forward publication, fail-closed negative cases, provider alignment, and subsequent CODER-owned semantic conflict rework."
 commit:
-  hash: "74061ddc5b4845f58f5ec451bc396419c64980e2"
-  message: "🚧 99FMGV task: Fix conflict rework CI gates"
+  hash: "4b3ae528276d3d67e48786ab4ad9e0443f47f0a1"
+  message: "🔍 99FMGV task: Record CI repair evaluator pass"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation target updated after CI repair: strict lint typing and extracted conflict base-context resolution."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -131,8 +134,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2."
+  -
+    type: "status"
+    at: "2026-07-31T17:16:15.346Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T17:13:43.790Z"
+doc_updated_at: "2026-07-31T17:16:15.346Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
@@ -326,8 +336,8 @@ sections:
       Resolution: Recorded all commands, pass results, concrete evidence counts, scopes, distinct divergent/unrelated tests, and live CT2725 route proof.
 extensions:
   implementation_commit:
-    hash: "5912dc86cc255d9401d0d96d534e23cd3250b0a4"
-    message: "🧪 99FMGV code: Distinguish divergent and unrelated heads"
+    hash: "74061ddc5b4845f58f5ec451bc396419c64980e2"
+    message: "🚧 99FMGV task: Fix conflict rework CI gates"
   workflow_route_baseline:
     start_head_sha: "3a42f9534b567fb4e86387bbbf6b2984a753bf6f"
     version: 1
