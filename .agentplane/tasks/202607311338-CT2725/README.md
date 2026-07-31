@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -32,35 +32,35 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T18:07:40.357Z"
+  updated_at: "2026-07-31T18:59:51.710Z"
   updated_by: "TESTER"
-  note: "PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay."
+  note: "PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T18:08:18.861Z"
+  updated_at: "2026-07-31T19:00:45.807Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "21b11aaef435c0c8b23c9627e17634447cd42da7"
+  evaluated_sha: "f9c7673f4b3593f009aff4c59ff729bed1041beb"
   blueprint_digest: "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4"
   evidence_refs:
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607311338-CT2725/README.md"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Typed blocked, needs_context, and failed executor results with present non-rejected unverified receipts preserve their semantic stop; completed-unverified, missing, and rejected receipts remain terminal."
-    - "The prior provenance mismatch is closed: task commit and fresh structured verification both target 21b11aaef435c0c8b23c9627e17634447cd42da7."
+    - "Present non-rejected but containment-unverified receipts preserve typed blocked, needs_context, and failed stops; completed-unverified, missing, and rejected receipts remain terminal."
+    - "The new merge parent contributes only the already-reviewed WBY9EK publication-route repair; it does not modify CT2725 supervisor implementation or tests, and all declared checks pass at f9c7673f4b3593f009aff4c59ff729bed1041beb."
 commit:
   hash: "78151f0bbc4b6818b23dbf764214b177907a481f"
   message: "🔍 CT2725 task: record post-conflict verification"
@@ -126,8 +126,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T18:59:51.710Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay."
 doc_version: 3
-doc_updated_at: "2026-07-31T18:09:03.571Z"
+doc_updated_at: "2026-07-31T18:59:52.636Z"
 doc_updated_by: "CODER"
 description: "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate."
 sections:
@@ -375,6 +381,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-31T18:59:51.710Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T18:09:03.571Z, excerpt_hash=sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311338-CT2725-resolve-successful-runner-receipt-observation-ra/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+    - old_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+    - current_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311338-CT2725
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -391,6 +427,10 @@ sections:
     - Observation: A successful provider receipt can remain unverified after containment; typed blocked, failed, and needs_context outcomes must still be surfaced without replay, while completed stays unauthorized.
       Impact: Treating every unverified receipt as runner_receipt_unobserved discards valid semantic stops and falsely blocks RC.1 qualification.
       Resolution: The observation boundary now preserves typed non-success outcomes with a present contained receipt and keeps completed, missing, mismatched, and rejected receipts terminal.
+
+    - Observation: The protected-base stale-head requirement was resolved by merging main at 25f6d22b; the CT2725 semantic implementation and negative receipt safeguards are unchanged.
+      Impact: The PR head is now eligible for fresh hosted verification against current main while preserving at-most-once provider execution.
+      Resolution: Re-ran every declared Verify Step plus typecheck and incident asset parity at f9c7673f4b3593f009aff4c59ff729bed1041beb.
 extensions:
   implementation_commit:
     hash: "21b11aaef435c0c8b23c9627e17634447cd42da7"
@@ -653,6 +693,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-31T18:59:51.710Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T18:09:03.571Z, excerpt_hash=sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311338-CT2725-resolve-successful-runner-receipt-observation-ra/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+- old_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+- current_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311338-CT2725
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -673,3 +743,7 @@ DecisionContextRef:
 - Observation: A successful provider receipt can remain unverified after containment; typed blocked, failed, and needs_context outcomes must still be surfaced without replay, while completed stays unauthorized.
   Impact: Treating every unverified receipt as runner_receipt_unobserved discards valid semantic stops and falsely blocks RC.1 qualification.
   Resolution: The observation boundary now preserves typed non-success outcomes with a present contained receipt and keeps completed, missing, mismatched, and rejected receipts terminal.
+
+- Observation: The protected-base stale-head requirement was resolved by merging main at 25f6d22b; the CT2725 semantic implementation and negative receipt safeguards are unchanged.
+  Impact: The PR head is now eligible for fresh hosted verification against current main while preserving at-most-once provider execution.
+  Resolution: Re-ran every declared Verify Step plus typecheck and incident asset parity at f9c7673f4b3593f009aff4c59ff729bed1041beb.

@@ -13,7 +13,7 @@ Created: 2026-07-31T13:40:50.644Z
 ## Verification
 
 - State: ok
-- Note: PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay.
+- Note: PASS at f9c7673f: current main is merged without semantic conflict; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity pass without provider replay.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
