@@ -141,6 +141,15 @@ function executedLifecycle(opts: {
   return lifecycle;
 }
 
+function successfulOperationResult() {
+  return Promise.resolve({
+    status: "succeeded" as const,
+    observed_postconditions: ["runner_state_observed"],
+    detail: "fixture operation completed",
+    exit_code: 0,
+  });
+}
+
 describe("persisted supervisor execution episodes", () => {
   it("records intent, outcome, and refreshed route without a second controller", async () => {
     const root = await mkGitRepoRoot();
@@ -304,19 +313,12 @@ describe("persisted supervisor execution episodes", () => {
     const firstDecision = fixtureDecision(root, 1);
     const secondDecision = fixtureDecision(root, 2);
     const finalDecision = fixtureDecision(root, 3);
-    const execute = () =>
-      Promise.resolve({
-        status: "succeeded" as const,
-        observed_postconditions: ["runner_state_observed"],
-        detail: "fixture operation completed",
-        exit_code: 0,
-      });
 
     const first = await supervisePersistedWorkflowEpisode({
       decision: firstDecision,
       git_root: root,
       task_revision: 1,
-      execute,
+      execute: successfulOperationResult,
       refresh: () => Promise.resolve(firstDecision),
     });
     expect(first.execution.executable).toBe(true);
@@ -328,7 +330,7 @@ describe("persisted supervisor execution episodes", () => {
       task_revision: 2,
       execute: () => {
         secondExecutions += 1;
-        return execute();
+        return successfulOperationResult();
       },
       refresh: () => Promise.resolve(finalDecision),
     });
