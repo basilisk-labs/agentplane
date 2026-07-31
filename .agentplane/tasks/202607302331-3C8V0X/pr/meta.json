@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:739a35a0cf51c4d07e9212d5d81b2b27f90da7a42900d802477acf6914b2655d",
   "pr_number": 4698,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4698",
+  "pre_merge_closure": {
+    "basis_commit": "792caabe60ba5de47356b56bee9123a3e7488fc2",
+    "branch": "task/202607302331-3C8V0X/repair-beta-2-guard-and-clone-baseline-drift",
+    "pr_number": 4698,
+    "recorded_at": "2026-07-31T00:14:40.457Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607302331-3C8V0X",
