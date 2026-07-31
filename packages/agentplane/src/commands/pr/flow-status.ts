@@ -398,6 +398,7 @@ export async function resolvePrFlowStatus(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride?: string;
+  integrationQueueRoot?: string | null;
   taskId: string;
 }): Promise<PrFlowStatusReport> {
   const { resolved, config, prDir } = await resolvePrPaths({ ...opts, ctx: opts.ctx });
@@ -424,7 +425,7 @@ export async function resolvePrFlowStatus(opts: {
     preferBranchSnapshot: true,
   });
   const meta = parsePrMetaIfPresent(taskMeta.content, task.id);
-  const queue = await readIntegrationQueue(resolved.gitRoot);
+  const queue = await readIntegrationQueue(opts.integrationQueueRoot ?? resolved.gitRoot);
   const queueEntry = queue.entries.find((candidate) => candidate.task_id === task.id) ?? null;
   const metaBranch = meta?.branch?.trim() ?? "";
   const inferredTaskBranch =

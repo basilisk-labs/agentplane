@@ -190,6 +190,39 @@ describe("WorkflowStep integration projections", () => {
       authoritativeCheckout: "base_checkout",
       exactArgv: ["agentplane", "integrate", "queue", "enqueue", task.id, "--branch", taskBranch],
     });
+
+    const queuedState = routeState({
+      task: { ...task, status: "DONE", verification: { state: "ok" } },
+      resume: { ...resume, task_status: "DONE" },
+      prFlow: {
+        ...openPr,
+        queue: {
+          present: true,
+          status: "queued",
+          reason: null,
+          updatedAt: "2026-07-31T12:34:40.572Z",
+          branch: taskBranch,
+          base: "main",
+          headSha: resume.head_sha,
+          baseSha: "2222222222222222222222222222222222222222",
+          prNumber: 4618,
+          leaseExpiresAt: null,
+          legacyProtectedConflictAdoption: null,
+          supersededByTaskId: null,
+        },
+      },
+    });
+    const queuedStep = reduceRouteState(queuedState);
+
+    expect(queuedStep).toMatchObject({
+      id: "wait.integration_queue",
+      kind: "wait",
+      condition: {
+        type: "integration_queue_terminal",
+        taskId: task.id,
+        queueStatus: "queued",
+      },
+    });
   });
 
   it("recomputes provider refresh routes with live remote truth", () => {

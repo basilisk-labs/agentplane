@@ -499,11 +499,17 @@ export type WorkflowStep =
     })
   | (WorkflowStepBase & {
       kind: "wait";
-      condition: {
-        type: "runner_terminal";
-        taskId: string;
-        runId: string | null;
-      };
+      condition:
+        | {
+            type: "runner_terminal";
+            taskId: string;
+            runId: string | null;
+          }
+        | {
+            type: "integration_queue_terminal";
+            taskId: string;
+            queueStatus: "queued" | "claimed" | "handoff" | "done";
+          };
     })
   | (WorkflowStepBase & {
       kind: "terminal";
