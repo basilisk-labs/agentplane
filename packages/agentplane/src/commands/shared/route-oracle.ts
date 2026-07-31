@@ -19,7 +19,8 @@ export type RouteBlockerCode =
   | "quality_review_missing"
   | "quality_review_stale"
   | "remote_pr_missing"
-  | "runner_alive";
+  | "runner_alive"
+  | "untracked_task_artifacts";
 
 export type RouteBlocker = {
   code: RouteBlockerCode;
@@ -111,11 +112,13 @@ export function deriveRouteOracle(opts: {
       phase:
         code === "commit_direct_task_artifacts"
           ? "direct_done_pending_artifact_commit"
-          : opts.task.status === "DONE"
-            ? "done"
-            : code === "complete_direct"
-              ? "direct_verified_pending_closeout"
-              : "direct_execution",
+          : code === "persist_direct_task_artifacts"
+            ? "direct_execution_pending_artifact_persistence"
+            : opts.task.status === "DONE"
+              ? "done"
+              : code === "complete_direct"
+                ? "direct_verified_pending_closeout"
+                : "direct_execution",
       authoritativeCheckout: "current_checkout",
     });
   }

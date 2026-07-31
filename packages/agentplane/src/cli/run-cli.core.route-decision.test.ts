@@ -866,7 +866,7 @@ describe("runCli route decision commands", () => {
     }
   });
 
-  it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {
+  it("persists an untracked done direct-mode task before declaring the route terminal", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -905,9 +905,11 @@ describe("runCli route decision commands", () => {
         blockers: { code: string }[];
         nextAction: { code: string; command: string | null };
       };
-      expect(parsed.blockers).toEqual([]);
-      expect(parsed.nextAction.code).toBe("done");
-      expect(parsed.nextAction.command).toBeNull();
+      expect(parsed.blockers).toEqual([expect.objectContaining({ code: "dirty_task_artifacts" })]);
+      expect(parsed.nextAction).toMatchObject({
+        code: "commit_direct_task_artifacts",
+        command: `agentplane commit ${taskId} --close --unstage-others`,
+      });
     } finally {
       statusIo.restore();
     }

@@ -123,11 +123,12 @@ export async function deriveBlockers(opts: {
   const blockers: RouteBlocker[] = [];
   if (opts.task.status === "DONE") {
     if (opts.workflowMode !== "branch_pr") {
-      const [staged, unstaged] = await Promise.all([
+      const [staged, unstaged, untracked] = await Promise.all([
         opts.ctx.git.statusStagedPaths(),
         opts.ctx.git.statusUnstagedTrackedPaths(),
+        opts.ctx.git.statusUntrackedPaths(),
       ]);
-      const dirtyTaskArtifacts = [...staged, ...unstaged].filter((relPath) =>
+      const dirtyTaskArtifacts = [...staged, ...unstaged, ...untracked].filter((relPath) =>
         isTaskArtifactPath({
           workflowDir: opts.ctx.config.paths.workflow_dir,
           taskId: opts.task.id,
@@ -138,7 +139,7 @@ export async function deriveBlockers(opts: {
         addBlocker(
           blockers,
           "dirty_task_artifacts",
-          `tracked task artifacts still need a cleanup commit (${dirtyTaskArtifacts.slice(0, 3).join(", ")}${dirtyTaskArtifacts.length > 3 ? ` +${dirtyTaskArtifacts.length - 3} more` : ""})`,
+          `task artifacts still need a cleanup commit (${dirtyTaskArtifacts.slice(0, 3).join(", ")}${dirtyTaskArtifacts.length > 3 ? ` +${dirtyTaskArtifacts.length - 3} more` : ""})`,
         );
       }
     }
@@ -154,6 +155,27 @@ export async function deriveBlockers(opts: {
   }
   if (opts.task.plan_approval?.state !== "approved") {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");
+  }
+  if (
+    opts.workflowMode !== "branch_pr" &&
+    String(opts.task.status).toUpperCase() === "DOING" &&
+    !opts.resume.runner.run_id &&
+    !opts.resume.runner.status
+  ) {
+    const untrackedTaskArtifacts = (await opts.ctx.git.statusUntrackedPaths()).filter((relPath) =>
+      isTaskArtifactPath({
+        workflowDir: opts.ctx.config.paths.workflow_dir,
+        taskId: opts.task.id,
+        relPath,
+      }),
+    );
+    if (untrackedTaskArtifacts.length > 0) {
+      addBlocker(
+        blockers,
+        "untracked_task_artifacts",
+        `canonical task artifacts are not persisted in git (${untrackedTaskArtifacts.slice(0, 3).join(", ")}${untrackedTaskArtifacts.length > 3 ? ` +${untrackedTaskArtifacts.length - 3} more` : ""})`,
+      );
+    }
   }
   if (opts.workflowMode === "branch_pr") {
     if (

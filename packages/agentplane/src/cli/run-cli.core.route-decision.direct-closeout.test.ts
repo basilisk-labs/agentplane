@@ -1,5 +1,5 @@
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe } from "vitest";
 
@@ -105,11 +105,13 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
-  it("does not require a runner route for a newly started direct task without runner state", async () => {
+  it("routes a tracked DOING direct task without runner state into the task runner", async () => {
     const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
+    await commitAll(root, "seed direct workflow config");
 
     const taskId = await createBranchPrTask(root);
     await runCliSilent([
@@ -136,6 +138,7 @@ describe("runCli route decision direct closeout", () => {
       "--root",
       root,
     ]);
+    await commitAll(root, "track direct task state before runner execution");
 
     const nextIo = captureStdIO();
     try {
@@ -154,15 +157,216 @@ describe("runCli route decision direct closeout", () => {
       };
       expect(parsed.route_oracle.phase).toBe("direct_execution");
       expect(parsed.next_action).toMatchObject({
-        code: "continue_direct",
-        command: `agentplane task verify-show ${taskId}`,
+        code: "run",
+        command: `agentplane task run ${taskId}`,
       });
-      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task verify-show ${taskId}`);
-      expect(parsed.next_action.command).not.toContain("task run");
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
       expect(parsed.operator_guidance.runner_context).toMatchObject({
-        runner_is_required: false,
-        runner_is_allowed_now: false,
-        runner_failure_means: "not_runner_route",
+        runner_is_required: true,
+        runner_is_allowed_now: true,
+        runner_failure_means: "runner_infrastructure_or_task_unknown",
+      });
+    } finally {
+      nextIo.restore();
+    }
+
+    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
+
+    const recomputeIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(recomputeIo.stdout) as {
+        next_action: { code: string; command: string | null };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "resume",
+        command: `agentplane task run ${taskId}`,
+      });
+      expect(parsed.next_action.command).not.toContain("verify-show");
+    } finally {
+      recomputeIo.restore();
+    }
+  });
+
+  it("persists untracked canonical task artifacts before routing direct runner work", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await commitAll(root, "seed direct workflow config");
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise persistence before direct runner execution.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: keep the canonical direct task artifact untracked before runner execution.",
+      "--root",
+      root,
+    ]);
+    await writeFile(path.join(root, "unrelated.txt"), "leave untracked\n", "utf8");
+
+    let persistenceArgv: string[] = [];
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: {
+          phase: string;
+          blocker: { code: string } | null;
+          nextCommand: string | null;
+        };
+        next_action: { code: string; command: string | null };
+        execution_packet: {
+          actionKind: string;
+          exactArgv: string[] | null;
+          evidenceMissing: string[];
+        };
+      };
+      expect(parsed.route_oracle.phase).toBe("direct_execution_pending_artifact_persistence");
+      expect(parsed.route_oracle.blocker).toMatchObject({
+        code: "untracked_task_artifacts",
+      });
+      expect(parsed.next_action.code).toBe("persist_direct_task_artifacts");
+      expect(parsed.next_action.command).toContain(`agentplane commit ${taskId}`);
+      expect(parsed.next_action.command).toContain("--allow-tasks");
+      expect(parsed.execution_packet.actionKind).toBe("local_command");
+      expect(parsed.execution_packet.evidenceMissing).toContain("task_artifact_persistence_commit");
+      persistenceArgv = parsed.execution_packet.exactArgv ?? [];
+    } finally {
+      nextIo.restore();
+    }
+
+    expect(persistenceArgv[0]).toBe("agentplane");
+    await runCliSilent([...persistenceArgv.slice(1), "--root", root]);
+
+    const trackedReadme = await execFileAsync(
+      "git",
+      ["ls-files", "--error-unmatch", `.agentplane/tasks/${taskId}/README.md`],
+      { cwd: root },
+    );
+    expect(trackedReadme.stdout.trim()).toBe(`.agentplane/tasks/${taskId}/README.md`);
+    const unrelatedStatus = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=all", "--", "unrelated.txt"],
+      { cwd: root },
+    );
+    expect(unrelatedStatus.stdout.trim()).toBe("?? unrelated.txt");
+
+    const recomputeIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(recomputeIo.stdout) as {
+        next_action: { code: string; command: string | null };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "run",
+        command: `agentplane task run ${taskId}`,
+      });
+    } finally {
+      recomputeIo.restore();
+    }
+  });
+
+  it("stops for verification evidence after a successful runner instead of looping verify-show", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await commitAll(root, "seed direct workflow config");
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise the direct terminal-runner verification gate.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: create a direct task whose runner reaches terminal success.",
+      "--root",
+      root,
+    ]);
+    await commitAll(root, "track direct task state before terminal runner simulation");
+    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
+
+    const statusIo = captureStdIO();
+    let statePath = "";
+    try {
+      expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
+      const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
+      statePath = payload.paths.state;
+    } finally {
+      statusIo.restore();
+    }
+    const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      statePath,
+      `${JSON.stringify({ ...state, status: "succeeded" }, null, 2)}\n`,
+      "utf8",
+    );
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string; command: string | null; summary: string };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          exactArgv: string[] | null;
+        };
+        operator_guidance: { canExecuteNow: boolean; safeCommand: string | null };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "review_direct_verification",
+        command: null,
+      });
+      expect(parsed.next_action.summary).toContain(`agentplane verify ${taskId}`);
+      expect(parsed.next_action.summary).not.toContain("verify-show");
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "stop",
+        safeToMutate: false,
+        exactArgv: null,
+      });
+      expect(parsed.operator_guidance).toMatchObject({
+        canExecuteNow: false,
+        safeCommand: null,
       });
     } finally {
       nextIo.restore();
@@ -395,7 +599,7 @@ describe("runCli route decision direct closeout", () => {
           code: "commit_direct_task_artifacts",
           command: `agentplane commit ${taskId} --close --unstage-others`,
         });
-        expect(parsed.next_action.summary).toContain("tracked task artifacts");
+        expect(parsed.next_action.summary).toContain("task artifacts");
         expect(parsed.route_oracle.nextCommand).toBe(parsed.next_action.command);
         expect(parsed.execution_packet.actionKind).toBe("local_command");
         expect(parsed.execution_packet.exactArgv).toEqual([

@@ -14,8 +14,8 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   synopsis: ["agentplane task <subcommand> [args] [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
-    "Default guided path: task begin -> task verify-show -> task complete. The low-level primitives remain available for explicit audit gates.",
-    "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
+    "Default guided path: task begin -> task next-action -> task run/verify/complete. The low-level primitives remain available for explicit audit gates.",
+    "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task next-action -> task run -> task verify-show -> verify -> finish.",
     "Before manually chaining low-level diagnostics, use `agentplane task status <task-id> --route` or `agentplane task next-action <task-id>` for a route decision.",
     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
     "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
