@@ -97,7 +97,7 @@ async function changedTaskReadmes(
     return null;
   }
 
-  const readmes: Array<readonly [before: string, after: string]> = [];
+  const readmes: (readonly [before: string, after: string])[] = [];
   for (const name of opts.changed) {
     const pair = await Promise.all([
       gitShowFile(opts.gitRoot, opts.parent, name).catch(() => null),
