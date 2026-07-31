@@ -12,8 +12,8 @@ Created: 2026-07-31T11:14:18.745Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

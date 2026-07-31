@@ -4,7 +4,7 @@ title: "Extend supervised execution to branch_pr"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -34,10 +34,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T12:09:21.598Z"
+  updated_by: "TESTER"
+  note: "Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed."
   attempts: 0
 commit:
   hash: "49f4e7c7a0ece8c38018f8b69f826f035685f34f"
@@ -64,8 +64,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: 49f4e7c7a. CLI-owned branch_pr supervision now covers semantic work, verification, PR/provider operations, integration queue, hosted close, durable idempotency, and cleanup."
+  -
+    type: "verify"
+    at: "2026-07-31T12:09:21.598Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:08:34.970Z"
+doc_updated_at: "2026-07-31T12:09:27.135Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
@@ -90,6 +96,36 @@ sections:
     5. Run branch_pr workflow coverage, lifecycle invariants, contract CI, and focused tests.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T12:09:21.598Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T12:08:34.970Z, excerpt_hash=sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-71SCSW-extend-supervised-execution-to-branch-pr/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json
+    - old_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+    - current_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-71SCSW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-71SCSW
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Before PR open: remove only the task-owned clean worktree/branch through the AgentPlane cleanup route and restore the previous supervisor feature boundary.
@@ -97,7 +133,10 @@ sections:
     - While queued: release the claimed/handoff lane through the integration queue recovery operation before reverting code.
     - After merge: never rewrite protected main; create a new follow-up task/PR and let hosted close reconcile the merged SHA.
     - After hosted close: preserve closure evidence and use a new rollback release/task; cleanup only verified clean task-owned worktrees and branches.
-  Findings: ""
+  Findings: |-
+    - Observation: ci:contract passed; workflow coverage passed 14 files/52 tests; critical CLI passed all 12 chunks; focused supervisor and lifecycle suites passed.
+      Impact: Protected-main branch_pr execution now stops safely on waits, authority, stale provider state, and effect uncertainty without duplicate side effects.
+      Resolution: Accept implementation commit 49f4e7c7a with durable operation receipts, zero executor lifecycle mutation coverage, and final-main/provider truth fixtures.
 extensions:
   workflow_route_baseline:
     start_head_sha: "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c"
@@ -134,6 +173,36 @@ RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hos
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T12:09:21.598Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T12:08:34.970Z, excerpt_hash=sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-71SCSW-extend-supervised-execution-to-branch-pr/.agentplane/tasks/202607221852-71SCSW/blueprint/resolved-snapshot.json
+- old_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+- current_digest: 1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-71SCSW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-71SCSW
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -145,3 +214,7 @@ RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hos
 - After hosted close: preserve closure evidence and use a new rollback release/task; cleanup only verified clean task-owned worktrees and branches.
 
 ## Findings
+
+- Observation: ci:contract passed; workflow coverage passed 14 files/52 tests; critical CLI passed all 12 chunks; focused supervisor and lifecycle suites passed.
+  Impact: Protected-main branch_pr execution now stops safely on waits, authority, stale provider state, and effect uncertainty without duplicate side effects.
+  Resolution: Accept implementation commit 49f4e7c7a with durable operation receipts, zero executor lifecycle mutation coverage, and final-main/provider truth fixtures.
