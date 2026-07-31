@@ -34,6 +34,8 @@ canonical result preservation, audit creation, token revocation, and broker clea
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog.test.ts        |   4 +
  .../src/cli/run-cli/command-catalog/task.ts        |   8 +
@@ -62,7 +64,7 @@ canonical result preservation, audit creation, token revocation, and broker clea
  .../agentplane/src/runtime/capabilities/runner.ts  |  31 ++
  .../baselines/v0.7-compatibility-candidate.json    |  38 +-
  .../check-compatibility-contract-baseline.mjs      |  15 +
- 28 files changed, 2651 insertions(+), 15 deletions(-)
+ 30 files changed, 2653 insertions(+), 15 deletions(-)
 ```
 
 </details>
