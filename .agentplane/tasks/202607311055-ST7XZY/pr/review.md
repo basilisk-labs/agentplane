@@ -12,8 +12,8 @@ Created: 2026-07-31T10:56:26.206Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: stale pre-merge closure accepted after implementation changes.
+- State: ok
+- Note: Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

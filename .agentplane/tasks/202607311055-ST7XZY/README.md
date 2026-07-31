@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -21,28 +21,31 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-31T11:22:28.604Z"
+  state: "ok"
+  updated_at: "2026-07-31T11:25:24.973Z"
   updated_by: "CODER"
-  note: "Rework: stale pre-merge closure accepted after implementation changes."
-  attempts: 1
+  note: "Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-31T11:17:50.290Z"
+  updated_at: "2026-07-31T11:25:27.562Z"
   updated_by: "EVALUATOR"
-  note: "Hosted contract rework passed without changing the production routing fix or oversized-test baseline."
-  evaluated_sha: "1997cf25e0076fe47889c3b3576d789c8f8f8993"
+  note: "Direct workflow and closeout routing regressions pass on the maintenance branch."
+  evaluated_sha: "ccfacd7d9a18ecba73a9e3e687fe3625e38492be"
   blueprint_digest: "063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d"
   evidence_refs:
     - ".agentplane/tasks/202607311055-ST7XZY/README.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111750290-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111750290-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-111750290-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-112527562-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-112527562-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311055-ST7XZY/quality/20260731-112527562-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
   findings:
-    - "The oversized route test is now below its existing 1171-line baseline and the full file passes 11/11 tests."
-    - "Production routing evidence remains covered by the prior 57 focused, 204 significant, and 16 release-critical passing tests."
+    - "DOING pending verification without runner state routes to task run after canonical task artifacts are persisted."
+    - "Terminal runner state stops for verification evidence instead of repeating verify-show."
+    - "Pre-merge closure must remain fresh relative to implementation HEAD; stale PR artifacts update before a new closure."
 commit: null
 comments:
   -
@@ -110,8 +113,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: enforce fresh pre-merge closure after implementation changes."
+  -
+    type: "verify"
+    at: "2026-07-31T11:25:24.973Z"
+    author: "CODER"
+    state: "ok"
+    note: "Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:22:37.267Z"
+doc_updated_at: "2026-07-31T11:25:25.163Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -256,6 +265,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T11:25:24.973Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:22:37.267Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+    - old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+    - diagnostic_command: agentplane pr check 202607311055-ST7XZY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the routing/persistence implementation and regression commits on the maintenance branch.
@@ -285,6 +324,10 @@ sections:
     - Observation: Pre-merge closure freshness was based only on marker presence.
       Impact: A reworked task could reach integration without a closure bound to the new implementation head.
       Resolution: Validate marker basis_commit against HEAD using task-local-only ancestry, and cover the deterministic pr update then fresh closure route.
+
+    - Observation: Direct no-runner and stale pre-merge closure routes now require state-changing transitions.
+      Impact: The reported state-neutral loop and analogous stale closure bypass are covered.
+      Resolution: Route to task run or artifact persistence; require fresh basis-bound closure after implementation changes.
 extensions:
   implementation_commit:
     hash: "d60e737bb85a8252367b8203074719531811764b"
@@ -441,6 +484,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T11:25:24.973Z — VERIFY — ok
+
+By: CODER
+
+Note: Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot budget, doctor, and v0.6.26 release plan passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T11:22:37.267Z, excerpt_hash=sha256:04fe9431887a0f0ee3fc83f28eb32cf1b871fe0b630097a592813372cdcc6120
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311055-ST7XZY-eliminate-direct-workflow-state-neutral-routing/.agentplane/tasks/202607311055-ST7XZY/blueprint/resolved-snapshot.json
+- old_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- current_digest: 063e7e1f0341562eb9e07c2b80ba05c375a57b35daffc47085e954e5030ecd3d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311055-ST7XZY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311055-ST7XZY --branch task/202607311055-ST7XZY/eliminate-direct-workflow-state-neutral-routing
+- diagnostic_command: agentplane pr check 202607311055-ST7XZY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -474,3 +547,7 @@ DecisionContextRef:
 - Observation: Pre-merge closure freshness was based only on marker presence.
   Impact: A reworked task could reach integration without a closure bound to the new implementation head.
   Resolution: Validate marker basis_commit against HEAD using task-local-only ancestry, and cover the deterministic pr update then fresh closure route.
+
+- Observation: Direct no-runner and stale pre-merge closure routes now require state-changing transitions.
+  Impact: The reported state-neutral loop and analogous stale closure bypass are covered.
+  Resolution: Route to task run or artifact persistence; require fresh basis-bound closure after implementation changes.

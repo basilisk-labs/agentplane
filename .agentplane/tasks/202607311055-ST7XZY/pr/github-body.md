@@ -15,8 +15,13 @@ Audit v0.6.25 direct workflow route decisions for successful state-neutral comma
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: stale pre-merge closure accepted after implementation changes.
+- State: ok
+- Note:
+
+```text
+Routing regressions, significant suite, release-critical suite, typecheck, policy routing, hotspot
+budget, doctor, and v0.6.26 release plan passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
