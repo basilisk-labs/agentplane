@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -34,30 +34,30 @@ verification:
   note: "PASS with immutable evidence scope: source and managed task artifacts pass range whitespace validation at 0af1c1a64."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T14:28:27.179Z"
+  updated_at: "2026-07-31T15:15:02.539Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "8a7f4e640022b355662b36f6b50ac8bf7a3aa65f"
   blueprint_digest: "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597"
   evidence_refs:
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607311404-P746PE/README.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607311404-P746PE/verification/20260731142716722-659dd4194bef6b6a.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-142734197-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No contract divergence found in the frozen implementation and verification evidence."
+    - "The frozen evaluator target is 8a7f4e640022b355662b36f6b50ac8bf7a3aa65f, while the latest recorded verification targets 0af1c1a648db15f88a72571b7411cd5ebe8ca7ac; evaluator preparation consequently freezes no verification records."
 commit:
   hash: "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac"
   message: "🚧 P746PE code: Resolve included batch targets"
