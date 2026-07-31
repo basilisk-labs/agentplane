@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T20:22:13.948Z"
+  updated_at: "2026-07-31T20:30:04.393Z"
   updated_by: "TESTER"
-  note: "CommandSession capability pilot passed typed denial, laziness, trace, architecture, critical CLI, typecheck, and bundle gates at implementation SHA 33e59899d."
+  note: "Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5."
   attempts: 0
 quality_review:
   state: "pass"
@@ -95,8 +95,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T20:30:04.393Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:24:41.643Z"
+doc_updated_at: "2026-07-31T20:30:05.193Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
@@ -129,6 +135,22 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T19:53:56.469Z, excerpt_hash=sha256:8a607b767465d48fff512fe7a20c5f468fbfae48be68219aa1ea6b45dd460fd4
+
+    Details:
+
+    # CommandSession Pilot Verification
+
+    Verified implementation SHA: `33e59899d5cd381f089b96746fb715fa5c84a6a2`.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T20:30:04.393Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T20:24:41.643Z, excerpt_hash=sha256:8a607b767465d48fff512fe7a20c5f468fbfae48be68219aa1ea6b45dd460fd4
 
     Details:
 
@@ -197,6 +219,22 @@ Details:
 
 Verified implementation SHA: `33e59899d5cd381f089b96746fb715fa5c84a6a2`.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T20:30:04.393Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted hotspot regression resolved by moving the trace integration case into a dedicated test file; hotspots baseline, 13 focused tests, and typecheck pass at 32da254a5.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T20:24:41.643Z, excerpt_hash=sha256:8a607b767465d48fff512fe7a20c5f468fbfae48be68219aa1ea6b45dd460fd4
+
+Details:
+
+# CommandSession Pilot Verification
+
+Verified implementation SHA: `33e59899d5cd381f089b96746fb715fa5c84a6a2`.
+
 ## Rollback Plan
 
 - Revert pilot command migrations and restore the explicit legacy CommandNeeds adapter.
@@ -210,6 +248,16 @@ Verified implementation SHA: `33e59899d5cd381f089b96746fb715fa5c84a6a2`.
   Resolution: Migrate underlying resolver slices incrementally in the downstream RC2 tasks while retaining the explicit legacy adapter.
 
 ## 1. Typed capability boundary and lazy resolution
+
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.command-session.test.ts`
+
+Result: pass (3 files, 13 tests).
+
+Evidence: the session tests cover compile-time capability narrowing, typed `E_INTERNAL` denial before an undeclared resolver runs, lazy node reuse, explicit legacy compatibility, and preparation trace visibility. The CLI integration test proves that `docs cli` resolves only the `output` node.
+
+Scope: Verify steps 1-4; `CommandSession`, the command catalog, the registry bridge, and representative simple/read/task/route/provider commands.
+
+The trace integration case lives in a dedicated test file so the existing oversized `run-cli.core.test.ts` baseline does not grow.
 
 Command: `bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.test.ts`
 
@@ -229,7 +277,23 @@ Evidence: dependency-cruiser reported zero violations for every package and comm
 
 Scope: Verify step 5; dependency direction, shared guard contracts, and trust-boundary invariants.
 
+Command: `bun run arch:check && bun run guards:check`
+
+Result: pass.
+
+Evidence: dependency-cruiser reported zero violations for every package and command slice; shared guards passed; the trust-boundary ratchet retained its single reviewed baseline exception.
+
+Scope: Verify step 5; dependency direction, shared guard contracts, and trust-boundary invariants.
+
 ## 3. Critical CLI compatibility
+
+Command: `bun run test:critical`
+
+Result: pass (12 of 12 chunks).
+
+Evidence: all critical CLI suites passed, including efficiency baseline/candidate/replay, exit-code, Git edge, protected-path, scope-leak, symlink-root, and trust-boundary regression suites.
+
+Scope: Verify steps 2, 3, and 5; user-visible CLI compatibility and safety behavior.
 
 Command: `bun run test:critical`
 
@@ -249,7 +313,38 @@ Evidence: the repository TypeScript build completed without diagnostics; core, r
 
 Scope: Verify steps 1 and 5; compile-time session subsets, public package boundaries, and production bundle generation.
 
+Command: `bun run typecheck && bun run build`
+
+Result: pass.
+
+Evidence: the repository TypeScript build completed without diagnostics; core, recipes, and agentplane bundles built successfully, including the 3.01 MB CLI bundle.
+
+Scope: Verify steps 1 and 5; compile-time session subsets, public package boundaries, and production bundle generation.
+
 ## Residual boundary
+
+Granular capabilities currently coalesce onto the existing monolithic `CommandContext` preparation node. This pilot makes requirements explicit, typed, lazy, and traceable without claiming field-level runtime isolation. Downstream vertical-slice tasks will split the underlying context resolvers while the explicit legacy adapter preserves compatibility.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-RW8CJF-define-granular-commandsession-capabilities-and/.agentplane/tasks/202607221854-RW8CJF/blueprint/resolved-snapshot.json
+- old_digest: db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06
+- current_digest: db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-RW8CJF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+<!-- END VERIFICATION RESULTS -->
 
 Granular capabilities currently coalesce onto the existing monolithic `CommandContext` preparation node. This pilot makes requirements explicit, typed, lazy, and traceable without claiming field-level runtime isolation. Downstream vertical-slice tasks will split the underlying context resolvers while the explicit legacy adapter preserves compatibility.
 
