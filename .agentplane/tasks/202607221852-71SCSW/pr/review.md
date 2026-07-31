@@ -13,7 +13,7 @@ Created: 2026-07-31T11:14:18.745Z
 ## Verification
 
 - State: ok
-- Note: Verified: branch_pr supervisor owns mechanical lifecycle and provider preparation while semantic episodes remain role-scoped; all declared gates passed.
+- Note: Verified: completed-journal recovery is bounded to durably completed operations; focused regression, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

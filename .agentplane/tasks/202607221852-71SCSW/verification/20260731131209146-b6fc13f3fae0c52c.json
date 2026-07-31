@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b6fc13f3fae0c52c2bd5990116334d1e1bf6ebb76be5c18f8751128d1e613ea4",
+  "implementation_sha": "525ec0f5413bb726a7f294a6db483b18ced3916d",
+  "kind": "task_verification_record",
+  "note": "Verified: completed-journal recovery is bounded to durably completed operations; focused regression, workflow coverage, critical CLI, typecheck, lint, lifecycle invariants, and full contract checks passed.",
+  "recorded_at": "2026-07-31T13:12:09.146Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run a protected-main branch_pr golden task. Expected: EXECUTOR performs zero lifecycle calls; supervisor owns worktree through cleanup and uses provider truth.\n2. Exercise late checks, stale head, merge conflict, deleted branch, queue contention, and hosted-close retry. Expected: safe typed waits/rework/recovery without duplicate PR/merge.\n3. Remove merge authority. Expected: an approval step; no provider action is imitated.\n4. Verify actual PR/check/merge receipts and final main SHA in integration fixtures.\n5. Run branch_pr workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:a38f1a3407037d57e61f4de991ed22561af0ace7a6acda607c2d462b937343f7",
+  "task_id": "202607221852-71SCSW",
+  "verification_command": "agentplane verify 202607221852-71SCSW --ok --by TESTER",
+  "verifier": "TESTER"
+}
