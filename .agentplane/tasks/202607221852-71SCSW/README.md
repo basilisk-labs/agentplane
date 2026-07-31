@@ -4,7 +4,7 @@ title: "Extend supervised execution to branch_pr"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "Every registry-backed mechanical operation is executed in-process, followed by route recomputation, and persisted under an idempotency key before effects."
     - "Provider uncertainty, queue contention, stale/conflict rework, deleted branches, and missing merge authority terminate as typed stops rather than implicit retries."
 commit:
-  hash: "3d20b919de9b7d2deb161d8947a8df1d7000321e"
-  message: "🚧 71SCSW task: fix quality target receipt"
+  hash: "6cb5cdc7e6fc8cdacd1a0b00d8d2fcabba85178e"
+  message: "🚧 71SCSW task: satisfy receipt resolver lint"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: strict quality target handling for CLI lifecycle receipts."
+  -
+    author: "CODER"
+    body: "Implementation committed: receipt resolver passes project lint."
 events:
   -
     type: "status"
@@ -106,8 +109,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: strict quality target handling for CLI lifecycle receipts."
+  -
+    type: "status"
+    at: "2026-07-31T12:24:12.450Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: receipt resolver passes project lint."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:20:58.037Z"
+doc_updated_at: "2026-07-31T12:24:12.450Z"
 doc_updated_by: "CODER"
 description: "RF-10b: add worktree, PR sync/open, hosted checks, integration queue, merge, hosted close, and cleanup operations to the proven supervisor while preserving provider waits and user-attributed authority."
 sections:
