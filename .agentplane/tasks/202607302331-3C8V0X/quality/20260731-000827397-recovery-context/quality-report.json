@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607302331-3C8V0X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T00:09:40.434Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "7b98413caecc2a1f2745fc12d5dd535f531c7a41",
+  "blueprint_digest": "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b",
+  "findings": [
+    "The frozen packet contains no deterministic execution records for the evaluated SHA; it only contains an aggregate verification assertion."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607302331-3C8V0X/README.md"
+  ],
+  "missing_tests": [
+    "Frozen command-level results at evaluated SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41 for all four declared checks.",
+    "Frozen focused results for projection windows, SQLite read/search mappings, canonical knowledge-kind positive and malformed-reference cases, and semantic-escalation guard behavior."
+  ],
+  "hidden_assumptions": [
+    "The aggregate statement that 33 focused tests and all declared checks passed accurately represents executions at the evaluated SHA despite the absence of frozen execution records.",
+    "The three deduplication refactors preserve output behavior under malformed data and concurrent reindex/search activity."
+  ],
+  "residual_risks": [
+    "Regenerate the evaluator packet with deterministic command-level evidence tied to evaluated SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41, including the declared checks and focused helper-consumer tests; then repeat semantic evaluation without changing implementation scope."
+  ]
+}

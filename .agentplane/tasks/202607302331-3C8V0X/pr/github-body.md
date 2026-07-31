@@ -16,7 +16,7 @@ Move the duplicated local isRecord repair and measured clone-baseline refresh ou
 ## Verification
 
 - State: ok
-- Note: Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass.
+- Note: Command-level verification evidence is frozen for the repaired implementation.
 - Canonical workflow state lives in the task README.
 
 <details>

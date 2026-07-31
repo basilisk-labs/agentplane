@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/sqlite.unit.test.ts packages/agentplane/src/runner/usecases/task-knowledge-request-scope.test.ts packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts\nResult: pass\nEvidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json\nScope: Focused affected-path behavior at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.\n\nCommand: bun run guards:check && bun run clone:check\nResult: pass\nEvidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json\nScope: Shared guard and clone-baseline invariants at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json\nScope: Repository TypeScript contract at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json\nScope: Declared repository contract at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.",
+  "digest": "sha256:c0522417eb70e987708f124ce63e6127f42b926edfacf03939feb9427e83739f",
+  "implementation_sha": "28774245e9eb01138a53eb174ec579c2ede58fed",
+  "kind": "task_verification_record",
+  "note": "Command-level verification evidence is frozen for the repaired implementation.",
+  "recorded_at": "2026-07-31T00:11:48.678Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run guards:check && bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6",
+  "task_id": "202607302331-3C8V0X",
+  "verification_command": "agentplane verify 202607302331-3C8V0X --ok --by TESTER",
+  "verifier": "TESTER"
+}
