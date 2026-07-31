@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The hosted failure was test-placement debt only: no runtime or capability behavior changed.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The dedicated trace test preserves coverage while reducing run-cli.core.test.ts to its frozen 1046-line baseline.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-203020898-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The pilot intentionally treats the existing CommandContext as one compatibility preparation node; capability declarations do not yet imply field-level object isolation."
+  ]
+}
