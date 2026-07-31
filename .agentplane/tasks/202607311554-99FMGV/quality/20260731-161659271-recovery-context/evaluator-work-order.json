@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607311554-99FMGV-3f8a7e9a3e259ae56c9b2dab",
+  "prepared_at": "2026-07-31T16:16:59.271Z",
+  "task": {
+    "id": "202607311554-99FMGV",
+    "revision": 7,
+    "objective": "Allow fast-forward publication before conflict rework\n\nWhen an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck && bun run format:check && node .agentplane/policy/check-routing.mjs",
+      "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts",
+      "- In scope: When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.\n- Out of scope: unrelated refactors not required for \"Allow fast-forward publication before conflict rework\".",
+      "1. Reproduce the provider-conflict/local-descendant route deadlock. 2. Add an explicit ancestry proof that selects guarded PR head publication only for a clean fast-forward local head. 3. Keep divergent, unknown, and dirty cases terminal and leave semantic conflict resolution to CODER after publication. 4. Add route and command-level regression coverage, run critical/static gates, independent evaluation, and protected-PR integration. 5. Resume CT2725 through the repaired route.",
+      "1. Reproduce an OPEN protected-base PR whose provider reports conflicts while the clean local task branch is a strict descendant of the provider head. Expected: next-action selects guarded PR head publication before conflict-packet preparation; no rebase, merge, force-push, or hunk selection occurs.\n2. Cover divergent, unrelated, dirty-worktree, unknown-mergeability, and provider-branch-mismatch cases. Expected: each remains fail-closed and cannot receive publication authority through this route.\n3. Publish the descendant head in the fixture and refresh provider truth. Expected: the provider/local identity matches, the bounded conflict packet can be prepared, and semantic resolution still routes to CODER with fresh verification required afterward.\n4. Run `bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts`. Expected: route and publication regressions pass.\n5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests."
+    ]
+  },
+  "evaluated_sha": "a2c70c4504b3d3729e0cc0767e64b796d9d951ba",
+  "diff_base_sha": "3a42f9534b567fb4e86387bbbf6b2984a753bf6f",
+  "blueprint_digest": "0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607311554-99FMGV/README.md",
+      "sha256": "sha256:f9ff9d19c8ff29d3ca746d6832ee61424bd25dabe7d4a02e7bb3c52e1181bed1",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:724d271ea7a7978e9c046532ec6fa8904906bd9511efb28011f63c6c04bdc224",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:dbfe427718b36e9c0318a2ceb2e6ca0b8a2e3c7c401b00228540de58821bc0ac",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-161659271-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:03ec619850b664c98390869bd8109db22665bb779c020ed0172255d8388ca6e6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
