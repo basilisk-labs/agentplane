@@ -4,7 +4,7 @@ Verified implementation SHA: `33e59899d5cd381f089b96746fb715fa5c84a6a2`.
 
 ## 1. Typed capability boundary and lazy resolution
 
-Command: `bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.command-session.test.ts`
+Command: `bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.command-session.test.ts`
 
 Result: pass (3 files, 13 tests).
 
