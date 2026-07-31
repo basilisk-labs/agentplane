@@ -1,0 +1,3 @@
+ .../commands/shared/merged-branch-cleanup.test.ts  | 39 +++++++++++++++++
+ .../src/commands/shared/merged-branch-cleanup.ts   | 49 +++++++++++++---------
+ 2 files changed, 68 insertions(+), 20 deletions(-)

@@ -1,0 +1,13 @@
+{
+  "base": "codex/fix-v0.6.24-closeout-route",
+  "branch": "task/202607311529-773BXT/make-merged-worktree-cleanup-idempotent",
+  "created_at": "2026-07-31T15:29:40.734Z",
+  "diffstat_sha256": "sha256:bc73bfbf840291dfd4e92407fa633bb4327ebe126a9a666e5f095c3e99801995",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607311529-773BXT",
+  "updated_at": "2026-07-31T15:29:40.734Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

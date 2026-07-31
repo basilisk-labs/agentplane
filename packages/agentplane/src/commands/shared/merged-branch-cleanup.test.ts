@@ -105,6 +105,45 @@ describe("commands/shared/merged-branch-cleanup", () => {
     );
   });
 
+  it("treats a stale worktree hint already removed by a hook as cleaned up", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    mocks.gitBranchExists.mockResolvedValue(false);
+    mocks.execFileAsync.mockRejectedValueOnce(new Error("not a working tree"));
+
+    const result = await cleanupMergedLocalBranch({
+      gitRoot: "/repo",
+      branch: "task/T-6",
+      worktreePathHint: "/repo/.agentplane/worktrees/task-T6",
+    });
+
+    expect(result).toEqual({
+      removedBranch: false,
+      removedWorktree: false,
+      worktreePath: "/repo/.agentplane/worktrees/task-T6",
+      skippedReason: null,
+      preservedDirtyState: false,
+      stashMessage: null,
+    });
+    expect(mocks.findWorktreeForBranch).toHaveBeenCalledTimes(2);
+    expect(mocks.execFileAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves a cleanup failure while the worktree is still registered", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    mocks.findWorktreeForBranch
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce("/repo/.agentplane/worktrees/task-T7");
+    mocks.execFileAsync.mockRejectedValueOnce(new Error("permission denied"));
+
+    await expect(
+      cleanupMergedLocalBranch({
+        gitRoot: "/repo",
+        branch: "task/T-7",
+        worktreePathHint: "/repo/.agentplane/worktrees/task-T7",
+      }),
+    ).rejects.toThrow("permission denied");
+  });
+
   it("skips cleanup when the branch worktree lives outside the repo", async () => {
     const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
     mocks.findWorktreeForBranch.mockResolvedValue("/tmp/agentplane-external-worktree");

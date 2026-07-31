@@ -45,31 +45,40 @@ export async function cleanupMergedLocalBranch(opts: {
         stashMessage: null,
       };
     }
-    if (opts.preserveDirty === true) {
-      const { stdout } = await execFileAsync(
-        "git",
-        ["status", "--porcelain", "--untracked-files=all"],
-        {
-          cwd: worktreePath,
-          env: gitEnv(),
-        },
-      );
-      if (stdout.trim()) {
-        stashMessage = `agentplane/cleanup-preserve:${opts.branch}`;
-        await execFileAsync("git", ["stash", "push", "-u", "-m", stashMessage], {
-          cwd: worktreePath,
-          env: gitEnv(),
-        });
+    let removedWorktree = false;
+    try {
+      if (opts.preserveDirty === true) {
+        const { stdout } = await execFileAsync(
+          "git",
+          ["status", "--porcelain", "--untracked-files=all"],
+          {
+            cwd: worktreePath,
+            env: gitEnv(),
+          },
+        );
+        if (stdout.trim()) {
+          stashMessage = `agentplane/cleanup-preserve:${opts.branch}`;
+          await execFileAsync("git", ["stash", "push", "-u", "-m", stashMessage], {
+            cwd: worktreePath,
+            env: gitEnv(),
+          });
+        }
+      }
+      await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      });
+      removedWorktree = true;
+    } catch (error) {
+      const stillRegistered = await findWorktreeForBranch(opts.gitRoot, opts.branch);
+      if (stillRegistered) {
+        throw error;
       }
     }
-    await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
     const removed = await removeBranch(opts.gitRoot, opts.branch);
     return {
       removedBranch: removed,
-      removedWorktree: true,
+      removedWorktree,
       worktreePath,
       skippedReason: null,
       preservedDirtyState: stashMessage !== null,
