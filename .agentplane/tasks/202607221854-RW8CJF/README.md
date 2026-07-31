@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -41,28 +41,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T20:40:50.192Z"
+  updated_at: "2026-07-31T20:47:33.617Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "3bb947f75aee3ce9075d56a0a90db0e8d6c3fa05"
+  evaluated_sha: "2d69511cc3a020636d2287b96ace6e764a687d67"
   blueprint_digest: "db2315050a9bd415958b67dbb220b8e7dbf6348561ad789d75653afe7a24fe06"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221854-RW8CJF/README.md"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204049946-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-RW8CJF/quality/20260731-204733366-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The hosted dead-code failure exposed unnecessary type re-exports only; internal session types and runtime behavior remain unchanged."
-    - "The public catalog surface is now limited to the existing CommandEntry and RunDeps contract, while internal consumers import only the session types they use."
+    - "The unit failure was a file-classification omission only; renaming the test under the established run-cli.core pattern fixes routing without changing test or runtime behavior."
+    - "All previously discovered hosted constraints now have direct local regression coverage: hotspot baseline, dead-code baseline, and test-routing inventory."
 commit:
   hash: "72cd979e8b580083ccc68b393428555163fb5816"
   message: "🔎 RW8CJF task: re-evaluate export surface"
@@ -133,7 +133,7 @@ events:
     state: "ok"
     note: "Hosted test-routing rework passed: the trace test now follows the existing run-cli.core route; routing inventory, 23 focused tests, knip baseline, and typecheck pass at 2d69511cc."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:47:29.452Z"
+doc_updated_at: "2026-07-31T20:47:33.644Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:

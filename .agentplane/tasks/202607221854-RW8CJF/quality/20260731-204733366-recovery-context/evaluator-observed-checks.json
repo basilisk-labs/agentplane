@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run arch:check",
+    "bun run guards:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T20:47:28.574Z",
+    "updated_by": "TESTER",
+    "note": "Hosted test-routing rework passed: the trace test now follows the existing run-cli.core route; routing inventory, 23 focused tests, knip baseline, and typecheck pass at 2d69511cc."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
