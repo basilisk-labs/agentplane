@@ -4,7 +4,7 @@ title: "Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -42,6 +42,33 @@ verification:
   updated_by: "TESTER"
   note: "Qualification completed on corrected main: local gates passed and the live RF-04 capture requires do_not_publish because latency guardrails failed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T09:46:08.157Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "8e92bbc0923d0c6a960a7c842abc89af9c63b7ba"
+  blueprint_digest: "a8ff296e091d8a30d8a7ea90dc7793a27c9de4b8f9e80bb44722a00c30760162"
+  evidence_refs:
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607310028-7KFTPH/README.md"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607310028-7KFTPH/evidence/qualification-packet.v1.json"
+    - ".agentplane/tasks/202607310028-7KFTPH/quality/20260731-094606863-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "PASS task outcome, FAIL release gate: the live 50-run/55-episode capture is bound to product SHA 25fbf2d836a94e9b190464da219a35efd4ebe878 and fails harness setup latency, first-mutation sample coverage, and verified-result latency."
+    - "The automatic qualification packet remains conservative but embeds the older b587054 candidate measurement; the current live measurement is preserved separately in rf04-live-candidate-summary.v1.json."
+    - "The runtime-bridge rematerialization command is blocked because authoritative sanitized bridge envelopes are absent; this is a reproducibility defect for the next implementation wave, not a reason to publish beta.2."
 commit:
   hash: "a13b39307951b1214a36552362d62def09dec497"
   message: "🧪 7KFTPH task: initialize beta.2 requalification"
