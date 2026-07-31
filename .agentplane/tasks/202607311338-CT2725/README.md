@@ -4,7 +4,7 @@ title: "Preserve typed executor stops with unverified receipts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -31,42 +31,45 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T15:52:30.456Z"
+  updated_at: "2026-07-31T18:07:40.357Z"
   updated_by: "TESTER"
-  note: "PASS: typed executor non-success stops remain fail-closed and verification is bound to the semantic implementation."
+  note: "PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T14:02:51.642Z"
+  updated_at: "2026-07-31T18:08:18.861Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
-  evaluated_sha: "c3b5d08db2960cc4722230f91d34f5fd17c16229"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "21b11aaef435c0c8b23c9627e17634447cd42da7"
   blueprint_digest: "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4"
   evidence_refs:
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607311338-CT2725/README.md"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607311338-CT2725/verification/20260731140114185-d1a0af6efccfd7bb.json"
-    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311338-CT2725/quality/20260731-180818587-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The structured verification record is bound to implementation SHA c1a783b40e9d6c622e583e5e1dfebb8f23f088bb, while the frozen work order evaluates c3b5d08db2960cc4722230f91d34f5fd17c16229. Its narrative claims checks at the evaluated SHA, but the authoritative metadata does not establish that provenance."
-  recovery_reason: "deterministic_evidence_gap"
-commit: null
+    - "Typed blocked, needs_context, and failed executor results with present non-rejected unverified receipts preserve their semantic stop; completed-unverified, missing, and rejected receipts remain terminal."
+    - "The prior provenance mismatch is closed: task commit and fresh structured verification both target 21b11aaef435c0c8b23c9627e17634447cd42da7."
+commit:
+  hash: "21b11aaef435c0c8b23c9627e17634447cd42da7"
+  message: "🔧 CT2725 task: resolve main conflict semantically"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation target: semantic conflict resolution on current main."
 events:
   -
     type: "status"
@@ -99,8 +102,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: typed executor non-success stops remain fail-closed and verification is bound to the semantic implementation."
+  -
+    type: "status"
+    at: "2026-07-31T18:06:15.588Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation target: semantic conflict resolution on current main."
+  -
+    type: "verify"
+    at: "2026-07-31T18:07:40.357Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay."
 doc_version: 3
-doc_updated_at: "2026-07-31T15:52:32.278Z"
+doc_updated_at: "2026-07-31T18:07:41.222Z"
 doc_updated_by: "CODER"
 description: "When a successful runner process returns a valid but containment-unverified receipt together with a typed non-success semantic result, preserve the real blocker, context request, or semantic failure without treating completed work as verified; add regression coverage, resolve INC-20260731-01, and unblock the 0.7.0-rc.1 gate."
 sections:
@@ -312,6 +328,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607311338-CT2725
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-31T18:07:40.357Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T18:06:15.588Z, excerpt_hash=sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311338-CT2725-resolve-successful-runner-receipt-observation-ra/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+    - old_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+    - current_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311338-CT2725
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -557,6 +603,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607311338-CT2725
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-31T18:07:40.357Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical chunks, typecheck, incident collection, release incident gate, and source/asset parity passed without provider replay.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T18:06:15.588Z, excerpt_hash=sha256:e282e10241c126410ab966a2f7ae45e6e445a1d8b657dd42abae47cbb68c0a30
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311338-CT2725-resolve-successful-runner-receipt-observation-ra/.agentplane/tasks/202607311338-CT2725/blueprint/resolved-snapshot.json
+- old_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+- current_digest: 6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311338-CT2725
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

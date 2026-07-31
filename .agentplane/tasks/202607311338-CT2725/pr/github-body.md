@@ -19,8 +19,9 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 - Note:
 
 ```text
-PASS: typed executor non-success stops remain fail-closed and verification is bound to the semantic
-implementation.
+PASS at 21b11aae: semantic conflict resolved on current main; 20 focused tests, all 12 critical
+chunks, typecheck, incident collection, release incident gate, and source/asset parity passed
+without provider replay.
 ```
 - Canonical workflow state lives in the task README.
 
