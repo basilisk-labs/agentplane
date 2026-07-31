@@ -6,7 +6,7 @@ Created: 2026-07-31T15:55:48.023Z
 
 - Task: `202607311554-99FMGV`
 - Title: Allow fast-forward publication before conflict rework
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r`
 - Canonical task record: `.agentplane/tasks/202607311554-99FMGV/README.md`
 
