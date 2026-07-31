@@ -14,10 +14,8 @@ import {
 export { createCommandSession } from "./command-session.js";
 export type {
   CommandCapability,
-  CommandPreparationNode,
   CommandPreparationTrace,
   CommandSession,
-  CommandSessionResolvers,
 } from "./command-session.js";
 
 export type RunDeps = Pick<
