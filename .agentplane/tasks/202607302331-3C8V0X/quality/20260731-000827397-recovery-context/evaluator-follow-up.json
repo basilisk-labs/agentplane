@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607302331-3C8V0X-62e2d146072a29b898a6828c",
+  "task_id": "202607302331-3C8V0X",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the evaluator packet with deterministic command-level evidence tied to evaluated SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41, including the declared checks and focused helper-consumer tests; then repeat semantic evaluation without changing implementation scope.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains no deterministic execution records for the evaluated SHA; it only contains an aggregate verification assertion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:c6cf422d2e6e7d22e56e63be8d297772a873d9de179898f2b1b8a7758299a0cf",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
+          "sha256": "sha256:ec84c64f9604c244a2f75a0c5b0fc58435951cc7d56ead6c985663dceeb68d49",
+          "section": "Verify Steps and latest Verification entry"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-result.json"
+}

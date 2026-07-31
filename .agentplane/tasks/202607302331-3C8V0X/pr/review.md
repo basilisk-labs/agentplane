@@ -13,7 +13,7 @@ Created: 2026-07-30T23:32:41.818Z
 ## Verification
 
 - State: ok
-- Note: Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass.
+- Note: Command-level verification evidence is frozen for the repaired implementation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -4,7 +4,7 @@ title: "Repair beta.2 guard and clone baseline drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -28,21 +28,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T00:07:49.495Z"
-  updated_by: "EVALUATOR"
-  note: "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass."
+  updated_at: "2026-07-31T00:11:48.678Z"
+  updated_by: "TESTER"
+  note: "Command-level verification evidence is frozen for the repaired implementation."
   attempts: 0
 quality_review:
-  state: "pass"
-  updated_at: "2026-07-31T00:07:49.495Z"
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-31T00:09:40.434Z"
   updated_by: "EVALUATOR"
-  note: "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass."
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
   evaluated_sha: "7b98413caecc2a1f2745fc12d5dd535f531c7a41"
   blueprint_digest: "1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b"
   evidence_refs:
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607302331-3C8V0X/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-000827397-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen packet contains no deterministic execution records for the evaluated SHA; it only contains an aggregate verification assertion."
+  recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "8250bd520904b4ad9e105fce32d303c0e89ae1ce"
   message: "♻️ 3C8V0X code: remove clone drift"
@@ -90,8 +105,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Fresh verification at 7b98413caecc: declared checks and focused helper consumers pass."
+  -
+    type: "verify"
+    at: "2026-07-31T00:11:48.678Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Command-level verification evidence is frozen for the repaired implementation."
 doc_version: 3
-doc_updated_at: "2026-07-31T00:07:51.299Z"
+doc_updated_at: "2026-07-31T00:11:50.442Z"
 doc_updated_by: "CODER"
 description: "Move the duplicated local isRecord repair and measured clone-baseline refresh out of beta.2 qualification. Preserve guard semantics, review the three absolute clone increments, and provide a bounded verified repair that beta.2 can depend on."
 sections:
@@ -194,6 +215,56 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-31T00:11:48.678Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command-level verification evidence is frozen for the repaired implementation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T00:07:51.299Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
+
+    Details:
+
+    Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/sqlite.unit.test.ts packages/agentplane/src/runner/usecases/task-knowledge-request-scope.test.ts packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+    Scope: Focused affected-path behavior at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+    Command: bun run guards:check && bun run clone:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+    Scope: Shared guard and clone-baseline invariants at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+    Scope: Repository TypeScript contract at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+    Scope: Declared repository contract at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+    - old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+    - current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607302331-3C8V0X
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -206,6 +277,10 @@ sections:
     - Observation: 33 focused tests plus semantic escalation, guards, clone baseline, typecheck, and ci:contract passed at 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
       Impact: The repaired guard and all three clone-group removals are covered at the evaluated implementation revision.
       Resolution: Submit a fresh evaluator packet with this verification record.
+
+    - Observation: Evaluator required command-level records, not an aggregate assertion.
+      Impact: A semantic review could not establish that declared checks covered the reviewed source revision.
+      Resolution: Linked structured check details to a SHA-bound runtime evidence record.
 extensions:
   workflow_route_baseline:
     start_head_sha: "9b299bedb15d2efdbf92b83567660e65aa3451a9"
@@ -321,6 +396,56 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-31T00:11:48.678Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command-level verification evidence is frozen for the repaired implementation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T00:07:51.299Z, excerpt_hash=sha256:33a7ea60be8996a11cf8818190fb185c57455d9dd80eccc3f72a4e712bbd29f6
+
+Details:
+
+Command: bun test packages/agentplane/src/runner/usecases/task-knowledge-semantic-escalation.test.ts packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/sqlite.unit.test.ts packages/agentplane/src/runner/usecases/task-knowledge-request-scope.test.ts packages/agentplane/src/runner/usecases/task-knowledge-request.test.ts
+Result: pass
+Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+Scope: Focused affected-path behavior at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+Command: bun run guards:check && bun run clone:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+Scope: Shared guard and clone-baseline invariants at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+Scope: Repository TypeScript contract at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/verification/202607302331-3C8V0X/7b98413caecc2a1f2745fc12d5dd535f531c7a41/command-results.json
+Scope: Declared repository contract at implementation SHA 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302331-3C8V0X-repair-beta-2-guard-and-clone-baseline-drift/.agentplane/tasks/202607302331-3C8V0X/blueprint/resolved-snapshot.json
+- old_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+- current_digest: 1e85ca18c2c30b9be0726757b2495a089750f7a9a00aefc647c628ac4017726b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607302331-3C8V0X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607302331-3C8V0X
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -337,3 +462,7 @@ DecisionContextRef:
 - Observation: 33 focused tests plus semantic escalation, guards, clone baseline, typecheck, and ci:contract passed at 7b98413caecc2a1f2745fc12d5dd535f531c7a41.
   Impact: The repaired guard and all three clone-group removals are covered at the evaluated implementation revision.
   Resolution: Submit a fresh evaluator packet with this verification record.
+
+- Observation: Evaluator required command-level records, not an aggregate assertion.
+  Impact: A semantic review could not establish that declared checks covered the reviewed source revision.
+  Resolution: Linked structured check details to a SHA-bound runtime evidence record.
