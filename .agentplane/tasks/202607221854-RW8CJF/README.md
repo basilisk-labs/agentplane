@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
     - "The unit failure was a file-classification omission only; renaming the test under the established run-cli.core pattern fixes routing without changing test or runtime behavior."
     - "All previously discovered hosted constraints now have direct local regression coverage: hotspot baseline, dead-code baseline, and test-routing inventory."
 commit:
-  hash: "72cd979e8b580083ccc68b393428555163fb5816"
-  message: "🔎 RW8CJF task: re-evaluate export surface"
+  hash: "bcd8e8843de359d5806b746887b157bbc3ac35fd"
+  message: "🔎 RW8CJF task: re-evaluate routed trace test"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -132,8 +135,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted test-routing rework passed: the trace test now follows the existing run-cli.core route; routing inventory, 23 focused tests, knip baseline, and typecheck pass at 2d69511cc."
+  -
+    type: "status"
+    at: "2026-07-31T20:48:37.157Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:47:33.644Z"
+doc_updated_at: "2026-07-31T20:48:37.172Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
@@ -230,8 +240,8 @@ sections:
       Resolution: Migrate underlying resolver slices incrementally in the downstream RC2 tasks while retaining the explicit legacy adapter.
 extensions:
   implementation_commit:
-    hash: "3bb947f75aee3ce9075d56a0a90db0e8d6c3fa05"
-    message: "♻️ RW8CJF task: trim unused session type exports"
+    hash: "2d69511cc3a020636d2287b96ace6e764a687d67"
+    message: "🧪 RW8CJF task: route command session trace test"
   workflow_route_baseline:
     start_head_sha: "1adc9896b158719e908acc894b3651bfec2348c1"
     version: 1
