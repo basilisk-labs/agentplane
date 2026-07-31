@@ -12,8 +12,8 @@ Created: 2026-07-31T11:44:30.841Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable branchHeadSha already captured before merge.
+- State: ok
+- Note: Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

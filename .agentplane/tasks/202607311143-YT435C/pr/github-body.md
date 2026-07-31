@@ -15,13 +15,14 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local
-task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable
-branchHeadSha already captured before merge.
+Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name.
+Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the
+preceding merge-lane full release:prepublish and all three Verify Steps passed before the
+finalize-only failure.
 ```
 - Canonical workflow state lives in the task README.
 

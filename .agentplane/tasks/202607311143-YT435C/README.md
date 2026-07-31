@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -31,29 +31,29 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-31T14:13:26.311Z"
+  state: "ok"
+  updated_at: "2026-07-31T14:13:51.473Z"
   updated_by: "CODER"
-  note: "Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable branchHeadSha already captured before merge."
-  attempts: 1
+  note: "Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure."
+  attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-31T13:50:09.108Z"
+  updated_at: "2026-07-31T14:13:52.989Z"
   updated_by: "EVALUATOR"
-  note: "The direct-workflow fixes and v0.6.26 candidate are verified; verification subprocess semantics are now independent of the invoking AgentPlane runtime."
-  evaluated_sha: "020dfcd89e6b4535896e1b211c58806d20e5aa84"
+  note: "v0.6.26 is ready for final integration; verification children are isolated and post-merge finalization no longer depends on mutable local refs."
+  evaluated_sha: "e5059fc9cf68bf8fbdef324d68f5c9dce521b7ed"
   blueprint_digest: "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4"
   evidence_refs:
     - ".agentplane/tasks/202607311143-YT435C/README.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-135009108-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-135009108-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-135009108-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-141352989-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-141352989-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-141352989-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/integrate/internal/finalize.ts"
+    - "packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts"
     - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-    - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.test.ts"
   findings:
-    - "Exact reproduction with AGENTPLANE_RUNTIME_ACTIVE_BIN pointing at 0.6.25 passes 43/43 and resolves candidate version 0.6.26 after sanitization."
+    - "Finalize diffstat uses branchHeadSha; focused integration tests 40/40 and release fast gates pass after the exact post-merge failure."
 commit: null
 comments:
   -
@@ -217,8 +217,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: make integration finalization independent of cleaned branch refs."
+  -
+    type: "verify"
+    at: "2026-07-31T14:13:51.473Z"
+    author: "CODER"
+    state: "ok"
+    note: "Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure."
 doc_version: 3
-doc_updated_at: "2026-07-31T14:13:27.734Z"
+doc_updated_at: "2026-07-31T14:13:51.606Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -537,6 +543,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T14:13:51.473Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:13:27.734Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -573,6 +609,10 @@ sections:
     - Observation: AGENTPLANE_RUNTIME_ACTIVE_BIN inherited from the maintenance controller redirected candidate package resolution to 0.6.25.
       Impact: The merge-lane version test observed the controller version instead of the candidate version, making verification dependent on its parent launcher.
       Resolution: Verification now strips presentation, runtime provenance, repo-local handoff, and transient dev-bootstrap carrier variables before spawning commands.
+
+    - Observation: The post-merge hook may remove the local task branch before finalizeIntegrate writes diffstat.
+      Impact: A successful verified merge returned E_IO when git merge-base received the now-deleted branch name.
+      Resolution: Use the pre-merge captured branchHeadSha for diffstat and assert the immutable SHA in finalize regression coverage.
 extensions:
   implementation_commit:
     hash: "020dfcd89e6b4535896e1b211c58806d20e5aa84"
@@ -904,6 +944,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T14:13:51.473Z — VERIFY — ok
+
+By: CODER
+
+Note: Integration finalization now uses immutable branchHeadSha instead of the cleanup-prone branch name. Focused integration/shared tests pass 40/40; typecheck, lint, and fast release gate pass; the preceding merge-lane full release:prepublish and all three Verify Steps passed before the finalize-only failure.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T14:13:27.734Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -944,3 +1014,7 @@ DecisionContextRef:
 - Observation: AGENTPLANE_RUNTIME_ACTIVE_BIN inherited from the maintenance controller redirected candidate package resolution to 0.6.25.
   Impact: The merge-lane version test observed the controller version instead of the candidate version, making verification dependent on its parent launcher.
   Resolution: Verification now strips presentation, runtime provenance, repo-local handoff, and transient dev-bootstrap carrier variables before spawning commands.
+
+- Observation: The post-merge hook may remove the local task branch before finalizeIntegrate writes diffstat.
+  Impact: A successful verified merge returned E_IO when git merge-base received the now-deleted branch name.
+  Resolution: Use the pre-merge captured branchHeadSha for diffstat and assert the immutable SHA in finalize regression coverage.
