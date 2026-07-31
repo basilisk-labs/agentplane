@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-AB2SFC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T19:44:21.570Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "212a987b5c2d47030097d082e9343875fbe8146f",
+  "blueprint_digest": "90a9309e5f0f29d169090d141459e1419957fe758a4a212cedc0ef1076bfc979",
+  "findings": [
+    "The declared RC1 dependency closure, critical checks, workflow coverage, lifecycle invariants, and release prepublish gate remain pinned to the reviewed implementation evidence and pass.",
+    "The qualification packet now records that its 50-run and 55-provider-episode measurement is bound to beta.1 subject b58705432c46df612a89348ef28ea268fdcc2b04, does not match reviewed implementation f669ed24a2433f1c2d6c36301c04a5a872d43fac, and establishes no live RC1 outcome, safety, token, or latency claim.",
+    "The only supported decision is do_not_publish; RC1 may unlock RC2 as an internal architecture checkpoint, but any package or tag requires a new provider measurement bound to the release-candidate SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-AB2SFC/quality/20260731-194421030-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A frozen provider packet remains useful for artifact replay, but code changes after its subject SHA cannot inherit its live metric claims."
+  ],
+  "residual_risks": []
+}
