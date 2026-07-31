@@ -12,8 +12,8 @@ Created: 2026-07-31T13:35:14.209Z
 
 ## Verification
 
-- State: needs_rework
-- Note: RC.1 qualification is blocked by active incident INC-20260731-01 after critical, workflow coverage, and lifecycle gates passed; release prepublish correctly rejected the unresolved runner receipt-observation race.
+- State: ok
+- Note: PASS at 81c9176f: RC1 dependency closure, critical, workflow coverage, lifecycle, release prepublish, and frozen RF-04 guards all pass; optional publication remains withheld by the latest live latency evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

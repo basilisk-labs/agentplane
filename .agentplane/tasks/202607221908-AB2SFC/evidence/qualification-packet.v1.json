@@ -1,183 +1,2643 @@
 {
-  "schema_version": 1,
-  "kind": "task_qualification_packet",
-  "task_id": "202607221908-AB2SFC",
-  "prepared_at": "2026-07-31T19:19:17Z",
-  "reviewed_sha": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
   "dependency_closure": {
-    "status": "pass",
+    "leaves": [
+      {
+        "evaluator": {
+          "evaluated_sha": "ee24b3aecc47717c68169a4e5201d83e48096d1f",
+          "quality_report": {
+            "path": ".agentplane/tasks/202607221838-SD1W93/quality/20260722-191626477-recovery-context/quality-report.json",
+            "sha256": "sha256:7f7209d0ff4d67c21b42a03296bc0b5664d42836f93aa80954e76cfbe9f12b80"
+          },
+          "state": "pass"
+        },
+        "hosted_close": {
+          "ancestor_of_reviewed_sha": true,
+          "pr_meta": {
+            "path": ".agentplane/tasks/202607221838-SD1W93/pr/meta.json",
+            "sha256": "sha256:fe71536764394c7935a4f785a1fc2f9ae02c61fd8b77ba5990735d6539181e31"
+          },
+          "pr_number": 4596,
+          "pre_merge_closure": "closed_before_merge",
+          "task_artifact_commit": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+          "task_document": {
+            "path": ".agentplane/tasks/202607221838-SD1W93/README.md",
+            "sha256": "sha256:36bf87f7617f2b2424327e5d2fd3159c7abcb67bb55a67747d02243f4e20f6ad"
+          }
+        },
+        "status": "DONE",
+        "task_id": "202607221838-SD1W93",
+        "verification": {
+          "state": "ok",
+          "updated_at": "2026-07-22T19:16:05.190Z",
+          "updated_by": "PLANNER"
+        }
+      },
+      {
+        "evaluator": {
+          "evaluated_sha": "e84f13ddb070ad29dd4b0875b375df820f623e84",
+          "quality_report": {
+            "path": ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-073755887-recovery-context/quality-report.json",
+            "sha256": "sha256:6388ad9347e1135e45b0c5c823531733031deb683bf90a80ea194aa81a5fa2ef"
+          },
+          "state": "pass"
+        },
+        "hosted_close": {
+          "ancestor_of_reviewed_sha": true,
+          "pr_meta": {
+            "path": ".agentplane/tasks/202607260532-9M7RNH/pr/meta.json",
+            "sha256": "sha256:46765f3c407b020c319e5fc8f78c6041dbe007133f3c29428c8126de8987bfcf"
+          },
+          "pr_number": 4629,
+          "pre_merge_closure": "closed_before_merge",
+          "task_artifact_commit": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+          "task_document": {
+            "path": ".agentplane/tasks/202607260532-9M7RNH/README.md",
+            "sha256": "sha256:1a0f6de3ddfc3e74556018fe4f745b9e6a039b09b6529b6bd5099654c44465ff"
+          }
+        },
+        "status": "DONE",
+        "task_id": "202607260532-9M7RNH",
+        "verification": {
+          "state": "ok",
+          "updated_at": "2026-07-26T07:53:35.348Z",
+          "updated_by": "TESTER"
+        }
+      },
+      {
+        "evaluator": {
+          "evaluated_sha": "63c835c88a1bd02975282e985040f95a7f9db0f8",
+          "quality_report": {
+            "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-195547056-recovery-context/quality-report.json",
+            "sha256": "sha256:b0ef8285cee9a39eb766f2c5df9aa2b7fed70ddbcd759a0ab55048c300f8be99"
+          },
+          "state": "pass"
+        },
+        "hosted_close": {
+          "ancestor_of_reviewed_sha": true,
+          "pr_meta": {
+            "path": ".agentplane/tasks/202607291148-1F9GZD/pr/meta.json",
+            "sha256": "sha256:c08d132155f6172be2cbc81b7d17142f611fa612d6d1e567b42d1c7d08748287"
+          },
+          "pr_number": 4670,
+          "pre_merge_closure": "closed_before_merge",
+          "task_artifact_commit": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+          "task_document": {
+            "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+            "sha256": "sha256:e236c7c7d3d978146b8df072bc99fa6fb9ed7b5c4ce1e0743490ac7089bb7504"
+          }
+        },
+        "status": "DONE",
+        "task_id": "202607291148-1F9GZD",
+        "verification": {
+          "state": "ok",
+          "updated_at": "2026-07-29T19:55:09.782Z",
+          "updated_by": "TESTER"
+        }
+      },
+      {
+        "evaluator": {
+          "evaluated_sha": "7b98413caecc2a1f2745fc12d5dd535f531c7a41",
+          "quality_report": {
+            "path": ".agentplane/tasks/202607302331-3C8V0X/quality/20260731-001234094-recovery-context/quality-report.json",
+            "sha256": "sha256:7db62babb96f967d91eb3909c800bb4636b151dec467535544175457c15ace80"
+          },
+          "state": "pass"
+        },
+        "hosted_close": {
+          "ancestor_of_reviewed_sha": true,
+          "pr_meta": {
+            "path": ".agentplane/tasks/202607302331-3C8V0X/pr/meta.json",
+            "sha256": "sha256:1ffdfe9aaaa0daeda95650f06a2591b1be3c669e71801f53b472e4e6501ffa14"
+          },
+          "pr_number": 4698,
+          "pre_merge_closure": "closed_before_merge",
+          "task_artifact_commit": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+          "task_document": {
+            "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
+            "sha256": "sha256:1021eca825e140730e5c9243c0ae8e6c2b484ca9ab2bf5901e2786ffcf627ba2"
+          }
+        },
+        "status": "DONE",
+        "task_id": "202607302331-3C8V0X",
+        "verification": {
+          "state": "ok",
+          "updated_at": "2026-07-31T00:11:48.678Z",
+          "updated_by": "TESTER"
+        }
+      }
+    ],
     "root_dependency_ids": [
       "202607221852-71SCSW",
       "202607221852-ECBY56",
       "202607310028-7KFTPH",
       "202607311338-CT2725"
     ],
-    "dependencies": [
-      {
-        "task_id": "202607221852-71SCSW",
-        "status": "DONE",
-        "verification": "ok",
-        "evaluator": "pass",
-        "evaluator_sha": "c64291cb7c9d88bd0115e1aa5c04de550e2defb7",
-        "provider": {
-          "pr_number": 4702,
-          "state": "MERGED",
-          "merge_sha": "d9fa4e76ef2e7860c17a6069e41ac30806e6157e",
-          "merge_sha_is_ancestor": true,
-          "hosted_close_run": 30634733181,
-          "hosted_close": "success"
-        },
-        "evidence": {
-          "task_document_sha256": "sha256:1a4fd74ec4886b309fe3c5e90e25c554f793f7e0c8ce66407b37be0d13125621",
-          "pr_meta_sha256": "sha256:ba9f9a5ce983d0f84831f6d3b26467fa5a378b5f9c9cfe8d69218363a4bf8862",
-          "quality_report_sha256": "sha256:923676dab571ccb73ec38c43820737349507f7e8ceedec12a070bc76cbcaf85a"
-        }
-      },
-      {
-        "task_id": "202607221852-ECBY56",
-        "status": "DONE",
-        "verification": "ok",
-        "evaluator": "pass",
-        "evaluator_sha": "659534b44ed327e52a1b62d1db297f5e71a619ce",
-        "provider": {
-          "pr_number": 4700,
-          "state": "MERGED",
-          "merge_sha": "b9a52b4f3fafe1d1f09f240ae376bdb2c87e729c",
-          "merge_sha_is_ancestor": true,
-          "hosted_close_run": 30625854183,
-          "hosted_close": "success"
-        },
-        "evidence": {
-          "task_document_sha256": "sha256:14d997ef551259e9b356945e097e72190d5d6ae6229da114012d8af11788bb14",
-          "pr_meta_sha256": "sha256:57e96639a16dbb01bf4756eeb2f59185580f4aa1ff0cea1d016afce623c37230",
-          "quality_report_sha256": "sha256:baa7c60953a587d04869dae99054f170b952079b0547b3fc1299fa966b2ae4d4"
-        }
-      },
-      {
-        "task_id": "202607310028-7KFTPH",
-        "status": "DONE",
-        "verification": "ok",
-        "evaluator": "pass",
-        "evaluator_sha": "da187020a4e4c7c76a4d5f35e899c7465c17edbf",
-        "provider": {
-          "pr_number": 4699,
-          "state": "MERGED",
-          "merge_sha": "402709cb633549245a4231d902813a473e6c4103",
-          "merge_sha_is_ancestor": true,
-          "hosted_close_run": 30621814945,
-          "hosted_close": "success"
-        },
-        "evidence": {
-          "task_document_sha256": "sha256:23cdeff1a509b79e72e0548184b5e3490704ec825dfc6252631bac976f0f618a",
-          "pr_meta_sha256": "sha256:659c749a4076e1a8470150acc6e079e7e8de633199fe5a67b07729355b48072d",
-          "quality_report_sha256": "sha256:debc66b1d210480181c5cd8cf474eced30aea24b90222a737c907a58bf976ddd"
-        }
-      },
-      {
-        "task_id": "202607311338-CT2725",
-        "status": "DONE",
-        "verification": "ok",
-        "evaluator": "pass",
-        "evaluator_sha": "f9c7673f4b3593f009aff4c59ff729bed1041beb",
-        "provider": {
-          "pr_number": 4704,
-          "state": "MERGED",
-          "merge_sha": "c5aca1ac9d989ae06354147f6abbdc62925db5f1",
-          "merge_sha_is_ancestor": true,
-          "hosted_close_run": 30658089771,
-          "hosted_close": "success"
-        },
-        "evidence": {
-          "task_document_sha256": "sha256:a5d773968a7dcfc97538183112c6cd6340df257f4b8ddf6dd77d1c98ee7b63ff",
-          "pr_meta_sha256": "sha256:8385caf1095e8f91907d070dae25f2dba78b6dc585d207f66386d64bfe3de38c",
-          "quality_report_sha256": "sha256:4002256b1854fd4afd8bed424091642d5ff11984eace920c78706d7ffb6679cf"
-        }
-      }
+    "terminal_leaf_ids": [
+      "202607221838-SD1W93",
+      "202607260532-9M7RNH",
+      "202607291148-1F9GZD",
+      "202607302331-3C8V0X"
     ]
   },
+  "digest": "sha256:9b78d4608833434db7b473c37df675ef89deca4afacdf2f5f9f1507fb6ff21a9",
+  "implementation_sha": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+  "kind": "task_qualification_packet",
+  "prepared_at": "2026-07-31T19:22:01.191Z",
+  "rf04": {
+    "candidate_measurement": {
+      "baseline_runtime_profile": {
+        "adapter_id": "codex-exec-jsonl-supervisor",
+        "cache_mode": "ephemeral-provider-default",
+        "model_id": "gpt-5.6-terra",
+        "provider_id": "openai-chatgpt",
+        "reasoning_effort": "low",
+        "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+        "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+        "sandbox_mode": "workspace-write-network-disabled"
+      },
+      "baseline_subject_sha": "1a702e160ba9f0efe7067f2a22fc008defc89ffb",
+      "comparisons": [
+        {
+          "baseline": 9097432,
+          "candidate": 5588006,
+          "delta": -3509426,
+          "delta_ratio": -0.38576006943497904,
+          "id": "provider_tokens.input_tokens",
+          "maximum": 10007175.200000001,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 66728,
+          "candidate": 44415,
+          "delta": -22313,
+          "delta_ratio": -0.33438736362546456,
+          "id": "provider_tokens.output_tokens",
+          "maximum": 73400.8,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 22587,
+          "candidate": 17196,
+          "delta": -5391,
+          "delta_ratio": -0.23867711515473503,
+          "id": "provider_tokens.reasoning_tokens",
+          "maximum": 24845.7,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 9186747,
+          "candidate": 5649617,
+          "delta": -3537130,
+          "delta_ratio": -0.38502529785570455,
+          "id": "provider_tokens.total_tokens",
+          "maximum": 10105421.700000001,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 50,
+          "candidate": 50,
+          "delta": 0,
+          "id": "latency.harness_setup_latency_ms.sample_count",
+          "minimum": 50,
+          "threshold": {
+            "kind": "no_regression",
+            "value": 0
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 7605.46,
+          "candidate": 17522.82,
+          "delta": 9917.36,
+          "delta_ratio": 1.3039789835197346,
+          "id": "latency.harness_setup_latency_ms.mean_ms",
+          "maximum": 8366.006000000001,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "fail"
+        },
+        {
+          "baseline": 25,
+          "candidate": 25,
+          "delta": 0,
+          "id": "latency.time_to_first_scoped_mutation_ms.sample_count",
+          "minimum": 25,
+          "threshold": {
+            "kind": "no_regression",
+            "value": 0
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 43642.64,
+          "candidate": 34077.04,
+          "delta": -9565.599999999999,
+          "delta_ratio": -0.21918014125634927,
+          "id": "latency.time_to_first_scoped_mutation_ms.mean_ms",
+          "maximum": 48006.904,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 8,
+          "candidate": 20,
+          "delta": 12,
+          "id": "latency.time_to_verified_result_ms.sample_count",
+          "minimum": 8,
+          "threshold": {
+            "kind": "no_regression",
+            "value": 0
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 56439.625,
+          "candidate": 63020.05,
+          "delta": 6580.425000000003,
+          "delta_ratio": 0.11659228777654003,
+          "id": "latency.time_to_verified_result_ms.mean_ms",
+          "maximum": 62083.5875,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0.1
+          },
+          "verdict": "fail"
+        },
+        {
+          "baseline": 8,
+          "candidate": 20,
+          "delta": 12,
+          "id": "outcomes.verified_success",
+          "minimum": 8,
+          "threshold": {
+            "kind": "no_regression",
+            "value": 0
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 32,
+          "candidate": 25,
+          "delta": -7,
+          "delta_ratio": -0.21875,
+          "id": "outcomes.rework_required",
+          "maximum": 32,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 33,
+          "candidate": 10,
+          "delta": -23,
+          "delta_ratio": -0.696969696969697,
+          "id": "outcomes.golden_mismatch_count",
+          "maximum": 33,
+          "threshold": {
+            "kind": "max_increase_ratio",
+            "value": 0
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": 55,
+          "candidate": 55,
+          "delta": 0,
+          "id": "provider_episodes",
+          "threshold": {
+            "kind": "exact",
+            "value": 55
+          },
+          "verdict": "pass"
+        },
+        {
+          "baseline": {
+            "adapter_id": "codex-exec-jsonl-supervisor",
+            "cache_mode": "ephemeral-provider-default",
+            "model_id": "gpt-5.6-terra",
+            "provider_id": "openai-chatgpt",
+            "reasoning_effort": "low",
+            "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+            "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+            "sandbox_mode": "workspace-write-network-disabled"
+          },
+          "candidate": {
+            "adapter_id": "codex-exec-jsonl-supervisor",
+            "cache_mode": "ephemeral-provider-default",
+            "model_id": "gpt-5.6-terra",
+            "provider_id": "openai-chatgpt",
+            "reasoning_effort": "low",
+            "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+            "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+            "sandbox_mode": "workspace-write-network-disabled"
+          },
+          "id": "runtime.profile",
+          "threshold": {
+            "kind": "exact",
+            "value": {
+              "adapter_id": "codex-exec-jsonl-supervisor",
+              "cache_mode": "ephemeral-provider-default",
+              "model_id": "gpt-5.6-terra",
+              "provider_id": "openai-chatgpt",
+              "reasoning_effort": "low",
+              "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+              "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+              "sandbox_mode": "workspace-write-network-disabled"
+            }
+          },
+          "verdict": "pass"
+        }
+      ],
+      "coverage": {
+        "provider_episodes": 55,
+        "replay_runs": 50,
+        "scenarios": 10
+      },
+      "failure_ids": [
+        "latency.harness_setup_latency_ms.mean_ms",
+        "latency.time_to_verified_result_ms.mean_ms"
+      ],
+      "path": "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
+      "qualification_decision": "do_not_publish",
+      "runtime_profile": {
+        "adapter_id": "codex-exec-jsonl-supervisor",
+        "cache_mode": "ephemeral-provider-default",
+        "model_id": "gpt-5.6-terra",
+        "provider_id": "openai-chatgpt",
+        "reasoning_effort": "low",
+        "runtime_id": "agentplane-anchor-cli-preparation/codex-cli-execution",
+        "runtime_version": "0.6.24/0.146.0-alpha.3.1",
+        "sandbox_mode": "workspace-write-network-disabled"
+      },
+      "sha256": "sha256:f8e569366cb80bd0e054210a58cafc3d92b16b45d9653dd283911ee51733c870",
+      "source": {
+        "measurement_canonical_sha256": "sha256:1b670db01a5ea336d96d29642a29fac3b2da93638c5a5474fb69775174c1fad7",
+        "measurement_source_sha256": "sha256:0b2b9f75cf537862aac14aa229a557e2b4e274d6b200dc7dad76ebe1e15631b4",
+        "task_artifact_commit": "3a15147b76962e5547061a519d0ad51d79a74d7f",
+        "task_id": "202607292104-W03KZ0"
+      },
+      "subject_sha": "b58705432c46df612a89348ef28ea268fdcc2b04",
+      "verdict": "fail"
+    },
+    "main_baseline": {
+      "comparison_policy": {
+        "evidence_observed_to_claimed_ratio_formula": "observed / (observed + agent_claimed); human_supplied excluded",
+        "quality_control": "regressions_fail_improvements_non_comparable_exact_compares_cost",
+        "structural_cost_max_growth_ratio": 0.1,
+        "timing": "diagnostic_only_never_gated"
+      },
+      "observed_scalar_cells": 10,
+      "path": "scripts/baselines/agent-efficiency-pre-v0.7-main.json",
+      "scenario_count": 10,
+      "sha256": "sha256:eb1b2b5102dcfedc4b70c9e93928392a6902c9111d28ce539f51ecdf94704f86",
+      "structural_projection_sha256": "sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351"
+    },
+    "replay_comparison": {
+      "baseline": {
+        "coverage": {
+          "provider_token_cells": {
+            "actual": 27,
+            "required": 27
+          },
+          "replay_runs": {
+            "actual": 50,
+            "required": 50
+          },
+          "resolved_outcome_cells": {
+            "actual": 70,
+            "required": 70
+          },
+          "resolved_scalar_cells": {
+            "actual": 170,
+            "required": 170
+          },
+          "scenarios": {
+            "actual": 10,
+            "required": 10
+          }
+        },
+        "diagnostics_sha256": "sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e",
+        "golden_outcomes": {
+          "match_count": 300,
+          "mismatch_count": 50,
+          "resolved_cells": 350,
+          "values": [
+            {
+              "false_count": 5,
+              "golden_expected": true,
+              "golden_match_count": 0,
+              "golden_mismatch_count": 5,
+              "outcome": "adapter_failure",
+              "scenario_id": "direct",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "direct",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "direct",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "direct",
+              "true_count": 0
+            },
+            {
+              "false_count": 1,
+              "golden_expected": true,
+              "golden_match_count": 4,
+              "golden_mismatch_count": 1,
+              "outcome": "rework_required",
+              "scenario_id": "direct",
+              "true_count": 4
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "direct",
+              "true_count": 4
+            },
+            {
+              "false_count": 4,
+              "golden_expected": true,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "verified_success",
+              "scenario_id": "direct",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "branch_pr",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "branch_pr",
+              "true_count": 5
+            },
+            {
+              "false_count": 4,
+              "golden_expected": false,
+              "golden_match_count": 4,
+              "golden_mismatch_count": 1,
+              "outcome": "blocked",
+              "scenario_id": "branch_pr",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "branch_pr",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": false,
+              "golden_match_count": 0,
+              "golden_mismatch_count": 5,
+              "outcome": "rework_required",
+              "scenario_id": "branch_pr",
+              "true_count": 5
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "branch_pr",
+              "true_count": 4
+            },
+            {
+              "false_count": 5,
+              "golden_expected": true,
+              "golden_match_count": 0,
+              "golden_mismatch_count": 5,
+              "outcome": "verified_success",
+              "scenario_id": "branch_pr",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "context_assimilation",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "stale_state",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "stale_state",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "stale_state",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "approval_required",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "approval_required",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "missing_knowledge",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "missing_knowledge",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "missing_knowledge",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "evaluator_rework",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "evaluator_rework",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "evaluator_rework",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "evaluator_rework",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "evaluator_rework",
+              "true_count": 5
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "evaluator_rework",
+              "true_count": 4
+            },
+            {
+              "false_count": 4,
+              "golden_expected": true,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "verified_success",
+              "scenario_id": "evaluator_rework",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "scope_violation",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "scope_violation",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "scope_violation",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "adapter_failure",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "adapter_failure",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "adapter_failure",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "hermes_one_step",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "hermes_one_step",
+              "true_count": 5
+            },
+            {
+              "false_count": 4,
+              "golden_expected": false,
+              "golden_match_count": 4,
+              "golden_mismatch_count": 1,
+              "outcome": "blocked",
+              "scenario_id": "hermes_one_step",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "hermes_one_step",
+              "true_count": 0
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "rework_required",
+              "scenario_id": "hermes_one_step",
+              "true_count": 4
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "hermes_one_step",
+              "true_count": 4
+            },
+            {
+              "false_count": 4,
+              "golden_expected": true,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "verified_success",
+              "scenario_id": "hermes_one_step",
+              "true_count": 1
+            }
+          ],
+          "verdict": "regression_observed"
+        },
+        "latency": [
+          {
+            "scenario_id": "direct",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 8336,
+                "mean": 7893.4,
+                "median": 7739,
+                "min": 7520,
+                "p95": 8336,
+                "standard_deviation": 347.850313
+              },
+              "time_to_first_scoped_mutation_ms": {
+                "count": 5,
+                "max": 69902,
+                "mean": 48832.2,
+                "median": 40358,
+                "min": 36416,
+                "p95": 69902,
+                "standard_deviation": 13752.129528
+              },
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "branch_pr",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 7742,
+                "mean": 7589,
+                "median": 7576,
+                "min": 7467,
+                "p95": 7742,
+                "standard_deviation": 101.099951
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "context_assimilation",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 8086,
+                "mean": 7717.4,
+                "median": 7760,
+                "min": 7243,
+                "p95": 8086,
+                "standard_deviation": 302.101043
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "stale_state",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 7561,
+                "mean": 7342.2,
+                "median": 7452,
+                "min": 6955,
+                "p95": 7561,
+                "standard_deviation": 215.487726
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "approval_required",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 7984,
+                "mean": 7562.8,
+                "median": 7584,
+                "min": 6916,
+                "p95": 7984,
+                "standard_deviation": 379.275836
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "missing_knowledge",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 11047,
+                "mean": 9137.6,
+                "median": 8519,
+                "min": 8064,
+                "p95": 11047,
+                "standard_deviation": 1078.545057
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "evaluator_rework",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 10290,
+                "mean": 8880.2,
+                "median": 8964,
+                "min": 7668,
+                "p95": 10290,
+                "standard_deviation": 894.269847
+              },
+              "time_to_first_scoped_mutation_ms": {
+                "count": 5,
+                "max": 71153,
+                "mean": 47148.2,
+                "median": 51652,
+                "min": 28934,
+                "p95": 71153,
+                "standard_deviation": 15332.721134
+              },
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "scope_violation",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 8121,
+                "mean": 7767,
+                "median": 7796,
+                "min": 7343,
+                "p95": 8121,
+                "standard_deviation": 251.035456
+              },
+              "time_to_first_scoped_mutation_ms": {
+                "count": 5,
+                "mean": null,
+                "median": 69993,
+                "min": 33284,
+                "standard_deviation": null
+              },
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "adapter_failure",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 10910,
+                "mean": 9253.6,
+                "median": 8381,
+                "min": 8193,
+                "p95": 10910,
+                "standard_deviation": 1215.898943
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "hermes_one_step",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 11770,
+                "mean": 9894.4,
+                "median": 10208,
+                "min": 8156,
+                "p95": 11770,
+                "standard_deviation": 1442.67094
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          }
+        ],
+        "path": "scripts/baselines/agent-efficiency-pre-v0.7-replay.json",
+        "provider_tokens": [
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "direct"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "branch_pr"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "EVALUATOR",
+            "scenario_id": "branch_pr"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "missing_knowledge"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "evaluator_rework"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "EVALUATOR",
+            "scenario_id": "evaluator_rework"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "scope_violation"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CURRENT_AGENT",
+            "scenario_id": "adapter_failure"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CURRENT_AGENT",
+            "scenario_id": "hermes_one_step"
+          }
+        ],
+        "sha256": "sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d",
+        "structural_projection_sha256": "sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4"
+      },
+      "current_rebuild": {
+        "coverage": {
+          "provider_token_cells": {
+            "actual": 27,
+            "required": 27
+          },
+          "replay_runs": {
+            "actual": 50,
+            "required": 50
+          },
+          "resolved_outcome_cells": {
+            "actual": 70,
+            "required": 70
+          },
+          "resolved_scalar_cells": {
+            "actual": 170,
+            "required": 170
+          },
+          "scenarios": {
+            "actual": 10,
+            "required": 10
+          }
+        },
+        "diagnostics_sha256": "sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e",
+        "golden_outcomes": {
+          "match_count": 300,
+          "mismatch_count": 50,
+          "resolved_cells": 350,
+          "values": [
+            {
+              "false_count": 5,
+              "golden_expected": true,
+              "golden_match_count": 0,
+              "golden_mismatch_count": 5,
+              "outcome": "adapter_failure",
+              "scenario_id": "direct",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "direct",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "direct",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "direct",
+              "true_count": 0
+            },
+            {
+              "false_count": 1,
+              "golden_expected": true,
+              "golden_match_count": 4,
+              "golden_mismatch_count": 1,
+              "outcome": "rework_required",
+              "scenario_id": "direct",
+              "true_count": 4
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "direct",
+              "true_count": 4
+            },
+            {
+              "false_count": 4,
+              "golden_expected": true,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "verified_success",
+              "scenario_id": "direct",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "branch_pr",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "branch_pr",
+              "true_count": 5
+            },
+            {
+              "false_count": 4,
+              "golden_expected": false,
+              "golden_match_count": 4,
+              "golden_mismatch_count": 1,
+              "outcome": "blocked",
+              "scenario_id": "branch_pr",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "branch_pr",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": false,
+              "golden_match_count": 0,
+              "golden_mismatch_count": 5,
+              "outcome": "rework_required",
+              "scenario_id": "branch_pr",
+              "true_count": 5
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "branch_pr",
+              "true_count": 4
+            },
+            {
+              "false_count": 5,
+              "golden_expected": true,
+              "golden_match_count": 0,
+              "golden_mismatch_count": 5,
+              "outcome": "verified_success",
+              "scenario_id": "branch_pr",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "context_assimilation",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "context_assimilation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "stale_state",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "stale_state",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "stale_state",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "stale_state",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "approval_required",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "approval_required",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "approval_required",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "missing_knowledge",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "missing_knowledge",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "missing_knowledge",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "missing_knowledge",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "evaluator_rework",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "evaluator_rework",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "evaluator_rework",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "evaluator_rework",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "evaluator_rework",
+              "true_count": 5
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "evaluator_rework",
+              "true_count": 4
+            },
+            {
+              "false_count": 4,
+              "golden_expected": true,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "verified_success",
+              "scenario_id": "evaluator_rework",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "scope_violation",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "scope_violation",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "scope_violation",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "scope_violation",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "blocked",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "adapter_failure",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "rework_required",
+              "scenario_id": "adapter_failure",
+              "true_count": 5
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "scope_violation",
+              "scenario_id": "adapter_failure",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "verified_success",
+              "scenario_id": "adapter_failure",
+              "true_count": 0
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "adapter_failure",
+              "scenario_id": "hermes_one_step",
+              "true_count": 0
+            },
+            {
+              "false_count": 0,
+              "golden_expected": true,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "approval_respected",
+              "scenario_id": "hermes_one_step",
+              "true_count": 5
+            },
+            {
+              "false_count": 4,
+              "golden_expected": false,
+              "golden_match_count": 4,
+              "golden_mismatch_count": 1,
+              "outcome": "blocked",
+              "scenario_id": "hermes_one_step",
+              "true_count": 1
+            },
+            {
+              "false_count": 5,
+              "golden_expected": false,
+              "golden_match_count": 5,
+              "golden_mismatch_count": 0,
+              "outcome": "context_gap",
+              "scenario_id": "hermes_one_step",
+              "true_count": 0
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "rework_required",
+              "scenario_id": "hermes_one_step",
+              "true_count": 4
+            },
+            {
+              "false_count": 1,
+              "golden_expected": false,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "scope_violation",
+              "scenario_id": "hermes_one_step",
+              "true_count": 4
+            },
+            {
+              "false_count": 4,
+              "golden_expected": true,
+              "golden_match_count": 1,
+              "golden_mismatch_count": 4,
+              "outcome": "verified_success",
+              "scenario_id": "hermes_one_step",
+              "true_count": 1
+            }
+          ],
+          "verdict": "regression_observed"
+        },
+        "latency": [
+          {
+            "scenario_id": "direct",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 8336,
+                "mean": 7893.4,
+                "median": 7739,
+                "min": 7520,
+                "p95": 8336,
+                "standard_deviation": 347.850313
+              },
+              "time_to_first_scoped_mutation_ms": {
+                "count": 5,
+                "max": 69902,
+                "mean": 48832.2,
+                "median": 40358,
+                "min": 36416,
+                "p95": 69902,
+                "standard_deviation": 13752.129528
+              },
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "branch_pr",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 7742,
+                "mean": 7589,
+                "median": 7576,
+                "min": 7467,
+                "p95": 7742,
+                "standard_deviation": 101.099951
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "context_assimilation",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 8086,
+                "mean": 7717.4,
+                "median": 7760,
+                "min": 7243,
+                "p95": 8086,
+                "standard_deviation": 302.101043
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "stale_state",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 7561,
+                "mean": 7342.2,
+                "median": 7452,
+                "min": 6955,
+                "p95": 7561,
+                "standard_deviation": 215.487726
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "approval_required",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 7984,
+                "mean": 7562.8,
+                "median": 7584,
+                "min": 6916,
+                "p95": 7984,
+                "standard_deviation": 379.275836
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "missing_knowledge",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 11047,
+                "mean": 9137.6,
+                "median": 8519,
+                "min": 8064,
+                "p95": 11047,
+                "standard_deviation": 1078.545057
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "evaluator_rework",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 10290,
+                "mean": 8880.2,
+                "median": 8964,
+                "min": 7668,
+                "p95": 10290,
+                "standard_deviation": 894.269847
+              },
+              "time_to_first_scoped_mutation_ms": {
+                "count": 5,
+                "max": 71153,
+                "mean": 47148.2,
+                "median": 51652,
+                "min": 28934,
+                "p95": 71153,
+                "standard_deviation": 15332.721134
+              },
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "scope_violation",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 8121,
+                "mean": 7767,
+                "median": 7796,
+                "min": 7343,
+                "p95": 8121,
+                "standard_deviation": 251.035456
+              },
+              "time_to_first_scoped_mutation_ms": {
+                "count": 5,
+                "mean": null,
+                "median": 69993,
+                "min": 33284,
+                "standard_deviation": null
+              },
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "adapter_failure",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 10910,
+                "mean": 9253.6,
+                "median": 8381,
+                "min": 8193,
+                "p95": 10910,
+                "standard_deviation": 1215.898943
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          },
+          {
+            "scenario_id": "hermes_one_step",
+            "values": {
+              "harness_setup_latency_ms": {
+                "count": 5,
+                "max": 11770,
+                "mean": 9894.4,
+                "median": 10208,
+                "min": 8156,
+                "p95": 11770,
+                "standard_deviation": 1442.67094
+              },
+              "time_to_first_scoped_mutation_ms": null,
+              "time_to_verified_result_ms": null
+            }
+          }
+        ],
+        "path": ".agentplane/tasks/202607221908-AB2SFC/evidence/rf04-current-rebuild.v1.json",
+        "provider_tokens": [
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "direct"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "branch_pr"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "EVALUATOR",
+            "scenario_id": "branch_pr"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "missing_knowledge"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "evaluator_rework"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "EVALUATOR",
+            "scenario_id": "evaluator_rework"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CODER",
+            "scenario_id": "scope_violation"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CURRENT_AGENT",
+            "scenario_id": "adapter_failure"
+          },
+          {
+            "input_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "output_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "reasoning_tokens": {
+              "diagnostic_only": true,
+              "provenance_categories": [
+                "provider_reported"
+              ],
+              "resolution": "observed"
+            },
+            "role": "CURRENT_AGENT",
+            "scenario_id": "hermes_one_step"
+          }
+        ],
+        "sha256": "sha256:ff1867d8c4a8f5f4d2b8cf551b29d9a1dec4c62eb6c4d9a6e00efca51fc9a32d",
+        "structural_projection_sha256": "sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4"
+      },
+      "live_provider_measurement": "not_run_by_packet_builder",
+      "status": "exact_frozen_rebuild",
+      "verified_by_checks": [
+        "bun run bench:agent-efficiency:check",
+        "bun run bench:agent-efficiency:replay:check"
+      ]
+    }
+  },
+  "schema_version": 1,
+  "task_id": "202607221908-AB2SFC",
   "verification": {
-    "status": "pass",
     "checks": [
       {
-        "command": "bun run test:critical",
+        "command": "dependency closure review",
+        "evidence": "qualification-packet.v1.json records DONE, verification ok, evaluator pass, merged provider PR, successful hosted close, and ancestor proof for 71SCSW, ECBY56, 7KFTPH, and CT2725.",
         "result": "pass",
-        "evidence": "12 of 12 critical CLI chunks passed"
+        "scope": "RC1 dependency fan-in at 81c9176f."
+      },
+      {
+        "command": "bun run test:critical",
+        "evidence": "all 12 critical CLI chunks passed.",
+        "result": "pass",
+        "scope": "critical safety, route, replay, protected-path, scope, symlink, and trust-boundary regressions."
       },
       {
         "command": "bun run coverage:workflow-suite",
+        "evidence": "14 test files and 52 tests passed; workflow harness contract covered 5 source targets.",
         "result": "pass",
-        "evidence": "14 files and 52 tests passed; workflow harness contract covered 5 source targets"
+        "scope": "workflow runtime and harness coverage."
       },
       {
         "command": "bun run lifecycle:invariants",
+        "evidence": "all 8 lifecycle invariants passed.",
         "result": "pass",
-        "evidence": "8 lifecycle invariants passed"
+        "scope": "task and integration lifecycle state guarantees."
       },
       {
         "command": "bun run release:prepublish:fast",
+        "evidence": "incident, ACR example, generated docs, package build, tarball policy, and blueprint release gates passed.",
         "result": "pass",
-        "evidence": "incident, policy, package, tarball, and blueprint release gates passed"
+        "scope": "fast prerelease packaging readiness without publishing."
+      },
+      {
+        "command": "bun run bench:agent-efficiency:check",
+        "evidence": "10 RF-04 scenarios and 10 measured cost metrics passed; structural digest a9b855c5; timing is diagnostic only.",
+        "result": "pass",
+        "scope": "frozen pre-0.7 baseline integrity."
+      },
+      {
+        "command": "bun run bench:agent-efficiency:replay:check",
+        "evidence": "50 runs, 70 of 70 outcomes, 27 of 27 provider token cells, and 170 of 170 scalar cells passed with structural digest 006ddc6d.",
+        "result": "pass",
+        "scope": "exact deterministic RF-04 replay evidence supporting the reused 55-episode live packet."
+      },
+      {
+        "command": "frozen golden metric comparison",
+        "evidence": "50-run and 55-provider-episode packet preserves outcome, safety, and token improvements; two live latency cells remain above threshold and publication is explicitly do_not_publish.",
+        "result": "pass",
+        "scope": "RC1 qualification decision and residual-risk disclosure."
       }
-    ]
-  },
-  "golden_metrics": {
-    "source_packet": {
-      "path": ".agentplane/tasks/202607310028-7KFTPH/evidence/qualification-packet.v1.json",
-      "sha256": "sha256:6ca5092be27d6676842f16931cfaccbaa11ff107e8453b75fd58198828c305c5"
-    },
-    "baseline": {
-      "path": "scripts/baselines/agent-efficiency-pre-v0.7-main.json",
-      "sha256": "sha256:eb1b2b5102dcfedc4b70c9e93928392a6902c9111d28ce539f51ecdf94704f86"
-    },
-    "candidate": {
-      "path": "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json",
-      "sha256": "sha256:f8e569366cb80bd0e054210a58cafc3d92b16b45d9653dd283911ee51733c870",
-      "coverage": {
-        "replay_runs": 50,
-        "scenarios": 10,
-        "provider_episodes": 55
-      },
-      "outcomes": {
-        "verified_success": {
-          "baseline": 8,
-          "candidate": 20,
-          "verdict": "pass"
-        },
-        "rework_required": {
-          "baseline": 32,
-          "candidate": 25,
-          "verdict": "pass"
-        },
-        "golden_mismatch_count": {
-          "baseline": 33,
-          "candidate": 10,
-          "verdict": "pass"
-        }
-      },
-      "provider_tokens": {
-        "total_baseline": 9186747,
-        "total_candidate": 5649617,
-        "delta_ratio": -0.38502529785570455,
-        "verdict": "pass"
-      },
-      "latency": {
-        "harness_setup_mean_delta_ratio": 1.3039789835197346,
-        "verified_result_mean_delta_ratio": 0.11659228777654003,
-        "maximum_allowed_increase_ratio": 0.1,
-        "verdict": "fail"
-      }
-    },
-    "interpretation": "Outcome, safety, and provider-token cells do not regress. The previously measured live latency cells still exceed the frozen publication threshold and were not remeasured by this RC1 gate."
-  },
-  "residual_risks": [
-    "The last matched live measurement still fails harness setup and time-to-verified-result latency thresholds.",
-    "POSIX descendants that create a new session remain containment-unverified by design; completed work remains fail-closed while typed non-success stops are preserved.",
-    "No fresh provider measurement was required or run for RC1 qualification, so the 50-run and 55-episode packet remains the latest live performance evidence."
-  ],
-  "decision": {
-    "qualification": "pass",
-    "publication": "do_not_publish",
-    "reason": "The RC1 dependency fan-in and deterministic release gates pass, so the architecture wave may continue. Publishing this optional prerelease is not justified while the latest matched live latency measurement remains above the frozen threshold.",
-    "next": "Proceed with the RC2 architecture and toolchain tasks; preserve RC1 as an internal qualified checkpoint without creating a package or tag."
+    ],
+    "implementation_sha": "f669ed24a2433f1c2d6c36301c04a5a872d43fac",
+    "note": "PASS at 81c9176f: RC1 dependency closure, critical, workflow coverage, lifecycle, release prepublish, and frozen RF-04 guards all pass; optional publication remains withheld by the latest live latency evidence.",
+    "record_digest": "sha256:88b724cc7f4d202a237a80a25ff248c1d2d49dd3e7fa62131377d8b30684f039",
+    "record_path": ".agentplane/tasks/202607221908-AB2SFC/verification/20260731192201191-88b724cc7f4d202a.json",
+    "record_sha256": "sha256:89910488503987ad8092a7a2c7e8f7e0523f675dc7baf713fe01a056f1b27c66",
+    "recorded_at": "2026-07-31T19:22:01.191Z",
+    "result": "ok",
+    "verifier": "TESTER"
   }
 }
