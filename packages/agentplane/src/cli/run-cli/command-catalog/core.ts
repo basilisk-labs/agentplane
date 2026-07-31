@@ -49,7 +49,7 @@ import {
 import { initSpec } from "../commands/init/spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, type CommandEntry } from "./kernel.js";
+import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsInit,
   fromCommandsUpgradeCommand,
@@ -185,10 +185,13 @@ export const CORE_COMMANDS = [
   declareCommand(platformSyncSpec, { load: loadPlatformSyncSpec, needs: "project" }),
   fromCommandsPlatform(platformExplainSpec, "runPlatformExplain", { needs: "none" }),
   fromCommandsPlatform(platformDoctorSpec, "runPlatformDoctor", { needs: "none" }),
-  declareCommand(agentsSpec, { load: loadAgentsSpec, needs: "project" }),
-  declareCommand(configShowSpec, {
+  declareSessionCommand(agentsSpec, {
+    load: loadAgentsSpec,
+    requirements: ["project"],
+  }),
+  declareSessionCommand(configShowSpec, {
     load: loadConfigShowSpec,
-    needs: "project+config",
+    requirements: ["project", "config"],
     invocation: requireCanonicalCommandInvocation(["config", "show"]),
   }),
   declareCommand(configSetSpec, { load: loadConfigSetSpec, needs: "project+config" }),

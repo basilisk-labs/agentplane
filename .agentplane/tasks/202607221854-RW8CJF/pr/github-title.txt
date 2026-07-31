@@ -1,0 +1,1 @@
+🚧 RW8CJF task: Define granular CommandSession capabilities and migrate a pilot slice [202607221854-RW8CJF]

@@ -153,11 +153,17 @@ function operatorGuidanceJson(guidance: RouteOperatorGuidance): Record<string, u
   };
 }
 
-export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunTaskNextActionHandler(session: {
+  getLocalContext: (cmd: string) => Promise<CommandContext>;
+  getRemoteContext: (cmd: string) => Promise<CommandContext>;
+}) {
   return async (ctx: CommandCtx, parsed: TaskNextActionParsed): Promise<number> => {
+    const commandCtx = await (parsed.remote
+      ? session.getRemoteContext("task next-action")
+      : session.getLocalContext("task next-action"));
     const preparedWorkOrder = requirePreparedAgentWorkOrder(
       await prepareAgentWorkOrder({
-        command_ctx: await getCtx("task next-action"),
+        command_ctx: commandCtx,
         cwd: ctx.cwd,
         root_override: ctx.rootOverride ?? null,
         task_id: parsed.taskId,

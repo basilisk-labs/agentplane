@@ -1,16 +1,29 @@
-import type { LoadedConfig } from "@agentplaneorg/core/config";
-import type { ResolvedProject } from "@agentplaneorg/core/project";
-
-import type { CommandContext } from "../../../commands/shared/task-backend.js";
-import type { HelpJson } from "../../spec/help-render.js";
+import { CliError } from "../../../shared/errors.js";
+import { exitCodeForError } from "../../exit-codes.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+import {
+  isCommandContextCapability,
+  preparationNodeForCapability,
+  validateCommandRequirements,
+  type CommandCapability,
+  type CommandPreparationNode,
+  type CommandSession,
+  type CommandSessionResolvers,
+} from "./command-session.js";
 
-export type RunDeps = {
-  getCtx: (commandForErrorContext: string) => Promise<CommandContext>;
-  getResolvedProject: (commandForErrorContext: string) => Promise<ResolvedProject>;
-  getLoadedConfig: (commandForErrorContext: string) => Promise<LoadedConfig>;
-  getHelpJsonForDocs: () => readonly HelpJson[];
-};
+export { createCommandSession } from "./command-session.js";
+export type {
+  CommandCapability,
+  CommandPreparationNode,
+  CommandPreparationTrace,
+  CommandSession,
+  CommandSessionResolvers,
+} from "./command-session.js";
+
+export type RunDeps = Pick<
+  CommandSessionResolvers,
+  "getCtx" | "getResolvedProject" | "getLoadedConfig" | "getHelpJsonForDocs"
+>;
 
 export type DispatchNeeds = {
   project: boolean;
@@ -23,8 +36,11 @@ export type CommandSurface = "user" | "advanced" | "framework" | "internal";
 
 export type CommandEntry = {
   spec: CommandSpec<unknown>;
-  load: (deps: RunDeps) => Promise<CommandHandler<unknown>>;
+  load: (session: CommandSession<CommandCapability>) => Promise<CommandHandler<unknown>>;
   needs: CommandNeeds;
+  requirements: readonly CommandCapability[];
+  preparationNodes: readonly CommandPreparationNode[];
+  compatibility: { mode: "legacy-command-needs"; needs: CommandNeeds } | null;
   dispatch: DispatchNeeds;
   surface: CommandSurface;
   helpGroup?: string;
@@ -54,21 +70,88 @@ type ExportedCommandDeclaration = CommandMeta & {
 
 type CommandDeclaration<TParsed> = LoadedCommandDeclaration<TParsed> | ExportedCommandDeclaration;
 
-function normalizeDispatchNeeds(needs: CommandNeeds): DispatchNeeds {
+const LEGACY_CONTEXT_REQUIREMENTS = [
+  "project",
+  "config",
+  "backend.read",
+  "backend.write",
+  "task.read",
+  "task.write",
+  "git.head",
+  "git.diff",
+  "git.mutate",
+  "route.local",
+  "route.remote",
+  "policy",
+  "approvals",
+  "context.search",
+  "provider",
+] as const satisfies readonly CommandCapability[];
+
+function legacyRequirements(needs: CommandNeeds): readonly CommandCapability[] {
   switch (needs) {
     case "none": {
-      return { project: false, loadedConfig: false, taskContext: false };
+      return [];
     }
     case "project": {
-      return { project: true, loadedConfig: false, taskContext: false };
+      return ["project"];
     }
     case "project+config": {
-      return { project: true, loadedConfig: true, taskContext: false };
+      return ["project", "config"];
     }
     case "project+config+task": {
-      return { project: true, loadedConfig: true, taskContext: true };
+      return LEGACY_CONTEXT_REQUIREMENTS;
     }
   }
+}
+
+function preparationNodesForRequirements(
+  requirements: readonly CommandCapability[],
+): readonly CommandPreparationNode[] {
+  return [...new Set(requirements.map((capability) => preparationNodeForCapability(capability)))];
+}
+
+function normalizeDispatchRequirements(requirements: readonly CommandCapability[]): DispatchNeeds {
+  const taskContext = requirements.some((capability) => isCommandContextCapability(capability));
+  const loadedConfig = taskContext || requirements.includes("config");
+  const project = loadedConfig || requirements.includes("project");
+  return { project, loadedConfig, taskContext };
+}
+
+function coarseNeedsForDispatch(dispatch: DispatchNeeds): CommandNeeds {
+  if (dispatch.taskContext) return "project+config+task";
+  if (dispatch.loadedConfig) return "project+config";
+  if (dispatch.project) return "project";
+  return "none";
+}
+
+function legacyRunDeps(session: CommandSession<CommandCapability>, needs: CommandNeeds): RunDeps {
+  const getCtx = async (command: string) => {
+    if (needs !== "project+config+task") denyLegacyAccess(command, "task context", needs);
+    return await session.require("task.read", command);
+  };
+  const getResolvedProject = async (command: string) => {
+    if (needs === "none") denyLegacyAccess(command, "project", needs);
+    return await session.require("project", command);
+  };
+  const getLoadedConfig = async (command: string) => {
+    if (needs === "none" || needs === "project") denyLegacyAccess(command, "config", needs);
+    return await session.require("config", command);
+  };
+  return {
+    getCtx,
+    getResolvedProject,
+    getLoadedConfig,
+    getHelpJsonForDocs: () => session.getHelpJsonForDocs(),
+  };
+}
+
+function denyLegacyAccess(command: string, capability: string, needs: CommandNeeds): never {
+  throw new CliError({
+    exitCode: exitCodeForError("E_INTERNAL"),
+    code: "E_INTERNAL",
+    message: `Internal error: legacy command "${command}" declared needs="${needs}" but attempted ${capability}`,
+  });
 }
 
 export function declareCommand<TParsed>(
@@ -76,11 +159,48 @@ export function declareCommand<TParsed>(
   declaration: CommandDeclaration<TParsed>,
 ): CommandEntry {
   const needs = declaration.needs ?? "project+config+task";
+  const requirements = legacyRequirements(needs);
+  const dispatch = normalizeDispatchRequirements(requirements);
   return {
     spec: spec as CommandSpec<unknown>,
-    load: (deps) => loadDeclaredCommand(declaration, deps) as Promise<CommandHandler<unknown>>,
+    load: (session) =>
+      loadDeclaredCommand(declaration, legacyRunDeps(session, needs)) as Promise<
+        CommandHandler<unknown>
+      >,
     needs,
-    dispatch: normalizeDispatchNeeds(needs),
+    requirements,
+    preparationNodes: preparationNodesForRequirements(requirements),
+    compatibility: { mode: "legacy-command-needs", needs },
+    dispatch,
+    surface: declaration.surface ?? "user",
+    helpGroup: declaration.helpGroup,
+    invocation: declaration.invocation,
+  };
+}
+
+export function declareSessionCommand<
+  TParsed,
+  const TRequirements extends readonly CommandCapability[],
+>(
+  spec: CommandSpec<TParsed>,
+  declaration: Omit<CommandMeta, "needs"> & {
+    requirements: TRequirements;
+    load: (session: CommandSession<TRequirements[number]>) => Promise<CommandHandler<TParsed>>;
+  },
+): CommandEntry {
+  validateCommandRequirements(declaration.requirements);
+  const dispatch = normalizeDispatchRequirements(declaration.requirements);
+  return {
+    spec: spec as CommandSpec<unknown>,
+    load: (session) =>
+      declaration.load(session as CommandSession<TRequirements[number]>) as Promise<
+        CommandHandler<unknown>
+      >,
+    needs: coarseNeedsForDispatch(dispatch),
+    requirements: [...declaration.requirements],
+    preparationNodes: preparationNodesForRequirements(declaration.requirements),
+    compatibility: null,
+    dispatch,
     surface: declaration.surface ?? "user",
     helpGroup: declaration.helpGroup,
     invocation: declaration.invocation,

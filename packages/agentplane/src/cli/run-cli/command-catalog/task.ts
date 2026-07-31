@@ -73,7 +73,7 @@ import { taskVerifyShowSpec } from "../../../commands/task/verify-show.command.j
 import { taskVerifySpec } from "../../../commands/task/verify.command.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, type CommandEntry } from "./kernel.js";
+import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
@@ -177,8 +177,9 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskListSpec, {
+  declareSessionCommand(taskListSpec, {
     load: loadTaskListSpec,
+    requirements: ["project", "config", "backend.read", "task.read"],
     invocation: requireCanonicalCommandInvocation(["task", "list"]),
   }),
   declareCommand(taskNextSpec, { load: loadTaskNextSpec }),
@@ -188,7 +189,21 @@ export const TASK_COMMANDS = [
     invocation: requireCanonicalCommandInvocation(["task", "show"]),
   }),
   declareCommand(taskStatusSpec, { load: loadTaskStatusSpec }),
-  declareCommand(taskNextActionSpec, { load: loadTaskNextActionSpec }),
+  declareSessionCommand(taskNextActionSpec, {
+    load: loadTaskNextActionSpec,
+    requirements: [
+      "project",
+      "config",
+      "backend.read",
+      "task.read",
+      "git.head",
+      "route.local",
+      "route.remote",
+      "policy",
+      "approvals",
+      "provider",
+    ],
+  }),
   declareCommand(taskNewSpec, {
     load: loadTaskNewSpec,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),

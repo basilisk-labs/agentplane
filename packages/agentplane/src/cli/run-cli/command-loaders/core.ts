@@ -1,4 +1,4 @@
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
 
 export const fromCommandsInit = commandModule(() => import("../commands/init/spec.js"));
 export const fromCommandsUpgradeCommand = commandModule(
@@ -66,10 +66,18 @@ export const loadIncidentsAdviseSpec = (deps: RunDeps) =>
   import("../../../commands/incidents/advise.command.js").then((m) =>
     m.makeRunIncidentsAdviseHandler(deps.getCtx),
   );
-export const loadAgentsSpec = (deps: RunDeps) =>
-  import("../commands/core/agents.js").then((m) => m.makeRunAgentsHandler(deps));
-export const loadConfigShowSpec = (deps: RunDeps) =>
-  import("../commands/config.js").then((m) => m.makeRunConfigShowHandler(deps));
+export const loadAgentsSpec = (session: CommandSession<"project">) =>
+  import("../commands/core/agents.js").then((m) =>
+    m.makeRunAgentsHandler({
+      getResolvedProject: (command) => session.require("project", command),
+    }),
+  );
+export const loadConfigShowSpec = (session: CommandSession<"project" | "config">) =>
+  import("../commands/config.js").then((m) =>
+    m.makeRunConfigShowHandler({
+      getLoadedConfig: (command) => session.require("config", command),
+    }),
+  );
 export const loadConfigSetSpec = (deps: RunDeps) =>
   import("../commands/config.js").then((m) => m.makeRunConfigSetHandler(deps));
 export const loadModeGetSpec = (deps: RunDeps) =>

@@ -3,12 +3,17 @@ import { helpSpec, makeHelpHandler } from "../spec/help.js";
 
 import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
 import { COMMANDS, getHelpCommandEntries, makeHelpSpecForEntry } from "./command-catalog.js";
-import type { RunDeps } from "./command-catalog/kernel.js";
+import {
+  createCommandSession,
+  type CommandPreparationTrace,
+  type RunDeps,
+} from "./command-catalog/kernel.js";
 
 export function buildRegistry(opts: {
   getCtx: RunDeps["getCtx"];
   getResolvedProject: RunDeps["getResolvedProject"];
   getLoadedConfig: RunDeps["getLoadedConfig"];
+  onPreparationTrace?: (event: CommandPreparationTrace) => void;
 }): CommandRegistry {
   const registry = new CommandRegistry();
   const getHelpJsonForDocs = () =>
@@ -23,9 +28,17 @@ export function buildRegistry(opts: {
     getHelpJsonForDocs,
   };
   for (const entry of COMMANDS) {
+    const session = createCommandSession({
+      command: entry.spec.id.join(" "),
+      requirements: entry.requirements,
+      resolvers: {
+        ...deps,
+        onPreparationTrace: opts.onPreparationTrace,
+      },
+    });
     let loaded: ReturnType<(typeof entry)["load"]> | null = null;
     registry.register(entry.spec, async (ctx, parsed) => {
-      loaded ??= entry.load(deps);
+      loaded ??= entry.load(session);
       const handler = await loaded;
       return await handler(ctx, parsed);
     });

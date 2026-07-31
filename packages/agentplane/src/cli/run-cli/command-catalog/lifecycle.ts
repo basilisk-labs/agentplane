@@ -16,7 +16,7 @@ import { startSpec } from "../../../commands/start.spec.js";
 import { verifySpec } from "../../../commands/verify.spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, type CommandEntry } from "./kernel.js";
+import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsHooksHooksCommand,
   fromCommandsHooksInstallCommand,
@@ -50,9 +50,9 @@ export const LIFECYCLE_COMMANDS = [
     invocation: requireCanonicalCommandInvocation(["finish"]),
   }),
   declareCommand(readySpec, { load: loadReadySpec }),
-  declareCommand(docsCliSpec, {
+  declareSessionCommand(docsCliSpec, {
     load: loadDocsCliSpec,
-    needs: "none",
+    requirements: ["output"],
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
