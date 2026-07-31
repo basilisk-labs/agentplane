@@ -1,10 +1,11 @@
 ---
 id: "202607311706-QB60J5"
 title: "Benchmark TypeScript 7 and freeze the AgentPlane adoption contract"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -62,8 +63,8 @@ quality_review:
     - "Diagnostic and emit drift are classified: supported root and website paths are green after bounded candidate config changes, JavaScript emit is unchanged, declaration drift is order-only or parenthesis-only, and pre-existing non-gating config failures are explicit."
     - "The side-by-side resolution proof and passing lint, trust-boundary, no-console, compatibility, frozen-install, typecheck, format, routing, task-state, syntax, and diff gates support the GO decision without prematurely landing the migration."
 commit:
-  hash: "7a6a2ee8f3ec8d8055136c45d5e53b3e0679f456"
-  message: "🧪 QB60J5 benchmark: freeze TypeScript 7 adoption contract"
+  hash: "2c402e11f96638b90b38452480b6f1fb924676d1"
+  message: "🔍 QB60J5 task: record benchmark verification"
 comments:
   -
     author: "TESTER"
@@ -71,6 +72,9 @@ comments:
   -
     author: "TESTER"
     body: "Implementation target: TypeScript 7 benchmark evidence and frozen adoption contract."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -92,8 +96,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-07-31T17:54:01.778Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T17:51:03.949Z"
+doc_updated_at: "2026-07-31T17:54:01.778Z"
 doc_updated_by: "TESTER"
 description: "Measure TypeScript 7.0 against the current TypeScript 6.0.3 baseline across all AgentPlane project references, classify diagnostic and emit parity, prove the TypeScript 6 compiler API consumers remain supported side-by-side, and freeze compiler pinning, CI concurrency, rollback, and acceptance thresholds for the 0.7 migration."
 sections:
@@ -161,6 +172,9 @@ sections:
       Impact: The v0.7 migration can reduce typecheck latency materially without moving compiler-API consumers off TypeScript 6.
       Resolution: Proceed through DRYTNK with exact pins, hosted Windows/Linux gates, declaration drift guard, and the TypeScript 6 rollback override.
 extensions:
+  implementation_commit:
+    hash: "7a6a2ee8f3ec8d8055136c45d5e53b3e0679f456"
+    message: "🧪 QB60J5 benchmark: freeze TypeScript 7 adoption contract"
   workflow_route_baseline:
     start_head_sha: "54c1d90ac8cd30ea28d165c8e41fcdc1542e740c"
     version: 1
