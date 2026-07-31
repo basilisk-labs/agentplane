@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "The qualification packet now records that its 50-run and 55-provider-episode measurement is bound to beta.1 subject b58705432c46df612a89348ef28ea268fdcc2b04, does not match reviewed implementation f669ed24a2433f1c2d6c36301c04a5a872d43fac, and establishes no live RC1 outcome, safety, token, or latency claim."
     - "The only supported decision is do_not_publish; RC1 may unlock RC2 as an internal architecture checkpoint, but any package or tag requires a new provider measurement bound to the release-candidate SHA."
 commit:
-  hash: "1aa85a597433c05339dcd9b42481d24c3cf3b47d"
-  message: "🔍 AB2SFC task: record RC1 evaluator verdict"
+  hash: "c4f57f5a18c34325254bdc8a08d3c4fc2e4010b4"
+  message: "🔍 AB2SFC task: record corrected evaluator verdict"
 comments:
   -
     author: "TESTER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "TESTER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -101,8 +104,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-31T19:45:56.181Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T19:27:07.392Z"
+doc_updated_at: "2026-07-31T19:45:56.181Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-rc.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -241,8 +251,8 @@ sections:
       Resolution: Committed a SHA-bound qualification packet with dependency/provider proof, exact gates, frozen RF-04 metrics, residual risks, and an explicit do_not_publish decision.
 extensions:
   implementation_commit:
-    hash: "29d05601599ff1bce772480b6f823cfc4596e60d"
-    message: "🔍 AB2SFC task: seal RC1 verification evidence"
+    hash: "212a987b5c2d47030097d082e9343875fbe8146f"
+    message: "🔍 AB2SFC task: correct RC1 metric attribution"
   workflow_route_baseline:
     start_head_sha: "d9fa4e76ef2e7860c17a6069e41ac30806e6157e"
     version: 1
