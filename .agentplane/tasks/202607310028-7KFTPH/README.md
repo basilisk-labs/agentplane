@@ -4,7 +4,7 @@ title: "Re-qualify the AgentPlane 0.7.0-beta.2 milestone from corrected main"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -42,11 +42,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "a13b39307951b1214a36552362d62def09dec497"
+  message: "🧪 7KFTPH task: initialize beta.2 requalification"
 comments:
   -
     author: "TESTER"
     body: "Start: re-qualify beta.2 only on corrected main; no implementation change or package publication is permitted."
+  -
+    author: "CODER"
+    body: "Implemented: initialized the corrected-main beta.2 qualification workspace, pinned the explicit quality-regression blueprint, and closed the malformed analysis-light intake as a duplicate. No product code changed."
 events:
   -
     type: "status"
@@ -55,9 +60,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: re-qualify beta.2 only on corrected main; no implementation change or package publication is permitted."
+  -
+    type: "status"
+    at: "2026-07-31T00:33:55.221Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: initialized the corrected-main beta.2 qualification workspace, pinned the explicit quality-regression blueprint, and closed the malformed analysis-light intake as a duplicate. No product code changed."
 doc_version: 3
-doc_updated_at: "2026-07-31T00:30:38.327Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-07-31T00:33:55.221Z"
+doc_updated_by: "CODER"
 description: "Re-run the beta.2 qualification gate from corrected main after the guard and clone-baseline repair was isolated and merged in task 202607302331-3C8V0X. Validate dependency closure, exact RF-04 measurement, safety and outcome metrics, and issue an evidence-backed publish-or-do-not-publish decision. This task must not modify product code or publish a package."
 sections:
   Summary: |-
