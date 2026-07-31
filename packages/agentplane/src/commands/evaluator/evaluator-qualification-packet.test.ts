@@ -124,6 +124,7 @@ describe("evaluator qualification packet", () => {
       }),
     ).resolves.toMatchObject({
       rootDependencyIds: ["aggregate"],
+      dependencyTaskIds: ["aggregate", "leaf-a", "leaf-b"],
       terminalLeaves: [{ id: "leaf-a" }, { id: "leaf-b" }],
     });
     tasks.set("missing-root", { id: "missing-root", depends_on: ["missing"] } as TaskData);

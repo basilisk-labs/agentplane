@@ -38,6 +38,7 @@ import {
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
+import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import { parseVerificationCheckDetails } from "../shared/verification-details.js";
 import type {
   ExecuteVerifyRecordCommandOptions,
@@ -200,11 +201,21 @@ async function recordVerificationResult(opts: {
         guidance: "fill it before running `agentplane verify ...`",
       });
       const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
+      const qualificationDependencies = isQualificationTask(current)
+        ? await resolveQualificationDependencyLeaves({
+            taskId: current.id,
+            loadTask: (taskId) => ctx.taskBackend.getTask(taskId),
+          })
+        : null;
+      const qualityReviewTaskIds = qualificationDependencies
+        ? [...new Set([...batchTaskIds, ...qualificationDependencies.dependencyTaskIds])]
+        : batchTaskIds;
       const evaluatedSha = await resolveQualityReviewTargetSha({
         gitRoot: resolved.gitRoot,
         workflowDir: config.paths.workflow_dir,
         taskId: current.id,
-        taskIds: normalizeBranchPrBatchTaskIds(current, current.id),
+        taskIds: qualityReviewTaskIds,
         previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
       });
       if (
