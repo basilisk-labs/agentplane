@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-2NDXVB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T23:51:42.183Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Both PR capability-boundary findings are corrected on the current head: remote authority grants use a declared remote/provider session selected by parsed intent, while observation triage uses the read-only profile.",
+  "evaluated_sha": "24e064bc3161bf5fab78e620a22894ce38e45f6a",
+  "blueprint_digest": "6da3bd6e284423315e176aa3e368fb2af9851d74b332cbeff5f6e150e24d64ec",
+  "findings": [
+    "The authority-grant profile is the union of lifecycle mutation and remote route capabilities; local grants remain provider-lazy and remote grants are now visible to capability enforcement and tracing.",
+    "Observation triage now matches its implementation, which only reads and summarizes observation entries."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-2NDXVB/verification/task-lifecycle-route-migration.md",
+    "24e064bc3161bf5fab78e620a22894ce38e45f6a"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "CommandContext remains the compatibility value until RF-24 fan-in; this follow-up does not broaden that residual boundary."
+  ]
+}
