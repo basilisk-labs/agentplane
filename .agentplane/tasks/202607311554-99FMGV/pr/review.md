@@ -13,7 +13,7 @@ Created: 2026-07-31T15:55:48.023Z
 ## Verification
 
 - State: ok
-- Note: PASS: structured verification for semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4.
+- Note: PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
