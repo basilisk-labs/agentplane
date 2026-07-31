@@ -126,6 +126,13 @@ const depcruiseRuntimeConfig = readFileSync(path.join(root, "depcruise.config.cj
 if (!depcruiseRuntimeConfig.includes('fileName: "tsconfig.depcruise.json"')) {
   throw new Error("dependency-cruiser must use the isolated TypeScript 6 config.");
 }
+const depcruiseRunner = readFileSync(
+  path.join(root, "scripts/checks/run-depcruise-arch.mjs"),
+  "utf8",
+);
+if (!depcruiseRunner.includes("register-typescript-6-resolution.mjs")) {
+  throw new Error("dependency-cruiser must preload deterministic TypeScript 6 resolution.");
+}
 
 const workspaces = [
   "packages/core/package.json",

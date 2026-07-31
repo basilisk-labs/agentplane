@@ -21,6 +21,7 @@ The migration implements the approved `202607311706-QB60J5` contract:
 - The wrapper defaults to `@typescript/native` and accepts only the documented `typescript` fallback.
 - Root `baseUrl` was removed and every path mapping is explicitly relative.
 - `dependency-cruiser` uses an isolated config without compiler-only project references or workspace path aliases, so clean package builds cannot change the architecture graph.
+- Its subprocess preloads root TypeScript 6.0.3 resolution and fails closed if the compiler API is unavailable, avoiding Bun isolated-linker differences between macOS and Linux.
 - The Docusaurus 3.10.1 config is mirrored by a checked compatibility bridge with only `baseUrl` removed.
 - TypeScript 7 remains a root development dependency and is absent from runtime package dependencies.
 
@@ -43,6 +44,7 @@ The migration implements the approved `202607311706-QB60J5` contract:
 - Isolated retry of every file that timed out during the overloaded full local Vitest run: pass, 7/7 files and 80/80 tests with one worker.
 - `bun run arch:check`: pass, zero dependency violations.
 - A fresh checkout reproduced the hosted failure after frozen install and all four package builds. After the fix, the same post-build `agentplane` dist shape (1127 files) and the full `bun run arch:check` passed with zero violations.
+- Linux container reproduction (Node 24.16.0, Bun 1.3.6): dependency-cruiser initially reported TypeScript unavailable and reproduced all 11 hosted false-positive cycles; with the guarded preload it resolved `typescript@6.0.3` and the complete architecture graph passed with zero violations.
 - `bun run knip:check`: pass, baseline 545/545.
 - `bun run package:tarball:check`: pass for core, recipes, and agentplane.
 - `bun run package:install-smoke`: pass for locally packed packages.
@@ -58,6 +60,7 @@ A full local `test:fast` attempt oversubscribed the machine and produced 18 obse
 - First hosted run: Windows, unit, critical CLI, workflow, contract, coverage, package-runtime, docs, dependency review, and CodeQL checks passed.
 - The first `verify-static` run exposed build-order-dependent dependency-cruiser resolution after root `baseUrl` removal. The clean sequence was reproduced locally.
 - Resolution: architecture analysis now uses `tsconfig.depcruise.json` without following compiler project references or workspace source aliases. The main TypeScript 7 graph remains free of `baseUrl`, and no architecture rule was weakened.
+- The second hosted run and a Linux container reproduction showed that Bun's isolated linker did not expose optional TypeScript to dependency-cruiser on Linux. The architecture runner now injects the pinned root TypeScript 6.0.3 module and verifies it before cruising.
 - Fresh hosted `verify-static`, aggregate PR verification, and all required checks remain mandatory on the rework commit.
 
 ## Rollback
