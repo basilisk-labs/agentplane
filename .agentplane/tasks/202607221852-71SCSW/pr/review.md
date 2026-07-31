@@ -6,7 +6,7 @@ Created: 2026-07-31T11:14:18.745Z
 
 - Task: `202607221852-71SCSW`
 - Title: Extend supervised execution to branch_pr
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-71SCSW/extend-supervised-execution-to-branch-pr`
 - Canonical task record: `.agentplane/tasks/202607221852-71SCSW/README.md`
 
