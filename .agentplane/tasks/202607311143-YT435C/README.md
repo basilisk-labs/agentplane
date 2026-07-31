@@ -2,10 +2,10 @@
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-31T13:30:56.028Z"
+  state: "needs_rework"
+  updated_at: "2026-07-31T13:49:21.168Z"
   updated_by: "CODER"
-  note: "v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env."
-  attempts: 0
+  note: "Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of 0.6.26. Expanding child-process isolation to all transient launcher provenance variables."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-31T13:31:07.524Z"
@@ -55,9 +55,7 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
   findings:
     - "Verification subprocesses are isolated from ap-only presentation variables; exact regression and the full release matrix pass on a913b333."
-commit:
-  hash: "511f717166e9a47ab72b6b3e69f92f53a6894b0d"
-  message: "✅ YT435C release: record final verification"
+commit: null
 comments:
   -
     author: "CODER"
@@ -80,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: isolate verification from transient runtime provenance variables."
 events:
   -
     type: "status"
@@ -172,8 +173,21 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T13:49:21.168Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of 0.6.26. Expanding child-process isolation to all transient launcher provenance variables."
+  -
+    type: "status"
+    at: "2026-07-31T13:49:22.776Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: isolate verification from transient runtime provenance variables."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:31:27.890Z"
+doc_updated_at: "2026-07-31T13:49:22.776Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -380,6 +394,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:12:54.825Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-31T13:49:21.168Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of 0.6.26. Expanding child-process isolation to all transient launcher provenance variables.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:31:27.890Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
 
     Details:
 
@@ -653,6 +697,36 @@ Note: v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-bas
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:12:54.825Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-31T13:49:21.168Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of 0.6.26. Expanding child-process isolation to all transient launcher provenance variables.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:31:27.890Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
 
 Details:
 

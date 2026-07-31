@@ -6,14 +6,14 @@ Created: 2026-07-31T11:44:30.841Z
 
 - Task: `202607311143-YT435C`
 - Title: Release AgentPlane v0.6.26
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607311143-YT435C/release-v0-6-26`
 - Canonical task record: `.agentplane/tasks/202607311143-YT435C/README.md`
 
 ## Verification
 
-- State: ok
-- Note: v0.6.26 HEAD a913b333 passed full release:prepublish (82/82 release-ci-base, workflow 34/34, significant 204/204, release-critical 16/16), focused routing 9/9, targeted verify/output 30/30, typecheck, lint, and fast release checks; verification subprocesses now strip ap-only presentation env.
+- State: needs_rework
+- Note: Integration verification exposed a second launcher-carrier leak: AGENTPLANE_RUNTIME_ACTIVE_BIN pointed candidate tests at the 0.6.25 controller package, so --version returned 0.6.25 instead of 0.6.26. Expanding child-process isolation to all transient launcher provenance variables.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -48,8 +48,8 @@ Created: 2026-07-31T11:44:30.841Z
  docs/reference/generated-reference.mdx             |   6 +--
  docs/releases/v0.6.26.md                           |  47 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +--
- .../agentplane/src/commands/shared/pr-meta.test.ts |  11 +++++
- .../src/commands/shared/pr-meta/verify-log.ts      |   5 ++-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  41 ++++++++++++++++++
+ .../src/commands/shared/pr-meta/verify-log.ts      |  15 ++++++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -57,7 +57,7 @@ Created: 2026-07-31T11:44:30.841Z
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.26.png    | Bin 0 -> 55079 bytes
  website/static/img/social/manifest.json            |   8 ++++
- 28 files changed, 113 insertions(+), 43 deletions(-)
+ 28 files changed, 153 insertions(+), 43 deletions(-)
 ```
 
 </details>

@@ -23,12 +23,24 @@ describe("pr-meta shell invocations", () => {
   let originalComSpec: string | undefined;
   let originalCliAlias: string | undefined;
   let originalAgentMode: string | undefined;
+  let originalRuntimeActiveBin: string | undefined;
+  let originalRuntimeMode: string | undefined;
+  let originalRuntimeHandoffFrom: string | undefined;
+  let originalRepoLocalHandoff: string | undefined;
+  let originalDevAutoBootstrapped: string | undefined;
+  let originalFrameworkBuildLockPath: string | undefined;
 
   beforeEach(() => {
     originalComspec = process.env.COMSPEC;
     originalComSpec = process.env.ComSpec;
     originalCliAlias = process.env.AGENTPLANE_CLI_ALIAS;
     originalAgentMode = process.env.AGENTPLANE_AGENT_MODE;
+    originalRuntimeActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+    originalRuntimeMode = process.env.AGENTPLANE_RUNTIME_MODE;
+    originalRuntimeHandoffFrom = process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+    originalRepoLocalHandoff = process.env.AGENTPLANE_REPO_LOCAL_HANDOFF;
+    originalDevAutoBootstrapped = process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED;
+    originalFrameworkBuildLockPath = process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH;
   });
 
   afterEach(() => {
@@ -37,6 +49,12 @@ describe("pr-meta shell invocations", () => {
     process.env.ComSpec = originalComSpec;
     process.env.AGENTPLANE_CLI_ALIAS = originalCliAlias;
     process.env.AGENTPLANE_AGENT_MODE = originalAgentMode;
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = originalRuntimeActiveBin;
+    process.env.AGENTPLANE_RUNTIME_MODE = originalRuntimeMode;
+    process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM = originalRuntimeHandoffFrom;
+    process.env.AGENTPLANE_REPO_LOCAL_HANDOFF = originalRepoLocalHandoff;
+    process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED = originalDevAutoBootstrapped;
+    process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH = originalFrameworkBuildLockPath;
   });
 
   it("parses verify commands as argv without a shell", () => {
@@ -66,6 +84,12 @@ describe("pr-meta shell invocations", () => {
     delete process.env.ComSpec;
     process.env.AGENTPLANE_CLI_ALIAS = "ap";
     process.env.AGENTPLANE_AGENT_MODE = "1";
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = "/maintenance/agentplane.js";
+    process.env.AGENTPLANE_RUNTIME_MODE = "repo-local";
+    process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM = "/global/agentplane.js";
+    process.env.AGENTPLANE_REPO_LOCAL_HANDOFF = "1";
+    process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED = "1";
+    process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH = "/tmp/agentplane-build.lock";
     const gitProcess = await import("@agentplaneorg/core/process");
     const stdout = new PassThrough();
     const stderr = new PassThrough();
@@ -97,6 +121,12 @@ describe("pr-meta shell invocations", () => {
     const startOptions = startProcess.mock.calls[0]?.[0];
     expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_CLI_ALIAS");
     expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_AGENT_MODE");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_ACTIVE_BIN");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_MODE");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_HANDOFF_FROM");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_REPO_LOCAL_HANDOFF");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_DEV_AUTO_BOOTSTRAPPED");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH");
     expect(result).toEqual({ code: 0, output: "ok" });
   });
 

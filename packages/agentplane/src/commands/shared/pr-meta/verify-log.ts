@@ -126,8 +126,18 @@ export async function runShellCommand(
     };
   }
   const env = { ...process.env };
-  delete env.AGENTPLANE_CLI_ALIAS;
-  delete env.AGENTPLANE_AGENT_MODE;
+  for (const key of [
+    "AGENTPLANE_CLI_ALIAS",
+    "AGENTPLANE_AGENT_MODE",
+    "AGENTPLANE_RUNTIME_ACTIVE_BIN",
+    "AGENTPLANE_RUNTIME_MODE",
+    "AGENTPLANE_RUNTIME_HANDOFF_FROM",
+    "AGENTPLANE_REPO_LOCAL_HANDOFF",
+    "AGENTPLANE_DEV_AUTO_BOOTSTRAPPED",
+    "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
+  ]) {
+    delete env[key];
+  }
   try {
     const child = startProcess({
       command: invocation.command,
