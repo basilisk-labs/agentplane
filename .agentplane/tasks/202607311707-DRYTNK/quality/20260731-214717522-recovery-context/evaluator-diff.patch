@@ -1,0 +1,1453 @@
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/README.md b/.agentplane/tasks/202607311707-DRYTNK/README.md
+index 33f81cdf0..c63f39462 100644
+--- a/.agentplane/tasks/202607311707-DRYTNK/README.md
++++ b/.agentplane/tasks/202607311707-DRYTNK/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607311707-DRYTNK"
+ title: "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 6
++revision: 7
+ origin:
+   system: "manual"
+ depends_on:
+@@ -37,11 +37,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T20:59:44.608Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-31T17:47:37.370Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-31T20:59:44.608Z"
++doc_updated_by: "CODER"
+ description: "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path."
+ sections:
+   Summary: |-
+@@ -73,6 +83,10 @@ sections:
+     - Observation: QB60J5 approved TypeScript 7.0.2 only as @typescript/native alongside pinned TypeScript 6.0.3; root baseUrl and the inherited Docusaurus 3.10.1 baseUrl are incompatible, and declaration emit has reviewed order-only drift.
+       Impact: DRYTNK must include the config bridge, deterministic emit classification, hosted platform resolution, and a runtime-selectable compiler rollback instead of a wholesale package replacement.
+       Resolution: Implement benchmark/typescript-7-adoption-contract.md exactly, including AGENTPLANE_TYPESCRIPT_PACKAGE=typescript as the rollback override and default automatic builder concurrency.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "ae4f903e99126484dcbe54ae3ec152dd20ba667b"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607311707-DRYTNK/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..d02fa191e
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/blueprint/resolved-snapshot.json
+@@ -0,0 +1,583 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607311707-DRYTNK",
++    "title": "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility",
++    "description": "Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.",
++    "tags": [
++      "code",
++      "migration",
++      "milestone-rc2",
++      "performance",
++      "toolchain",
++      "typescript7",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607311707-DRYTNK",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "1e52f772c7855fef3c6ae0acefd3152bb235fe4c84fc78f15a4b77e4c88100cc"
++  }
++}
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/pr/diffstat.txt b/.agentplane/tasks/202607311707-DRYTNK/pr/diffstat.txt
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/pr/github-body.md b/.agentplane/tasks/202607311707-DRYTNK/pr/github-body.md
+new file mode 100644
+index 000000000..771670eab
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/pr/github-body.md
+@@ -0,0 +1,33 @@
++Task: `202607311707-DRYTNK`
++Title: Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility
++Canonical task record: `.agentplane/tasks/202607311707-DRYTNK/README.md`
++
++## Summary
++
++Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility
++
++Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.
++
++## Scope
++
++- In scope: Implement the benchmark-approved TypeScript 7 compiler path for AgentPlane 0.7 while retaining a pinned TypeScript 6 compatibility package for typescript-eslint and repository scripts that consume the compiler API. Keep package installation deterministic across Bun, Node, and Windows; bound compiler parallelism for CI; preserve an immediate rollback path.
++- Out of scope: unrelated refactors not required for "Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T20:59:44.719Z
++- Branch: task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++No changes detected.
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/pr/github-title.txt b/.agentplane/tasks/202607311707-DRYTNK/pr/github-title.txt
+new file mode 100644
+index 000000000..b9628328d
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 DRYTNK task: Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility [202607311707-DRYTNK]
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/pr/meta.json b/.agentplane/tasks/202607311707-DRYTNK/pr/meta.json
+new file mode 100644
+index 000000000..dae731da4
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr",
++  "created_at": "2026-07-31T20:59:44.719Z",
++  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "last_verified_at": null,
++  "pr_number": 4713,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4713",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607311707-DRYTNK",
++  "updated_at": "2026-07-31T21:00:58.689Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/pr/review.md b/.agentplane/tasks/202607311707-DRYTNK/pr/review.md
+new file mode 100644
+index 000000000..5eb477e2d
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/pr/review.md
+@@ -0,0 +1,36 @@
++# PR Review
++
++Created: 2026-07-31T20:59:44.719Z
++
++## Task
++
++- Task: `202607311707-DRYTNK`
++- Title: Adopt TypeScript 7 for typechecking with TypeScript 6 API compatibility
++- Status: DOING
++- Branch: `task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr`
++- Canonical task record: `.agentplane/tasks/202607311707-DRYTNK/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T20:59:44.719Z
++- Branch: task/202607311707-DRYTNK/adopt-typescript-7-for-typechecking-with-typescr
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++No changes detected.
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607311707-DRYTNK/verification/typescript-7-migration.md b/.agentplane/tasks/202607311707-DRYTNK/verification/typescript-7-migration.md
+new file mode 100644
+index 000000000..235535d33
+--- /dev/null
++++ b/.agentplane/tasks/202607311707-DRYTNK/verification/typescript-7-migration.md
+@@ -0,0 +1,57 @@
++# TypeScript 7 migration evidence
++
++Date: 2026-07-31  
++Task: `202607311707-DRYTNK`
++
++## Frozen benchmark basis
++
++The migration implements the approved `202607311706-QB60J5` contract:
++
++- TypeScript 7.0.2 cold mean: 1.210 s, 1011.3 MiB peak RSS.
++- TypeScript 6.0.3 cold mean: 5.967 s, 1181.6 MiB peak RSS.
++- TypeScript 7.0.2 warm mean: 1.358 s, 1034.7 MiB peak RSS.
++- TypeScript 6.0.3 warm mean: 6.056 s, 1131.9 MiB peak RSS.
++- Decision: use TypeScript 7 only for CLI typechecking and retain TypeScript 6 for compiler-API consumers.
++
++## Implemented contract
++
++- `@typescript/native` is pinned to `npm:typescript@7.0.2`.
++- `typescript` is pinned to `6.0.3` for `typescript-eslint`, tsup, and repository compiler-API scripts.
++- Root and workspace typecheck scripts use `scripts/checks/run-typescript-build.mjs`.
++- The wrapper defaults to `@typescript/native` and accepts only the documented `typescript` fallback.
++- Root `baseUrl` was removed and every path mapping is explicitly relative.
++- The Docusaurus 3.10.1 config is mirrored by a checked compatibility bridge with only `baseUrl` removed.
++- TypeScript 7 remains a root development dependency and is absent from runtime package dependencies.
++
++## Local proof
++
++- `bun install --frozen-lockfile --ignore-scripts`: pass, no changes.
++- `bun run typescript:toolchain:check`: pass; typecheck 7.0.2, compiler API 6.0.3, typescript-eslint 6.0.3.
++- `/usr/bin/time -lp bun run typecheck`: pass in 1.58 s with 1,006,305,280 bytes maximum RSS (about 960 MiB), below the 1536 MiB gate.
++- `bun run --filter='*' typecheck`: pass for core, recipes, agentplane, testkit, and website.
++- `bun run docs:site:typecheck`: pass through the TypeScript 7 wrapper.
++- `AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck`: pass with the exact rollback command.
++- `bun run build`: pass; TypeScript declarations, tsup bundles, and development manifests generated successfully.
++- `bun run lint:core`: pass with TypeScript 6 compiler API resolution.
++- `bun run guards:check`: pass.
++- `bun run logging:check`: pass.
++- `bun run bench:compatibility:check`: pass.
++- `bun run bench:agent-efficiency:replay:check`: pass; the historical 50-run/70-outcome RF-04 baseline remains unchanged.
++- `bun run release:parity`: pass.
++- `bun run test:critical`: pass, 12/12 routed chunks. The RF-04 exact-anchor runtime accepts only the frozen additive TypeScript 7 lock delta and still rejects any version or package-set drift as `ANCHOR_LOCK_MISMATCH`.
++
++The first plain `bun install` updated the lockfile and then hit an existing local Lefthook replacement error because `pre-commit.old` already existed. The deterministic install was repeated with `--frozen-lockfile --ignore-scripts` and passed; this is worktree hook infrastructure, not package-resolution failure.
++
++## Rollback
++
++Immediate rollback does not mutate dependencies or generated configuration:
++
++```sh
++AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck
++```
++
++The command resolves TypeScript 6.0.3 through the same wrapper and completed successfully after the TypeScript 7 build.
++
++## RF-04 anchor isolation
++
++The RF-04 subject remains the exact pre-0.7 commit and still builds with TypeScript 6.0.3. Its lock gate now projects away only the approved root `@typescript/native` alias, the exact 7.0.2 platform package set, and the semver-range-to-pin changes that keep the same TypeScript 6.0.3 API package. The comparison remains fail-closed for any other lockfile difference. This avoids falsely treating an unused development-only compiler as a semantic change to the historical benchmark while preserving the original anchor and evidence.
+diff --git a/bun.lock b/bun.lock
+index 1290c248e..cb3e673dc 100644
+--- a/bun.lock
++++ b/bun.lock
+@@ -9,6 +9,7 @@
+         "@types/node": "^25.9.3",
+         "@typescript-eslint/eslint-plugin": "^8.61.0",
+         "@typescript-eslint/parser": "^8.61.0",
++        "@typescript/native": "npm:typescript@7.0.2",
+         "@vitest/coverage-v8": "4.1.9",
+         "dependency-cruiser": "^17.4.3",
+         "eslint": "^10.5.0",
+@@ -25,7 +26,7 @@
+         "prettier": "^3.8.4",
+         "tsup": "^8.5.1",
+         "turbo": "^2.9.18",
+-        "typescript": "^6.0.3",
++        "typescript": "6.0.3",
+         "vitest": "4.1.9",
+       },
+     },
+@@ -98,7 +99,7 @@
+         "@types/react": "^19.2.17",
+         "@types/react-dom": "^19.2.3",
+         "sharp": "^0.35.1",
+-        "typescript": "~6.0.3",
++        "typescript": "6.0.3",
+       },
+     },
+   },
+@@ -1279,6 +1280,48 @@
+ 
+     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.61.0", "", { "dependencies": { "@typescript-eslint/types": "8.61.0", "eslint-visitor-keys": "^5.0.0" } }, "sha512-QVLZu3ZPQEE+HICQyAMZ2yLQhxf0meY/wx6Hx14YcTNj13JB3qHlX3lJ02L3fLGHgERRH71kvYDwiXIguT3AjQ=="],
+ 
++    "@typescript/native": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
++
++    "@typescript/typescript-aix-ppc64": ["@typescript/typescript-aix-ppc64@7.0.2", "", { "os": "aix", "cpu": "ppc64" }, "sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ=="],
++
++    "@typescript/typescript-darwin-arm64": ["@typescript/typescript-darwin-arm64@7.0.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-gowzar9MwS/aRWp6f3a4KUqzRjAZjOsmGNCM6LcTgXum+dBfgsBVMN+AgvOCCbguXyick6LJhpBszxMebJ8syA=="],
++
++    "@typescript/typescript-darwin-x64": ["@typescript/typescript-darwin-x64@7.0.2", "", { "os": "darwin", "cpu": "x64" }, "sha512-SZ9xZInqApNlNGc9s0W1VSsktYSOe9cFqNOIqmN1Gs8SmkjKZYFt017G4VwPxASInODuAdbTW7sXiFUf893RgA=="],
++
++    "@typescript/typescript-freebsd-arm64": ["@typescript/typescript-freebsd-arm64@7.0.2", "", { "os": "freebsd", "cpu": "arm64" }, "sha512-W5NH4y/J0plIIS5b2xvTEkU7JFxyqdMAOgf+Ilhl0vHQXKO5dZoxd+C/jEtq56c4F3wk71RB4BMRQ2XdI+bwYQ=="],
++
++    "@typescript/typescript-freebsd-x64": ["@typescript/typescript-freebsd-x64@7.0.2", "", { "os": "freebsd", "cpu": "x64" }, "sha512-UMGDx5sTpzNw3WiPebH7l90IWfJggEd+egHt/q6p7/Cm3zqoV7VxkGXt+3DxPIw8CcmvAB0j3sVVfbhX+M4Tpw=="],
++
++    "@typescript/typescript-linux-arm": ["@typescript/typescript-linux-arm@7.0.2", "", { "os": "linux", "cpu": "arm" }, "sha512-gffT3xPz9sR7j/YJExkyPntrI0P2EP9XbOyWzth2/Gs0RstK+90RBcO0ncXoXy/beYll1SXw846Nf2zdnEz0QQ=="],
++
++    "@typescript/typescript-linux-arm64": ["@typescript/typescript-linux-arm64@7.0.2", "", { "os": "linux", "cpu": "arm64" }, "sha512-Qh4eU4/y3yDjnfjjyPYihMj5/ODIlmt+Bzu17OI+fiSRDW57QmU5SiN63exPRNJPKUzcc1INa1NXdrJ+MqHjUQ=="],
++
++    "@typescript/typescript-linux-loong64": ["@typescript/typescript-linux-loong64@7.0.2", "", { "os": "linux", "cpu": "none" }, "sha512-uEHck9i8hoAzXPiYRib1O7miOnz23SxIeVl6F4LXox+qov1K35jHcEW6VHKvZI+pyvl7fZEP4MCU5LYvIq1GuQ=="],
++
++    "@typescript/typescript-linux-mips64el": ["@typescript/typescript-linux-mips64el@7.0.2", "", { "os": "linux", "cpu": "none" }, "sha512-R4KvAMnE43W5Qeqb0Ly56O3mWMWIAgsMyz36DCaycd5nbg/9kzm0liw3JocfRqyJY0KPmzFjbswozXyW0DnIYA=="],
++
++    "@typescript/typescript-linux-ppc64": ["@typescript/typescript-linux-ppc64@7.0.2", "", { "os": "linux", "cpu": "ppc64" }, "sha512-DORx5b3sd/4S7eayxm4FQv+A7CrkUIGRaHiwI8oiHTAI1fAPWhF4J0vAlkC8biAlHSVVwxMQ3tjZ2/DVbnQiiA=="],
++
++    "@typescript/typescript-linux-riscv64": ["@typescript/typescript-linux-riscv64@7.0.2", "", { "os": "linux", "cpu": "none" }, "sha512-wf0jqEDOjrPRnKwYRyyJDRo11KMbvMFrU+q4zqKyChODBzvlkbhNQfKvLxQCcwTpdDaXSHZTVuh0JoCrKCUMHQ=="],
++
++    "@typescript/typescript-linux-s390x": ["@typescript/typescript-linux-s390x@7.0.2", "", { "os": "linux", "cpu": "s390x" }, "sha512-IkwJc3L7yhytWd/ewjyxNDfOmswCm9GWMJT/ue/dU4aZNbwZeYAetq42VyLmsmSjvoX7z74X6ZaYCtzAr0EuGw=="],
++
++    "@typescript/typescript-linux-x64": ["@typescript/typescript-linux-x64@7.0.2", "", { "os": "linux", "cpu": "x64" }, "sha512-EYdf2cNg7rgCWJnxCdJ+F3V39O8ihb37eHAu1LK8oAFizgTQbPOK7zHHXbPt8rX24COqODXeI3sIf0fCXG7H/A=="],
++
++    "@typescript/typescript-netbsd-arm64": ["@typescript/typescript-netbsd-arm64@7.0.2", "", { "os": "none", "cpu": "arm64" }, "sha512-+polYF4MF04aPpO5FTkHran9yUQDSXqy5GiSDKpsll5jy3l3+g9QLhpf39T+ePtefhXLOGrLl0QIjkQP6VnelA=="],
++
++    "@typescript/typescript-netbsd-x64": ["@typescript/typescript-netbsd-x64@7.0.2", "", { "os": "none", "cpu": "x64" }, "sha512-8YIT0EHM/3dq10ZOVF/A7pc/YSMtbcecct4rWtexrnSCHOPcpC2KTLXfTCR6vDpnSiY12heNb1GiN/wu+T/FyA=="],
++
++    "@typescript/typescript-openbsd-arm64": ["@typescript/typescript-openbsd-arm64@7.0.2", "", { "os": "openbsd", "cpu": "arm64" }, "sha512-APT8+ClYnuYm1u9+kgGXoMj2VzWzcymwh2gNSQVySHfkRDGOTVkoWLjCmOQSaO+PoqQ57B0flRp9SA+7GnnkzQ=="],
++
++    "@typescript/typescript-openbsd-x64": ["@typescript/typescript-openbsd-x64@7.0.2", "", { "os": "openbsd", "cpu": "x64" }, "sha512-yX7s+Q0Dln0Dt9tEzZsAjXXR/+ytBM7AlglaqyeMPxQszJ1JhlJdZ6jLA+IzldHtflX81em7lDao1xXu+aRRkg=="],
++
++    "@typescript/typescript-sunos-x64": ["@typescript/typescript-sunos-x64@7.0.2", "", { "os": "sunos", "cpu": "x64" }, "sha512-dLJDGaLZ1D4HPQn62u1n8mBDkJREwMsAkCdkwd4Ieqw+x3TUyTsqY0YiBCtE6H6OzzgGk3iuZ3vFWRS+E8/d1g=="],
++
++    "@typescript/typescript-win32-arm64": ["@typescript/typescript-win32-arm64@7.0.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-Gyl1Vy6OsWesLzmq+EP0Fb7b4Nid5232AvcA2SFcdYreldpNtYFFofPjnt62y9hQy7VTaZp65ICJjuAQRaVcIQ=="],
++
++    "@typescript/typescript-win32-x64": ["@typescript/typescript-win32-x64@7.0.2", "", { "os": "win32", "cpu": "x64" }, "sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g=="],
++
+     "@ungap/structured-clone": ["@ungap/structured-clone@1.3.1", "", {}, "sha512-mUFwbeTqrVgDQxFveS+df2yfap6iuP20NAKAsBt5jDEoOTDew+zwLAOilHCeQJOVSvmgCX4ogqIrA0mnyr08yQ=="],
+ 
+     "@unrs/resolver-binding-android-arm-eabi": ["@unrs/resolver-binding-android-arm-eabi@1.11.1", "", { "os": "android", "cpu": "arm" }, "sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw=="],
+diff --git a/package.json b/package.json
+index 3b4cd8776..0ccf0d0da 100644
+--- a/package.json
++++ b/package.json
+@@ -36,7 +36,7 @@
+     "clone:report": "node scripts/checks/check-clone-baseline.mjs --report",
+     "clone:baseline:update": "node scripts/checks/check-clone-baseline.mjs --update-baseline",
+     "ci": "bun run ci:contract && bun run ci:test",
+-    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check",
++    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check",
+     "ci:test": "bun run typecheck && bun run coverage && bun run coverage:significant",
+     "ci:local": "node scripts/checks/run-local-ci.mjs --mode fast",
+     "ci:local:smoke": "node scripts/checks/run-local-ci.mjs --mode smoke",
+@@ -115,6 +115,7 @@
+     "spec:examples:check": "node scripts/checks/check-spec-examples.mjs",
+     "hotspots:check": "node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000",
+     "check:types-files": "node scripts/checks/check-types-files.mjs",
++    "typescript:toolchain:check": "node scripts/checks/check-typescript-toolchain.mjs",
+     "vitest:projects:check": "node scripts/checks/check-vitest-projects.mjs",
+     "coverage:significant": "node scripts/checks/check-significant-coverage.mjs",
+     "coverage:workflow-harness": "node scripts/checks/check-workflow-harness-coverage.mjs",
+@@ -188,7 +189,8 @@
+     "prettier": "^3.8.4",
+     "tsup": "^8.5.1",
+     "turbo": "^2.9.18",
+-    "typescript": "^6.0.3",
++    "@typescript/native": "npm:typescript@7.0.2",
++    "typescript": "6.0.3",
+     "vitest": "4.1.9"
+   }
+ }
+diff --git a/packages/agentplane/package.json b/packages/agentplane/package.json
+index 05e7a8c09..899823d3e 100644
+--- a/packages/agentplane/package.json
++++ b/packages/agentplane/package.json
+@@ -63,7 +63,7 @@
+     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
+     "build": "npm run clean && node ../../scripts/checks/run-typescript-build.mjs --force && npm run build:bundle",
+     "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .",
+-    "typecheck": "tsc -b",
++    "typecheck": "node ../../scripts/checks/run-typescript-build.mjs",
+     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project agentplane",
+     "prepack": "npm run clean && npm run build && node ../../scripts/release/manifest.mjs sanitize .",
+     "postpack": "node ../../scripts/release/manifest.mjs build .",
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
+index 26067c8c4..1f48a1fd0 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts
+@@ -703,6 +703,35 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
+     ).toThrow("does not link");
+   });
+ 
++  it("accepts only the frozen TypeScript 7 additive anchor lock delta", async () => {
++    const replay = await importModule<{
++      REPLAY_ANCHOR_COMMIT: string;
++    }>("scripts/lib/agent-efficiency-replay.mjs");
++    const anchorRuntime = await importModule<{
++      assertAnchorLockCompatible(subject: Buffer, driver: Buffer): void;
++    }>("scripts/bench/internal/agent-efficiency-anchor-runtime.mjs");
++    const subjectLock = execFileSync(
++      "/usr/bin/git",
++      ["show", `${replay.REPLAY_ANCHOR_COMMIT}:bun.lock`],
++      { cwd: REPO_ROOT },
++    );
++    const driverLock = readFileSync(path.join(REPO_ROOT, "bun.lock"));
++
++    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, driverLock)).not.toThrow();
++
++    const tampered = Buffer.from(
++      driverLock
++        .toString("utf8")
++        .replace(
++          '"@typescript/native": "npm:typescript@7.0.2"',
++          '"@typescript/native": "npm:typescript@7.0.1"',
++        ),
++    );
++    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, tampered)).toThrow(
++      "ANCHOR_LOCK_MISMATCH",
++    );
++  });
++
+   it("runs the real exact-anchor CURRENT_AGENT adapter-failure entrypoint offline", async () => {
+     const baseline = await importModule<{
+       stableJson(value: unknown, spaces?: number): string;
+diff --git a/packages/core/package.json b/packages/core/package.json
+index 4d9fe7fbc..a9d69af74 100644
+--- a/packages/core/package.json
++++ b/packages/core/package.json
+@@ -95,7 +95,7 @@
+     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
+     "build": "node ../../scripts/checks/run-typescript-build.mjs && bun run build:bundle",
+     "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .",
+-    "typecheck": "tsc -b",
++    "typecheck": "node ../../scripts/checks/run-typescript-build.mjs",
+     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project core",
+     "prepack": "bun run clean && bun run build && node ../../scripts/release/manifest.mjs sanitize .",
+     "postpack": "node ../../scripts/release/manifest.mjs build .",
+diff --git a/packages/recipes/package.json b/packages/recipes/package.json
+index 921557870..8479b58db 100644
+--- a/packages/recipes/package.json
++++ b/packages/recipes/package.json
+@@ -48,7 +48,7 @@
+     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
+     "build": "node ../../scripts/checks/run-typescript-build.mjs && bun run build:bundle",
+     "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .",
+-    "typecheck": "tsc -b",
++    "typecheck": "node ../../scripts/checks/run-typescript-build.mjs",
+     "prepack": "bun run clean && bun run build && node ../../scripts/release/manifest.mjs sanitize .",
+     "postpack": "node ../../scripts/release/manifest.mjs build .",
+     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack",
+diff --git a/packages/testkit/package.json b/packages/testkit/package.json
+index 8a95eafc4..bf2cd0203 100644
+--- a/packages/testkit/package.json
++++ b/packages/testkit/package.json
+@@ -74,7 +74,7 @@
+   },
+   "scripts": {
+     "build": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json",
+-    "typecheck": "tsc -p tsconfig.json --noEmit",
++    "typecheck": "node ../../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit",
+     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project testkit"
+   }
+ }
+diff --git a/scripts/bench/internal/agent-efficiency-anchor-runtime.mjs b/scripts/bench/internal/agent-efficiency-anchor-runtime.mjs
+index 2243298af..0ff540163 100644
+--- a/scripts/bench/internal/agent-efficiency-anchor-runtime.mjs
++++ b/scripts/bench/internal/agent-efficiency-anchor-runtime.mjs
+@@ -11,6 +11,8 @@ import {
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
++import { stableJson } from "../../lib/agent-efficiency-baseline.mjs";
++import { parseReplayJsonc } from "./agent-efficiency-dependency-manifest.mjs";
+ import {
+   buildCodexReplayEnvironment,
+   fail,
+@@ -18,11 +20,85 @@ import {
+ } from "./agent-efficiency-codex-runtime.mjs";
+ 
+ const DRIVER_REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
++const TYPESCRIPT_NATIVE_ALIAS = "npm:typescript@7.0.2";
++const TYPESCRIPT_NATIVE_VERSION = "7.0.2";
++const TYPESCRIPT_PLATFORM_PACKAGES = Object.freeze([
++  "@typescript/typescript-aix-ppc64",
++  "@typescript/typescript-darwin-arm64",
++  "@typescript/typescript-darwin-x64",
++  "@typescript/typescript-freebsd-arm64",
++  "@typescript/typescript-freebsd-x64",
++  "@typescript/typescript-linux-arm",
++  "@typescript/typescript-linux-arm64",
++  "@typescript/typescript-linux-loong64",
++  "@typescript/typescript-linux-mips64el",
++  "@typescript/typescript-linux-ppc64",
++  "@typescript/typescript-linux-riscv64",
++  "@typescript/typescript-linux-s390x",
++  "@typescript/typescript-linux-x64",
++  "@typescript/typescript-netbsd-arm64",
++  "@typescript/typescript-netbsd-x64",
++  "@typescript/typescript-openbsd-arm64",
++  "@typescript/typescript-openbsd-x64",
++  "@typescript/typescript-sunos-x64",
++  "@typescript/typescript-win32-arm64",
++  "@typescript/typescript-win32-x64",
++]);
+ 
+ function sha256(value) {
+   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+ }
+ 
++function projectApprovedTypeScript7Lock(lock) {
++  const projected = structuredClone(lock);
++  const rootDependencies = projected.workspaces?.[""]?.devDependencies;
++  const websiteDependencies = projected.workspaces?.website?.devDependencies;
++  const nativePackage = projected.packages?.["@typescript/native"];
++  const nativeMetadata = nativePackage?.[2];
++  const optionalDependencies = nativeMetadata?.optionalDependencies;
++  if (
++    rootDependencies?.["@typescript/native"] !== TYPESCRIPT_NATIVE_ALIAS ||
++    rootDependencies?.typescript !== "6.0.3" ||
++    websiteDependencies?.typescript !== "6.0.3" ||
++    nativePackage?.[0] !== `typescript@${TYPESCRIPT_NATIVE_VERSION}` ||
++    nativeMetadata?.bin?.tsc !== "bin/tsc" ||
++    stableJson(Object.keys(optionalDependencies ?? {}).toSorted()) !==
++      stableJson([...TYPESCRIPT_PLATFORM_PACKAGES].toSorted()) ||
++    Object.values(optionalDependencies ?? {}).some(
++      (version) => version !== TYPESCRIPT_NATIVE_VERSION,
++    )
++  ) {
++    return null;
++  }
++
++  delete rootDependencies["@typescript/native"];
++  rootDependencies.typescript = "^6.0.3";
++  websiteDependencies.typescript = "~6.0.3";
++  delete projected.packages["@typescript/native"];
++  for (const packageName of TYPESCRIPT_PLATFORM_PACKAGES) {
++    const platformPackage = projected.packages?.[packageName];
++    if (platformPackage?.[0] !== `${packageName}@${TYPESCRIPT_NATIVE_VERSION}`) return null;
++    delete projected.packages[packageName];
++  }
++  return projected;
++}
++
++export function assertAnchorLockCompatible(subjectLockBytes, driverLockBytes) {
++  if (sha256(subjectLockBytes) === sha256(driverLockBytes)) return;
++  let subjectLock;
++  let driverLock;
++  try {
++    subjectLock = parseReplayJsonc(subjectLockBytes.toString("utf8"));
++    driverLock = parseReplayJsonc(driverLockBytes.toString("utf8"));
++  } catch {
++    fail("ANCHOR_LOCK_MISMATCH");
++  }
++  const projected = projectApprovedTypeScript7Lock(driverLock);
++  if (projected === null || stableJson(projected) !== stableJson(subjectLock)) {
++    fail("ANCHOR_LOCK_MISMATCH");
++  }
++}
++
+ export function buildAnchorProcessEnvironment(fixtureRoot, source = process.env) {
+   const processRoot = path.join(path.resolve(fixtureRoot), ".rf04-runtime", "process");
+   return {
+@@ -94,7 +170,7 @@ function assertAnchorWorkspaceLink(subjectRoot, linkRelative, packageRelative) {
+ function linkAnchorDependencies(subjectRoot) {
+   const subjectLock = readFileSync(path.join(subjectRoot, "bun.lock"));
+   const driverLock = readFileSync(path.join(DRIVER_REPO_ROOT, "bun.lock"));
+-  if (sha256(subjectLock) !== sha256(driverLock)) fail("ANCHOR_LOCK_MISMATCH");
++  assertAnchorLockCompatible(subjectLock, driverLock);
+ 
+   const rootModules = path.join(subjectRoot, "node_modules");
+   rmSync(rootModules, { force: true, recursive: true });
+diff --git a/scripts/bench/internal/agent-efficiency-dependency-manifest.mjs b/scripts/bench/internal/agent-efficiency-dependency-manifest.mjs
+index 2322a058c..0b230557a 100644
+--- a/scripts/bench/internal/agent-efficiency-dependency-manifest.mjs
++++ b/scripts/bench/internal/agent-efficiency-dependency-manifest.mjs
+@@ -65,7 +65,7 @@ function assertCapturePlatform(value, label) {
+   return value;
+ }
+ 
+-function parseJsonc(input) {
++export function parseReplayJsonc(input) {
+   let withoutComments = "";
+   let inString = false;
+   let escaped = false;
+@@ -138,7 +138,7 @@ export function createReplayPortableDependencyManifest(repoRoot) {
+     }
+     let value;
+     try {
+-      value = parseJsonc(readFileSync(real, "utf8"));
++      value = parseReplayJsonc(readFileSync(real, "utf8"));
+     } catch {
+       throw new Error(`RF-04 portable dependency input must be JSON: ${relativePath}`);
+     }
+diff --git a/scripts/checks/check-typescript-toolchain.mjs b/scripts/checks/check-typescript-toolchain.mjs
+new file mode 100644
+index 000000000..ea7110047
+--- /dev/null
++++ b/scripts/checks/check-typescript-toolchain.mjs
+@@ -0,0 +1,134 @@
++import { spawnSync } from "node:child_process";
++import { createRequire } from "node:module";
++import { readFileSync } from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
++const require = createRequire(import.meta.url);
++const expectedNativeVersion = "7.0.2";
++const expectedApiVersion = "6.0.3";
++
++function readJson(relativePath) {
++  return JSON.parse(readFileSync(path.join(root, relativePath), "utf8"));
++}
++
++function runVersion(packageName) {
++  const packageJson = require.resolve(`${packageName}/package.json`, { paths: [root] });
++  const entrypoint = path.join(path.dirname(packageJson), "bin", "tsc");
++  const result = spawnSync(process.execPath, [entrypoint, "--version"], {
++    cwd: root,
++    encoding: "utf8",
++  });
++  if (result.error) throw result.error;
++  if (result.status !== 0) {
++    throw new Error(
++      `${packageName} version probe failed: ${result.stderr.trim() || `exit=${result.status ?? 1}`}`,
++    );
++  }
++  return result.stdout.trim().replace(/^Version\s+/u, "");
++}
++
++function runWrapperVersion(packageName) {
++  const env = { ...process.env };
++  if (packageName === undefined) delete env.AGENTPLANE_TYPESCRIPT_PACKAGE;
++  else env.AGENTPLANE_TYPESCRIPT_PACKAGE = packageName;
++
++  const result = spawnSync(
++    process.execPath,
++    [path.join(root, "scripts/checks/run-typescript-build.mjs"), "--version"],
++    { cwd: root, encoding: "utf8", env },
++  );
++  if (result.error) throw result.error;
++  if (result.status !== 0) {
++    throw new Error(
++      `TypeScript wrapper version probe failed: ${result.stderr.trim() || `exit=${result.status ?? 1}`}`,
++    );
++  }
++  return result.stdout.trim().replace(/^Version\s+/u, "");
++}
++
++const rootPackage = readJson("package.json");
++if (rootPackage.devDependencies["@typescript/native"] !== "npm:typescript@7.0.2") {
++  throw new Error("@typescript/native must stay pinned to npm:typescript@7.0.2.");
++}
++if (rootPackage.devDependencies.typescript !== expectedApiVersion) {
++  throw new Error(`typescript must stay pinned to ${expectedApiVersion}.`);
++}
++
++const nativeVersion = runVersion("@typescript/native");
++const apiVersion = runVersion("typescript");
++if (nativeVersion !== expectedNativeVersion) {
++  throw new Error(
++    `Native typecheck compiler drift: expected ${expectedNativeVersion}, got ${nativeVersion}.`,
++  );
++}
++if (apiVersion !== expectedApiVersion) {
++  throw new Error(
++    `Compiler API compatibility drift: expected ${expectedApiVersion}, got ${apiVersion}.`,
++  );
++}
++if (runWrapperVersion() !== expectedNativeVersion) {
++  throw new Error("The canonical TypeScript wrapper no longer defaults to TypeScript 7.");
++}
++if (runWrapperVersion("typescript") !== expectedApiVersion) {
++  throw new Error(
++    "AGENTPLANE_TYPESCRIPT_PACKAGE=typescript no longer selects the rollback compiler.",
++  );
++}
++
++const typescriptApi = require("typescript");
++if (typescriptApi.version !== expectedApiVersion) {
++  throw new Error(
++    `require("typescript") must resolve the ${expectedApiVersion} compiler API, got ${typescriptApi.version}.`,
++  );
++}
++
++const parserPackage = require.resolve("@typescript-eslint/parser/package.json", { paths: [root] });
++const parserRequire = createRequire(parserPackage);
++const parserTypescriptVersion = parserRequire("typescript").version;
++if (parserTypescriptVersion !== expectedApiVersion) {
++  throw new Error(
++    `typescript-eslint must resolve TypeScript ${expectedApiVersion}, got ${parserTypescriptVersion}.`,
++  );
++}
++
++const docusaurusPackage = require.resolve("@docusaurus/tsconfig/package.json", {
++  paths: [path.join(root, "website")],
++});
++const docusaurusConfig = JSON.parse(
++  readFileSync(path.join(path.dirname(docusaurusPackage), "tsconfig.json"), "utf8"),
++);
++const bridgeConfig = readJson("website/tsconfig.docusaurus.json");
++const expectedBridgeOptions = { ...docusaurusConfig.compilerOptions };
++delete expectedBridgeOptions.baseUrl;
++if (JSON.stringify(bridgeConfig.compilerOptions) !== JSON.stringify(expectedBridgeOptions)) {
++  throw new Error(
++    "website/tsconfig.docusaurus.json must mirror the pinned Docusaurus config except for removed baseUrl.",
++  );
++}
++
++const workspaces = [
++  "packages/core/package.json",
++  "packages/recipes/package.json",
++  "packages/agentplane/package.json",
++  "packages/testkit/package.json",
++  "website/package.json",
++];
++for (const workspace of workspaces) {
++  const typecheck = readJson(workspace).scripts?.typecheck ?? "";
++  if (!typecheck.includes("run-typescript-build.mjs")) {
++    throw new Error(`${workspace} bypasses the canonical TypeScript wrapper.`);
++  }
++}
++
++for (const packagePath of workspaces.slice(0, 4)) {
++  const pkg = readJson(packagePath);
++  if (pkg.dependencies?.["@typescript/native"] || pkg.peerDependencies?.["@typescript/native"]) {
++    throw new Error(`${packagePath} leaks @typescript/native into a runtime dependency surface.`);
++  }
++}
++
++console.log(
++  `typescript toolchain ok (typecheck=${nativeVersion}, compiler_api=${apiVersion}, typescript_eslint=${parserTypescriptVersion})`,
++);
+diff --git a/scripts/checks/run-typescript-build.mjs b/scripts/checks/run-typescript-build.mjs
+index 9ea8ba7d1..6eb07c7b6 100644
+--- a/scripts/checks/run-typescript-build.mjs
++++ b/scripts/checks/run-typescript-build.mjs
+@@ -3,6 +3,13 @@ import { existsSync } from "node:fs";
+ import path from "node:path";
+ 
+ const TSC_NODE_HEAP_OPTION = "--max-old-space-size=4096";
++const DEFAULT_TYPESCRIPT_PACKAGE = "@typescript/native";
++const FALLBACK_TYPESCRIPT_PACKAGE = "typescript";
++const allowedTypescriptPackages = new Set([
++  DEFAULT_TYPESCRIPT_PACKAGE,
++  FALLBACK_TYPESCRIPT_PACKAGE,
++]);
++
+ function findUp(relativePath) {
+   let current = process.cwd();
+   while (true) {
+@@ -14,11 +21,21 @@ function findUp(relativePath) {
+   }
+ }
+ 
+-const localTscEntrypoint = findUp(path.join("node_modules", "typescript", "bin", "tsc"));
++const typescriptPackage = process.env.AGENTPLANE_TYPESCRIPT_PACKAGE || DEFAULT_TYPESCRIPT_PACKAGE;
++
++if (!allowedTypescriptPackages.has(typescriptPackage)) {
++  throw new Error(
++    `Unsupported AGENTPLANE_TYPESCRIPT_PACKAGE=${JSON.stringify(typescriptPackage)}. Expected ${DEFAULT_TYPESCRIPT_PACKAGE} or ${FALLBACK_TYPESCRIPT_PACKAGE}.`,
++  );
++}
++
++const localTscEntrypoint = findUp(
++  path.join("node_modules", ...typescriptPackage.split("/"), "bin", "tsc"),
++);
+ 
+ if (localTscEntrypoint === null) {
+   throw new Error(
+-    "TypeScript entrypoint not found under node_modules/typescript/bin/tsc. Run the repository install step before retrying.",
++    `TypeScript entrypoint not found for ${typescriptPackage}. Run the repository install step before retrying.`,
+   );
+ }
+ 
+@@ -28,7 +45,14 @@ const nodeOptions = existingNodeOptions.includes("--max-old-space-size")
+   : [TSC_NODE_HEAP_OPTION, existingNodeOptions].filter(Boolean).join(" ");
+ 
+ const cliArgs = process.argv.slice(2);
+-const tscArgs = cliArgs[0] === "-p" || cliArgs[0] === "--project" ? cliArgs : ["-b", ...cliArgs];
++const directInvocation =
++  cliArgs[0] === "-p" ||
++  cliArgs[0] === "--project" ||
++  cliArgs[0] === "-v" ||
++  cliArgs[0] === "--version" ||
++  cliArgs[0] === "-h" ||
++  cliArgs[0] === "--help";
++const tscArgs = directInvocation ? cliArgs : ["-b", ...cliArgs];
+ 
+ const result = spawnSync(process.execPath, [localTscEntrypoint, ...tscArgs], {
+   cwd: process.cwd(),
+diff --git a/tsconfig.base.json b/tsconfig.base.json
+index 60aec51b5..ba21e2893 100644
+--- a/tsconfig.base.json
++++ b/tsconfig.base.json
+@@ -3,23 +3,24 @@
+     "target": "ES2022",
+     "lib": ["ES2023"],
+     "types": ["node"],
+-    "baseUrl": ".",
+     "ignoreDeprecations": "6.0",
+     "paths": {
+-      "@agentplane/testkit": ["packages/testkit/src/index.ts"],
+-      "@agentplane/testkit/cli": ["packages/testkit/src/cli.ts"],
+-      "@agentplane/testkit/cli-core-lifecycle": ["packages/testkit/src/cli-core-lifecycle.ts"],
+-      "@agentplane/testkit/cli-core-pr-flow": ["packages/testkit/src/cli-core-pr-flow.ts"],
+-      "@agentplane/testkit/cli-core-tasks-query": ["packages/testkit/src/cli-core-tasks-query.ts"],
+-      "@agentplane/testkit/recipes": ["packages/testkit/src/recipes.ts"],
+-      "@agentplane/testkit/release": ["packages/testkit/src/release.ts"],
+-      "@agentplane/testkit/runner": ["packages/testkit/src/runner.ts"],
+-      "@agentplane/testkit/task": ["packages/testkit/src/task.ts"],
+-      "@agentplane/testkit/*": ["packages/testkit/src/*.ts"],
+-      "@agentplaneorg/core": ["packages/core/src/index.ts"],
+-      "@agentplaneorg/core/*": ["packages/core/src/*/index.ts", "packages/core/src/*"],
+-      "@agentplaneorg/recipes": ["packages/recipes/src/index.ts"],
+-      "@agentplaneorg/recipes/*": ["packages/recipes/src/*"]
++      "@agentplane/testkit": ["./packages/testkit/src/index.ts"],
++      "@agentplane/testkit/cli": ["./packages/testkit/src/cli.ts"],
++      "@agentplane/testkit/cli-core-lifecycle": ["./packages/testkit/src/cli-core-lifecycle.ts"],
++      "@agentplane/testkit/cli-core-pr-flow": ["./packages/testkit/src/cli-core-pr-flow.ts"],
++      "@agentplane/testkit/cli-core-tasks-query": [
++        "./packages/testkit/src/cli-core-tasks-query.ts"
++      ],
++      "@agentplane/testkit/recipes": ["./packages/testkit/src/recipes.ts"],
++      "@agentplane/testkit/release": ["./packages/testkit/src/release.ts"],
++      "@agentplane/testkit/runner": ["./packages/testkit/src/runner.ts"],
++      "@agentplane/testkit/task": ["./packages/testkit/src/task.ts"],
++      "@agentplane/testkit/*": ["./packages/testkit/src/*.ts"],
++      "@agentplaneorg/core": ["./packages/core/src/index.ts"],
++      "@agentplaneorg/core/*": ["./packages/core/src/*/index.ts", "./packages/core/src/*"],
++      "@agentplaneorg/recipes": ["./packages/recipes/src/index.ts"],
++      "@agentplaneorg/recipes/*": ["./packages/recipes/src/*"]
+     },
+     "module": "NodeNext",
+     "moduleResolution": "NodeNext",
+diff --git a/website/package.json b/website/package.json
+index 18e71c8b0..b5989f65c 100644
+--- a/website/package.json
++++ b/website/package.json
+@@ -19,7 +19,7 @@
+     "check-social-images": "node scripts/generate-social-images.mjs --check",
+     "write-translations": "docusaurus write-translations",
+     "write-heading-ids": "docusaurus write-heading-ids",
+-    "typecheck": "tsc --noEmit"
++    "typecheck": "node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit"
+   },
+   "dependencies": {
+     "@docusaurus/core": "3.10.1",
+@@ -40,7 +40,7 @@
+     "@types/react": "^19.2.17",
+     "@types/react-dom": "^19.2.3",
+     "sharp": "^0.35.1",
+-    "typescript": "~6.0.3"
++    "typescript": "6.0.3"
+   },
+   "browserslist": {
+     "production": [
+diff --git a/website/tsconfig.docusaurus.json b/website/tsconfig.docusaurus.json
+new file mode 100644
+index 000000000..3cc704377
+--- /dev/null
++++ b/website/tsconfig.docusaurus.json
+@@ -0,0 +1,18 @@
++{
++  "$schema": "https://json.schemastore.org/tsconfig",
++  "display": "Docusaurus (TypeScript 7 compatible)",
++  "compilerOptions": {
++    "allowJs": true,
++    "esModuleInterop": true,
++    "jsx": "preserve",
++    "target": "ES2022",
++    "lib": ["ES2022", "DOM"],
++    "moduleResolution": "bundler",
++    "module": "esnext",
++    "noEmit": true,
++    "paths": {
++      "@site/*": ["./*"]
++    },
++    "skipLibCheck": true
++  }
++}
+diff --git a/website/tsconfig.json b/website/tsconfig.json
+index 77186021c..d8710aea7 100644
+--- a/website/tsconfig.json
++++ b/website/tsconfig.json
+@@ -1,8 +1,7 @@
+ {
+   // This file is not used in compilation. It is here just for a nice editor experience.
+-  "extends": "@docusaurus/tsconfig",
++  "extends": "./tsconfig.docusaurus.json",
+   "compilerOptions": {
+-    "baseUrl": ".",
+     "ignoreDeprecations": "6.0",
+     "strictNullChecks": true,
+     "lib": ["ES2023", "DOM", "DOM.Iterable"]

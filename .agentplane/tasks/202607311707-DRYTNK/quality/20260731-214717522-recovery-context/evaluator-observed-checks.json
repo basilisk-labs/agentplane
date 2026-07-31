@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Root typecheck, package builds, lint, critical/unit tests, declaration/manifest checks, and Windows CI pass with deterministic checker/builder limits.",
+    "The benchmark-approved TypeScript 7 binary is the canonical root and package typecheck path, with exact versions and aliases frozen in package.json and bun.lock.",
+    "The task records before/after timing evidence and proves the documented one-command rollback restores the TypeScript 6 compiler path.",
+    "typescript-eslint and every repository script importing typescript continue to use the pinned TypeScript 6 compatibility API; trust-boundary and compatibility gates pass unchanged."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T21:46:15.293Z",
+    "updated_by": "TESTER",
+    "note": "Local migration verification passed: TS7/TS6 probes, root/workspace typechecks, rollback, build, critical tests, isolated concurrency tests, lint, architecture, Knip, package install, and docs build. Hosted full unit and Windows remain required before integration."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

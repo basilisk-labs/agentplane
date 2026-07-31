@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The native compiler is confined to canonical typecheck entrypoints; runtime packages and compiler-API consumers remain on TypeScript 6.0.3.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311707-DRYTNK/quality/20260731-214717522-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted Bun installs must resolve the pinned TypeScript 7 optional platform package on Linux and Windows exactly as recorded in bun.lock."
+  ]
+}
