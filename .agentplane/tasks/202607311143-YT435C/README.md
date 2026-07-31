@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-31T13:01:47.330Z"
+  state: "needs_rework"
+  updated_at: "2026-07-31T13:12:53.437Z"
   updated_by: "CODER"
-  note: "PR review thread resolved with exact workflow evidence: Bun 1.3.6 force install produced no bun.lock diff and frozen install exited 0 on the v0.6.26 candidate."
-  attempts: 0
+  note: "Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent presentation mode and failing output expectations."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-31T13:01:48.570Z"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: regenerate bun.lock for v0.6.26 and prove frozen-install publication readiness."
+  -
+    author: "CODER"
+    body: "Rework: isolate integration verification subprocesses from AgentPlane presentation-mode environment."
 events:
   -
     type: "status"
@@ -138,8 +141,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "PR review thread resolved with exact workflow evidence: Bun 1.3.6 force install produced no bun.lock diff and frozen install exited 0 on the v0.6.26 candidate."
+  -
+    type: "verify"
+    at: "2026-07-31T13:12:53.437Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent presentation mode and failing output expectations."
+  -
+    type: "status"
+    at: "2026-07-31T13:12:54.825Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: isolate integration verification subprocesses from AgentPlane presentation-mode environment."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:01:47.432Z"
+doc_updated_at: "2026-07-31T13:12:54.825Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -308,6 +324,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-31T13:12:53.437Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent presentation mode and failing output expectations.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:01:47.432Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -332,6 +378,10 @@ sections:
     - Observation: Bun workspace lock metadata remains stable across workspace package version-only changes.
       Impact: The publish workflows' pinned frozen install accepts the exact candidate; no synthetic lockfile edit is needed.
       Resolution: Recorded reproducible command evidence and resolved the false-positive review thread.
+
+    - Observation: runShellCommand forwards the AgentPlane launcher presentation environment into arbitrary verification subprocesses.
+      Impact: Verification behavior differs between direct execution and integration, producing false failures for valid suites.
+      Resolution: Sanitize AgentPlane presentation-mode variables at the verification process boundary and add a focused regression.
 extensions:
   implementation_commit:
     hash: "1d297d1b128faf9cdc7c55805b5fd855197c980b"
@@ -513,6 +563,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-31T13:12:53.437Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent presentation mode and failing output expectations.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:01:47.432Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -541,3 +621,7 @@ DecisionContextRef:
 - Observation: Bun workspace lock metadata remains stable across workspace package version-only changes.
   Impact: The publish workflows' pinned frozen install accepts the exact candidate; no synthetic lockfile edit is needed.
   Resolution: Recorded reproducible command evidence and resolved the false-positive review thread.
+
+- Observation: runShellCommand forwards the AgentPlane launcher presentation environment into arbitrary verification subprocesses.
+  Impact: Verification behavior differs between direct execution and integration, producing false failures for valid suites.
+  Resolution: Sanitize AgentPlane presentation-mode variables at the verification process boundary and add a focused regression.

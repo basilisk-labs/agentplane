@@ -21,16 +21,22 @@ import {
 describe("pr-meta shell invocations", () => {
   let originalComspec: string | undefined;
   let originalComSpec: string | undefined;
+  let originalCliAlias: string | undefined;
+  let originalAgentMode: string | undefined;
 
   beforeEach(() => {
     originalComspec = process.env.COMSPEC;
     originalComSpec = process.env.ComSpec;
+    originalCliAlias = process.env.AGENTPLANE_CLI_ALIAS;
+    originalAgentMode = process.env.AGENTPLANE_AGENT_MODE;
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     process.env.COMSPEC = originalComspec;
     process.env.ComSpec = originalComSpec;
+    process.env.AGENTPLANE_CLI_ALIAS = originalCliAlias;
+    process.env.AGENTPLANE_AGENT_MODE = originalAgentMode;
   });
 
   it("parses verify commands as argv without a shell", () => {
@@ -58,6 +64,8 @@ describe("pr-meta shell invocations", () => {
   it("streams verify output without a fixed child-process buffer", async () => {
     delete process.env.COMSPEC;
     delete process.env.ComSpec;
+    process.env.AGENTPLANE_CLI_ALIAS = "ap";
+    process.env.AGENTPLANE_AGENT_MODE = "1";
     const gitProcess = await import("@agentplaneorg/core/process");
     const stdout = new PassThrough();
     const stderr = new PassThrough();
@@ -86,6 +94,9 @@ describe("pr-meta shell invocations", () => {
         stderr: "pipe",
       }),
     );
+    const startOptions = startProcess.mock.calls[0]?.[0];
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_CLI_ALIAS");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_AGENT_MODE");
     expect(result).toEqual({ code: 0, output: "ok" });
   });
 

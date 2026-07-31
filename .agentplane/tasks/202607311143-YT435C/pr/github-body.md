@@ -15,12 +15,12 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-PR review thread resolved with exact workflow evidence: Bun 1.3.6 force install produced no bun.lock
-diff and frozen install exited 0 on the v0.6.26 candidate.
+Integration-only full prepublish inherited AGENTPLANE_CLI_ALIAS=ap, switching child tests into agent
+presentation mode and failing output expectations.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -51,6 +51,8 @@ diff and frozen install exited 0 on the v0.6.26 candidate.
  docs/reference/generated-reference.mdx             |   6 +--
  docs/releases/v0.6.26.md                           |  47 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +--
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  11 +++++
+ .../src/commands/shared/pr-meta/verify-log.ts      |   5 ++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -58,7 +60,7 @@ diff and frozen install exited 0 on the v0.6.26 candidate.
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.26.png    | Bin 0 -> 55079 bytes
  website/static/img/social/manifest.json            |   8 ++++
- 26 files changed, 98 insertions(+), 42 deletions(-)
+ 28 files changed, 113 insertions(+), 43 deletions(-)
 ```
 
 </details>

@@ -125,12 +125,15 @@ export async function runShellCommand(
       output: `verify command executable is not allowed: ${invocation.command}`,
     };
   }
+  const env = { ...process.env };
+  delete env.AGENTPLANE_CLI_ALIAS;
+  delete env.AGENTPLANE_AGENT_MODE;
   try {
     const child = startProcess({
       command: invocation.command,
       args: invocation.args,
       cwd,
-      env: process.env,
+      env,
       buffer: false,
       stdout: "pipe",
       stderr: "pipe",
