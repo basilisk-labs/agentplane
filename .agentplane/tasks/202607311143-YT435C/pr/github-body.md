@@ -15,8 +15,14 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34,
+significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9,
+incident clearance, and task-registry readiness also pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

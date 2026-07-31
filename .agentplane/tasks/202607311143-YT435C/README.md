@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.26"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-31T12:49:40.314Z"
+  updated_by: "CODER"
+  note: "v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34, significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9, incident clearance, and task-registry readiness also pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-07-31T12:49:41.515Z"
+  updated_by: "EVALUATOR"
+  note: "v0.6.26 maintenance candidate is release-ready after full and final-state gates."
+  evaluated_sha: "f4a967d3f4a54062d1f002ef3b8e49e33743f669"
+  blueprint_digest: "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4"
+  evidence_refs:
+    - ".agentplane/tasks/202607311143-YT435C/README.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-124941515-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-124941515-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311143-YT435C/quality/20260731-124941515-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json"
+    - "docs/releases/v0.6.26.md"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+    - ".agentplane/workflows/last-known-good.md"
+  findings:
+    - "The direct pending/no-runner route transitions to task run and terminal runner state stops for verification evidence."
+    - "Untracked canonical task artifacts are persisted before execution without staging unrelated untracked files."
+    - "Pre-merge closure freshness is bound to implementation HEAD and stale markers route through PR refresh to a new closure."
+    - "Full release prepublish, final fast prepublish, focused regressions, incidents, registry, parity, pack, and install-smoke checks pass."
 commit: null
 comments:
   -
@@ -48,8 +70,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare and publish v0.6.26 exclusively from the v0.6.24 maintenance branch, with exact-SHA hosted verification and no main integration."
+  -
+    type: "verify"
+    at: "2026-07-31T12:49:40.314Z"
+    author: "CODER"
+    state: "ok"
+    note: "v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34, significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9, incident clearance, and task-registry readiness also pass."
 doc_version: 3
-doc_updated_at: "2026-07-31T12:48:58.554Z"
+doc_updated_at: "2026-07-31T12:49:40.426Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -68,11 +96,44 @@ sections:
     4. Verify hosted checks for the candidate PR, publish exact merged SHA, and confirm tag/GitHub Release/npm gitHead all equal the release commit while git merge-base --is-ancestor <release-sha> origin/main fails.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-31T12:49:40.314Z — VERIFY — ok
+
+    By: CODER
+
+    Note: v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34, significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9, incident clearance, and task-registry readiness also pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T12:48:58.554Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607311143-YT435C --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The final candidate includes synchronized v0.6.26 workflow and generated documentation assets.
+      Impact: Version parity and release artifacts are consistent on the maintenance-only candidate branch.
+      Resolution: Publish only the exact merged maintenance SHA after hosted checks pass.
 id_source: "generated"
 ---
 ## Summary
@@ -100,6 +161,36 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-31T12:49:40.314Z — VERIFY — ok
+
+By: CODER
+
+Note: v0.6.26 maintenance candidate passed full release prepublish: 82/82 isolated groups, workflow 34/34, significant 204/204, release-critical 16/16; final-state fast prepublish, focused routing 9/9, incident clearance, and task-registry readiness also pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T12:48:58.554Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607311143-YT435C --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -108,3 +199,7 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The final candidate includes synchronized v0.6.26 workflow and generated documentation assets.
+  Impact: Version parity and release artifacts are consistent on the maintenance-only candidate branch.
+  Resolution: Publish only the exact merged maintenance SHA after hosted checks pass.
