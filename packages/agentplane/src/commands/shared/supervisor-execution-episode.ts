@@ -7,6 +7,7 @@ import {
   completeSupervisorExecutionEpisode,
   migrateSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   type SupervisorEpisodeOperationKind,
@@ -420,16 +421,26 @@ export async function supervisePersistedWorkflowEpisode(opts: {
   }
 
   const kind = operationKind(opts.decision);
-  const started = startSupervisorExecutionEpisode({
-    journal,
-    role: operationRole({ decision: opts.decision, kind }),
-    kind,
-    operation_identity: operation,
-    precondition_fingerprint_digest: currentFingerprint,
-    authority_ref: `workflow-operation:${operation.id}`,
-    authority_digest: operation.preconditionFingerprint.digest,
-    effect_ref: operation.idempotencyKey,
-  });
+  const start = () =>
+    startSupervisorExecutionEpisode({
+      journal,
+      role: operationRole({ decision: opts.decision, kind }),
+      kind,
+      operation_identity: operation,
+      precondition_fingerprint_digest: currentFingerprint,
+      authority_ref: `workflow-operation:${operation.id}`,
+      authority_digest: operation.preconditionFingerprint.digest,
+      effect_ref: operation.idempotencyKey,
+    });
+  let started = start();
+  if (started.status === "stopped" && started.stop.reason === "stale_state") {
+    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+      journal: started.journal,
+      state_fingerprint_digest: currentFingerprint,
+    });
+    await store.write(journal);
+    started = start();
+  }
   journal = started.journal;
   await store.write(journal);
   if (started.status !== "started") {

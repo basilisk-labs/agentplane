@@ -299,6 +299,63 @@ describe("persisted supervisor execution episodes", () => {
     expect(replay.execution.stop_reason).toContain("already completed this idempotency key");
   });
 
+  it("opens a distinct operation after a completed journal becomes stale", async () => {
+    const root = await mkGitRepoRoot();
+    const firstDecision = fixtureDecision(root, 1);
+    const secondDecision = fixtureDecision(root, 2);
+    const finalDecision = fixtureDecision(root, 3);
+    const execute = () =>
+      Promise.resolve({
+        status: "succeeded" as const,
+        observed_postconditions: ["runner_state_observed"],
+        detail: "fixture operation completed",
+        exit_code: 0,
+      });
+
+    const first = await supervisePersistedWorkflowEpisode({
+      decision: firstDecision,
+      git_root: root,
+      task_revision: 1,
+      execute,
+      refresh: () => Promise.resolve(firstDecision),
+    });
+    expect(first.execution.executable).toBe(true);
+
+    let secondExecutions = 0;
+    const second = await supervisePersistedWorkflowEpisode({
+      decision: secondDecision,
+      git_root: root,
+      task_revision: 2,
+      execute: () => {
+        secondExecutions += 1;
+        return execute();
+      },
+      refresh: () => Promise.resolve(finalDecision),
+    });
+
+    expect(secondExecutions).toBe(1);
+    expect(second.execution).toMatchObject({
+      executable: true,
+      stop_reason: null,
+      refreshed_decision: finalDecision,
+    });
+    expect(second.journal).toMatchObject({
+      status: "running",
+      cursor: { phase: "ready", operation_key: null },
+      state_fingerprint_digest: finalDecision.workflowStep.preconditionFingerprint.digest,
+      operations: [
+        { status: "completed" },
+        {
+          status: "completed",
+          precondition_fingerprint_digest:
+            secondDecision.workflowStep.preconditionFingerprint.digest,
+          postcondition_fingerprint_digest:
+            finalDecision.workflowStep.preconditionFingerprint.digest,
+        },
+      ],
+    });
+  });
+
   it("projects supervisor-observed provider and execution usage into the journal", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
