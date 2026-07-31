@@ -62,6 +62,12 @@ type ConflictRouteOutput = {
           evidence: { task_id: string };
         };
       }
+    | {
+        state: "publication_required";
+        reason: string;
+        provider_head_sha: string;
+        local_head_sha: string;
+      }
     | { state: "invalid"; reason_code: string; reason: string }
     | { state: "not_conflicting"; reason: string }
     | null;
@@ -176,6 +182,202 @@ function fakeGithubProviderSource(detail: Record<string, unknown>): string {
 }
 
 describe("provider conflict rework CLI", () => {
+  it("routes a clean strict local descendant through guarded publication before conflict rework", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed publication conflict fixture"], {
+      cwd: root,
+    });
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Publish a strict local descendant before preparing semantic conflict rework.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const slug = "publish-before-conflict-rework";
+    const branch = `task/${taskId}/${slug}`;
+    await runCliSilent([
+      "work",
+      "start",
+      taskId,
+      "--agent",
+      "CODER",
+      "--slug",
+      slug,
+      "--worktree",
+      "--root",
+      root,
+    ]);
+    const worktree = await worktreeForBranch(root, branch);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: preserve provider identity before semantic conflict resolution.",
+      "--root",
+      worktree,
+    ]);
+    await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
+    await execFileAsync("git", ["add", "-A"], { cwd: worktree });
+    await execFileAsync("git", ["commit", "-m", "test: provider-visible conflict head"], {
+      cwd: worktree,
+    });
+
+    const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
+    const taskReadme = await readFile(taskReadmePath, "utf8");
+    await writeFile(
+      taskReadmePath,
+      taskReadme.replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
+    await execFileAsync("git", ["commit", "-m", "test: freeze provider conflict head"], {
+      cwd: worktree,
+    });
+    const { stdout: providerHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: worktree,
+    });
+    const providerHeadSha = providerHeadRaw.trim();
+
+    await writeFile(path.join(worktree, "local-evidence.txt"), "local-only evidence\n", "utf8");
+    await execFileAsync("git", ["add", "local-evidence.txt"], { cwd: worktree });
+    await execFileAsync("git", ["commit", "-m", "test: local strict descendant"], {
+      cwd: worktree,
+    });
+    const { stdout: localHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: worktree,
+    });
+    const localHeadSha = localHeadRaw.trim();
+
+    await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
+    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: base side of publication conflict"], {
+      cwd: root,
+    });
+    const { stdout: baseRaw } = await execFileAsync("git", ["rev-parse", "main"], { cwd: root });
+    const baseSha = baseRaw.trim();
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+    });
+
+    await withFakeGh(
+      root,
+      fakeGithubProviderSource({
+        number: 4626,
+        html_url: "https://github.example/acme/agentplane/pull/4626",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        mergeable: false,
+        mergeable_state: "dirty",
+        head: { ref: branch, sha: providerHeadSha },
+        base: { ref: "main", sha: baseSha },
+      }),
+      async () => {
+        const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
+        expect(before.stdout).toBe("");
+
+        const route = await readRemoteRoute(root, taskId);
+        expect(route.conflict_rework).toMatchObject({
+          state: "publication_required",
+          provider_head_sha: providerHeadSha,
+          local_head_sha: localHeadSha,
+        });
+        expect(route.workflow_step).toMatchObject({
+          kind: "approval",
+          id: "approval.pr.head.publish",
+          authoritativeCheckout: "task_worktree",
+          compatibility: { code: "publish_conflict_pr_head" },
+        });
+        expect(route.blockers.map((blocker) => blocker.code)).toContain("pr_head_unpublished");
+        expect(route.blockers.map((blocker) => blocker.code)).not.toContain(
+          "provider_conflict_context_invalid",
+        );
+        expect(route.execution_packet).toMatchObject({
+          actionKind: "provider_action",
+          safeToMutate: false,
+          exactArgv: null,
+        });
+
+        const packetIo = captureStdIO();
+        try {
+          const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
+          expect(code).not.toBe(0);
+          expect(packetIo.stderr).toContain(
+            "must be published before conflict context can be frozen",
+          );
+          expect(packetIo.stderr).toContain(
+            `agentplane task next-action ${taskId} --remote --explain`,
+          );
+        } finally {
+          packetIo.restore();
+        }
+
+        const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
+        expect(after.stdout).toBe(before.stdout);
+      },
+    );
+
+    await withFakeGh(
+      root,
+      fakeGithubProviderSource({
+        number: 4626,
+        html_url: "https://github.example/acme/agentplane/pull/4626",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        mergeable: false,
+        mergeable_state: "dirty",
+        head: { ref: branch, sha: localHeadSha },
+        base: { ref: "main", sha: baseSha },
+      }),
+      async () => {
+        const alignedRoute = await readRemoteRoute(root, taskId);
+        expect(alignedRoute.conflict_rework).toMatchObject({
+          state: "ready",
+          packet: {
+            provider: { head_sha: localHeadSha },
+            route_evidence: {
+              kind: "current_verified_open_pr_rework",
+              queue: null,
+              handoff: null,
+            },
+          },
+        });
+        expect(alignedRoute.workflow_step).toMatchObject({
+          kind: "agent_episode",
+          id: "agent.provider_conflict_rework",
+          authoritativeCheckout: "task_worktree",
+          episode: { purpose: "implementation_rework", role: "CODER" },
+        });
+        expect(alignedRoute.execution_packet).toMatchObject({
+          actionKind: "stop",
+          safeToMutate: true,
+          exactArgv: null,
+        });
+      },
+    );
+  });
+
   it("routes a live GitHub conflict to CODER with a fresh read-only packet", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -616,7 +818,23 @@ describe("provider conflict rework CLI", () => {
         if (conflictRework?.state !== "adoption_required") {
           throw new Error("expected legacy conflict-rework adoption requirement");
         }
+        const grantCommand = route.workflow_step.compatibility.command;
+        if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
         expect(route.workflow_step).toMatchObject({
+          kind: "approval",
+          id: "approval.integration.adopt_legacy_protected_conflict",
+          authoritativeCheckout: "task_worktree",
+          compatibility: {
+            code: "adopt_legacy_protected_conflict",
+            command: expect.stringContaining(
+              `agentplane task authority grant ${taskId}`,
+            ) as unknown as string,
+          },
+        });
+        await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
+
+        const authorizedRoute = await readRemoteRoute(root, taskId);
+        expect(authorizedRoute.workflow_step).toMatchObject({
           kind: "cli_operation",
           id: "integration.adopt_legacy_protected_conflict",
           authoritativeCheckout: "base_checkout",
@@ -624,7 +842,7 @@ describe("provider conflict rework CLI", () => {
             params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
           },
         });
-        expect(route.execution_packet).toMatchObject({
+        expect(authorizedRoute.execution_packet).toMatchObject({
           actionKind: "local_command",
           safeToMutate: true,
           exactArgv: [

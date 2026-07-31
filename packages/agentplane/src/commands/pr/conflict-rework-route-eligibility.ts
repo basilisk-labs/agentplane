@@ -53,6 +53,12 @@ type CurrentProtectedBaseReworkRouteEvidence = {
   handoff: ConflictRouteEvidenceHandoff;
 };
 
+type CurrentVerifiedOpenPrReworkEvidence = {
+  kind: "current_verified_open_pr_rework";
+  queue: null;
+  handoff: null;
+};
+
 export type ConflictRouteEvidence =
   | {
       kind: "current_queue";
@@ -65,6 +71,7 @@ export type ConflictRouteEvidence =
       handoff: ConflictRouteEvidenceHandoff;
     }
   | CurrentProtectedBaseReworkRouteEvidence
+  | CurrentVerifiedOpenPrReworkEvidence
   | LegacyAdoptedConflictRouteEvidence
   | LegacyUnadoptedConflictRouteEvidence;
 
@@ -223,14 +230,34 @@ export function resolveConflictRouteEligibility(opts: {
   identity: ConflictRouteIdentity;
   now: Date;
 }): ConflictRouteEligibility {
-  if (
-    opts.report.task.status.trim().toUpperCase() !== "DONE" ||
-    opts.report.task.verification !== "ok"
-  ) {
+  const taskStatus = opts.report.task.status.trim().toUpperCase();
+  if (opts.report.task.verification !== "ok") {
+    return {
+      state: "ineligible",
+      reason: "semantic conflict rework requires a current passing verification record",
+    };
+  }
+  if (taskStatus === "DOING") {
+    if (!opts.report.queue.present && !opts.report.handoff.present) {
+      return {
+        state: "eligible",
+        evidence: {
+          kind: "current_verified_open_pr_rework",
+          queue: null,
+          handoff: null,
+        },
+      };
+    }
     return {
       state: "ineligible",
       reason:
-        "semantic conflict rework requires a DONE task with a current passing verification record",
+        "a verified DOING task may enter semantic conflict rework only from its current open PR before any integration queue or protected-base handoff exists",
+    };
+  }
+  if (taskStatus !== "DONE") {
+    return {
+      state: "ineligible",
+      reason: "semantic conflict rework requires a verified DOING or DONE task",
     };
   }
 

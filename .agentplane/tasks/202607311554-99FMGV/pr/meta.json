@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r",
   "created_at": "2026-07-31T15:55:48.023Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:d2fd16c8b3486f75d1eb4dc34577797992999ffa1bd4c952cc65227abf6ebc0a",
   "last_verified_at": null,
+  "pr_number": 4708,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4708",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607311554-99FMGV",
-  "updated_at": "2026-07-31T15:55:48.023Z",
+  "updated_at": "2026-07-31T15:56:54.955Z",
   "verify": {
     "status": "skipped"
   }

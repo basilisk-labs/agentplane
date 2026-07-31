@@ -96,6 +96,27 @@ function report(overrides: Partial<PrFlowStatusReport> = {}): PrFlowStatusReport
   };
 }
 
+function providerBehindReport(
+  providerHeadSha = "2222222222222222222222222222222222222222",
+): PrFlowStatusReport {
+  const behind = report();
+  behind.pr.headSha = providerHeadSha;
+  if (behind.providerObservation?.state !== "found" || !behind.queue.present) {
+    throw new Error("fixture error");
+  }
+  behind.providerObservation.pr.headSha = providerHeadSha;
+  behind.queue = { ...behind.queue, headSha: providerHeadSha };
+  behind.publication = {
+    state: "unpublished",
+    reason: "upstream_head_mismatch",
+    localHeadSha: headSha,
+    upstreamRef: `origin/${branch}`,
+    upstreamHeadSha: providerHeadSha,
+    hostedHeadSha: providerHeadSha,
+  };
+  return behind;
+}
+
 const cleanWorktree = {
   state: "clean",
   branch,
@@ -214,14 +235,68 @@ describe("provider conflict rework packet", () => {
     expect(git.calls.diffNames).toBe(2);
   });
 
-  it("invalidates when the provider head no longer matches the local task branch", async () => {
-    const conflicting = report();
-    if (conflicting.providerObservation?.state !== "found") throw new Error("fixture error");
-    conflicting.providerObservation.pr.headSha = "2222222222222222222222222222222222222222";
+  it("requires guarded publication when the clean local head strictly descends from the provider head", async () => {
+    const conflicting = providerBehindReport();
+    const providerHeadSha = conflicting.pr.headSha;
+    if (!providerHeadSha) throw new Error("fixture error");
+    const git = primeGit();
+    git.gitOps.mergeBase = (gitRoot, left, right) => {
+      git.calls.mergeBase.push([gitRoot, left, right]);
+      return Promise.resolve(providerHeadSha);
+    };
 
+    await expect(prepare({ report: conflicting, git })).resolves.toMatchObject({
+      state: "publication_required",
+      provider_head_sha: providerHeadSha,
+      local_head_sha: headSha,
+    });
+    expect(git.calls.mergeBase).toEqual([["/repo", providerHeadSha, headSha]]);
+    expect(git.calls.diffNames).toBe(0);
+  });
+
+  it("invalidates divergent or locally unavailable provider-head ancestry", async () => {
+    const conflicting = providerBehindReport();
     await expect(prepare({ report: conflicting })).resolves.toMatchObject({
       state: "invalid",
       reason_code: "provider_head_mismatch",
+    });
+
+    const unavailable = primeGit();
+    unavailable.gitOps.mergeBase = () => Promise.reject(new Error("missing provider commit"));
+    await expect(prepare({ report: conflicting, git: unavailable })).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "provider_head_mismatch",
+      reason: expect.stringContaining("missing provider commit"),
+    });
+  });
+
+  it("does not allow fast-forward publication from a dirty task worktree", async () => {
+    const dirtyWorktree = {
+      state: "dirty",
+      branch,
+      worktreePath: cleanWorktree.worktreePath,
+      changedPaths: ["packages/agentplane/src/index.ts"],
+    } as const satisfies TaskWorktreeCleanliness;
+    const git = primeGit();
+    git.gitOps.mergeBase = () => Promise.resolve("2222222222222222222222222222222222222222");
+
+    await expect(
+      prepare({ report: providerBehindReport(), taskWorktree: dirtyWorktree, git }),
+    ).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "task_worktree_dirty",
+    });
+    expect(git.calls.mergeBase).toEqual([]);
+  });
+
+  it("keeps a provider branch identity mismatch fail-closed", async () => {
+    const conflicting = providerBehindReport();
+    if (conflicting.providerObservation?.state !== "found") throw new Error("fixture error");
+    conflicting.providerObservation.pr.headRef = "task/other/branch";
+
+    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "provider_branch_identity_mismatch",
     });
   });
 
@@ -413,6 +488,57 @@ describe("provider conflict rework packet", () => {
     const viaHandoff = report({ queue: { present: false } });
 
     await expect(prepare({ report: viaHandoff })).resolves.toMatchObject({ state: "ready" });
+  });
+
+  it("allows a verified DOING task to rework its current open PR before queue handoff", async () => {
+    const currentOpenPr = report({
+      task: { id: taskId, status: "DOING", verification: "ok" },
+      queue: { present: false },
+      handoff: { present: false },
+    });
+
+    await expect(prepare({ report: currentOpenPr })).resolves.toMatchObject({
+      state: "ready",
+      packet: {
+        route_evidence: {
+          kind: "current_verified_open_pr_rework",
+          queue: null,
+          handoff: null,
+        },
+      },
+    });
+  });
+
+  it("accepts an ancestor provider base for current verified open-PR rework", async () => {
+    const currentBase = "3333333333333333333333333333333333333333";
+    const currentOpenPr = report({
+      task: { id: taskId, status: "DOING", verification: "ok" },
+      queue: { present: false },
+      handoff: { present: false },
+    });
+    const git = primeGit({ localBase: currentBase });
+    git.gitOps.mergeBase = (gitRoot, left, right) => {
+      git.calls.mergeBase.push([gitRoot, left, right]);
+      return Promise.resolve(left === baseSha && right === currentBase ? baseSha : mergeBase);
+    };
+
+    await expect(prepare({ report: currentOpenPr, git })).resolves.toMatchObject({
+      state: "ready",
+      packet: {
+        base_context: {
+          provider_conflict_base_sha: baseSha,
+          current_base_sha: currentBase,
+          relation: "provider_base_ancestor_of_current_base",
+          legacy_queue_base_sha: null,
+          legacy_queue_relation: "not_applicable",
+        },
+        route_evidence: { kind: "current_verified_open_pr_rework" },
+      },
+    });
+    expect(git.calls.mergeBase).toEqual([
+      ["/repo", baseSha, currentBase],
+      ["/repo", currentBase, headSha],
+    ]);
   });
 
   it("invalidates semantic rework when the protected-base handoff observed a stale provider base", async () => {

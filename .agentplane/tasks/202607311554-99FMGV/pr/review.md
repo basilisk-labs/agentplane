@@ -24,12 +24,21 @@ Created: 2026-07-31T15:55:48.023Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-31T15:55:48.023Z
+- Updated: 2026-07-31T15:56:54.955Z
 - Branch: task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 220 ++++++++++++++++++++-
+ .../pr/conflict-rework-route-eligibility.ts        |  37 +++-
+ .../src/commands/pr/conflict-rework.command.ts     |  18 ++
+ .../src/commands/pr/conflict-rework.test.ts        | 134 ++++++++++++-
+ .../agentplane/src/commands/pr/conflict-rework.ts  | 212 +++++++++++++-------
+ .../src/commands/shared/route-decision-blockers.ts |   1 +
+ .../shared/workflow-step-conflict-rework.ts        |  26 +++
+ ...rkflow-step-projections.conflict-rework.test.ts |  67 ++++++-
+ .../src/commands/shared/workflow-step.ts           |   1 +
+ 9 files changed, 629 insertions(+), 87 deletions(-)
 ```
 
 </details>
