@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
     - "The hosted dead-code failure exposed unnecessary type re-exports only; internal session types and runtime behavior remain unchanged."
     - "The public catalog surface is now limited to the existing CommandEntry and RunDeps contract, while internal consumers import only the session types they use."
 commit:
-  hash: "3c2735705af084189c02a50fca450c7a7c81f9f0"
-  message: "🔎 RW8CJF task: re-evaluate hosted CI rework"
+  hash: "72cd979e8b580083ccc68b393428555163fb5816"
+  message: "🔎 RW8CJF task: re-evaluate export surface"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -116,8 +119,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted dead-code baseline rework passed: unused type re-exports removed, knip baseline unchanged at 545 entries, typecheck and 13 focused tests pass at 3bb947f75."
+  -
+    type: "status"
+    at: "2026-07-31T20:41:53.125Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T20:40:50.218Z"
+doc_updated_at: "2026-07-31T20:41:53.138Z"
 doc_updated_by: "CODER"
 description: "RF-24a: replace coarse CommandNeeds with composable project/config/backend/task/Git/route/policy/approval/context/provider/output capabilities and prove typed lazy resolution on representative commands."
 sections:
@@ -198,8 +208,8 @@ sections:
       Resolution: Migrate underlying resolver slices incrementally in the downstream RC2 tasks while retaining the explicit legacy adapter.
 extensions:
   implementation_commit:
-    hash: "32da254a5accb6ee2e704d94a4e16e192a50de97"
-    message: "🧪 RW8CJF task: isolate command session trace test"
+    hash: "3bb947f75aee3ce9075d56a0a90db0e8d6c3fa05"
+    message: "♻️ RW8CJF task: trim unused session type exports"
   workflow_route_baseline:
     start_head_sha: "1adc9896b158719e908acc894b3651bfec2348c1"
     version: 1
