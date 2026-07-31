@@ -8,10 +8,10 @@
   "pr_number": 4708,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4708",
   "pre_merge_closure": {
-    "basis_commit": "2bd765be7322e2bcf393da221f0c8e1a0d07a045",
+    "basis_commit": "4b3ae528276d3d67e48786ab4ad9e0443f47f0a1",
     "branch": "task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r",
     "pr_number": 4708,
-    "recorded_at": "2026-07-31T16:27:05.343Z",
+    "recorded_at": "2026-07-31T17:16:15.397Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
