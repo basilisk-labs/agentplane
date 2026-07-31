@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
     - "The deterministic verification evidence applies to semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4, but the frozen diff evaluates SHA 74061ddc5b4845f58f5ec451bc396419c64980e2 and includes subsequent implementation changes to conflict-rework base-context logic and tests. No check evidence validates the evaluated implementation."
   recovery_reason: "deterministic_evidence_gap"
 commit:
-  hash: "2bd765be7322e2bcf393da221f0c8e1a0d07a045"
-  message: "🔍 99FMGV task: Record evaluator pass"
+  hash: "74061ddc5b4845f58f5ec451bc396419c64980e2"
+  message: "🚧 99FMGV task: Fix conflict rework CI gates"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Implementation target updated after CI repair: strict lint typing and extracted conflict base-context resolution."
 events:
   -
     type: "status"
@@ -116,8 +119,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-31T17:11:11.688Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Implementation target updated after CI repair: strict lint typing and extracted conflict base-context resolution."
 doc_version: 3
-doc_updated_at: "2026-07-31T16:27:05.275Z"
+doc_updated_at: "2026-07-31T17:11:11.688Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
