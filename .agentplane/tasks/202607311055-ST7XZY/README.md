@@ -1,10 +1,11 @@
 ---
 id: "202607311055-ST7XZY"
 title: "Eliminate direct workflow state-neutral routing loops"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -43,11 +44,16 @@ quality_review:
   findings:
     - "No state-neutral verify-show command remains in runner transition hints or direct next-action routes."
     - "Untracked active and DONE canonical task artifacts now receive deterministic task-scoped persistence or cleanup commands."
-commit: null
+commit:
+  hash: "666b99486bd6fc90355445552a154be6651850f1"
+  message: "✅ ST7XZY task: record routing verification"
 comments:
   -
     author: "CODER"
     body: "Start: audit direct route transitions, eliminate state-neutral loops, and add deterministic task artifact persistence recovery for the v0.6.26 maintenance patch."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -62,8 +68,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Command: focused Vitest route/runner suite; bun run coverage:significant-suite; bun run test:release:critical; bun run typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane release plan --patch. Result: pass. Evidence: focused 11 files/57 tests, significant 19 files/204 tests, release-critical 4 files/16 tests, typecheck and routing OK, doctor errors=0, next tag v0.6.26. Scope: direct routing, runner handoff, guided begin, untracked canonical task persistence, release readiness."
+  -
+    type: "status"
+    at: "2026-07-31T11:12:31.520Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-31T11:12:03.627Z"
+doc_updated_at: "2026-07-31T11:12:31.521Z"
 doc_updated_by: "CODER"
 description: "Audit v0.6.25 direct workflow route decisions for successful state-neutral command loops; fix DOING plus pending verification plus absent runner routing; add deterministic recovery for untracked canonical task artifacts; add exact and analogous regression coverage without touching main."
 sections:
@@ -143,6 +156,10 @@ sections:
     - Observation: v0.6.25 used successful read-only verify-show output as an executable transition in absent and terminal runner states.
       Impact: Strict recompute rails could loop forever and active untracked task truth could be lost on workspace recreation.
       Resolution: Runner transitions now mutate or stop explicitly; untracked task truth gets a guarded persistence route before execution.
+extensions:
+  implementation_commit:
+    hash: "d60e737bb85a8252367b8203074719531811764b"
+    message: "🐛 ST7XZY routing: eliminate state-neutral direct loops"
 id_source: "generated"
 ---
 ## Summary
