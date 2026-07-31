@@ -72,7 +72,8 @@ async function readVerificationRecord(
   taskId: string,
 ): Promise<Record<string, unknown>> {
   const verificationDir = path.join(root, `.agentplane/tasks/${taskId}/verification`);
-  const records = (await readdir(verificationDir)).filter((name) => name.endsWith(".json"));
+  const verificationEntries = await readdir(verificationDir);
+  const records = verificationEntries.filter((name) => name.endsWith(".json"));
   expect(records).toHaveLength(1);
   return JSON.parse(await readFile(path.join(verificationDir, records[0] ?? ""), "utf8")) as Record<
     string,
