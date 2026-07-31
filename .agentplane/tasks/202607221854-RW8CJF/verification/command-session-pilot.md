@@ -44,6 +44,16 @@ Evidence: the repository TypeScript build completed without diagnostics; core, r
 
 Scope: Verify steps 1 and 5; compile-time session subsets, public package boundaries, and production bundle generation.
 
+## 5. Dead-code and export surface
+
+Command: `bun run knip:check`
+
+Result: pass.
+
+Evidence: the unused-code baseline remains unchanged at 545 entries (`files=1`, `exports=178`, `types=366`). Session types are exported only from the modules that consume them; no unused public re-export debt was added.
+
+Scope: Verify step 5; public type surface and dead-code ratchet.
+
 ## Residual boundary
 
 Granular capabilities currently coalesce onto the existing monolithic `CommandContext` preparation node. This pilot makes requirements explicit, typed, lazy, and traceable without claiming field-level runtime isolation. Downstream vertical-slice tasks will split the underlying context resolvers while the explicit legacy adapter preserves compatibility.
