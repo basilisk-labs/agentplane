@@ -6,7 +6,7 @@ Created: 2026-07-31T11:44:30.841Z
 
 - Task: `202607311143-YT435C`
 - Title: Release AgentPlane v0.6.26
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607311143-YT435C/release-v0-6-26`
 - Canonical task record: `.agentplane/tasks/202607311143-YT435C/README.md`
 
