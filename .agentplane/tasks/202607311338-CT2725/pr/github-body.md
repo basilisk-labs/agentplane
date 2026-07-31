@@ -19,8 +19,8 @@ Repair the outer direct supervisor so a durably persisted successful runner exec
 - Note:
 
 ```text
-Structured deterministic verification evidence refreshed for implementation
-c3b5d08db2960cc4722230f91d34f5fd17c16229 after PR #4704 linkage.
+PASS: typed executor non-success stops remain fail-closed and verification is bound to the semantic
+implementation.
 ```
 - Canonical workflow state lives in the task README.
 
