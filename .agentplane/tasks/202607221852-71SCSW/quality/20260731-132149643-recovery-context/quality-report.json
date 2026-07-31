@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:21:50.649Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "c64291cb7c9d88bd0115e1aa5c04de550e2defb7",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "PASS: task.pre_merge_close forwards commit for closure provenance but does not override implementationCommit, allowing finish to resolve quality_review.evaluated_sha after task-only artifact advances.",
+    "PASS: the focused regression asserts the adapter omits implementationCommit and retains the expected task, commit, and preMergeClosure arguments.",
+    "PASS: the change is narrower than the failed behavior and does not weaken quality freshness or allow an unreviewed implementation head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-132149643-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
