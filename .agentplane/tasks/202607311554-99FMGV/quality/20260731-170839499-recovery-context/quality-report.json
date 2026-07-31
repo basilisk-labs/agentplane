@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311554-99FMGV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T17:09:37.108Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "74061ddc5b4845f58f5ec451bc396419c64980e2",
+  "blueprint_digest": "0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f",
+  "findings": [
+    "The deterministic verification evidence applies to semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4, but the frozen diff evaluates SHA 74061ddc5b4845f58f5ec451bc396419c64980e2 and includes subsequent implementation changes to conflict-rework base-context logic and tests. No check evidence validates the evaluated implementation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311554-99FMGV/quality/20260731-170839499-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607311554-99FMGV/quality/20260731-170839499-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607311554-99FMGV/README.md"
+  ],
+  "missing_tests": [
+    "Re-run the declared focused Vitest suite, conflict-rework unit and recovery suites, test:critical, typecheck, format:check, routing validation, and diff check against evaluated SHA 74061ddc5b4845f58f5ec451bc396419c64980e2.",
+    "Record deterministic coverage for the extracted conflict-rework base-context behavior at the evaluated SHA, including equal base, ancestor base, unavailable ancestry, non-ancestor base, legacy queue ancestry, and current verified open-PR paths."
+  ],
+  "hidden_assumptions": [
+    "The recovery packet assumes commits after semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4 were lifecycle-only, but the frozen diff shows later implementation-code changes.",
+    "Passing results from the earlier semantic SHA are assumed to remain valid after extracting and changing base-context resolution logic; this has not been demonstrated."
+  ],
+  "residual_risks": [
+    "Obtain and freeze deterministic verification evidence for evaluated SHA 74061ddc5b4845f58f5ec451bc396419c64980e2. The current evidence is stale because it validates SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4 while later commits modify implementation code and tests."
+  ]
+}

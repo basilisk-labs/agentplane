@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607311554-99FMGV-bb3b912d464e6e00457e2707",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311554-99FMGV-allow-fast-forward-publication-before-conflict-r",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311554-99FMGV-allow-fast-forward-publication-before-conflict-r/.agentplane/tasks/202607311554-99FMGV/quality/20260731-170839499-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-31T17:08:39.829Z",
+  "ended_at": "2026-07-31T17:09:36.833Z",
+  "stdout_bytes": 105936,
+  "stderr_bytes": 6565,
+  "provider_usage": {
+    "input_tokens": 168568,
+    "output_tokens": 2394,
+    "total_tokens": 170962
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:d563c3c102d134332391991296e3c101da8fab8e1e5a472806c947c8eb8ca0c1"
+}
