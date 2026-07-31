@@ -30,15 +30,16 @@ Created: 2026-07-31T15:55:48.023Z
 
 ```text
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 222 ++++++++++++++++++++-
+ .../commands/pr/conflict-rework-base-context.ts    | 149 ++++++++++++++
  .../pr/conflict-rework-route-eligibility.ts        |  37 +++-
  .../src/commands/pr/conflict-rework.command.ts     |  18 ++
- .../src/commands/pr/conflict-rework.test.ts        | 138 ++++++++++++-
- .../agentplane/src/commands/pr/conflict-rework.ts  | 212 +++++++++++++-------
+ .../src/commands/pr/conflict-rework.test.ts        | 139 ++++++++++++-
+ .../agentplane/src/commands/pr/conflict-rework.ts  | 133 +++++-------
  .../src/commands/shared/route-decision-blockers.ts |   1 +
  .../shared/workflow-step-conflict-rework.ts        |  26 +++
  ...rkflow-step-projections.conflict-rework.test.ts |  67 ++++++-
  .../src/commands/shared/workflow-step.ts           |   1 +
- 9 files changed, 634 insertions(+), 88 deletions(-)
+ 10 files changed, 696 insertions(+), 97 deletions(-)
 ```
 
 </details>

@@ -236,9 +236,8 @@ describe("provider conflict rework packet", () => {
   });
 
   it("requires guarded publication when the clean local head strictly descends from the provider head", async () => {
-    const conflicting = providerBehindReport();
-    const providerHeadSha = conflicting.pr.headSha;
-    if (!providerHeadSha) throw new Error("fixture error");
+    const providerHeadSha = "2222222222222222222222222222222222222222";
+    const conflicting = providerBehindReport(providerHeadSha);
     const git = primeGit();
     git.gitOps.mergeBase = (gitRoot, left, right) => {
       git.calls.mergeBase.push([gitRoot, left, right]);
@@ -255,23 +254,25 @@ describe("provider conflict rework packet", () => {
   });
 
   it("invalidates a divergent local head", async () => {
-    await expect(prepare({ report: providerBehindReport() })).resolves.toMatchObject({
+    const prepared = await prepare({ report: providerBehindReport() });
+    expect(prepared).toMatchObject({
       state: "invalid",
       reason_code: "provider_head_mismatch",
-      reason: expect.stringContaining("not a fast-forward continuation"),
     });
+    if (prepared.state !== "invalid") throw new Error("expected invalid preparation");
+    expect(prepared.reason).toContain("not a fast-forward continuation");
   });
 
   it("invalidates unrelated provider/local histories when no merge base exists", async () => {
     const unrelated = primeGit();
     unrelated.gitOps.mergeBase = () => Promise.reject(new Error("no merge base"));
-    await expect(
-      prepare({ report: providerBehindReport(), git: unrelated }),
-    ).resolves.toMatchObject({
+    const prepared = await prepare({ report: providerBehindReport(), git: unrelated });
+    expect(prepared).toMatchObject({
       state: "invalid",
       reason_code: "provider_head_mismatch",
-      reason: expect.stringContaining("no merge base"),
     });
+    if (prepared.state !== "invalid") throw new Error("expected invalid preparation");
+    expect(prepared.reason).toContain("no merge base");
   });
 
   it("does not allow fast-forward publication from a dirty task worktree", async () => {

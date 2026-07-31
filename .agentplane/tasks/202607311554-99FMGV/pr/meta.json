@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r",
   "created_at": "2026-07-31T15:55:48.023Z",
-  "diffstat_sha256": "sha256:3468897ad5c1b0918e66fdfc1342ead5853c22cc2a7cd981ae85d0585108c435",
+  "diffstat_sha256": "sha256:ee353df192285628fce4168e270045ecb08b9c9cf8512ee75b31f33e72f3315a",
   "last_verified_at": "2026-07-31T16:24:31.821Z",
   "last_verified_diffstat_sha256": "sha256:3468897ad5c1b0918e66fdfc1342ead5853c22cc2a7cd981ae85d0585108c435",
   "pr_number": 4708,
