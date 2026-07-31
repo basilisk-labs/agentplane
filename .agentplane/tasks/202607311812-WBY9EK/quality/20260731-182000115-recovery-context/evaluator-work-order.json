@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607311812-WBY9EK-030ea2608ca8e7d9ca42c6e7",
+  "prepared_at": "2026-07-31T18:20:00.115Z",
+  "task": {
+    "id": "202607311812-WBY9EK",
+    "revision": 7,
+    "objective": "Publish resolved DONE conflict heads before semantic rework gating\n\nWhen a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.",
+    "acceptance_criteria": [
+      "Critical CLI suite and typecheck pass.",
+      "Focused conflict-rework and route projection tests pass.",
+      "- In scope: When a verified DONE task has a clean local branch that strictly fast-forwards the stale conflicting provider head, route guarded non-force publication before requiring semantic conflict queue or handoff evidence; preserve fail-closed behavior for divergence, dirty worktrees, unverified tasks, and still-conflicting aligned heads.\n- Out of scope: unrelated refactors not required for \"Publish resolved DONE conflict heads before semantic rework gating\".",
+      "1. Reproduce the verified DONE/no-queue stale provider conflict where the clean local head strictly fast-forwards the provider head. 2. Move only guarded fast-forward publication ahead of semantic route eligibility while retaining verification/status, protected-base, clean-worktree, branch identity, and ancestry checks. 3. Add unit and CLI route regressions for the resolved-conflict closeout path plus fail-closed divergent/unverified cases. 4. Run focused route tests, typecheck, and critical CLI checks; record independent verification and evaluator evidence. 5. Merge the repair, then resume CT2725 publication from live provider truth.",
+      "1. Run `bunx vitest run packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts`. Expected: a verified DONE task without queue/handoff routes a clean strict provider-head descendant to guarded non-force publication; after heads align, unresolved conflicts still require semantic route authority; divergent, dirty, and unverified cases remain fail-closed.\n2. Run `bun run typecheck`, `node .agentplane/policy/check-routing.mjs`, and formatting/diff checks for touched files. Expected: all static and routing contracts pass without unrelated changes.\n3. Run `bun run test:critical`. Expected: all critical CLI chunks pass, including side-effect authority, route safety, and trust-boundary regressions.\n4. Review the final diff and task evidence. Expected: changes remain bounded to conflict-rework preparation ordering and its unit/CLI regression coverage; no force-push, automatic merge/rebase, queue mutation, or weakened semantic authority is introduced."
+    ]
+  },
+  "evaluated_sha": "ec05273fe44825a864f54aef15865b80afeeb847",
+  "diff_base_sha": "9eb65c88341f2495a0a1f11865eb38c4978b2ef3",
+  "blueprint_digest": "811859237d1e336a22045da7dbb31a7f329f2ca34c058ea0ecc8483282d8ea04",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607311812-WBY9EK/README.md",
+      "sha256": "sha256:b8a56c2f07a9e57d47b85bea3b57084c73a9d9c58ee2d86eafdacb4912d2a63e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607311812-WBY9EK/quality/20260731-182000115-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:1f72906cc2ddbe48336afb067c0be594043b7441acfbc4b8e3f12502c319e05b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607311812-WBY9EK/quality/20260731-182000115-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:dcf0c91bdc536d762281797d83060d2d3e7e57f9f2e016f4a8b37dddab294e92",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607311812-WBY9EK/quality/20260731-182000115-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:de13cbc9bedd43cccdc59d4c1a6f480a4de9b1f4921f1df98a838c4d968b7c4d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

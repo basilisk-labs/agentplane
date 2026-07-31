@@ -1,0 +1,39 @@
+# PR Review
+
+Created: 2026-07-31T18:13:29.527Z
+
+## Task
+
+- Task: `202607311812-WBY9EK`
+- Title: Publish resolved DONE conflict heads before semantic rework gating
+- Status: DONE
+- Branch: `task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema`
+- Canonical task record: `.agentplane/tasks/202607311812-WBY9EK/README.md`
+
+## Verification
+
+- State: ok
+- Note: PASS at ec05273fe448 under the PLANNER-authored contract: 35 focused tests prove verified DONE/no-queue fast-forward publication and aligned-authority gating; all 12 critical chunks, typecheck, routing, format, and diff checks pass.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-07-31T18:20:52.699Z
+- Branch: task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../run-cli.core.pr-conflict-publication.test.ts   | 279 +++++++++++++++++++++
+ .../src/commands/pr/conflict-rework.test.ts        |  29 +++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  42 ++--
+ 3 files changed, 336 insertions(+), 14 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

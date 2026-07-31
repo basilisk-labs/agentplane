@@ -6,7 +6,11 @@ import type { ConflictReworkPacket } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance } from "./route-guidance.js";
-import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+import {
+  WORKFLOW_OPERATION_REGISTRY,
+  type WorkflowRouteState,
+  type WorkflowStep,
+} from "./workflow-step.js";
 import {
   projectWorkflowStepExecutionPacket,
   projectWorkflowStepOracle,
@@ -348,6 +352,67 @@ describe("WorkflowStep conflict rework projections", () => {
       evidenceMissing: ["legacy_protected_conflict_adoption_receipt"],
     });
     expect(step.kind === "agent_episode").toBe(false);
+  });
+
+  it("publishes a guarded fast-forward conflict head before quality review or semantic rework", () => {
+    const providerHeadSha = "0000000000000000000000000000000000000001";
+    const state = routeState({
+      task: { ...task, status: "DONE", verification: { state: "ok" } },
+      resume: { ...resume, task_status: "DONE" },
+      blockers: [
+        {
+          code: "pr_head_unpublished",
+          summary: "local task branch head is not published",
+        },
+        {
+          code: "quality_review_missing",
+          summary: "quality review is missing",
+        },
+      ],
+      conflictRework: {
+        state: "publication_required",
+        reason: "clean local head strictly descends from provider head",
+        provider_head_sha: providerHeadSha,
+        local_head_sha: resume.head_sha,
+      },
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { taskWorktreePath },
+    });
+
+    expect(step).toMatchObject({
+      kind: "approval",
+      id: "approval.pr.head.publish",
+      compatibility: { code: "publish_conflict_pr_head" },
+      request: {
+        type: "side_effect",
+        operationId: "pr.head.publish",
+        operation: {
+          params: {
+            taskId: task.id,
+            author: task.owner,
+            includeTaskIds: [],
+          },
+        },
+      },
+      selectedBlocker: { code: "pr_head_unpublished" },
+    });
+    expect(step.id).not.toBe("agent.quality_review");
+    expect(step.id).not.toBe("agent.provider_conflict_rework");
+    expect(oracle.mutationPathHint).toBeNull();
+    expect(packet).toMatchObject({
+      actionKind: "provider_action",
+      safeToMutate: false,
+      exactArgv: null,
+    });
+    expect(
+      WORKFLOW_OPERATION_REGISTRY["pr.head.publish"].mustNot.some((rule) =>
+        rule.includes("force-push"),
+      ),
+    ).toBe(true);
   });
 
   it("fails closed when a provider conflict lacks a usable task worktree", () => {

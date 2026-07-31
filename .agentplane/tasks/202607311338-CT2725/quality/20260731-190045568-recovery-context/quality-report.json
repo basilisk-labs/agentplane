@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311338-CT2725",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T19:00:45.807Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "f9c7673f4b3593f009aff4c59ff729bed1041beb",
+  "blueprint_digest": "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4",
+  "findings": [
+    "Present non-rejected but containment-unverified receipts preserve typed blocked, needs_context, and failed stops; completed-unverified, missing, and rejected receipts remain terminal.",
+    "The new merge parent contributes only the already-reviewed WBY9EK publication-route repair; it does not modify CT2725 supervisor implementation or tests, and all declared checks pass at f9c7673f4b3593f009aff4c59ff729bed1041beb."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311338-CT2725/quality/20260731-190045568-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

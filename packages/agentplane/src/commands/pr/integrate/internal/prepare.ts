@@ -35,7 +35,7 @@ import { resolveQualityReviewTargetSha } from "../../../shared/quality-review-ta
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
-import { normalizeBranchPrBatchIncludedTaskIds } from "../../internal/sync-batch-ownership.js";
+import { normalizeBranchPrBatchTaskIds } from "../../internal/sync-batch-ownership.js";
 import { computePrDiffstat } from "../../internal/sync-branch.js";
 
 import { readAndValidatePrArtifacts, ensureCommittedPrArtifactsOnBranch } from "../artifacts.js";
@@ -350,7 +350,7 @@ export async function prepareIntegrate(opts: {
     gitRoot: resolved.gitRoot,
     workflowDir: loadedConfig.paths.workflow_dir,
     taskId: opts.taskId,
-    taskIds: [opts.taskId, ...normalizeBranchPrBatchIncludedTaskIds(task, opts.taskId)],
+    taskIds: normalizeBranchPrBatchTaskIds(task, opts.taskId),
     headSha: branchHeadSha,
     previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
   });

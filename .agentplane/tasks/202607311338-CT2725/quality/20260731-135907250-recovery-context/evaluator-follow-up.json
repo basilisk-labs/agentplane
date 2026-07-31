@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607311338-CT2725-cdf08adfc7bbc2c67f160459",
+  "task_id": "202607311338-CT2725",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen observed-checks evidence with deterministic command records and outputs tied to evaluated SHA c3b5d08db2960cc4722230f91d34f5fd17c16229, including focused positive and negative receipt cases, outer-supervisor at-most-once behavior, critical checks, incident parity, and release readiness; then rerun semantic evaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen observed-checks artifact contains no deterministic check records or runtime evidence, so the claimed focused, critical, incident-parity, release-readiness, and at-most-once results cannot be independently evaluated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135907250-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:0a7fdab74335684904f46c56d4220a07c3ad47e4d4275b52778b076f453f758a",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135907250-recovery-context/evaluator-result.json"
+}

@@ -345,6 +345,54 @@ describe("direct task supervisor", () => {
     expect(mocks.executeEvaluator).not.toHaveBeenCalled();
   });
 
+  it("surfaces a typed blocker from an unverified contained run without replaying it", async () => {
+    const runner = decision({
+      id: "runner.follow",
+      code: "continue_direct",
+      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
+    });
+    const lifecycle = {
+      phase: "executed",
+      invocation: { run_id: "run-blocked-unverified" },
+      result: {
+        status: "success",
+        execution_receipt: {
+          path: "agentplane-run://tasks/rf10/run-blocked-unverified/execution-receipt.json",
+          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          verification_state: "unverified",
+          observed_by: "agentplane",
+        },
+        semantic_result: {
+          provenance: "agent_reported",
+          value: { kind: "agent_semantic_result", status: "blocked" },
+        },
+      },
+    } as never;
+    mocks.buildDecision.mockResolvedValue(runner);
+    mocks.supervise.mockResolvedValue({
+      journal,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      execution: {
+        executable: true,
+        result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
+        refreshed_decision: runner,
+      },
+    });
+    mocks.loadTask.mockResolvedValue({ id: TASK_ID, events: [] });
+
+    const result = await superviseDirectTaskRun({
+      ctx: { cwd: "/repo", rootOverride: null } as never,
+      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      task_id: TASK_ID,
+      include_remote: false,
+    });
+
+    expect(result).toMatchObject({ status: "stopped", stop: { code: "executor_blocked" } });
+    expect(mocks.supervise).toHaveBeenCalledTimes(1);
+    expect(mocks.recordEvidence).not.toHaveBeenCalled();
+    expect(mocks.executeEvaluator).not.toHaveBeenCalled();
+  });
+
   it("turns an EXECUTOR adapter crash into a typed stop", async () => {
     const runner = decision({
       id: "runner.follow",

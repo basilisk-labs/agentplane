@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311404-P746PE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T15:37:01.331Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "9d4b182abb337d2849f7e25760ef4b2ad3d99aa1",
+  "blueprint_digest": "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597",
+  "findings": [
+    "Implementation and frozen verification evidence consistently bind verification records and evaluator preparation to the same semantic target SHA across lifecycle-only closure history."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607311404-P746PE/verification/20260731153115267-c27ca95630d2c5e7.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

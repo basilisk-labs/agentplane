@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202607311404-P746PE/bind-verification-records-to-semantic-review-tar",
+  "created_at": "2026-07-31T14:05:33.781Z",
+  "diffstat_sha256": "sha256:e88e009aed952e9610a6435ba5c893546519ad37f2ddeab7bdfa6009b22977e5",
+  "last_verified_at": "2026-07-31T15:31:15.267Z",
+  "last_verified_diffstat_sha256": "sha256:e88e009aed952e9610a6435ba5c893546519ad37f2ddeab7bdfa6009b22977e5",
+  "pr_number": 4705,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4705",
+  "pre_merge_closure": {
+    "basis_commit": "949ccd0470a303577e72f1041b0fee0abcc11fb4",
+    "branch": "task/202607311404-P746PE/bind-verification-records-to-semantic-review-tar",
+    "pr_number": 4705,
+    "recorded_at": "2026-07-31T15:38:12.591Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607311404-P746PE",
+  "updated_at": "2026-07-31T14:05:54.431Z",
+  "verify": {
+    "status": "pass"
+  }
+}

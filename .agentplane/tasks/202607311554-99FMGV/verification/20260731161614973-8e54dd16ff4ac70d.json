@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:8e54dd16ff4ac70deba04bff508d01568e9d27547b64ca7303e582a445d8efe6",
+  "implementation_sha": "a2c70c4504b3d3729e0cc0767e64b796d9d951ba",
+  "kind": "task_verification_record",
+  "note": "PASS: semantic SHA a2c70c4504b3d3729e0cc0767e64b796d9d951ba; focused route/publication matrix 21/21, conflict units 38/38, legacy/recovery 22/22, critical CLI 12/12 chunks, typecheck, format, routing, and real CT2725 route projection passed.",
+  "recorded_at": "2026-07-31T16:16:14.973Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Reproduce an OPEN protected-base PR whose provider reports conflicts while the clean local task branch is a strict descendant of the provider head. Expected: next-action selects guarded PR head publication before conflict-packet preparation; no rebase, merge, force-push, or hunk selection occurs.\n2. Cover divergent, unrelated, dirty-worktree, unknown-mergeability, and provider-branch-mismatch cases. Expected: each remains fail-closed and cannot receive publication authority through this route.\n3. Publish the descendant head in the fixture and refresh provider truth. Expected: the provider/local identity matches, the bounded conflict packet can be prepared, and semantic resolution still routes to CODER with fresh verification required afterward.\n4. Run `bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts`. Expected: route and publication regressions pass.\n5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests.",
+  "scope_digest": "sha256:c1fbf1ebd599a5379cf93aa75fd17b0e1cba6aebd0ef736022215ce82b4fe0a5",
+  "task_id": "202607311554-99FMGV",
+  "verification_command": "agentplane verify 202607311554-99FMGV --ok --by TESTER",
+  "verifier": "TESTER"
+}

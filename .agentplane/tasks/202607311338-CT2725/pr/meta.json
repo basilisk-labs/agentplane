@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra",
+  "created_at": "2026-07-31T13:40:50.644Z",
+  "diffstat_sha256": "sha256:245f730016f6e1c725493e22a8d100d40c73076e90d52e641717b18c1f86add4",
+  "last_verified_at": "2026-07-31T18:59:51.710Z",
+  "last_verified_diffstat_sha256": "sha256:245f730016f6e1c725493e22a8d100d40c73076e90d52e641717b18c1f86add4",
+  "pr_number": 4704,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4704",
+  "pre_merge_closure": {
+    "basis_commit": "83ca254177db35f13572a3462faec4326e67046c",
+    "branch": "task/202607311338-CT2725/resolve-successful-runner-receipt-observation-ra",
+    "pr_number": 4704,
+    "recorded_at": "2026-07-31T19:02:00.006Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607311338-CT2725",
+  "updated_at": "2026-07-31T13:58:02.416Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607311338-CT2725-0ed9ee54bf1ad299d6d49f8f",
+  "task_id": "202607311338-CT2725",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate deterministic verification evidence for the exact evaluated SHA c3b5d08db2960cc4722230f91d34f5fd17c16229, ensuring the structured implementation_sha and all check provenance agree, then rerun semantic evaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The structured verification record is bound to implementation SHA c1a783b40e9d6c622e583e5e1dfebb8f23f088bb, while the frozen work order evaluates c3b5d08db2960cc4722230f91d34f5fd17c16229. Its narrative claims checks at the evaluated SHA, but the authoritative metadata does not establish that provenance.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311338-CT2725/verification/20260731140114185-d1a0af6efccfd7bb.json",
+          "sha256": "sha256:41f707ff043300dfdfc27adaa47e1ddde6159c598fd602972ec61d4f66e736df"
+        },
+        {
+          "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f990efda4965e0fba83e09c9622e4e554f6473f10038e4c246facca47658213b"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-result.json"
+}

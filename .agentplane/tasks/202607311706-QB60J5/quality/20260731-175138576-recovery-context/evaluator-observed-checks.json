@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Exercise typescript-eslint plus trust-boundary and compatibility scripts that import the TypeScript compiler API with the side-by-side TypeScript 6 package.",
+    "Measure repeated warm and cold TypeScript 6 and TypeScript 7 typecheck runs for the root project graph and record wall time, peak memory, and diagnostic counts.",
+    "Record a go/no-go decision with exact package aliases, pinned versions, checker/builder settings, CI resource limits, and a one-command rollback path.",
+    "Run TypeScript 7 against every repository tsconfig/project-reference path and classify every diagnostic or emit difference; unresolved correctness drift fails the adoption gate."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-31T17:51:03.105Z",
+    "updated_by": "TESTER",
+    "note": "Verified implementation 7a6a2ee8f3ec: 3 cold and 5 warm runs per compiler, 4.46x-4.93x speedup, lower RSS, root/website compatibility classification, reviewed emit drift, TypeScript 6 API resolution, lint/trust/compatibility gates, frozen install, typecheck, format, task-state, routing, syntax, and diff checks passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

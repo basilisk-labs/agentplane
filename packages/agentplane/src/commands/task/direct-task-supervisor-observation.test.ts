@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 
+import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
 
-function lifecycle(verificationState: "observed_success" | "unverified" | "rejected") {
+function lifecycle(
+  verificationState: "observed_success" | "unverified" | "rejected",
+  semanticStatus: "blocked" | "completed" | "failed" | "needs_context" = "completed",
+): TaskRunnerLifecycleResult {
   return {
     phase: "executed",
     invocation: { run_id: "rf10-run" },
@@ -16,10 +20,10 @@ function lifecycle(verificationState: "observed_success" | "unverified" | "rejec
       },
       semantic_result: {
         provenance: "agent_reported",
-        value: { kind: "agent_semantic_result", status: "completed" },
+        value: { kind: "agent_semantic_result", status: semanticStatus },
       },
     },
-  } as never;
+  } as TaskRunnerLifecycleResult;
 }
 
 describe("direct executor observation", () => {
@@ -48,4 +52,30 @@ describe("direct executor observation", () => {
       observeDirectExecutor(lifecycle("rejected"), { allow_unverified_receipt: true }),
     ).toMatchObject({ stop: "runner_receipt_unobserved" });
   });
+
+  it("never accepts a missing receipt for a typed non-success result", () => {
+    const withReceipt = lifecycle("unverified", "blocked");
+    const result = withReceipt.result;
+    if (!result) throw new Error("test lifecycle result is missing");
+    const withoutReceipt: TaskRunnerLifecycleResult = {
+      ...withReceipt,
+      result: { ...result, execution_receipt: undefined },
+    };
+    expect(observeDirectExecutor(withoutReceipt)).toMatchObject({
+      stop: "runner_receipt_unobserved",
+    });
+  });
+
+  it.each([
+    ["blocked", "executor_blocked"],
+    ["failed", "executor_semantic_failed"],
+    ["needs_context", "missing_knowledge"],
+  ] as const)(
+    "surfaces an unverified typed %s stop without accepting completed execution",
+    (semanticStatus, stop) => {
+      expect(observeDirectExecutor(lifecycle("unverified", semanticStatus))).toMatchObject({
+        stop,
+      });
+    },
+  );
 });

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:44c37c26760cbac46e10b7cb32b4f5d5b676b8018f1276e233cf5fd9337140da",
+  "implementation_sha": "ec05273fe44825a864f54aef15865b80afeeb847",
+  "kind": "task_verification_record",
+  "note": "PASS at ec05273fe448: verified DONE/no-queue fast-forward routes to guarded publication; aligned conflict remains authority-gated; 35 focused tests, 12 critical chunks, typecheck, routing, format, and diff checks pass.",
+  "recorded_at": "2026-07-31T18:18:09.839Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Publish resolved DONE conflict heads before semantic rework gating\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Publish resolved DONE conflict heads before semantic rework gating\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:20edfb5f60809a3436f94714767006b56a2513fea97bb46702b1ccd78bcb5b42",
+  "task_id": "202607311812-WBY9EK",
+  "verification_command": "agentplane verify 202607311812-WBY9EK --ok --by TESTER",
+  "verifier": "TESTER"
+}

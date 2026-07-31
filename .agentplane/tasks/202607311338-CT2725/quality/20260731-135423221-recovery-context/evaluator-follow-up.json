@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607311338-CT2725-c8d55346067f77911d6abcca",
+  "task_id": "202607311338-CT2725",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command-result or runtime evidence for the declared focused, critical, incident-parity, and at-most-once checks at evaluated SHA c3b5d08db2960cc4722230f91d34f5fd17c16229.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the claimed focused, critical, incident-parity, and at-most-once results cannot be independently evaluated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f368e058de239a0eb8f57d45285d80b83987b7be5039079084f08995f8beb187",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-result.json"
+}

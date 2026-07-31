@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311812-WBY9EK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T18:20:00.219Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "ec05273fe44825a864f54aef15865b80afeeb847",
+  "blueprint_digest": "811859237d1e336a22045da7dbb31a7f329f2ca34c058ea0ecc8483282d8ea04",
+  "findings": [
+    "A clean verified DOING or DONE local head may be published only when the stale provider head is its strict ancestor; branch identity, protected base, clean worktree, status, and verification are checked first.",
+    "After provider/local heads align, DONE tasks without current queue or handoff evidence remain ineligible for semantic conflict rework."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311812-WBY9EK/quality/20260731-182000115-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

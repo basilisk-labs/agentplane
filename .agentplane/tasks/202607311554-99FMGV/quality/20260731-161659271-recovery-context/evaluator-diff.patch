@@ -1,0 +1,1784 @@
+diff --git a/.agentplane/tasks/202607311554-99FMGV/README.md b/.agentplane/tasks/202607311554-99FMGV/README.md
+new file mode 100644
+index 000000000..6f5e74452
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/README.md
+@@ -0,0 +1,113 @@
++---
++id: "202607311554-99FMGV"
++title: "Allow fast-forward publication before conflict rework"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 5
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "branch-pr"
++  - "code"
++  - "conflict-rework"
++  - "routing"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "quality.regression"
++verify:
++  - "bun run test:critical"
++  - "bun run typecheck && bun run format:check && node .agentplane/policy/check-routing.mjs"
++  - "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-31T15:54:57.816Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-31T15:55:47.815Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++doc_version: 3
++doc_updated_at: "2026-07-31T15:55:47.815Z"
++doc_updated_by: "CODER"
++description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
++sections:
++  Summary: |-
++    Allow fast-forward publication before conflict rework
++
++    When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
++  Scope: |-
++    - In scope: When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
++    - Out of scope: unrelated refactors not required for "Allow fast-forward publication before conflict rework".
++  Plan: "1. Reproduce the provider-conflict/local-descendant route deadlock. 2. Add an explicit ancestry proof that selects guarded PR head publication only for a clean fast-forward local head. 3. Keep divergent, unknown, and dirty cases terminal and leave semantic conflict resolution to CODER after publication. 4. Add route and command-level regression coverage, run critical/static gates, independent evaluation, and protected-PR integration. 5. Resume CT2725 through the repaired route."
++  Verify Steps: |-
++    1. Reproduce an OPEN protected-base PR whose provider reports conflicts while the clean local task branch is a strict descendant of the provider head. Expected: next-action selects guarded PR head publication before conflict-packet preparation; no rebase, merge, force-push, or hunk selection occurs.
++    2. Cover divergent, unrelated, dirty-worktree, unknown-mergeability, and provider-branch-mismatch cases. Expected: each remains fail-closed and cannot receive publication authority through this route.
++    3. Publish the descendant head in the fixture and refresh provider truth. Expected: the provider/local identity matches, the bounded conflict packet can be prepared, and semantic resolution still routes to CODER with fresh verification required afterward.
++    4. Run `bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts`. Expected: route and publication regressions pass.
++    5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "3a42f9534b567fb4e86387bbbf6b2984a753bf6f"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Allow fast-forward publication before conflict rework
++
++When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
++
++## Scope
++
++- In scope: When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
++- Out of scope: unrelated refactors not required for "Allow fast-forward publication before conflict rework".
++
++## Plan
++
++1. Reproduce the provider-conflict/local-descendant route deadlock. 2. Add an explicit ancestry proof that selects guarded PR head publication only for a clean fast-forward local head. 3. Keep divergent, unknown, and dirty cases terminal and leave semantic conflict resolution to CODER after publication. 4. Add route and command-level regression coverage, run critical/static gates, independent evaluation, and protected-PR integration. 5. Resume CT2725 through the repaired route.
++
++## Verify Steps
++
++1. Reproduce an OPEN protected-base PR whose provider reports conflicts while the clean local task branch is a strict descendant of the provider head. Expected: next-action selects guarded PR head publication before conflict-packet preparation; no rebase, merge, force-push, or hunk selection occurs.
++2. Cover divergent, unrelated, dirty-worktree, unknown-mergeability, and provider-branch-mismatch cases. Expected: each remains fail-closed and cannot receive publication authority through this route.
++3. Publish the descendant head in the fixture and refresh provider truth. Expected: the provider/local identity matches, the bounded conflict packet can be prepared, and semantic resolution still routes to CODER with fresh verification required afterward.
++4. Run `bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts`. Expected: route and publication regressions pass.
++5. Run `bun run test:critical`, `bun run typecheck`, `bun run format:check`, `node .agentplane/policy/check-routing.mjs`, and review the final diff. Expected: all gates pass and changes remain bounded to conflict/publication routing plus focused tests.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..9a404ff58
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json
+@@ -0,0 +1,607 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607311554-99FMGV",
++    "title": "Allow fast-forward publication before conflict rework",
++    "description": "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.",
++    "tags": [
++      "branch-pr",
++      "code",
++      "conflict-rework",
++      "routing",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "quality.regression"
++  },
++  "selectedBlueprint": {
++    "id": "quality.regression",
++    "version": 1,
++    "title": "Quality regression",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "quality.regression",
++    "blueprintVersion": 1,
++    "title": "Quality regression",
++    "taskId": "202607311554-99FMGV",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "quality.regression"
++    },
++    "whySelected": [
++      "explicit blueprint requested: quality.regression",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest",
++          "artifact"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "check_result"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "weak_links"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "regression.original_failure",
++        "kind": "artifact",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Original failure log or check output."
++      },
++      {
++        "id": "regression.reproduction",
++        "kind": "check_result",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Local reproduction or explicit non-reproduction result."
++      },
++      {
++        "id": "regression.focused_check",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Focused regression check."
++      },
++      {
++        "id": "regression.matrix_or_scope",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Affected test/check matrix or bounded scope."
++      },
++      {
++        "id": "regression.full_gate",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Full relevant gate or hosted check evidence."
++      },
++      {
++        "id": "regression.flake_classification",
++        "kind": "weak_links",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Flake classification or residual risk."
++      },
++      {
++        "id": "regression.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "regression.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "affected matrix or full relevant gate",
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "failure reproduction command",
++      "focused regression check",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest",
++        "artifact"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "check_result"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "weak_links"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "regression.original_failure",
++      "kind": "artifact",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Original failure log or check output."
++    },
++    {
++      "id": "regression.reproduction",
++      "kind": "check_result",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Local reproduction or explicit non-reproduction result."
++    },
++    {
++      "id": "regression.focused_check",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Focused regression check."
++    },
++    {
++      "id": "regression.matrix_or_scope",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Affected test/check matrix or bounded scope."
++    },
++    {
++      "id": "regression.full_gate",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Full relevant gate or hosted check evidence."
++    },
++    {
++      "id": "regression.flake_classification",
++      "kind": "weak_links",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Flake classification or residual risk."
++    },
++    {
++      "id": "regression.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "regression.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "affected matrix or full relevant gate",
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "failure reproduction command",
++    "focused regression check",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: quality.regression",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f"
++  }
++}
+diff --git a/.agentplane/tasks/202607311554-99FMGV/pr/diffstat.txt b/.agentplane/tasks/202607311554-99FMGV/pr/diffstat.txt
+new file mode 100644
+index 000000000..33ff0f56c
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/pr/diffstat.txt
+@@ -0,0 +1,10 @@
++ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 220 ++++++++++++++++++++-
++ .../pr/conflict-rework-route-eligibility.ts        |  37 +++-
++ .../src/commands/pr/conflict-rework.command.ts     |  18 ++
++ .../src/commands/pr/conflict-rework.test.ts        | 134 ++++++++++++-
++ .../agentplane/src/commands/pr/conflict-rework.ts  | 212 +++++++++++++-------
++ .../src/commands/shared/route-decision-blockers.ts |   1 +
++ .../shared/workflow-step-conflict-rework.ts        |  26 +++
++ ...rkflow-step-projections.conflict-rework.test.ts |  67 ++++++-
++ .../src/commands/shared/workflow-step.ts           |   1 +
++ 9 files changed, 629 insertions(+), 87 deletions(-)
+diff --git a/.agentplane/tasks/202607311554-99FMGV/pr/github-body.md b/.agentplane/tasks/202607311554-99FMGV/pr/github-body.md
+new file mode 100644
+index 000000000..eb3cfcc95
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/pr/github-body.md
+@@ -0,0 +1,42 @@
++Task: `202607311554-99FMGV`
++Title: Allow fast-forward publication before conflict rework
++Canonical task record: `.agentplane/tasks/202607311554-99FMGV/README.md`
++
++## Summary
++
++Allow fast-forward publication before conflict rework
++
++When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
++
++## Scope
++
++- In scope: When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution.
++- Out of scope: unrelated refactors not required for "Allow fast-forward publication before conflict rework".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T15:56:54.955Z
++- Branch: task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 220 ++++++++++++++++++++-
++ .../pr/conflict-rework-route-eligibility.ts        |  37 +++-
++ .../src/commands/pr/conflict-rework.command.ts     |  18 ++
++ .../src/commands/pr/conflict-rework.test.ts        | 134 ++++++++++++-
++ .../agentplane/src/commands/pr/conflict-rework.ts  | 212 +++++++++++++-------
++ .../src/commands/shared/route-decision-blockers.ts |   1 +
++ .../shared/workflow-step-conflict-rework.ts        |  26 +++
++ ...rkflow-step-projections.conflict-rework.test.ts |  67 ++++++-
++ .../src/commands/shared/workflow-step.ts           |   1 +
++ 9 files changed, 629 insertions(+), 87 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607311554-99FMGV/pr/github-title.txt b/.agentplane/tasks/202607311554-99FMGV/pr/github-title.txt
+new file mode 100644
+index 000000000..81c26fcc9
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 99FMGV task: Allow fast-forward publication before conflict rework [202607311554-99FMGV]
+diff --git a/.agentplane/tasks/202607311554-99FMGV/pr/meta.json b/.agentplane/tasks/202607311554-99FMGV/pr/meta.json
+new file mode 100644
+index 000000000..400eef8b6
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r",
++  "created_at": "2026-07-31T15:55:48.023Z",
++  "diffstat_sha256": "sha256:d2fd16c8b3486f75d1eb4dc34577797992999ffa1bd4c952cc65227abf6ebc0a",
++  "last_verified_at": null,
++  "pr_number": 4708,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4708",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607311554-99FMGV",
++  "updated_at": "2026-07-31T15:56:54.955Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607311554-99FMGV/pr/review.md b/.agentplane/tasks/202607311554-99FMGV/pr/review.md
+new file mode 100644
+index 000000000..811e279fc
+--- /dev/null
++++ b/.agentplane/tasks/202607311554-99FMGV/pr/review.md
+@@ -0,0 +1,45 @@
++# PR Review
++
++Created: 2026-07-31T15:55:48.023Z
++
++## Task
++
++- Task: `202607311554-99FMGV`
++- Title: Allow fast-forward publication before conflict rework
++- Status: DOING
++- Branch: `task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r`
++- Canonical task record: `.agentplane/tasks/202607311554-99FMGV/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-31T15:56:54.955Z
++- Branch: task/202607311554-99FMGV/allow-fast-forward-publication-before-conflict-r
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 220 ++++++++++++++++++++-
++ .../pr/conflict-rework-route-eligibility.ts        |  37 +++-
++ .../src/commands/pr/conflict-rework.command.ts     |  18 ++
++ .../src/commands/pr/conflict-rework.test.ts        | 134 ++++++++++++-
++ .../agentplane/src/commands/pr/conflict-rework.ts  | 212 +++++++++++++-------
++ .../src/commands/shared/route-decision-blockers.ts |   1 +
++ .../shared/workflow-step-conflict-rework.ts        |  26 +++
++ ...rkflow-step-projections.conflict-rework.test.ts |  67 ++++++-
++ .../src/commands/shared/workflow-step.ts           |   1 +
++ 9 files changed, 629 insertions(+), 87 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+index 03698853a..27bda085b 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+@@ -62,6 +62,12 @@ type ConflictRouteOutput = {
+           evidence: { task_id: string };
+         };
+       }
++    | {
++        state: "publication_required";
++        reason: string;
++        provider_head_sha: string;
++        local_head_sha: string;
++      }
+     | { state: "invalid"; reason_code: string; reason: string }
+     | { state: "not_conflicting"; reason: string }
+     | null;
+@@ -176,6 +182,202 @@ function fakeGithubProviderSource(detail: Record<string, unknown>): string {
+ }
+ 
+ describe("provider conflict rework CLI", () => {
++  it("routes a clean strict local descendant through guarded publication before conflict rework", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
++    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed publication conflict fixture"], {
++      cwd: root,
++    });
++
++    const taskId = await createBranchPrTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Publish a strict local descendant before preparing semantic conflict rework.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++
++    const slug = "publish-before-conflict-rework";
++    const branch = `task/${taskId}/${slug}`;
++    await runCliSilent([
++      "work",
++      "start",
++      taskId,
++      "--agent",
++      "CODER",
++      "--slug",
++      slug,
++      "--worktree",
++      "--root",
++      root,
++    ]);
++    const worktree = await worktreeForBranch(root, branch);
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: preserve provider identity before semantic conflict resolution.",
++      "--root",
++      worktree,
++    ]);
++    await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
++    await execFileAsync("git", ["add", "-A"], { cwd: worktree });
++    await execFileAsync("git", ["commit", "-m", "test: provider-visible conflict head"], {
++      cwd: worktree,
++    });
++
++    const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
++    const taskReadme = await readFile(taskReadmePath, "utf8");
++    await writeFile(
++      taskReadmePath,
++      taskReadme.replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
++      "utf8",
++    );
++    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
++    await execFileAsync("git", ["commit", "-m", "test: freeze provider conflict head"], {
++      cwd: worktree,
++    });
++    const { stdout: providerHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: worktree,
++    });
++    const providerHeadSha = providerHeadRaw.trim();
++
++    await writeFile(path.join(worktree, "local-evidence.txt"), "local-only evidence\n", "utf8");
++    await execFileAsync("git", ["add", "local-evidence.txt"], { cwd: worktree });
++    await execFileAsync("git", ["commit", "-m", "test: local strict descendant"], {
++      cwd: worktree,
++    });
++    const { stdout: localHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: worktree,
++    });
++    const localHeadSha = localHeadRaw.trim();
++
++    await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
++    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: base side of publication conflict"], {
++      cwd: root,
++    });
++    const { stdout: baseRaw } = await execFileAsync("git", ["rev-parse", "main"], { cwd: root });
++    const baseSha = baseRaw.trim();
++    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
++      cwd: root,
++    });
++
++    await withFakeGh(
++      root,
++      fakeGithubProviderSource({
++        number: 4626,
++        html_url: "https://github.example/acme/agentplane/pull/4626",
++        state: "open",
++        merged_at: null,
++        merge_commit_sha: null,
++        mergeable: false,
++        mergeable_state: "dirty",
++        head: { ref: branch, sha: providerHeadSha },
++        base: { ref: "main", sha: baseSha },
++      }),
++      async () => {
++        const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
++        expect(before.stdout).toBe("");
++
++        const route = await readRemoteRoute(root, taskId);
++        expect(route.conflict_rework).toMatchObject({
++          state: "publication_required",
++          provider_head_sha: providerHeadSha,
++          local_head_sha: localHeadSha,
++        });
++        expect(route.workflow_step).toMatchObject({
++          kind: "approval",
++          id: "approval.pr.head.publish",
++          authoritativeCheckout: "task_worktree",
++          compatibility: { code: "publish_conflict_pr_head" },
++        });
++        expect(route.blockers.map((blocker) => blocker.code)).toContain("pr_head_unpublished");
++        expect(route.blockers.map((blocker) => blocker.code)).not.toContain(
++          "provider_conflict_context_invalid",
++        );
++        expect(route.execution_packet).toMatchObject({
++          actionKind: "provider_action",
++          safeToMutate: false,
++          exactArgv: null,
++        });
++
++        const packetIo = captureStdIO();
++        try {
++          const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
++          expect(code).not.toBe(0);
++          expect(packetIo.stderr).toContain(
++            "must be published before conflict context can be frozen",
++          );
++          expect(packetIo.stderr).toContain(
++            `agentplane task next-action ${taskId} --remote --explain`,
++          );
++        } finally {
++          packetIo.restore();
++        }
++
++        const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
++        expect(after.stdout).toBe(before.stdout);
++      },
++    );
++
++    await withFakeGh(
++      root,
++      fakeGithubProviderSource({
++        number: 4626,
++        html_url: "https://github.example/acme/agentplane/pull/4626",
++        state: "open",
++        merged_at: null,
++        merge_commit_sha: null,
++        mergeable: false,
++        mergeable_state: "dirty",
++        head: { ref: branch, sha: localHeadSha },
++        base: { ref: "main", sha: baseSha },
++      }),
++      async () => {
++        const alignedRoute = await readRemoteRoute(root, taskId);
++        expect(alignedRoute.conflict_rework).toMatchObject({
++          state: "ready",
++          packet: {
++            provider: { head_sha: localHeadSha },
++            route_evidence: {
++              kind: "current_verified_open_pr_rework",
++              queue: null,
++              handoff: null,
++            },
++          },
++        });
++        expect(alignedRoute.workflow_step).toMatchObject({
++          kind: "agent_episode",
++          id: "agent.provider_conflict_rework",
++          authoritativeCheckout: "task_worktree",
++          episode: { purpose: "implementation_rework", role: "CODER" },
++        });
++        expect(alignedRoute.execution_packet).toMatchObject({
++          actionKind: "stop",
++          safeToMutate: true,
++          exactArgv: null,
++        });
++      },
++    );
++  });
++
+   it("routes a live GitHub conflict to CODER with a fresh read-only packet", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+@@ -616,7 +818,23 @@ describe("provider conflict rework CLI", () => {
+         if (conflictRework?.state !== "adoption_required") {
+           throw new Error("expected legacy conflict-rework adoption requirement");
+         }
++        const grantCommand = route.workflow_step.compatibility.command;
++        if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
+         expect(route.workflow_step).toMatchObject({
++          kind: "approval",
++          id: "approval.integration.adopt_legacy_protected_conflict",
++          authoritativeCheckout: "task_worktree",
++          compatibility: {
++            code: "adopt_legacy_protected_conflict",
++            command: expect.stringContaining(
++              `agentplane task authority grant ${taskId}`,
++            ) as unknown as string,
++          },
++        });
++        await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
++
++        const authorizedRoute = await readRemoteRoute(root, taskId);
++        expect(authorizedRoute.workflow_step).toMatchObject({
+           kind: "cli_operation",
+           id: "integration.adopt_legacy_protected_conflict",
+           authoritativeCheckout: "base_checkout",
+@@ -624,7 +842,7 @@ describe("provider conflict rework CLI", () => {
+             params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
+           },
+         });
+-        expect(route.execution_packet).toMatchObject({
++        expect(authorizedRoute.execution_packet).toMatchObject({
+           actionKind: "local_command",
+           safeToMutate: true,
+           exactArgv: [
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts b/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
+index eddc243fb..4d1ba66bc 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
+@@ -53,6 +53,12 @@ type CurrentProtectedBaseReworkRouteEvidence = {
+   handoff: ConflictRouteEvidenceHandoff;
+ };
+ 
++type CurrentVerifiedOpenPrReworkEvidence = {
++  kind: "current_verified_open_pr_rework";
++  queue: null;
++  handoff: null;
++};
++
+ export type ConflictRouteEvidence =
+   | {
+       kind: "current_queue";
+@@ -65,6 +71,7 @@ export type ConflictRouteEvidence =
+       handoff: ConflictRouteEvidenceHandoff;
+     }
+   | CurrentProtectedBaseReworkRouteEvidence
++  | CurrentVerifiedOpenPrReworkEvidence
+   | LegacyAdoptedConflictRouteEvidence
+   | LegacyUnadoptedConflictRouteEvidence;
+ 
+@@ -223,14 +230,34 @@ export function resolveConflictRouteEligibility(opts: {
+   identity: ConflictRouteIdentity;
+   now: Date;
+ }): ConflictRouteEligibility {
+-  if (
+-    opts.report.task.status.trim().toUpperCase() !== "DONE" ||
+-    opts.report.task.verification !== "ok"
+-  ) {
++  const taskStatus = opts.report.task.status.trim().toUpperCase();
++  if (opts.report.task.verification !== "ok") {
++    return {
++      state: "ineligible",
++      reason: "semantic conflict rework requires a current passing verification record",
++    };
++  }
++  if (taskStatus === "DOING") {
++    if (!opts.report.queue.present && !opts.report.handoff.present) {
++      return {
++        state: "eligible",
++        evidence: {
++          kind: "current_verified_open_pr_rework",
++          queue: null,
++          handoff: null,
++        },
++      };
++    }
+     return {
+       state: "ineligible",
+       reason:
+-        "semantic conflict rework requires a DONE task with a current passing verification record",
++        "a verified DOING task may enter semantic conflict rework only from its current open PR before any integration queue or protected-base handoff exists",
++    };
++  }
++  if (taskStatus !== "DONE") {
++    return {
++      state: "ineligible",
++      reason: "semantic conflict rework requires a verified DOING or DONE task",
+     };
+   }
+ 
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.command.ts b/packages/agentplane/src/commands/pr/conflict-rework.command.ts
+index 0d003644b..12e73f2e1 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.command.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.command.ts
+@@ -15,6 +15,24 @@ function packetFailure(
+   taskId: string,
+   preparation: Exclude<ConflictReworkPreparation, { state: "ready" }>,
+ ): CliError {
++  if (preparation.state === "publication_required") {
++    const command = `agentplane task next-action ${taskId} --remote --explain`;
++    return new CliError({
++      exitCode: exitCodeForError("E_VALIDATION"),
++      code: "E_VALIDATION",
++      message:
++        `Cannot prepare semantic conflict rework for ${taskId}: ${preparation.reason}. ` +
++        `Publish the guarded fast-forward head through the route oracle first: ${command}. ` +
++        "No branch, worktree, PR, provider, queue, or task-state mutation was performed.",
++      context: {
++        reason_code: "provider_head_publication_required",
++        task_id: taskId,
++        provider_head_sha: preparation.provider_head_sha,
++        local_head_sha: preparation.local_head_sha,
++        next_command: command,
++      },
++    });
++  }
+   if (preparation.state === "adoption_required") {
+     const command =
+       `agentplane integrate queue adopt-legacy-protected-conflict ${taskId} ` +
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.test.ts b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+index b7a11abc3..e42581cdb 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.test.ts
+@@ -96,6 +96,27 @@ function report(overrides: Partial<PrFlowStatusReport> = {}): PrFlowStatusReport
+   };
+ }
+ 
++function providerBehindReport(
++  providerHeadSha = "2222222222222222222222222222222222222222",
++): PrFlowStatusReport {
++  const behind = report();
++  behind.pr.headSha = providerHeadSha;
++  if (behind.providerObservation?.state !== "found" || !behind.queue.present) {
++    throw new Error("fixture error");
++  }
++  behind.providerObservation.pr.headSha = providerHeadSha;
++  behind.queue = { ...behind.queue, headSha: providerHeadSha };
++  behind.publication = {
++    state: "unpublished",
++    reason: "upstream_head_mismatch",
++    localHeadSha: headSha,
++    upstreamRef: `origin/${branch}`,
++    upstreamHeadSha: providerHeadSha,
++    hostedHeadSha: providerHeadSha,
++  };
++  return behind;
++}
++
+ const cleanWorktree = {
+   state: "clean",
+   branch,
+@@ -214,15 +235,69 @@ describe("provider conflict rework packet", () => {
+     expect(git.calls.diffNames).toBe(2);
+   });
+ 
+-  it("invalidates when the provider head no longer matches the local task branch", async () => {
+-    const conflicting = report();
+-    if (conflicting.providerObservation?.state !== "found") throw new Error("fixture error");
+-    conflicting.providerObservation.pr.headSha = "2222222222222222222222222222222222222222";
++  it("requires guarded publication when the clean local head strictly descends from the provider head", async () => {
++    const conflicting = providerBehindReport();
++    const providerHeadSha = conflicting.pr.headSha;
++    if (!providerHeadSha) throw new Error("fixture error");
++    const git = primeGit();
++    git.gitOps.mergeBase = (gitRoot, left, right) => {
++      git.calls.mergeBase.push([gitRoot, left, right]);
++      return Promise.resolve(providerHeadSha);
++    };
+ 
++    await expect(prepare({ report: conflicting, git })).resolves.toMatchObject({
++      state: "publication_required",
++      provider_head_sha: providerHeadSha,
++      local_head_sha: headSha,
++    });
++    expect(git.calls.mergeBase).toEqual([["/repo", providerHeadSha, headSha]]);
++    expect(git.calls.diffNames).toBe(0);
++  });
++
++  it("invalidates divergent or locally unavailable provider-head ancestry", async () => {
++    const conflicting = providerBehindReport();
+     await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+       state: "invalid",
+       reason_code: "provider_head_mismatch",
+     });
++
++    const unavailable = primeGit();
++    unavailable.gitOps.mergeBase = () => Promise.reject(new Error("missing provider commit"));
++    await expect(prepare({ report: conflicting, git: unavailable })).resolves.toMatchObject({
++      state: "invalid",
++      reason_code: "provider_head_mismatch",
++      reason: expect.stringContaining("missing provider commit"),
++    });
++  });
++
++  it("does not allow fast-forward publication from a dirty task worktree", async () => {
++    const dirtyWorktree = {
++      state: "dirty",
++      branch,
++      worktreePath: cleanWorktree.worktreePath,
++      changedPaths: ["packages/agentplane/src/index.ts"],
++    } as const satisfies TaskWorktreeCleanliness;
++    const git = primeGit();
++    git.gitOps.mergeBase = () => Promise.resolve("2222222222222222222222222222222222222222");
++
++    await expect(
++      prepare({ report: providerBehindReport(), taskWorktree: dirtyWorktree, git }),
++    ).resolves.toMatchObject({
++      state: "invalid",
++      reason_code: "task_worktree_dirty",
++    });
++    expect(git.calls.mergeBase).toEqual([]);
++  });
++
++  it("keeps a provider branch identity mismatch fail-closed", async () => {
++    const conflicting = providerBehindReport();
++    if (conflicting.providerObservation?.state !== "found") throw new Error("fixture error");
++    conflicting.providerObservation.pr.headRef = "task/other/branch";
++
++    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
++      state: "invalid",
++      reason_code: "provider_branch_identity_mismatch",
++    });
+   });
+ 
+   it("fails closed for missing or unavailable provider PR truth", async () => {
+@@ -415,6 +490,57 @@ describe("provider conflict rework packet", () => {
+     await expect(prepare({ report: viaHandoff })).resolves.toMatchObject({ state: "ready" });
+   });
+ 
++  it("allows a verified DOING task to rework its current open PR before queue handoff", async () => {
++    const currentOpenPr = report({
++      task: { id: taskId, status: "DOING", verification: "ok" },
++      queue: { present: false },
++      handoff: { present: false },
++    });
++
++    await expect(prepare({ report: currentOpenPr })).resolves.toMatchObject({
++      state: "ready",
++      packet: {
++        route_evidence: {
++          kind: "current_verified_open_pr_rework",
++          queue: null,
++          handoff: null,
++        },
++      },
++    });
++  });
++
++  it("accepts an ancestor provider base for current verified open-PR rework", async () => {
++    const currentBase = "3333333333333333333333333333333333333333";
++    const currentOpenPr = report({
++      task: { id: taskId, status: "DOING", verification: "ok" },
++      queue: { present: false },
++      handoff: { present: false },
++    });
++    const git = primeGit({ localBase: currentBase });
++    git.gitOps.mergeBase = (gitRoot, left, right) => {
++      git.calls.mergeBase.push([gitRoot, left, right]);
++      return Promise.resolve(left === baseSha && right === currentBase ? baseSha : mergeBase);
++    };
++
++    await expect(prepare({ report: currentOpenPr, git })).resolves.toMatchObject({
++      state: "ready",
++      packet: {
++        base_context: {
++          provider_conflict_base_sha: baseSha,
++          current_base_sha: currentBase,
++          relation: "provider_base_ancestor_of_current_base",
++          legacy_queue_base_sha: null,
++          legacy_queue_relation: "not_applicable",
++        },
++        route_evidence: { kind: "current_verified_open_pr_rework" },
++      },
++    });
++    expect(git.calls.mergeBase).toEqual([
++      ["/repo", baseSha, currentBase],
++      ["/repo", currentBase, headSha],
++    ]);
++  });
++
+   it("invalidates semantic rework when the protected-base handoff observed a stale provider base", async () => {
+     const viaHandoff = report({ queue: { present: false } });
+     if (!viaHandoff.handoff.present) throw new Error("fixture error");
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.ts b/packages/agentplane/src/commands/pr/conflict-rework.ts
+index 86f675dd5..a76b34213 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.ts
+@@ -133,6 +133,12 @@ export type ConflictReworkPreparation =
+         token: string;
+       };
+     }
++  | {
++      state: "publication_required";
++      reason: string;
++      provider_head_sha: string;
++      local_head_sha: string;
++    }
+   | { state: "ready"; packet: ConflictReworkPacket };
+ 
+ function invalid(
+@@ -282,12 +288,6 @@ export async function prepareConflictReworkPacket(opts: {
+       `provider head branch differs from task branch: provider=${providerHeadRef} task=${taskBranch}`,
+     );
+   }
+-  if (providerHead !== localHead) {
+-    return invalid(
+-      "provider_head_mismatch",
+-      `provider head differs from local task branch: provider=${providerHead} local=${localHead}`,
+-    );
+-  }
+   const routeEligibility = resolveConflictRouteEligibility({
+     report: opts.report,
+     identity: {
+@@ -342,6 +342,33 @@ export async function prepareConflictReworkPacket(opts: {
+       `task worktree cannot be inspected: ${opts.taskWorktree.reason}`,
+     );
+   }
++  if (providerHead !== localHead) {
++    const ancestry = await localAncestry({
++      gitRoot: opts.gitRoot,
++      gitOps,
++      ancestor: providerHead,
++      descendant: localHead,
++    });
++    if (!ancestry.ok) {
++      return invalid(
++        "provider_head_mismatch",
++        `provider/local head ancestry cannot be resolved: provider=${providerHead} local=${localHead}: ${ancestry.reason}`,
++      );
++    }
++    if (!ancestry.isAncestor) {
++      return invalid(
++        "provider_head_mismatch",
++        `local task branch is not a fast-forward continuation of the provider head: provider=${providerHead} local=${localHead}`,
++      );
++    }
++    return {
++      state: "publication_required",
++      reason:
++        "the clean local task branch is a strict fast-forward continuation of the conflicting provider head and must be published before conflict context can be frozen",
++      provider_head_sha: providerHead,
++      local_head_sha: localHead,
++    };
++  }
+ 
+   const localBase = await resolveLocalRef({
+     gitRoot: opts.gitRoot,
+@@ -353,76 +380,109 @@ export async function prepareConflictReworkPacket(opts: {
+   if (!localBase.ok) return localBase.preparation;
+ 
+   const routeEvidence = routeEligibility.evidence;
+-  const baseContext = isBaseAdvancedProtectedConflictRoute(
+-    routeEvidence,
+-    localBase.value,
+-    providerBase,
+-  )
+-    ? await (async () => {
+-        const legacyQueueBase = routeEvidence.queue.base_sha;
+-        if (localBase.value === providerBase) {
+-          return invalid(
+-            "conflict_rework_route_ineligible",
+-            "legacy released conflict rework requires the provider conflict base to be a strict ancestor of the current local base",
+-          );
+-        }
+-        const providerToQueue = await localAncestry({
+-          gitRoot: opts.gitRoot,
+-          gitOps,
+-          ancestor: providerBase,
+-          descendant: legacyQueueBase,
+-        });
+-        if (!providerToQueue.ok) {
+-          return invalid(
+-            "legacy_queue_base_unavailable",
+-            `legacy queue base ancestry cannot be resolved locally: ${providerToQueue.reason}`,
+-          );
+-        }
+-        if (!providerToQueue.isAncestor) {
+-          return invalid(
+-            "provider_base_not_ancestor",
+-            `provider conflict base is not an ancestor of the released queue base: provider=${providerBase} queue=${legacyQueueBase}`,
+-          );
+-        }
+-        const queueToCurrent = await localAncestry({
+-          gitRoot: opts.gitRoot,
+-          gitOps,
+-          ancestor: legacyQueueBase,
+-          descendant: localBase.value,
+-        });
+-        if (!queueToCurrent.ok) {
+-          return invalid(
+-            "legacy_queue_base_unavailable",
+-            `current local base ancestry cannot be resolved from the released queue base: ${queueToCurrent.reason}`,
+-          );
+-        }
+-        if (!queueToCurrent.isAncestor) {
+-          return invalid(
+-            "legacy_queue_base_not_ancestor",
+-            `released queue base is not an ancestor of the current local ${base}: queue=${legacyQueueBase} local=${localBase.value}`,
+-          );
+-        }
+-        return {
+-          provider_conflict_base_sha: providerBase,
+-          current_base_sha: localBase.value,
+-          relation: "provider_base_ancestor_of_current_base" as const,
+-          legacy_queue_base_sha: legacyQueueBase,
+-          legacy_queue_relation:
+-            "provider_base_ancestor_of_queue_base_and_queue_base_ancestor_of_current_base" as const,
+-        };
+-      })()
+-    : localBase.value === providerBase
+-      ? {
+-          provider_conflict_base_sha: providerBase,
+-          current_base_sha: localBase.value,
+-          relation: "equal" as const,
+-          legacy_queue_base_sha: null,
+-          legacy_queue_relation: "not_applicable" as const,
+-        }
+-      : invalid(
+-          "provider_base_mismatch",
+-          `provider base differs from local ${base}: provider=${providerBase} local=${localBase.value}`,
+-        );
++  const baseContext =
++    routeEvidence.kind === "current_verified_open_pr_rework"
++      ? localBase.value === providerBase
++        ? {
++            provider_conflict_base_sha: providerBase,
++            current_base_sha: localBase.value,
++            relation: "equal" as const,
++            legacy_queue_base_sha: null,
++            legacy_queue_relation: "not_applicable" as const,
++          }
++        : await (async () => {
++            const providerToCurrent = await localAncestry({
++              gitRoot: opts.gitRoot,
++              gitOps,
++              ancestor: providerBase,
++              descendant: localBase.value,
++            });
++            if (!providerToCurrent.ok) {
++              return invalid(
++                "provider_base_unavailable",
++                `current local base ancestry cannot be resolved from the provider conflict base: ${providerToCurrent.reason}`,
++              );
++            }
++            if (!providerToCurrent.isAncestor) {
++              return invalid(
++                "provider_base_not_ancestor",
++                `provider conflict base is not an ancestor of current local ${base}: provider=${providerBase} local=${localBase.value}`,
++              );
++            }
++            return {
++              provider_conflict_base_sha: providerBase,
++              current_base_sha: localBase.value,
++              relation: "provider_base_ancestor_of_current_base" as const,
++              legacy_queue_base_sha: null,
++              legacy_queue_relation: "not_applicable" as const,
++            };
++          })()
++      : isBaseAdvancedProtectedConflictRoute(routeEvidence, localBase.value, providerBase)
++        ? await (async () => {
++            const legacyQueueBase = routeEvidence.queue.base_sha;
++            if (localBase.value === providerBase) {
++              return invalid(
++                "conflict_rework_route_ineligible",
++                "legacy released conflict rework requires the provider conflict base to be a strict ancestor of the current local base",
++              );
++            }
++            const providerToQueue = await localAncestry({
++              gitRoot: opts.gitRoot,
++              gitOps,
++              ancestor: providerBase,
++              descendant: legacyQueueBase,
++            });
++            if (!providerToQueue.ok) {
++              return invalid(
++                "legacy_queue_base_unavailable",
++                `legacy queue base ancestry cannot be resolved locally: ${providerToQueue.reason}`,
++              );
++            }
++            if (!providerToQueue.isAncestor) {
++              return invalid(
++                "provider_base_not_ancestor",
++                `provider conflict base is not an ancestor of the released queue base: provider=${providerBase} queue=${legacyQueueBase}`,
++              );
++            }
++            const queueToCurrent = await localAncestry({
++              gitRoot: opts.gitRoot,
++              gitOps,
++              ancestor: legacyQueueBase,
++              descendant: localBase.value,
++            });
++            if (!queueToCurrent.ok) {
++              return invalid(
++                "legacy_queue_base_unavailable",
++                `current local base ancestry cannot be resolved from the released queue base: ${queueToCurrent.reason}`,
++              );
++            }
++            if (!queueToCurrent.isAncestor) {
++              return invalid(
++                "legacy_queue_base_not_ancestor",
++                `released queue base is not an ancestor of the current local ${base}: queue=${legacyQueueBase} local=${localBase.value}`,
++              );
++            }
++            return {
++              provider_conflict_base_sha: providerBase,
++              current_base_sha: localBase.value,
++              relation: "provider_base_ancestor_of_current_base" as const,
++              legacy_queue_base_sha: legacyQueueBase,
++              legacy_queue_relation:
++                "provider_base_ancestor_of_queue_base_and_queue_base_ancestor_of_current_base" as const,
++            };
++          })()
++        : localBase.value === providerBase
++          ? {
++              provider_conflict_base_sha: providerBase,
++              current_base_sha: localBase.value,
++              relation: "equal" as const,
++              legacy_queue_base_sha: null,
++              legacy_queue_relation: "not_applicable" as const,
++            }
++          : invalid(
++              "provider_base_mismatch",
++              `provider base differs from local ${base}: provider=${providerBase} local=${localBase.value}`,
++            );
+   if ("state" in baseContext) return baseContext;
+ 
+   if (isLegacyProtectedConflictRoute(routeEvidence)) {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index b97de4c79..d5234ade2 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -91,6 +91,7 @@ function addConflictReworkBlockers(
+     );
+     return;
+   }
++  if (preparation.state === "publication_required") return;
+   addBlocker(
+     blockers,
+     "provider_conflict_context_invalid",
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts b/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts
+index a844a818d..4256144cb 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts
+@@ -5,6 +5,29 @@ import {
+   routeBlockerFor,
+   terminalStep,
+ } from "./workflow-step-factory.js";
++import { primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
++
++function conflictHeadPublicationStep(state: WorkflowRouteState): WorkflowStep {
++  const preparation = state.conflictRework;
++  if (preparation?.state !== "publication_required") {
++    throw new Error(
++      "conflictHeadPublicationStep requires a publication-required conflict preparation",
++    );
++  }
++  return cliOperationStep({
++    state,
++    operationId: "pr.head.publish",
++    params: {
++      taskId: state.task.id,
++      author: state.task.owner,
++      includeTaskIds: primaryIncludeTaskIds(state),
++    },
++    code: "publish_conflict_pr_head",
++    summary:
++      "publish the clean fast-forward task head so provider/local identity can be frozen before semantic conflict rework",
++    selectedBlocker: routeBlockerFor(state, "pr_head_unpublished", "hosted_pr_head_mismatch"),
++  });
++}
+ 
+ function providerConflictReworkStep(state: WorkflowRouteState): WorkflowStep {
+   const preparation = state.conflictRework;
+@@ -89,6 +112,9 @@ function conflictReworkContextInvalidStep(state: WorkflowRouteState): WorkflowSt
+ }
+ 
+ export function conflictReworkRouteStep(state: WorkflowRouteState): WorkflowStep | null {
++  if (state.conflictRework?.state === "publication_required") {
++    return conflictHeadPublicationStep(state);
++  }
+   if (
+     state.blockers.some((blocker) => blocker.code === "legacy_protected_conflict_adoption_required")
+   ) {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+index b83314a75..cee441d3d 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+@@ -6,7 +6,11 @@ import type { ConflictReworkPacket } from "../pr/conflict-rework.js";
+ import type { TaskResumeContext } from "../task/handoff.shared.js";
+ import type { TaskRouteDecision } from "./route-decision-types.js";
+ import { deriveRouteOperatorGuidance } from "./route-guidance.js";
+-import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
++import {
++  WORKFLOW_OPERATION_REGISTRY,
++  type WorkflowRouteState,
++  type WorkflowStep,
++} from "./workflow-step.js";
+ import {
+   projectWorkflowStepExecutionPacket,
+   projectWorkflowStepOracle,
+@@ -350,6 +354,67 @@ describe("WorkflowStep conflict rework projections", () => {
+     expect(step.kind === "agent_episode").toBe(false);
+   });
+ 
++  it("publishes a guarded fast-forward conflict head before quality review or semantic rework", () => {
++    const providerHeadSha = "0000000000000000000000000000000000000001";
++    const state = routeState({
++      task: { ...task, status: "DONE", verification: { state: "ok" } },
++      resume: { ...resume, task_status: "DONE" },
++      blockers: [
++        {
++          code: "pr_head_unpublished",
++          summary: "local task branch head is not published",
++        },
++        {
++          code: "quality_review_missing",
++          summary: "quality review is missing",
++        },
++      ],
++      conflictRework: {
++        state: "publication_required",
++        reason: "clean local head strictly descends from provider head",
++        provider_head_sha: providerHeadSha,
++        local_head_sha: resume.head_sha,
++      },
++    });
++    const step = reduceRouteState(state);
++    const { oracle, packet } = executionPacket({
++      state,
++      step,
++      paths: { taskWorktreePath },
++    });
++
++    expect(step).toMatchObject({
++      kind: "approval",
++      id: "approval.pr.head.publish",
++      compatibility: { code: "publish_conflict_pr_head" },
++      request: {
++        type: "side_effect",
++        operationId: "pr.head.publish",
++        operation: {
++          params: {
++            taskId: task.id,
++            author: task.owner,
++            includeTaskIds: [],
++          },
++        },
++      },
++      selectedBlocker: { code: "pr_head_unpublished" },
++    });
++    expect(step.id).not.toBe("agent.quality_review");
++    expect(step.id).not.toBe("agent.provider_conflict_rework");
++    expect(oracle.mutationPathHint).toBeNull();
++    expect(packet).toMatchObject({
++      actionKind: "provider_action",
++      safeToMutate: false,
++      exactArgv: null,
++    });
++    expect(
++      WORKFLOW_OPERATION_REGISTRY["pr.head.publish"].mustNot.some((rule) =>
++        rule.includes("force-push"),
++      ),
++    ).toBe(true);
++  });
++
+   it("fails closed when a provider conflict lacks a usable task worktree", () => {
+     const state = routeState({
+       taskWorktree: {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 7af36f346..042e1c5cf 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -276,6 +276,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
+     expectedPostconditions: [POSTCONDITION.remotePrAligned, POSTCONDITION.routeRecomputed],
+     mustNot: [
+       "do not push or relink the hosted PR manually; agentplane pr open owns final branch publication and PR head alignment",
++      "do not rebase, merge, force-push, or select conflict hunks while publishing the guarded branch head",
+     ],
+     triggersGitHooks: true,
+     verificationCandidate: "agentplane pr flow status <task-id>",
