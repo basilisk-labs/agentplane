@@ -390,6 +390,121 @@ describe("evaluator runtime evidence", () => {
     expect(prepared.work_order.evaluated_sha).toBe(sourceSha);
   });
 
+  it("keeps verification frozen across the complete pre-merge closure artifact sequence", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV23";
+    await addTask(root, taskId);
+    const sourceSha = await commitPath(root, "src/evaluated.ts");
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    command.config.workflow_mode = "branch_pr";
+    await cmdVerifyParsed({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      state: "ok",
+      by: "TESTER",
+      note: "Pre-merge implementation verification passed.",
+      details:
+        "Command: bunx vitest run evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: complete pre-merge closure fixture passed\nScope: verification, evaluator, PR, blueprint, and DONE lifecycle artifacts",
+      quiet: true,
+    });
+    const verificationRecord = await readVerificationRecord(root, taskId);
+    expect(verificationRecord.implementation_sha).toBe(sourceSha);
+
+    const qualityReportPath = `.agentplane/tasks/${taskId}/quality/final/quality-report.json`;
+    const evaluatorResultPath = `.agentplane/tasks/${taskId}/quality/final/evaluator-result.json`;
+    await applyTaskMutation({
+      ctx: command,
+      taskId,
+      build: () => ({
+        intents: setTaskFieldsIntent({
+          status: "DONE",
+          result_summary: "pre-merge closure",
+          commit: {
+            hash: sourceSha,
+            message: "feat: target",
+          },
+          quality_review: {
+            state: "pass",
+            provenance: "evaluator_supplied",
+            updated_at: "2026-05-24T09:10:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Complete pre-merge closure passed.",
+            evaluated_sha: sourceSha,
+            blueprint_digest: "fixture-blueprint",
+            evidence_refs: [qualityReportPath, evaluatorResultPath],
+            findings: ["Lifecycle closure preserved the semantic target."],
+          },
+        }),
+      }),
+    });
+    await mkdir(path.join(root, path.dirname(qualityReportPath)), { recursive: true });
+    await writeFile(
+      path.join(root, qualityReportPath),
+      `${JSON.stringify({ task_id: taskId, verdict: "pass", evaluated_sha: sourceSha })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, evaluatorResultPath),
+      `${JSON.stringify({ kind: "sgr.evaluator_result.v1", verdict: "pass" })}\n`,
+      "utf8",
+    );
+    const blueprintPath = `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`;
+    await mkdir(path.join(root, path.dirname(blueprintPath)), { recursive: true });
+    await writeFile(
+      path.join(root, blueprintPath),
+      `${JSON.stringify({ digest: "fixture-blueprint" })}\n`,
+      "utf8",
+    );
+    const prMetaPath = `.agentplane/tasks/${taskId}/pr/meta.json`;
+    await mkdir(path.join(root, path.dirname(prMetaPath)), { recursive: true });
+    await writeFile(
+      path.join(root, prMetaPath),
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: taskId,
+        branch: `task/${taskId}/fixture`,
+        base: sourceSha,
+        created_at: "2026-05-24T09:00:00.000Z",
+        updated_at: "2026-05-24T09:10:00.000Z",
+        status: "OPEN",
+        verify: { status: "pass" },
+        pre_merge_closure: { state: "closed_before_merge" },
+      })}\n`,
+      "utf8",
+    );
+    await commitTaskArtifacts(root, taskId, "chore: record complete pre-merge closure");
+
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+    const evaluator = catalog.find((entry) => entry.id === "recovery-context");
+    if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
+    const prepared = await prepareEvaluatorReview({
+      ctx: command,
+      task,
+      evaluator,
+      provenance: "evaluator_supplied",
+    });
+    expect(prepared.work_order.evaluated_sha).toBe(sourceSha);
+    const observedEvidence = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    );
+    if (!observedEvidence) throw new Error("Missing observed checks evidence.");
+    const observed = JSON.parse(
+      await readFile(path.join(root, observedEvidence.path), "utf8"),
+    ) as Record<string, unknown>;
+    const verificationRecords = Array.isArray(observed.verification_records)
+      ? observed.verification_records.filter(hasStringPath)
+      : [];
+    expect(verificationRecords).toHaveLength(1);
+    const frozenRecord = JSON.parse(
+      await readFile(path.join(root, verificationRecords[0]?.path ?? ""), "utf8"),
+    ) as Record<string, unknown>;
+    expect(frozenRecord.implementation_sha).toBe(sourceSha);
+  });
+
   it("skips lifecycle artifacts for every included branch_pr batch task", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
