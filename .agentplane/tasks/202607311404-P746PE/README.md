@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -34,30 +34,30 @@ verification:
   note: "PASS: semantic verification target remains stable through full closure history."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-31T15:15:02.539Z"
+  updated_at: "2026-07-31T15:37:01.331Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "8a7f4e640022b355662b36f6b50ac8bf7a3aa65f"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "9d4b182abb337d2849f7e25760ef4b2ad3d99aa1"
   blueprint_digest: "d2deec83c68155c5716653708b093e245feaa5c8cd4e93a0c6a6b23bef802597"
   evidence_refs:
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607311404-P746PE/README.md"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-151344749-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607311404-P746PE/verification/20260731153115267-c27ca95630d2c5e7.json"
+    - ".agentplane/tasks/202607311404-P746PE/quality/20260731-153602337-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen evaluator target is 8a7f4e640022b355662b36f6b50ac8bf7a3aa65f, while the latest recorded verification targets 0af1c1a648db15f88a72571b7411cd5ebe8ca7ac; evaluator preparation consequently freezes no verification records."
+    - "Implementation and frozen verification evidence consistently bind verification records and evaluator preparation to the same semantic target SHA across lifecycle-only closure history."
 commit:
   hash: "0af1c1a648db15f88a72571b7411cd5ebe8ca7ac"
   message: "🚧 P746PE code: Resolve included batch targets"
