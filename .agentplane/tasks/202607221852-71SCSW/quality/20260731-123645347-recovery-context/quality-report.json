@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T12:36:45.928Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "6cb5cdc7e6fc8cdacd1a0b00d8d2fcabba85178e",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "integration.enqueue persisted the queue entry under the base checkout, but supervisor refresh switched task loading to the stale base README while task-worktree refresh could not observe the base queue cache."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-123645347-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "No regression covered task-worktree task truth combined with base-checkout integration queue truth."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Keep task and quality truth anchored to the task worktree while resolving integration queue truth from the authoritative base checkout; add regression coverage and repeat the live queued transition."
+  ]
+}
