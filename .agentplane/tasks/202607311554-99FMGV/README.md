@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-31T16:24:31.821Z"
+  updated_at: "2026-07-31T17:13:42.586Z"
   updated_by: "TESTER"
-  note: "PASS: structured verification for semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4."
+  note: "PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -126,8 +126,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Implementation target updated after CI repair: strict lint typing and extracted conflict base-context resolution."
+  -
+    type: "verify"
+    at: "2026-07-31T17:13:42.586Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2."
 doc_version: 3
-doc_updated_at: "2026-07-31T17:11:11.688Z"
+doc_updated_at: "2026-07-31T17:13:43.790Z"
 doc_updated_by: "CODER"
 description: "When an OPEN protected-base PR reports conflicts but the local task branch is a clean descendant of the provider head, route the task through guarded PR head publication before preparing the conflict packet. Preserve fail-closed behavior for divergent or unrelated heads, unknown mergeability, dirty worktrees, and semantic conflict resolution."
 sections:
@@ -222,6 +228,71 @@ sections:
     Result: pass
     Evidence: real CT2725 projected approval.pr.head.publish with provider c1a783b40e9d6c622e583e5e1dfebb8f23f088bb and clean local ff68dc96afa7b5e086440d332bd50b3b5623232e
     Scope: live provider conflict deadlock reproduction and guarded fast-forward route selection
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311554-99FMGV-allow-fast-forward-publication-before-conflict-r/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json
+    - old_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+    - current_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311554-99FMGV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-31T17:13:42.586Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T17:11:11.688Z, excerpt_hash=sha256:c1fbf1ebd599a5379cf93aa75fd17b0e1cba6aebd0ef736022215ce82b4fe0a5
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts
+    Result: pass
+    Evidence: 3 files passed; 21 tests passed; 24.97 seconds
+    Scope: guarded publication, authority flow, provider alignment, and semantic CODER handoff
+
+    Command: bun test packages/agentplane/src/commands/pr/conflict-rework.test.ts
+    Result: pass
+    Evidence: 30 tests passed; 86 assertions
+    Scope: clean descendant plus divergent, unrelated, dirty, branch-mismatch, mergeability, current-open-PR, equal-base, and ancestor-base cases
+
+    Command: bun test packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
+    Result: pass
+    Evidence: 2 files passed; 22 tests passed; 63 assertions
+    Scope: equal and advanced bases, unavailable/non-ancestor ancestry, legacy queue topology, adoption, and divergence recovery
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 chunks passed; 76 tests passed
+    Scope: critical CLI, at-most-once provider, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript project build exited 0
+    Scope: all workspace TypeScript projects
+
+    Command: bun run lint:core && bun run hotspots:check && bun run format:check && node .agentplane/policy/check-routing.mjs && git diff --check
+    Result: pass
+    Evidence: ESLint clean; runtime hotspot maximum reduced from 622 to 525 lines; oversized thresholds passed; Prettier clean; policy routing OK; diff check clean
+    Scope: CI static and contract failures observed on PR 4708
+
+    Command: node packages/agentplane/bin/agentplane.js task next-action 202607311338-CT2725 --remote --json --root control-checkout
+    Result: pass
+    Evidence: live CT2725 projected approval.pr.head.publish and conflict_rework.state=publication_required for provider c1a783b40e9d6c622e583e5e1dfebb8f23f088bb to local ff68dc96afa7b5e086440d332bd50b3b5623232e
+    Scope: original provider/local conflict deadlock
 
     BlueprintSnapshotRef:
     - state: current
@@ -364,6 +435,71 @@ Command: node packages/agentplane/bin/agentplane.js task next-action 20260731133
 Result: pass
 Evidence: real CT2725 projected approval.pr.head.publish with provider c1a783b40e9d6c622e583e5e1dfebb8f23f088bb and clean local ff68dc96afa7b5e086440d332bd50b3b5623232e
 Scope: live provider conflict deadlock reproduction and guarded fast-forward route selection
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607311554-99FMGV-allow-fast-forward-publication-before-conflict-r/.agentplane/tasks/202607311554-99FMGV/blueprint/resolved-snapshot.json
+- old_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+- current_digest: 0b116101eda2537a3384040ba26116ad6b2b6d0b6bde04285c01b036ffd29b7f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311554-99FMGV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-31T17:13:42.586Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: deterministic verification for CI-repair implementation SHA 74061ddc5b4845f58f5ec451bc396419c64980e2.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T17:11:11.688Z, excerpt_hash=sha256:c1fbf1ebd599a5379cf93aa75fd17b0e1cba6aebd0ef736022215ce82b4fe0a5
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts
+Result: pass
+Evidence: 3 files passed; 21 tests passed; 24.97 seconds
+Scope: guarded publication, authority flow, provider alignment, and semantic CODER handoff
+
+Command: bun test packages/agentplane/src/commands/pr/conflict-rework.test.ts
+Result: pass
+Evidence: 30 tests passed; 86 assertions
+Scope: clean descendant plus divergent, unrelated, dirty, branch-mismatch, mergeability, current-open-PR, equal-base, and ancestor-base cases
+
+Command: bun test packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
+Result: pass
+Evidence: 2 files passed; 22 tests passed; 63 assertions
+Scope: equal and advanced bases, unavailable/non-ancestor ancestry, legacy queue topology, adoption, and divergence recovery
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 chunks passed; 76 tests passed
+Scope: critical CLI, at-most-once provider, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript project build exited 0
+Scope: all workspace TypeScript projects
+
+Command: bun run lint:core && bun run hotspots:check && bun run format:check && node .agentplane/policy/check-routing.mjs && git diff --check
+Result: pass
+Evidence: ESLint clean; runtime hotspot maximum reduced from 622 to 525 lines; oversized thresholds passed; Prettier clean; policy routing OK; diff check clean
+Scope: CI static and contract failures observed on PR 4708
+
+Command: node packages/agentplane/bin/agentplane.js task next-action 202607311338-CT2725 --remote --json --root control-checkout
+Result: pass
+Evidence: live CT2725 projected approval.pr.head.publish and conflict_rework.state=publication_required for provider c1a783b40e9d6c622e583e5e1dfebb8f23f088bb to local ff68dc96afa7b5e086440d332bd50b3b5623232e
+Scope: original provider/local conflict deadlock
 
 BlueprintSnapshotRef:
 - state: current
