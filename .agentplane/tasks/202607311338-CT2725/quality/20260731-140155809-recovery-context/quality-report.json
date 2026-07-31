@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311338-CT2725",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T14:02:51.642Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "c3b5d08db2960cc4722230f91d34f5fd17c16229",
+  "blueprint_digest": "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4",
+  "findings": [
+    "The structured verification record is bound to implementation SHA c1a783b40e9d6c622e583e5e1dfebb8f23f088bb, while the frozen work order evaluates c3b5d08db2960cc4722230f91d34f5fd17c16229. Its narrative claims checks at the evaluated SHA, but the authoritative metadata does not establish that provenance."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311338-CT2725/verification/20260731140114185-d1a0af6efccfd7bb.json",
+    ".agentplane/tasks/202607311338-CT2725/quality/20260731-140155809-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Record fresh deterministic focused, critical, incident-parity, and release-gate results in a structured verification artifact whose implementation_sha exactly equals c3b5d08db2960cc4722230f91d34f5fd17c16229."
+  ],
+  "hidden_assumptions": [
+    "The verification record's narrative SHA is assumed to be authoritative despite its contradictory implementation_sha field.",
+    "No post-verification change between c1a783b40e9d6c622e583e5e1dfebb8f23f088bb and c3b5d08db2960cc4722230f91d34f5fd17c16229 affected implementation or test outcomes."
+  ],
+  "residual_risks": [
+    "Regenerate deterministic verification evidence for the exact evaluated SHA c3b5d08db2960cc4722230f91d34f5fd17c16229, ensuring the structured implementation_sha and all check provenance agree, then rerun semantic evaluation."
+  ]
+}

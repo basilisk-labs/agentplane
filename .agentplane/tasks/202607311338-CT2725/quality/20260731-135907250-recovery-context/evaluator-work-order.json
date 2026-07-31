@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607311338-CT2725-cdf08adfc7bbc2c67f160459",
+  "prepared_at": "2026-07-31T13:59:07.250Z",
+  "task": {
+    "id": "202607311338-CT2725",
+    "revision": 13,
+    "objective": "Resolve successful runner receipt observation race\n\nRepair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.",
+    "acceptance_criteria": [
+      "bun run release:incidents:check",
+      "bun run test:critical",
+      "bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+      "- In scope: Repair the outer direct supervisor so a durably persisted successful runner execution receipt is observed without false runner_receipt_unobserved termination; add deterministic regression coverage, resolve INC-20260731-01 with evidence, and unblock the 0.7.0-rc.1 release gate.\n- Out of scope: unrelated refactors not required for \"Resolve successful runner receipt observation race\".",
+      "1. Use the preserved RF-23 live artifact to distinguish receipt integrity from containment verification and reproduce the false runner_receipt_unobserved classification.\n2. Reorder direct executor observation so a present non-rejected receipt can carry typed blocked, needs_context, or failed stops, while completed execution still requires observed_success or explicit unverified authority.\n3. Add focused unit and outer-supervisor regression coverage, including missing/rejected receipt and completed-unverified safeguards.\n4. Run focused and critical gates, then resolve INC-20260731-01 through the canonical incident workflow with source/asset parity.\n5. Record independent verification and evaluator evidence, integrate the repair, then rerun RC.1 qualification.",
+      "1. Inspect the preserved RF-23 live artifact. Expected: process, scope, Git, artifacts, protected-filesystem observation, and phase-tool audit pass; containment alone leaves the receipt unverified, while the typed result is blocked and the pre-fix outer stop is runner_receipt_unobserved.\n2. Run `bunx vitest run packages/agentplane/src/commands/task/direct-task-supervisor-observation.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts`. Expected: blocked, needs_context, and failed results with present unverified receipts preserve their typed stop without provider replay; completed-unverified, missing, and rejected receipts remain terminal and cannot authorize progress.\n3. Run `bun run test:critical`. Expected: all critical CLI chunks pass and provider execution remains at-most-once.\n4. Run `agentplane incidents collect 202607311338-CT2725 --check` and `bun run release:incidents:check`. Expected: INC-20260731-01 is resolved with task/commit evidence, source and packaged incident assets stay identical, and the release incident gate passes.\n5. Review the final diff and task evidence. Expected: changes remain bounded to semantic-stop observation ordering, focused tests, incident records, and this task artifact; RC.1 can be rerun from the merged SHA."
+    ]
+  },
+  "evaluated_sha": "c3b5d08db2960cc4722230f91d34f5fd17c16229",
+  "diff_base_sha": "7f9c6ff8e11c0bbe7dcf9c26beb44240cac5310e",
+  "blueprint_digest": "6412359ff58556a5fbe1a031120a6aa924fd9bcc77a9e20bf4c21468e52700d4",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607311338-CT2725/README.md",
+      "sha256": "sha256:ac36b6e8bc2960e7cdee53bfd673118bc574cb6d7d5f3464f6d2d58d1c32d65c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135907250-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:699f45ac25ae005ffa4c375bb1ac2d13fa820ab21e8fc74ad41bcb2e008841fd",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135907250-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:0a7fdab74335684904f46c56d4220a07c3ad47e4d4275b52778b076f453f758a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135907250-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:75e405e69362c6eb691b4c0782b5ac8d4f66f0da5213b1f5e8c1df8a132a2e78",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

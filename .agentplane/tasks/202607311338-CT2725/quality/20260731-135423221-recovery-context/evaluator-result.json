@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen observed-checks artifact contains only a verification note; verification_records, runner_history, and runtime_evidence are empty, so the claimed focused, critical, incident-parity, and at-most-once results cannot be independently evaluated.",
+      "broken_invariant": "A pass requires deterministic verification evidence covering the relevant positive, negative, and concurrency-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311338-CT2725/quality/20260731-135423221-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f368e058de239a0eb8f57d45285d80b83987b7be5039079084f08995f8beb187",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen deterministic results for the focused supervisor tests, including blocked, needs_context, failed, completed-unverified, missing, and rejected receipt cases.",
+    "Frozen deterministic evidence that provider execution remains at-most-once through the outer supervisor path.",
+    "Frozen deterministic results for the critical suite and incident source/package parity gate."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes checks executed at the evaluated SHA.",
+    "Existing tests outside the patch provide sufficient rejected-receipt and completed-unverified outer-supervisor coverage."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic command-result or runtime evidence for the declared focused, critical, incident-parity, and at-most-once checks at evaluated SHA c3b5d08db2960cc4722230f91d34f5fd17c16229.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
