@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T12:29:41.229Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "6cb5cdc7e6fc8cdacd1a0b00d8d2fcabba85178e",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "EXECUTOR semantic episodes remain isolated from lifecycle mutations; the supervisor owns typed worktree, PR, provider, integration, close, and cleanup operations.",
+    "Implementation receipt advances preserve the reviewed implementation SHA only when task semantics and prior comment/event history are unchanged and the recorded commit is the exact parent.",
+    "Late checks, stale heads, merge conflicts, deleted branches, queue contention, hosted-close retry, merge authority, and final provider truth have explicit regression coverage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-122940782-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
