@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607311143-YT435C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T12:53:44.926Z",
+  "verdict": "pass",
+  "summary": "The v0.6.26 candidate formatting defect is resolved and release behavior remains verified.",
+  "evaluated_sha": "1d297d1b128faf9cdc7c55805b5fd855197c980b",
+  "blueprint_digest": "3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4",
+  "findings": [
+    "Generated ACR version data is formatted and release parity remains 0.6.26.",
+    "Direct routing and stale closure regressions remain green after the candidate correction."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607311143-YT435C/README.md",
+    "packages/spec/examples/acr.json",
+    "docs/releases/v0.6.26.md",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

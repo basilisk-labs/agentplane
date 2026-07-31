@@ -12,8 +12,8 @@ Created: 2026-07-31T11:44:30.841Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-contract found the generated v0.6.26 ACR example was not formatted after candidate version mutation.
+- State: ok
+- Note: Hosted format failure resolved; format:check, final fast prepublish, focused routing 9/9, incidents, and registry checks pass on v0.6.26 state.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

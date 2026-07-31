@@ -15,12 +15,12 @@ Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, i
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted verify-contract found the generated v0.6.26 ACR example was not formatted after candidate
-version mutation.
+Hosted format failure resolved; format:check, final fast prepublish, focused routing 9/9, incidents,
+and registry checks pass on v0.6.26 state.
 ```
 - Canonical workflow state lives in the task README.
 
