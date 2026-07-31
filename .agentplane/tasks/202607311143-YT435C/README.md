@@ -2,10 +2,10 @@
 id: "202607311143-YT435C"
 title: "Release AgentPlane v0.6.26"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-31T13:50:07.149Z"
+  state: "needs_rework"
+  updated_at: "2026-07-31T14:13:26.311Z"
   updated_by: "CODER"
-  note: "Transient launcher provenance is now removed from verification child environments. Exact integration-carrier reproduction with the 0.6.25 active bin passed candidate run-cli.core 43/43 and reported 0.6.26; shared/output/version tests pass 73/73, typecheck, lint, and fast release gate pass."
-  attempts: 0
+  note: "Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable branchHeadSha already captured before merge."
+  attempts: 1
 quality_review:
   state: "pass"
   updated_at: "2026-07-31T13:50:09.108Z"
@@ -54,9 +54,7 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.test.ts"
   findings:
     - "Exact reproduction with AGENTPLANE_RUNTIME_ACTIVE_BIN pointing at 0.6.25 passes 43/43 and resolves candidate version 0.6.26 after sanitization."
-commit:
-  hash: "5343f438ede7829c429d7773f4948f05e45471ab"
-  message: "✅ YT435C release: verify runtime isolation"
+commit: null
 comments:
   -
     author: "CODER"
@@ -85,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: make integration finalization independent of cleaned branch refs."
 events:
   -
     type: "status"
@@ -203,8 +204,21 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-31T14:13:26.311Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable branchHeadSha already captured before merge."
+  -
+    type: "status"
+    at: "2026-07-31T14:13:27.734Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: make integration finalization independent of cleaned branch refs."
 doc_version: 3
-doc_updated_at: "2026-07-31T13:50:48.029Z"
+doc_updated_at: "2026-07-31T14:13:27.734Z"
 doc_updated_by: "CODER"
 description: "Prepare and publish v0.6.26 exclusively from codex/fix-v0.6.24-closeout-route, including release notes for the routing fixes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub Release verification, and proof that main does not contain the maintenance release."
 sections:
@@ -471,6 +485,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:49:22.776Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+    - old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+    - diagnostic_command: agentplane pr check 202607311143-YT435C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-31T14:13:26.311Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable branchHeadSha already captured before merge.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:50:48.029Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
 
     Details:
 
@@ -808,6 +852,36 @@ Note: Transient launcher provenance is now removed from verification child envir
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:49:22.776Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607311143-YT435C-release-v0-6-26/.agentplane/tasks/202607311143-YT435C/blueprint/resolved-snapshot.json
+- old_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- current_digest: 3b71052486bce178c3afb3ef2a0ba0ec42a4e7839daf10bea73ea49b344640a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607311143-YT435C
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607311143-YT435C --branch task/202607311143-YT435C/release-v0-6-26
+- diagnostic_command: agentplane pr check 202607311143-YT435C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-31T14:13:26.311Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Post-verify integration exposed branch-name liveness coupling: post-merge cleanup removed the local task ref before finalizeIntegrate computed diffstat. Switching finalization to the immutable branchHeadSha already captured before merge.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-31T13:50:48.029Z, excerpt_hash=sha256:046024067e5a449b591650df464194a6167bb9acffc20b84002d49f5dcf5ec03
 
 Details:
 
