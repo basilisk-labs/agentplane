@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-71SCSW-10cf2f18219826217cb4d277",
+  "task_id": "202607221852-71SCSW",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Reuse the existing completed-operation stale-state reopen contract for persisted workflow operations: allow reopening only when the latest operation is completed, then retry start once; preserve terminal behavior for running, failed, or effect-in-doubt operations.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "A completed integration.enqueue journal was converted to terminal stale_state when the later pr.head.publish step opened against a new fingerprint, so safe sequential branch_pr operations cannot resume across normal task/authority mutations.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-result.json"
+}

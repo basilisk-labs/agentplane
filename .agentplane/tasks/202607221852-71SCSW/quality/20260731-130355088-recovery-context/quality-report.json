@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-71SCSW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-31T13:03:55.552Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "3fd3313d8c8a45e7c36a004f07b4d9071bc3abea",
+  "blueprint_digest": "1546fb324a2b5f29a94664925b6e887f2a66ded00af61563b8e344f9297ba363",
+  "findings": [
+    "A completed integration.enqueue journal was converted to terminal stale_state when the later pr.head.publish step opened against a new fingerprint, so safe sequential branch_pr operations cannot resume across normal task/authority mutations."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-71SCSW/quality/20260731-130355088-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Regression for a completed persisted workflow operation followed by a different operation after an externally changed route fingerprint."
+  ],
+  "hidden_assumptions": [
+    "The persisted workflow loop assumed every next mechanical step would be reached only through the immediately refreshed postcondition fingerprint."
+  ],
+  "residual_risks": [
+    "Reuse the existing completed-operation stale-state reopen contract for persisted workflow operations: allow reopening only when the latest operation is completed, then retry start once; preserve terminal behavior for running, failed, or effect-in-doubt operations."
+  ]
+}
