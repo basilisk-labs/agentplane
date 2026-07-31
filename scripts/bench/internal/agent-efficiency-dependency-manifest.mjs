@@ -65,7 +65,7 @@ function assertCapturePlatform(value, label) {
   return value;
 }
 
-function parseJsonc(input) {
+export function parseReplayJsonc(input) {
   let withoutComments = "";
   let inString = false;
   let escaped = false;
@@ -138,7 +138,7 @@ export function createReplayPortableDependencyManifest(repoRoot) {
     }
     let value;
     try {
-      value = parseJsonc(readFileSync(real, "utf8"));
+      value = parseReplayJsonc(readFileSync(real, "utf8"));
     } catch {
       throw new Error(`RF-04 portable dependency input must be JSON: ${relativePath}`);
     }

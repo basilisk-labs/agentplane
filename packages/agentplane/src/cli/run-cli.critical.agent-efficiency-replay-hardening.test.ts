@@ -703,6 +703,35 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
+  it("accepts only the frozen TypeScript 7 additive anchor lock delta", async () => {
+    const replay = await importModule<{
+      REPLAY_ANCHOR_COMMIT: string;
+    }>("scripts/lib/agent-efficiency-replay.mjs");
+    const anchorRuntime = await importModule<{
+      assertAnchorLockCompatible(subject: Buffer, driver: Buffer): void;
+    }>("scripts/bench/internal/agent-efficiency-anchor-runtime.mjs");
+    const subjectLock = execFileSync(
+      "/usr/bin/git",
+      ["show", `${replay.REPLAY_ANCHOR_COMMIT}:bun.lock`],
+      { cwd: REPO_ROOT },
+    );
+    const driverLock = readFileSync(path.join(REPO_ROOT, "bun.lock"));
+
+    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, driverLock)).not.toThrow();
+
+    const tampered = Buffer.from(
+      driverLock
+        .toString("utf8")
+        .replace(
+          '"@typescript/native": "npm:typescript@7.0.2"',
+          '"@typescript/native": "npm:typescript@7.0.1"',
+        ),
+    );
+    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, tampered)).toThrow(
+      "ANCHOR_LOCK_MISMATCH",
+    );
+  });
+
   it("runs the real exact-anchor CURRENT_AGENT adapter-failure entrypoint offline", async () => {
     const baseline = await importModule<{
       stableJson(value: unknown, spaces?: number): string;

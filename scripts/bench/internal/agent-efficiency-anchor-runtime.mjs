@@ -11,6 +11,8 @@ import {
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { stableJson } from "../../lib/agent-efficiency-baseline.mjs";
+import { parseReplayJsonc } from "./agent-efficiency-dependency-manifest.mjs";
 import {
   buildCodexReplayEnvironment,
   fail,
@@ -18,9 +20,83 @@ import {
 } from "./agent-efficiency-codex-runtime.mjs";
 
 const DRIVER_REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const TYPESCRIPT_NATIVE_ALIAS = "npm:typescript@7.0.2";
+const TYPESCRIPT_NATIVE_VERSION = "7.0.2";
+const TYPESCRIPT_PLATFORM_PACKAGES = Object.freeze([
+  "@typescript/typescript-aix-ppc64",
+  "@typescript/typescript-darwin-arm64",
+  "@typescript/typescript-darwin-x64",
+  "@typescript/typescript-freebsd-arm64",
+  "@typescript/typescript-freebsd-x64",
+  "@typescript/typescript-linux-arm",
+  "@typescript/typescript-linux-arm64",
+  "@typescript/typescript-linux-loong64",
+  "@typescript/typescript-linux-mips64el",
+  "@typescript/typescript-linux-ppc64",
+  "@typescript/typescript-linux-riscv64",
+  "@typescript/typescript-linux-s390x",
+  "@typescript/typescript-linux-x64",
+  "@typescript/typescript-netbsd-arm64",
+  "@typescript/typescript-netbsd-x64",
+  "@typescript/typescript-openbsd-arm64",
+  "@typescript/typescript-openbsd-x64",
+  "@typescript/typescript-sunos-x64",
+  "@typescript/typescript-win32-arm64",
+  "@typescript/typescript-win32-x64",
+]);
 
 function sha256(value) {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+function projectApprovedTypeScript7Lock(lock) {
+  const projected = structuredClone(lock);
+  const rootDependencies = projected.workspaces?.[""]?.devDependencies;
+  const websiteDependencies = projected.workspaces?.website?.devDependencies;
+  const nativePackage = projected.packages?.["@typescript/native"];
+  const nativeMetadata = nativePackage?.[2];
+  const optionalDependencies = nativeMetadata?.optionalDependencies;
+  if (
+    rootDependencies?.["@typescript/native"] !== TYPESCRIPT_NATIVE_ALIAS ||
+    rootDependencies?.typescript !== "6.0.3" ||
+    websiteDependencies?.typescript !== "6.0.3" ||
+    nativePackage?.[0] !== `typescript@${TYPESCRIPT_NATIVE_VERSION}` ||
+    nativeMetadata?.bin?.tsc !== "bin/tsc" ||
+    stableJson(Object.keys(optionalDependencies ?? {}).toSorted()) !==
+      stableJson([...TYPESCRIPT_PLATFORM_PACKAGES].toSorted()) ||
+    Object.values(optionalDependencies ?? {}).some(
+      (version) => version !== TYPESCRIPT_NATIVE_VERSION,
+    )
+  ) {
+    return null;
+  }
+
+  delete rootDependencies["@typescript/native"];
+  rootDependencies.typescript = "^6.0.3";
+  websiteDependencies.typescript = "~6.0.3";
+  delete projected.packages["@typescript/native"];
+  for (const packageName of TYPESCRIPT_PLATFORM_PACKAGES) {
+    const platformPackage = projected.packages?.[packageName];
+    if (platformPackage?.[0] !== `${packageName}@${TYPESCRIPT_NATIVE_VERSION}`) return null;
+    delete projected.packages[packageName];
+  }
+  return projected;
+}
+
+export function assertAnchorLockCompatible(subjectLockBytes, driverLockBytes) {
+  if (sha256(subjectLockBytes) === sha256(driverLockBytes)) return;
+  let subjectLock;
+  let driverLock;
+  try {
+    subjectLock = parseReplayJsonc(subjectLockBytes.toString("utf8"));
+    driverLock = parseReplayJsonc(driverLockBytes.toString("utf8"));
+  } catch {
+    fail("ANCHOR_LOCK_MISMATCH");
+  }
+  const projected = projectApprovedTypeScript7Lock(driverLock);
+  if (projected === null || stableJson(projected) !== stableJson(subjectLock)) {
+    fail("ANCHOR_LOCK_MISMATCH");
+  }
 }
 
 export function buildAnchorProcessEnvironment(fixtureRoot, source = process.env) {
@@ -94,7 +170,7 @@ function assertAnchorWorkspaceLink(subjectRoot, linkRelative, packageRelative) {
 function linkAnchorDependencies(subjectRoot) {
   const subjectLock = readFileSync(path.join(subjectRoot, "bun.lock"));
   const driverLock = readFileSync(path.join(DRIVER_REPO_ROOT, "bun.lock"));
-  if (sha256(subjectLock) !== sha256(driverLock)) fail("ANCHOR_LOCK_MISMATCH");
+  assertAnchorLockCompatible(subjectLock, driverLock);
 
   const rootModules = path.join(subjectRoot, "node_modules");
   rmSync(rootModules, { force: true, recursive: true });
