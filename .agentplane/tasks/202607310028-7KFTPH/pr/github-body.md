@@ -15,8 +15,13 @@ Re-run the beta.2 qualification gate from corrected main after the guard and clo
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Qualification completed on corrected main: local gates passed and the live RF-04 capture requires
+do_not_publish because latency guardrails failed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
