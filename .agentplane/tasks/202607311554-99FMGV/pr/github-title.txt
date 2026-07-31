@@ -1,1 +1,1 @@
-🚧 99FMGV task: Allow fast-forward publication before conflict rework [202607311554-99FMGV]
+✅ 99FMGV task: Allow fast-forward publication before conflict rework [202607311554-99FMGV]
