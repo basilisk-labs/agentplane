@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607311554-99FMGV-bb3b912d464e6e00457e2707",
+  "task_id": "202607311554-99FMGV",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Obtain and freeze deterministic verification evidence for evaluated SHA 74061ddc5b4845f58f5ec451bc396419c64980e2. The current evidence is stale because it validates SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4 while later commits modify implementation code and tests.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The deterministic verification evidence applies to semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4, but the frozen diff evaluates SHA 74061ddc5b4845f58f5ec451bc396419c64980e2 and includes subsequent implementation changes to conflict-rework base-context logic and tests. No check evidence validates the evaluated implementation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-170839499-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:755cdb6b6e6bc2a3002d1187e67bc6694a9962e15574045fe881cd8fa40f2621",
+          "section": "Subsequent implementation changes include conflict-rework-base-context.ts and modifications to conflict-rework.ts and conflict-rework.test.ts."
+        },
+        {
+          "path": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-170839499-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:96618d2616a8a91c9305db2085d9ec4a5f79e31f8913b677da285bcef9245416",
+          "section": "Verification note identifies semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4 and contains no verification records or runtime evidence."
+        },
+        {
+          "path": ".agentplane/tasks/202607311554-99FMGV/README.md",
+          "sha256": "sha256:7e679da139a457bbd1955be63156284c3b230c54f970927368c911fb522bc77a",
+          "section": "Verification records are explicitly tied to semantic SHA 5912dc86cc255d9401d0d96d534e23cd3250b0a4."
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607311554-99FMGV/quality/20260731-170839499-recovery-context/evaluator-result.json"
+}
