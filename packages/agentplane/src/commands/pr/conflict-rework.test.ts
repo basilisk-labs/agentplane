@@ -254,19 +254,23 @@ describe("provider conflict rework packet", () => {
     expect(git.calls.diffNames).toBe(0);
   });
 
-  it("invalidates divergent or locally unavailable provider-head ancestry", async () => {
-    const conflicting = providerBehindReport();
-    await expect(prepare({ report: conflicting })).resolves.toMatchObject({
+  it("invalidates a divergent local head", async () => {
+    await expect(prepare({ report: providerBehindReport() })).resolves.toMatchObject({
       state: "invalid",
       reason_code: "provider_head_mismatch",
+      reason: expect.stringContaining("not a fast-forward continuation"),
     });
+  });
 
-    const unavailable = primeGit();
-    unavailable.gitOps.mergeBase = () => Promise.reject(new Error("missing provider commit"));
-    await expect(prepare({ report: conflicting, git: unavailable })).resolves.toMatchObject({
+  it("invalidates unrelated provider/local histories when no merge base exists", async () => {
+    const unrelated = primeGit();
+    unrelated.gitOps.mergeBase = () => Promise.reject(new Error("no merge base"));
+    await expect(
+      prepare({ report: providerBehindReport(), git: unrelated }),
+    ).resolves.toMatchObject({
       state: "invalid",
       reason_code: "provider_head_mismatch",
-      reason: expect.stringContaining("missing provider commit"),
+      reason: expect.stringContaining("no merge base"),
     });
   });
 
