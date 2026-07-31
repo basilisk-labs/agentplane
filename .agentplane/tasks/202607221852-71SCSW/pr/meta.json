@@ -8,10 +8,10 @@
   "pr_number": 4702,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4702",
   "pre_merge_closure": {
-    "basis_commit": "863b5740d2b609342a955354be0d37ba22587bd0",
+    "basis_commit": "2257c5a99a1e980b8ba0817a3f78e6c9ddf5cb55",
     "branch": "task/202607221852-71SCSW/extend-supervised-execution-to-branch-pr",
     "pr_number": 4702,
-    "recorded_at": "2026-07-31T12:30:28.641Z",
+    "recorded_at": "2026-07-31T13:01:58.806Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
