@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607311812-WBY9EK/publish-resolved-done-conflict-heads-before-sema",
+  "created_at": "2026-07-31T18:13:29.527Z",
+  "diffstat_sha256": "sha256:c078f5ef607f482bf82d19eab8334aeaec10d2b0dac9e1eb26a87a241a522973",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607311812-WBY9EK",
+  "updated_at": "2026-07-31T18:13:29.527Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
