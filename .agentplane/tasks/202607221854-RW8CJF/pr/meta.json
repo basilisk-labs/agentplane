@@ -8,10 +8,10 @@
   "pr_number": 4712,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4712",
   "pre_merge_closure": {
-    "basis_commit": "04e6b589abdac03f56c597baac8948920302dd55",
+    "basis_commit": "3c2735705af084189c02a50fca450c7a7c81f9f0",
     "branch": "task/202607221854-RW8CJF/define-granular-commandsession-capabilities-and",
     "pr_number": 4712,
-    "recorded_at": "2026-07-31T20:24:41.677Z",
+    "recorded_at": "2026-07-31T20:31:10.763Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
