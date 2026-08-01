@@ -4,7 +4,7 @@ title: "Migrate provider, integration, release, and ops command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T03:43:10.720Z"
+  updated_at: "2026-08-01T12:24:05.563Z"
   updated_by: "TESTER"
-  note: "Provider/integration/release boundary verification passed: focused family matrix 65 files/414 tests; critical CLI 12/12 chunks and 77 tests; typecheck, format, lint, Knip 545/545, guards, trust ratchet, lifecycle 8/8, release parity, and architecture dependency checks all passed."
+  note: "PASS: provider/release vertical verified with SHA-bound command and runtime recovery evidence."
   attempts: 0
 quality_review:
   state: "rework"
@@ -95,8 +95,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Provider/integration/release boundary verification passed: focused family matrix 65 files/414 tests; critical CLI 12/12 chunks and 77 tests; typecheck, format, lint, Knip 545/545, guards, trust ratchet, lifecycle 8/8, release parity, and architecture dependency checks all passed."
+  -
+    type: "verify"
+    at: "2026-08-01T12:24:05.563Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: provider/release vertical verified with SHA-bound command and runtime recovery evidence."
 doc_version: 3
-doc_updated_at: "2026-08-01T12:13:31.661Z"
+doc_updated_at: "2026-08-01T12:24:06.453Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers."
 sections:
@@ -144,6 +150,96 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607221908-7WV0A7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T12:24:05.563Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: provider/release vertical verified with SHA-bound command and runtime recovery evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T12:13:31.661Z, excerpt_hash=sha256:5f3be586d16174d604f552b097ea4f2500e7bc2eedc047d7bcac67a48748a628
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts packages/agentplane/src/commands/provider-ops-results.test.ts packages/agentplane/src/commands/release/plan.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: 5 files and 37 tests prove the full vertical capability matrix, denied authority before preparation, single-context reuse, real typed queue results, human and JSON compatibility, and exact protected-base SHA release-plan provenance.
+
+    Command: bunx vitest run packages/agentplane/src/commands/pr/hosted-checks.test.ts packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-recovery.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/commands/release/apply.push-recovery.test.ts packages/agentplane/src/commands/release/apply.apply-flow.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: 7 files and 91 tests prove late checks, network failure, bounded timeout, merge conflict, queue recovery, partial publication, failed prepublish, exact release identity, and duplicate-effect prevention.
+
+    Command: git diff --quiet 6c23608a30c55cc88770da4b0d1c15caae7bc0e2 134295dcd7191419f4120f6347a7f6cd508686ab -- packages scripts package.json bun.lock .github
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: no implementation, script, dependency, or workflow drift between semantic implementation SHA 6c23608a30c5 and lifecycle-descendant verification execution SHA 134295dcd719.
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: shared guards and trust-boundary ratchet.
+
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: all 8 lifecycle invariants.
+
+    Command: bun run release:parity
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: core, CLI, recipes, dependency, and runtime version parity.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: all 12 critical CLI chunks and 77 tests.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: workspace TypeScript correctness.
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: core source and scripts.
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: unused-code debt baseline at 545 of 545 entries.
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: repository formatting contract.
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+    Scope: runtime and test source-size hard limits and oversized-test baseline.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-7WV0A7-migrate-provider-integration-release-and-ops-com/.agentplane/tasks/202607221908-7WV0A7/blueprint/resolved-snapshot.json
+    - old_digest: f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c
+    - current_digest: f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-7WV0A7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -222,6 +318,96 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607221908-7WV0A7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T12:24:05.563Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: provider/release vertical verified with SHA-bound command and runtime recovery evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T12:13:31.661Z, excerpt_hash=sha256:5f3be586d16174d604f552b097ea4f2500e7bc2eedc047d7bcac67a48748a628
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts packages/agentplane/src/commands/provider-ops-results.test.ts packages/agentplane/src/commands/release/plan.test.ts
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: 5 files and 37 tests prove the full vertical capability matrix, denied authority before preparation, single-context reuse, real typed queue results, human and JSON compatibility, and exact protected-base SHA release-plan provenance.
+
+Command: bunx vitest run packages/agentplane/src/commands/pr/hosted-checks.test.ts packages/agentplane/src/commands/integrate-queue.command.test.ts packages/agentplane/src/commands/integrate-queue-recovery.test.ts packages/agentplane/src/commands/pr/conflict-rework.test.ts packages/agentplane/src/commands/release/apply.push-recovery.test.ts packages/agentplane/src/commands/release/apply.apply-flow.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: 7 files and 91 tests prove late checks, network failure, bounded timeout, merge conflict, queue recovery, partial publication, failed prepublish, exact release identity, and duplicate-effect prevention.
+
+Command: git diff --quiet 6c23608a30c55cc88770da4b0d1c15caae7bc0e2 134295dcd7191419f4120f6347a7f6cd508686ab -- packages scripts package.json bun.lock .github
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: no implementation, script, dependency, or workflow drift between semantic implementation SHA 6c23608a30c5 and lifecycle-descendant verification execution SHA 134295dcd719.
+
+Command: bun run guards:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: shared guards and trust-boundary ratchet.
+
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: all 8 lifecycle invariants.
+
+Command: bun run release:parity
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: core, CLI, recipes, dependency, and runtime version parity.
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: all 12 critical CLI chunks and 77 tests.
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: workspace TypeScript correctness.
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: core source and scripts.
+
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: unused-code debt baseline at 545 of 545 entries.
+
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: repository formatting contract.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-7WV0A7-134295dcd719-checks.json
+Scope: runtime and test source-size hard limits and oversized-test baseline.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-7WV0A7-migrate-provider-integration-release-and-ops-com/.agentplane/tasks/202607221908-7WV0A7/blueprint/resolved-snapshot.json
+- old_digest: f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c
+- current_digest: f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-7WV0A7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
