@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 42
 origin:
   system: "manual"
 depends_on:
@@ -35,35 +35,35 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T09:37:29.701Z"
+  updated_at: "2026-08-01T09:39:51.504Z"
   updated_by: "CODER"
-  note: "Reverified evaluator capability boundaries at c9f9423d36b7 after hosted contract rework."
+  note: "Deterministic evaluator-boundary checks passed at c9f9423d36b7."
   attempts: 0
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T09:35:37.232Z"
+  updated_at: "2026-08-01T09:38:41.388Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned blocked with 1 typed finding(s)."
   evaluated_sha: "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557"
   blueprint_digest: "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221908-YD5J89/README.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen deterministic verification covers cef1b58cb88c, but the evaluated SHA is c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 and includes a later evaluator authority-profile change; no executed checks for that final change are present."
+    - "The frozen packet contains no deterministic check results for the evaluated SHA c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557."
   recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "2041a94a61629fe1ecadfe9d4d887c2b8df64891"
@@ -246,8 +246,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Reverified evaluator capability boundaries at c9f9423d36b7 after hosted contract rework."
+  -
+    type: "verify"
+    at: "2026-08-01T09:39:51.504Z"
+    author: "CODER"
+    state: "ok"
+    note: "Deterministic evaluator-boundary checks passed at c9f9423d36b7."
 doc_version: 3
-doc_updated_at: "2026-08-01T09:37:30.446Z"
+doc_updated_at: "2026-08-01T09:39:52.339Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -678,6 +684,61 @@ sections:
     Details:
 
     Command: bun test command-catalog.test.ts kernel.test.ts registry.run.test.ts evaluator-execute.command.test.ts evaluator-prepare.command.test.ts; bun run guards:check; bun run schemas:check; bun run test:critical; bun run typecheck. Result: focused 36/36 passed; shared guards and trust ratchet passed; schemas OK; all 12 critical CLI chunks passed; TypeScript build passed. Evidence: current implementation SHA c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 and terminal results from 2026-08-01. Scope: evaluator read/write/execute capability composition, denied cross-capability mutations, concurrent CommandSession isolation, evaluator execution lifecycle, schemas, critical CLI, and type safety.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T09:39:51.504Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Deterministic evaluator-boundary checks passed at c9f9423d36b7.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:37:30.446Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    Command: bun test packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts
+    Result: pass
+    Evidence: 36 tests passed with 400 assertions at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+    Scope: read authority, artifact-only authority, mutation denial, concurrent session isolation, evaluator execution
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: shared guards OK and trust-boundary ratchet OK at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+    Scope: repository and trust-boundary guards
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: schemas OK at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+    Scope: generated schema compatibility
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical CLI chunks passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+    Scope: critical CLI behavior and trust-boundary regressions
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+    Scope: static type safety
 
     BlueprintSnapshotRef:
     - state: current
@@ -1188,6 +1249,61 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:20:27.019Z, excerpt_
 Details:
 
 Command: bun test command-catalog.test.ts kernel.test.ts registry.run.test.ts evaluator-execute.command.test.ts evaluator-prepare.command.test.ts; bun run guards:check; bun run schemas:check; bun run test:critical; bun run typecheck. Result: focused 36/36 passed; shared guards and trust ratchet passed; schemas OK; all 12 critical CLI chunks passed; TypeScript build passed. Evidence: current implementation SHA c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 and terminal results from 2026-08-01. Scope: evaluator read/write/execute capability composition, denied cross-capability mutations, concurrent CommandSession isolation, evaluator execution lifecycle, schemas, critical CLI, and type safety.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T09:39:51.504Z — VERIFY — ok
+
+By: CODER
+
+Note: Deterministic evaluator-boundary checks passed at c9f9423d36b7.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:37:30.446Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+Command: bun test packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts
+Result: pass
+Evidence: 36 tests passed with 400 assertions at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+Scope: read authority, artifact-only authority, mutation denial, concurrent session isolation, evaluator execution
+
+Command: bun run guards:check
+Result: pass
+Evidence: shared guards OK and trust-boundary ratchet OK at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+Scope: repository and trust-boundary guards
+
+Command: bun run schemas:check
+Result: pass
+Evidence: schemas OK at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+Scope: generated schema compatibility
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical CLI chunks passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+Scope: critical CLI behavior and trust-boundary regressions
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
+Scope: static type safety
 
 BlueprintSnapshotRef:
 - state: current

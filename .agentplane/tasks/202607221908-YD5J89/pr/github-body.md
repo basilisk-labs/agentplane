@@ -16,7 +16,7 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 ## Verification
 
 - State: ok
-- Note: Reverified evaluator capability boundaries at c9f9423d36b7 after hosted contract rework.
+- Note: Deterministic evaluator-boundary checks passed at c9f9423d36b7.
 - Canonical workflow state lives in the task README.
 
 <details>
