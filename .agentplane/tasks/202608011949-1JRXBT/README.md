@@ -4,7 +4,7 @@ title: "Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -35,6 +35,32 @@ verification:
   updated_by: "TESTER"
   note: "Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI 5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports terminal direct verification, immutable-head diffstat, streamed bounded verification output, and runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check gate."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T22:45:49.318Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "e2acc9d90c46ace69c61fa45916570949a86cc8a"
+  blueprint_digest: "f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461"
+  evidence_refs:
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608011949-1JRXBT/README.md"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The new verification executable allowlist rejects `bunx`, although the task’s first two mandatory Verify Steps invoke `bunx vitest`. Integration verification would therefore fail before starting those declared checks."
+    - "Frozen observed-check evidence contains a verification summary but no verification records, runner history, or runtime evidence, so the claimed successful checks cannot be deterministically inspected at the evaluated SHA."
 commit:
   hash: "e2acc9d90c46ace69c61fa45916570949a86cc8a"
   message: "🧩 1JRXBT release: assimilate 0.6.26 fixes"
