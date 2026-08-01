@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "`evaluator run --no-record` is assigned a read-only session but still writes a new evaluator evidence packet directly to the task quality directory."
 commit:
-  hash: "9ef73324a40ab1a66bd831eb2c31d2402c4fdb11"
-  message: "🔒 YD5J89 task: enforce evaluator run session authority"
+  hash: "e21e0b57359539eb2a365afca7353c4239d7f9bc"
+  message: "🔒 YD5J89 task: declare evaluator artifact authority"
 comments:
   -
     author: "CODER"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: evaluator run now selects read/write authority before CommandSession construction, with normal registry-dispatch denial coverage."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: evaluator preparation and no-record execution now use explicit artifact-write authority without task or Git mutation rights."
 events:
   -
     type: "status"
@@ -153,8 +156,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness."
+  -
+    type: "status"
+    at: "2026-08-01T02:22:46.707Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: evaluator preparation and no-record execution now use explicit artifact-write authority without task or Git mutation rights."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:14:12.145Z"
+doc_updated_at: "2026-08-01T02:22:46.707Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
