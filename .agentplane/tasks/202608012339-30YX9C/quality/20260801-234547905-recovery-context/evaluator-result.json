@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The documentation-path exception permits every file beneath website/static/img/social, including implementation or executable files that are not generated social-card artifacts.",
+      "broken_invariant": "A docs.change task may commit only documentation artifacts and must remain blocked from implementation-mutating paths; the approved scope authorizes generated social-card artifacts, not an unrestricted directory subtree.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:14a6b5e5c5733fc325032fdbd916593b2fa4b1b9ac523dadde79a54418b7b54f",
+          "line": 71
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/README.md",
+          "sha256": "sha256:6133ad898011f299ad9d170fb2a3f00b4dee252171030b9333746c154043e4bf",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Verify that a docs.change task is rejected when staging a non-artifact implementation or executable file such as website/static/img/social/generate.ts or website/static/img/social/build.sh.",
+    "Verify the complete intended allowlist of generated social-card artifact types and manifest paths independently, rather than only in one combined positive case."
+  ],
+  "hidden_assumptions": [
+    "Everything placed beneath website/static/img/social is assumed to be a generated documentation artifact regardless of file type or purpose.",
+    "The existing website/src negative case is assumed to prove implementation paths remain blocked even inside the newly exempted social-artifact subtree."
+  ],
+  "recovery_context": "Narrow the social-card exception to the canonical generated artifact paths or permitted artifact extensions, then add an adversarial negative test for implementation or executable content inside website/static/img/social and rerun the focused policy test and full documentation-site gate."
+}

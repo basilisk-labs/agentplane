@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608012339-30YX9C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T23:46:28.352Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "ad886bd07c86af5eb185b6b43ba3fea9f2b1d938",
+  "blueprint_digest": "c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e",
+  "findings": [
+    "The documentation-path exception permits every file beneath website/static/img/social, including implementation or executable files that are not generated social-card artifacts."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608012339-30YX9C/README.md"
+  ],
+  "missing_tests": [
+    "Verify that a docs.change task is rejected when staging a non-artifact implementation or executable file such as website/static/img/social/generate.ts or website/static/img/social/build.sh.",
+    "Verify the complete intended allowlist of generated social-card artifact types and manifest paths independently, rather than only in one combined positive case."
+  ],
+  "hidden_assumptions": [
+    "Everything placed beneath website/static/img/social is assumed to be a generated documentation artifact regardless of file type or purpose.",
+    "The existing website/src negative case is assumed to prove implementation paths remain blocked even inside the newly exempted social-artifact subtree."
+  ],
+  "residual_risks": [
+    "Narrow the social-card exception to the canonical generated artifact paths or permitted artifact extensions, then add an adversarial negative test for implementation or executable content inside website/static/img/social and rerun the focused policy test and full documentation-site gate."
+  ]
+}
