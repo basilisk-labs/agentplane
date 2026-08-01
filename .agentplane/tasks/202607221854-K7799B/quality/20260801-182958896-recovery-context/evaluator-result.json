@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The evaluated rework commit has no current deterministic verification evidence: the only verification note targets the preceding commit, while all structured verification collections are empty.",
+      "broken_invariant": "Pass requires verification evidence covering the evaluated SHA and the task's positive, negative, and concurrency-sensitive paths; DoD also requires exact commands, results, key output, and scope for every Verify Step.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/README.md",
+          "sha256": "sha256:3e9f35702e5a986731a5a459f4be95f66574bd5900e46239f59860f7010ece9c",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:96e2da1e692d0df2d7e8948408e9ed08fbaad5f22e9b0432fa126e90ecb26d02",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and record the focused layering regression tests against evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73.",
+    "Run and record bun run arch:check, bun run ci:contract, bun run guards:check, and bun run typecheck against the evaluated SHA, including exact result, key output, and coverage scope.",
+    "Record deterministic evidence for the required lifecycle-invariant and schema checks, or identify the declared command that transitively covers each requirement."
+  ],
+  "hidden_assumptions": [
+    "The verification results from commit 41212b7a1a8b remain valid after the OS-import guard and test changes in commit 48e131c52b3bf71d733a5fcd7ee9991efffe6d73.",
+    "The narrative verification note is assumed to satisfy the structured verification-evidence contract despite empty verification_records, runner_history, and runtime_evidence arrays."
+  ],
+  "recovery_context": "Re-run the focused and full declared verification suite at evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73 and freeze structured per-command evidence before repeating semantic evaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

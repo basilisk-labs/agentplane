@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221854-K7799B-170827062fd65a90a968fd32",
+  "prepared_at": "2026-08-01T18:29:58.896Z",
+  "task": {
+    "id": "202607221854-K7799B",
+    "revision": 11,
+    "objective": "Close all AgentPlane 0.7 architecture guard violations\n\nRF-27b: reduce the trust/architecture baseline to zero for automatic verdicts, agent-owned observations, untyped durable boundaries, shell orchestration, duplicate task views, undeclared capabilities, and direct OS/Git/network imports in migrated use cases.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bun run ci:contract",
+      "bun run guards:check",
+      "bun run typecheck",
+      "- In scope: eliminate every v0.7 ratchet baseline entry, tighten dependency rules, ensure new use cases use ports, remove compatibility code whose window ends at 0.7, and document any intentionally retained public v1 reader separately from violations.\n- Out of scope: hiding unresolved violations by broad exclusions or resetting the baseline upward.",
+      "1. Re-run every architecture/trust rule and assign each remaining violation to its owning migrated slice.\n2. Remove violations or replace them with explicit versioned compatibility adapters that satisfy the rule.\n3. Tighten dependency/import rules for new use cases and command sessions.\n4. Reduce the machine baseline to zero and prohibit recreation.\n5. Run full architecture, contract, lifecycle, schema, and type gates.",
+      "1. Run the trust-boundary checker and architecture guards. Expected: zero baseline violations and zero suppressions added for v0.7 paths.\n2. Search production for automatic verdicts, agent-writable observed fields, internal shell orchestration, unsafe durable casts, duplicate TaskData projections, and undeclared direct OS/Git/network imports. Expected: none remain.\n3. Exercise supported compatibility readers. Expected: they are versioned, tested adapters and cannot violate authority/provenance.\n4. Run guards, arch check, contract CI, lifecycle invariants, schemas, and typecheck."
+    ]
+  },
+  "evaluated_sha": "48e131c52b3bf71d733a5fcd7ee9991efffe6d73",
+  "diff_base_sha": "365bd520baed0eac843fe41eb5df7bd2a505c4ca",
+  "blueprint_digest": "e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221854-K7799B/README.md",
+      "sha256": "sha256:3e9f35702e5a986731a5a459f4be95f66574bd5900e46239f59860f7010ece9c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:06365ee46c8a94e83e06332172323a774178ef9e3ec5534306417fe2747599f3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:96e2da1e692d0df2d7e8948408e9ed08fbaad5f22e9b0432fa126e90ecb26d02",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:8a8522c4dd0ef8dda6336a52d69290b75dd5e1d50265c82751a640b4b1ad6893",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

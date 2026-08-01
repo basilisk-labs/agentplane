@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-K7799B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T18:36:07.279Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "48e131c52b3bf71d733a5fcd7ee9991efffe6d73",
+  "blueprint_digest": "e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f",
+  "findings": [
+    "The prior deterministic-evidence gap is resolved: current verification targets evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73 and covers the focused negative cases, architecture/trust gates, compatibility readers, schemas, lifecycle invariants, and type checking."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-K7799B/README.md",
+    ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen diff represents all implementation changes between diff_base_sha and evaluated_sha.",
+    "No concurrent writer modified the evaluated task worktree after the frozen evidence was prepared."
+  ],
+  "residual_risks": []
+}
