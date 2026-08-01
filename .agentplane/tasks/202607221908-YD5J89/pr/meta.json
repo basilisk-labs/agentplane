@@ -8,10 +8,10 @@
   "pr_number": 4716,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4716",
   "pre_merge_closure": {
-    "basis_commit": "67bc603c94ed475f796ae5f5aeba75b7c0666c19",
+    "basis_commit": "d183683d77ba264e8c6cded828fa6fbf019e7a7f",
     "branch": "task/202607221908-YD5J89/migrate-context-and-evaluator-command-boundaries",
     "pr_number": 4716,
-    "recorded_at": "2026-08-01T09:41:43.658Z",
+    "recorded_at": "2026-08-01T10:26:20.887Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

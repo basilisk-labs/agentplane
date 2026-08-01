@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on:
@@ -83,8 +83,8 @@ quality_review:
   findings:
     - "No contract-breaking defect was identified; the frozen diff and verification evidence cover typed in-process context/evaluator results, capability-scoped denial, artifact-only evaluator authority, and invocation-local concurrency isolation at the evaluated SHA."
 commit:
-  hash: "67bc603c94ed475f796ae5f5aeba75b7c0666c19"
-  message: "🧩 YD5J89 quality: record final evaluator pass"
+  hash: "d183683d77ba264e8c6cded828fa6fbf019e7a7f"
+  message: "🧪 YD5J89 quality: record merged-state evaluator pass"
 comments:
   -
     author: "CODER"
@@ -119,6 +119,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -304,8 +307,15 @@ events:
       Result: pass
       Evidence: the hosted failure reproduced locally as 10 deterministic E_VALIDATION failures across 3 lifecycle files; after the fixture fix all 17 tests pass repeatedly.
       Scope: regression reproduction and flake classification; deterministic integration defect, not a flake.
+  -
+    type: "status"
+    at: "2026-08-01T10:26:20.827Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T10:23:55.374Z"
+doc_updated_at: "2026-08-01T10:26:20.828Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -906,8 +916,8 @@ sections:
       Resolution: Map every backend, task, and Git member to one exact required capability and prove all four asymmetric cross-capability attempts are denied before underlying methods run.
 extensions:
   implementation_commit:
-    hash: "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557"
-    message: "🧩 YD5J89 code: restore evaluator read authority"
+    hash: "346e9681ba68631bd22d5e40c328654c30a8892e"
+    message: "🧹 YD5J89 quality: remove stale lint suppression"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
