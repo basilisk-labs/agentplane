@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608010431-WWQP4B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T08:31:42.735Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "0179801532c99db510bbcbbab1724561d8cab331",
+  "blueprint_digest": "636a8dcbfd32efc90e7ff96d659bce2e3bf154b9bd72a551263b5492de4c1abf",
+  "findings": [
+    "The frozen packet contains only a narrative verification assertion; it contains no command-level deterministic results proving the declared focused tests, typecheck, guards, or diff checks ran successfully against the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/tasks/202608010431-WWQP4B/README.md"
+  ],
+  "missing_tests": [
+    "Frozen command-level results for the focused evaluator suite, typecheck, guards, and git diff --check at evaluated SHA 0179801532c99db510bbcbbab1724561d8cab331."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note is assumed to be sufficient proof of execution despite the frozen packet containing no verification records, runner history, or runtime evidence."
+  ],
+  "residual_risks": [
+    "Rebuild the frozen review packet with deterministic command-level verification evidence tied to evaluated SHA 0179801532c99db510bbcbbab1724561d8cab331; the implementation diff itself shows the intended active-task exclusion and preservation of source, binary, rename, and unrelated-task changes."
+  ]
+}

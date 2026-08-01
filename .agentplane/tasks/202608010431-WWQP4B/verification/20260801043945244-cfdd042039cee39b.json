@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:cfdd042039cee39b0443e593ff22decf170cab90ea23af62f90abc2a46df388b",
+  "implementation_sha": "a6b5051e73fdbbcd59fce21ee4be58833775e0f5",
+  "kind": "task_verification_record",
+  "note": "Verified bounded evaluator evidence repair at a6b5051e7: focused evaluator suite 31/31, critical CLI 77/77, typecheck, schemas, guards/trust ratchet, lifecycle 8/8, Knip, lint, format, and diff checks passed.",
+  "recorded_at": "2026-08-01T04:39:45.244Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused evaluator diff/review suite. Expected: active-task generated artifacts are absent from actual_diff, source changes and other-task changes remain, and frozen digest validation still passes.\n2. Rebuild the YD5J89-style review surface before and after the change. Expected: exact line/byte counts decrease without removing task_document, blueprint, observed_checks, or policy evidence.\n3. Run typecheck and guards. Expected: no schema, trust-boundary, or lifecycle regression.\n4. Run git diff --check and inspect the final task scope. Expected: only evaluator evidence preparation, focused tests, and task artifacts changed.",
+  "scope_digest": "sha256:d45cd28a705b78674e597411823cb544ffe42b1af95af87368e653e743d421fa",
+  "task_id": "202608010431-WWQP4B",
+  "verification_command": "agentplane verify 202608010431-WWQP4B --ok --by TESTER",
+  "verifier": "TESTER"
+}

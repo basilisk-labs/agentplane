@@ -57,8 +57,7 @@ Created: 2026-08-01T00:38:26.423Z
  packages/agentplane/src/context/doctor.ts          |  60 ++-
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
- scripts/README.md                                  |  40 +-
- 29 files changed, 3012 insertions(+), 690 deletions(-)
+ 28 files changed, 2991 insertions(+), 671 deletions(-)
 ```
 
 </details>

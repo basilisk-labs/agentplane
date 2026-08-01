@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608010431-WWQP4B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T08:35:38.513Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "0179801532c99db510bbcbbab1724561d8cab331",
+  "blueprint_digest": "636a8dcbfd32efc90e7ff96d659bce2e3bf154b9bd72a551263b5492de4c1abf",
+  "findings": [
+    "The implementation excludes only the active task artifact subtree while retaining implementation changes and unrelated-task artifacts; frozen verification covers positive, negative, rename, binary, and scope-sensitive cases."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608010431-WWQP4B/verification/20260801083354942-8a620912490997fa.json",
+    ".agentplane/tasks/202608010431-WWQP4B/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "taskArtifactRoot is always a repository-relative path identifying exactly the active task subtree."
+  ],
+  "residual_risks": []
+}

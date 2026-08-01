@@ -1,0 +1,28 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run guards:check",
+    "bun run typecheck",
+    "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T08:33:54.942Z",
+    "updated_by": "TESTER",
+    "note": "Reverified provider-updated head 017980153: focused evaluator suite 31/31, typecheck, guards, generated-doc freshness, and scoped diff checks pass with command-level evidence."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608010431-WWQP4B/verification/20260801083354942-8a620912490997fa.json",
+      "sha256": "sha256:a9ab448bdd08d2bd946f513d5b15c0175a39fa5d1ec3d6db01f70446e7570457"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
