@@ -316,4 +316,94 @@ describe("CommandSession", () => {
         .map((event) => event.capability),
     ).toEqual(["task.write", "git.mutate"]);
   });
+
+  it("keeps backend, task, and Git authority asymmetric", async () => {
+    const writeTask = vi.fn(() => Promise.resolve());
+    const sync = vi.fn(() => Promise.resolve());
+    const headCommit = vi.fn(() => Promise.resolve("abc123"));
+    const stage = vi.fn(() => Promise.resolve());
+    const rawContext = {
+      resolvedProject: { gitRoot: "/repo" },
+      config: {},
+      taskBackend: {
+        id: "local",
+        capabilities: {},
+        getTask: vi.fn(() => Promise.resolve(null)),
+        listTasks: vi.fn(() => Promise.resolve([])),
+        writeTask,
+        sync,
+      },
+      backendId: "local",
+      backendConfigPath: "/repo/.agentplane/config.json",
+      git: { gitRoot: "/repo", headCommit, stage },
+      memo: {},
+    };
+    const makeScopedSession = (requirements: readonly CommandCapability[]) =>
+      createCommandSession({
+        command: "asymmetric capability test",
+        requirements,
+        resolvers: {
+          ...makeResolvers(),
+          getCtx: vi.fn(() => Promise.resolve(rawContext as never)),
+        },
+      }) as CommandSession<CommandCapability>;
+
+    const backendWriteSession = makeScopedSession(["project", "config", "backend.write"]);
+    const backendContext = await backendWriteSession.require(
+      "backend.write",
+      "asymmetric backend.write",
+    );
+    await expect(
+      Promise.resolve().then(() => backendContext.taskBackend.writeTask({ id: "TASK-1" } as never)),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const taskWriteSession = makeScopedSession(["project", "config", "task.write"]);
+    const taskContext = await taskWriteSession.require("task.write", "asymmetric task.write");
+    await expect(
+      Promise.resolve().then(() =>
+        taskContext.taskBackend.sync?.({
+          direction: "pull",
+          conflict: "fail",
+          quiet: true,
+          confirm: false,
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const gitMutationSession = makeScopedSession(["project", "config", "git.mutate"]);
+    const gitMutationContext = await gitMutationSession.require(
+      "git.mutate",
+      "asymmetric git.mutate",
+    );
+    await expect(
+      Promise.resolve().then(() => gitMutationContext.git.headCommit()),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const gitHeadSession = makeScopedSession(["project", "config", "git.head"]);
+    const gitHeadContext = await gitHeadSession.require("git.head", "asymmetric git.head");
+    await expect(
+      Promise.resolve().then(() => gitHeadContext.git.stage(["README.md"])),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    expect(writeTask).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+    expect(headCommit).not.toHaveBeenCalled();
+    expect(stage).not.toHaveBeenCalled();
+    expect(backendWriteSession.trace().at(-1)).toMatchObject({
+      capability: "task.write",
+      status: "denied",
+    });
+    expect(taskWriteSession.trace().at(-1)).toMatchObject({
+      capability: "backend.write",
+      status: "denied",
+    });
+    expect(gitMutationSession.trace().at(-1)).toMatchObject({
+      capability: "git.head",
+      status: "denied",
+    });
+    expect(gitHeadSession.trace().at(-1)).toMatchObject({
+      capability: "git.mutate",
+      status: "denied",
+    });
+  });
 });

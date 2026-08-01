@@ -4,17 +4,30 @@ import type { CommandCapability } from "./command-session.js";
 
 type CapabilityDenial = (capability: CommandCapability, operation: string) => never;
 
-const TASK_BACKEND_READ_MEMBERS = new Set<PropertyKey>([
+const BACKEND_READ_MEMBERS = new Set<PropertyKey>([
   "id",
   "capabilities",
-  "listTasks",
-  "getTask",
-  "getTasks",
   "listProjectionTasks",
   "getLastListWarnings",
   "observeProjection",
   "inspectConfiguration",
-  "getTaskDoc",
+]);
+const TASK_READ_MEMBERS = new Set<PropertyKey>(["listTasks", "getTask", "getTasks", "getTaskDoc"]);
+const BACKEND_WRITE_MEMBERS = new Set<PropertyKey>([
+  "assertLocalMutationReady",
+  "normalizeTasks",
+  "refreshProjection",
+  "refreshProjectionBeforeTaskStart",
+  "migrateCanonicalState",
+  "sync",
+]);
+const TASK_WRITE_MEMBERS = new Set<PropertyKey>([
+  "writeTask",
+  "writeTaskWithResult",
+  "writeTaskWithProjectionTransition",
+  "writeTasks",
+  "setTaskDoc",
+  "touchTaskDocMetadata",
   "generateTaskId",
 ]);
 
@@ -57,16 +70,15 @@ function createTaskBackendPort(opts: {
   deny: CapabilityDenial;
 }): CommandContext["taskBackend"] {
   const target = opts.command.taskBackend;
-  const canRead = opts.allowed.has("backend.read") || opts.allowed.has("task.read");
-  const canWrite = opts.allowed.has("backend.write") || opts.allowed.has("task.write");
   return new Proxy(target, {
     get: (backend, property, receiver) => {
       const value = Reflect.get(backend, property, receiver) as unknown;
       if (value === undefined) return;
-      if (canWrite || (canRead && TASK_BACKEND_READ_MEMBERS.has(property))) {
+      const capability = requiredTaskBackendCapability(property);
+      if (opts.allowed.has(capability)) {
         return boundValue(backend, property, receiver);
       }
-      return deniedValue(backend, property, "task.write", "taskBackend", opts.deny);
+      return deniedValue(backend, property, capability, "taskBackend", opts.deny);
     },
     set: (_backend, property) => opts.deny("task.write", operationName("taskBackend", property)),
     defineProperty: (_backend, property) =>
@@ -74,6 +86,14 @@ function createTaskBackendPort(opts: {
     deleteProperty: (_backend, property) =>
       opts.deny("task.write", operationName("taskBackend", property)),
   });
+}
+
+function requiredTaskBackendCapability(property: PropertyKey): CommandCapability {
+  if (BACKEND_READ_MEMBERS.has(property)) return "backend.read";
+  if (TASK_READ_MEMBERS.has(property)) return "task.read";
+  if (BACKEND_WRITE_MEMBERS.has(property)) return "backend.write";
+  if (TASK_WRITE_MEMBERS.has(property)) return "task.write";
+  return "backend.write";
 }
 
 function requiredGitCapability(property: PropertyKey): CommandCapability {
@@ -94,11 +114,7 @@ function createGitPort(opts: {
       const value = Reflect.get(git, property, receiver) as unknown;
       if (value === undefined) return;
       const capability = requiredGitCapability(property);
-      if (
-        opts.allowed.has("git.mutate") ||
-        (capability === "git.head" && opts.allowed.has("git.head")) ||
-        (capability === "git.diff" && opts.allowed.has("git.diff"))
-      ) {
+      if (opts.allowed.has(capability)) {
         return boundValue(git, property, receiver);
       }
       return deniedValue(git, property, capability, "git", opts.deny);
