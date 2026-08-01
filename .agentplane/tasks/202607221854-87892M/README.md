@@ -4,7 +4,7 @@ title: "Add fingerprinted preparation caches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -41,6 +41,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Benchmark verdict: no-go. Exact stdout remained unchanged, semantic/authority/provider results were never cached, and the complete prototype was removed because it failed the complexity threshold."
 events:
   -
     type: "status"
@@ -49,8 +52,13 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "comment"
+    at: "2026-08-01T16:38:49.110Z"
+    author: "CODER"
+    body: "Benchmark verdict: no-go. Exact stdout remained unchanged, semantic/authority/provider results were never cached, and the complete prototype was removed because it failed the complexity threshold."
 doc_version: 3
-doc_updated_at: "2026-08-01T15:52:24.480Z"
+doc_updated_at: "2026-08-01T16:38:49.110Z"
 doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
@@ -80,7 +88,10 @@ sections:
     - Disable and remove the selected cache adapters while retaining preparation instrumentation.
     - Purge only versioned cache entries through the bounded cache API.
     - Re-run cold-path correctness and compare to the pre-cache trace.
-  Findings: ""
+  Findings: |-
+    - Observation: The exact persistent Git snapshot cache improved warm task next-action latency by 3.94% across 25 external-process pairs, while a cold miss added 4.67%; command-local task snapshot coalescing improved 1.18%.
+      Impact: Neither candidate meets the declared 5% end-to-end threshold, so retaining the persistent cache would add invalidation, corruption, retention, and cross-process locking state without enough user-visible benefit.
+      Resolution: Reject and remove both prototypes; retain the benchmark artifact and route the next optimization toward parallel observation of independent Git inputs without persistent state.
 extensions:
   workflow_route_baseline:
     start_head_sha: "451a8a6e980f9f2724bce718e807a8675fd89eeb"
@@ -126,3 +137,7 @@ RF-26b: cache only measured expensive deterministic nodes by exact StateFingerpr
 - Re-run cold-path correctness and compare to the pre-cache trace.
 
 ## Findings
+
+- Observation: The exact persistent Git snapshot cache improved warm task next-action latency by 3.94% across 25 external-process pairs, while a cold miss added 4.67%; command-local task snapshot coalescing improved 1.18%.
+  Impact: Neither candidate meets the declared 5% end-to-end threshold, so retaining the persistent cache would add invalidation, corruption, retention, and cross-process locking state without enough user-visible benefit.
+  Resolution: Reject and remove both prototypes; retain the benchmark artifact and route the next optimization toward parallel observation of independent Git inputs without persistent state.
