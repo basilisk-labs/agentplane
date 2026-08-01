@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -34,11 +34,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "cd1c7119b85dd9e524e52293da33684a847ddabd"
+  message: "🔄 4FNZPG task: merge current main for release verification"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation recorded: installed-tarball migration matrix covers fresh installs, active upgrades from v0.6.24 and v0.6.26 in direct and branch_pr, task README v2/v3, and exact WORKFLOW v1 rollback; current main is merged for final release verification."
 events:
   -
     type: "status"
@@ -47,9 +52,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T20:24:53.056Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: installed-tarball migration matrix covers fresh installs, active upgrades from v0.6.24 and v0.6.26 in direct and branch_pr, task README v2/v3, and exact WORKFLOW v1 rollback; current main is merged for final release verification."
 doc_version: 3
-doc_updated_at: "2026-08-01T19:31:50.730Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-08-01T20:24:53.056Z"
+doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
   Summary: |-
