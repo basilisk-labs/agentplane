@@ -1,10 +1,11 @@
 ---
 id: "202607221908-7WV0A7"
 title: "Migrate provider, integration, release, and ops command boundaries"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +66,8 @@ quality_review:
   findings:
     - "No contract-breaking findings identified."
 commit:
-  hash: "d53ad1acb3f9473a2f5e493035b8bb8ba7b049fa"
-  message: "♻️ 7WV0A7 task: migrate provider and release command sessions"
+  hash: "b14fb5a947953302d509b2ec77947da6595123de"
+  message: "✅ 7WV0A7 task: record passing semantic review"
 comments:
   -
     author: "CODER"
@@ -74,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: provider, integration, release, hosted-close, cleanup, and local work commands now declare authority-aware CommandSession profiles; group commands no longer prepare broad context; focused and critical verification passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -107,8 +111,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: semantic rework verified at 8c8bf30b4b6f with measured effects and SHA-bound recovery evidence."
+  -
+    type: "status"
+    at: "2026-08-01T12:37:06.160Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T12:30:06.049Z"
+doc_updated_at: "2026-08-01T12:37:06.161Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers."
 sections:
@@ -351,6 +362,9 @@ sections:
       Impact: Read-oriented commands prepared backend/task write and Git mutation capabilities unnecessarily, while queue and release outputs still coupled typed orchestration data to CLI rendering.
       Resolution: Split exact local-read, provider-read, task-provider-read, and execution profiles; select release and run-next sessions from parsed intent; make queue list side-effect free; add typed list, doctor, and release-plan results with audit metadata plus separate compatibility renderers; verify negative authority, recovery, human/JSON parity, and exact-SHA paths.
 extensions:
+  implementation_commit:
+    hash: "8c8bf30b4b6fe5fd3cce7d6be67eeb7267834290"
+    message: "♻️ 7WV0A7 task: measure release plan effects"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
