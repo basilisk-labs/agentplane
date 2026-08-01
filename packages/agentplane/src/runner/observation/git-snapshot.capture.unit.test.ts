@@ -18,7 +18,7 @@ afterEach(async () => {
 });
 
 describe("Git snapshot capture scheduling", () => {
-  it("starts independent root, HEAD, status, and index observations before awaiting results", async () => {
+  it("starts independent root, HEAD, canonical status, and index observations before awaiting results", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-snapshot-parallel-"));
     tempRoots.push(root);
     let releaseObservations: (() => void) | undefined;
@@ -40,7 +40,7 @@ describe("Git snapshot capture scheduling", () => {
     );
 
     const capture = captureGitSnapshot({ repository_root: root });
-    await vi.waitFor(() => expect(mocks.execFileAsync).toHaveBeenCalledTimes(5));
+    await vi.waitFor(() => expect(mocks.execFileAsync).toHaveBeenCalledTimes(4));
     const calls = mocks.execFileAsync.mock.calls as unknown as [
       string,
       readonly string[],
@@ -51,8 +51,10 @@ describe("Git snapshot capture scheduling", () => {
       "rev-parse",
       "status",
       "ls-files",
-      "ls-files",
     ]);
+    expect(calls[2]?.[1]).toContain("--untracked-files=all");
+    expect(calls.some(([, args]) => args.includes("--untracked-files=no"))).toBe(false);
+    expect(calls.some(([, args]) => args.includes("--others"))).toBe(false);
 
     releaseObservations?.();
     const snapshot = await capture;
