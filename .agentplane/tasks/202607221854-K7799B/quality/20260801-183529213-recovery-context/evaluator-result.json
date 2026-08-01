@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The prior deterministic-evidence gap is resolved: current verification targets evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73 and covers the focused negative cases, architecture/trust gates, compatibility readers, schemas, lifecycle invariants, and type checking.",
+      "broken_invariant": "No invariant remains broken; the recovery requirement that verification evidence match the evaluated implementation SHA is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/README.md",
+          "sha256": "sha256:14422b9cacf31915e4f57c569d7c2b8365a995be9ec81e1e6e1260b8b46f47d0",
+          "section": "Verification and Findings"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:413511bbd5f11254274a14e63fc46290f257828a11cc221ca5e32d1a265693f4",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:06365ee46c8a94e83e06332172323a774178ef9e3ec5534306417fe2747599f3",
+          "section": "packages/agentplane/src/commands/doctor/layering.test.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen diff represents all implementation changes between diff_base_sha and evaluated_sha.",
+    "No concurrent writer modified the evaluated task worktree after the frozen evidence was prepared."
+  ]
+}

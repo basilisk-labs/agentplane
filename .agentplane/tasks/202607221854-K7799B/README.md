@@ -1,10 +1,11 @@
 ---
 id: "202607221854-K7799B"
 title: "Close all AgentPlane 0.7 architecture guard violations"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -40,39 +41,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T18:25:54.518Z"
+  updated_at: "2026-08-01T18:35:15.026Z"
   updated_by: "TESTER"
-  note: "Verified commit 41212b7a1a8b: reproduced the pre-fix ap doctor --dev E_INTERNAL/ENOENT on missing src/usecases; post-fix doctor --dev passes. Focused layering regressions: 4/4 pass. Compatibility matrix (run-repository v1, evaluator legacy facade, integration queue legacy reader): 46/46 pass. Full gates: ci:contract pass; typecheck pass; guards/trust ratchet pass with 0 reviewed violations; arch check pass with 0 dependency violations; critical CLI 12/12 chunks pass. Flake classification: none; one expected stale-dist gate required framework bootstrap after source mutation and then passed."
+  note: "Fresh verification for implementation SHA 48e131c52b3b. Per-command Command/Result/Evidence/Scope records are stored in Findings. Focused layering: 5/5 pass; doctor --dev: errors=0/OK; trust ratchet: 0; architecture violations: 0; typecheck: pass; compatibility readers: 42/42 pass; ci:contract: pass including schemas and 8 lifecycle invariants. Flake classification: none; no test retries."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T18:27:10.687Z"
+  updated_at: "2026-08-01T18:36:07.279Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "41212b7a1a8b7127e773a587b652701298477648"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "48e131c52b3bf71d733a5fcd7ee9991efffe6d73"
   blueprint_digest: "e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221854-K7799B/README.md"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-K7799B/quality/20260801-183529213-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The tightened use-case import guard still permits direct operating-system access through node:os or os, so it cannot enforce the declared zero-violation boundary for direct OS imports."
-    - "The frozen verification evidence contains only a combined narrative assertion: it has no per-command records, runner history, runtime evidence, exact key output, or coverage scope for the declared gates."
+    - "The prior deterministic-evidence gap is resolved: current verification targets evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73 and covers the focused negative cases, architecture/trust gates, compatibility readers, schemas, lifecycle invariants, and type checking."
 commit:
-  hash: "41212b7a1a8b7127e773a587b652701298477648"
-  message: "🧱 K7799B architecture: harden source layering guard"
+  hash: "48e131c52b3bf71d733a5fcd7ee9991efffe6d73"
+  message: "🧱 K7799B architecture: cover OS imports and rework evidence"
 comments:
   -
     author: "CODER"
@@ -80,6 +79,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: centralize source-layer checks, make the incremental clean-usecase root optional for doctor, and reject literal OS/Git/network imports including re-exports, dynamic imports, and require calls."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: reject node:os/os and add equivalent ports-root coverage for static imports, re-exports, dynamic imports, and require calls."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -101,8 +106,28 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified commit 41212b7a1a8b: reproduced the pre-fix ap doctor --dev E_INTERNAL/ENOENT on missing src/usecases; post-fix doctor --dev passes. Focused layering regressions: 4/4 pass. Compatibility matrix (run-repository v1, evaluator legacy facade, integration queue legacy reader): 46/46 pass. Full gates: ci:contract pass; typecheck pass; guards/trust ratchet pass with 0 reviewed violations; arch check pass with 0 dependency violations; critical CLI 12/12 chunks pass. Flake classification: none; one expected stale-dist gate required framework bootstrap after source mutation and then passed."
+  -
+    type: "status"
+    at: "2026-08-01T18:29:09.006Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: reject node:os/os and add equivalent ports-root coverage for static imports, re-exports, dynamic imports, and require calls."
+  -
+    type: "verify"
+    at: "2026-08-01T18:35:15.026Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Fresh verification for implementation SHA 48e131c52b3b. Per-command Command/Result/Evidence/Scope records are stored in Findings. Focused layering: 5/5 pass; doctor --dev: errors=0/OK; trust ratchet: 0; architecture violations: 0; typecheck: pass; compatibility readers: 42/42 pass; ci:contract: pass including schemas and 8 lifecycle invariants. Flake classification: none; no test retries."
+  -
+    type: "status"
+    at: "2026-08-01T18:36:50.671Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T18:25:55.275Z"
+doc_updated_at: "2026-08-01T18:36:50.672Z"
 doc_updated_by: "CODER"
 description: "RF-27b: reduce the trust/architecture baseline to zero for automatic verdicts, agent-owned observations, untyped durable boundaries, shell orchestration, duplicate task views, undeclared capabilities, and direct OS/Git/network imports in migrated use cases."
 sections:
@@ -156,6 +181,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T18:35:15.026Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh verification for implementation SHA 48e131c52b3b. Per-command Command/Result/Evidence/Scope records are stored in Findings. Focused layering: 5/5 pass; doctor --dev: errors=0/OK; trust ratchet: 0; architecture violations: 0; typecheck: pass; compatibility readers: 42/42 pass; ci:contract: pass including schemas and 8 lifecycle invariants. Flake classification: none; no test retries.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T18:35:04.566Z, excerpt_hash=sha256:b77dc4d1c865ee15604ef604ab4ac950cd1d06c9fcf6b52a8b1314cac0710858
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-K7799B-close-all-agentplane-0-7-architecture-guard-viol/.agentplane/tasks/202607221854-K7799B/blueprint/resolved-snapshot.json
+    - old_digest: e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f
+    - current_digest: e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-K7799B
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221854-K7799B
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the guard-closing changes together with any dependent contract removal.
@@ -165,6 +220,38 @@ sections:
     - Observation: The doctor and architecture tests had duplicated scanners; doctor treated the incremental clean-usecase directory as mandatory and crashed when it was absent.
       Impact: A green architecture test did not guarantee that the operator-facing dev doctor could execute, and the duplicated import lists could drift.
       Resolution: Use the doctor scanner as the single contract, accept an absent optional clean-usecase root, expand literal OS/Git/network detection, and cover static imports, re-exports, dynamic imports, require calls, and direct CLI adapter imports.
+
+    - Observation: Command: bunx --no-install vitest --config vitest.workspace.ts run packages/agentplane/src/commands/doctor/layering.test.ts packages/agentplane/src/architecture/layering.imports.test.ts --reporter=dot. Result: pass. Evidence: 2 files passed; 5 tests passed; includes missing usecases root, OS/Git/network forms in usecases and ports, and direct CLI adapter imports.
+      Impact: Scope: focused positive and negative regression surface for the shared doctor/architecture layering scanner at implementation SHA 48e131c52b3b.
+      Resolution: Accepted as focused regression evidence; no flake or retry observed.
+
+    - Observation: Command: ap doctor --dev. Result: pass. Evidence: source layering completed; errors=0; doctor OK. Four unrelated existing archive/state warnings remained non-blocking.
+      Impact: Scope: operator-facing monorepo dev doctor, including the previously crashing absent clean-usecase directory path.
+      Resolution: Accepted as reproduction-to-fix evidence for the original E_INTERNAL/ENOENT failure.
+
+    - Observation: Command: bun run guards:check. Result: pass. Evidence: shared guards OK; trust-boundary ratchet OK with 0 reviewed violations.
+      Impact: Scope: automatic semantic verdicts, agent-writable observed fields, implicit danger sandbox, untyped durable boundaries, rendered command orchestration, and duplicate runner task representations.
+      Resolution: Accepted as zero active trust-baseline evidence with no suppression or baseline increase.
+
+    - Observation: Command: bun run arch:check. Result: pass. Evidence: known dependency violations count=0/max=0; dependency-cruiser reported no violations for every package and command-family graph.
+      Impact: Scope: circularity, command-catalog cycles, resolution, core/recipes layering, and runtime-to-testkit boundaries across the repository.
+      Resolution: Accepted as full architecture dependency-matrix evidence.
+
+    - Observation: Command: bun run typecheck. Result: pass. Evidence: run-typescript-build.mjs exited 0 using the configured native TypeScript 7 typecheck lane.
+      Impact: Scope: workspace TypeScript contracts affected by the shared scanner and its tests.
+      Resolution: Accepted as compile-time contract evidence.
+
+    - Observation: Command: bunx --no-install vitest --config vitest.workspace.ts run packages/agentplane/src/runner/run-repository-compat.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts --pool=forks --maxWorkers=4 --testTimeout=60000 --hookTimeout=60000 --reporter=dot. Result: pass. Evidence: 3 files passed; 42 tests passed.
+      Impact: Scope: versioned runner repository compatibility, evaluator legacy facade, and integration-queue legacy reader authority/provenance behavior.
+      Resolution: Accepted as supported compatibility-reader matrix evidence.
+
+    - Observation: Command: bun run ci:contract. Result: pass. Evidence: schemas OK; lifecycle invariant check OK with 8 invariants; policy/agents/docs/release parity, guards, lint, architecture, clone, Knip, and coverage threshold checks passed.
+      Impact: Scope: repository-wide contract gate, including the task's required schema and lifecycle surfaces plus downstream static compatibility.
+      Resolution: Accepted as full-gate evidence; no flake or retry observed on the evaluated implementation.
+
+    - Observation: The prior verification record targeted SHA 41212b7a1a8b and could not verify the OS-import rework commit.
+      Impact: Semantic quality review was correctly blocked because deterministic evidence was stale for SHA 48e131c52b3b.
+      Resolution: Re-ran every declared gate and focused/compatibility matrices against the current implementation, then recorded exact command-level evidence in task Findings.
 extensions:
   workflow_route_baseline:
     start_head_sha: "365bd520baed0eac843fe41eb5df7bd2a505c4ca"
@@ -230,6 +317,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T18:35:15.026Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh verification for implementation SHA 48e131c52b3b. Per-command Command/Result/Evidence/Scope records are stored in Findings. Focused layering: 5/5 pass; doctor --dev: errors=0/OK; trust ratchet: 0; architecture violations: 0; typecheck: pass; compatibility readers: 42/42 pass; ci:contract: pass including schemas and 8 lifecycle invariants. Flake classification: none; no test retries.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T18:35:04.566Z, excerpt_hash=sha256:b77dc4d1c865ee15604ef604ab4ac950cd1d06c9fcf6b52a8b1314cac0710858
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-K7799B-close-all-agentplane-0-7-architecture-guard-viol/.agentplane/tasks/202607221854-K7799B/blueprint/resolved-snapshot.json
+- old_digest: e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f
+- current_digest: e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-K7799B
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221854-K7799B
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -243,3 +360,35 @@ DecisionContextRef:
 - Observation: The doctor and architecture tests had duplicated scanners; doctor treated the incremental clean-usecase directory as mandatory and crashed when it was absent.
   Impact: A green architecture test did not guarantee that the operator-facing dev doctor could execute, and the duplicated import lists could drift.
   Resolution: Use the doctor scanner as the single contract, accept an absent optional clean-usecase root, expand literal OS/Git/network detection, and cover static imports, re-exports, dynamic imports, require calls, and direct CLI adapter imports.
+
+- Observation: Command: bunx --no-install vitest --config vitest.workspace.ts run packages/agentplane/src/commands/doctor/layering.test.ts packages/agentplane/src/architecture/layering.imports.test.ts --reporter=dot. Result: pass. Evidence: 2 files passed; 5 tests passed; includes missing usecases root, OS/Git/network forms in usecases and ports, and direct CLI adapter imports.
+  Impact: Scope: focused positive and negative regression surface for the shared doctor/architecture layering scanner at implementation SHA 48e131c52b3b.
+  Resolution: Accepted as focused regression evidence; no flake or retry observed.
+
+- Observation: Command: ap doctor --dev. Result: pass. Evidence: source layering completed; errors=0; doctor OK. Four unrelated existing archive/state warnings remained non-blocking.
+  Impact: Scope: operator-facing monorepo dev doctor, including the previously crashing absent clean-usecase directory path.
+  Resolution: Accepted as reproduction-to-fix evidence for the original E_INTERNAL/ENOENT failure.
+
+- Observation: Command: bun run guards:check. Result: pass. Evidence: shared guards OK; trust-boundary ratchet OK with 0 reviewed violations.
+  Impact: Scope: automatic semantic verdicts, agent-writable observed fields, implicit danger sandbox, untyped durable boundaries, rendered command orchestration, and duplicate runner task representations.
+  Resolution: Accepted as zero active trust-baseline evidence with no suppression or baseline increase.
+
+- Observation: Command: bun run arch:check. Result: pass. Evidence: known dependency violations count=0/max=0; dependency-cruiser reported no violations for every package and command-family graph.
+  Impact: Scope: circularity, command-catalog cycles, resolution, core/recipes layering, and runtime-to-testkit boundaries across the repository.
+  Resolution: Accepted as full architecture dependency-matrix evidence.
+
+- Observation: Command: bun run typecheck. Result: pass. Evidence: run-typescript-build.mjs exited 0 using the configured native TypeScript 7 typecheck lane.
+  Impact: Scope: workspace TypeScript contracts affected by the shared scanner and its tests.
+  Resolution: Accepted as compile-time contract evidence.
+
+- Observation: Command: bunx --no-install vitest --config vitest.workspace.ts run packages/agentplane/src/runner/run-repository-compat.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/integrate-queue-lane.test.ts --pool=forks --maxWorkers=4 --testTimeout=60000 --hookTimeout=60000 --reporter=dot. Result: pass. Evidence: 3 files passed; 42 tests passed.
+  Impact: Scope: versioned runner repository compatibility, evaluator legacy facade, and integration-queue legacy reader authority/provenance behavior.
+  Resolution: Accepted as supported compatibility-reader matrix evidence.
+
+- Observation: Command: bun run ci:contract. Result: pass. Evidence: schemas OK; lifecycle invariant check OK with 8 invariants; policy/agents/docs/release parity, guards, lint, architecture, clone, Knip, and coverage threshold checks passed.
+  Impact: Scope: repository-wide contract gate, including the task's required schema and lifecycle surfaces plus downstream static compatibility.
+  Resolution: Accepted as full-gate evidence; no flake or retry observed on the evaluated implementation.
+
+- Observation: The prior verification record targeted SHA 41212b7a1a8b and could not verify the OS-import rework commit.
+  Impact: Semantic quality review was correctly blocked because deterministic evidence was stale for SHA 48e131c52b3b.
+  Resolution: Re-ran every declared gate and focused/compatibility matrices against the current implementation, then recorded exact command-level evidence in task Findings.

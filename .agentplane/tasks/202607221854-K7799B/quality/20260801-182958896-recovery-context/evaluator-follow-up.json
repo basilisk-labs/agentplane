@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221854-K7799B-170827062fd65a90a968fd32",
+  "task_id": "202607221854-K7799B",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Re-run the focused and full declared verification suite at evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73 and freeze structured per-command evidence before repeating semantic evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The evaluated rework commit has no current deterministic verification evidence: the only verification note targets the preceding commit, while all structured verification collections are empty.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/README.md",
+          "sha256": "sha256:3e9f35702e5a986731a5a459f4be95f66574bd5900e46239f59860f7010ece9c",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:96e2da1e692d0df2d7e8948408e9ed08fbaad5f22e9b0432fa126e90ecb26d02",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-result.json"
+}

@@ -6,14 +6,14 @@ Created: 2026-08-01T18:07:23.250Z
 
 - Task: `202607221854-K7799B`
 - Title: Close all AgentPlane 0.7 architecture guard violations
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221854-K7799B/close-all-agentplane-0-7-architecture-guard-viol`
 - Canonical task record: `.agentplane/tasks/202607221854-K7799B/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified commit 41212b7a1a8b: reproduced the pre-fix ap doctor --dev E_INTERNAL/ENOENT on missing src/usecases; post-fix doctor --dev passes. Focused layering regressions: 4/4 pass. Compatibility matrix (run-repository v1, evaluator legacy facade, integration queue legacy reader): 46/46 pass. Full gates: ci:contract pass; typecheck pass; guards/trust ratchet pass with 0 reviewed violations; arch check pass with 0 dependency violations; critical CLI 12/12 chunks pass. Flake classification: none; one expected stale-dist gate required framework bootstrap after source mutation and then passed.
+- Note: Fresh verification for implementation SHA 48e131c52b3b. Per-command Command/Result/Evidence/Scope records are stored in Findings. Focused layering: 5/5 pass; doctor --dev: errors=0/OK; trust ratchet: 0; architecture violations: 0; typecheck: pass; compatibility readers: 42/42 pass; ci:contract: pass including schemas and 8 lifecycle invariants. Flake classification: none; no test retries.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

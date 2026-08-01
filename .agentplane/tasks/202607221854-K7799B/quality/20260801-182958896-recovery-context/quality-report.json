@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-K7799B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T18:30:42.378Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "48e131c52b3bf71d733a5fcd7ee9991efffe6d73",
+  "blueprint_digest": "e9c3504d1f354ef743f0544f58c59c7926529573d244f755a901af02057bb02f",
+  "findings": [
+    "The evaluated rework commit has no current deterministic verification evidence: the only verification note targets the preceding commit, while all structured verification collections are empty."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-K7799B/README.md",
+    ".agentplane/tasks/202607221854-K7799B/quality/20260801-182958896-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "Run and record the focused layering regression tests against evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73.",
+    "Run and record bun run arch:check, bun run ci:contract, bun run guards:check, and bun run typecheck against the evaluated SHA, including exact result, key output, and coverage scope.",
+    "Record deterministic evidence for the required lifecycle-invariant and schema checks, or identify the declared command that transitively covers each requirement."
+  ],
+  "hidden_assumptions": [
+    "The verification results from commit 41212b7a1a8b remain valid after the OS-import guard and test changes in commit 48e131c52b3bf71d733a5fcd7ee9991efffe6d73.",
+    "The narrative verification note is assumed to satisfy the structured verification-evidence contract despite empty verification_records, runner_history, and runtime_evidence arrays."
+  ],
+  "residual_risks": [
+    "Re-run the focused and full declared verification suite at evaluated SHA 48e131c52b3bf71d733a5fcd7ee9991efffe6d73 and freeze structured per-command evidence before repeating semantic evaluation."
+  ]
+}
