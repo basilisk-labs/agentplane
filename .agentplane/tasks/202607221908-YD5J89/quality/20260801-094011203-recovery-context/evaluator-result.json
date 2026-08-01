@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "No contract-breaking defect was identified; frozen verification covers typed in-process results, read-only mutation denial, artifact-only authority, and concurrent session isolation at the evaluated SHA.",
+      "broken_invariant": "No invariant is broken; the implementation and deterministic evidence satisfy the task's positive, negative, and concurrency-sensitive requirements.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:5bed46b72a0a95675a1415922980ae985a49bfbdcb34493c591144841b7938d1",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:37bee03a16afd11a88e6e1ed8e0bb099fd6f337e582f8a65b0f3afd9c6f5fb28",
+          "section": "context/evaluator capability profiles, conditional sessions, typed handlers, and regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/verification/20260801093951504-893338dfb120657f.json",
+          "sha256": "sha256:3cdbc40f7278f1f1e59c6cde08c7f2b20e59bdb2ef6298bc81424821218249da",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b3cf48f3938ccad576dec4161a35c7119cc5994fe367b0b72303a3ca8c5386ad",
+          "section": "verification_records"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The recorded deterministic commands are assumed to have run against the clean evaluated SHA stated in the immutable verification record."
+  ]
+}
