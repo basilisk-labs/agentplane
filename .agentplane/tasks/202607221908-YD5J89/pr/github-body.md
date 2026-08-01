@@ -19,8 +19,8 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 - Note:
 
 ```text
-Focused 97/97, doctor/wiki 20/20, critical 12/12 chunks (77 tests), format, schemas, guards, TS7
-typecheck, full lint, architecture, knip, and diff checks passed.
+Post-rework verification passed: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7
+typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39.
 ```
 - Canonical workflow state lives in the task README.
 
