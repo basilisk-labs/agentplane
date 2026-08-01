@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "The new evaluator.artifacts.write capability is not a confined artifact-write port: resolving it returns the full CommandContext, so a no-record evaluator handler can access broader mutation facilities without requesting task.write."
 commit:
-  hash: "e21e0b57359539eb2a365afca7353c4239d7f9bc"
-  message: "🔒 YD5J89 task: declare evaluator artifact authority"
+  hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
+  message: "🔐 YD5J89 task: confine evaluator artifact preparation"
 comments:
   -
     author: "CODER"
@@ -89,6 +89,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: evaluator preparation and no-record execution now use explicit artifact-write authority without task or Git mutation rights."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: evaluator preparation now resolves a path-confined frozen port and no-record handlers cannot obtain CommandContext, task, Git, backend, approval, or generic file-write services."
 events:
   -
     type: "status"
@@ -169,8 +172,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed."
+  -
+    type: "status"
+    at: "2026-08-01T02:41:38.563Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: evaluator preparation now resolves a path-confined frozen port and no-record handlers cannot obtain CommandContext, task, Git, backend, approval, or generic file-write services."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:23:08.424Z"
+doc_updated_at: "2026-08-01T02:41:38.563Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
