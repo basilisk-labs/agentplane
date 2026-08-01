@@ -4,7 +4,7 @@ title: "Archive resolved RF-24/RF-25 help snapshot incident"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-01T20:10:28.900Z"
+  updated_by: "TESTER"
+  note: "PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings."
   attempts: 0
 commit:
   hash: "5832d8fed38943727e4380d3aefc472f822f10c1"
@@ -59,8 +59,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation recorded: archived INC-20260801-01 with merged-main and focused regression evidence; active source and packaged registries are empty and synchronized."
+  -
+    type: "verify"
+    at: "2026-08-01T20:10:28.900Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:09:17.615Z"
+doc_updated_at: "2026-08-01T20:10:29.773Z"
 doc_updated_by: "DOCS"
 description: "Reconcile INC-20260801-01 against merged main evidence, preserve its final state in the historical archive, remove it from the active source and packaged registries, and reopen the release gates without changing runtime behavior."
 sections:
@@ -81,6 +87,36 @@ sections:
     6. Run `git diff --check` and inspect all tracked/untracked paths. Expected: only the approved incident archive, mirrored active registry, and task artifacts changed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-01T20:10:28.900Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T20:09:17.615Z, excerpt_hash=sha256:ab014caf7cd2ae6d74516e52c75be5aae8450a7578d0e385ab02562a6007437e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608011958-EMTWRX-archive-resolved-rf-24-rf-25-help-snapshot-incid/.agentplane/tasks/202608011958-EMTWRX/blueprint/resolved-snapshot.json
+    - old_digest: 565fcfd0088aebd9e02c6a8fd1602f53946eb082a29fa0d4760c15f7f70c5703
+    - current_digest: 565fcfd0088aebd9e02c6a8fd1602f53946eb082a29fa0d4760c15f7f70c5703
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608011958-EMTWRX
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608011958-EMTWRX
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -126,6 +162,36 @@ Reconcile INC-20260801-01 against merged main evidence, preserve its final state
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-01T20:10:28.900Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T20:09:17.615Z, excerpt_hash=sha256:ab014caf7cd2ae6d74516e52c75be5aae8450a7578d0e385ab02562a6007437e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608011958-EMTWRX-archive-resolved-rf-24-rf-25-help-snapshot-incid/.agentplane/tasks/202608011958-EMTWRX/blueprint/resolved-snapshot.json
+- old_digest: 565fcfd0088aebd9e02c6a8fd1602f53946eb082a29fa0d4760c15f7f70c5703
+- current_digest: 565fcfd0088aebd9e02c6a8fd1602f53946eb082a29fa0d4760c15f7f70c5703
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608011958-EMTWRX
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608011958-EMTWRX
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

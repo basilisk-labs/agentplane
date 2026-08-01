@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:65ce8a3a85b7ff7872c1861904fba8d1af20b51f5b4427c9c5282a404633b255",
+  "implementation_sha": "a544a527fcf6940a683bf97aec4afe33c2b65a7b",
+  "kind": "task_verification_record",
+  "note": "PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings.",
+  "recorded_at": "2026-08-01T20:10:28.900Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-snap.test.ts`. Expected: the merged help registry snapshot remains green.\n2. Run `bun run release:incidents:check`. Expected: no active incident blocks release.\n3. Run `bun run assets:builtin:check` and compare the active source and packaged incident registries. Expected: builtin assets are fresh and the registries are byte-identical.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing and size budgets pass.\n5. Run `agentplane doctor`. Expected: exit 0 with no errors; unrelated historical warnings are recorded as residual findings.\n6. Run `git diff --check` and inspect all tracked/untracked paths. Expected: only the approved incident archive, mirrored active registry, and task artifacts changed.",
+  "scope_digest": "sha256:ab014caf7cd2ae6d74516e52c75be5aae8450a7578d0e385ab02562a6007437e",
+  "task_id": "202608011958-EMTWRX",
+  "verification_command": "agentplane verify 202608011958-EMTWRX --ok --by TESTER",
+  "verifier": "TESTER"
+}
