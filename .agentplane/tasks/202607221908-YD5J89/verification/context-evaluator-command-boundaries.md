@@ -7,6 +7,7 @@
 - Context search, show, ingest, reindex, wiki, graph, and doctor operations expose typed in-process results. CLI rendering remains at compatibility-handler edges.
 - `context supervise-task` invokes the typed evaluator use case with the same prepared `CommandContext`; no subprocess or stdout capture is used for orchestration.
 - `context learn files`, `learn changes`, `learn tasks`, and `harvest tasks` reuse the session-owned `CommandContext` instead of loading it a second time.
+- `context verify-task` resolves a read-only task session once; `context finalize-task` resolves a task-write session once and passes that context through final verification.
 - Existing human and JSON output contracts remain unchanged; existing schema versions and durable evaluator/context artifacts were preserved.
 
 ## Capability evidence
@@ -18,7 +19,7 @@
 
 ## Verification commands
 
-- Focused context/evaluator/catalog suite: 12 files, 97 tests passed.
+- Focused context/evaluator/catalog suite: 12 files, 98 tests passed.
 - Doctor/wiki compatibility suite: 4 files, 20 tests passed.
 - Critical CLI suite: 12 of 12 chunks passed, 77 tests total.
 - `bun run format:check`: passed.
@@ -34,3 +35,7 @@
 ## Residual boundary
 
 Capability resolution still materializes the shared `CommandContext` behind granular session capabilities. This slice removes broad declaration and duplicate loading, but per-capability physical context objects remain a later infrastructure concern rather than a compatibility change for 0.7.
+
+## Semantic review rework
+
+The first EVALUATOR review found that `context verify-task` and `context finalize-task` were still declared project-only while loading task context internally. The rework added explicit task-read/task-write profiles, injected the session-owned context into both handlers, and added regression coverage for single context resolution.

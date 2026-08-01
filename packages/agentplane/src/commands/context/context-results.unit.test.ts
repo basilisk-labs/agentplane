@@ -10,7 +10,11 @@ import { inspectContextHealth } from "../../context/doctor.js";
 import { runContextReindex } from "../../context/reindex.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { makeRunContextLearnFilesHandler } from "./context-runner.js";
+import {
+  makeRunContextFinalizeTaskHandler,
+  makeRunContextLearnFilesHandler,
+  makeRunContextVerifyTaskHandler,
+} from "./context-runner.js";
 import { summarizeContextGraph } from "./graph.js";
 import { searchContext } from "./search.js";
 import { showContext } from "./show.js";
@@ -132,5 +136,40 @@ describe("typed context command results", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("routes task-aware verify and finalize commands through their session-owned context", async () => {
+    const root = await tempRoot();
+    const command = { resolvedProject: { gitRoot: root } } as CommandContext;
+    const readContext = vi.fn(() => Promise.resolve(command));
+    const writeContext = vi.fn(() => Promise.resolve(command));
+    const verifyTask = vi.fn(() => Promise.resolve(0));
+    const finalizeTask = vi.fn(() => Promise.resolve(0));
+    const ctx = { cwd: root, rootOverride: undefined };
+
+    await makeRunContextVerifyTaskHandler({ getCommandContext: readContext }, verifyTask)(ctx, {
+      taskId: "CTX-READ",
+    });
+    await makeRunContextFinalizeTaskHandler({ getCommandContext: writeContext }, finalizeTask)(
+      ctx,
+      { taskId: "CTX-WRITE" },
+    );
+
+    expect(readContext).toHaveBeenCalledOnce();
+    expect(readContext).toHaveBeenCalledWith(ctx, "context verify-task");
+    expect(writeContext).toHaveBeenCalledOnce();
+    expect(writeContext).toHaveBeenCalledWith(ctx, "context finalize-task");
+    expect(verifyTask).toHaveBeenCalledWith({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      parsed: { taskId: "CTX-READ" },
+    });
+    expect(finalizeTask).toHaveBeenCalledWith({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      parsed: { taskId: "CTX-WRITE" },
+    });
   });
 });

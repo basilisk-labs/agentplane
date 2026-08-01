@@ -13,6 +13,7 @@ import {
 } from "./project-capability-profiles.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
+  CONTEXT_TASK_READ_REQUIREMENTS,
   EVALUATOR_READ_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./context-evaluator-capability-profiles.js";
@@ -203,6 +204,17 @@ describe("CommandSession", () => {
       code: "E_INTERNAL",
     });
     expect(projectResolvers.getCtx).not.toHaveBeenCalled();
+
+    const taskReadResolvers = makeResolvers();
+    const taskReadSession = createCommandSession({
+      command: "context verify-task",
+      requirements: CONTEXT_TASK_READ_REQUIREMENTS,
+      resolvers: taskReadResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(
+      taskReadSession.require("task.write", "context verify-task"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(taskReadResolvers.getCtx).not.toHaveBeenCalled();
 
     for (const requirements of [EVALUATOR_READ_REQUIREMENTS, EVALUATOR_WRITE_REQUIREMENTS]) {
       const resolvers = makeResolvers();

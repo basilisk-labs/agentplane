@@ -151,6 +151,7 @@ import {
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
+  CONTEXT_TASK_READ_REQUIREMENTS,
   CONTEXT_TASK_WRITE_REQUIREMENTS,
   EVALUATOR_EXECUTE_REQUIREMENTS,
   EVALUATOR_READ_REQUIREMENTS,
@@ -453,7 +454,7 @@ export const PROJECT_COMMANDS = [
   }),
   declareSessionCommand(contextFinalizeTaskSpec, {
     load: loadContextFinalizeTaskSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
   }),
   declareSessionCommand(contextSuperviseTaskSpec, {
     load: loadContextSuperviseTaskSpec,
@@ -461,7 +462,7 @@ export const PROJECT_COMMANDS = [
   }),
   declareSessionCommand(contextVerifyTaskSpec, {
     load: loadContextVerifyTaskSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+    requirements: CONTEXT_TASK_READ_REQUIREMENTS,
     surface: "advanced",
   }),
   declareSessionCommand(contextHarvestSpec, {

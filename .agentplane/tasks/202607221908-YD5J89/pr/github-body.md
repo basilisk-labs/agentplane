@@ -32,13 +32,14 @@ typecheck, full lint, architecture, knip, and diff checks passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli/command-catalog.test.ts        |  70 ++++
- .../context-evaluator-capability-profiles.ts       |  56 +++
- .../src/cli/run-cli/command-catalog/kernel.test.ts |  31 ++
- .../src/cli/run-cli/command-catalog/project.ts     | 269 ++++++++++---
- .../src/cli/run-cli/command-loaders/project.ts     | 193 +++++++++-
- .../commands/context/context-results.unit.test.ts  | 136 +++++++
- .../src/commands/context/context-runner.ts         | 287 ++++++++------
+ .../src/cli/run-cli/command-catalog.test.ts        |  77 ++++
+ .../context-evaluator-capability-profiles.ts       |  63 +++
+ .../src/cli/run-cli/command-catalog/kernel.test.ts |  43 +++
+ .../src/cli/run-cli/command-catalog/project.ts     | 270 ++++++++++---
+ .../src/cli/run-cli/command-loaders/project.ts     | 198 +++++++++-
+ .../commands/context/context-results.unit.test.ts  | 175 +++++++++
+ .../src/commands/context/context-runner.ts         | 339 +++++++++-------
+ .../agentplane/src/commands/context/finalize.ts    |   5 +-
  packages/agentplane/src/commands/context/graph.ts  | 129 +++++--
  packages/agentplane/src/commands/context/search.ts | 141 ++++---
  packages/agentplane/src/commands/context/show.ts   |  35 +-
@@ -49,7 +50,7 @@ typecheck, full lint, architecture, knip, and diff checks passed.
  packages/agentplane/src/context/doctor.ts          |  60 ++-
  packages/agentplane/src/context/ingest.ts          | 121 ++++--
  packages/agentplane/src/context/reindex.ts         | 101 ++---
- 17 files changed, 1722 insertions(+), 532 deletions(-)
+ 18 files changed, 1831 insertions(+), 551 deletions(-)
 ```
 
 </details>

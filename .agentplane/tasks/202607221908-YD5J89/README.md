@@ -4,7 +4,7 @@ title: "Migrate context and evaluator command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -38,6 +38,31 @@ verification:
   updated_by: "TESTER"
   note: "Focused 97/97, doctor/wiki 20/20, critical 12/12 chunks (77 tests), format, schemas, guards, TS7 typecheck, full lint, architecture, knip, and diff checks passed."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T01:36:23.883Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "1d315e9e1a465b9e87ad476759e0e41ea1d4a69b"
+  blueprint_digest: "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f"
+  evidence_refs:
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-YD5J89/README.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-013623389-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "context verify-task and context finalize-task are catalogued as project-only while their implementations load CommandContext internally, so the declared capability profile understates backend/task access and permits duplicate broad context preparation."
 commit:
   hash: "1d315e9e1a465b9e87ad476759e0e41ea1d4a69b"
   message: "♻️ YD5J89 task: migrate context evaluator command boundaries"

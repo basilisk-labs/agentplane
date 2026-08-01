@@ -1,6 +1,7 @@
 import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
 import type {
   ContextProjectSession,
+  ContextTaskReadSession,
   ContextTaskWriteSession,
   EvaluatorExecuteSession,
   EvaluatorReadSession,
@@ -285,14 +286,18 @@ export const loadContextWikiReportSpec = projectContextLoader(
   "context wiki report",
 );
 export const loadContextDoctorSpec = projectContextLoader("runContextDoctor", "context doctor");
-export const loadContextFinalizeTaskSpec = projectContextLoader(
-  "runContextFinalizeTask",
-  "context finalize-task",
-);
-export const loadContextVerifyTaskSpec = projectContextLoader(
-  "runContextVerifyTask",
-  "context verify-task",
-);
+export const loadContextFinalizeTaskSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextFinalizeTaskHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
+export const loadContextVerifyTaskSpec = (session: ContextTaskReadSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextVerifyTaskHandler({
+      getCommandContext: (_ctx, command) => session.require("task.read", command),
+    }),
+  );
 export const loadContextGraphSummarySpec = projectContextLoader(
   "runContextGraphSummary",
   "context graph summary",

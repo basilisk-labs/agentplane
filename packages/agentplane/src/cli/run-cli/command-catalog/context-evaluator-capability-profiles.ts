@@ -4,20 +4,24 @@ export const CONTEXT_PROJECT_REQUIREMENTS = [
   "project",
 ] as const satisfies readonly CommandCapability[];
 
-export const CONTEXT_TASK_WRITE_REQUIREMENTS = [
+export const CONTEXT_TASK_READ_REQUIREMENTS = [
   "project",
   "config",
   "backend.read",
-  "backend.write",
   "task.read",
-  "task.write",
   "git.head",
   "git.diff",
-  "git.mutate",
   "route.local",
   "policy",
-  "approvals",
   "context.search",
+] as const satisfies readonly CommandCapability[];
+
+export const CONTEXT_TASK_WRITE_REQUIREMENTS = [
+  ...CONTEXT_TASK_READ_REQUIREMENTS,
+  "backend.write",
+  "task.write",
+  "git.mutate",
+  "approvals",
 ] as const satisfies readonly CommandCapability[];
 
 export const EVALUATOR_READ_REQUIREMENTS = [
@@ -46,6 +50,9 @@ export const EVALUATOR_EXECUTE_REQUIREMENTS = [
 ] as const satisfies readonly CommandCapability[];
 
 export type ContextProjectSession = CommandSession<(typeof CONTEXT_PROJECT_REQUIREMENTS)[number]>;
+export type ContextTaskReadSession = CommandSession<
+  (typeof CONTEXT_TASK_READ_REQUIREMENTS)[number]
+>;
 export type ContextTaskWriteSession = CommandSession<
   (typeof CONTEXT_TASK_WRITE_REQUIREMENTS)[number]
 >;

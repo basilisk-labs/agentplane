@@ -9,6 +9,7 @@ import {
 } from "./command-catalog.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
+  CONTEXT_TASK_READ_REQUIREMENTS,
   CONTEXT_TASK_WRITE_REQUIREMENTS,
   EVALUATOR_EXECUTE_REQUIREMENTS,
   EVALUATOR_READ_REQUIREMENTS,
@@ -181,6 +182,11 @@ describe("command catalog graph", () => {
       expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
+    expect(findCommandEntry(["context", "verify-task"])?.requirements).toEqual(
+      CONTEXT_TASK_READ_REQUIREMENTS,
+    );
+    expect(findCommandEntry(["context", "verify-task"])?.requirements).not.toContain("task.write");
+
     for (const id of [
       ["context", "ingest"],
       ["context", "learn", "files"],
@@ -188,6 +194,7 @@ describe("command catalog graph", () => {
       ["context", "learn", "tasks"],
       ["context", "harvest", "tasks"],
       ["context", "supervise-task"],
+      ["context", "finalize-task"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
         CONTEXT_TASK_WRITE_REQUIREMENTS,

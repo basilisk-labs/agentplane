@@ -225,27 +225,43 @@ export async function runContextDoctor(_ctx: CommandCtx, p: { fix: boolean }): P
   });
 }
 
-export async function runContextVerifyTask(
-  _ctx: CommandCtx,
-  p: { taskId: string },
-): Promise<number> {
-  return await cmdContextVerifyTask({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: p,
-  });
+export function makeRunContextVerifyTaskHandler(
+  deps: ContextTaskCommandDeps,
+  verifyTask: typeof cmdContextVerifyTask = cmdContextVerifyTask,
+): (ctx: CommandCtx, parsed: { taskId: string }) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context verify-task");
+    return await verifyTask({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed,
+    });
+  };
 }
 
-export async function runContextFinalizeTask(
-  _ctx: CommandCtx,
-  p: { taskId: string },
-): Promise<number> {
-  return await cmdContextFinalizeTask({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: p,
-  });
+export const runContextVerifyTask = makeRunContextVerifyTaskHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
+
+export function makeRunContextFinalizeTaskHandler(
+  deps: ContextTaskCommandDeps,
+  finalizeTask: typeof cmdContextFinalizeTask = cmdContextFinalizeTask,
+): (ctx: CommandCtx, parsed: { taskId: string }) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context finalize-task");
+    return await finalizeTask({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed,
+    });
+  };
 }
+
+export const runContextFinalizeTask = makeRunContextFinalizeTaskHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
 
 export type ContextSuperviseTaskParsed = {
   taskId: string;
