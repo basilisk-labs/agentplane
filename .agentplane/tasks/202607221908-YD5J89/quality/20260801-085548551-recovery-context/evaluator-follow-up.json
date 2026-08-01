@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-YD5J89-e08ae1bd6d73becbb2535e10",
+  "task_id": "202607221908-YD5J89",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace the shared CommandContext result for granular capabilities with capability-specific runtime ports or guarded wrappers, then add negative tests that attempt mutation through the value returned to a read-only handler, not only through undeclared session.require calls.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Declared read-only capabilities still resolve to the full mutable CommandContext, so capability isolation is not enforced at the returned port boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:e040883640c088421fd8752432604e75792fdd8b68289507a0e95482b0c0bcdf",
+          "section": "command-session.ts and registry.run.test.ts changes"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:3805633ebea2139b070175716e58ce393674425edae98e75a3f158b85f0d2274",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/verification/20260801085448940-7ec1ee4f4101f389.json",
+          "sha256": "sha256:5aac7857b58dad128c1889871d4cf12ad10fbd2697eb3e980099be1b81a00d76",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-result.json"
+}

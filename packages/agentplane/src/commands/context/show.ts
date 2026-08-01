@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import path from "node:path";
 
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
   parseLineRange,
@@ -13,11 +14,19 @@ import {
   parseJsonlLines,
 } from "./context-utils.js";
 
-export async function cmdContextShow(opts: {
+const output = createCliEmitter();
+
+export type ContextShowResult = {
+  ref: string;
+  content: string;
+  selection: "document" | "lines" | "section" | "row";
+};
+
+export async function showContext(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { ref: string };
-}): Promise<number> {
+}): Promise<ContextShowResult> {
   const projectRoot = path.resolve(opts.rootOverride ?? opts.cwd);
   const parsed = parseSourceRef(opts.parsed.ref);
   const rawPath = parsed.path;
@@ -52,8 +61,7 @@ export async function cmdContextShow(opts: {
   const selectorKeys = Object.keys(selectors);
 
   if (selectorKeys.length === 0) {
-    process.stdout.write(text.endsWith("\n") ? text : `${text}\n`);
-    return 0;
+    return { ref: relative, content: text, selection: "document" };
   }
 
   if (selectorKeys.includes("line") || selectorKeys.includes("lines")) {
@@ -68,8 +76,7 @@ export async function cmdContextShow(opts: {
     }
     const lines = text.split(/\r?\n/);
     const snippet = buildSnippet(lines, range[0], range[1]);
-    process.stdout.write(snippet.endsWith("\n") ? snippet : `${snippet}\n`);
-    return 0;
+    return { ref: relative, content: snippet, selection: "lines" };
   }
 
   if (selectors.section) {
@@ -83,8 +90,7 @@ export async function cmdContextShow(opts: {
     }
     const lines = text.split(/\r?\n/);
     const snippet = buildSnippet(lines, heading.start, heading.end);
-    process.stdout.write(snippet.endsWith("\n") ? snippet : `${snippet}\n`);
-    return 0;
+    return { ref: relative, content: snippet, selection: "section" };
   }
 
   const selectorValue = ["fact", "entity", "edge", "capability", "task"].find((key) =>
@@ -112,11 +118,18 @@ export async function cmdContextShow(opts: {
         message: `Row not found: ${relative}#${selectorValue}=${wanted}`,
       });
     }
-    process.stdout.write(`${JSON.stringify(row, null, 2)}\n`);
-    return 0;
+    return { ref: relative, content: JSON.stringify(row, null, 2), selection: "row" };
   }
 
-  process.stdout.write(text.endsWith("\n") ? text : `${text}\n`);
+  return { ref: relative, content: text, selection: "document" };
+}
+
+function renderContextShowResult(result: ContextShowResult): void {
+  output.line(result.content);
+}
+
+export async function cmdContextShow(opts: Parameters<typeof showContext>[0]): Promise<number> {
+  renderContextShowResult(await showContext(opts));
   return 0;
 }
 

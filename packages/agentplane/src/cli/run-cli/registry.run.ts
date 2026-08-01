@@ -5,7 +5,9 @@ import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
 import { COMMANDS, getHelpCommandEntries, makeHelpSpecForEntry } from "./command-catalog.js";
 import {
   createCommandSession,
+  type CommandEntry,
   type CommandPreparationTrace,
+  type CommandSessionResolvers,
   type RunDeps,
 } from "./command-catalog/kernel.js";
 
@@ -13,7 +15,9 @@ export function buildRegistry(opts: {
   getCtx: RunDeps["getCtx"];
   getResolvedProject: RunDeps["getResolvedProject"];
   getLoadedConfig: RunDeps["getLoadedConfig"];
+  getEvaluatorArtifactPort: CommandSessionResolvers["getEvaluatorArtifactPort"];
   onPreparationTrace?: (event: CommandPreparationTrace) => void;
+  entries?: readonly CommandEntry[];
 }): CommandRegistry {
   const registry = new CommandRegistry();
   const getHelpJsonForDocs = () =>
@@ -27,19 +31,33 @@ export function buildRegistry(opts: {
     getLoadedConfig: opts.getLoadedConfig,
     getHelpJsonForDocs,
   };
-  for (const entry of COMMANDS) {
-    const session = createCommandSession({
-      command: entry.spec.id.join(" "),
-      requirements: entry.requirements,
-      resolvers: {
-        ...deps,
-        onPreparationTrace: opts.onPreparationTrace,
-      },
-    });
-    let loaded: ReturnType<(typeof entry)["load"]> | null = null;
+  const resolvers: CommandSessionResolvers = {
+    ...deps,
+    getEvaluatorArtifactPort: opts.getEvaluatorArtifactPort,
+    onPreparationTrace: opts.onPreparationTrace,
+  };
+  for (const entry of opts.entries ?? COMMANDS) {
+    if (entry.selectSession) {
+      registry.register(entry.spec, async (ctx, parsed) => {
+        const selected = entry.selectSession?.(parsed);
+        if (!selected) throw new Error("Conditional command did not select a session");
+        const session = createCommandSession({
+          command: entry.spec.id.join(" "),
+          requirements: selected.requirements,
+          resolvers,
+        });
+        const handler = await selected.load(session);
+        return await handler(ctx, parsed);
+      });
+      continue;
+    }
     registry.register(entry.spec, async (ctx, parsed) => {
-      loaded ??= entry.load(session);
-      const handler = await loaded;
+      const session = createCommandSession({
+        command: entry.spec.id.join(" "),
+        requirements: entry.requirements,
+        resolvers,
+      });
+      const handler = await entry.load(session);
       return await handler(ctx, parsed);
     });
   }

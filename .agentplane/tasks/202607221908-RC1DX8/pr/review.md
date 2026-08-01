@@ -29,21 +29,23 @@ Created: 2026-08-01T02:58:47.934Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-run.test.ts          | 14 ++++-
- .../src/cli/run-cli/command-catalog.test.ts        | 65 ++++++++++++++++++++++
- .../src/cli/run-cli/command-catalog/core.ts        | 16 ++++--
- .../src/cli/run-cli/command-catalog/kernel.test.ts | 36 ++++++++++++
- .../src/cli/run-cli/command-catalog/project.ts     | 40 ++++++++++---
- .../runner-hermes-capability-profiles.ts           | 45 +++++++++++++++
- .../src/cli/run-cli/command-catalog/task.ts        | 31 ++++++++---
- .../src/cli/run-cli/command-loaders/core.ts        | 14 ++---
- .../src/cli/run-cli/command-loaders/project.ts     | 48 ++++++++++++----
- .../src/cli/run-cli/command-loaders/task.ts        | 59 ++++++++++++++------
- .../src/commands/hermes/hermes.command.ts          | 45 ++++++++++-----
- .../src/commands/insights/insights-report.ts       | 10 +++-
- .../src/commands/insights/insights.command.ts      | 19 +++++--
- .../agentplane/src/commands/task/run.command.ts    | 21 ++++++-
- 14 files changed, 381 insertions(+), 82 deletions(-)
+ .../src/cli/run-cli.core.task-run.test.ts          | 80 ++++++++++++----------
+ .../src/cli/run-cli/command-catalog.test.ts        | 80 ++++++++++++++++++++++
+ .../command-catalog/command-context-port.ts        |  1 +
+ .../src/cli/run-cli/command-catalog/core.ts        | 16 +++--
+ .../src/cli/run-cli/command-catalog/kernel.test.ts | 38 ++++++++++
+ .../src/cli/run-cli/command-catalog/project.ts     | 41 ++++++++---
+ .../runner-hermes-capability-profiles.ts           | 54 +++++++++++++++
+ .../src/cli/run-cli/command-catalog/task.ts        | 49 ++++++++++---
+ .../src/cli/run-cli/command-loaders/core.ts        | 14 ++--
+ .../src/cli/run-cli/command-loaders/project.ts     | 49 +++++++++----
+ .../src/cli/run-cli/command-loaders/task.ts        | 63 ++++++++++++-----
+ .../src/cli/run-cli/registry.run.test.ts           | 47 +++++++++++++
+ .../src/commands/hermes/hermes.command.ts          | 45 ++++++++----
+ .../src/commands/insights/insights-report.ts       | 10 ++-
+ .../src/commands/insights/insights.command.ts      | 19 +++--
+ .../agentplane/src/commands/task/run.command.ts    | 27 +++++++-
+ 16 files changed, 513 insertions(+), 120 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Declared read-only capabilities still resolve to the full mutable CommandContext, so capability isolation is not enforced at the returned port boundary.",
+      "broken_invariant": "Read-only evaluator and context commands must receive granular capability-specific ports and must get a typed denial when attempting mutation. The implementation maps every backend, task, Git, policy, route, approval, context-search, and provider capability to the same CommandContext value, which exposes taskBackend and GitContext mutation methods once any single context capability is granted. Existing denial coverage only tests undeclared session.require calls and does not prevent mutation through an already returned CommandContext.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:e040883640c088421fd8752432604e75792fdd8b68289507a0e95482b0c0bcdf",
+          "section": "command-session.ts and registry.run.test.ts changes"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:3805633ebea2139b070175716e58ce393674425edae98e75a3f158b85f0d2274",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/verification/20260801085448940-7ec1ee4f4101f389.json",
+          "sha256": "sha256:5aac7857b58dad128c1889871d4cf12ad10fbd2697eb3e980099be1b81a00d76",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A read-only evaluator or context handler should obtain its declared read port and then attempt taskBackend or Git mutation through the returned value; the operation must fail with a typed capability denial and leave repository and task state unchanged.",
+    "Capability tests should assert that each declared capability resolves to a capability-specific interface that does not expose undeclared task, backend, Git, approval, provider, or network operations."
+  ],
+  "hidden_assumptions": [
+    "Compile-time restriction of session.require is assumed to provide runtime least authority even though the resolved value is the full mutable CommandContext.",
+    "Command handlers are assumed not to use mutation methods exposed by a CommandContext obtained through a read-only capability."
+  ],
+  "recovery_context": "Replace the shared CommandContext result for granular capabilities with capability-specific runtime ports or guarded wrappers, then add negative tests that attempt mutation through the value returned to a read-only handler, not only through undeclared session.require calls."
+}

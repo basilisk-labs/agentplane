@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T01:42:37.393Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "8e4f2872a896a86a61319bef7047fdc9da0abe19",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "context verify-task is declared with CONTEXT_TASK_READ_REQUIREMENTS and receives the session-owned CommandContext through makeRunContextVerifyTaskHandler without task.write authority.",
+    "context finalize-task is declared with CONTEXT_TASK_WRITE_REQUIREMENTS and passes the same prepared CommandContext into final verification, removing the duplicate hidden load identified in the prior review.",
+    "Typed context/evaluator use cases and edge renderers preserve existing human/JSON contracts while context supervision invokes evaluator execution in-process without stdout capture."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-014237050-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "No additional missing test within the approved command-boundary scope."
+  ],
+  "hidden_assumptions": [
+    "Granular capabilities currently coalesce onto one physical CommandContext node; this is documented residual infrastructure work, not a contract mismatch."
+  ],
+  "residual_risks": []
+}

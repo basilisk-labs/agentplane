@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run ci:local:fast\nResult: pass\nEvidence: formatting, schema/template/policy/release checks, builds, cold-start, generated docs, hotspot, lint, 513 test files with 3593 tests, and 12 critical CLI chunks passed.\nScope: repository-wide regression surface for the shared command-session runtime guard.\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: 5 files and 50 tests passed on 8c1035a4368; read-only taskBackend.writeTask and git.stage attempts return E_INTERNAL, leave README/backend/git status unchanged, and concurrent dispatches retain distinct contexts and artifact destinations.\nScope: in-process context/evaluator results, runtime capability denial, filesystem non-mutation, artifact confinement, and concurrent session isolation.\n\nCommand: bun run guards:check\nResult: pass\nEvidence: shared guards OK; trust-boundary ratchet OK with reviewed baseline unchanged.\nScope: source trust boundaries.\n\nCommand: bun run schemas:check\nResult: pass\nEvidence: schemas OK.\nScope: generated schemas and compatibility fixtures.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical-cli chunks passed, 77 tests total, on 8c1035a4368.\nScope: critical CLI, Git/path isolation, and trust-boundary contracts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript 7 build check exited 0 on 8c1035a4368.\nScope: workspace type and declaration compatibility.\n\nCommand: git diff --check 49254048af47..8c1035a4368 -- <semantic paths>\nResult: pass\nEvidence: no whitespace errors in the capability-port implementation diff.\nScope: command-context port, session integration, and regression tests.",
+  "digest": "sha256:5e5e045a8a3657327f5d0d752ecfa396a15c1655a0890c661df0359b6cd2f721",
+  "implementation_sha": "8c1035a4368ed34b57e1e78ff1811752fbf8a35b",
+  "kind": "task_verification_record",
+  "note": "Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.",
+  "recorded_at": "2026-08-01T09:13:02.541Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

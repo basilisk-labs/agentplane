@@ -297,11 +297,11 @@ function reportTaskSupervision(opts: {
 }
 
 export type TaskRunContextDependencies = {
-  getPreparationContext: (
+  getPreparationContext?: (
     command: string,
     options: { includeRemote: boolean },
   ) => Promise<CommandContext>;
-  getExecutionContext: (
+  getExecutionContext?: (
     command: string,
     options: { includeRemote: boolean },
   ) => Promise<CommandContext>;
@@ -318,6 +318,9 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         }
       : null;
     if (parsed.dryRun) {
+      if (!deps.getPreparationContext) {
+        throw new Error("task run dry-run was loaded without preparation capabilities");
+      }
       const commandCtx = await deps.getPreparationContext("task run", {
         includeRemote: parsed.remote,
       });
@@ -344,6 +347,9 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       return 0;
     }
 
+    if (!deps.getExecutionContext) {
+      throw new Error("task run execution was loaded without execution capabilities");
+    }
     const commandCtx = await deps.getExecutionContext("task run", {
       includeRemote: parsed.remote,
     });

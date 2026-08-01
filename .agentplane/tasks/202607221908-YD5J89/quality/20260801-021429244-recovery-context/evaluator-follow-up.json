@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-YD5J89-d26007365705adf062fa3a47",
+  "task_id": "202607221908-YD5J89",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Route evaluator evidence-packet creation through an explicitly write-authorized capability, or redefine the no-record path so it performs no filesystem writes. Re-run the real registry-dispatched no-record command with before/after filesystem assertions and typed-denial coverage; session.require-only tests are insufficient.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "`evaluator run --no-record` is assigned a read-only session but still writes a new evaluator evidence packet directly to the task quality directory.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-021429244-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8acd4487a596ef305c908d9e5cc4ddf38a650f7bd0f0c6ae4b3dba1c24353bb2",
+          "line": 1779,
+          "lines": "The catalog assigns `record=false` to `EVALUATOR_READ_REQUIREMENTS`, while the evaluator command diff shows the no-record branch is reached only after `prepareEvaluatorReview` returns paths for newly generated artifacts.",
+          "section": "Evaluator run authority rework and evaluator command implementation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:e22223fe72b38c2ca725e8266f720b8cb130862662d578c003b5c355c7280577",
+          "line": 219,
+          "lines": "Verify Step 3 requires attempted mutation from a read-only evaluator to produce a typed denial.",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-021429244-recovery-context/evaluator-result.json"
+}

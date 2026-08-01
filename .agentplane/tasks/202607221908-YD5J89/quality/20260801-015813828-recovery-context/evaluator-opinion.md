@@ -1,0 +1,23 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 1 typed finding(s).
+
+## Findings
+- The recorded deterministic verification predates the implementation rework and therefore does not verify the evaluated SHA.
+
+## Evidence
+- .agentplane/tasks/202607221908-YD5J89/README.md
+- .agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-observed-checks.json
+- .agentplane/policy/dod.code.md
+- .agentplane/policy/dod.core.md
+
+## Missing Tests
+- Record a fresh post-rework run of every declared Verify Step against evaluated SHA f404121e09d0447deac5d8001481b63ced9269cd, including exact command, result, evidence summary, and covered scope.
+
+## Hidden Assumptions
+- The unrecorded rework checks described in the task-local verification narrative are assumed to have run against the final implementation, but the frozen observed-checks artifact does not establish that provenance or SHA binding.
+
+## Residual Risks
+- Deterministic verification was recorded at 2026-08-01T01:34:41.204Z, while the task records implementation rework at 2026-08-01T01:42:14.637Z. Re-run and formally record the declared verification contract against the evaluated implementation SHA, then regenerate the frozen evaluator packet and repeat semantic evaluation.

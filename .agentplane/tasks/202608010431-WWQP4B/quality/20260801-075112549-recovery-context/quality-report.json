@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608010431-WWQP4B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T07:52:03.614Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "a6b5051e73fdbbcd59fce21ee4be58833775e0f5",
+  "blueprint_digest": "636a8dcbfd32efc90e7ff96d659bce2e3bf154b9bd72a551263b5492de4c1abf",
+  "findings": [
+    "The implementation matches the approved bounded-diff contract: it excludes only the active task artifact subtree while retaining source, binary, rename, and unrelated-task changes."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608010431-WWQP4B/README.md",
+    ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The task artifact root passed to renderActualDiff is the normalized repository-relative active-task subtree supplied by trusted evaluator preparation code."
+  ],
+  "residual_risks": []
+}

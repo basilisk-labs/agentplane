@@ -615,7 +615,7 @@ describe("evaluator run command", () => {
     });
   });
 
-  it("freezes the complete branch delta from the merge base through the evaluated SHA", async () => {
+  it("freezes the implementation delta while excluding duplicated active-task control artifacts", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const baseSha = await commitPath(
@@ -626,13 +626,8 @@ describe("evaluator run command", () => {
     );
     const taskId = "202605240900-EV15";
     await addTask(root, taskId);
-    await commitPath(
-      root,
-      `.agentplane/tasks/${taskId}/quality/previous-evaluator-diff.patch`,
-      "stale evaluator patch that must not recurse into the next evaluator diff\n",
-      "test: persist prior evaluator evidence",
-    );
-    const prDir = path.join(root, `.agentplane/tasks/${taskId}/pr`);
+    const taskRoot = path.join(root, `.agentplane/tasks/${taskId}`);
+    const prDir = path.join(taskRoot, "pr");
     await mkdir(prDir, { recursive: true });
     await writeFile(
       path.join(prDir, "meta.json"),
@@ -647,6 +642,35 @@ describe("evaluator run command", () => {
         base: baseSha,
       })}\n`,
       "utf8",
+    );
+    await mkdir(path.join(taskRoot, "blueprint"), { recursive: true });
+    await writeFile(
+      path.join(taskRoot, "blueprint", "resolved-snapshot.json"),
+      '{"marker":"generated blueprint must not duplicate frozen evidence"}\n',
+      "utf8",
+    );
+    await mkdir(path.join(taskRoot, "verification"), { recursive: true });
+    await writeFile(
+      path.join(taskRoot, "verification", "result.json"),
+      '{"marker":"generated verification must not duplicate observed checks"}\n',
+      "utf8",
+    );
+    await mkdir(path.join(taskRoot, "quality"), { recursive: true });
+    await writeFile(
+      path.join(taskRoot, "quality", "previous-evaluator-diff.patch"),
+      "stale evaluator patch that must not recurse into the next evaluator diff\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: persist active task control artifacts"], {
+      cwd: root,
+    });
+    const otherTaskId = "202605240900-OTHER1";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${otherTaskId}/README.md`,
+      "other task artifact intentionally changed by the implementation\n",
+      "test: change another task artifact",
     );
     await commitPath(root, "src/first-change.ts", "export const first = true;\n", "feat: first");
     await commitPath(root, "src/second-change.ts", "export const second = true;\n", "feat: second");
@@ -678,6 +702,11 @@ describe("evaluator run command", () => {
     expect(frozenDiff).toContain("GIT binary patch");
     expect(frozenDiff).toContain("rename from src/rename-before.ts");
     expect(frozenDiff).toContain("rename to src/rename-after.ts");
+    expect(frozenDiff).toContain(`.agentplane/tasks/${otherTaskId}/README.md`);
+    expect(frozenDiff).toContain("other task artifact intentionally changed");
+    expect(frozenDiff).not.toContain(`.agentplane/tasks/${taskId}/README.md`);
+    expect(frozenDiff).not.toContain("generated blueprint must not duplicate frozen evidence");
+    expect(frozenDiff).not.toContain("generated verification must not duplicate observed checks");
     expect(frozenDiff).not.toContain("stale evaluator patch that must not recurse");
   });
 

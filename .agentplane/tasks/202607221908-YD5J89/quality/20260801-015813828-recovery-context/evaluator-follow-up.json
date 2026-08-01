@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-YD5J89-3bc506937ae5658ab958faa0",
+  "task_id": "202607221908-YD5J89",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Deterministic verification was recorded at 2026-08-01T01:34:41.204Z, while the task records implementation rework at 2026-08-01T01:42:14.637Z. Re-run and formally record the declared verification contract against the evaluated implementation SHA, then regenerate the frozen evaluator packet and repeat semantic evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The recorded deterministic verification predates the implementation rework and therefore does not verify the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:7f7479348c67b6bcddc7e3f8d6816591e8d5789eff14801e2e1377393c5373ec",
+          "section": "verification, comments, and events"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:1ad868da52d8dc3d09de850efea876d2b92e9f6b1bb8aee787b5c9bc3844d75a",
+          "section": "verification, verification_records, runner_history, and runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-result.json"
+}

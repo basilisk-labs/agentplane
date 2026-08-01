@@ -83,8 +83,10 @@ export async function renderActualDiff(
   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
   try {
     const artifactRoot = taskArtifactRoot?.trim().replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
-    const qualityExclude = artifactRoot
-      ? ["--", ".", `:(exclude,glob)${artifactRoot}/quality/**`]
+    // The task document, blueprint, checks, and policy are frozen as separate evidence. Exclude
+    // only this task's generated subtree so it cannot recursively inflate the implementation diff.
+    const taskArtifactExclude = artifactRoot
+      ? ["--", ".", `:(exclude,glob)${artifactRoot}/**`]
       : [];
     const { stdout } = await execFileAsync(
       "git",
@@ -92,7 +94,7 @@ export async function renderActualDiff(
         ...(diffBaseSha
           ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
           : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha]),
-        ...qualityExclude,
+        ...taskArtifactExclude,
       ],
       { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
     );

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:5d440e318a08b7c3a0e7edd22ac95c6caa7b0a05c04833d659dd03221b9c74e2",
+  "implementation_sha": "29d67bf216448202b058df3aba33508f06d58613",
+  "kind": "task_verification_record",
+  "note": "Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests.",
+  "recorded_at": "2026-08-01T02:54:11.355Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

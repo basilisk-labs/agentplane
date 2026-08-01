@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: 5 files and 51 tests passed on cef1b58cb88c; asymmetric sessions prove backend.write cannot invoke task writes, task.write cannot invoke backend sync, git.mutate cannot read HEAD, and git.head cannot stage; all cross-capability operations return E_INTERNAL without invoking underlying methods.\nScope: exact capability-specific runtime port enforcement, read-only filesystem non-mutation, evaluator artifact confinement, and concurrent dispatch isolation.\n\nCommand: bun run guards:check\nResult: pass\nEvidence: shared guards OK; trust-boundary ratchet OK with reviewed baseline unchanged.\nScope: source trust boundaries.\n\nCommand: bun run schemas:check\nResult: pass\nEvidence: schemas OK.\nScope: generated schemas and compatibility fixtures.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical-cli chunks passed, 77 tests total, on cef1b58cb88c.\nScope: critical CLI, Git/path isolation, and trust-boundary contracts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript 7 build check exited 0 on cef1b58cb88c.\nScope: workspace type and declaration compatibility.\n\nCommand: git diff --check 16e40b316031..cef1b58cb88c -- <semantic paths>\nResult: pass\nEvidence: no whitespace errors in the exact-capability implementation diff.\nScope: capability-member mapping and asymmetric regression tests.",
+  "digest": "sha256:e26eb1f28224f116abfd7a8c3764aa688eb73fc6babc498d60f77072b3e7257c",
+  "implementation_sha": "cef1b58cb88c6856a04ebadc824daa77ac1d93a9",
+  "kind": "task_verification_record",
+  "note": "Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.",
+  "recorded_at": "2026-08-01T09:18:12.405Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

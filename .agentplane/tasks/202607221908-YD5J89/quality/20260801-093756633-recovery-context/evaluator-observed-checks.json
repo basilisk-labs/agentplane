@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run guards:check",
+    "bun run schemas:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T09:37:29.701Z",
+    "updated_by": "CODER",
+    "note": "Reverified evaluator capability boundaries at c9f9423d36b7 after hosted contract rework."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

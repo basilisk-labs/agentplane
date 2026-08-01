@@ -14,6 +14,12 @@ export const RUNNER_WRITE_REQUIREMENTS = [
   ...TASK_WRITE_REQUIREMENTS,
 ] as const satisfies readonly CommandCapability[];
 
+export const RUNNER_PREPARATION_REQUIREMENTS = [
+  ...TASK_ROUTE_LOCAL_REQUIREMENTS,
+  "route.remote",
+  "context.search",
+] as const satisfies readonly CommandCapability[];
+
 export const RUNNER_EXECUTION_REQUIREMENTS = [
   ...TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
   "context.search",
@@ -35,6 +41,9 @@ export const INSIGHTS_READ_REQUIREMENTS = [
 
 export type RunnerReadSession = CommandSession<(typeof RUNNER_READ_REQUIREMENTS)[number]>;
 export type RunnerWriteSession = CommandSession<(typeof RUNNER_WRITE_REQUIREMENTS)[number]>;
+export type RunnerPreparationSession = CommandSession<
+  (typeof RUNNER_PREPARATION_REQUIREMENTS)[number]
+>;
 export type RunnerExecutionSession = CommandSession<(typeof RUNNER_EXECUTION_REQUIREMENTS)[number]>;
 export type HermesProjectionSession = CommandSession<
   (typeof HERMES_PROJECTION_REQUIREMENTS)[number]

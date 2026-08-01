@@ -5,6 +5,7 @@ import { createReadStream } from "node:fs";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
+import { createCliEmitter } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import { isRecord } from "../shared/guards.js";
@@ -15,11 +16,22 @@ import { checkSqliteProjection } from "./sqlite.js";
 import { validateContextCrossSurfaceIntegrity } from "./integrity.js";
 import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
 
-export async function cmdContextDoctor(opts: {
+const output = createCliEmitter();
+
+export type ContextDoctorResult = {
+  label: "check" | "doctor";
+  root: string;
+  fix: boolean;
+  issues: string[];
+  warnings: string[];
+  recovery_hint: string;
+};
+
+export async function inspectContextHealth(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { fix: boolean; label?: "check" | "doctor" };
-}): Promise<number> {
+}): Promise<ContextDoctorResult> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const label = opts.parsed.label ?? "doctor";
   const manifestPath = path.join(root, ".agentplane/context/agentplane.context.yaml");
@@ -162,25 +174,49 @@ export async function cmdContextDoctor(opts: {
   await checkHarvestReports(root, issues, warnings);
   issues.push(...(await validateContextCrossSurfaceIntegrity(root)));
 
-  if (issues.length > 0) {
-    process.stderr.write(
-      `[context.${label}] issues:\n` + issues.map((entry) => `- ${entry}`).join("\n") + "\n",
+  return {
+    label,
+    root,
+    fix: opts.parsed.fix,
+    issues,
+    warnings,
+    recovery_hint: contextDoctorRecoveryHint(root, opts.parsed.fix, label),
+  };
+}
+
+function renderContextDoctorResult(result: ContextDoctorResult): void {
+  if (result.issues.length > 0) {
+    output.lines(
+      [
+        `[context.${result.label}] issues:`,
+        ...result.issues.map((entry) => `- ${entry}`),
+        result.recovery_hint,
+      ],
+      "stderr",
     );
-    process.stderr.write(contextDoctorRecoveryHint(root, opts.parsed.fix, label) + "\n");
-    if (!opts.parsed.fix)
+    if (!result.fix) {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: `context ${label} failed: ${issues.length} issues\n- ${issues.join("\n- ")}`,
+        message: `context ${result.label} failed: ${result.issues.length} issues\n- ${result.issues.join("\n- ")}`,
       });
+    }
   }
-  if (warnings.length > 0) {
-    process.stderr.write(
-      `[context.${label}] warnings:\n` + warnings.map((entry) => `- ${entry}`).join("\n") + "\n",
+  if (result.warnings.length > 0) {
+    output.lines(
+      [`[context.${result.label}] warnings:`, ...result.warnings.map((entry) => `- ${entry}`)],
+      "stderr",
     );
   }
 
-  process.stdout.write(`context ${label}: ok\n`);
+  output.line(`context ${result.label}: ok`);
+}
+
+export async function cmdContextDoctor(
+  opts: Parameters<typeof inspectContextHealth>[0],
+): Promise<number> {
+  const result = await inspectContextHealth(opts);
+  renderContextDoctorResult(result);
   return 0;
 }
 

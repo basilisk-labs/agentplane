@@ -73,7 +73,12 @@ import { taskVerifyShowSpec } from "../../../commands/task/verify-show.command.j
 import { taskVerifySpec } from "../../../commands/task/verify.command.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+import {
+  declareCommand,
+  declareConditionalSessionCommand,
+  declareSessionCommand,
+  type CommandEntry,
+} from "./kernel.js";
 import {
   TASK_LIFECYCLE_REQUIREMENTS,
   TASK_READ_REQUIREMENTS,
@@ -84,6 +89,7 @@ import {
 } from "./task-capability-profiles.js";
 import {
   RUNNER_EXECUTION_REQUIREMENTS,
+  RUNNER_PREPARATION_REQUIREMENTS,
   RUNNER_READ_REQUIREMENTS,
   RUNNER_WRITE_REQUIREMENTS,
 } from "./runner-hermes-capability-profiles.js";
@@ -120,6 +126,7 @@ import {
   loadTaskRunReconcileSpec,
   loadTaskRunResolveEffectSpec,
   loadTaskRunResumeEffectSpec,
+  loadTaskRunPreparationSpec,
   loadTaskRunSpec,
   loadTaskRunToolSpec,
   loadTaskRunStatusSpec,
@@ -276,9 +283,16 @@ export const TASK_COMMANDS = [
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareSessionCommand(taskRunSpec, {
-    load: loadTaskRunSpec,
-    requirements: RUNNER_EXECUTION_REQUIREMENTS,
+  declareConditionalSessionCommand(taskRunSpec, {
+    default: {
+      load: loadTaskRunPreparationSpec,
+      requirements: RUNNER_PREPARATION_REQUIREMENTS,
+    },
+    selected: {
+      when: (parsed) => !parsed.dryRun,
+      load: loadTaskRunSpec,
+      requirements: RUNNER_EXECUTION_REQUIREMENTS,
+    },
     surface: "internal",
     helpGroup: "Maintenance",
   }),

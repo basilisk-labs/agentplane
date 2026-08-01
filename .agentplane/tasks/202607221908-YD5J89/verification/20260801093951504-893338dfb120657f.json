@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts\nResult: pass\nEvidence: 36 tests passed with 400 assertions at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557\nScope: read authority, artifact-only authority, mutation denial, concurrent session isolation, evaluator execution\n\nCommand: bun run guards:check\nResult: pass\nEvidence: shared guards OK and trust-boundary ratchet OK at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557\nScope: repository and trust-boundary guards\n\nCommand: bun run schemas:check\nResult: pass\nEvidence: schemas OK at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557\nScope: generated schema compatibility\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical CLI chunks passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557\nScope: critical CLI behavior and trust-boundary regressions\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557\nScope: static type safety",
+  "digest": "sha256:893338dfb120657f8e49d74475dd64e4c36cceb34dc8c15f7379a1c9d34c62ec",
+  "implementation_sha": "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557",
+  "kind": "task_verification_record",
+  "note": "Deterministic evaluator-boundary checks passed at c9f9423d36b7.",
+  "recorded_at": "2026-08-01T09:39:51.504Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by CODER",
+  "verifier": "CODER"
+}

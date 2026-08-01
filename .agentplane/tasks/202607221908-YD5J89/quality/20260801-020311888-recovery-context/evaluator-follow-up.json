@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-YD5J89-a7b0731d42769bc667617744",
+  "task_id": "202607221908-YD5J89",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Split `evaluator run` authority selection at or before command-session construction so `--no-record` creates an evaluator-read session and the recording path creates an evaluator-write session. Re-run capability-denial coverage through normal catalog dispatch; existing deterministic checks do not cover this boundary mismatch.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "`evaluator run --no-record` still enters a command catalog boundary declared with write and Git-mutation capabilities, despite selecting a read dependency inside the handler. The implementation therefore does not provide the promised read-only evaluator authority boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:83996b7dc339e07c6c99d209c2c18e3b78a10b86fc511ffe3d729a07acf52987",
+          "line": 1447,
+          "lines": "1447-1450",
+          "section": "PROJECT_COMMANDS evaluator run declaration"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:83996b7dc339e07c6c99d209c2c18e3b78a10b86fc511ffe3d729a07acf52987",
+          "line": 1235,
+          "lines": "1235-1247",
+          "section": "EVALUATOR_WRITE_REQUIREMENTS"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:83996b7dc339e07c6c99d209c2c18e3b78a10b86fc511ffe3d729a07acf52987",
+          "line": 1713,
+          "lines": "1713-1718",
+          "section": "loadEvaluatorRunSpec"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:9d6ebc32376203a0b2c4b61e370de6dd97615652f7b2e111eed0290ff87919d0",
+          "line": 128,
+          "lines": "128-131",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-result.json"
+}

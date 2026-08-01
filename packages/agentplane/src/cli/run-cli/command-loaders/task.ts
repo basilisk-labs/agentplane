@@ -15,6 +15,7 @@ import type {
 } from "../command-catalog/task-capability-profiles.js";
 import type {
   RunnerExecutionSession,
+  RunnerPreparationSession,
   RunnerReadSession,
   RunnerWriteSession,
 } from "../command-catalog/runner-hermes-capability-profiles.js";
@@ -146,17 +147,20 @@ export const loadTaskBriefSpec = (session: TaskRouteSession) =>
   import("../../../commands/task/brief.command.js").then((m) =>
     m.makeRunTaskBriefHandler(getTaskRouteContexts(session)),
   );
-export const loadTaskRunSpec = (session: RunnerExecutionSession) =>
+export const loadTaskRunPreparationSpec = (session: RunnerPreparationSession) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunHandler({
       getPreparationContext: async (command, options) => {
         await session.require("context.search", command);
-        if (options.includeRemote) {
-          await session.require("route.remote", command);
-          return await session.require("provider", command);
-        }
-        return await session.require("route.local", command);
+        return options.includeRemote
+          ? await session.require("route.remote", command)
+          : await session.require("route.local", command);
       },
+    }),
+  );
+export const loadTaskRunSpec = (session: RunnerExecutionSession) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunHandler({
       getExecutionContext: async (command, options) => {
         await session.require("git.mutate", command);
         await session.require("context.search", command);

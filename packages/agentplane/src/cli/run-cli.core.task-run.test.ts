@@ -62,26 +62,25 @@ async function createStartedRunnerTask(root: string, title: string): Promise<str
   {
     const io = captureStdIO();
     try {
-      expect(
-        await runCli([
-          "task",
-          "new",
-          "--title",
-          title,
-          "--description",
-          "Exercise the public task runner path.",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "code",
-          "--verify",
-          "bun run test:critical",
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
+      const exitCode = await runCli([
+        "task",
+        "new",
+        "--title",
+        title,
+        "--description",
+        "Exercise the public task runner path.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "bun run test:critical",
+        "--root",
+        root,
+      ]);
+      expect(exitCode, io.stderr).toBe(0);
       taskId = io.stdout.trim();
     } finally {
       io.restore();
@@ -209,20 +208,19 @@ describe("runCli task run", () => {
     const io = captureStdIO();
     const prepareSpy = vi.spyOn(taskRunUsecases, "prepareTaskRunnerExecution");
     try {
-      expect(
-        await runCli([
-          "task",
-          "run",
-          taskId,
-          "--dry-run",
-          "--sandbox",
-          "danger-full-access",
-          "--allow-danger-full-access",
-          "--json",
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
+      const exitCode = await runCli([
+        "task",
+        "run",
+        taskId,
+        "--dry-run",
+        "--sandbox",
+        "danger-full-access",
+        "--allow-danger-full-access",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(exitCode, io.stderr).toBe(0);
       expect(prepareSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           task_id: taskId,
