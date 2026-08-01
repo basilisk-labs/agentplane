@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607221854-PGPR3J-9ed956c7777620d4b21aa574",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-PGPR3J-complete-typed-use-case-and-cli-rendering-bounda",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-PGPR3J-complete-typed-use-case-and-cli-rendering-bounda/.agentplane/tasks/202607221854-PGPR3J/quality/20260801-143147871-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-08-01T14:31:48.117Z",
+  "ended_at": "2026-08-01T14:32:29.952Z",
+  "stdout_bytes": 73624,
+  "stderr_bytes": 6660,
+  "provider_usage": {
+    "input_tokens": 192145,
+    "output_tokens": 1739,
+    "total_tokens": 193884
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:3619e4982b126cc34e1ee510c623ddb0ffea02b9c4e88b1a23dac6e0a2d8a91f"
+}

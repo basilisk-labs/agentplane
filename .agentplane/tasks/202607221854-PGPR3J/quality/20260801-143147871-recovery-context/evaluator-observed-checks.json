@@ -1,0 +1,34 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run guards:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T14:31:15.761Z",
+    "updated_by": "TESTER",
+    "note": "PASS: dependency closure, zero active rendered-command orchestration, centralized human/plain/JSON/error rendering, full 3204-test suite, critical tests, TypeScript 7 typecheck, guards, and ci:contract verified for 90711c8f4951."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221854-PGPR3J/verification/20260801143115761-169d083576c5b228.json",
+      "sha256": "sha256:020bd7e8587f1575a6633a4a3f2ca6677b275dd05a32da012cc8582cdc4811f6"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/verification/202607221854-PGPR3J-90711c8f4951-checks.json",
+      "sha256": "sha256:53023f656c7f64a8ef8a9d7299693abbc9754289d85bb19a4b3242f78a09f1dc"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

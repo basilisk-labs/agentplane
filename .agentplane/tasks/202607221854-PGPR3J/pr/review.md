@@ -6,14 +6,14 @@ Created: 2026-08-01T14:09:09.518Z
 
 - Task: `202607221854-PGPR3J`
 - Title: Complete typed use-case and CLI rendering boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221854-PGPR3J/complete-typed-use-case-and-cli-rendering-bounda`
 - Canonical task record: `.agentplane/tasks/202607221854-PGPR3J/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS: dependency closure, zero active rendered-command orchestration, centralized human/plain/JSON/error rendering, full 3204-test suite, critical tests, TypeScript 7 typecheck, guards, and ci:contract verified for 90711c8f4951.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
