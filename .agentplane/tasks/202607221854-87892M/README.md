@@ -1,10 +1,10 @@
 ---
 id: "202607221854-87892M"
 title: "Add fingerprinted preparation caches"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T15:51:47.980Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -37,11 +37,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T15:52:24.480Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:28.935Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T15:52:24.480Z"
+doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
   Summary: |-
@@ -71,6 +81,10 @@ sections:
     - Purge only versioned cache entries through the bounded cache API.
     - Re-run cold-path correctness and compare to the pre-cache trace.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "451a8a6e980f9f2724bce718e807a8675fd89eeb"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
