@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-SDPFN0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T13:29:06.967Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "d89988611fbdd3efaba3c9054d122104e6717a2b",
+  "blueprint_digest": "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62",
+  "findings": [
+    "Замороженный пакет не содержит детерминированных результатов проверок, привязанных к evaluated_sha: verification_records, runner_history и runtime_evidence пусты."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221854-SDPFN0/README.md"
+  ],
+  "missing_tests": [
+    "Включить в замороженные evidence детерминированные результаты catalog/session-тестов для минимальных capability-профилей, условных команд и запрета недекларированных возможностей.",
+    "Включить SHA-привязанные результаты поиска нулевых production-потребителей CommandNeeds, legacy-command-needs, needs и дублирующей loader-метаинформации.",
+    "Включить результаты command/help/JSON snapshots, preparation profiles, arch:check, guards:check, ci:contract, typecheck и test:critical."
+  ],
+  "hidden_assumptions": [
+    "Текстовая заметка TESTER предполагается достаточным подтверждением запусков, хотя соответствующие записи и runtime-доказательства отсутствуют в замороженном пакете.",
+    "Упомянутый в README файл кэша проверки предполагается корректным и привязанным к evaluated_sha, но он не входит в work_order.evidence и поэтому не может использоваться evaluator."
+  ],
+  "residual_risks": [
+    "Сформировать новый замороженный пакет, включающий детерминированные SHA-привязанные результаты заявленных и специализированных проверок; затем повторить семантическую оценку без изменения реализации."
+  ]
+}

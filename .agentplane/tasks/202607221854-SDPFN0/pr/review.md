@@ -13,7 +13,7 @@ Created: 2026-08-01T12:47:37.534Z
 ## Verification
 
 - State: ok
-- Note: PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at d89988611fbd.
+- Note: PASS: current verification now includes parser-valid SHA-bound check records and frozen runtime evidence for d89988611fbd.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
