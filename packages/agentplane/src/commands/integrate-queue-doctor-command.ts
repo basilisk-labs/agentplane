@@ -19,10 +19,9 @@ import { decideIntegrationQueueRecovery } from "./integrate-queue-recovery.js";
 import type { IntegrateQueueDoctorParsed } from "./integrate-queue.spec.js";
 import { renderIntegrationQueueDoctorResult } from "./integrate-queue-render.js";
 
-export const INTEGRATION_QUEUE_DOCTOR_RESULT_SCHEMA =
-  "agentplane.integration_queue.doctor.v1" as const;
+const INTEGRATION_QUEUE_DOCTOR_RESULT_SCHEMA = "agentplane.integration_queue.doctor.v1" as const;
 
-export type IntegrationQueueDoctorFinding = {
+type IntegrationQueueDoctorFinding = {
   task_id: string;
   status: string;
   reason: string;

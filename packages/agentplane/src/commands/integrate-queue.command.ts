@@ -46,7 +46,6 @@ import {
   hasQueuedIntegrationEntries,
   recoverStaleActiveLane,
   rejectIfQueuedEntryIsStale,
-  renderIntegrationQueueEntry,
 } from "./integrate-queue-lane.js";
 import type {
   IntegrateQueueAdoptLegacyProtectedConflictParsed,

@@ -1,5 +1,5 @@
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
 import type {
   IntegrationQueueExecutionSession,
   IntegrationQueueListSession,
@@ -533,9 +533,10 @@ export const loadIntegrateQueueEnqueueSpec = (session: IntegrationQueueTaskProvi
   );
 export const loadIntegrateQueueListSpec = (session: IntegrationQueueListSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueListHandler(
-      async (command) => (await session.require("project", command)).gitRoot,
-    ),
+    m.makeRunIntegrateQueueListHandler(async (command) => {
+      const project = await session.require("project", command);
+      return project.gitRoot;
+    }),
   );
 export const loadIntegrateQueueDoctorSpec = (session: IntegrationQueueTaskProviderReadSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
@@ -550,7 +551,10 @@ export const loadIntegrateQueueClaimSpec = (session: IntegrationQueueProviderRea
 export const loadIntegrateQueueReleaseLocalSpec = (session: IntegrationQueueListSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueReleaseHandler({
-      getGitRoot: async (command) => (await session.require("project", command)).gitRoot,
+      getGitRoot: async (command) => {
+        const project = await session.require("project", command);
+        return project.gitRoot;
+      },
     }),
   );
 export const loadIntegrateQueueReleaseProviderSpec = (
@@ -558,8 +562,10 @@ export const loadIntegrateQueueReleaseProviderSpec = (
 ) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueReleaseHandler({
-      getGitRoot: async (command) =>
-        (await getProviderReadContext(session, command)).resolvedProject.gitRoot,
+      getGitRoot: async (command) => {
+        const context = await getProviderReadContext(session, command);
+        return context.resolvedProject.gitRoot;
+      },
       getCtx: (command) => getProviderReadContext(session, command),
     }),
   );

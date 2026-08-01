@@ -314,7 +314,7 @@ describe("integrate queue claim publication guard", () => {
       providerObservation: { state: "found", pr: { status: "CLOSED", headSha: "audited-head" } },
     });
     const handler = makeRunIntegrateQueueReleaseHandler({
-      getGitRoot: async () => "/repo",
+      getGitRoot: () => Promise.resolve("/repo"),
       getCtx: commandContext,
     });
 
@@ -357,7 +357,7 @@ describe("integrate queue claim publication guard", () => {
       providerObservation: { state: "found", pr: { status: "CLOSED" } },
     });
     const handler = makeRunIntegrateQueueReleaseHandler({
-      getGitRoot: async () => "/repo",
+      getGitRoot: () => Promise.resolve("/repo"),
       getCtx: commandContext,
     });
 

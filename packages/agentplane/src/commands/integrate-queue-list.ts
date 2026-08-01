@@ -4,7 +4,7 @@ import {
   type IntegrationQueueState,
 } from "./pr/integrate/queue-state.js";
 
-export const INTEGRATION_QUEUE_LIST_RESULT_SCHEMA = "agentplane.integration_queue.list.v1" as const;
+const INTEGRATION_QUEUE_LIST_RESULT_SCHEMA = "agentplane.integration_queue.list.v1" as const;
 
 export type IntegrationQueueListResult = {
   schema: typeof INTEGRATION_QUEUE_LIST_RESULT_SCHEMA;

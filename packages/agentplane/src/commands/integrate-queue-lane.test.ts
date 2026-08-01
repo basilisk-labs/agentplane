@@ -258,7 +258,8 @@ describe("integration queue terminal recovery", () => {
       audit: { authority: "local_read", attempts: 1, effects_applied: 0 },
     });
     expect(mocks.resolvePrFlowStatus).not.toHaveBeenCalled();
-    expect((await readIntegrationQueue(root)).entries[0]?.status).toBe("queued");
+    const persisted = await readIntegrationQueue(root);
+    expect(persisted.entries[0]?.status).toBe("queued");
   });
 
   it("keeps doctor from repairing an open PR entry and closes it after Hosted Close evidence", async () => {
