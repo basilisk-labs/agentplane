@@ -1,10 +1,10 @@
 ---
 id: "202607221854-TE9ZJ5"
 title: "Instrument preparation graph nodes and invalidation inputs"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T14:42:47.960Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -40,11 +40,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T14:43:14.954Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:26.117Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T14:43:14.954Z"
+doc_updated_by: "CODER"
 description: "RF-26a: measure task/backend read, Git snapshot, provider state, blueprint, policy/authority, knowledge retrieval, prompt compilation, and rendering nodes with exact fingerprint and invalidation provenance."
 sections:
   Summary: |-
@@ -74,6 +84,10 @@ sections:
     - Remove only generated trace data, not task/context source data.
     - Re-run golden scenarios to confirm no functional dependency on instrumentation.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "fa0eae41849fc8e339543f3c41dfc81b2d05c82d"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
