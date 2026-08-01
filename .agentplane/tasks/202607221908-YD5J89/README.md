@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T09:13:02.541Z"
+  updated_at: "2026-08-01T09:18:12.405Z"
   updated_by: "TESTER"
-  note: "Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
+  note: "Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -224,8 +224,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
+  -
+    type: "verify"
+    at: "2026-08-01T09:18:12.405Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T09:13:03.519Z"
+doc_updated_at: "2026-08-01T09:18:13.204Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -584,6 +590,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T09:18:12.405Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:13:03.519Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: 5 files and 51 tests passed on cef1b58cb88c; asymmetric sessions prove backend.write cannot invoke task writes, task.write cannot invoke backend sync, git.mutate cannot read HEAD, and git.head cannot stage; all cross-capability operations return E_INTERNAL without invoking underlying methods.
+    Scope: exact capability-specific runtime port enforcement, read-only filesystem non-mutation, evaluator artifact confinement, and concurrent dispatch isolation.
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: shared guards OK; trust-boundary ratchet OK with reviewed baseline unchanged.
+    Scope: source trust boundaries.
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: schemas OK.
+    Scope: generated schemas and compatibility fixtures.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed, 77 tests total, on cef1b58cb88c.
+    Scope: critical CLI, Git/path isolation, and trust-boundary contracts.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript 7 build check exited 0 on cef1b58cb88c.
+    Scope: workspace type and declaration compatibility.
+
+    Command: git diff --check 16e40b316031..cef1b58cb88c -- <semantic paths>
+    Result: pass
+    Evidence: no whitespace errors in the exact-capability implementation diff.
+    Scope: capability-member mapping and asymmetric regression tests.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -625,6 +691,10 @@ sections:
     - Observation: A declared read capability previously returned the raw mutable CommandContext even though undeclared session.require calls were denied.
       Impact: A read-only handler could bypass the session API and reach taskBackend write or Git mutation methods through the returned object.
       Resolution: Return a guarded per-session CommandContext view; backend and Git mutation members now emit typed capability denials before touching real state, with mock and real-filesystem negative tests.
+
+    - Observation: The first guarded port used OR-based backend/task write authorization and treated git.mutate as an implicit read grant.
+      Impact: A hypothetical asymmetric command profile could cross from backend maintenance into task mutation, or from task mutation into backend synchronization, despite not declaring that capability.
+      Resolution: Map every backend, task, and Git member to one exact required capability and prove all four asymmetric cross-capability attempts are denied before underlying methods run.
 extensions:
   implementation_commit:
     hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
@@ -998,6 +1068,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T09:18:12.405Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:13:03.519Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: 5 files and 51 tests passed on cef1b58cb88c; asymmetric sessions prove backend.write cannot invoke task writes, task.write cannot invoke backend sync, git.mutate cannot read HEAD, and git.head cannot stage; all cross-capability operations return E_INTERNAL without invoking underlying methods.
+Scope: exact capability-specific runtime port enforcement, read-only filesystem non-mutation, evaluator artifact confinement, and concurrent dispatch isolation.
+
+Command: bun run guards:check
+Result: pass
+Evidence: shared guards OK; trust-boundary ratchet OK with reviewed baseline unchanged.
+Scope: source trust boundaries.
+
+Command: bun run schemas:check
+Result: pass
+Evidence: schemas OK.
+Scope: generated schemas and compatibility fixtures.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed, 77 tests total, on cef1b58cb88c.
+Scope: critical CLI, Git/path isolation, and trust-boundary contracts.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript 7 build check exited 0 on cef1b58cb88c.
+Scope: workspace type and declaration compatibility.
+
+Command: git diff --check 16e40b316031..cef1b58cb88c -- <semantic paths>
+Result: pass
+Evidence: no whitespace errors in the exact-capability implementation diff.
+Scope: capability-member mapping and asymmetric regression tests.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1043,3 +1173,7 @@ DecisionContextRef:
 - Observation: A declared read capability previously returned the raw mutable CommandContext even though undeclared session.require calls were denied.
   Impact: A read-only handler could bypass the session API and reach taskBackend write or Git mutation methods through the returned object.
   Resolution: Return a guarded per-session CommandContext view; backend and Git mutation members now emit typed capability denials before touching real state, with mock and real-filesystem negative tests.
+
+- Observation: The first guarded port used OR-based backend/task write authorization and treated git.mutate as an implicit read grant.
+  Impact: A hypothetical asymmetric command profile could cross from backend maintenance into task mutation, or from task mutation into backend synchronization, despite not declaring that capability.
+  Resolution: Map every backend, task, and Git member to one exact required capability and prove all four asymmetric cross-capability attempts are denied before underlying methods run.

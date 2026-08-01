@@ -13,7 +13,7 @@ Created: 2026-08-01T00:38:26.423Z
 ## Verification
 
 - State: ok
-- Note: Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+- Note: Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,10 +31,10 @@ Created: 2026-08-01T00:38:26.423Z
 ```text
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  89 ++++
- .../command-catalog/command-context-port.ts        | 137 +++++
+ .../command-catalog/command-context-port.ts        | 153 ++++++
  .../cli/run-cli/command-catalog/command-session.ts |  45 +-
  .../context-evaluator-capability-profiles.ts       |  71 +++
- .../src/cli/run-cli/command-catalog/kernel.test.ts | 134 ++++-
+ .../src/cli/run-cli/command-catalog/kernel.test.ts | 224 +++++++-
  .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
  .../src/cli/run-cli/command-loaders/project.ts     | 215 +++++++-
@@ -58,7 +58,7 @@ Created: 2026-08-01T00:38:26.423Z
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 29 files changed, 2898 insertions(+), 693 deletions(-)
+ 29 files changed, 3004 insertions(+), 693 deletions(-)
 ```
 
 </details>
