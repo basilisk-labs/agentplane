@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The trace contract is deterministic: sorted inputs, SHA-256 digests, explicit dependency edges, byte counts, status, cacheability, and named invalidation reasons are emitted without raw fingerprint values.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Route authority and evaluator artifact preparation remain non-cacheable; provider state is only a TTL candidate with mandatory live revalidation before side effects.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The benchmark compares paired trace-disabled/enabled runs with exact stdout equality and selects candidates from measured latency/size rather than enabling speculative caches.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

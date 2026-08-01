@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7f706235979f1cd26bc55128dad11db53e3cb10dd8104cc5477e13dac3db028d",
+  "implementation_sha": "9c4be64354a1b8e615e706813decb374ecc05598",
+  "kind": "task_verification_record",
+  "note": "PASS: 16 focused trace/CLI/fingerprint tests and TypeScript 7 typecheck passed after commit; full test:fast (3612 tests), ci:contract, clone/knip/hotspot guards, and paired overhead benchmark passed before commit with identical stdout. Median traced ratios: simple 0.990, branch route 1.022, next-action 1.079 against <=1.15 threshold.",
+  "recorded_at": "2026-08-01T15:38:00.639Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run preparation traces for simple CLI, direct, branch_pr, and context scenarios. Expected: each node exposes latency, bytes, dependencies, fingerprint inputs, and invalidation reasons.\n2. Repeat unchanged and independently stale scenarios. Expected: trace identifies exactly which nodes could be reused or must invalidate.\n3. Inspect semantic decisions. Expected: they are marked non-cacheable unless provenance and invalidation are explicit.\n4. Compare trace overhead to baseline. Expected: bounded overhead and no changed functional outcome.\n5. Run focused trace tests and typecheck.",
+  "scope_digest": "sha256:00c60277a7e4cf5e47d702a0f85173ae9661a4ac0f70dd69676d1a35b5303048",
+  "task_id": "202607221854-TE9ZJ5",
+  "verification_command": "agentplane verify 202607221854-TE9ZJ5 --ok --by TESTER",
+  "verifier": "TESTER"
+}
