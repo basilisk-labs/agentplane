@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen evidence supports rejecting one persistent Git-snapshot cache, but it does not support the broader conclusion that no preparation cache should be implemented. The task requires selecting measured deterministic nodes, while the benchmark evidence covers only one candidate and explicitly recommends benchmarking another approach; the task record also claims a command-local candidate was tested without freezing corresponding measurements.",
+      "broken_invariant": "A no-go outcome may replace implementation only when the approved candidate-selection scope is supported by deterministic measurements. The evidence must establish that the relevant measured preparation nodes and viable cache designs fail the declared threshold, rather than generalizing from one persistent-cache prototype.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:17c55610904e9d12bc153ab4e898e44077fdcc79185f6e62c957bcd5fbaf2daa",
+          "section": "Plan and implementation comments"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json",
+          "sha256": "sha256:42a33290ea5e28d7a5fb5480ea1f0bae6666702d9fff05e452aef69502b2d112",
+          "section": "method and decision"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json",
+          "sha256": "sha256:a544921a4b7e3ce23a79527c3258a265b128ab182d7a42ad7f2b3fea613124d0",
+          "section": "production_source_files_changed and prototype_retained"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze reproducible measurements for every candidate used to justify the task-wide no-go decision, including the claimed command-local candidate and the recommended stateless parallel-observation approach, or narrow and re-approve the task scope to the single persistent Git-snapshot candidate."
+  ],
+  "hidden_assumptions": [
+    "The persistent Git-snapshot cache is assumed to be the only viable preparation-cache design even though the evidence recommends an unmeasured alternative.",
+    "The task comment's claim that a command-local candidate also failed is assumed true without raw samples, formulas, or a corresponding frozen benchmark record."
+  ],
+  "recovery_context": "Resume from the validated persistent Git-snapshot no-go result, but do not treat it as a task-wide no-go. Either add frozen deterministic benchmark evidence for the other candidate designs used in the decision or obtain explicit approval to narrow the task contract to the single measured candidate."
+}

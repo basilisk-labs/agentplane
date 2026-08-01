@@ -4,7 +4,7 @@ title: "Add fingerprinted preparation caches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -32,36 +32,39 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T16:48:34.091Z"
+  updated_at: "2026-08-01T16:55:36.769Z"
   updated_by: "TESTER"
-  note: "Fresh deterministic evidence: raw benchmark arrays and formulas, exact-output proof, command-level pass records, evaluated no-source-change diff, and explicit no-cache applicability are frozen for evaluator review."
+  note: "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T16:49:43.216Z"
+  updated_at: "2026-08-01T16:57:03.512Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
   blueprint_digest: "653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221854-87892M/README.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-87892M/verification/20260801165536769-e5385260c2e9f58f.json"
+    - ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json"
+    - ".agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json"
+    - ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet asserts a benchmark no-go but does not contain the raw benchmark samples, reproducible benchmark check record, or runtime evidence needed to validate the 3.94% result and exact-output claim independently."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The frozen evidence supports rejecting one persistent Git-snapshot cache, but it does not support the broader conclusion that no preparation cache should be implemented. The task requires selecting measured deterministic nodes, while the benchmark evidence covers only one candidate and explicitly recommends benchmarking another approach; the task record also claims a command-local candidate was tested without freezing corresponding measurements."
 commit:
   hash: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
   message: "🚧 87892M task: record cache benchmark no-go"
@@ -107,8 +110,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Fresh deterministic evidence: raw benchmark arrays and formulas, exact-output proof, command-level pass records, evaluated no-source-change diff, and explicit no-cache applicability are frozen for evaluator review."
+  -
+    type: "verify"
+    at: "2026-08-01T16:55:36.769Z"
+    author: "TESTER"
+    state: "ok"
+    note: "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains."
 doc_version: 3
-doc_updated_at: "2026-08-01T16:48:34.996Z"
+doc_updated_at: "2026-08-01T16:55:37.745Z"
 doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
@@ -242,6 +251,51 @@ sections:
       "verdict": "pass_no_go_evidence",
       "residual_risk": "Wall-time results are specific to the recorded machine and dirty-worktree scenario. The candidate misses the threshold, so benchmark noise cannot turn this result into an implementation acceptance without a new approved task and benchmark."
     }
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-87892M-add-fingerprinted-preparation-caches/.agentplane/tasks/202607221854-87892M/blueprint/resolved-snapshot.json
+    - old_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+    - current_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-87892M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221854-87892M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T16:55:36.769Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T16:48:34.996Z, excerpt_hash=sha256:e7b862a47cf21a72b15dbd0b18e43dab413e0d738dfeb569e3ccd8c104b90d47
+
+    Details:
+
+    Command: 25-pair external-process cold and warm preparation benchmark
+    Result: pass
+    Evidence: .agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json
+    Scope: raw samples, environment, method, formulas, declared threshold, exact-output result, and no-go decision
+
+    Command: bun run typecheck && bun run ci:contract && bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json
+    Scope: deterministic type, contract, critical regression, artifact parsing, and exact-output checks
+
+    Command: git diff --name-status <base>..<implementation> && rg -n <persistent-cache-symbols> packages/agentplane/src
+    Result: pass
+    Evidence: .agentplane/cache/evaluator/202607221854-87892M/repository-state.json
+    Scope: evaluated source diff, clean prototype removal, and live semantic-resolution proof
 
     BlueprintSnapshotRef:
     - state: current
@@ -420,6 +474,51 @@ Details:
   "verdict": "pass_no_go_evidence",
   "residual_risk": "Wall-time results are specific to the recorded machine and dirty-worktree scenario. The candidate misses the threshold, so benchmark noise cannot turn this result into an implementation acceptance without a new approved task and benchmark."
 }
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-87892M-add-fingerprinted-preparation-caches/.agentplane/tasks/202607221854-87892M/blueprint/resolved-snapshot.json
+- old_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+- current_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-87892M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221854-87892M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T16:55:36.769Z — VERIFY — ok
+
+By: TESTER
+
+Note: RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T16:48:34.996Z, excerpt_hash=sha256:e7b862a47cf21a72b15dbd0b18e43dab413e0d738dfeb569e3ccd8c104b90d47
+
+Details:
+
+Command: 25-pair external-process cold and warm preparation benchmark
+Result: pass
+Evidence: .agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json
+Scope: raw samples, environment, method, formulas, declared threshold, exact-output result, and no-go decision
+
+Command: bun run typecheck && bun run ci:contract && bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json
+Scope: deterministic type, contract, critical regression, artifact parsing, and exact-output checks
+
+Command: git diff --name-status <base>..<implementation> && rg -n <persistent-cache-symbols> packages/agentplane/src
+Result: pass
+Evidence: .agentplane/cache/evaluator/202607221854-87892M/repository-state.json
+Scope: evaluated source diff, clean prototype removal, and live semantic-resolution proof
 
 BlueprintSnapshotRef:
 - state: current

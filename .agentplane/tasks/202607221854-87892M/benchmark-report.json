@@ -112,19 +112,99 @@
     "threshold_passed": false,
     "verdict": "no_go"
   },
-  "command_local_task_snapshot_experiment": {
-    "method": "Fifteen alternating external-process pairs against the RF-26a binary, with persistent cache disabled in both builds.",
-    "baseline_median_ms": 860.239625,
-    "candidate_median_ms": 850.077,
-    "improvement_percent": 1.181371,
-    "exact_stdout": true,
-    "verdict": "rejected_below_threshold"
+  "stateless_parallel_git_observation": {
+    "method": {
+      "mode": "alternating external-process pairs after one warmup per binary",
+      "command": "node packages/agentplane/dist/cli.js task next-action 202607221854-87892M --json --root <task-worktree>",
+      "baseline": "RF-26a main at 451a8a6e980f9f2724bce718e807a8675fd89eeb",
+      "candidate": "split tracked/untracked Git status observation with root, HEAD, status, index, blueprint, and policy-scope work overlapped without persistent state",
+      "functional_comparison": "Exact stdout equality for every paired run."
+    },
+    "threshold": {
+      "median_improvement_percent_gte": 5,
+      "functional_output_must_be_unchanged": true,
+      "declared_before_run": true
+    },
+    "runs": {
+      "pairs": 25,
+      "baseline_ms": [
+        1088.143792,
+        1106.309958,
+        1097.610209,
+        1104.037542,
+        1125.129791,
+        1108.721833,
+        1108.68775,
+        1109.819459,
+        1108.679584,
+        1139.630667,
+        1112.087375,
+        1115.030083,
+        1123.51975,
+        1108.749792,
+        1149.675834,
+        1114.247083,
+        1157.31375,
+        1115.184542,
+        1121.013542,
+        1128.47375,
+        1112.734917,
+        1139.996167,
+        1109.146833,
+        1151.570958,
+        1117.239125
+      ],
+      "candidate_ms": [
+        1058.2865,
+        1042.435834,
+        1034.709708,
+        1052.155875,
+        1078.351708,
+        1080.68275,
+        1076.309916,
+        1248.191458,
+        1059.246916,
+        1045.169625,
+        1056.334166,
+        1039.147625,
+        1075.61775,
+        1050.933291,
+        1050.994167,
+        1048.771292,
+        1053.725666,
+        1049.482625,
+        1048.30075,
+        1072.550667,
+        1046.025542,
+        1050.646583,
+        1052.493834,
+        1188.699667,
+        1047.954084
+      ]
+    },
+    "comparison": {
+      "baseline_median_ms": 1114.247083,
+      "candidate_median_ms": 1052.155875,
+      "baseline_mean_ms": 1118.91016344,
+      "candidate_mean_ms": 1068.28871996,
+      "improvement_formula": "(1 - candidate_median_ms / baseline_median_ms) * 100",
+      "improvement_percent": 5.572481,
+      "exact_stdout": true,
+      "threshold_passed": true,
+      "verdict": "go"
+    },
+    "implementation": {
+      "persistent_state": false,
+      "cache_invalidation": false,
+      "error_precedence": "git_root, git_head, git_status, git_index",
+      "semantic_projection": "tracked plus untracked observations are sorted and filtered through the existing snapshot model before fingerprinting"
+    }
   },
   "candidate_selection": [
     {
       "node": "git_snapshot",
-      "result": "rejected",
-      "reason": "The exact live pre-key repeats most of the expensive untracked-file scan, leaving only a 3.94 percent end-to-end warm gain."
+      "result": "accepted_stateless",
+      "reason": "The persistent-cache design remained below threshold, while stateless parallel observation improved the end-to-end median by 5.57 percent with exact output parity and no persistent state."
     },
     {
       "node": "task_context_assembly",
@@ -134,7 +214,7 @@
     {
       "node": "task_backend_read",
       "result": "rejected",
-      "reason": "Branch snapshot discovery remains the dominant pre-key cost, while command-local coalescing improved the full command by only 1.18 percent."
+      "reason": "The final accepted optimization removes the measured Git-observation serialization without introducing broad command-local task state."
     },
     {
       "node": "remote_provider_state",
@@ -150,8 +230,9 @@
   "decision": {
     "persistent_cache_merged": false,
     "prototype_retained": false,
-    "reason": "The measured benefit fails the declared complexity threshold, while the cold path becomes slower and the cache adds a new persistent concurrency surface.",
-    "recommended_follow_up": "Benchmark parallel observation of independent Git root, HEAD, status, and index inputs without persistent state."
+    "stateless_parallel_observation_merged": true,
+    "reason": "The persistent cache failed its complexity threshold. Stateless parallel Git observation exceeded the same five-percent end-to-end threshold with exact output parity and no cache lifecycle surface.",
+    "recommended_follow_up": "Keep semantic authority and remote provider observations live; use the preparation trace to select future stateless scheduling improvements."
   },
   "evidence": {
     "benchmark.baseline": "runs.baseline_ms and runs.baseline_cold_ms",
@@ -159,7 +240,7 @@
     "benchmark.runs": "runs",
     "benchmark.threshold": "threshold",
     "benchmark.comparison": "comparison",
-    "benchmark.verdict": "no_go; prototype removed",
+    "benchmark.verdict": "persistent_cache_no_go; stateless_parallel_observation_go",
     "benchmark.quality": "pending evaluator gate",
     "benchmark.commit": "pending artifact commit"
   }

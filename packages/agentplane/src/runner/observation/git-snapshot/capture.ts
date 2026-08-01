@@ -7,6 +7,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   GIT_MAX_BUFFER_BYTES,
   GIT_TIMEOUT_MS,
+  assertGitPath,
   isExcluded,
   normalizeExcludedRoots,
   normalizeRepositoryRoot,
@@ -15,6 +16,7 @@ import {
   sha256,
   sha256File,
   sortFingerprints,
+  sortStatusEntries,
   stableJson,
   statusEntryPaths,
   uniqSorted,
@@ -43,6 +45,81 @@ async function captureHead(repositoryRoot: string): Promise<string | null> {
     if (code === 1) return null;
     throw error;
   }
+}
+
+async function validateRepositoryRoot(repositoryRoot: string): Promise<void> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
+    cwd: repositoryRoot,
+    env: gitEnv(),
+    timeout: GIT_TIMEOUT_MS,
+  });
+  const observedRoot = path.resolve(String(stdout).trim());
+  const [canonicalObservedRoot, canonicalRepositoryRoot] = await Promise.all([
+    realpath(observedRoot),
+    realpath(repositoryRoot),
+  ]);
+  if (canonicalObservedRoot !== canonicalRepositoryRoot) {
+    throw new Error(
+      `repository_root mismatch: expected ${repositoryRoot}, Git resolved ${observedRoot}`,
+    );
+  }
+}
+
+async function captureTrackedStatusEntries(repositoryRoot: string): Promise<GitStatusEntry[]> {
+  const { stdout } = await execFileAsync(
+    "git",
+    [
+      "status",
+      "--porcelain=v1",
+      "-z",
+      "--untracked-files=no",
+      "--renames",
+      "--ignore-submodules=none",
+    ],
+    {
+      cwd: repositoryRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: GIT_MAX_BUFFER_BYTES,
+      timeout: GIT_TIMEOUT_MS,
+    },
+  );
+  return parsePorcelainStatus(stdout);
+}
+
+async function captureUntrackedStatusEntries(repositoryRoot: string): Promise<GitStatusEntry[]> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["ls-files", "--others", "--exclude-standard", "-z"],
+    {
+      cwd: repositoryRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: GIT_MAX_BUFFER_BYTES,
+      timeout: GIT_TIMEOUT_MS,
+    },
+  );
+  return stdout
+    .toString("utf8")
+    .split("\0")
+    .filter((entryPath) => entryPath.length > 0)
+    .map((entryPath) => ({
+      index_status: "?",
+      worktree_status: "?",
+      path: assertGitPath(entryPath),
+      original_path: null,
+    }));
+}
+
+async function captureIndexEntries(repositoryRoot: string): Promise<GitSnapshot["index_entries"]> {
+  const { stdout } = await execFileAsync("git", ["ls-files", "--stage", "-z"], {
+    cwd: repositoryRoot,
+    env: gitEnv(),
+    encoding: "buffer",
+    maxBuffer: GIT_MAX_BUFFER_BYTES,
+    timeout: GIT_TIMEOUT_MS,
+  });
+  return parseIndexEntries(stdout);
 }
 
 async function capturePathFingerprint(
@@ -185,12 +262,68 @@ function unavailableSnapshot(opts: {
   };
 }
 
-export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promise<GitSnapshot> {
+type GitSnapshotObservation =
+  | {
+      state: "invalid";
+      repository_root: string;
+      error: unknown;
+    }
+  | {
+      state: "observed";
+      repository_root: string;
+      root_result: PromiseSettledResult<void>;
+      head_result: PromiseSettledResult<string | null>;
+      tracked_status_result: PromiseSettledResult<GitStatusEntry[]>;
+      untracked_status_result: PromiseSettledResult<GitStatusEntry[]>;
+      index_result: PromiseSettledResult<GitSnapshot["index_entries"]>;
+    };
+
+export async function captureGitSnapshotObservation(
+  repositoryRootInput: string,
+): Promise<GitSnapshotObservation> {
   let repositoryRoot = "";
+  try {
+    repositoryRoot = normalizeRepositoryRoot(repositoryRootInput);
+  } catch (error) {
+    return { state: "invalid", repository_root: repositoryRoot, error };
+  }
+
+  const [rootResult, headResult, trackedStatusResult, untrackedStatusResult, indexResult] =
+    await Promise.allSettled([
+      validateRepositoryRoot(repositoryRoot),
+      captureHead(repositoryRoot),
+      captureTrackedStatusEntries(repositoryRoot),
+      captureUntrackedStatusEntries(repositoryRoot),
+      captureIndexEntries(repositoryRoot),
+    ]);
+
+  return {
+    state: "observed",
+    repository_root: repositoryRoot,
+    root_result: rootResult,
+    head_result: headResult,
+    tracked_status_result: trackedStatusResult,
+    untracked_status_result: untrackedStatusResult,
+    index_result: indexResult,
+  };
+}
+
+export async function materializeGitSnapshot(
+  observation: GitSnapshotObservation,
+  excludedRoots: readonly string[] = [],
+): Promise<GitSnapshot> {
+  const repositoryRoot = observation.repository_root;
+  if (observation.state === "invalid") {
+    return unavailableSnapshot({
+      repositoryRoot,
+      excludedPaths: [],
+      errors: [observationError("snapshot_input", observation.error)],
+    });
+  }
+
   let excludedPaths: string[] = [];
   try {
-    repositoryRoot = normalizeRepositoryRoot(input.repository_root);
-    excludedPaths = normalizeExcludedRoots(repositoryRoot, input.excluded_roots ?? []);
+    excludedPaths = normalizeExcludedRoots(repositoryRoot, excludedRoots);
   } catch (error) {
     return unavailableSnapshot({
       repositoryRoot,
@@ -199,94 +332,64 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
     });
   }
 
-  try {
-    const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
-      cwd: repositoryRoot,
-      env: gitEnv(),
-      timeout: GIT_TIMEOUT_MS,
-    });
-    const observedRoot = path.resolve(String(stdout).trim());
-    const [canonicalObservedRoot, canonicalRepositoryRoot] = await Promise.all([
-      realpath(observedRoot),
-      realpath(repositoryRoot),
-    ]);
-    if (canonicalObservedRoot !== canonicalRepositoryRoot) {
-      throw new Error(
-        `repository_root mismatch: expected ${repositoryRoot}, Git resolved ${observedRoot}`,
-      );
-    }
-  } catch (error) {
+  const {
+    root_result: rootResult,
+    head_result: headResult,
+    tracked_status_result: trackedStatusResult,
+    untracked_status_result: untrackedStatusResult,
+    index_result: indexResult,
+  } = observation;
+
+  if (rootResult.status === "rejected") {
     return unavailableSnapshot({
       repositoryRoot,
       excludedPaths,
-      errors: [observationError("git_root", error)],
+      errors: [observationError("git_root", rootResult.reason)],
     });
   }
 
-  let headCommit: string | null;
-  try {
-    headCommit = await captureHead(repositoryRoot);
-  } catch (error) {
+  if (headResult.status === "rejected") {
     return unavailableSnapshot({
       repositoryRoot,
       excludedPaths,
-      errors: [observationError("git_head", error)],
+      errors: [observationError("git_head", headResult.reason)],
     });
   }
+  const headCommit = headResult.value;
 
-  let statusEntries: GitStatusEntry[];
-  try {
-    const { stdout } = await execFileAsync(
-      "git",
-      [
-        "status",
-        "--porcelain=v1",
-        "-z",
-        "--untracked-files=all",
-        "--renames",
-        "--ignore-submodules=none",
-      ],
-      {
-        cwd: repositoryRoot,
-        env: gitEnv(),
-        encoding: "buffer",
-        maxBuffer: GIT_MAX_BUFFER_BYTES,
-        timeout: GIT_TIMEOUT_MS,
-      },
-    );
-    statusEntries = parsePorcelainStatus(stdout).filter((entry) =>
-      statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
-    );
-  } catch (error) {
+  if (trackedStatusResult.status === "rejected") {
     return unavailableSnapshot({
       repositoryRoot,
       excludedPaths,
       headCommit,
-      errors: [observationError("git_status", error)],
+      errors: [observationError("git_status", trackedStatusResult.reason)],
     });
   }
-
-  let indexEntries: GitSnapshot["index_entries"];
-  try {
-    const { stdout } = await execFileAsync("git", ["ls-files", "--stage", "-z"], {
-      cwd: repositoryRoot,
-      env: gitEnv(),
-      encoding: "buffer",
-      maxBuffer: GIT_MAX_BUFFER_BYTES,
-      timeout: GIT_TIMEOUT_MS,
+  if (untrackedStatusResult.status === "rejected") {
+    return unavailableSnapshot({
+      repositoryRoot,
+      excludedPaths,
+      headCommit,
+      statusEntries: trackedStatusResult.value,
+      errors: [observationError("git_status", untrackedStatusResult.reason)],
     });
-    indexEntries = parseIndexEntries(stdout).filter(
-      (entry) => !isExcluded(entry.path, excludedPaths),
-    );
-  } catch (error) {
+  }
+  const statusEntries = sortStatusEntries(
+    [...trackedStatusResult.value, ...untrackedStatusResult.value].filter((entry) =>
+      statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
+    ),
+  );
+
+  if (indexResult.status === "rejected") {
     return unavailableSnapshot({
       repositoryRoot,
       excludedPaths,
       headCommit,
       statusEntries,
-      errors: [observationError("git_index", error)],
+      errors: [observationError("git_index", indexResult.reason)],
     });
   }
+  const indexEntries = indexResult.value.filter((entry) => !isExcluded(entry.path, excludedPaths));
 
   const dirtyPaths = uniqSorted(
     statusEntries
@@ -332,4 +435,11 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
     path_fingerprints: pathFingerprints,
     errors: [],
   };
+}
+
+export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promise<GitSnapshot> {
+  return await materializeGitSnapshot(
+    await captureGitSnapshotObservation(input.repository_root),
+    input.excluded_roots,
+  );
 }

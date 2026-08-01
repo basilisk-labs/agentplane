@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221854-87892M-53b10f19bf6e40fb01d85f8f",
+  "task_id": "202607221854-87892M",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Resume from the validated persistent Git-snapshot no-go result, but do not treat it as a task-wide no-go. Either add frozen deterministic benchmark evidence for the other candidate designs used in the decision or obtain explicit approval to narrow the task contract to the single measured candidate.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen evidence supports rejecting one persistent Git-snapshot cache, but it does not support the broader conclusion that no preparation cache should be implemented. The task requires selecting measured deterministic nodes, while the benchmark evidence covers only one candidate and explicitly recommends benchmarking another approach; the task record also claims a command-local candidate was tested without freezing corresponding measurements.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:17c55610904e9d12bc153ab4e898e44077fdcc79185f6e62c957bcd5fbaf2daa",
+          "section": "Plan and implementation comments"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json",
+          "sha256": "sha256:42a33290ea5e28d7a5fb5480ea1f0bae6666702d9fff05e452aef69502b2d112",
+          "section": "method and decision"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json",
+          "sha256": "sha256:a544921a4b7e3ce23a79527c3258a265b128ab182d7a42ad7f2b3fea613124d0",
+          "section": "production_source_files_changed and prototype_retained"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-result.json"
+}
