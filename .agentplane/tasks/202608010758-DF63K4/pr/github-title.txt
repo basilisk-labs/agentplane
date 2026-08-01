@@ -1,0 +1,1 @@
+🚧 DF63K4 task: Refresh generated script inventory after TypeScript 7 adoption [202608010758-DF63K4]
