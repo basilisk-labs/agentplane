@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608011949-1JRXBT/assimilate-v0-6-25-v0-6-26-maintenance-fixes-int",
+  "created_at": "2026-08-01T22:10:12.728Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608011949-1JRXBT",
+  "updated_at": "2026-08-01T22:10:12.728Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
