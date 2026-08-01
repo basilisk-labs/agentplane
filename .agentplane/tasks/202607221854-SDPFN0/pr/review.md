@@ -6,7 +6,7 @@ Created: 2026-08-01T12:47:37.534Z
 
 - Task: `202607221854-SDPFN0`
 - Title: Complete CommandSession capability migration
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221854-SDPFN0/complete-commandsession-capability-migration`
 - Canonical task record: `.agentplane/tasks/202607221854-SDPFN0/README.md`
 
