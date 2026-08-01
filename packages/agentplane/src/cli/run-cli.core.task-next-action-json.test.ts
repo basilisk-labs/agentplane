@@ -95,7 +95,7 @@ async function readNextActionJson(root: string, taskId: string): Promise<NextAct
 }
 
 describe("task next-action JSON", () => {
-  it("commits a branch_pr authority record before returning the authorized PR operation", async () => {
+  it("stores branch_pr authority without changing the task branch before the authorized PR operation", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -149,6 +149,9 @@ describe("task next-action JSON", () => {
       cwd: root,
     });
     expect(setupStatus.trim()).toBe("");
+    const { stdout: setupHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
 
     const initial = await readNextActionJson(root, taskId);
     expect(initial.workflow_step).toMatchObject({
@@ -178,12 +181,10 @@ describe("task next-action JSON", () => {
       root,
     ]);
 
-    const { stdout: subject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+    const { stdout: authorizedHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
-    expect(subject.trim()).toBe(
-      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
-    );
+    expect(authorizedHead.trim()).toBe(setupHead.trim());
     const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
     expect(status.trim()).toBe("");
 
