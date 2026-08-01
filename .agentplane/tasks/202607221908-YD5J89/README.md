@@ -4,7 +4,7 @@ title: "Migrate context and evaluator command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
   findings:
     - "context verify-task and context finalize-task are catalogued as project-only while their implementations load CommandContext internally, so the declared capability profile understates backend/task access and permits duplicate broad context preparation."
 commit:
-  hash: "1d315e9e1a465b9e87ad476759e0e41ea1d4a69b"
-  message: "♻️ YD5J89 task: migrate context evaluator command boundaries"
+  hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
+  message: "♻️ YD5J89 task: route task-aware context sessions"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: granular context/evaluator sessions, typed in-process results, renderer boundaries, and single-context supervision."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: verify-task now resolves task.read once; finalize-task resolves task.write once and passes the session-owned context through final verification."
 events:
   -
     type: "status"
@@ -94,8 +97,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused 97/97, doctor/wiki 20/20, critical 12/12 chunks (77 tests), format, schemas, guards, TS7 typecheck, full lint, architecture, knip, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-08-01T01:42:14.637Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: verify-task now resolves task.read once; finalize-task resolves task.write once and passes the session-owned context through final verification."
 doc_version: 3
-doc_updated_at: "2026-08-01T01:34:42.683Z"
+doc_updated_at: "2026-08-01T01:42:14.637Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
