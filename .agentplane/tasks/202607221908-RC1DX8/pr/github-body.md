@@ -19,9 +19,8 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
 - Note:
 
 ```text
-PASS implementation rework at b9473bd1de4a9246378fbc6e7156a79cd582ded4: Hermes supervision now
-selects least-authority sessions from parsed remote, execute-step, and dry-run intent; all focused
-and repository gates passed.
+PASS hosted-contract rework at 70dbba1ebf95e36842902ac0f3d5e23fb45b31cc: Hermes catalog extraction
+restores the 600-line hotspot invariant without changing command graph or authority selection.
 ```
 - Canonical workflow state lives in the task README.
 

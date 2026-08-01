@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T11:12:25.369Z"
+  updated_at: "2026-08-01T11:23:41.783Z"
   updated_by: "TESTER"
-  note: "PASS implementation rework at b9473bd1de4a9246378fbc6e7156a79cd582ded4: Hermes supervision now selects least-authority sessions from parsed remote, execute-step, and dry-run intent; all focused and repository gates passed."
+  note: "PASS hosted-contract rework at 70dbba1ebf95e36842902ac0f3d5e23fb45b31cc: Hermes catalog extraction restores the 600-line hotspot invariant without changing command graph or authority selection."
   attempts: 0
 quality_review:
   state: "pass"
@@ -124,8 +124,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-01T11:23:41.783Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS hosted-contract rework at 70dbba1ebf95e36842902ac0f3d5e23fb45b31cc: Hermes catalog extraction restores the 600-line hotspot invariant without changing command graph or authority selection."
 doc_version: 3
-doc_updated_at: "2026-08-01T11:14:16.329Z"
+doc_updated_at: "2026-08-01T11:23:42.671Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session capabilities, shared supervisor use cases, typed episode results, and compatibility renderers."
 sections:
@@ -338,6 +344,91 @@ sections:
     Command: bun run knip:check
     Result: pass
     Evidence: .agentplane/cache/verification/202607221908-RC1DX8-b9473bd-checks.json
+    Scope: Knip baseline at 545 of 545.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-RC1DX8-migrate-runner-and-hermes-command-boundaries/.agentplane/tasks/202607221908-RC1DX8/blueprint/resolved-snapshot.json
+    - old_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+    - current_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-RC1DX8
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T11:23:41.783Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS hosted-contract rework at 70dbba1ebf95e36842902ac0f3d5e23fb45b31cc: Hermes catalog extraction restores the 600-line hotspot invariant without changing command graph or authority selection.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T11:14:16.329Z, excerpt_hash=sha256:37018661039d255b8db6848f76a0c989406a2fc609faa7afbdaa318279087623
+
+    Details:
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: CI contract regression; project.ts is 582 lines and the extracted Hermes catalog is 92 lines, both below the 600-line runtime limit.
+
+    Command: bunx vitest run packages/agentplane/src/commands/hermes packages/agentplane/src/commands/insights packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: 9 files and 72 tests covering runner and Hermes command boundaries, all supervision modes, output compatibility, provenance, and typed cross-phase capability denial.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: All 12 critical CLI test chunks.
+
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: Generated CLI reference freshness after catalog extraction.
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: Shared guards and trust-boundary ratchet.
+
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: All 8 lifecycle invariants.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: TypeScript 7 build check across the workspace.
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: Full core lint surface.
+
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: Dependency architecture checks with zero violations.
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+    Scope: Generated schema synchronization.
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
     Scope: Knip baseline at 545 of 545.
 
     BlueprintSnapshotRef:
@@ -596,6 +687,91 @@ Scope: Generated schema synchronization.
 Command: bun run knip:check
 Result: pass
 Evidence: .agentplane/cache/verification/202607221908-RC1DX8-b9473bd-checks.json
+Scope: Knip baseline at 545 of 545.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-RC1DX8-migrate-runner-and-hermes-command-boundaries/.agentplane/tasks/202607221908-RC1DX8/blueprint/resolved-snapshot.json
+- old_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+- current_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-RC1DX8
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T11:23:41.783Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS hosted-contract rework at 70dbba1ebf95e36842902ac0f3d5e23fb45b31cc: Hermes catalog extraction restores the 600-line hotspot invariant without changing command graph or authority selection.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T11:14:16.329Z, excerpt_hash=sha256:37018661039d255b8db6848f76a0c989406a2fc609faa7afbdaa318279087623
+
+Details:
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: CI contract regression; project.ts is 582 lines and the extracted Hermes catalog is 92 lines, both below the 600-line runtime limit.
+
+Command: bunx vitest run packages/agentplane/src/commands/hermes packages/agentplane/src/commands/insights packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: 9 files and 72 tests covering runner and Hermes command boundaries, all supervision modes, output compatibility, provenance, and typed cross-phase capability denial.
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: All 12 critical CLI test chunks.
+
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: Generated CLI reference freshness after catalog extraction.
+
+Command: bun run guards:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: Shared guards and trust-boundary ratchet.
+
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: All 8 lifecycle invariants.
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: TypeScript 7 build check across the workspace.
+
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: Full core lint surface.
+
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: Dependency architecture checks with zero violations.
+
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
+Scope: Generated schema synchronization.
+
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json
 Scope: Knip baseline at 545 of 545.
 
 BlueprintSnapshotRef:
