@@ -7,6 +7,8 @@ import { CliError } from "../../../shared/errors.js";
 import { exitCodeForError } from "../../exit-codes.js";
 import type { HelpJson } from "../../spec/help-render.js";
 
+import { createCapabilityScopedCommandContext } from "./command-context-port.js";
+
 export type CommandCapability =
   | "project"
   | "config"
@@ -127,11 +129,14 @@ export function validateCommandRequirements(requirements: readonly CommandCapabi
 function undeclaredCapabilityError(opts: {
   command: string;
   capability: CommandCapability;
+  operation?: string;
 }): CliError {
   return new CliError({
     exitCode: exitCodeForError("E_INTERNAL"),
     code: "E_INTERNAL",
-    message: `Internal error: command "${opts.command}" attempted undeclared capability "${opts.capability}"`,
+    message: opts.operation
+      ? `Internal error: command "${opts.command}" attempted operation "${opts.operation}" requiring undeclared capability "${opts.capability}"`
+      : `Internal error: command "${opts.command}" attempted undeclared capability "${opts.capability}"`,
   });
 }
 
@@ -154,7 +159,7 @@ export function createCommandSession<
     opts.resolvers.onPreparationTrace?.(event);
   };
 
-  const deny = (capability: CommandCapability): never => {
+  const deny = (capability: CommandCapability, operation?: string): never => {
     const node = preparationNodeForCapability(capability);
     record({
       command: opts.command,
@@ -163,7 +168,7 @@ export function createCommandSession<
       status: "denied",
       durationMs: 0,
     });
-    throw undeclaredCapabilityError({ command: opts.command, capability });
+    throw undeclaredCapabilityError({ command: opts.command, capability, operation });
   };
 
   const resolveNode = async (
@@ -195,7 +200,11 @@ export function createCommandSession<
         }
         case "command_context": {
           await resolveNode("config", commandForErrorContext);
-          return await opts.resolvers.getCtx(commandForErrorContext);
+          return createCapabilityScopedCommandContext({
+            command: await opts.resolvers.getCtx(commandForErrorContext),
+            allowed,
+            deny,
+          });
         }
         case "evaluator_artifacts": {
           await resolveNode("config", commandForErrorContext);

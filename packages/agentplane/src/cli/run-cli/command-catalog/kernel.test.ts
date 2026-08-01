@@ -65,8 +65,11 @@ describe("CommandSession", () => {
       resolvers,
     });
 
-    await expect(session.require("route.remote", "pr check")).resolves.toBe(commandContext);
-    await expect(session.require("provider", "pr check")).resolves.toBe(commandContext);
+    const routeContext = await session.require("route.remote", "pr check");
+    const providerContext = await session.require("provider", "pr check");
+    expect(routeContext).toBe(providerContext);
+    expect(routeContext).not.toBe(commandContext);
+    expect(Reflect.get(routeContext, "marker")).toBe("command-context");
 
     expect(resolvers.getResolvedProject).toHaveBeenCalledTimes(1);
     expect(resolvers.getLoadedConfig).toHaveBeenCalledTimes(1);
@@ -259,5 +262,58 @@ describe("CommandSession", () => {
     expect(port.git).toBeUndefined();
     // @ts-expect-error the artifact port does not expose the task backend
     expect(port.taskBackend).toBeUndefined();
+  });
+
+  it("denies backend and Git mutation through a context returned to a read-only evaluator", async () => {
+    const writeTask = vi.fn(() => Promise.resolve());
+    const stage = vi.fn(() => Promise.resolve());
+    const getTask = vi.fn(() => Promise.resolve(null));
+    const headCommit = vi.fn(() => Promise.resolve("abc123"));
+    const rawContext = {
+      resolvedProject: { gitRoot: "/repo" },
+      config: {},
+      taskBackend: {
+        id: "local",
+        capabilities: {},
+        getTask,
+        listTasks: vi.fn(() => Promise.resolve([])),
+        writeTask,
+      },
+      backendId: "local",
+      backendConfigPath: "/repo/.agentplane/config.json",
+      git: {
+        gitRoot: "/repo",
+        headCommit,
+        stage,
+      },
+      memo: {},
+    };
+    const resolvers = {
+      ...makeResolvers(),
+      getCtx: vi.fn(() => Promise.resolve(rawContext as never)),
+    };
+    const session = createCommandSession({
+      command: "evaluator inspect",
+      requirements: EVALUATOR_READ_REQUIREMENTS,
+      resolvers,
+    });
+    const context = await session.require("task.read", "evaluator inspect");
+
+    await expect(context.taskBackend.getTask("TASK-1")).resolves.toBeNull();
+    await expect(context.git.headCommit()).resolves.toBe("abc123");
+    await expect(
+      Promise.resolve().then(() => context.taskBackend.writeTask({ id: "TASK-1" } as never)),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      Promise.resolve().then(() => context.git.stage(["README.md"])),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(writeTask).not.toHaveBeenCalled();
+    expect(stage).not.toHaveBeenCalled();
+    expect(
+      session
+        .trace()
+        .filter((event) => event.status === "denied")
+        .map((event) => event.capability),
+    ).toEqual(["task.write", "git.mutate"]);
   });
 });

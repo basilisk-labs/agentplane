@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607221908-YD5J89-e08ae1bd6d73becbb2535e10",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-08-01T08:55:48.945Z",
+  "ended_at": "2026-08-01T08:56:43.141Z",
+  "stdout_bytes": 82379,
+  "stderr_bytes": 4908,
+  "provider_usage": {
+    "input_tokens": 194421,
+    "output_tokens": 2873,
+    "total_tokens": 197294
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:d520986381a0e8fe191d7a44ccbddcc0ddaca650d7fdc72eb768e6a9a9f03e18"
+}

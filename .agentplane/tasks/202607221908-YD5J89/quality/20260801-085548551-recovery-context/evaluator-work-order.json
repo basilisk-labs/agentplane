@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-YD5J89-e08ae1bd6d73becbb2535e10",
+  "prepared_at": "2026-08-01T08:55:48.551Z",
+  "task": {
+    "id": "202607221908-YD5J89",
+    "revision": 32,
+    "objective": "Migrate context and evaluator command boundaries\n\nRF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run schemas:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: context search/show/ingest/reindex/wiki/graph/doctor and evaluator prepare/apply/run compatibility commands, typed use cases, granular capabilities, output renderers, and elimination of subprocess/stdout orchestration in this family.\n- Out of scope: runner/Hermes, general task lifecycle, or provider/release commands.",
+      "1. Declare exact context/evaluator capability sets and ports.\n2. Reuse typed supervisor, journal, retrieval, and evaluator use cases.\n3. Separate CLI parsing/rendering from result application.\n4. Remove direct OS/Git/network access and internal command subprocesses.\n5. Run context/evaluator schema, fixture, rendering, and capability tests.",
+      "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck."
+    ]
+  },
+  "evaluated_sha": "2a1eaadae735a42a28df85c62bcab114a97da3b2",
+  "diff_base_sha": "56bb919419e198f3ecfd1a074358e6ead81deaa7",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+      "sha256": "sha256:3805633ebea2139b070175716e58ce393674425edae98e75a3f158b85f0d2274",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:e040883640c088421fd8752432604e75792fdd8b68289507a0e95482b0c0bcdf",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:0ad7073fb2eb048f20cf82273d177d6f18b77aece3294cbf51bd208d55107152",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221908-YD5J89/verification/20260801085448940-7ec1ee4f4101f389.json",
+      "sha256": "sha256:5aac7857b58dad128c1889871d4cf12ad10fbd2697eb3e980099be1b81a00d76",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:26310c0e9494dc13e1cdbc7e2109988390eed8e59ac753d7c7ba3175d5784fb6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

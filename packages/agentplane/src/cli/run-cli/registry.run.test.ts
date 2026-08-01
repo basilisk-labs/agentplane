@@ -7,7 +7,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
 import { createEvaluatorArtifactPreparationPort } from "../../commands/evaluator/evaluator-artifact-port.js";
-import { addTask, commitPath } from "../../commands/evaluator/evaluator-test-helpers.js";
+import {
+  addTask,
+  commitPath,
+  execFileAsync,
+} from "../../commands/evaluator/evaluator-test-helpers.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { parseCommandArgv } from "../spec/parse.js";
 import { findCommandEntry } from "./command-catalog.js";
@@ -62,12 +66,12 @@ describe("runtime registry session selection", () => {
       },
       {
         requirements: EVALUATOR_READ_REQUIREMENTS,
-        load: async (session) => {
+        load: (session) => {
           captureProfile("evaluator-read", session.requirements);
-          return async () => {
+          return Promise.resolve(async () => {
             readContexts.push(await session.require("task.read", "test evaluator-read"));
             return 0;
-          };
+          });
         },
       },
     );
@@ -79,9 +83,9 @@ describe("runtime registry session selection", () => {
       },
       {
         requirements: EVALUATOR_PREPARE_REQUIREMENTS,
-        load: async (session) => {
+        load: (session) => {
           captureProfile("evaluator-prepare", session.requirements);
-          return async () => {
+          return Promise.resolve(async () => {
             const port = await session.require(
               "evaluator.artifacts.write",
               "test evaluator-prepare",
@@ -94,7 +98,7 @@ describe("runtime registry session selection", () => {
             });
             artifactDestinations.push(packet.git_root);
             return 0;
-          };
+          });
         },
       },
     );
@@ -106,30 +110,34 @@ describe("runtime registry session selection", () => {
       },
       {
         requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
-        load: async (session) => {
+        load: (session) => {
           captureProfile("context-mutation", session.requirements);
-          return async () => {
+          return Promise.resolve(async () => {
             mutationContexts.push(await session.require("task.write", "test context-mutation"));
             return 0;
-          };
+          });
         },
       },
     );
 
     let contextIndex = 0;
     let artifactIndex = 0;
-    const getCtx = vi.fn(async () => ({ invocation: `context-${contextIndex++}` }) as never);
-    const getEvaluatorArtifactPort = vi.fn(async () => {
+    const getCtx = vi.fn(() =>
+      Promise.resolve({ invocation: `context-${contextIndex++}` } as never),
+    );
+    const getEvaluatorArtifactPort = vi.fn(() => {
       const destination = `/repo/.agentplane/tasks/TASK-${artifactIndex++}/quality/review`;
-      return Object.freeze({
-        prepare: async () => ({ git_root: destination, prepared: {} }),
-      }) as never;
+      return Promise.resolve(
+        Object.freeze({
+          prepare: () => Promise.resolve({ git_root: destination, prepared: {} }),
+        }) as never,
+      );
     });
     const registry = buildRegistry({
       entries: [evaluatorReadEntry, evaluatorPrepareEntry, contextMutationEntry],
       getCtx,
-      getResolvedProject: vi.fn(async () => ({ marker: "project" }) as never),
-      getLoadedConfig: vi.fn(async () => ({ marker: "config" }) as never),
+      getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
+      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
       getEvaluatorArtifactPort,
     });
     const evaluatorRead = registry.lookup(["test", "evaluator-read"]);
@@ -164,6 +172,76 @@ describe("runtime registry session selection", () => {
     expect(new Set(artifactDestinations)).toHaveLength(2);
     expect(getCtx).toHaveBeenCalledTimes(4);
     expect(getEvaluatorArtifactPort).toHaveBeenCalledTimes(2);
+  });
+
+  it("leaves real task and Git state unchanged after mutation attempts through a read-only port", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202608010000-READ01";
+    await addTask(root, taskId);
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readmeBefore = await readFile(readmePath, "utf8");
+    const { stdout: statusBefore } = await execFileAsync("git", ["status", "--short"], {
+      cwd: root,
+    });
+    const commandContext = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskBefore = await commandContext.taskBackend.getTask(taskId);
+    if (!taskBefore) throw new Error("read-only mutation fixture task is missing");
+    const denials: unknown[] = [];
+    const entry = declareSessionCommand(
+      {
+        id: ["test", "read-only-mutation"],
+        group: "test",
+        summary: "Attempt mutations through read-only evaluator authority.",
+      },
+      {
+        requirements: EVALUATOR_READ_REQUIREMENTS,
+        load: (session) =>
+          Promise.resolve(async () => {
+            const context = await session.require("task.read", "test read-only-mutation");
+            for (const mutation of [
+              () =>
+                context.taskBackend.writeTask({
+                  ...taskBefore,
+                  title: "Mutation must be denied",
+                }),
+              () => context.git.stage([readmePath]),
+            ]) {
+              try {
+                await mutation();
+              } catch (error) {
+                denials.push(error);
+              }
+            }
+            return 0;
+          }),
+      },
+    );
+    const registry = buildRegistry({
+      entries: [entry],
+      getCtx: () => Promise.resolve(commandContext),
+      getResolvedProject: () => Promise.resolve(commandContext.resolvedProject),
+      getLoadedConfig: () =>
+        Promise.resolve({ config: commandContext.config, sourcePath: "fixture" } as never),
+      getEvaluatorArtifactPort: () =>
+        Promise.reject(new Error("artifact authority must remain unavailable")),
+    });
+    const runtime = registry.lookup(["test", "read-only-mutation"]);
+    if (!runtime) throw new Error("read-only mutation command was not registered");
+
+    await runtime.handler({ cwd: root, rootOverride: root }, {});
+
+    expect(denials).toHaveLength(2);
+    expect(denials).toEqual([
+      expect.objectContaining({ code: "E_INTERNAL" }),
+      expect.objectContaining({ code: "E_INTERNAL" }),
+    ]);
+    expect(await readFile(readmePath, "utf8")).toBe(readmeBefore);
+    expect(await commandContext.taskBackend.getTask(taskId)).toEqual(taskBefore);
+    const { stdout: statusAfter } = await execFileAsync("git", ["status", "--short"], {
+      cwd: root,
+    });
+    expect(statusAfter).toBe(statusBefore);
   });
 
   it("constructs evaluator run authority from parsed persistence mode before loading its handler", async () => {
