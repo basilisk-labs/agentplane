@@ -24,12 +24,18 @@ Created: 2026-08-01T14:09:09.518Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T14:09:09.518Z
+- Updated: 2026-08-01T14:09:35.347Z
 - Branch: task/202607221854-PGPR3J/complete-typed-use-case-and-cli-rendering-bounda
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/developer/workflow-harness-test-matrix.mdx    |   2 +-
+ ...run-cli.critical.trust-boundary-ratchet.test.ts |   2 +-
+ .../agentplane/src/harness/hooks-lifecycle.test.ts |  45 ---------
+ packages/agentplane/src/harness/hooks-lifecycle.ts | 104 ---------------------
+ scripts/baselines/trust-boundary-violations.json   |  12 +--
+ scripts/checks/check-trust-boundary-ratchet.mjs    |   9 +-
+ 6 files changed, 7 insertions(+), 167 deletions(-)
 ```
 
 </details>

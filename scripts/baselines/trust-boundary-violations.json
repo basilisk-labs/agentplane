@@ -108,15 +108,5 @@
       "description": "Serialized runner task input must not carry TaskData beside duplicate task projections."
     }
   ],
-  "violations": [
-    {
-      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
-      "rule_id": "trust.no-rendered-command-orchestration",
-      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
-      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
-      "path": "packages/agentplane/src/harness/hooks-lifecycle.ts",
-      "locator": "shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
-      "rationale": "internal orchestration executes a rendered command through a shell"
-    }
-  ]
+  "violations": []
 }
