@@ -13,7 +13,7 @@ Created: 2026-08-01T12:47:37.534Z
 ## Verification
 
 - State: ok
-- Note: PASS: evaluator-requested dependency evidence rework verified; exact declared closure and independent verification are proven; implementation remains d89988611fbd.
+- Note: PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical tests, typecheck, and ci:contract verified for 4f808df120a6.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
