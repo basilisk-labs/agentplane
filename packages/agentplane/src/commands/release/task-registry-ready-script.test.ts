@@ -11,7 +11,13 @@ const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release/check-task-regi
 const temps: string[] = [];
 
 async function makeRepo(
-  tasks: { id: string; status: string; title?: string; mergedPr?: boolean }[],
+  tasks: {
+    id: string;
+    status: string;
+    title?: string;
+    mergedPr?: boolean;
+    dependsOn?: string[];
+  }[],
 ) {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-registry-ready-"));
   temps.push(root);
@@ -25,7 +31,9 @@ async function makeRepo(
         `id: ${task.id}`,
         `title: ${task.title ?? "Test task"}`,
         `status: ${task.status}`,
-        "depends_on: []",
+        task.dependsOn?.length
+          ? ["depends_on:", ...task.dependsOn.map((dependency) => `  - "${dependency}"`)].join("\n")
+          : "depends_on: []",
         "tags:",
         task.title?.startsWith("Release AgentPlane") ? '  - "release"' : '  - "code"',
         "---",
@@ -60,6 +68,52 @@ async function makeRepo(
     "utf8",
   );
   return root;
+}
+
+async function writeReleasePlan(
+  root: string,
+  plan: {
+    rootTaskId: string;
+    requiredTaskIds: string[];
+    optionalTaskIds?: string[];
+  },
+) {
+  const planDir = path.join(root, "docs", "internal");
+  await mkdir(planDir, { recursive: true });
+  await writeFile(
+    path.join(planDir, "v0.7-release-task-closure.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        release: "0.7.0",
+        root_task_id: plan.rootTaskId,
+        required_task_ids: plan.requiredTaskIds,
+        optional_tasks: (plan.optionalTaskIds ?? []).map((taskId) => ({
+          task_id: taskId,
+          reason: "Optional prerelease qualification.",
+        })),
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
+async function runRegistryCheck(root: string) {
+  return execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+    () => ({ ok: true as const, stderr: "" }),
+    (error: unknown) => {
+      const stderr =
+        typeof error === "object" &&
+        error !== null &&
+        "stderr" in error &&
+        typeof (error as { stderr?: unknown }).stderr === "string"
+          ? (error as { stderr: string }).stderr
+          : "";
+      return { ok: false as const, stderr };
+    },
+  );
 }
 
 afterEach(async () => {
@@ -293,5 +347,105 @@ describe("check-task-registry-ready script", () => {
     );
 
     await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
+  });
+
+  it("accepts a fully classified release closure and a disconnected declared optional task", async () => {
+    const rootTaskId = "202605190001-ROOT01";
+    const gateTaskId = "202605190002-GATE01";
+    const rf02TaskId = "202605190003-RF0200";
+    const rf20TaskId = "202605190004-RF2000";
+    const optionalTaskId = "202605190005-OPT001";
+    const root = await makeRepo([
+      { id: rootTaskId, status: "TODO", dependsOn: [gateTaskId] },
+      { id: gateTaskId, status: "DONE", dependsOn: [rf02TaskId, rf20TaskId] },
+      { id: rf02TaskId, status: "DONE" },
+      { id: rf20TaskId, status: "DONE" },
+      { id: optionalTaskId, status: "DONE" },
+    ]);
+    await writeReleasePlan(root, {
+      rootTaskId,
+      requiredTaskIds: [gateTaskId, rf02TaskId, rf20TaskId],
+      optionalTaskIds: [optionalTaskId],
+    });
+
+    await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
+  });
+
+  it("fails closed when the v0.7 roadmap exists without its release closure contract", async () => {
+    const root = await makeRepo([{ id: "202605190001-ROOT01", status: "DONE" }]);
+    const planDir = path.join(root, "docs", "internal");
+    await mkdir(planDir, { recursive: true });
+    await writeFile(path.join(planDir, "v0.7-refactor-plan.md"), "# AgentPlane 0.7 plan\n", "utf8");
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("release plan is missing");
+  });
+
+  it("names RF-02 and RF-20 when their release dependency edges are removed", async () => {
+    const rootTaskId = "202605190001-ROOT01";
+    const gateTaskId = "202605190002-GATE01";
+    const rf02TaskId = "202605190003-RF0200";
+    const rf20TaskId = "202605190004-RF2000";
+    const root = await makeRepo([
+      { id: rootTaskId, status: "TODO", dependsOn: [gateTaskId] },
+      { id: gateTaskId, status: "DONE" },
+      { id: rf02TaskId, status: "DONE" },
+      { id: rf20TaskId, status: "DONE" },
+    ]);
+    await writeReleasePlan(root, {
+      rootTaskId,
+      requiredTaskIds: [gateTaskId, rf02TaskId, rf20TaskId],
+    });
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(`required task ${rf02TaskId} is not an ancestor`);
+    expect(result.stderr).toContain(`required task ${rf20TaskId} is not an ancestor`);
+  });
+
+  it("reports release cycles and unknown dependencies with exact task ids", async () => {
+    const rootTaskId = "202605190001-ROOT01";
+    const gateTaskId = "202605190002-GATE01";
+    const cycleTaskId = "202605190003-CYCLE1";
+    const unknownTaskId = "202605190099-MISS01";
+    const root = await makeRepo([
+      { id: rootTaskId, status: "TODO", dependsOn: [gateTaskId] },
+      { id: gateTaskId, status: "DONE", dependsOn: [cycleTaskId, unknownTaskId] },
+      { id: cycleTaskId, status: "DONE", dependsOn: [gateTaskId] },
+    ]);
+    await writeReleasePlan(root, {
+      rootTaskId,
+      requiredTaskIds: [gateTaskId, cycleTaskId],
+    });
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(
+      `release dependency cycle: ${gateTaskId} -> ${cycleTaskId} -> ${gateTaskId}`,
+    );
+    expect(result.stderr).toContain(`unknown dependency ${gateTaskId} -> ${unknownTaskId}`);
+  });
+
+  it("rejects an optional task that the release root requires in practice", async () => {
+    const rootTaskId = "202605190001-ROOT01";
+    const optionalTaskId = "202605190002-OPT001";
+    const root = await makeRepo([
+      { id: rootTaskId, status: "TODO", dependsOn: [optionalTaskId] },
+      { id: optionalTaskId, status: "DONE" },
+    ]);
+    await writeReleasePlan(root, {
+      rootTaskId,
+      requiredTaskIds: [],
+      optionalTaskIds: [optionalTaskId],
+    });
+
+    const result = await runRegistryCheck(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(`optional task ${optionalTaskId} is required by release root`);
   });
 });
