@@ -4,7 +4,7 @@ title: "Add fingerprinted preparation caches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -39,30 +39,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T17:29:49.807Z"
+  updated_at: "2026-08-01T17:45:35.485Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "370da2c0b0489d3939d66ed93bb8cc6916fd1e0d"
+  evaluated_sha: "96ddaf5b63888de328ba3ae74f1892962cb7dccd"
   blueprint_digest: "653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221854-87892M/README.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated change implements stateless parallel Git observation under the cache task, although the approved recovery record explicitly routes that optimization to a separate task. No fingerprinted preparation cache, TTL, bounded storage, or cache receipt implementation is present."
-    - "Verification is stale for the evaluated SHA: the frozen checks describe SHA 6e1e191 and assert zero production-source changes and no retained prototype, while the work order evaluates SHA 370da2c with production changes across Git snapshot and workflow fingerprint preparation paths."
-    - "The new implementation reconstructs status from concurrent tracked-status and untracked-file commands without proving behavior when repository state changes between those observations. The added equivalence test covers only a stable repository, so duplicate, omitted, or differently classified paths under concurrent Git mutation remain untested."
+    - "The evaluated implementation can combine HEAD, status, and index observations from different repository states because all three Git commands run concurrently and their results are materialized as one snapshot."
+    - "No deterministic verification or benchmark evidence is frozen for evaluated SHA 96ddaf5b63888de328ba3ae74f1892962cb7dccd; the observed-checks artifact contains no verification records, runner history, or runtime evidence, while the task verification still describes the earlier no-prototype SHA."
+    - "The added tests prove command scheduling and stable-repository parity only; they do not exercise repository mutation between concurrent HEAD, status, index, and path-fingerprint observations."
 commit:
   hash: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
   message: "🚧 87892M task: record cache benchmark no-go"
@@ -115,7 +115,7 @@ events:
     state: "ok"
     note: "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains."
 doc_version: 3
-doc_updated_at: "2026-08-01T17:39:30.920Z"
+doc_updated_at: "2026-08-01T17:49:43.544Z"
 doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
@@ -331,6 +331,10 @@ sections:
     - Observation: The persistent cache pilot failed its declared five-percent threshold, and the operator subsequently authorized continued AgentPlane 0.7 implementation without repeated approval requests. The first stateless replacement exposed a split-status race during evaluator review.
       Impact: The earlier separate-task recovery note is superseded for this task: retaining cache machinery would add unjustified state, while split tracked/untracked observation could combine different repository states.
       Resolution: Use this approved rework episode for the bounded stateless replacement: keep one canonical Git status invocation, overlap only independent preparation work, require exact output parity and at least five-percent median improvement, and keep semantic, authority, and provider truth live.
+
+    - Observation: The reworked stateless candidate reached 5.80 percent median improvement with exact stable-state output, but independent evaluation found that concurrent HEAD, status, and index reads can form an incoherent Git snapshot. Serializing Git reads and overlapping only independent blueprint and policy-scope work reduced the seven-pair screening improvement to 1.09 percent.
+      Impact: The fast variant fails the correctness gate and the safe variant fails the declared five-percent performance gate; neither justifies a retained runtime change or a final 25-pair qualification run.
+      Resolution: Reject and remove both stateless prototypes. Close RF-26b as a measured no-go with no production-source delta, preserving live Git, semantic, authority, and provider resolution.
 extensions:
   workflow_route_baseline:
     start_head_sha: "451a8a6e980f9f2724bce718e807a8675fd89eeb"
@@ -562,3 +566,7 @@ DecisionContextRef:
 - Observation: The persistent cache pilot failed its declared five-percent threshold, and the operator subsequently authorized continued AgentPlane 0.7 implementation without repeated approval requests. The first stateless replacement exposed a split-status race during evaluator review.
   Impact: The earlier separate-task recovery note is superseded for this task: retaining cache machinery would add unjustified state, while split tracked/untracked observation could combine different repository states.
   Resolution: Use this approved rework episode for the bounded stateless replacement: keep one canonical Git status invocation, overlap only independent preparation work, require exact output parity and at least five-percent median improvement, and keep semantic, authority, and provider truth live.
+
+- Observation: The reworked stateless candidate reached 5.80 percent median improvement with exact stable-state output, but independent evaluation found that concurrent HEAD, status, and index reads can form an incoherent Git snapshot. Serializing Git reads and overlapping only independent blueprint and policy-scope work reduced the seven-pair screening improvement to 1.09 percent.
+  Impact: The fast variant fails the correctness gate and the safe variant fails the declared five-percent performance gate; neither justifies a retained runtime change or a final 25-pair qualification run.
+  Resolution: Reject and remove both stateless prototypes. Close RF-26b as a measured no-go with no production-source delta, preserving live Git, semantic, authority, and provider resolution.

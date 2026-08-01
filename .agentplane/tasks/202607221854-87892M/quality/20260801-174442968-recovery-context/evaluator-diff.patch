@@ -1,0 +1,744 @@
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint-preparation.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint-preparation.ts
+new file mode 100644
+index 000000000..1cbb6253e
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint-preparation.ts
+@@ -0,0 +1,154 @@
++import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
++
++import {
++  captureGitSnapshotObservation,
++  materializeGitSnapshot,
++  type GitSnapshot,
++} from "../../runner/observation/git-snapshot.js";
++import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
++import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
++import { measurePreparationNode } from "../../shared/preparation-trace.js";
++import type { CommandContext } from "./task-backend.js";
++import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
++import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
++import {
++  observeWorkflowPolicyScope,
++  type WorkflowPolicyScopeObservation,
++} from "./workflow-step-policy-scope.js";
++import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
++import type { WorkflowStep } from "./workflow-step.js";
++
++type BlueprintObservation = Awaited<ReturnType<typeof observeWorkflowBlueprint>>;
++
++export async function prepareWorkflowStepFingerprint(opts: {
++  ctx: CommandContext;
++  state: WorkflowRouteStateInput;
++  step: WorkflowStep;
++  repositoryRoot: string;
++  traceScope: string;
++  blueprintPath: string;
++  semanticTask: () => StateFingerprintComponentInput;
++  workflowAuthority: () => Record<string, unknown>;
++  selectPolicyPaths: (
++    blueprintPolicyModules: readonly string[],
++    changedPaths: readonly string[],
++  ) => string[];
++  semanticGitExclusions: (policyPaths: readonly string[]) => string[];
++  observePolicy: (
++    policyScope: WorkflowPolicyScopeObservation,
++    selectedPolicyPaths: readonly string[],
++  ) => Promise<StateFingerprintComponentInput>;
++}): Promise<{
++  blueprintObservation: BlueprintObservation;
++  policyScope: WorkflowPolicyScopeObservation;
++  selectedPolicyPaths: string[];
++  knowledge: StateFingerprintComponentInput;
++  policy: StateFingerprintComponentInput;
++  backendProjection: StateFingerprintComponentInput;
++  git: GitSnapshot;
++}> {
++  const blueprintPromise = measurePreparationNode({
++    recorder: opts.ctx.preparationTrace,
++    node: "blueprint_resolution",
++    scope: opts.traceScope,
++    dependencies: ["task_backend_read"],
++    cacheability: "exact",
++    cachePolicyReason:
++      "Blueprint source, task state, workflow mode, and resolved projection are fingerprinted.",
++    operation: async () =>
++      await observeWorkflowBlueprint({
++        ctx: opts.ctx,
++        repositoryRoot: opts.repositoryRoot,
++        task: opts.state.task,
++        step: opts.step,
++        workflowMode: opts.state.workflowMode,
++        relativePath: opts.blueprintPath,
++      }),
++    fingerprintInputs: (observation) => ({
++      task: opts.semanticTask(),
++      workflow_mode: opts.state.workflowMode,
++      step: opts.workflowAuthority(),
++      blueprint_observation: observation,
++    }),
++    output: (observation) => observation,
++  });
++  const policyScopePromise = measurePreparationNode({
++    recorder: opts.ctx.preparationTrace,
++    node: "policy_scope",
++    scope: opts.traceScope,
++    dependencies: ["task_backend_read"],
++    cacheability: "exact",
++    cachePolicyReason: "Policy selection is bound to the observed task and changed-path scope.",
++    operation: async () =>
++      await observeWorkflowPolicyScope({
++        repositoryRoot: opts.repositoryRoot,
++        state: opts.state,
++      }),
++    fingerprintInputs: (scope) => ({
++      task_id: opts.state.task.id,
++      workflow_mode: opts.state.workflowMode,
++      policy_scope: scope,
++    }),
++    output: (scope) => scope,
++  });
++  const policyInputsPromise = Promise.all([blueprintPromise, policyScopePromise]).then(
++    ([blueprintObservation, policyScope]) => ({
++      blueprintObservation,
++      policyScope,
++      selectedPolicyPaths: opts.selectPolicyPaths(
++        blueprintObservation.policyModules,
++        policyScope.state === "present" ? policyScope.changedPaths : [],
++      ),
++    }),
++  );
++  const gitObservationPromise = captureGitSnapshotObservation(opts.repositoryRoot);
++  const gitPromise = measurePreparationNode({
++    recorder: opts.ctx.preparationTrace,
++    node: "git_snapshot",
++    scope: opts.traceScope,
++    dependencies: ["blueprint_resolution", "policy_scope"],
++    cacheability: "exact",
++    cachePolicyReason: "HEAD, index, dirty paths, path digests, and exclusions are fingerprinted.",
++    operation: async () => {
++      const [observation, policyInputs] = await Promise.all([
++        gitObservationPromise,
++        policyInputsPromise,
++      ]);
++      return await materializeGitSnapshot(
++        observation,
++        opts.semanticGitExclusions(policyInputs.selectedPolicyPaths),
++      );
++    },
++    fingerprintInputs: (snapshot) => ({
++      repository_root: opts.repositoryRoot,
++      git_snapshot: snapshot,
++    }),
++    output: (snapshot) => snapshot,
++  });
++  const componentsPromise = policyInputsPromise.then(
++    async ({ policyScope, selectedPolicyPaths }) =>
++      await traceWorkflowFingerprintComponents({
++        recorder: opts.ctx.preparationTrace,
++        scope: opts.traceScope,
++        backendId: opts.ctx.backendId,
++        policyScope,
++        selectedPolicyPaths,
++        observeKnowledge: async () => await observeKnowledgeProjection(opts.repositoryRoot),
++        observePolicy: async () => await opts.observePolicy(policyScope, selectedPolicyPaths),
++        observeBackend: async () =>
++          await observeBackendProjection(opts.ctx, { repository_root: opts.repositoryRoot }),
++      }),
++  );
++  const [policyInputs, components, git] = await Promise.all([
++    policyInputsPromise,
++    componentsPromise,
++    gitPromise,
++  ]);
++  return {
++    ...policyInputs,
++    knowledge: components[0],
++    policy: components[1],
++    backendProjection: components[2],
++    git,
++  };
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index b7c6647ab..ea9e46900 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -8,19 +8,11 @@ import {
+   type StateFingerprintPolicy,
+ } from "@agentplaneorg/core/schemas";
+ 
+-import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
+-import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
+-import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
+ import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+-import { measurePreparationNode } from "../../shared/preparation-trace.js";
+ import type { CommandContext } from "./task-backend.js";
+ import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
+-import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
+-import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
+-import {
+-  observeWorkflowPolicyScope,
+-  type WorkflowPolicyScopeObservation,
+-} from "./workflow-step-policy-scope.js";
++import { prepareWorkflowStepFingerprint } from "./workflow-step-fingerprint-preparation.js";
++import { type WorkflowPolicyScopeObservation } from "./workflow-step-policy-scope.js";
+ import {
+   WORKFLOW_OPERATION_REGISTRY,
+   type WorkflowCheckout,
+@@ -436,78 +428,21 @@ export async function captureWorkflowStepFingerprint(opts: {
+     "resolved-snapshot.json",
+   );
+   const traceScope = `task:${opts.state.task.id}:route_fingerprint`;
+-  const blueprintObservation = repositoryRoot
+-    ? await measurePreparationNode({
+-        recorder: opts.ctx.preparationTrace,
+-        node: "blueprint_resolution",
+-        scope: traceScope,
+-        dependencies: ["task_backend_read"],
+-        cacheability: "exact",
+-        cachePolicyReason:
+-          "Blueprint source, task state, workflow mode, and resolved projection are fingerprinted.",
+-        operation: async () =>
+-          await observeWorkflowBlueprint({
+-            ctx: opts.ctx,
+-            repositoryRoot,
+-            task: opts.state.task,
+-            step: opts.step,
+-            workflowMode: opts.state.workflowMode,
+-            relativePath: blueprintPath,
+-          }),
+-        fingerprintInputs: (observation) => ({
+-          task: semanticTaskComponent(opts.state),
+-          workflow_mode: opts.state.workflowMode,
+-          step: workflowAuthority(opts.step),
+-          blueprint_observation: observation,
+-        }),
+-        output: (observation) => observation,
+-      })
+-    : {
+-        component: unavailableComponent(
+-          "workflow_route_blueprint",
+-          "authoritative_checkout_unavailable",
+-        ),
+-        policyModules: [],
+-      };
+-  const policyScope = repositoryRoot
+-    ? await measurePreparationNode({
+-        recorder: opts.ctx.preparationTrace,
+-        node: "policy_scope",
+-        scope: traceScope,
+-        dependencies: ["task_backend_read"],
+-        cacheability: "exact",
+-        cachePolicyReason: "Policy selection is bound to the observed task and changed-path scope.",
+-        operation: async () =>
+-          await observeWorkflowPolicyScope({
+-            repositoryRoot,
+-            state: opts.state,
+-          }),
+-        fingerprintInputs: (scope) => ({
+-          task_id: opts.state.task.id,
+-          workflow_mode: opts.state.workflowMode,
+-          policy_scope: scope,
+-        }),
+-        output: (scope) => scope,
+-      })
+-    : {
+-        state: "unavailable" as const,
+-        reason: "authoritative_checkout_unavailable",
+-        evidence: { checkout: fingerprintCheckout },
+-      };
+-  const selectedPolicyPaths = workflowPolicyPaths(
+-    opts.ctx.config.workflow_mode,
+-    blueprintObservation.policyModules,
+-    policyScope.state === "present" ? policyScope.changedPaths : [],
+-  );
+-  const [knowledge, policy, backendProjection] = repositoryRoot
+-    ? await traceWorkflowFingerprintComponents({
+-        recorder: opts.ctx.preparationTrace,
+-        scope: traceScope,
+-        backendId: opts.ctx.backendId,
+-        policyScope,
+-        selectedPolicyPaths,
+-        observeKnowledge: async () => await observeKnowledgeProjection(repositoryRoot),
+-        observePolicy: async () =>
++  const preparation = repositoryRoot
++    ? await prepareWorkflowStepFingerprint({
++        ctx: opts.ctx,
++        state: opts.state,
++        step: opts.step,
++        repositoryRoot,
++        traceScope,
++        blueprintPath,
++        semanticTask: () => semanticTaskComponent(opts.state),
++        workflowAuthority: () => workflowAuthority(opts.step),
++        selectPolicyPaths: (blueprintPolicyModules, changedPaths) =>
++          workflowPolicyPaths(opts.ctx.config.workflow_mode, blueprintPolicyModules, changedPaths),
++        semanticGitExclusions: (policyPaths) =>
++          semanticGitExclusions({ ctx: opts.ctx, taskId: opts.state.task.id, policyPaths }),
++        observePolicy: async (policyScope, selectedPolicyPaths) =>
+           policyScope.state === "present"
+             ? await observeWorkflowPolicy({
+                 ctx: opts.ctx,
+@@ -520,39 +455,33 @@ export async function captureWorkflowStepFingerprint(opts: {
+                 "policy_graph_observation_unavailable",
+                 { reason: policyScope.reason, ...policyScope.evidence },
+               ),
+-        observeBackend: async () =>
+-          await observeBackendProjection(opts.ctx, { repository_root: repositoryRoot }),
+-      })
+-    : [
+-        unavailableComponent("context_manifest_lock", "authoritative_checkout_unavailable"),
+-        unavailableComponent("workflow_route_policy", "authoritative_checkout_unavailable"),
+-        unavailableComponent("task_backend_runtime", "authoritative_checkout_unavailable"),
+-      ];
+-  const git = repositoryRoot
+-    ? await measurePreparationNode({
+-        recorder: opts.ctx.preparationTrace,
+-        node: "git_snapshot",
+-        scope: traceScope,
+-        dependencies: ["policy_scope", "backend_projection"],
+-        cacheability: "exact",
+-        cachePolicyReason:
+-          "HEAD, index, dirty paths, path digests, and exclusions are fingerprinted.",
+-        operation: async () =>
+-          await captureGitSnapshot({
+-            repository_root: repositoryRoot,
+-            excluded_roots: semanticGitExclusions({
+-              ctx: opts.ctx,
+-              taskId: opts.state.task.id,
+-              policyPaths: selectedPolicyPaths,
+-            }),
+-          }),
+-        fingerprintInputs: (snapshot) => ({
+-          repository_root: repositoryRoot,
+-          git_snapshot: snapshot,
+-        }),
+-        output: (snapshot) => snapshot,
+       })
+-    : null;
++    : {
++        blueprintObservation: {
++          component: unavailableComponent(
++            "workflow_route_blueprint",
++            "authoritative_checkout_unavailable",
++          ),
++          policyModules: [],
++        },
++        policyScope: {
++          state: "unavailable" as const,
++          reason: "authoritative_checkout_unavailable",
++          evidence: { checkout: fingerprintCheckout },
++        },
++        selectedPolicyPaths: [],
++        knowledge: unavailableComponent(
++          "context_manifest_lock",
++          "authoritative_checkout_unavailable",
++        ),
++        policy: unavailableComponent("workflow_route_policy", "authoritative_checkout_unavailable"),
++        backendProjection: unavailableComponent(
++          "task_backend_runtime",
++          "authoritative_checkout_unavailable",
++        ),
++        git: null,
++      };
++  const { blueprintObservation, knowledge, policy, backendProjection, git } = preparation;
+   const gitComponent =
+     git?.state === "available"
+       ? presentComponent("workflow_route_git", {
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot.capture.unit.test.ts b/packages/agentplane/src/runner/observation/git-snapshot.capture.unit.test.ts
+new file mode 100644
+index 000000000..181c65194
+--- /dev/null
++++ b/packages/agentplane/src/runner/observation/git-snapshot.capture.unit.test.ts
+@@ -0,0 +1,67 @@
++import { mkdtemp, rm } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({ execFileAsync: vi.fn() }));
++
++vi.mock("@agentplaneorg/core/process", () => ({ execFileAsync: mocks.execFileAsync }));
++
++import { captureGitSnapshot } from "./git-snapshot/capture.js";
++
++const tempRoots: string[] = [];
++
++afterEach(async () => {
++  mocks.execFileAsync.mockReset();
++  await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++
++describe("Git snapshot capture scheduling", () => {
++  it("starts independent root, HEAD, canonical status, and index observations before awaiting results", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-snapshot-parallel-"));
++    tempRoots.push(root);
++    let releaseObservations: (() => void) | undefined;
++    const observationsReleased = new Promise<void>((resolve) => {
++      releaseObservations = resolve;
++    });
++
++    mocks.execFileAsync.mockImplementation(
++      async (_command: string, args: readonly string[], options: { cwd?: string }) => {
++        await observationsReleased;
++        if (args[0] === "rev-parse" && args[1] === "--show-toplevel") {
++          return { stdout: `${options.cwd ?? root}\n`, stderr: "" };
++        }
++        if (args[0] === "rev-parse") {
++          return { stdout: `${"a".repeat(40)}\n`, stderr: "" };
++        }
++        return { stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) };
++      },
++    );
++
++    const capture = captureGitSnapshot({ repository_root: root });
++    await vi.waitFor(() => expect(mocks.execFileAsync).toHaveBeenCalledTimes(4));
++    const calls = mocks.execFileAsync.mock.calls as unknown as [
++      string,
++      readonly string[],
++      { cwd?: string },
++    ][];
++    expect(calls.map(([, args]) => args[0])).toEqual([
++      "rev-parse",
++      "rev-parse",
++      "status",
++      "ls-files",
++    ]);
++    expect(calls[2]?.[1]).toContain("--untracked-files=all");
++    expect(calls.some(([, args]) => args.includes("--untracked-files=no"))).toBe(false);
++    expect(calls.some(([, args]) => args.includes("--others"))).toBe(false);
++
++    releaseObservations?.();
++    const snapshot = await capture;
++
++    expect(snapshot.state).toBe("available");
++    expect(snapshot.head_commit).toBe("a".repeat(40));
++    expect(snapshot.status_entries).toEqual([]);
++    expect(snapshot.index_entries).toEqual([]);
++  });
++});
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot.test.ts b/packages/agentplane/src/runner/observation/git-snapshot.test.ts
+index 3208c32cd..110eca83a 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot.test.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot.test.ts
+@@ -13,6 +13,7 @@ import {
+   type GitSnapshotDelta,
+   type GitSnapshotDeltaEntry,
+ } from "./git-snapshot.js";
++import { parsePorcelainStatus } from "./git-snapshot/parse.js";
+ 
+ const tempRoots: string[] = [];
+ 
+@@ -60,6 +61,42 @@ function expectSha256(value: string | null): void {
+ }
+ 
+ describe("Git execution snapshot observation", () => {
++  it("matches canonical porcelain status while observing tracked and untracked paths in parallel", async () => {
++    const root = await createRepository({
++      "deleted.txt": "delete\n",
++      "modified.txt": "base\n",
++      "removed-from-index.txt": "keep in worktree\n",
++      "renamed.txt": "rename\n",
++      "staged.txt": "stage\n",
++    });
++    await unlink(path.join(root, "deleted.txt"));
++    await writeRepoFile(root, "modified.txt", "modified\n");
++    await git(root, ["rm", "-q", "--cached", "--", "removed-from-index.txt"]);
++    await writeRepoFile(root, "newly-staged.txt", "new stage\n");
++    await git(root, ["add", "--", "newly-staged.txt"]);
++    await writeRepoFile(root, "staged.txt", "staged\n");
++    await git(root, ["add", "--", "staged.txt"]);
++    await git(root, ["mv", "--", "renamed.txt", "destination.txt"]);
++    await writeRepoFile(root, "untracked.txt", "untracked\n");
++
++    const { stdout } = await execFileAsync(
++      "git",
++      [
++        "status",
++        "--porcelain=v1",
++        "-z",
++        "--untracked-files=all",
++        "--renames",
++        "--ignore-submodules=none",
++      ],
++      { cwd: root, env: gitEnv(), encoding: "buffer" },
++    );
++    const snapshot = await captureGitSnapshot({ repository_root: root });
++
++    expect(snapshot.state, JSON.stringify(snapshot.errors)).toBe("available");
++    expect(snapshot.status_entries).toEqual(parsePorcelainStatus(stdout));
++  });
++
+   it("attributes clean tracked modifications and unreported untracked writes", async () => {
+     const root = await createRepository();
+     const before = await captureGitSnapshot({ repository_root: root });
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot.ts b/packages/agentplane/src/runner/observation/git-snapshot.ts
+index d3f734b4a..fd27d4e75 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot.ts
+@@ -1,4 +1,8 @@
+-export { captureGitSnapshot } from "./git-snapshot/capture.js";
++export {
++  captureGitSnapshot,
++  captureGitSnapshotObservation,
++  materializeGitSnapshot,
++} from "./git-snapshot/capture.js";
+ export { compareGitSnapshots } from "./git-snapshot/compare.js";
+ export {
+   type GitSnapshot,
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot/capture.ts b/packages/agentplane/src/runner/observation/git-snapshot/capture.ts
+index cf61b1670..00a986b08 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot/capture.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot/capture.ts
+@@ -45,6 +45,57 @@ async function captureHead(repositoryRoot: string): Promise<string | null> {
+   }
+ }
+ 
++async function validateRepositoryRoot(repositoryRoot: string): Promise<void> {
++  const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
++    cwd: repositoryRoot,
++    env: gitEnv(),
++    timeout: GIT_TIMEOUT_MS,
++  });
++  const observedRoot = path.resolve(String(stdout).trim());
++  const [canonicalObservedRoot, canonicalRepositoryRoot] = await Promise.all([
++    realpath(observedRoot),
++    realpath(repositoryRoot),
++  ]);
++  if (canonicalObservedRoot !== canonicalRepositoryRoot) {
++    throw new Error(
++      `repository_root mismatch: expected ${repositoryRoot}, Git resolved ${observedRoot}`,
++    );
++  }
++}
++
++async function captureStatusEntries(repositoryRoot: string): Promise<GitStatusEntry[]> {
++  const { stdout } = await execFileAsync(
++    "git",
++    [
++      "status",
++      "--porcelain=v1",
++      "-z",
++      "--untracked-files=all",
++      "--renames",
++      "--ignore-submodules=none",
++    ],
++    {
++      cwd: repositoryRoot,
++      env: gitEnv(),
++      encoding: "buffer",
++      maxBuffer: GIT_MAX_BUFFER_BYTES,
++      timeout: GIT_TIMEOUT_MS,
++    },
++  );
++  return parsePorcelainStatus(stdout);
++}
++
++async function captureIndexEntries(repositoryRoot: string): Promise<GitSnapshot["index_entries"]> {
++  const { stdout } = await execFileAsync("git", ["ls-files", "--stage", "-z"], {
++    cwd: repositoryRoot,
++    env: gitEnv(),
++    encoding: "buffer",
++    maxBuffer: GIT_MAX_BUFFER_BYTES,
++    timeout: GIT_TIMEOUT_MS,
++  });
++  return parseIndexEntries(stdout);
++}
++
+ async function capturePathFingerprint(
+   repositoryRoot: string,
+   gitPath: string,
+@@ -185,12 +236,64 @@ function unavailableSnapshot(opts: {
+   };
+ }
+ 
+-export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promise<GitSnapshot> {
++type GitSnapshotObservation =
++  | {
++      state: "invalid";
++      repository_root: string;
++      error: unknown;
++    }
++  | {
++      state: "observed";
++      repository_root: string;
++      root_result: PromiseSettledResult<void>;
++      head_result: PromiseSettledResult<string | null>;
++      status_result: PromiseSettledResult<GitStatusEntry[]>;
++      index_result: PromiseSettledResult<GitSnapshot["index_entries"]>;
++    };
++
++export async function captureGitSnapshotObservation(
++  repositoryRootInput: string,
++): Promise<GitSnapshotObservation> {
+   let repositoryRoot = "";
++  try {
++    repositoryRoot = normalizeRepositoryRoot(repositoryRootInput);
++  } catch (error) {
++    return { state: "invalid", repository_root: repositoryRoot, error };
++  }
++
++  const [rootResult, headResult, statusResult, indexResult] = await Promise.allSettled([
++    validateRepositoryRoot(repositoryRoot),
++    captureHead(repositoryRoot),
++    captureStatusEntries(repositoryRoot),
++    captureIndexEntries(repositoryRoot),
++  ]);
++
++  return {
++    state: "observed",
++    repository_root: repositoryRoot,
++    root_result: rootResult,
++    head_result: headResult,
++    status_result: statusResult,
++    index_result: indexResult,
++  };
++}
++
++export async function materializeGitSnapshot(
++  observation: GitSnapshotObservation,
++  excludedRoots: readonly string[] = [],
++): Promise<GitSnapshot> {
++  const repositoryRoot = observation.repository_root;
++  if (observation.state === "invalid") {
++    return unavailableSnapshot({
++      repositoryRoot,
++      excludedPaths: [],
++      errors: [observationError("snapshot_input", observation.error)],
++    });
++  }
++
+   let excludedPaths: string[] = [];
+   try {
+-    repositoryRoot = normalizeRepositoryRoot(input.repository_root);
+-    excludedPaths = normalizeExcludedRoots(repositoryRoot, input.excluded_roots ?? []);
++    excludedPaths = normalizeExcludedRoots(repositoryRoot, excludedRoots);
+   } catch (error) {
+     return unavailableSnapshot({
+       repositoryRoot,
+@@ -199,94 +302,52 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
+     });
+   }
+ 
+-  try {
+-    const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
+-      cwd: repositoryRoot,
+-      env: gitEnv(),
+-      timeout: GIT_TIMEOUT_MS,
+-    });
+-    const observedRoot = path.resolve(String(stdout).trim());
+-    const [canonicalObservedRoot, canonicalRepositoryRoot] = await Promise.all([
+-      realpath(observedRoot),
+-      realpath(repositoryRoot),
+-    ]);
+-    if (canonicalObservedRoot !== canonicalRepositoryRoot) {
+-      throw new Error(
+-        `repository_root mismatch: expected ${repositoryRoot}, Git resolved ${observedRoot}`,
+-      );
+-    }
+-  } catch (error) {
++  const {
++    root_result: rootResult,
++    head_result: headResult,
++    status_result: statusResult,
++    index_result: indexResult,
++  } = observation;
++
++  if (rootResult.status === "rejected") {
+     return unavailableSnapshot({
+       repositoryRoot,
+       excludedPaths,
+-      errors: [observationError("git_root", error)],
++      errors: [observationError("git_root", rootResult.reason)],
+     });
+   }
+ 
+-  let headCommit: string | null;
+-  try {
+-    headCommit = await captureHead(repositoryRoot);
+-  } catch (error) {
++  if (headResult.status === "rejected") {
+     return unavailableSnapshot({
+       repositoryRoot,
+       excludedPaths,
+-      errors: [observationError("git_head", error)],
++      errors: [observationError("git_head", headResult.reason)],
+     });
+   }
++  const headCommit = headResult.value;
+ 
+-  let statusEntries: GitStatusEntry[];
+-  try {
+-    const { stdout } = await execFileAsync(
+-      "git",
+-      [
+-        "status",
+-        "--porcelain=v1",
+-        "-z",
+-        "--untracked-files=all",
+-        "--renames",
+-        "--ignore-submodules=none",
+-      ],
+-      {
+-        cwd: repositoryRoot,
+-        env: gitEnv(),
+-        encoding: "buffer",
+-        maxBuffer: GIT_MAX_BUFFER_BYTES,
+-        timeout: GIT_TIMEOUT_MS,
+-      },
+-    );
+-    statusEntries = parsePorcelainStatus(stdout).filter((entry) =>
+-      statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
+-    );
+-  } catch (error) {
++  if (statusResult.status === "rejected") {
+     return unavailableSnapshot({
+       repositoryRoot,
+       excludedPaths,
+       headCommit,
+-      errors: [observationError("git_status", error)],
++      errors: [observationError("git_status", statusResult.reason)],
+     });
+   }
++  const statusEntries = statusResult.value.filter((entry) =>
++    statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
++  );
+ 
+-  let indexEntries: GitSnapshot["index_entries"];
+-  try {
+-    const { stdout } = await execFileAsync("git", ["ls-files", "--stage", "-z"], {
+-      cwd: repositoryRoot,
+-      env: gitEnv(),
+-      encoding: "buffer",
+-      maxBuffer: GIT_MAX_BUFFER_BYTES,
+-      timeout: GIT_TIMEOUT_MS,
+-    });
+-    indexEntries = parseIndexEntries(stdout).filter(
+-      (entry) => !isExcluded(entry.path, excludedPaths),
+-    );
+-  } catch (error) {
++  if (indexResult.status === "rejected") {
+     return unavailableSnapshot({
+       repositoryRoot,
+       excludedPaths,
+       headCommit,
+       statusEntries,
+-      errors: [observationError("git_index", error)],
++      errors: [observationError("git_index", indexResult.reason)],
+     });
+   }
++  const indexEntries = indexResult.value.filter((entry) => !isExcluded(entry.path, excludedPaths));
+ 
+   const dirtyPaths = uniqSorted(
+     statusEntries
+@@ -333,3 +394,10 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
+     errors: [],
+   };
+ }
++
++export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promise<GitSnapshot> {
++  return await materializeGitSnapshot(
++    await captureGitSnapshotObservation(input.repository_root),
++    input.excluded_roots,
++  );
++}

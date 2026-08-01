@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221854-87892M-14dedeb1bb0ba8d4ba86d955",
+  "task_id": "202607221854-87892M",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework the Git observation boundary so one returned snapshot cannot combine different repository states, add a deterministic concurrent-mutation negative test, and freeze current-SHA declared-check and benchmark evidence proving exact output parity and the approved five-percent median improvement threshold.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The evaluated implementation can combine HEAD, status, and index observations from different repository states because all three Git commands run concurrently and their results are materialized as one snapshot.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b9c9196a8bcc8e1202651c4464c9fad83d917d15b33acb6e3c522e55136f9537",
+          "line": 581,
+          "lines": "581-616"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:9838e8ea68d41fd9f3377c40ae58cda523bcfda9f24b98f049428768aa69826f",
+          "line": 331,
+          "lines": "331-334",
+          "section": "Findings"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "No deterministic verification or benchmark evidence is frozen for evaluated SHA 96ddaf5b63888de328ba3ae74f1892962cb7dccd; the observed-checks artifact contains no verification records, runner history, or runtime evidence, while the task verification still describes the earlier no-prototype SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:dd6c2b156f71b886dde4ec673adc2b7d86e3074fa0983ec32e2693fbcedfe407",
+          "line": 1,
+          "lines": "1-20"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:9838e8ea68d41fd9f3377c40ae58cda523bcfda9f24b98f049428768aa69826f",
+          "line": 136,
+          "lines": "136-140",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+          "line": 250,
+          "lines": "250-308",
+          "section": "plan.requiredEvidence"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "The added tests prove command scheduling and stable-repository parity only; they do not exercise repository mutation between concurrent HEAD, status, index, and path-fingerprint observations.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b9c9196a8bcc8e1202651c4464c9fad83d917d15b33acb6e3c522e55136f9537",
+          "line": 352,
+          "lines": "352-474"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:9838e8ea68d41fd9f3377c40ae58cda523bcfda9f24b98f049428768aa69826f",
+          "line": 138,
+          "lines": "138-140",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-result.json"
+}
