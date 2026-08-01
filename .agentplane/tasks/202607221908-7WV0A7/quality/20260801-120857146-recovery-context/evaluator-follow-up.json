@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-7WV0A7-9552fcf4a05e342a8f25897b",
+  "task_id": "202607221908-7WV0A7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Continue from the narrowed capability profiles and typed queue/release-plan seams, but treat them as partial remediation. Complete the typed result/error, renderer, exit mapping, retry/wait, and audit migration for every operation named in Scope, then freeze command-backed evidence for all negative, recovery, parity, concurrency, and exact-SHA Verify Steps.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The patch adds typed results and separate renderers only for integration queue list/doctor and release plan; the approved provider, integration, release, publication, recovery, and ops command surface remains only partially migrated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:c08d986f1eda0cedfcfc40ddabec7773787074a234619e016910e3bfd898f1c9",
+          "section": "Scope and Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-120857146-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6e0aa721febe7a3dcb3994f4b41477346e1ca4e6ce1378d622358e8b70d07739"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The frozen verification packet contains no command records, runner history, or runtime evidence for the mandatory negative, failure, recovery, parity, and exact-SHA scenarios.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-120857146-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:cc01f477396d4e3ff43d24d3b99951ccfe66ea964575f51114aa96ff8b0a8b03",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:c08d986f1eda0cedfcfc40ddabec7773787074a234619e016910e3bfd898f1c9",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "The new audit metadata is asserted through synthetic renderer fixtures, but the packet does not demonstrate that retries, partial effects, or duplicated-effect prevention are measured from real execution paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-120857146-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6e0aa721febe7a3dcb3994f4b41477346e1ca4e6ce1378d622358e8b70d07739"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:c08d986f1eda0cedfcfc40ddabec7773787074a234619e016910e3bfd898f1c9",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-120857146-recovery-context/evaluator-result.json"
+}
