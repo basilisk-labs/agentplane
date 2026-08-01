@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608010758-DF63K4-bb25c0a94099990ad3af849f",
+  "prepared_at": "2026-08-01T08:11:08.801Z",
+  "task": {
+    "id": "202608010758-DF63K4",
+    "revision": 9,
+    "objective": "Refresh generated script inventory after TypeScript 7 adoption\n\nRepair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.",
+    "acceptance_criteria": [
+      "bun run docs:scripts:check",
+      "bun run typescript:toolchain:check",
+      "- In scope: Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.\n- Out of scope: unrelated refactors not required for \"Refresh generated script inventory after TypeScript 7 adoption\".",
+      "1. Regenerate scripts/README.md from the current package.json script registry.\n2. Confirm the diff contains only the missing TypeScript toolchain command, the corresponding ci:contract expansion, and deterministic table formatting.\n3. Run the generated-doc freshness check and the TypeScript toolchain contract check.\n4. Record the hosted CI failure as the triggering evidence and preserve all unrelated implementation state.",
+      "1. Run `bun run docs:scripts:generate` and inspect the diff. Expected: only the current `ci:contract` command, the `typescript:toolchain:check` inventory row, its generated grouping note, and deterministic table-width formatting change.\n2. Run `bun run docs:scripts:check`. Expected: the generated script inventory is current.\n3. Run `bun run typescript:toolchain:check`. Expected: TypeScript 7 remains the typecheck compiler, TypeScript 6 remains the compiler-API surface, and runtime packages do not depend on `@typescript/native`.\n4. Run `git diff --check` and inspect final status. Expected: no unrelated tracked file changes."
+    ]
+  },
+  "evaluated_sha": "c074e8b126972091c6591ac028c39d407e0b7da2",
+  "diff_base_sha": "56bb919419e198f3ecfd1a074358e6ead81deaa7",
+  "blueprint_digest": "53e897d649eeb24bafe3b8382410406d35085ca3ef9fa9410677337cfbe6362d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608010758-DF63K4/README.md",
+      "sha256": "sha256:5346cacd92309713f0e94c41a94825e1383b15a3cf63a47ee10144aaa41e8e9e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608010758-DF63K4/quality/20260801-081108801-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:15afa86d966b3a9493328857c2ece9d6d2ac980feb8db768fb5b7108a2bdc86f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608010758-DF63K4/quality/20260801-081108801-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:abac69b6ced147173ec1e5201f4f3ec38524618a1402788ba0b748a74f429a31",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608010758-DF63K4/quality/20260801-081108801-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:38507ed463b0649eaf2d99c16991ea3d45fcdd434fef29f1514fc59e2a538f23",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

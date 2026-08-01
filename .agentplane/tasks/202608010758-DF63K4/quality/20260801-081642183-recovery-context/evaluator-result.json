@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "scope-and-contract",
+      "severity": "low",
+      "summary": "The evaluated change is limited to the generated script inventory and task-local traceability artifacts; the inventory adds the current ci:contract expansion, typescript:toolchain:check row, grouping note, and deterministic table-width changes without modifying runtime or package sources.",
+      "broken_invariant": "No invariant is broken; the approved documentation-only scope and TypeScript 7/TypeScript 6 toolchain contract are preserved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608010758-DF63K4/quality/20260801-081642183-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:15afa86d966b3a9493328857c2ece9d6d2ac980feb8db768fb5b7108a2bdc86f",
+          "line": 648
+        },
+        {
+          "path": ".agentplane/tasks/202608010758-DF63K4/README.md",
+          "sha256": "sha256:e8f7f53f3f831f4b8a5f5c6b63221b95003c7ac111c5555d2f1b37e1fee0eef0",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "verification-coverage",
+      "severity": "low",
+      "summary": "Recorded verification covers generated-document freshness, the positive TS7/TS6 version split, the negative runtime-dependency constraint, whitespace and changed-path scope, final workspace drift classification, policy checks, doctor, and the full-fast regression route at the evaluated SHA.",
+      "broken_invariant": "No invariant is broken; deterministic evidence covers the relevant positive, negative, and drift-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608010758-DF63K4/verification/20260801081316294-8e68c6441257e6d3.json",
+          "sha256": "sha256:c45294f8eda6d7a00b82b16983e450a07a148f6b787ffea6bc9bc676a76774de",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608010758-DF63K4/quality/20260801-081642183-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:6993dc99edd711dffbd079715303e34e66434f92a8de16f9598a53ebc4349d89",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/policy/dod.docs.md",
+          "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

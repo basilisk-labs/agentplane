@@ -1,0 +1,712 @@
+diff --git a/.agentplane/tasks/202608010758-DF63K4/README.md b/.agentplane/tasks/202608010758-DF63K4/README.md
+new file mode 100644
+index 000000000..88cb32f8f
+--- /dev/null
++++ b/.agentplane/tasks/202608010758-DF63K4/README.md
+@@ -0,0 +1,122 @@
++---
++id: "202608010758-DF63K4"
++title: "Refresh generated script inventory after TypeScript 7 adoption"
++status: "DOING"
++priority: "high"
++owner: "DOCS"
++revision: 7
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "docs"
++  - "generated"
++  - "post-merge"
++  - "toolchain"
++  - "typescript7"
++  - "v0.7"
++verify:
++  - "bun run docs:scripts:check"
++  - "bun run typescript:toolchain:check"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-08-01T07:59:23.870Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "DOCS"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-08-01T07:59:55.958Z"
++    author: "DOCS"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++doc_version: 3
++doc_updated_at: "2026-08-01T08:01:21.371Z"
++doc_updated_by: "DOCS"
++description: "Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract."
++sections:
++  Summary: |-
++    Refresh generated script inventory after TypeScript 7 adoption
++
++    Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.
++  Scope: |-
++    - In scope: Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.
++    - Out of scope: unrelated refactors not required for "Refresh generated script inventory after TypeScript 7 adoption".
++  Plan: |-
++    1. Regenerate scripts/README.md from the current package.json script registry.
++    2. Confirm the diff contains only the missing TypeScript toolchain command, the corresponding ci:contract expansion, and deterministic table formatting.
++    3. Run the generated-doc freshness check and the TypeScript toolchain contract check.
++    4. Record the hosted CI failure as the triggering evidence and preserve all unrelated implementation state.
++  Verify Steps: |-
++    1. Run `bun run docs:scripts:generate` and inspect the diff. Expected: only the current `ci:contract` command, the `typescript:toolchain:check` inventory row, its generated grouping note, and deterministic table-width formatting change.
++    2. Run `bun run docs:scripts:check`. Expected: the generated script inventory is current.
++    3. Run `bun run typescript:toolchain:check`. Expected: TypeScript 7 remains the typecheck compiler, TypeScript 6 remains the compiler-API surface, and runtime packages do not depend on `@typescript/native`.
++    4. Run `git diff --check` and inspect final status. Expected: no unrelated tracked file changes.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: Hosted Core CI for PR #4719 failed in verify-routed because scripts/README.md did not include the TypeScript toolchain check added by completed task DRYTNK.
++      Impact: Every evaluator-path PR fails the targeted fast route before its scoped tests, blocking WWQP4B integration and all downstream 0.7 work.
++      Resolution: Regenerate the canonical script inventory in this dedicated post-merge task and keep the diff limited to generated output.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Refresh generated script inventory after TypeScript 7 adoption
++
++Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.
++
++## Scope
++
++- In scope: Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.
++- Out of scope: unrelated refactors not required for "Refresh generated script inventory after TypeScript 7 adoption".
++
++## Plan
++
++1. Regenerate scripts/README.md from the current package.json script registry.
++2. Confirm the diff contains only the missing TypeScript toolchain command, the corresponding ci:contract expansion, and deterministic table formatting.
++3. Run the generated-doc freshness check and the TypeScript toolchain contract check.
++4. Record the hosted CI failure as the triggering evidence and preserve all unrelated implementation state.
++
++## Verify Steps
++
++1. Run `bun run docs:scripts:generate` and inspect the diff. Expected: only the current `ci:contract` command, the `typescript:toolchain:check` inventory row, its generated grouping note, and deterministic table-width formatting change.
++2. Run `bun run docs:scripts:check`. Expected: the generated script inventory is current.
++3. Run `bun run typescript:toolchain:check`. Expected: TypeScript 7 remains the typecheck compiler, TypeScript 6 remains the compiler-API surface, and runtime packages do not depend on `@typescript/native`.
++4. Run `git diff --check` and inspect final status. Expected: no unrelated tracked file changes.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: Hosted Core CI for PR #4719 failed in verify-routed because scripts/README.md did not include the TypeScript toolchain check added by completed task DRYTNK.
++  Impact: Every evaluator-path PR fails the targeted fast route before its scoped tests, blocking WWQP4B integration and all downstream 0.7 work.
++  Resolution: Regenerate the canonical script inventory in this dedicated post-merge task and keep the diff limited to generated output.
+diff --git a/.agentplane/tasks/202608010758-DF63K4/blueprint/resolved-snapshot.json b/.agentplane/tasks/202608010758-DF63K4/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..4b162920d
+--- /dev/null
++++ b/.agentplane/tasks/202608010758-DF63K4/blueprint/resolved-snapshot.json
+@@ -0,0 +1,400 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202608010758-DF63K4",
++    "title": "Refresh generated script inventory after TypeScript 7 adoption",
++    "description": "Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.",
++    "tags": [
++      "docs",
++      "generated",
++      "post-merge",
++      "toolchain",
++      "typescript7",
++      "v0.7"
++    ],
++    "owner": "DOCS",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "docs",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "docs.change",
++    "version": 1,
++    "title": "Documentation change",
++    "taskKinds": [
++      "docs"
++    ],
++    "workflowModes": [
++      "direct",
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "docs.change",
++    "blueprintVersion": 1,
++    "title": "Documentation change",
++    "taskId": "202608010758-DF63K4",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "docs"
++    },
++    "whySelected": [
++      "task kind resolved to docs",
++      "workflow mode: branch_pr",
++      "mutation scope: docs"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.docs.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "docs.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed documentation paths."
++      },
++      {
++        "id": "docs.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Documentation checks."
++      },
++      {
++        "id": "docs.artifact",
++        "kind": "artifact",
++        "producedBy": "artifact_write",
++        "required": true,
++        "description": "Updated documentation artifact."
++      },
++      {
++        "id": "docs.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/dod.docs.md",
++      ".agentplane/policy/security.must.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "documentation checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 3,
++      "maxPromptBlocks": 10,
++      "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.docs.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "docs.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed documentation paths."
++    },
++    {
++      "id": "docs.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Documentation checks."
++    },
++    {
++      "id": "docs.artifact",
++      "kind": "artifact",
++      "producedBy": "artifact_write",
++      "required": true,
++      "description": "Updated documentation artifact."
++    },
++    {
++      "id": "docs.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/dod.docs.md",
++    ".agentplane/policy/security.must.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "documentation checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 3,
++    "maxPromptBlocks": 10,
++    "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to docs",
++    "workflow mode: branch_pr",
++    "mutation scope: docs"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "53e897d649eeb24bafe3b8382410406d35085ca3ef9fa9410677337cfbe6362d"
++  }
++}
+diff --git a/.agentplane/tasks/202608010758-DF63K4/pr/diffstat.txt b/.agentplane/tasks/202608010758-DF63K4/pr/diffstat.txt
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/.agentplane/tasks/202608010758-DF63K4/pr/github-body.md b/.agentplane/tasks/202608010758-DF63K4/pr/github-body.md
+new file mode 100644
+index 000000000..995cf73ce
+--- /dev/null
++++ b/.agentplane/tasks/202608010758-DF63K4/pr/github-body.md
+@@ -0,0 +1,33 @@
++Task: `202608010758-DF63K4`
++Title: Refresh generated script inventory after TypeScript 7 adoption
++Canonical task record: `.agentplane/tasks/202608010758-DF63K4/README.md`
++
++## Summary
++
++Refresh generated script inventory after TypeScript 7 adoption
++
++Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.
++
++## Scope
++
++- In scope: Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract.
++- Out of scope: unrelated refactors not required for "Refresh generated script inventory after TypeScript 7 adoption".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-08-01T07:59:56.084Z
++- Branch: task/202608010758-DF63K4/refresh-generated-script-inventory-after-typescr
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++No changes detected.
++```
++
++</details>
+diff --git a/.agentplane/tasks/202608010758-DF63K4/pr/github-title.txt b/.agentplane/tasks/202608010758-DF63K4/pr/github-title.txt
+new file mode 100644
+index 000000000..362580dd1
+--- /dev/null
++++ b/.agentplane/tasks/202608010758-DF63K4/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 DF63K4 task: Refresh generated script inventory after TypeScript 7 adoption [202608010758-DF63K4]
+diff --git a/.agentplane/tasks/202608010758-DF63K4/pr/meta.json b/.agentplane/tasks/202608010758-DF63K4/pr/meta.json
+new file mode 100644
+index 000000000..2c87aaaad
+--- /dev/null
++++ b/.agentplane/tasks/202608010758-DF63K4/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202608010758-DF63K4/refresh-generated-script-inventory-after-typescr",
++  "created_at": "2026-08-01T07:59:56.084Z",
++  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "last_verified_at": null,
++  "pr_number": 4720,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4720",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202608010758-DF63K4",
++  "updated_at": "2026-08-01T08:00:25.136Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202608010758-DF63K4/pr/review.md b/.agentplane/tasks/202608010758-DF63K4/pr/review.md
+new file mode 100644
+index 000000000..1a6d7ab0a
+--- /dev/null
++++ b/.agentplane/tasks/202608010758-DF63K4/pr/review.md
+@@ -0,0 +1,36 @@
++# PR Review
++
++Created: 2026-08-01T07:59:56.084Z
++
++## Task
++
++- Task: `202608010758-DF63K4`
++- Title: Refresh generated script inventory after TypeScript 7 adoption
++- Status: DOING
++- Branch: `task/202608010758-DF63K4/refresh-generated-script-inventory-after-typescr`
++- Canonical task record: `.agentplane/tasks/202608010758-DF63K4/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-08-01T07:59:56.084Z
++- Branch: task/202608010758-DF63K4/refresh-generated-script-inventory-after-typescr
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++No changes detected.
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/scripts/README.md b/scripts/README.md
+index 9a19e0179..d0fd2ff5b 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -14,25 +14,25 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## CI
+ 
+-| Script              | Command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Purpose                          |
+-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+-| `ci`                | `bun run ci:contract && bun run ci:test`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Run ci workflow commands.        |
+-| `ci:agentplane`     | `node scripts/checks/ci-scope.mjs --scope agentplane`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Run ci workflow: agentplane.     |
+-| `ci:contract`       | `bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check` | Run ci workflow: contract.       |
+-| `ci:core`           | `node scripts/checks/ci-scope.mjs --scope core`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: core.           |
+-| `ci:local`          | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local.          |
+-| `ci:local:explain`  | `node scripts/checks/run-local-ci.mjs --mode smoke --explain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local explain.  |
+-| `ci:local:fast`     | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local fast.     |
+-| `ci:local:full`     | `node scripts/checks/run-local-ci.mjs --mode full`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local full.     |
+-| `ci:local:profile`  | `node scripts/checks/profile-local-quality.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: local profile.  |
+-| `ci:local:smoke`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow: local smoke.    |
+-| `ci:local:touch`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow: local touch.    |
+-| `ci:local:turbo`    | `node scripts/checks/run-turbo-local-ci.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: local turbo.    |
+-| `ci:recipes`        | `node scripts/checks/ci-scope.mjs --scope recipes`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: recipes.        |
+-| `ci:release-extras` | `bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical`                                                  | Run ci workflow: release-extras. |
+-| `ci:spec`           | `node scripts/checks/ci-scope.mjs --scope spec`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: spec.           |
+-| `ci:test`           | `bun run typecheck && bun run coverage && bun run coverage:significant`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Run ci workflow: test.           |
+-| `ci:testkit`        | `node scripts/checks/ci-scope.mjs --scope testkit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: testkit.        |
++| Script              | Command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Purpose                          |
++| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
++| `ci`                | `bun run ci:contract && bun run ci:test`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow commands.        |
++| `ci:agentplane`     | `node scripts/checks/ci-scope.mjs --scope agentplane`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: agentplane.     |
++| `ci:contract`       | `bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check` | Run ci workflow: contract.       |
++| `ci:core`           | `node scripts/checks/ci-scope.mjs --scope core`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Run ci workflow: core.           |
++| `ci:local`          | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: local.          |
++| `ci:local:explain`  | `node scripts/checks/run-local-ci.mjs --mode smoke --explain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Run ci workflow: local explain.  |
++| `ci:local:fast`     | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: local fast.     |
++| `ci:local:full`     | `node scripts/checks/run-local-ci.mjs --mode full`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: local full.     |
++| `ci:local:profile`  | `node scripts/checks/profile-local-quality.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Run ci workflow: local profile.  |
++| `ci:local:smoke`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local smoke.    |
++| `ci:local:touch`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local touch.    |
++| `ci:local:turbo`    | `node scripts/checks/run-turbo-local-ci.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Run ci workflow: local turbo.    |
++| `ci:recipes`        | `node scripts/checks/ci-scope.mjs --scope recipes`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: recipes.        |
++| `ci:release-extras` | `bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical`                                                                                        | Run ci workflow: release-extras. |
++| `ci:spec`           | `node scripts/checks/ci-scope.mjs --scope spec`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Run ci workflow: spec.           |
++| `ci:test`           | `bun run typecheck && bun run coverage && bun run coverage:significant`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Run ci workflow: test.           |
++| `ci:testkit`        | `node scripts/checks/ci-scope.mjs --scope testkit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: testkit.        |
+ 
+ ## Release
+ 
+@@ -207,6 +207,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | `task-state:check`                 | `node scripts/checks/check-task-state.mjs`                                                                                                                                                                                       | Run task-state workflow: check.                           |
+ | `trust:ratchet:check`              | `node scripts/checks/check-trust-boundary-ratchet.mjs`                                                                                                                                                                           | Run trust workflow: ratchet check.                        |
+ | `typecheck`                        | `node scripts/checks/run-typescript-build.mjs`                                                                                                                                                                                   | Run repository TypeScript type checks.                    |
++| `typescript:toolchain:check`       | `node scripts/checks/check-typescript-toolchain.mjs`                                                                                                                                                                             | Run typescript workflow: toolchain check.                 |
+ | `vitest:projects:check`            | `node scripts/checks/check-vitest-projects.mjs`                                                                                                                                                                                  | Run vitest workflow: projects check.                      |
+ | `workflow:github-protection:check` | `node scripts/checks/check-github-protection-contract.mjs`                                                                                                                                                                       | Run workflow workflow: github-protection check.           |
+ | `workflow:wait-remote-checks`      | `node scripts/workflow/wait-remote-pr-checks.mjs`                                                                                                                                                                                | Run workflow workflow: wait-remote-checks.                |
+@@ -255,6 +256,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ - `spec:examples:check` is currently grouped as `misc` (review namespace intent).
+ - `task-state:check` is currently grouped as `misc` (review namespace intent).
+ - `trust:ratchet:check` is currently grouped as `misc` (review namespace intent).
++- `typescript:toolchain:check` is currently grouped as `misc` (review namespace intent).
+ - `vitest:projects:check` is currently grouped as `misc` (review namespace intent).
+ - `workflow:github-protection:check` is currently grouped as `misc` (review namespace intent).
+ - `workflow:wait-remote-checks` is currently grouped as `misc` (review namespace intent).
