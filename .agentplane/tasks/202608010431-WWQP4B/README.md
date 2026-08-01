@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
   findings:
     - "The implementation excludes only the active task artifact subtree while retaining implementation changes and unrelated-task artifacts; frozen verification covers positive, negative, rename, binary, and scope-sensitive cases."
 commit:
-  hash: "7f77c56b3e4de624d1b7ab9bc4ad9cb74d537cff"
-  message: "🧾 WWQP4B task: preserve prepared quality review"
+  hash: "a910f1795247d2ce4391cd701b71bf91dc20068a"
+  message: "🧪 WWQP4B task: record base-update quality review"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -106,8 +109,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Reverified provider-updated head 017980153: focused evaluator suite 31/31, typecheck, guards, generated-doc freshness, and scoped diff checks pass with command-level evidence."
+  -
+    type: "status"
+    at: "2026-08-01T08:36:44.433Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T08:33:55.769Z"
+doc_updated_at: "2026-08-01T08:36:44.433Z"
 doc_updated_by: "CODER"
 description: "Fix the measured evaluator timeout by excluding the active task's generated control artifacts from actual_diff while preserving the task document, blueprint, observed checks, policy, and complete implementation delta as separately digest-verified evidence."
 sections:
@@ -252,8 +262,8 @@ sections:
       Resolution: Exclude only the active task artifact subtree from actual_diff; keep all other branch delta and frozen evidence contracts unchanged.
 extensions:
   implementation_commit:
-    hash: "a6b5051e73fdbbcd59fce21ee4be58833775e0f5"
-    message: "♻️ WWQP4B task: bound evaluator implementation evidence"
+    hash: "0179801532c99db510bbcbbab1724561d8cab331"
+    message: "Merge branch 'main' into task/202608010431-WWQP4B/bound-evaluator-review-packets-to-implementation"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
