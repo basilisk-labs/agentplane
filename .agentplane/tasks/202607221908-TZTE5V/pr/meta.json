@@ -8,10 +8,10 @@
   "pr_number": 4715,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4715",
   "pre_merge_closure": {
-    "basis_commit": "8fc6ef287988ccec9dd88f7bfbf1094371d00b51",
+    "basis_commit": "607cc2753f554bef9fbb367068da22ea79a09963",
     "branch": "task/202607221908-TZTE5V/migrate-project-config-help-and-docs-command-bou",
     "pr_number": 4715,
-    "recorded_at": "2026-08-01T00:24:32.792Z",
+    "recorded_at": "2026-08-01T00:27:28.439Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
