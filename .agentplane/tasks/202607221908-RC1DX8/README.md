@@ -4,7 +4,7 @@ title: "Migrate runner and Hermes command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +38,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "253943c427b60c81673f4442fbe7d277cb41a4e9"
+  message: "🧪 RC1DX8 task: cover runner capability phases"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: migrated runner, Hermes, and local insights commands to phase-scoped CommandSession profiles; preserved typed in-process supervisor use cases and compatibility output."
 events:
   -
     type: "status"
@@ -51,8 +56,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T03:19:35.108Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: migrated runner, Hermes, and local insights commands to phase-scoped CommandSession profiles; preserved typed in-process supervisor use cases and compatibility output."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:58:47.800Z"
+doc_updated_at: "2026-08-01T03:19:35.108Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session capabilities, shared supervisor use cases, typed episode results, and compatibility renderers."
 sections:
