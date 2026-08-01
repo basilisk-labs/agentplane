@@ -19,9 +19,11 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
 - Note:
 
 ```text
-PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process
-supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12,
-typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed.
+PASS after integration rework at d227dc0acf705edf48b5f165b92b8a368496b5d7: task run dry-run selects
+RUNNER_PREPARATION_REQUIREMENTS without provider or git.mutate; execute retains
+RUNNER_EXECUTION_REQUIREMENTS. Focused runner/Hermes/direct/branch matrix 71/71, critical 12/12
+chunks, guards, lifecycle 8/8, TypeScript 7 typecheck, core lint, architecture, schemas, Knip
+545/545, and changed-file formatting passed.
 ```
 - Canonical workflow state lives in the task README.
 
