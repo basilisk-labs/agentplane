@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-TZTE5V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T00:23:11.258Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "8fc6ef287988ccec9dd88f7bfbf1094371d00b51",
+  "blueprint_digest": "44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b",
+  "findings": [
+    "No blocking correctness or architecture finding: migrated loaders receive only typed project/config/output sessions and denial tests prevent task/provider escalation before shared context creation.",
+    "The stale help snapshot was a pre-existing main baseline defect and its refresh matches current catalog text; no unrelated command behavior changed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Compatibility relies on createCliEmitter preserving the prior stdout newline contract; focused help/docs/runtime tests and snapshots cover that assumption."
+  ],
+  "residual_risks": []
+}

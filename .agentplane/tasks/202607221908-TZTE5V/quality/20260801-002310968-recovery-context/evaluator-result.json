@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "No blocking correctness or architecture finding: migrated loaders receive only typed project/config/output sessions and denial tests prevent task/provider escalation before shared context creation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The stale help snapshot was a pre-existing main baseline defect and its refresh matches current catalog text; no unrelated command behavior changed.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Compatibility relies on createCliEmitter preserving the prior stdout newline contract; focused help/docs/runtime tests and snapshots cover that assumption."
+  ]
+}

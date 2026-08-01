@@ -1,10 +1,11 @@
 ---
 id: "202607221908-TZTE5V"
 title: "Migrate project, config, help, and docs command boundaries"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -31,16 +32,49 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-01T00:22:32.323Z"
+  updated_by: "TESTER"
+  note: "Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md"
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T00:23:11.258Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "8fc6ef287988ccec9dd88f7bfbf1094371d00b51"
+  blueprint_digest: "44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b"
+  evidence_refs:
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-TZTE5V/README.md"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "No blocking correctness or architecture finding: migrated loaders receive only typed project/config/output sessions and denial tests prevent task/provider escalation before shared context creation."
+    - "The stale help snapshot was a pre-existing main baseline defect and its refresh matches current catalog text; no unrelated command behavior changed."
+commit:
+  hash: "8fc6ef287988ccec9dd88f7bfbf1094371d00b51"
+  message: "♻️ TZTE5V task: migrate project config command sessions"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation recorded: minimal project/config/output sessions, typed use-case results, compatibility renderers, and focused regression evidence are committed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -49,8 +83,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T00:22:14.119Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: minimal project/config/output sessions, typed use-case results, compatibility renderers, and focused regression evidence are committed."
+  -
+    type: "verify"
+    at: "2026-08-01T00:22:32.323Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md"
+  -
+    type: "status"
+    at: "2026-08-01T00:24:32.620Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T00:21:05.286Z"
+doc_updated_at: "2026-08-01T00:24:32.622Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed session capabilities and typed results with centralized compatibility renderers."
 sections:
@@ -74,6 +128,36 @@ sections:
     4. Run family tests, docs CLI check, guards, and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-01T00:22:32.323Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T00:22:14.119Z, excerpt_hash=sha256:9ce64a1d327e47cc63d1a606c55c68344c767e35a04bd14cd5a5225a8d14c3ee
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-TZTE5V-migrate-project-config-help-and-docs-command-bou/.agentplane/tasks/202607221908-TZTE5V/blueprint/resolved-snapshot.json
+    - old_digest: 44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b
+    - current_digest: 44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-TZTE5V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221908-TZTE5V
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only this command family to the explicit legacy session/result adapter.
@@ -85,6 +169,10 @@ sections:
       Resolution: Reproduced the failure at main commit 0dca3d627916e8c36ecf46bcbbb523a3b0013317 and refreshed only the help snapshot owned by this vertical slice.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: Project/config/help/docs commands prepare only declared project, config, or output capabilities; fast help prepares none.
+      Impact: The CLI now supplies formal context for this family without loading task or provider state, reducing agent context overhead while preserving output compatibility.
+      Resolution: Keep this vertical slice and continue remaining command families in dedicated tasks.
 extensions:
   workflow_route_baseline:
     start_head_sha: "0dca3d627916e8c36ecf46bcbbb523a3b0013317"
@@ -120,6 +208,36 @@ RF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-01T00:22:32.323Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T00:22:14.119Z, excerpt_hash=sha256:9ce64a1d327e47cc63d1a606c55c68344c767e35a04bd14cd5a5225a8d14c3ee
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-TZTE5V-migrate-project-config-help-and-docs-command-bou/.agentplane/tasks/202607221908-TZTE5V/blueprint/resolved-snapshot.json
+- old_digest: 44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b
+- current_digest: 44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-TZTE5V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221908-TZTE5V
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -135,3 +253,7 @@ RF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed
   Resolution: Reproduced the failure at main commit 0dca3d627916e8c36ecf46bcbbb523a3b0013317 and refreshed only the help snapshot owned by this vertical slice.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: Project/config/help/docs commands prepare only declared project, config, or output capabilities; fast help prepares none.
+  Impact: The CLI now supplies formal context for this family without loading task or provider state, reducing agent context overhead while preserving output compatibility.
+  Resolution: Keep this vertical slice and continue remaining command families in dedicated tasks.
