@@ -6,14 +6,14 @@ Created: 2026-08-01T00:38:26.423Z
 
 - Task: `202607221908-YD5J89`
 - Title: Migrate context and evaluator command boundaries
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221908-YD5J89/migrate-context-and-evaluator-command-boundaries`
 - Canonical task record: `.agentplane/tasks/202607221908-YD5J89/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52 tests; real registry no-record execution created the canonical evidence packet with task README unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed.
+- Note: Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

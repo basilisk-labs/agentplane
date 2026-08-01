@@ -19,11 +19,10 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 - Note:
 
 ```text
-Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52
-tests; real registry no-record execution created the canonical evidence packet with task README
-unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only
-prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards,
-architecture, hotspots, and all 12 critical CLI chunks passed.
+Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to
+four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7
+typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites
+still pass 52 tests.
 ```
 - Canonical workflow state lives in the task README.
 

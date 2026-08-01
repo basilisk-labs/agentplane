@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T02:42:00.472Z"
+  updated_at: "2026-08-01T02:54:11.355Z"
   updated_by: "TESTER"
-  note: "Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52 tests; real registry no-record execution created the canonical evidence packet with task README unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed."
+  note: "Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests."
   attempts: 0
 quality_review:
   state: "pass"
@@ -204,8 +204,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Hosted static rework committed: removed four newly unused exported type declarations; runtime behavior is unchanged and the local knip baseline now passes."
+  -
+    type: "verify"
+    at: "2026-08-01T02:54:11.355Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:53:25.870Z"
+doc_updated_at: "2026-08-01T02:54:12.326Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -409,6 +415,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T02:54:11.355Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:53:25.870Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -438,6 +474,10 @@ sections:
     - Observation: Evaluator preparation resolves a distinct evaluator_artifacts node and returns a frozen path-confined port rather than CommandContext; no-record sessions declare no task-context capability.
       Impact: Evidence-packet generation is mechanically separated from task, Git, backend, approval, provider, and generic filesystem mutation authority at the handler dependency boundary.
       Resolution: Accepted after compile-time surface checks, real registry/filesystem regression coverage, traversal rejection, and repository critical/architecture gates.
+
+    - Observation: Removing one obsolete session alias and three implementation-only export modifiers changes no runtime behavior or public CLI contract.
+      Impact: Hosted verify-static can pass without accepting new dead-code debt or updating the reviewed baseline.
+      Resolution: Accepted after exact local reproduction of the failed knip gate plus unchanged focused runtime coverage.
 extensions:
   implementation_commit:
     hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
@@ -656,6 +696,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T02:54:11.355Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:53:25.870Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -689,3 +759,7 @@ DecisionContextRef:
 - Observation: Evaluator preparation resolves a distinct evaluator_artifacts node and returns a frozen path-confined port rather than CommandContext; no-record sessions declare no task-context capability.
   Impact: Evidence-packet generation is mechanically separated from task, Git, backend, approval, provider, and generic filesystem mutation authority at the handler dependency boundary.
   Resolution: Accepted after compile-time surface checks, real registry/filesystem regression coverage, traversal rejection, and repository critical/architecture gates.
+
+- Observation: Removing one obsolete session alias and three implementation-only export modifiers changes no runtime behavior or public CLI contract.
+  Impact: Hosted verify-static can pass without accepting new dead-code debt or updating the reviewed baseline.
+  Resolution: Accepted after exact local reproduction of the failed knip gate plus unchanged focused runtime coverage.
