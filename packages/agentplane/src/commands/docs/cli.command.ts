@@ -3,9 +3,12 @@ import path from "node:path";
 
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { renderCliDocsMdx } from "../../cli/spec/docs-render.js";
 import { renderCommandHelpJson, type HelpJson } from "../../cli/spec/help-render.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
+
+const output = createCliEmitter();
 
 export type DocsCliParsed = {
   out: string;
@@ -34,6 +37,23 @@ export const docsCliSpec: CommandSpec<DocsCliParsed> = {
   parse: (raw) => ({ out: raw.opts.out as string }),
 };
 
+export type DocsCliResult = {
+  outPath: string;
+  commandCount: number;
+};
+
+export async function generateCliDocs(opts: {
+  cwd: string;
+  out: string;
+  help: readonly HelpJson[];
+}): Promise<DocsCliResult> {
+  const mdx = renderCliDocsMdx(opts.help);
+  const outPath = path.resolve(opts.cwd, opts.out);
+  await mkdir(path.dirname(outPath), { recursive: true });
+  await writeTextIfChanged(outPath, mdx);
+  return { outPath, commandCount: opts.help.length };
+}
+
 export function makeRunDocsCliHandler(getHelpJson: () => readonly HelpJson[]) {
   return async (ctx: CommandCtx, p: DocsCliParsed): Promise<number> => {
     let list: readonly HelpJson[];
@@ -47,11 +67,8 @@ export function makeRunDocsCliHandler(getHelpJson: () => readonly HelpJson[]) {
       });
     }
 
-    const mdx = renderCliDocsMdx(list);
-    const outPath = path.resolve(ctx.cwd, p.out);
-    await mkdir(path.dirname(outPath), { recursive: true });
-    await writeTextIfChanged(outPath, mdx);
-    process.stdout.write(`${outPath}\n`);
+    const result = await generateCliDocs({ cwd: ctx.cwd, out: p.out, help: list });
+    output.line(result.outPath);
     return 0;
   };
 }

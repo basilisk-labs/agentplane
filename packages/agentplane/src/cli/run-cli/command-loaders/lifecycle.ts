@@ -1,5 +1,6 @@
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import type { OutputSession } from "../command-catalog/project-capability-profiles.js";
 import type {
   TaskLifecycleSession,
   TaskReadSession,
@@ -52,7 +53,7 @@ export const loadReadySpec = (session: TaskReadSession) =>
   import("../../../commands/ready.command.js").then((m) =>
     m.makeRunReadyHandler(getTaskReadContext(session)),
   );
-export const loadDocsCliSpec = (session: CommandSession<"output">) =>
+export const loadDocsCliSpec = (session: OutputSession) =>
   import("../../../commands/docs/cli.command.js").then((m) =>
     m.makeRunDocsCliHandler(session.getHelpJsonForDocs),
   );

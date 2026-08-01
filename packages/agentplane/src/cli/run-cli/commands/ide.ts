@@ -29,6 +29,8 @@ export const ideSyncSpec: CommandSpec<IdeSyncParsed> = {
   parse: (raw) => ({ ide: raw.opts.ide as IdeSyncParsed["ide"] }),
 };
 
-export function makeRunIdeSyncHandler(deps: RunDeps): CommandHandler<IdeSyncParsed> {
+export function makeRunIdeSyncHandler(
+  deps: Pick<RunDeps, "getResolvedProject">,
+): CommandHandler<IdeSyncParsed> {
   return makeRunIdePlatformSyncHandler(deps);
 }

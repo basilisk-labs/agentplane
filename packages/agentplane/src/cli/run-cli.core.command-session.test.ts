@@ -16,6 +16,75 @@ import { runCli } from "./run-cli.js";
 installRunCliIntegrationHarness();
 
 describe("runCli CommandSession", () => {
+  it("keeps fast help outside project and task preparation", async () => {
+    const previousTrace = process.env.AGENTPLANE_TRACE;
+    process.env.AGENTPLANE_TRACE = "1";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "config", "show", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("config show");
+      expect(io.stderr).not.toContain('"component":"command-session"');
+    } finally {
+      if (previousTrace === undefined) {
+        delete process.env.AGENTPLANE_TRACE;
+      } else {
+        process.env.AGENTPLANE_TRACE = previousTrace;
+      }
+      io.restore();
+    }
+  });
+
+  it("resolves config commands through project and config nodes only", async () => {
+    const root = await mkGitRepoRoot();
+    await writeConfig(root, defaultConfig());
+    const previousTrace = process.env.AGENTPLANE_TRACE;
+    process.env.AGENTPLANE_TRACE = "1";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).toContain('"capability":"project"');
+      expect(io.stderr).toContain('"capability":"config"');
+      expect(io.stderr).not.toContain('"node":"command_context"');
+      expect(io.stderr).not.toContain('"capability":"provider"');
+    } finally {
+      if (previousTrace === undefined) {
+        delete process.env.AGENTPLANE_TRACE;
+      } else {
+        process.env.AGENTPLANE_TRACE = previousTrace;
+      }
+      io.restore();
+      await rm(root, { force: true, recursive: true });
+    }
+  });
+
+  it("keeps runtime explain available outside a configured project", async () => {
+    const root = await mkTempDir();
+    const previousTrace = process.env.AGENTPLANE_TRACE;
+    process.env.AGENTPLANE_TRACE = "1";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["runtime", "explain", "--json", "--root", root]);
+      expect(code).toBe(0);
+      expect(JSON.parse(io.stdout)).toMatchObject({
+        repoCliExpectation: { state: "unconfigured" },
+      });
+      expect(io.stderr).toContain('"capability":"project"');
+      expect(io.stderr).toContain('"capability":"config"');
+      expect(io.stderr).not.toContain('"node":"command_context"');
+      expect(io.stderr).not.toContain('"capability":"provider"');
+    } finally {
+      if (previousTrace === undefined) {
+        delete process.env.AGENTPLANE_TRACE;
+      } else {
+        process.env.AGENTPLANE_TRACE = previousTrace;
+      }
+      io.restore();
+      await rm(root, { force: true, recursive: true });
+    }
+  });
+
   it("traces only the declared output node for a metadata-only command", async () => {
     const root = await mkTempDir();
     const outPath = path.join(root, "cli-reference.mdx");

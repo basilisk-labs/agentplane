@@ -7,6 +7,10 @@ import {
   type CommandSession,
 } from "./kernel.js";
 import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
+import {
+  PROJECT_CONFIG_REQUIREMENTS,
+  PROJECT_REQUIREMENTS,
+} from "./project-capability-profiles.js";
 
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
@@ -162,5 +166,24 @@ describe("CommandSession", () => {
       code: "E_INTERNAL",
     });
     expect(lifecycleResolvers.getCtx).not.toHaveBeenCalled();
+  });
+
+  it("denies task and provider access from project/config sessions before context preparation", async () => {
+    for (const requirements of [PROJECT_REQUIREMENTS, PROJECT_CONFIG_REQUIREMENTS]) {
+      const resolvers = makeResolvers();
+      const session = createCommandSession({
+        command: "config show",
+        requirements,
+        resolvers,
+      }) as CommandSession<CommandCapability>;
+
+      await expect(session.require("task.read", "config show")).rejects.toMatchObject({
+        code: "E_INTERNAL",
+      });
+      await expect(session.require("provider", "config show")).rejects.toMatchObject({
+        code: "E_INTERNAL",
+      });
+      expect(resolvers.getCtx).not.toHaveBeenCalled();
+    }
   });
 });

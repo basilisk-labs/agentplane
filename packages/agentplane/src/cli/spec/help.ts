@@ -60,43 +60,55 @@ export const helpSpec: CommandSpec<HelpParsed> = {
   },
 };
 
+type HelpResult =
+  | { kind: "registry_json"; value: ReturnType<typeof renderCommandHelpJson>[] }
+  | { kind: "command_json"; value: ReturnType<typeof renderCommandHelpJson> }
+  | { kind: "text"; value: string };
+
+function resolveHelpResult(registry: HelpRegistryView, parsed: HelpParsed): HelpResult {
+  const specs = registry.list({ all: parsed.all }).map((entry) => entry.spec);
+
+  if (parsed.cmd.length === 0) {
+    return parsed.json
+      ? { kind: "registry_json", value: specs.map((spec) => renderCommandHelpJson(spec)) }
+      : { kind: "text", value: renderRegistryHelpText(specs) };
+  }
+
+  const match = registry.match(parsed.cmd, { all: parsed.all });
+  if (match?.consumed !== parsed.cmd.length) {
+    const input = parsed.cmd.join(" ");
+    const candidates = specs.map((spec) => spec.id.join(" "));
+    const suggestion = suggestOne(input, candidates);
+    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
+    throw usageError({
+      spec: helpSpec,
+      command: "help",
+      message: `Unknown command: ${input}.${suffix}`,
+    });
+  }
+
+  return parsed.json
+    ? { kind: "command_json", value: renderCommandHelpJson(match.spec) }
+    : {
+        kind: "text",
+        value: renderCommandHelpText(match.spec, {
+          compact: parsed.compact,
+          includeHeader: true,
+        }),
+      };
+}
+
+function renderHelpResult(result: HelpResult): void {
+  if (result.kind === "text") {
+    output.line(result.value);
+    return;
+  }
+  output.json(result.value);
+}
+
 export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<HelpParsed> {
   return (_ctx, p) => {
-    const specs = registry.list({ all: p.all }).map((e) => e.spec);
-
-    if (p.cmd.length === 0) {
-      if (p.json) {
-        const out = specs.map((s) => renderCommandHelpJson(s));
-        output.json(out);
-      } else {
-        output.line(renderRegistryHelpText(specs));
-      }
-      return Promise.resolve(0);
-    }
-
-    const match = registry.match(p.cmd, { all: p.all });
-    if (match?.consumed !== p.cmd.length) {
-      const input = p.cmd.join(" ");
-      const candidates = specs.map((s) => s.id.join(" "));
-      const suggestion = suggestOne(input, candidates);
-      const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-      throw usageError({
-        spec: helpSpec,
-        command: "help",
-        message: `Unknown command: ${input}.${suffix}`,
-      });
-    }
-
-    if (p.json) {
-      output.json(renderCommandHelpJson(match.spec));
-      return Promise.resolve(0);
-    }
-
-    const text = renderCommandHelpText(match.spec, {
-      compact: p.compact,
-      includeHeader: true,
-    });
-    output.line(text);
+    renderHelpResult(resolveHelpResult(registry, p));
     return Promise.resolve(0);
   };
 }

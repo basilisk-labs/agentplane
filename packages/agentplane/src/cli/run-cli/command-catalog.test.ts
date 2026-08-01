@@ -51,10 +51,7 @@ describe("command catalog graph", () => {
   it("keeps dispatch metadata separate from handler loading", () => {
     expect(findCommandEntry(["ide", "sync"])?.needs).toBe("project");
     expect(findCommandEntry(["ide", "sync"])?.requirements).toEqual(["project"]);
-    expect(findCommandEntry(["ide", "sync"])?.compatibility).toEqual({
-      mode: "legacy-command-needs",
-      needs: "project",
-    });
+    expect(findCommandEntry(["ide", "sync"])?.compatibility).toBeNull();
     expect(findCommandEntry(["ide", "sync"])?.dispatch).toEqual({
       project: true,
       loadedConfig: false,
@@ -106,6 +103,44 @@ describe("command catalog graph", () => {
       expect.arrayContaining(["task.read", "git.head", "git.diff", "route.remote", "provider"]),
     );
     expect(findCommandEntry(["pr", "check"])?.compatibility).toBeNull();
+  });
+
+  it("publishes exact project, config, runtime, and docs capability profiles", () => {
+    for (const id of [["agents"], ["platform", "sync"], ["ide", "sync"]]) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual(["project"]);
+    }
+
+    for (const id of [
+      ["config", "show"],
+      ["config", "set"],
+      ["mode", "get"],
+      ["mode", "set"],
+      ["profile", "set"],
+      ["runtime", "explain"],
+    ]) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual(["project", "config"]);
+      expect(entry?.requirements, id.join(" ")).not.toEqual(
+        expect.arrayContaining(["task.read", "git.head", "provider"]),
+      );
+    }
+
+    expect(findCommandEntry(["runtime"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["runtime"])?.compatibility).toBeNull();
+    for (const id of [
+      ["platform"],
+      ["platform", "list"],
+      ["platform", "explain"],
+      ["platform", "doctor"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
+    expect(findCommandEntry(["docs", "cli"])?.compatibility).toBeNull();
   });
 
   it("publishes exact task, lifecycle, and route capability profiles", () => {

@@ -51,6 +51,11 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
 
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
+  NO_CONTEXT_REQUIREMENTS,
+  PROJECT_CONFIG_REQUIREMENTS,
+  PROJECT_REQUIREMENTS,
+} from "./project-capability-profiles.js";
+import {
   fromCommandsInit,
   fromCommandsUpgradeCommand,
   fromCommandsReleaseReleaseCommand,
@@ -59,11 +64,15 @@ import {
   fromCommandsCoreQuickstart,
   fromCommandsCorePreflight,
   fromCommandsCodex,
-  fromCommandsRuntimeCommand,
+  loadRuntimeSpec,
+  loadRuntimeExplainSpec,
   fromCommandsInsightsCommand,
   fromCommandsIncidentsIncidentsCommand,
   fromCommandsCoreRole,
-  fromCommandsPlatform,
+  loadPlatformSpec,
+  loadPlatformListSpec,
+  loadPlatformExplainSpec,
+  loadPlatformDoctorSpec,
   fromCommandsDoctorRun,
   fromCommandsDoctorGitLocksCommand,
   fromCommandsWorkflowCommand,
@@ -151,8 +160,14 @@ export const CORE_COMMANDS = [
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  fromCommandsRuntimeCommand(runtimeSpec, "runRuntime", { needs: "none" }),
-  fromCommandsRuntimeCommand(runtimeExplainSpec, "runRuntimeExplain", { needs: "none" }),
+  declareSessionCommand(runtimeSpec, {
+    load: loadRuntimeSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(runtimeExplainSpec, {
+    load: loadRuntimeExplainSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
   fromCommandsInsightsCommand(insightsSpec, "runInsights", { needs: "none" }),
   declareCommand(insightsReportSpec, {
     load: loadInsightsReportSpec,
@@ -180,25 +195,55 @@ export const CORE_COMMANDS = [
     needs: "none",
     invocation: requireCanonicalCommandInvocation(["role"]),
   }),
-  fromCommandsPlatform(platformSpec, "runPlatform", { needs: "none" }),
-  fromCommandsPlatform(platformListSpec, "runPlatformList", { needs: "none" }),
-  declareCommand(platformSyncSpec, { load: loadPlatformSyncSpec, needs: "project" }),
-  fromCommandsPlatform(platformExplainSpec, "runPlatformExplain", { needs: "none" }),
-  fromCommandsPlatform(platformDoctorSpec, "runPlatformDoctor", { needs: "none" }),
+  declareSessionCommand(platformSpec, {
+    load: loadPlatformSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(platformListSpec, {
+    load: loadPlatformListSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(platformSyncSpec, {
+    load: loadPlatformSyncSpec,
+    requirements: PROJECT_REQUIREMENTS,
+  }),
+  declareSessionCommand(platformExplainSpec, {
+    load: loadPlatformExplainSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(platformDoctorSpec, {
+    load: loadPlatformDoctorSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   declareSessionCommand(agentsSpec, {
     load: loadAgentsSpec,
-    requirements: ["project"],
+    requirements: PROJECT_REQUIREMENTS,
   }),
   declareSessionCommand(configShowSpec, {
     load: loadConfigShowSpec,
-    requirements: ["project", "config"],
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["config", "show"]),
   }),
-  declareCommand(configSetSpec, { load: loadConfigSetSpec, needs: "project+config" }),
-  declareCommand(modeGetSpec, { load: loadModeGetSpec, needs: "project+config" }),
-  declareCommand(modeSetSpec, { load: loadModeSetSpec, needs: "project+config" }),
-  declareCommand(profileSetSpec, { load: loadProfileSetSpec, needs: "project+config" }),
-  declareCommand(ideSyncSpec, { load: loadIdeSyncSpec, needs: "project" }),
+  declareSessionCommand(configSetSpec, {
+    load: loadConfigSetSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
+  declareSessionCommand(modeGetSpec, {
+    load: loadModeGetSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
+  declareSessionCommand(modeSetSpec, {
+    load: loadModeSetSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
+  declareSessionCommand(profileSetSpec, {
+    load: loadProfileSetSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
+  declareSessionCommand(ideSyncSpec, {
+    load: loadIdeSyncSpec,
+    requirements: PROJECT_REQUIREMENTS,
+  }),
   fromCommandsDoctorRun(doctorSpec, "runDoctor", { needs: "project" }),
   fromCommandsWorkflowCommand(workflowSpec, "runWorkflow", {
     needs: "none",

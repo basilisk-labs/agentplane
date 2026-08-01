@@ -56,13 +56,13 @@ Commands:
     integrate queue doctor  Diagnose and optionally repair stale branch_pr integration queue state.
     integrate queue enqueue  Add or refresh a verified task branch in the integration queue.
     integrate queue list  List branch_pr integration queue entries.
-    integrate queue release  Release or complete a queue entry.
+    integrate queue release  Release, complete, or record a superseded queue entry.
     integrate queue run-next  Claim and run one queued integration candidate.
     pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
     pr check  Check that PR artifacts are present and valid.
     pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
     pr close-superseded  Close a superseded task PR using task artifacts.
-    pr conflict-rework  Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.
+    pr conflict-rework  Prepare a bounded conflict packet, or explicitly recover a diverged local/provider task head without semantic resolution.
     pr flow status  Show branch_pr task branch, remote PR, close-tail, and next-action state.
     pr note  Append a handoff note into PR review.md.
     pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
@@ -169,9 +169,10 @@ Commands:
     context learn  Create context processing tasks from files, changes, or completed tasks.
     context learn changes  Create a context assimilation task from changed context sources.
     context learn files  Create a context assimilation task from explicit files or paths.
-    context learn tasks  Create CURATOR extraction tasks from completed task history.
+    context learn tasks  Collect completed-task knowledge proposals; select one task to create a CURATOR work order.
     context search  Search curated local context, facts, graph, and capabilities.
     context show  Resolve a context source reference and print addressed content.
+    context supervise-task  Run resumable CLI-owned post-processing for one CURATOR context result.
     context wiki  Create, lint, explain, link, index, and report on local context wiki pages.
     context wiki explain  Print a wiki page's Agentplane context frontmatter.
     context wiki index  Update generated wiki index sections for pages and subdirectories.
@@ -180,9 +181,12 @@ Commands:
     context wiki new  Create a wiki page with Agentplane context frontmatter.
     context wiki report  Generate maximum-assimilation wiki link/orphan reports and required review report pages.
   Evaluators:
-    evaluator  List, inspect, and run evaluator quality reviews.
+    evaluator  Prepare, apply, inspect, and record evaluator quality reviews.
+    evaluator apply  Validate and record a typed EVALUATOR result against a frozen work order.
+    evaluator execute  Run one read-only EVALUATOR provider episode and apply its typed result.
     evaluator list  List evaluator prompt modules from .agentplane/evaluators.
-    evaluator run  Create and record a structured EVALUATOR quality review report.
+    evaluator prepare  Freeze bounded evidence and build a read-only EVALUATOR work order.
+    evaluator run  Compatibility facade for preparing and recording a structured quality review.
     evaluator show  Print an evaluator prompt module.
   Evidence:
     evidence  Create and verify deterministic task evidence bundle manifests.
