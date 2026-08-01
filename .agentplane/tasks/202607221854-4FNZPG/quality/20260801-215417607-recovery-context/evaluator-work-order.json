@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221854-4FNZPG-9e11e4af7e2c562f1a412c72",
+  "prepared_at": "2026-08-01T21:54:17.607Z",
+  "task": {
+    "id": "202607221854-4FNZPG",
+    "revision": 18,
+    "objective": "Validate the 0.6.24-to-0.7 migration and installed-package matrix\n\nRun the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs.",
+    "acceptance_criteria": [
+      "bun run package:install-smoke",
+      "bun run release:e2e:local",
+      "bun run release:prepublish:heavy",
+      "- In scope: automated migration fixtures/matrix, dry-run/rollback/idempotency, active-task preservation, direct/branch_pr route parity, Workflow/task/result schema versions, installed task brief/next-action/workflow doctor/runner smoke, package exports, Node engines, and exact failure diagnostics.\n- Out of scope: changing product architecture after rc; defects become bounded release blockers/follow-up tasks.",
+      "1. Build clean and 0.6.24 fixture repositories covering both workflows, schema versions, task doc versions, and active lifecycle phases.\n2. Run upgrade/migration dry-run, apply, repeat, rollback, and resume.\n3. Exercise installed tarball commands and runner/evaluator result paths.\n4. Run supported Node/package/export matrices.\n5. Record exact blockers and require fixes before release readiness.",
+      "1. Migrate every matrix fixture. Expected: no task, authority, context, Git, or workflow truth is lost; second apply is a no-op and rollback is exact where supported.\n2. Resume active direct and branch_pr tasks. Expected: route/work order/fingerprint remain coherent and no duplicate worktree/PR/task is created.\n3. Install local tarballs into clean fixtures. Expected: task brief/next-action JSON, workflow migration/doctor, runner result, and evaluator paths work outside the monorepo.\n4. Run package export and supported Node matrices. Expected: declarations match executable support.\n5. Run local release E2E, install smoke, and heavy prepublish gates."
+    ]
+  },
+  "evaluated_sha": "cec72a74caf380d60fc084dbd837ae43b1eea970",
+  "diff_base_sha": "5b0bd96dc06afe1d76cff2e0998b769e51e5eef8",
+  "blueprint_digest": "fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221854-4FNZPG/README.md",
+      "sha256": "sha256:b649fb6ca288866771b5a480109a5f1a6aebe9a656d26b4ae79e74d411f7d958",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:cf809b88c789778ac6991454d584f2e588d0c9f4660e826c4df57ac46c632f4c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:2c25b48bd2214983193cf964691ac7921d1dff37a5d922de632c65ac0f085aa0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:2b71212462e55a140950b0c9ac25f6cc360e3b3a6b0f15220690ed6f5912bb96",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
