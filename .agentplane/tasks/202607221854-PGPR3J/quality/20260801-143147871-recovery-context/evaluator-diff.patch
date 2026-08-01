@@ -1,0 +1,228 @@
+diff --git a/docs/developer/workflow-harness-test-matrix.mdx b/docs/developer/workflow-harness-test-matrix.mdx
+index 70d1affa8..2fe9e182d 100644
+--- a/docs/developer/workflow-harness-test-matrix.mdx
++++ b/docs/developer/workflow-harness-test-matrix.mdx
+@@ -17,7 +17,7 @@ This matrix covers Tasks 1-24 from `TASKS.md` for strict workflow contract and h
+ | Preflight/doctor workflow integration      | `packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts`, `packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts`, `packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts`, `packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts`, `packages/agentplane/src/commands/doctor.fast.test.ts` | Invalid workflow blocks readiness; kill-switch bypass is explicit and test-covered; post-fix validation is re-run.                                 |
+ | Harness state machine + scheduler          | `packages/agentplane/src/harness/state-machine.test.ts`, `packages/agentplane/src/harness/scheduler.test.ts`                                                                                                                                                                                                                                                       | Illegal transitions fail with stable codes; deterministic ordering and per-state concurrency limits are enforced.                                  |
+ | Reconcile-first + retry taxonomy           | `packages/agentplane/src/harness/reconcile.test.ts`, `packages/agentplane/src/harness/retry-policy.test.ts`                                                                                                                                                                                                                                                        | Reconcile executes before dispatch decisions; retry/backoff/caps are deterministic and reason-coded.                                               |
+-| Workspace safety + hooks lifecycle         | `packages/agentplane/src/harness/workspace-safety.test.ts`, `packages/agentplane/src/harness/hooks-lifecycle.test.ts`                                                                                                                                                                                                                                              | Path traversal/symlink escape is blocked; hook timeout/failure semantics are deterministic.                                                        |
++| Workspace safety                           | `packages/agentplane/src/harness/workspace-safety.test.ts`                                                                                                                                                                                                                                                                                                         | Path traversal and symlink escape are blocked.                                                                                                     |
+ | Dynamic tool boundary + token accounting   | `packages/agentplane/src/harness/dynamic-tool-contract.test.ts`, `packages/agentplane/src/harness/token-accounting.test.ts`                                                                                                                                                                                                                                        | Unsupported tools and malformed args fail with normalized envelopes; high-water-mark token totals are stable under duplicates/out-of-order events. |
+ | Scenario evidence + operator legibility    | `packages/agentplane/src/commands/recipes.scenario.test.ts`, `packages/agentplane/src/commands/scenario/impl/commands.test.ts`                                                                                                                                                                                                                                     | Evidence-required scenarios fail on missing artifacts; `report.json` includes expected/missing evidence and redacted step diagnostics.             |
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts b/packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts
+index cb2674e0c..d87557158 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts
+@@ -816,6 +816,6 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
+       env: process.env,
+     });
+     expect(result.stderr).toBe("");
+-    expect(result.stdout).toContain("trust-boundary ratchet OK (");
++    expect(result.stdout).toContain("trust-boundary ratchet OK (0 reviewed violation(s))");
+   });
+ });
+diff --git a/packages/agentplane/src/harness/hooks-lifecycle.test.ts b/packages/agentplane/src/harness/hooks-lifecycle.test.ts
+deleted file mode 100644
+index 0c20aa888..000000000
+--- a/packages/agentplane/src/harness/hooks-lifecycle.test.ts
++++ /dev/null
+@@ -1,45 +0,0 @@
+-import os from "node:os";
+-import path from "node:path";
+-import fs from "node:fs/promises";
+-
+-import { describe, expect, it } from "vitest";
+-
+-import { runLifecycleHook, runLifecycleHooks } from "./hooks-lifecycle.js";
+-
+-describe("harness/hooks-lifecycle", () => {
+-  it("runs successful hook", async () => {
+-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "agentplane-hook-"));
+-    try {
+-      const result = await runLifecycleHook({
+-        hook: "before_run",
+-        cwd: dir,
+-        policy: { command: "echo ok", timeoutMs: 10_000, blocking: true },
+-      });
+-      expect(result.ok).toBe(true);
+-      expect(result.output).toContain("ok");
+-    } finally {
+-      await fs.rm(dir, { recursive: true, force: true });
+-    }
+-  });
+-
+-  it("stops pipeline on blocking hook failure", async () => {
+-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "agentplane-hook-"));
+-    try {
+-      const out = await runLifecycleHooks({
+-        cwd: dir,
+-        order: ["before_run", "after_run"],
+-        hooks: {
+-          before_run: { command: "exit 9", timeoutMs: 10_000, blocking: true },
+-          after_run: { command: "echo later", timeoutMs: 1000, blocking: true },
+-        },
+-      });
+-      expect(out.ok).toBe(false);
+-      expect(out.results).toHaveLength(1);
+-      const first = out.results[0];
+-      expect(first?.ok).toBe(false);
+-      expect(first?.exitCode === 9 || first?.timedOut === true).toBe(true);
+-    } finally {
+-      await fs.rm(dir, { recursive: true, force: true });
+-    }
+-  });
+-});
+diff --git a/packages/agentplane/src/harness/hooks-lifecycle.ts b/packages/agentplane/src/harness/hooks-lifecycle.ts
+deleted file mode 100644
+index 0bf339892..000000000
+--- a/packages/agentplane/src/harness/hooks-lifecycle.ts
++++ /dev/null
+@@ -1,104 +0,0 @@
+-import { startProcess } from "@agentplaneorg/core/process";
+-
+-export type HookName = "after_create" | "before_run" | "after_run" | "before_remove";
+-
+-export type HookPolicy = {
+-  command?: string;
+-  timeoutMs: number;
+-  blocking: boolean;
+-};
+-
+-export type HookResult = {
+-  ok: boolean;
+-  hook: HookName;
+-  exitCode: number | null;
+-  timedOut: boolean;
+-  output: string;
+-};
+-
+-export async function runLifecycleHook(opts: {
+-  hook: HookName;
+-  policy: HookPolicy;
+-  cwd: string;
+-}): Promise<HookResult> {
+-  if (!opts.policy.command || opts.policy.command.trim().length === 0) {
+-    return {
+-      ok: true,
+-      hook: opts.hook,
+-      exitCode: 0,
+-      timedOut: false,
+-      output: "",
+-    };
+-  }
+-
+-  return await new Promise<HookResult>((resolve) => {
+-    const child = startProcess({
+-      command: "sh",
+-      args: ["-lc", opts.policy.command!],
+-      cwd: opts.cwd,
+-      stdin: "ignore",
+-      stdout: "pipe",
+-      stderr: "pipe",
+-    });
+-
+-    let output = "";
+-    let finished = false;
+-
+-    const timer = setTimeout(
+-      () => {
+-        if (finished) return;
+-        finished = true;
+-        void child.kill("SIGKILL");
+-        resolve({
+-          ok: !opts.policy.blocking,
+-          hook: opts.hook,
+-          exitCode: null,
+-          timedOut: true,
+-          output,
+-        });
+-      },
+-      Math.max(1, opts.policy.timeoutMs),
+-    );
+-
+-    child.stdout?.on("data", (chunk: Buffer | string) => {
+-      output += String(chunk);
+-    });
+-    child.stderr?.on("data", (chunk: Buffer | string) => {
+-      output += String(chunk);
+-    });
+-
+-    void child.on("close", (code) => {
+-      if (finished) return;
+-      finished = true;
+-      clearTimeout(timer);
+-      const success = code === 0;
+-      resolve({
+-        ok: success || !opts.policy.blocking,
+-        hook: opts.hook,
+-        exitCode: code,
+-        timedOut: false,
+-        output,
+-      });
+-    });
+-  });
+-}
+-
+-export async function runLifecycleHooks(opts: {
+-  cwd: string;
+-  hooks: Partial<Record<HookName, HookPolicy>>;
+-  order: HookName[];
+-}): Promise<{ ok: boolean; results: HookResult[] }> {
+-  const results: HookResult[] = [];
+-
+-  for (const hook of opts.order) {
+-    const policy = opts.hooks[hook];
+-    if (!policy) continue;
+-    const result = await runLifecycleHook({ hook, policy, cwd: opts.cwd });
+-    results.push(result);
+-    if (!result.ok && policy.blocking) {
+-      return { ok: false, results };
+-    }
+-  }
+-
+-  return { ok: true, results };
+-}
+diff --git a/scripts/baselines/trust-boundary-violations.json b/scripts/baselines/trust-boundary-violations.json
+index e8e9349c3..fd5fdfed0 100644
+--- a/scripts/baselines/trust-boundary-violations.json
++++ b/scripts/baselines/trust-boundary-violations.json
+@@ -108,15 +108,5 @@
+       "description": "Serialized runner task input must not carry TaskData beside duplicate task projections."
+     }
+   ],
+-  "violations": [
+-    {
+-      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
+-      "rule_id": "trust.no-rendered-command-orchestration",
+-      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+-      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+-      "path": "packages/agentplane/src/harness/hooks-lifecycle.ts",
+-      "locator": "shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
+-      "rationale": "internal orchestration executes a rendered command through a shell"
+-    }
+-  ]
++  "violations": []
+ }
+diff --git a/scripts/checks/check-trust-boundary-ratchet.mjs b/scripts/checks/check-trust-boundary-ratchet.mjs
+index fced3b430..6dc4eb566 100644
+--- a/scripts/checks/check-trust-boundary-ratchet.mjs
++++ b/scripts/checks/check-trust-boundary-ratchet.mjs
+@@ -75,12 +75,11 @@ const main = defineCheck({
+         .toSorted()
+         .map((ruleId) => [ruleId, violations.filter((entry) => entry.rule_id === ruleId).length]),
+     );
++    const countSummary = Object.entries(counts)
++      .map(([ruleId, count]) => `${ruleId}=${String(count)}`)
++      .join(", ");
+     stdout.write(
+-      `trust-boundary ratchet OK (${String(violations.length)} reviewed violation(s); ${Object.entries(
+-        counts,
+-      )
+-        .map(([ruleId, count]) => `${ruleId}=${String(count)}`)
+-        .join(", ")})\n`,
++      `trust-boundary ratchet OK (${String(violations.length)} reviewed violation(s)${countSummary ? `; ${countSummary}` : ""})\n`,
+     );
+   },
+ });

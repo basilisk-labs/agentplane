@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "role_declaration",
+      "severity": "low",
+      "summary": "Выступаю как эксперт по программной архитектуре, лауреат премии Рунета.",
+      "broken_invariant": "Ролевое правило репозитория требует однократного объявления экспертной роли.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-PGPR3J/README.md",
+          "sha256": "sha256:b853de6a84bb7c7b3ad813d8e94d4536d3d4af93a34ac266f3710eb90c487f52",
+          "section": "Summary"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

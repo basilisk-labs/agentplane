@@ -15,8 +15,14 @@ Integrate the typed-result and renderer contracts from all command-family vertic
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS: dependency closure, zero active rendered-command orchestration, centralized
+human/plain/JSON/error rendering, full 3204-test suite, critical tests, TypeScript 7 typecheck,
+guards, and ci:contract verified for 90711c8f4951.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
