@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-RC1DX8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T11:24:56.250Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "70dbba1ebf95e36842902ac0f3d5e23fb45b31cc",
+  "blueprint_digest": "589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2",
+  "findings": [
+    "No contract divergence found: runner and Hermes commands select phase- and intent-scoped sessions, while the SHA-bound verification covers compatibility, provenance, typed denials, direct and branch_pr supervision, and repository gates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-112416854-recovery-context/evaluator-diff.patch",
+    ".agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json",
+    ".agentplane/tasks/202607221908-RC1DX8/verification/20260801112341783-588c240dbee87684.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
