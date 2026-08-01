@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  COMMANDS,
   findCommandEntry,
   getDirectChildCommandEntries,
   getDirectChildCommandNames,
@@ -31,6 +32,14 @@ import {
   PROVIDER_READ_REQUIREMENTS,
   PROVIDER_WRITE_REQUIREMENTS,
 } from "./command-catalog/provider-ops-capability-profiles.js";
+import {
+  NO_CONTEXT_REQUIREMENTS,
+  PROJECT_REQUIREMENTS,
+} from "./command-catalog/project-capability-profiles.js";
+import {
+  TASK_LIFECYCLE_REQUIREMENTS,
+  TASK_WRITE_REQUIREMENTS,
+} from "./command-catalog/task-capability-profiles.js";
 
 describe("command catalog graph", () => {
   it("uses one graph for longest-prefix match and exact lookup", () => {
@@ -73,30 +82,59 @@ describe("command catalog graph", () => {
   });
 
   it("keeps dispatch metadata separate from handler loading", () => {
-    expect(findCommandEntry(["ide", "sync"])?.needs).toBe("project");
     expect(findCommandEntry(["ide", "sync"])?.requirements).toEqual(["project"]);
-    expect(findCommandEntry(["ide", "sync"])?.compatibility).toBeNull();
     expect(findCommandEntry(["ide", "sync"])?.dispatch).toEqual({
       project: true,
       loadedConfig: false,
       taskContext: false,
     });
-    expect(findCommandEntry(["config", "show"])?.needs).toBe("project+config");
     expect(findCommandEntry(["config", "show"])?.requirements).toEqual(["project", "config"]);
     expect(findCommandEntry(["config", "show"])?.preparationNodes).toEqual(["project", "config"]);
-    expect(findCommandEntry(["config", "show"])?.compatibility).toBeNull();
     expect(findCommandEntry(["config", "show"])?.dispatch).toEqual({
       project: true,
       loadedConfig: true,
       taskContext: false,
     });
-    expect(findCommandEntry(["task"])?.needs).toBe("none");
     expect(findCommandEntry(["task"])?.requirements).toEqual([]);
     expect(findCommandEntry(["task"])?.dispatch).toEqual({
       project: false,
       loadedConfig: false,
       taskContext: false,
     });
+  });
+
+  it("contains no coarse command-needs compatibility metadata", () => {
+    for (const entry of COMMANDS) {
+      expect("needs" in entry, entry.spec.id.join(" ")).toBe(false);
+      expect("compatibility" in entry, entry.spec.id.join(" ")).toBe(false);
+    }
+  });
+
+  it("selects only the capabilities needed by conditional catalog entries", () => {
+    const codexInstall = findCommandEntry(["codex", "plugin", "install"]);
+    expect(codexInstall?.requirements).toEqual(NO_CONTEXT_REQUIREMENTS);
+    expect(codexInstall?.selectSession?.({ scope: "user" }).requirements).toEqual(
+      NO_CONTEXT_REQUIREMENTS,
+    );
+    expect(codexInstall?.selectSession?.({ scope: "repo" }).requirements).toEqual(
+      PROJECT_REQUIREMENTS,
+    );
+
+    const normalize = findCommandEntry(["task", "normalize"]);
+    expect(normalize?.requirements).toEqual(TASK_WRITE_REQUIREMENTS);
+    expect(
+      normalize?.selectSession?.({ syncHostedMerges: false, syncBranchPrState: false })
+        .requirements,
+    ).toEqual(TASK_WRITE_REQUIREMENTS);
+    expect(
+      normalize?.selectSession?.({ syncHostedMerges: false, syncBranchPrState: true }).requirements,
+    ).toEqual(TASK_LIFECYCLE_REQUIREMENTS);
+    expect(
+      normalize?.selectSession?.({ syncHostedMerges: true, syncBranchPrState: false }).requirements,
+    ).toEqual(PROVIDER_WRITE_REQUIREMENTS);
+    expect(
+      normalize?.selectSession?.({ syncHostedMerges: true, syncBranchPrState: true }).requirements,
+    ).toEqual(PROVIDER_WRITE_REQUIREMENTS);
   });
 
   it("publishes granular requirements for the migrated pilot slices", () => {
@@ -120,19 +158,16 @@ describe("command catalog graph", () => {
     expect(routeRequirements).toEqual(
       expect.arrayContaining(["task.read", "git.head", "route.local", "route.remote", "provider"]),
     );
-    expect(findCommandEntry(["task", "next-action"])?.compatibility).toBeNull();
 
     const providerRequirements = findCommandEntry(["pr", "check"])?.requirements ?? [];
     expect(providerRequirements).toEqual(
       expect.arrayContaining(["task.read", "git.head", "git.diff", "route.remote", "provider"]),
     );
-    expect(findCommandEntry(["pr", "check"])?.compatibility).toBeNull();
   });
 
   it("publishes exact project, config, runtime, and docs capability profiles", () => {
     for (const id of [["agents"], ["platform", "sync"], ["ide", "sync"]]) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual(["project"]);
     }
 
@@ -145,7 +180,6 @@ describe("command catalog graph", () => {
       ["runtime", "explain"],
     ]) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual(["project", "config"]);
       expect(entry?.requirements, id.join(" ")).not.toEqual(
         expect.arrayContaining(["task.read", "git.head", "provider"]),
@@ -153,7 +187,6 @@ describe("command catalog graph", () => {
     }
 
     expect(findCommandEntry(["runtime"])?.requirements).toEqual([]);
-    expect(findCommandEntry(["runtime"])?.compatibility).toBeNull();
     for (const id of [
       ["platform"],
       ["platform", "list"],
@@ -161,10 +194,8 @@ describe("command catalog graph", () => {
       ["platform", "doctor"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
     expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
-    expect(findCommandEntry(["docs", "cli"])?.compatibility).toBeNull();
   });
 
   it("publishes exact context and evaluator capability profiles", () => {
@@ -181,7 +212,6 @@ describe("command catalog graph", () => {
       ["evaluator", "show"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     for (const id of [
@@ -195,7 +225,6 @@ describe("command catalog graph", () => {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
         CONTEXT_PROJECT_REQUIREMENTS,
       );
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     expect(findCommandEntry(["context", "verify-task"])?.requirements).toEqual(
@@ -216,7 +245,6 @@ describe("command catalog graph", () => {
         CONTEXT_TASK_WRITE_REQUIREMENTS,
       );
       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
@@ -264,7 +292,6 @@ describe("command catalog graph", () => {
     ];
     for (const id of taskReadCommands) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual([
         "project",
         "config",
@@ -282,7 +309,6 @@ describe("command catalog graph", () => {
     ];
     for (const id of taskWriteCommands) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual([
         "project",
         "config",
@@ -307,7 +333,6 @@ describe("command catalog graph", () => {
     ];
     for (const id of lifecycleCommands) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual(
         expect.arrayContaining([
           "task.read",
@@ -329,14 +354,12 @@ describe("command catalog graph", () => {
       ["task", "next-action"],
     ]) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual(
         expect.arrayContaining(["route.local", "route.remote", "provider"]),
       );
     }
 
     const authorityGrant = findCommandEntry(["task", "authority", "grant"]);
-    expect(authorityGrant?.compatibility).toBeNull();
     expect(authorityGrant?.requirements).toEqual(
       expect.arrayContaining([
         "task.write",
@@ -354,7 +377,6 @@ describe("command catalog graph", () => {
       ["pr", "flow", "status"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_READ_REQUIREMENTS);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     for (const id of [
@@ -372,7 +394,6 @@ describe("command catalog graph", () => {
       ["release", "tasks", "reconcile"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_WRITE_REQUIREMENTS);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     for (const id of [
@@ -417,7 +438,6 @@ describe("command catalog graph", () => {
       ["work", "resume"],
     ]) {
       const entry = findCommandEntry(id);
-      expect(entry?.compatibility, id.join(" ")).toBeNull();
       expect(entry?.requirements, id.join(" ")).toEqual(
         expect.arrayContaining(["task.write", "git.mutate", "route.local", "approvals"]),
       );
@@ -474,18 +494,15 @@ describe("command catalog graph", () => {
       ["task", "run", "logs"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskRead);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
     for (const id of [
       ["task", "run", "reconcile"],
       ["task", "run", "resolve-effect"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
     for (const id of [["task", "run", "resume-effect"]]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     const taskRun = findCommandEntry(["task", "run"]);
@@ -498,7 +515,6 @@ describe("command catalog graph", () => {
     );
     expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("provider");
     expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("git.mutate");
-    expect(taskRun?.compatibility).toBeNull();
 
     const hermesSupervise = findCommandEntry(["hermes", "supervise"]);
     expect(hermesSupervise?.requirements).toEqual(HERMES_PROJECTION_REQUIREMENTS);
@@ -536,7 +552,6 @@ describe("command catalog graph", () => {
       expect(requirements).not.toContain("provider");
       expect(requirements).not.toContain("git.mutate");
     }
-    expect(hermesSupervise?.compatibility).toBeNull();
 
     const hermesProjection = [
       ...taskRead,
@@ -553,7 +568,6 @@ describe("command catalog graph", () => {
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(hermesProjection);
       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
     expect(findCommandEntry(["task", "run", "tool"])?.requirements).toEqual(["project"]);

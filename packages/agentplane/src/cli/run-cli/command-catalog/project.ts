@@ -79,74 +79,21 @@ import { recipesListSpec } from "../../../commands/recipes/list.command.js";
 import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
 import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
-import { contextIngestSpec } from "../../../commands/context/ingest.spec.js";
-import {
-  contextCapabilityDiscoverSpec,
-  contextCapabilitySearchSpec,
-  contextCapabilitySpec,
-  contextCapabilityValidateSpec,
-  contextDashboardSpec,
-  contextDoctorSpec,
-  contextFinalizeTaskSpec,
-  contextExtractionApplySpec,
-  contextSuperviseTaskSpec,
-  contextGraphNeighborsSpec,
-  contextGraphExportSpec,
-  contextGraphShowSpec,
-  contextGraphSpec,
-  contextGraphSummarySpec,
-  contextGraphValidateSpec,
-  contextHarvestSpec,
-  contextHarvestTasksSpec,
-  contextInitSpec,
-  contextMigrateSpec,
-  contextReindexSpec,
-  contextSearchSpec,
-  contextShowSpec,
-  contextSpec,
-  contextVerifyTaskSpec,
-  contextWikiExplainSpec,
-  contextWikiIndexSpec,
-  contextWikiLinkSpec,
-  contextWikiLintSpec,
-  contextWikiNewSpec,
-  contextWikiReportSpec,
-  contextWikiSpec,
-} from "../../../commands/context/context.spec.js";
-import {
-  contextCheckSpec,
-  contextLearnChangesSpec,
-  contextLearnFilesSpec,
-  contextLearnSpec,
-  contextLearnTasksSpec,
-} from "../../../commands/context/context.learn.spec.js";
-import {
-  evaluatorApplySpec,
-  evaluatorExecuteSpec,
-  evaluatorListSpec,
-  evaluatorPrepareSpec,
-  evaluatorRunSpec,
-  evaluatorShowSpec,
-  evaluatorSpec,
-} from "../../../commands/evaluator/evaluator.command.js";
-
-import {
-  declareCommand,
-  declareConditionalSessionCommand,
-  declareSessionCommand,
-  type CommandEntry,
-} from "./kernel.js";
+import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+import { CONTEXT_COMMANDS, EVALUATOR_COMMANDS } from "./context-evaluator.js";
 import { HERMES_COMMANDS } from "./hermes.js";
 import { INTEGRATION_QUEUE_COMMANDS } from "./integration-queue.js";
 import {
-  CONTEXT_PROJECT_REQUIREMENTS,
-  CONTEXT_TASK_READ_REQUIREMENTS,
-  CONTEXT_TASK_WRITE_REQUIREMENTS,
-  EVALUATOR_EXECUTE_REQUIREMENTS,
-  EVALUATOR_PREPARE_REQUIREMENTS,
-  EVALUATOR_WRITE_REQUIREMENTS,
-} from "./context-evaluator-capability-profiles.js";
-import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
+  NO_CONTEXT_REQUIREMENTS,
+  PROJECT_CONFIG_REQUIREMENTS,
+  PROJECT_REQUIREMENTS,
+} from "./project-capability-profiles.js";
+import {
+  TASK_LIFECYCLE_REQUIREMENTS,
+  TASK_READ_REQUIREMENTS,
+  TASK_ROUTE_LOCAL_REQUIREMENTS,
+  TASK_WRITE_REQUIREMENTS,
+} from "./task-capability-profiles.js";
 import {
   LOCAL_OPS_WRITE_REQUIREMENTS,
   PROVIDER_READ_REQUIREMENTS,
@@ -212,121 +159,101 @@ import {
   loadBlueprintReportSpec,
   loadBlueprintValidateSpec,
   loadBlueprintScaffoldSpec,
-  loadEvaluatorSpec,
-  loadEvaluatorListSpec,
-  loadEvaluatorShowSpec,
-  loadEvaluatorPrepareSpec,
-  loadEvaluatorApplySpec,
-  loadEvaluatorExecuteSpec,
-  loadEvaluatorRunPrepareSpec,
-  loadEvaluatorRunWriteSpec,
   fromCommandsBlueprintsCommand,
-  loadContextIngestSpec,
-  loadContextGroupSpec,
-  loadContextInitSpec,
-  loadContextLearnGroupSpec,
-  loadContextWikiGroupSpec,
-  loadContextHarvestGroupSpec,
-  loadContextGraphGroupSpec,
-  loadContextCapabilityGroupSpec,
-  loadContextMigrateSpec,
-  loadContextCheckSpec,
-  loadContextReindexSpec,
-  loadContextSearchSpec,
-  loadContextDashboardSpec,
-  loadContextShowSpec,
-  loadContextWikiNewSpec,
-  loadContextWikiLintSpec,
-  loadContextWikiExplainSpec,
-  loadContextWikiLinkSpec,
-  loadContextWikiIndexSpec,
-  loadContextWikiReportSpec,
-  loadContextDoctorSpec,
-  loadContextFinalizeTaskSpec,
-  loadContextVerifyTaskSpec,
-  loadContextGraphSummarySpec,
-  loadContextGraphShowSpec,
-  loadContextGraphNeighborsSpec,
-  loadContextGraphValidateSpec,
-  loadContextGraphExportSpec,
-  loadContextExtractionApplySpec,
-  loadContextCapabilityValidateSpec,
-  loadContextCapabilitySearchSpec,
-  loadContextCapabilityDiscoverSpec,
-  loadContextLearnFilesSpec,
-  loadContextLearnChangesSpec,
-  loadContextLearnTasksSpec,
-  loadContextHarvestTasksSpec,
-  loadContextSuperviseTaskSpec,
 } from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
-  declareCommand(acrSpec, { load: loadAcrSpec, needs: "none" }),
-  declareCommand(acrSchemaSpec, { load: loadAcrSchemaSpec, needs: "none" }),
-  declareCommand(acrGenerateSpec, { load: loadAcrGenerateSpec }),
-  declareCommand(acrValidateSpec, { load: loadAcrValidateSpec }),
-  declareCommand(acrCheckSpec, { load: loadAcrCheckSpec }),
-  declareCommand(acrExplainSpec, { load: loadAcrExplainSpec }),
-  fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
-  declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
-  declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
+  declareCommand(acrSpec, {
+    load: loadAcrSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareCommand(acrSchemaSpec, {
+    load: loadAcrSchemaSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareCommand(acrGenerateSpec, {
+    load: loadAcrGenerateSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  declareCommand(acrValidateSpec, {
+    load: loadAcrValidateSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  declareCommand(acrCheckSpec, {
+    load: loadAcrCheckSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  declareCommand(acrExplainSpec, {
+    load: loadAcrExplainSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareCommand(evidenceBundleSpec, {
+    load: loadEvidenceBundleSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
+  declareCommand(evidenceVerifySpec, {
+    load: loadEvidenceVerifySpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+  }),
   ...HERMES_COMMANDS,
-  declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
-  declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
-  declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),
-  declareCommand(blueprintExplainSpec, { load: loadBlueprintExplainSpec }),
-  declareCommand(blueprintSnapshotSpec, { load: loadBlueprintSnapshotSpec }),
-  declareCommand(blueprintDriftSpec, { load: loadBlueprintDriftSpec }),
-  declareCommand(blueprintReportSpec, { load: loadBlueprintReportSpec, needs: "none" }),
-  declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
-  declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
-  declareSessionCommand(evaluatorSpec, {
-    load: loadEvaluatorSpec,
+  declareCommand(blueprintSpec, {
+    load: loadBlueprintSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(evaluatorListSpec, {
-    load: loadEvaluatorListSpec,
+  declareCommand(blueprintListSpec, {
+    load: loadBlueprintListSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(evaluatorShowSpec, {
-    load: loadEvaluatorShowSpec,
+  declareCommand(blueprintExamplesSpec, {
+    load: loadBlueprintExamplesSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(evaluatorPrepareSpec, {
-    load: loadEvaluatorPrepareSpec,
-    requirements: EVALUATOR_PREPARE_REQUIREMENTS,
+  declareCommand(blueprintExplainSpec, {
+    load: loadBlueprintExplainSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
   }),
-  declareSessionCommand(evaluatorApplySpec, {
-    load: loadEvaluatorApplySpec,
-    requirements: EVALUATOR_WRITE_REQUIREMENTS,
+  declareCommand(blueprintSnapshotSpec, {
+    load: loadBlueprintSnapshotSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
   }),
-  declareSessionCommand(evaluatorExecuteSpec, {
-    load: loadEvaluatorExecuteSpec,
-    requirements: EVALUATOR_EXECUTE_REQUIREMENTS,
+  declareCommand(blueprintDriftSpec, {
+    load: loadBlueprintDriftSpec,
+    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
   }),
-  declareConditionalSessionCommand(evaluatorRunSpec, {
-    default: {
-      load: loadEvaluatorRunPrepareSpec,
-      requirements: EVALUATOR_PREPARE_REQUIREMENTS,
-    },
-    selected: {
-      when: (parsed) => parsed.record,
-      load: loadEvaluatorRunWriteSpec,
-      requirements: EVALUATOR_WRITE_REQUIREMENTS,
-    },
+  declareCommand(blueprintReportSpec, {
+    load: loadBlueprintReportSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
-  fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),
+  declareCommand(blueprintScaffoldSpec, {
+    load: loadBlueprintScaffoldSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareCommand(blueprintValidateSpec, {
+    load: loadBlueprintValidateSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  ...EVALUATOR_COMMANDS,
+  fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   fromCommandsBlueprintsCommand(blueprintsCatalogRefreshSpec, "runBlueprintsCatalogRefresh", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
   }),
   fromCommandsBlueprintsCommand(blueprintsCatalogListSpec, "runBlueprintsCatalogList", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
   }),
   fromCommandsBlueprintsCommand(blueprintsCatalogInfoSpec, "runBlueprintsCatalogInfo", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
+  fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {
+    requirements: PROJECT_REQUIREMENTS,
+  }),
   declareSessionCommand(workStartSpec, {
     load: loadWorkStartSpec,
     requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
@@ -335,210 +262,108 @@ export const PROJECT_COMMANDS = [
     load: loadWorkResumeSpec,
     requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
   }),
-  fromCommandsFlowCommand(flowSpec, "runFlow", { needs: "none" }),
+  fromCommandsFlowCommand(flowSpec, "runFlow", { requirements: NO_CONTEXT_REQUIREMENTS }),
   declareSessionCommand(flowRepairSpec, {
     load: loadFlowRepairSpec,
     requirements: PROVIDER_WRITE_REQUIREMENTS,
   }),
-  fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
-  fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
-  fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),
-  fromRecipesActiveSpec(recipesActiveSpec, "runRecipesActive"),
-  fromCommandsRecipesListCommand(recipesListSpec, "runRecipesList", { needs: "none" }),
-  fromCommandsRecipesListRemoteCommand(recipesListRemoteSpec, "runRecipesListRemote", {}),
-  fromRecipesInfoSpec(recipesInfoSpec, "runRecipesInfo", { needs: "none" }),
-  fromCommandsRecipesExplainCommand(recipesExplainSpec, "runRecipesExplain", {}),
-  declareCommand(recipesExplainActiveSpec, { load: loadRecipesExplainActiveSpec }),
-  fromCommandsRecipesEnableCommand(recipesEnableSpec, "runRecipesEnable", {}),
-  fromRecipesDisableSpec(recipesDisableSpec, "runRecipesDisable"),
-  fromCommandsRecipesRemoveCommand(recipesRemoveSpec, "runRecipesRemove", {}),
-  fromRecipesUpdateSpec(recipesUpdateSpec, "runRecipesUpdate"),
-  fromCommandsRecipesDetachCommand(recipesDetachSpec, "runRecipesDetach", {}),
-  fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune"),
-  fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", { needs: "none" }),
-  declareSessionCommand(contextSpec, {
-    load: loadContextGroupSpec,
+  fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", {
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextIngestSpec, {
-    load: loadContextIngestSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-  }),
-  declareSessionCommand(contextInitSpec, {
-    load: loadContextInitSpec,
+  fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", {
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextMigrateSpec, {
-    load: loadContextMigrateSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextLearnSpec, {
-    load: loadContextLearnGroupSpec,
+  fromRecipesActiveSpec(recipesActiveSpec, "runRecipesActive", {
+    requirements: PROJECT_REQUIREMENTS,
+  }),
+  fromCommandsRecipesListCommand(recipesListSpec, "runRecipesList", {
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextLearnFilesSpec, {
-    load: loadContextLearnFilesSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
+  fromCommandsRecipesListRemoteCommand(recipesListRemoteSpec, "runRecipesListRemote", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextLearnChangesSpec, {
-    load: loadContextLearnChangesSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextLearnTasksSpec, {
-    load: loadContextLearnTasksSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextCheckSpec, {
-    load: loadContextCheckSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextReindexSpec, {
-    load: loadContextReindexSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
-  }),
-  declareSessionCommand(contextSearchSpec, {
-    load: loadContextSearchSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextDashboardSpec, {
-    load: loadContextDashboardSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextShowSpec, {
-    load: loadContextShowSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextWikiSpec, {
-    load: loadContextWikiGroupSpec,
+  fromRecipesInfoSpec(recipesInfoSpec, "runRecipesInfo", {
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextWikiNewSpec, {
-    load: loadContextWikiNewSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+  fromCommandsRecipesExplainCommand(recipesExplainSpec, "runRecipesExplain", {
+    requirements: PROJECT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextWikiLintSpec, {
-    load: loadContextWikiLintSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+  declareCommand(recipesExplainActiveSpec, {
+    load: loadRecipesExplainActiveSpec,
+    requirements: PROJECT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextWikiExplainSpec, {
-    load: loadContextWikiExplainSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+  fromCommandsRecipesEnableCommand(recipesEnableSpec, "runRecipesEnable", {
+    requirements: PROJECT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextWikiLinkSpec, {
-    load: loadContextWikiLinkSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+  fromRecipesDisableSpec(recipesDisableSpec, "runRecipesDisable", {
+    requirements: PROJECT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextWikiIndexSpec, {
-    load: loadContextWikiIndexSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+  fromCommandsRecipesRemoveCommand(recipesRemoveSpec, "runRecipesRemove", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextWikiReportSpec, {
-    load: loadContextWikiReportSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+  fromRecipesUpdateSpec(recipesUpdateSpec, "runRecipesUpdate", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextDoctorSpec, {
-    load: loadContextDoctorSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromCommandsRecipesDetachCommand(recipesDetachSpec, "runRecipesDetach", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextFinalizeTaskSpec, {
-    load: loadContextFinalizeTaskSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
+  fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune", {
+    requirements: PROJECT_REQUIREMENTS,
   }),
-  declareSessionCommand(contextSuperviseTaskSpec, {
-    load: loadContextSuperviseTaskSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(contextVerifyTaskSpec, {
-    load: loadContextVerifyTaskSpec,
-    requirements: CONTEXT_TASK_READ_REQUIREMENTS,
-    surface: "advanced",
-  }),
-  declareSessionCommand(contextHarvestSpec, {
-    load: loadContextHarvestGroupSpec,
+  fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
   }),
-  declareSessionCommand(contextHarvestTasksSpec, {
-    load: loadContextHarvestTasksSpec,
-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-  }),
-  declareSessionCommand(contextGraphSpec, {
-    load: loadContextGraphGroupSpec,
+  ...CONTEXT_COMMANDS,
+  fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
   }),
-  declareSessionCommand(contextGraphSummarySpec, {
-    load: loadContextGraphSummarySpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextGraphShowSpec, {
-    load: loadContextGraphShowSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextGraphNeighborsSpec, {
-    load: loadContextGraphNeighborsSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromCommandsBranchBaseCommand(branchBaseClearSpec, "runBranchBaseClear", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextGraphValidateSpec, {
-    load: loadContextGraphValidateSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromBranchBaseExplainSpec(branchBaseExplainSpec, "runBranchBaseExplain", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextGraphExportSpec, {
-    load: loadContextGraphExportSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromCommandsBranchStatusCommand(branchStatusSpec, "runBranchStatus", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextExtractionApplySpec, {
-    load: loadContextExtractionApplySpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  fromBranchRemoveSpec(branchRemoveSpec, "runBranchRemove", {
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  declareSessionCommand(contextCapabilitySpec, {
-    load: loadContextCapabilityGroupSpec,
+  declareCommand(backendSpec, {
+    load: loadBackendSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
   }),
-  declareSessionCommand(contextCapabilityValidateSpec, {
-    load: loadContextCapabilityValidateSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  declareCommand(backendSyncSpec, {
+    load: loadBackendSyncSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
   }),
-  declareSessionCommand(contextCapabilitySearchSpec, {
-    load: loadContextCapabilitySearchSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  declareCommand(backendInspectSpec, {
+    load: loadBackendInspectSpec,
+    requirements: TASK_READ_REQUIREMENTS,
   }),
-  declareSessionCommand(contextCapabilityDiscoverSpec, {
-    load: loadContextCapabilityDiscoverSpec,
-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
-    surface: "advanced",
+  declareCommand(backendConnectSpec, {
+    load: loadBackendConnectSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
   }),
-  fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", { needs: "none" }),
-  fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {}),
-  fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet"),
-  fromCommandsBranchBaseCommand(branchBaseClearSpec, "runBranchBaseClear", {}),
-  fromBranchBaseExplainSpec(branchBaseExplainSpec, "runBranchBaseExplain"),
-  fromCommandsBranchStatusCommand(branchStatusSpec, "runBranchStatus", {}),
-  fromBranchRemoveSpec(branchRemoveSpec, "runBranchRemove"),
-  declareCommand(backendSpec, { load: loadBackendSpec, needs: "none" }),
-  declareCommand(backendSyncSpec, { load: loadBackendSyncSpec }),
-  declareCommand(backendInspectSpec, { load: loadBackendInspectSpec }),
-  declareCommand(backendConnectSpec, { load: loadBackendConnectSpec }),
   declareCommand(backendMigrateCanonicalStateSpec, {
     load: loadBackendMigrateCanonicalStateSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(syncSpec, { load: loadSyncSpec }),
+  declareCommand(syncSpec, {
+    load: loadSyncSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+  }),
   declareSessionCommand(prSpec, {
     load: loadPrSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,

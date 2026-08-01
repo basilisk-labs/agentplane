@@ -670,11 +670,6 @@
       "file": "packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts",
       "types": [
         {
-          "name": "CommandNeeds",
-          "line": 21,
-          "col": 13
-        },
-        {
           "name": "CommandSurface",
           "line": 22,
           "col": 13
@@ -3499,9 +3494,9 @@
   "counts": {
     "files": 1,
     "exports": 178,
-    "types": 366,
+    "types": 365,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 545
+    "total": 544
   }
 }

@@ -96,12 +96,12 @@ export const runCodexPlugin: CommandHandler<GroupCommandParsed> = async (_ctx, p
 };
 
 export function makeRunCodexPluginInstallHandler(
-  deps: RunDeps,
+  deps: Pick<RunDeps, "getResolvedProject"> | null,
 ): CommandHandler<CodexPluginInstallParsed> {
   return async (ctx, p) =>
     wrapCommand({ command: "codex plugin install", rootOverride: ctx.rootOverride }, async () => {
       const resolvedProject =
-        p.scope === "repo" ? await deps.getResolvedProject("codex plugin install") : null;
+        p.scope === "repo" ? await requireRepoProjectResolver(deps)("codex plugin install") : null;
       const installRoot =
         p.scope === "repo"
           ? resolveCodexInstallRoot({
@@ -131,4 +131,11 @@ export function makeRunCodexPluginInstallHandler(
       );
       return 0;
     });
+}
+
+function requireRepoProjectResolver(
+  deps: Pick<RunDeps, "getResolvedProject"> | null,
+): RunDeps["getResolvedProject"] {
+  if (deps) return deps.getResolvedProject;
+  throw new Error("Repo-scoped Codex plugin install requires the project capability");
 }

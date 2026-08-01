@@ -49,7 +49,12 @@ import {
 import { initSpec } from "../commands/init/spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+import {
+  declareCommand,
+  declareConditionalSessionCommand,
+  declareSessionCommand,
+  type CommandEntry,
+} from "./kernel.js";
 import {
   NO_CONTEXT_REQUIREMENTS,
   PROJECT_CONFIG_REQUIREMENTS,
@@ -61,6 +66,7 @@ import {
   RELEASE_PLAN_REQUIREMENTS,
   RELEASE_PUBLISH_REQUIREMENTS,
 } from "./provider-ops-capability-profiles.js";
+import { TASK_READ_REQUIREMENTS, TASK_WRITE_REQUIREMENTS } from "./task-capability-profiles.js";
 import {
   fromCommandsInit,
   fromCommandsUpgradeCommand,
@@ -87,7 +93,8 @@ import {
   fromCommandsWorkflowRestoreCommand,
   fromCommandsWorkflowMigrateCommand,
   fromCommandsWorkflowPlaybookCommand,
-  loadCodexPluginInstallSpec,
+  loadCodexPluginInstallRepoSpec,
+  loadCodexPluginInstallUserSpec,
   loadIncidentsCollectSpec,
   loadIncidentsAdviseSpec,
   loadAgentsSpec,
@@ -108,10 +115,12 @@ import {
 
 export const CORE_COMMANDS = [
   fromCommandsInit(initSpec, "runInit", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["init"]),
   }),
-  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", { needs: "none" }),
+  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   declareSessionCommand(releaseSpec, {
     load: loadReleaseSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -143,31 +152,38 @@ export const CORE_COMMANDS = [
     helpGroup: "Framework Dev",
   }),
   fromCommandsCoreQuickstart(quickstartSpec, "runQuickstart", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["quickstart"]),
   }),
   declareCommand(demoSpec, {
     load: loadDemoSpec,
-    needs: "project+config+task",
+    requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["demo"]),
   }),
   fromCommandsCorePreflight(preflightSpec, "runPreflight", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["preflight"]),
   }),
   fromCommandsCodex(codexSpec, "runCodex", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
   fromCommandsCodex(codexPluginSpec, "runCodexPlugin", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  declareCommand(codexPluginInstallSpec, {
-    load: loadCodexPluginInstallSpec,
-    needs: "none",
+  declareConditionalSessionCommand(codexPluginInstallSpec, {
+    default: {
+      load: loadCodexPluginInstallUserSpec,
+      requirements: NO_CONTEXT_REQUIREMENTS,
+    },
+    selected: {
+      when: (parsed) => parsed.scope === "repo",
+      load: loadCodexPluginInstallRepoSpec,
+      requirements: PROJECT_REQUIREMENTS,
+    },
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
@@ -193,20 +209,28 @@ export const CORE_COMMANDS = [
   }),
   declareCommand(insightsIssueSpec, {
     load: loadInsightsIssueSpec,
-    needs: "project+config",
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
   declareCommand(intakeSpec, {
     load: loadIntakeSpec,
-    needs: "project+config",
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
   fromCommandsDoctorGitLocksCommand(doctorGitLocksSpec, "runDoctorGitLocks", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
   }),
-  fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", { needs: "none" }),
-  declareCommand(incidentsCollectSpec, { load: loadIncidentsCollectSpec }),
-  declareCommand(incidentsAdviseSpec, { load: loadIncidentsAdviseSpec }),
+  fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareCommand(incidentsCollectSpec, {
+    load: loadIncidentsCollectSpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+  }),
+  declareCommand(incidentsAdviseSpec, {
+    load: loadIncidentsAdviseSpec,
+    requirements: TASK_READ_REQUIREMENTS,
+  }),
   fromCommandsCoreRole(roleSpec, "runRole", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["role"]),
   }),
   declareSessionCommand(platformSpec, {
@@ -258,37 +282,37 @@ export const CORE_COMMANDS = [
     load: loadIdeSyncSpec,
     requirements: PROJECT_REQUIREMENTS,
   }),
-  fromCommandsDoctorRun(doctorSpec, "runDoctor", { needs: "project" }),
+  fromCommandsDoctorRun(doctorSpec, "runDoctor", { requirements: PROJECT_REQUIREMENTS }),
   fromCommandsWorkflowCommand(workflowSpec, "runWorkflow", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
   fromCommandsWorkflowBuildCommand(workflowBuildSpec, "runWorkflowBuild", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
   fromCommandsWorkflowRestoreCommand(workflowRestoreSpec, "runWorkflowRestore", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
   fromCommandsWorkflowMigrateCommand(workflowMigrateSpec, "runWorkflowMigrate", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
   }),
   fromCommandsWorkflowPlaybookCommand(workflowDebugSpec, "runWorkflowDebug", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
   fromCommandsWorkflowPlaybookCommand(workflowSyncSpec, "runWorkflowSync", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
   fromCommandsWorkflowPlaybookCommand(workflowLandSpec, "runWorkflowLand", {
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),

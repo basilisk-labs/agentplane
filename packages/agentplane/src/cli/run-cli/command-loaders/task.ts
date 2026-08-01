@@ -3,7 +3,6 @@ import {
   commandModule,
   type CommandCapability,
   type CommandSession,
-  type RunDeps,
 } from "../command-catalog/kernel.js";
 import type {
   TaskLifecycleSession,
@@ -289,13 +288,21 @@ export const loadTaskScaffoldSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/scaffold.command.js").then((m) =>
     m.makeRunTaskScaffoldHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskNormalizeSpec = (deps: RunDeps) =>
+export const loadTaskNormalizeWriteSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/normalize.command.js").then((m) =>
-    m.makeRunTaskNormalizeHandler(deps.getCtx),
+    m.makeRunTaskNormalizeHandler(getSessionContext(session, "task.write")),
   );
-export const loadTaskObsidianSpec = (deps: RunDeps) =>
+export const loadTaskNormalizeLifecycleSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/normalize.command.js").then((m) =>
+    m.makeRunTaskNormalizeHandler(getSessionContext(session, "git.mutate")),
+  );
+export const loadTaskNormalizeProviderSpec = (session: ProviderWriteSession) =>
+  import("../../../commands/task/normalize.command.js").then((m) =>
+    m.makeRunTaskNormalizeHandler(getProviderWriteContext(session)),
+  );
+export const loadTaskObsidianSpec = (session: TaskReadSession) =>
   import("../../../commands/task/obsidian.command.js").then((m) =>
-    m.makeRunTaskObsidianHandler(deps.getCtx),
+    m.makeRunTaskObsidianHandler(getSessionContext(session, "task.read")),
   );
 export const loadTaskObsidianCleanSpec = () =>
   import("../../../commands/task/obsidian.command.js").then((m) =>

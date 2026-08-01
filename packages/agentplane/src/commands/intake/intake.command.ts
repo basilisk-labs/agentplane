@@ -152,7 +152,9 @@ function renderIntakeReport(
   ];
 }
 
-export function makeRunIntakeHandler(deps: RunDeps): CommandHandler<IntakeParsed> {
+export function makeRunIntakeHandler(
+  deps: Pick<RunDeps, "getResolvedProject" | "getLoadedConfig">,
+): CommandHandler<IntakeParsed> {
   return async (ctx, parsed) =>
     wrapCommand({ command: "intake", rootOverride: ctx.rootOverride }, async () => {
       const [resolved, loaded] = await Promise.all([
