@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:755c3b59ac4ee64933d36b9382f126a601e4fda19fe2bd266b1cf97966f02bab",
+  "implementation_sha": "e2acc9d90c46ace69c61fa45916570949a86cc8a",
+  "kind": "task_verification_record",
+  "note": "Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI 5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports terminal direct verification, immutable-head diffstat, streamed bounded verification output, and runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check gate.",
+  "recorded_at": "2026-08-01T22:43:30.355Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/task-handoff.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/verify.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts`. Expected: terminal handoff, immutable diffstat, bounded streaming verification, environment isolation, visible failure tails, and direct supervisor closeout regressions pass.\n2. Run `bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts`. Expected: a terminal successful runner yields a TESTER verification episode with no executable `verify-show` transition.\n3. Run `bun run typecheck`. Expected: the typed WorkflowStep and runner-operation changes compile under the repository TypeScript contract.\n4. Run `bun run test:critical`. Expected: all critical CLI chunks pass.\n5. Run `bun run ci:contract`. Expected: contract, architecture, task-state, formatting, lint, and coverage ratchets pass.\n6. Inspect the final diff against the v0.6.25-v0.6.26 maintenance branch. Expected: only behavior missing from the refactored 0.7 architecture is ported; the stronger current cleanup implementation remains unchanged.",
+  "scope_digest": "sha256:e05f258289d36b3cbda4636c84832a48240539a8f9b58f83bb74bd01632dc40b",
+  "task_id": "202608011949-1JRXBT",
+  "verification_command": "agentplane verify 202608011949-1JRXBT --ok --by TESTER",
+  "verifier": "TESTER"
+}
