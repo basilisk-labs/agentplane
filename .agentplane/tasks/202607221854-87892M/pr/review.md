@@ -12,8 +12,8 @@ Created: 2026-08-01T15:52:24.595Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Fresh deterministic evidence: raw benchmark arrays and formulas, exact-output proof, command-level pass records, evaluated no-source-change diff, and explicit no-cache applicability are frozen for evaluator review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

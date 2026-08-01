@@ -1,0 +1,219 @@
+{
+  "artifact_root": ".agentplane/tasks/202607221854-87892M",
+  "created_at": "2026-08-01T16:46:45.965Z",
+  "files": [
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/benchmark-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:3866537d485becd1f48c4290ffdb8ac51a0dc3890c5632c25b8b8beab545c526",
+      "size_bytes": 5494
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/blueprint/resolved-snapshot.json",
+      "role": "blueprint_snapshot",
+      "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+      "size_bytes": 16653
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/pr/diffstat.txt",
+      "role": "pr_artifact",
+      "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/pr/github-body.md",
+      "role": "pr_artifact",
+      "sha256": "sha256:b29e0a7cff276aeae9c8173772266f816851772c9c8536740cc52191f8a4a389",
+      "size_bytes": 1357
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/pr/github-title.txt",
+      "role": "pr_artifact",
+      "sha256": "sha256:f290e120f445eb546b0294acc00272d0e313cc917a1a8fb3f245a641b2503b46",
+      "size_bytes": 77
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/pr/meta.json",
+      "role": "pr_artifact",
+      "sha256": "sha256:54dfb2b20b2f5259ec56eff9bc38bc5b892cae1765c9eb8f52d1bfe95261ac28",
+      "size_bytes": 651
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/pr/review.md",
+      "role": "pr_artifact",
+      "sha256": "sha256:1fd7d97fbe76c663ea0f3006462b7534251f45fe010fb73b246a4284e910101c",
+      "size_bytes": 1024
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+      "size_bytes": 16653
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "size_bytes": 52
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:a42be536b915141c551acf5ed44390e3c31e6ff4f669ff0270f1848de526bb78",
+      "size_bytes": 1321
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:78d3c83811e8559a019d878eaa94e8551c6aac335b326dcfbab2fe053ff2dbcf",
+      "size_bytes": 1933
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:c830ef59e9470e9b06632d733f517707a5979e93ac94ec8aa0533bec25722cc4",
+      "size_bytes": 794
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:4d08dfc631f15f97cf1c4ea1349da121e1f94b22a716a789fb82bf1c4704c325",
+      "size_bytes": 2288
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:24fc7cd2b00297e83911142f2134af809b13c1b8c603ecd87e9d3526ebdd543e",
+      "size_bytes": 4738
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:e3cde44048fec2761fffba76da9cb0713681ac08a5e278342b682920669d30fb",
+      "size_bytes": 3278
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
+      "size_bytes": 3478
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:97618a3641f84071d46f20a2dede36b97be4809a7ff3274fe4013d8fddee5885",
+      "size_bytes": 4858
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:a6a3092a9064d3295a8b64a5d6208475af0f52a18a98252502ebf1b21cd09811",
+      "size_bytes": 2733
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+      "size_bytes": 16653
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "size_bytes": 52
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:9d751f59dd92dcab2318220f4a98f7b5f528586e6606490ac1400259da4ef676",
+      "size_bytes": 1319
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f3ad2e8ade409577e920e926089f3c3eb67f1ac365fd8c434ee64055128f8311",
+      "size_bytes": 2257
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:cce88ca535b306945599b3c3bba7d62926e326df780c3fe9b5e96121e4aa062c",
+      "size_bytes": 726
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:a2018bba6339b406c78e1997473e8cc8d4a993815c0a0202ad3e6126247c14e5",
+      "size_bytes": 1994
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:04dd42a0e8a491effe6c67c3725e777610efb6cb0b8cbb132601df0afa6b02e3",
+      "size_bytes": 4738
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:90a212629b29af520893fa03149a02d3c1fd5fcb251fa5f9337369cd183e8896",
+      "size_bytes": 3222
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
+      "size_bytes": 3478
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f9522bc41c5cee92d30fd89bc8063375f3b8ae5e3e21aeb8e5b1226d2b1a6143",
+      "size_bytes": 4858
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:06ab74a09d2bc5d750e9cc669e7d1549011af5ba5062e5b4c7a10b18e61d3665",
+      "size_bytes": 2439
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/README.md",
+      "role": "task_readme",
+      "sha256": "sha256:1b712053942988b0f3e4682f6aeccd5cbac520429660248c20c32f5e00372371",
+      "size_bytes": 25509
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/verification/20260801164408542-d292d5bd56aa9fa4.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7b7a0972b43f9da6d20435fa0d0d6b517447d65fd9b93c947c19da574dd44868",
+      "size_bytes": 1503
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/verification/20260801164834091-fdc22adff234ad91.json",
+      "role": "task_artifact",
+      "sha256": "sha256:020fbf5ec7472379d7255a99ce43eaedd413d25473d36899b4cacf5e409c5f2f",
+      "size_bytes": 5290
+    },
+    {
+      "path": ".agentplane/tasks/202607221854-87892M/verification/deterministic-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7be8c7916ade6da1df9de2e0341eade29c271ad2a1724ef27861e943364a51c4",
+      "size_bytes": 3615
+    }
+  ],
+  "integrity": {
+    "canonicalization": "agentplane-canonical-json-v1",
+    "digest_algorithm": "sha256",
+    "manifest_digest": "sha256:d848b0ff2134717471411a7a76df3a4dbbcbc9106840f0588f2c3268b81e69a1"
+  },
+  "kind": "agentplane_evidence_bundle",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.24"
+  },
+  "schema_version": 1,
+  "task_id": "202607221854-87892M",
+  "verification": {
+    "command": "agentplane evidence verify 202607221854-87892M"
+  }
+}

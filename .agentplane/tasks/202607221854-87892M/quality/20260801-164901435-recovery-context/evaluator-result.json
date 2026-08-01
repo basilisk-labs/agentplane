@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet asserts a benchmark no-go but does not contain the raw benchmark samples, reproducible benchmark check record, or runtime evidence needed to validate the 3.94% result and exact-output claim independently.",
+      "broken_invariant": "A pass requires deterministic evidence covering the relevant positive, negative, and concurrency-sensitive paths; the performance blueprint also requires raw measurement results and a before/after comparison.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:cce88ca535b306945599b3c3bba7d62926e326df780c3fe9b5e96121e4aa062c",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:aac462d2033ee3eec1eb1453476f0388c775b61d5a4f72e87e41925fe9fc2f82",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+          "section": "No file diff was recorded for the evaluated commit."
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+          "section": "plan.requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze a reproducible benchmark check record containing all 25 baseline/candidate samples, environment and warm/cold method, formulas, threshold, and command outcome.",
+    "Freeze deterministic exact-output comparison evidence for cold and paired candidate runs.",
+    "Freeze a source-diff or repository-state check proving that no production cache implementation or cache-sensitive concurrency path remains at the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The benchmark aggregates and exact-output statement embedded in the task document accurately represent the unavailable raw runs.",
+    "A 5% end-to-end threshold was fixed before the final benchmark and is appropriate for rejecting the cache candidates.",
+    "The absence of a recorded implementation diff means all cache prototypes were removed rather than omitted from the frozen packet."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic benchmark records: raw paired samples, method and environment, exact-output comparisons, command-level results, and a reviewable repository-state or source-diff proof that no cache implementation remains. The current packet contains only summary assertions, so the no-go conclusion cannot be independently validated.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

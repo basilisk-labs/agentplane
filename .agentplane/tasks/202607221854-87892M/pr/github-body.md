@@ -15,8 +15,14 @@ RF-26b: cache only measured expensive deterministic nodes by exact StateFingerpr
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Fresh deterministic evidence: raw benchmark arrays and formulas, exact-output proof, command-level
+pass records, evaluated no-source-change diff, and explicit no-cache applicability are frozen for
+evaluator review.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
