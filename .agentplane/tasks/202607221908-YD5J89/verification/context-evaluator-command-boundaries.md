@@ -39,3 +39,18 @@ Capability resolution still materializes the shared `CommandContext` behind gran
 ## Semantic review rework
 
 The first EVALUATOR review found that `context verify-task` and `context finalize-task` were still declared project-only while loading task context internally. The rework added explicit task-read/task-write profiles, injected the session-owned context into both handlers, and added regression coverage for single context resolution.
+
+## Hosted CI rework
+
+The first hosted run exposed two sequential repository gates that the focused verification had not reached:
+
+- `scripts/README.md` was stale because the already-merged TypeScript 7 toolchain check was absent from the generated script inventory. Regenerating the inventory restored source/document parity.
+- `evaluator.command.ts` exceeded the 600-line runtime-module limit. Catalog discovery and list/show rendering were extracted into `evaluator-catalog.command.ts`; the compatibility exports remain unchanged and the original command module is now 516 lines.
+
+Rework verification:
+
+- Focused evaluator/catalog suite: 3 files, 39 tests passed.
+- `bun run typecheck`: passed with the TypeScript 7 default compiler.
+- `bun run hotspots:check`: passed.
+- `bun run docs:scripts:check`: passed.
+- `bun run ci:local:fast`: passed, including 512 unit-test files / 3589 tests and all 12 critical CLI chunks.

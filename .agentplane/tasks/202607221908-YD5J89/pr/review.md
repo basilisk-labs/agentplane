@@ -31,23 +31,25 @@ Created: 2026-08-01T00:38:26.423Z
 ```text
  .../src/cli/run-cli/command-catalog.test.ts        |  77 ++++
  .../context-evaluator-capability-profiles.ts       |  63 +++
- .../src/cli/run-cli/command-catalog/kernel.test.ts |  43 +++
- .../src/cli/run-cli/command-catalog/project.ts     | 270 ++++++++++---
- .../src/cli/run-cli/command-loaders/project.ts     | 198 +++++++++-
- .../commands/context/context-results.unit.test.ts  | 175 +++++++++
- .../src/commands/context/context-runner.ts         | 339 +++++++++-------
+ .../src/cli/run-cli/command-catalog/kernel.test.ts |  43 ++
+ .../src/cli/run-cli/command-catalog/project.ts     | 270 ++++++++++--
+ .../src/cli/run-cli/command-loaders/project.ts     | 198 ++++++++-
+ .../commands/context/context-results.unit.test.ts  | 175 ++++++++
+ .../src/commands/context/context-runner.ts         | 339 +++++++++------
  .../agentplane/src/commands/context/finalize.ts    |   5 +-
- packages/agentplane/src/commands/context/graph.ts  | 129 +++++--
- packages/agentplane/src/commands/context/search.ts | 141 ++++---
+ packages/agentplane/src/commands/context/graph.ts  | 129 ++++--
+ packages/agentplane/src/commands/context/search.ts | 141 +++---
  packages/agentplane/src/commands/context/show.ts   |  35 +-
  .../src/commands/context/wiki-reports.ts           |  28 +-
- packages/agentplane/src/commands/context/wiki.ts   |  94 +++--
+ packages/agentplane/src/commands/context/wiki.ts   |  94 ++--
+ .../evaluator/evaluator-catalog.command.ts         | 122 ++++++
  .../evaluator/evaluator-run.command.test.ts        |  79 +++-
- .../src/commands/evaluator/evaluator.command.ts    | 424 ++++++++++++++-------
+ .../src/commands/evaluator/evaluator.command.ts    | 480 +++++++++++----------
  packages/agentplane/src/context/doctor.ts          |  60 ++-
  packages/agentplane/src/context/ingest.ts          | 121 ++++--
- packages/agentplane/src/context/reindex.ts         | 101 ++---
- 18 files changed, 1831 insertions(+), 551 deletions(-)
+ packages/agentplane/src/context/reindex.ts         | 101 +++--
+ scripts/README.md                                  |  40 +-
+ 20 files changed, 1950 insertions(+), 650 deletions(-)
 ```
 
 </details>
