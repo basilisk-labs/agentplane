@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "No contract-breaking defect was identified; frozen verification covers typed in-process results, read-only mutation denial, artifact-only authority, and concurrent session isolation at the evaluated SHA."
 commit:
-  hash: "2041a94a61629fe1ecadfe9d4d887c2b8df64891"
-  message: "✅ YD5J89 task: record exact capability quality pass"
+  hash: "67bc603c94ed475f796ae5f5aeba75b7c0666c19"
+  message: "🧩 YD5J89 quality: record final evaluator pass"
 comments:
   -
     author: "CODER"
@@ -101,6 +101,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -251,8 +254,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Deterministic evaluator-boundary checks passed at c9f9423d36b7."
+  -
+    type: "status"
+    at: "2026-08-01T09:41:43.603Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T09:39:52.339Z"
+doc_updated_at: "2026-08-01T09:41:43.603Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -805,8 +815,8 @@ sections:
       Resolution: Map every backend, task, and Git member to one exact required capability and prove all four asymmetric cross-capability attempts are denied before underlying methods run.
 extensions:
   implementation_commit:
-    hash: "cef1b58cb88c6856a04ebadc824daa77ac1d93a9"
-    message: "🔐 YD5J89 task: separate backend and task authority"
+    hash: "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557"
+    message: "🧩 YD5J89 code: restore evaluator read authority"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
