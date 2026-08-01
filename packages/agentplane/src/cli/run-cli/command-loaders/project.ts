@@ -1,7 +1,9 @@
 import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
 import type {
+  HermesLocalExecutionSession,
   HermesProjectionSession,
-  HermesSupervisionSession,
+  HermesRemoteExecutionSession,
+  HermesRemotePreparationSession,
 } from "../command-catalog/runner-hermes-capability-profiles.js";
 import type {
   NoContextSession,
@@ -66,16 +68,39 @@ export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
     m.makeRunHermesEnqueueHandler((command) => session.require("context.search", command)),
   );
-export const loadHermesSuperviseSpec = (session: HermesSupervisionSession) =>
+export const loadHermesSuperviseLocalPreparationSpec = (session: HermesProjectionSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
-    m.makeRunHermesSuperviseHandler(async (command, options) => {
+    m.makeRunHermesSuperviseHandler(async (command) => {
       await session.require("route.local", command);
       await session.require("context.search", command);
-      if (options.includeRemote) await session.require("route.remote", command);
-      if (options.includeRemote || options.executeStep) {
-        return await session.require("provider", command);
-      }
       return await session.require("context.search", command);
+    }),
+  );
+export const loadHermesSuperviseRemotePreparationSpec = (session: HermesRemotePreparationSession) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesSuperviseHandler(async (command) => {
+      await session.require("route.local", command);
+      await session.require("context.search", command);
+      return await session.require("route.remote", command);
+    }),
+  );
+export const loadHermesSuperviseLocalExecutionSpec = (session: HermesLocalExecutionSession) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesSuperviseHandler(async (command) => {
+      await session.require("route.local", command);
+      await session.require("git.mutate", command);
+      await session.require("context.search", command);
+      return await session.require("provider", command);
+    }),
+  );
+export const loadHermesSuperviseRemoteExecutionSpec = (session: HermesRemoteExecutionSession) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) =>
+    m.makeRunHermesSuperviseHandler(async (command) => {
+      await session.require("route.local", command);
+      await session.require("git.mutate", command);
+      await session.require("context.search", command);
+      await session.require("route.remote", command);
+      return await session.require("provider", command);
     }),
   );
 export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>

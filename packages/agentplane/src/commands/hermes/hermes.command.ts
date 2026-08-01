@@ -124,13 +124,14 @@ export function makeRunHermesEnqueueHandler(
 export function makeRunHermesSuperviseHandler(
   getCtx: (
     command: string,
-    options: { includeRemote: boolean; executeStep: boolean },
+    options: { includeRemote: boolean; executeStep: boolean; dryRun: boolean },
   ) => Promise<CommandContext>,
 ): CommandHandler<HermesSuperviseParsed> {
   return async (ctx, parsed) => {
     const commandCtx = await getCtx("hermes supervise", {
       includeRemote: parsed.remote,
       executeStep: parsed.executeStep,
+      dryRun: parsed.dryRun,
     });
     const routeOpts = {
       ctx: commandCtx,

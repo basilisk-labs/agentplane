@@ -151,7 +151,9 @@ import {
 import {
   declareCommand,
   declareConditionalSessionCommand,
+  declareMultiSessionCommand,
   declareSessionCommand,
+  defineCommandSessionSelection,
   type CommandEntry,
 } from "./kernel.js";
 import {
@@ -163,8 +165,10 @@ import {
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./context-evaluator-capability-profiles.js";
 import {
+  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
   HERMES_PROJECTION_REQUIREMENTS,
-  HERMES_SUPERVISION_REQUIREMENTS,
+  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
+  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
 } from "./runner-hermes-capability-profiles.js";
 import {
   NO_CONTEXT_REQUIREMENTS,
@@ -234,7 +238,10 @@ import {
   loadHermesEnqueueSpec,
   loadHermesLifecycleSpec,
   loadHermesReconcileSpec,
-  loadHermesSuperviseSpec,
+  loadHermesSuperviseLocalExecutionSpec,
+  loadHermesSuperviseLocalPreparationSpec,
+  loadHermesSuperviseRemoteExecutionSpec,
+  loadHermesSuperviseRemotePreparationSpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
   loadBlueprintExamplesSpec,
@@ -292,6 +299,23 @@ import {
   loadContextSuperviseTaskSpec,
 } from "../command-loaders/project.js";
 
+const HERMES_SUPERVISE_LOCAL_PREPARATION = defineCommandSessionSelection({
+  load: loadHermesSuperviseLocalPreparationSpec,
+  requirements: HERMES_PROJECTION_REQUIREMENTS,
+});
+const HERMES_SUPERVISE_REMOTE_PREPARATION = defineCommandSessionSelection({
+  load: loadHermesSuperviseRemotePreparationSpec,
+  requirements: HERMES_REMOTE_PREPARATION_REQUIREMENTS,
+});
+const HERMES_SUPERVISE_LOCAL_EXECUTION = defineCommandSessionSelection({
+  load: loadHermesSuperviseLocalExecutionSpec,
+  requirements: HERMES_LOCAL_EXECUTION_REQUIREMENTS,
+});
+const HERMES_SUPERVISE_REMOTE_EXECUTION = defineCommandSessionSelection({
+  load: loadHermesSuperviseRemoteExecutionSpec,
+  requirements: HERMES_REMOTE_EXECUTION_REQUIREMENTS,
+});
+
 export const PROJECT_COMMANDS = [
   declareCommand(acrSpec, { load: loadAcrSpec, needs: "none" }),
   declareCommand(acrSchemaSpec, { load: loadAcrSchemaSpec, needs: "none" }),
@@ -310,9 +334,22 @@ export const PROJECT_COMMANDS = [
     load: loadHermesEnqueueSpec,
     requirements: HERMES_PROJECTION_REQUIREMENTS,
   }),
-  declareSessionCommand(hermesSuperviseSpec, {
-    load: loadHermesSuperviseSpec,
-    requirements: HERMES_SUPERVISION_REQUIREMENTS,
+  declareMultiSessionCommand(hermesSuperviseSpec, {
+    default: HERMES_SUPERVISE_LOCAL_PREPARATION,
+    variants: [
+      {
+        when: (parsed) => parsed.executeStep && !parsed.dryRun && parsed.remote,
+        selection: HERMES_SUPERVISE_REMOTE_EXECUTION,
+      },
+      {
+        when: (parsed) => parsed.executeStep && !parsed.dryRun,
+        selection: HERMES_SUPERVISE_LOCAL_EXECUTION,
+      },
+      {
+        when: (parsed) => parsed.remote,
+        selection: HERMES_SUPERVISE_REMOTE_PREPARATION,
+      },
+    ],
   }),
   declareSessionCommand(hermesReconcileSpec, {
     load: loadHermesReconcileSpec,

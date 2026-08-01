@@ -16,6 +16,10 @@ import {
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./command-catalog/context-evaluator-capability-profiles.js";
 import {
+  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
+  HERMES_PROJECTION_REQUIREMENTS,
+  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
+  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
   RUNNER_EXECUTION_REQUIREMENTS,
   RUNNER_PREPARATION_REQUIREMENTS,
 } from "./command-catalog/runner-hermes-capability-profiles.js";
@@ -365,10 +369,7 @@ describe("command catalog graph", () => {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
       expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
-    for (const id of [
-      ["task", "run", "resume-effect"],
-      ["hermes", "supervise"],
-    ]) {
+    for (const id of [["task", "run", "resume-effect"]]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
       expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
@@ -384,6 +385,44 @@ describe("command catalog graph", () => {
     expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("provider");
     expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("git.mutate");
     expect(taskRun?.compatibility).toBeNull();
+
+    const hermesSupervise = findCommandEntry(["hermes", "supervise"]);
+    expect(hermesSupervise?.requirements).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: false, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: false, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: true })
+        .requirements,
+    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: true })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_LOCAL_EXECUTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_EXECUTION_REQUIREMENTS);
+    for (const parsed of [
+      { remote: false, executeStep: false, dryRun: false },
+      { remote: true, executeStep: false, dryRun: false },
+      { remote: false, executeStep: true, dryRun: true },
+      { remote: true, executeStep: true, dryRun: true },
+    ]) {
+      const requirements = hermesSupervise?.selectSession?.(parsed).requirements;
+      expect(requirements).not.toContain("provider");
+      expect(requirements).not.toContain("git.mutate");
+    }
+    expect(hermesSupervise?.compatibility).toBeNull();
 
     const hermesProjection = [
       ...taskRead,

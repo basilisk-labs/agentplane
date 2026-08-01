@@ -6,6 +6,7 @@ import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/tes
 import { describe, expect, it, vi } from "vitest";
 
 import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
+import { hermesSuperviseSpec } from "../../commands/hermes/hermes-specs.js";
 import { taskRunSpec } from "../../commands/task/run.command.js";
 import { createEvaluatorArtifactPreparationPort } from "../../commands/evaluator/evaluator-artifact-port.js";
 import {
@@ -23,6 +24,9 @@ import {
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./command-catalog/context-evaluator-capability-profiles.js";
 import {
+  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
+  HERMES_PROJECTION_REQUIREMENTS,
+  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
   RUNNER_EXECUTION_REQUIREMENTS,
   RUNNER_PREPARATION_REQUIREMENTS,
 } from "./command-catalog/runner-hermes-capability-profiles.js";
@@ -53,6 +57,19 @@ function evaluatorRunParsed(noRecord: boolean) {
 
 function taskRunParsed(dryRun: boolean) {
   return parseCommandArgv(taskRunSpec, ["TASK-1", ...(dryRun ? ["--dry-run"] : [])]).parsed;
+}
+
+function hermesSuperviseParsed(options: {
+  remote?: boolean;
+  executeStep?: boolean;
+  dryRun?: boolean;
+}) {
+  return parseCommandArgv(hermesSuperviseSpec, [
+    "TASK-1",
+    ...(options.remote ? ["--remote"] : []),
+    ...(options.executeStep ? ["--execute-step"] : []),
+    ...(options.dryRun ? ["--dry-run"] : []),
+  ]).parsed;
 }
 
 describe("runtime registry session selection", () => {
@@ -343,6 +360,66 @@ describe("runtime registry session selection", () => {
 
     await runtime.handler({ cwd: "/repo" }, taskRunParsed(false));
     expect(observed.at(-1)).toEqual(RUNNER_EXECUTION_REQUIREMENTS);
+  });
+
+  it("constructs Hermes supervision authority from parsed remote and execution intent", async () => {
+    const catalogEntry = findCommandEntry(["hermes", "supervise"]);
+    if (!catalogEntry?.selectSession) throw new Error("hermes supervise must select a session");
+    const observed: CommandCapability[][] = [];
+    const entry: CommandEntry = {
+      ...catalogEntry,
+      selectSession: (parsed) => {
+        const selected = catalogEntry.selectSession?.(parsed);
+        if (!selected) throw new Error("hermes supervise did not select a session");
+        return {
+          ...selected,
+          load: (session) => {
+            observed.push([...session.requirements]);
+            return Promise.resolve(async () => {
+              const options = parsed as { executeStep: boolean; dryRun: boolean };
+              if (!options.executeStep || options.dryRun) {
+                const unsafe = session as CommandSession<CommandCapability>;
+                await expect(
+                  unsafe.require("provider", "hermes supervise preparation"),
+                ).rejects.toMatchObject({ code: "E_INTERNAL" });
+                await expect(
+                  unsafe.require("git.mutate", "hermes supervise preparation"),
+                ).rejects.toMatchObject({ code: "E_INTERNAL" });
+              }
+              return 0;
+            });
+          },
+        };
+      },
+    };
+    const getCtx = vi.fn(() => Promise.resolve({ marker: "command-context" } as never));
+    const registry = buildRegistry({
+      entries: [entry],
+      getCtx,
+      getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
+      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
+      getEvaluatorArtifactPort: vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never)),
+    });
+    const runtime = registry.lookup(["hermes", "supervise"]);
+    if (!runtime) throw new Error("runtime registry did not register hermes supervise");
+
+    await runtime.handler({ cwd: "/repo" }, hermesSuperviseParsed({}));
+    expect(observed.at(-1)).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+
+    await runtime.handler({ cwd: "/repo" }, hermesSuperviseParsed({ remote: true }));
+    expect(observed.at(-1)).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+
+    await runtime.handler(
+      { cwd: "/repo" },
+      hermesSuperviseParsed({ executeStep: true, dryRun: true }),
+    );
+    expect(observed.at(-1)).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+
+    await runtime.handler({ cwd: "/repo" }, hermesSuperviseParsed({ executeStep: true }));
+    expect(observed.at(-1)).toEqual(HERMES_LOCAL_EXECUTION_REQUIREMENTS);
+    expect(observed.at(-1)).toContain("provider");
+    expect(observed.at(-1)).toContain("git.mutate");
+    expect(getCtx).not.toHaveBeenCalled();
   });
 
   it("dispatches the real no-record handler with artifact-only write authority", async () => {
