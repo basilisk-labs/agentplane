@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PassThrough } from "node:stream";
 
 import {
   buildObservedGithubPrMeta,
@@ -17,19 +18,48 @@ import {
   withPrArtifactLifecycleState,
 } from "./pr-meta.js";
 
+function restoreProcessEnv(name: string, value: string | undefined): void {
+  if (value === undefined) delete process.env[name];
+  else process.env[name] = value;
+}
+
 describe("pr-meta shell invocations", () => {
   let originalComspec: string | undefined;
   let originalComSpec: string | undefined;
+  let originalCliAlias: string | undefined;
+  let originalAgentMode: string | undefined;
+  let originalRuntimeActiveBin: string | undefined;
+  let originalRuntimeMode: string | undefined;
+  let originalRuntimeHandoffFrom: string | undefined;
+  let originalRepoLocalHandoff: string | undefined;
+  let originalDevAutoBootstrapped: string | undefined;
+  let originalFrameworkBuildLockPath: string | undefined;
 
   beforeEach(() => {
     originalComspec = process.env.COMSPEC;
     originalComSpec = process.env.ComSpec;
+    originalCliAlias = process.env.AGENTPLANE_CLI_ALIAS;
+    originalAgentMode = process.env.AGENTPLANE_AGENT_MODE;
+    originalRuntimeActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+    originalRuntimeMode = process.env.AGENTPLANE_RUNTIME_MODE;
+    originalRuntimeHandoffFrom = process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+    originalRepoLocalHandoff = process.env.AGENTPLANE_REPO_LOCAL_HANDOFF;
+    originalDevAutoBootstrapped = process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED;
+    originalFrameworkBuildLockPath = process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH;
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    process.env.COMSPEC = originalComspec;
-    process.env.ComSpec = originalComSpec;
+    restoreProcessEnv("COMSPEC", originalComspec);
+    restoreProcessEnv("ComSpec", originalComSpec);
+    restoreProcessEnv("AGENTPLANE_CLI_ALIAS", originalCliAlias);
+    restoreProcessEnv("AGENTPLANE_AGENT_MODE", originalAgentMode);
+    restoreProcessEnv("AGENTPLANE_RUNTIME_ACTIVE_BIN", originalRuntimeActiveBin);
+    restoreProcessEnv("AGENTPLANE_RUNTIME_MODE", originalRuntimeMode);
+    restoreProcessEnv("AGENTPLANE_RUNTIME_HANDOFF_FROM", originalRuntimeHandoffFrom);
+    restoreProcessEnv("AGENTPLANE_REPO_LOCAL_HANDOFF", originalRepoLocalHandoff);
+    restoreProcessEnv("AGENTPLANE_DEV_AUTO_BOOTSTRAPPED", originalDevAutoBootstrapped);
+    restoreProcessEnv("AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH", originalFrameworkBuildLockPath);
   });
 
   it("parses verify commands as argv without a shell", () => {
@@ -54,23 +84,91 @@ describe("pr-meta shell invocations", () => {
     });
   });
 
-  it("uses current shell invocation for command execution", async () => {
+  it("streams verify output without a fixed child-process buffer", async () => {
     delete process.env.COMSPEC;
     delete process.env.ComSpec;
+    process.env.AGENTPLANE_CLI_ALIAS = "ap";
+    process.env.AGENTPLANE_AGENT_MODE = "1";
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = "/maintenance/agentplane.js";
+    process.env.AGENTPLANE_RUNTIME_MODE = "repo-local";
+    process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM = "/global/agentplane.js";
+    process.env.AGENTPLANE_REPO_LOCAL_HANDOFF = "1";
+    process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED = "1";
+    process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH = "/tmp/agentplane-build.lock";
     const gitProcess = await import("@agentplaneorg/core/process");
-    const execFileAsync = vi.spyOn(gitProcess, "execFileAsync").mockResolvedValue({
-      stdout: "ok",
-      stderr: "",
-    });
-
-    const result = await runShellCommand("echo hello", process.cwd());
-
-    expect(execFileAsync).toHaveBeenCalledWith(
-      "echo",
-      ["hello"],
-      expect.objectContaining({ cwd: process.cwd() }),
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    let resolveProcess: ((value: { exitCode: number }) => void) | undefined;
+    const child = Object.assign(
+      new Promise<{ exitCode: number }>((resolve) => {
+        resolveProcess = resolve;
+      }),
+      { stdout, stderr },
     );
+    const startProcess = vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
+
+    const pending = runShellCommand("node --version", process.cwd());
+    stdout.end("ok");
+    stderr.end("");
+    resolveProcess?.({ exitCode: 0 });
+    const result = await pending;
+
+    expect(startProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: "node",
+        args: ["--version"],
+        cwd: process.cwd(),
+        buffer: false,
+        stdout: "pipe",
+        stderr: "pipe",
+      }),
+    );
+    const startOptions = startProcess.mock.calls[0]?.[0];
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_CLI_ALIAS");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_AGENT_MODE");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_ACTIVE_BIN");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_MODE");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_HANDOFF_FROM");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_REPO_LOCAL_HANDOFF");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_DEV_AUTO_BOOTSTRAPPED");
+    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH");
     expect(result).toEqual({ code: 0, output: "ok" });
+  });
+
+  it("keeps only a bounded tail for release-sized verify output", async () => {
+    const gitProcess = await import("@agentplaneorg/core/process");
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    let resolveProcess: ((value: { exitCode: number }) => void) | undefined;
+    const child = Object.assign(
+      new Promise<{ exitCode: number }>((resolve) => {
+        resolveProcess = resolve;
+      }),
+      { stdout, stderr },
+    );
+    vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
+
+    const pending = runShellCommand("bun test", process.cwd());
+    stdout.end(`discard-me${"x".repeat(1024 * 1024)}tail`);
+    stderr.end("");
+    resolveProcess?.({ exitCode: 0 });
+    const result = await pending;
+
+    expect(result.code).toBe(0);
+    expect(result.output).toContain("[output truncated; showing last 1048576 bytes]");
+    expect(result.output).not.toContain("discard-me");
+    expect(result.output.endsWith("tail")).toBe(true);
+  });
+
+  it("rejects non-allowlisted verify executables before process start", async () => {
+    const gitProcess = await import("@agentplaneorg/core/process");
+    const startProcess = vi.spyOn(gitProcess, "startProcess");
+
+    await expect(runShellCommand("custom-runner --version", process.cwd())).resolves.toEqual({
+      code: 1,
+      output: "verify command executable is not allowed: custom-runner",
+    });
+    expect(startProcess).not.toHaveBeenCalled();
   });
 
   it("rejects invalid pr/meta schema shapes", () => {

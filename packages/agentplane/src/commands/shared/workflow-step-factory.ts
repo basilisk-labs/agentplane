@@ -173,7 +173,6 @@ function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runne
   if (action === "wait") {
     return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
   }
-  if (action === "none") return { mode: "verify", taskId: id };
   return { mode: "run", taskId: id };
 }
 
@@ -197,6 +196,32 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.resume.runner.run_id || state.resume.runner.status) {
+    if (state.resume.runner.next_action === "none") {
+      return agentEpisodeStep({
+        state,
+        id: "agent.direct_verification",
+        code: "review_direct_verification",
+        phase: "direct_verification_required",
+        checkout: "current_checkout",
+        role: "TESTER",
+        purpose: "verification",
+        summary:
+          `runner work is complete; execute the declared Verify Steps, then record ` +
+          `agentplane verify ${id} --ok|--rework with evidence`,
+        objective:
+          "Verify the completed direct-runner work against the declared contract and record an evidence-based verdict.",
+        mustNot: [
+          "do not rerun the completed runner episode unless verification identifies implementation rework",
+          "do not replace the verification verdict with task verify-show or another read-only diagnostic",
+          "do not close the task before TESTER records verification evidence",
+        ],
+        returnControlWhen:
+          "after TESTER records the evidence-based verification outcome; recompute task next-action before direct closeout",
+        verificationCandidate: `agentplane verify ${id} --ok|--rework --by TESTER --note "..."`,
+        evidenceMissing: ["verification_record"],
+        selectedBlocker: null,
+      });
+    }
     const code = state.resume.runner.next_action ?? "continue_direct";
     return cliOperationStep({
       state,

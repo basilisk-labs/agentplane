@@ -4,7 +4,7 @@ title: "Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -19,9 +19,11 @@ task_kind: "code"
 mutation_scope: "code"
 blueprint_request: "quality.regression"
 verify:
-  - "bun run ci:contract"
+  - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/task-handoff.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/verify.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts"
+  - "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+  - "bun run typecheck"
   - "bun run test:critical"
-  - "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts"
+  - "bun run ci:contract"
 plan_approval:
   state: "approved"
   updated_at: "2026-08-01T19:50:23.706Z"
@@ -47,7 +49,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-01T22:10:12.605Z"
+doc_updated_at: "2026-08-01T22:26:47.334Z"
 doc_updated_by: "CODER"
 description: "Port the behaviorally missing stable-line fixes for direct runner closeout, immutable integration finalization, and isolated streaming verification into the refactored 0.7 architecture; retain stronger 0.7 cleanup behavior and add regression coverage."
 sections:
@@ -65,13 +67,12 @@ sections:
     4. Add focused regression tests, then run critical and full contract gates.
     5. Add this repair task to the mandatory rc.2 dependency closure before integration.
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-    2. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.
-    3. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.
-    4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+    1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/task-handoff.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/verify.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts`. Expected: terminal handoff, immutable diffstat, bounded streaming verification, environment isolation, visible failure tails, and direct supervisor closeout regressions pass.
+    2. Run `bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts`. Expected: a terminal successful runner yields a TESTER verification episode with no executable `verify-show` transition.
+    3. Run `bun run typecheck`. Expected: the typed WorkflowStep and runner-operation changes compile under the repository TypeScript contract.
+    4. Run `bun run test:critical`. Expected: all critical CLI chunks pass.
+    5. Run `bun run ci:contract`. Expected: contract, architecture, task-state, formatting, lint, and coverage ratchets pass.
+    6. Inspect the final diff against the v0.6.25-v0.6.26 maintenance branch. Expected: only behavior missing from the refactored 0.7 architecture is ported; the stronger current cleanup implementation remains unchanged.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -106,13 +107,12 @@ Port the behaviorally missing stable-line fixes for direct runner closeout, immu
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Run `bun run ci:contract`. Expected: it succeeds and confirms the requested outcome for this task.
-4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/task-handoff.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/verify.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts`. Expected: terminal handoff, immutable diffstat, bounded streaming verification, environment isolation, visible failure tails, and direct supervisor closeout regressions pass.
+2. Run `bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts`. Expected: a terminal successful runner yields a TESTER verification episode with no executable `verify-show` transition.
+3. Run `bun run typecheck`. Expected: the typed WorkflowStep and runner-operation changes compile under the repository TypeScript contract.
+4. Run `bun run test:critical`. Expected: all critical CLI chunks pass.
+5. Run `bun run ci:contract`. Expected: contract, architecture, task-state, formatting, lint, and coverage ratchets pass.
+6. Inspect the final diff against the v0.6.25-v0.6.26 maintenance branch. Expected: only behavior missing from the refactored 0.7 architecture is ported; the stronger current cleanup implementation remains unchanged.
 
 ## Verification
 
