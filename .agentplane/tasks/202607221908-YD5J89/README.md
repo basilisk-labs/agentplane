@@ -2,10 +2,10 @@
 id: "202607221908-YD5J89"
 title: "Migrate context and evaluator command boundaries"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "No contract violations found in the frozen implementation and verification evidence."
 commit:
-  hash: "29d67bf216448202b058df3aba33508f06d58613"
-  message: "🧹 YD5J89 task: remove unused type exports"
+  hash: "2041a94a61629fe1ecadfe9d4d887c2b8df64891"
+  message: "✅ YD5J89 task: record exact capability quality pass"
 comments:
   -
     author: "CODER"
@@ -98,6 +98,9 @@ comments:
   -
     author: "CODER"
     body: "Hosted static rework committed: removed four newly unused exported type declarations; runtime behavior is unchanged and the local knip baseline now passes."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -229,8 +232,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
+  -
+    type: "status"
+    at: "2026-08-01T09:20:27.018Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T09:18:13.204Z"
+doc_updated_at: "2026-08-01T09:20:27.019Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -696,8 +706,8 @@ sections:
       Resolution: Map every backend, task, and Git member to one exact required capability and prove all four asymmetric cross-capability attempts are denied before underlying methods run.
 extensions:
   implementation_commit:
-    hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
-    message: "🔐 YD5J89 task: confine evaluator artifact preparation"
+    hash: "cef1b58cb88c6856a04ebadc824daa77ac1d93a9"
+    message: "🔐 YD5J89 task: separate backend and task authority"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
