@@ -4,7 +4,7 @@ title: "Refresh generated script inventory after TypeScript 7 adoption"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -43,7 +43,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-01T07:59:55.958Z"
+doc_updated_at: "2026-08-01T08:01:21.371Z"
 doc_updated_by: "DOCS"
 description: "Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/README.md from package.json without changing scripts, runtime behavior, or the adopted TS7/TS6 toolchain contract."
 sections:
@@ -70,7 +70,10 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Hosted Core CI for PR #4719 failed in verify-routed because scripts/README.md did not include the TypeScript toolchain check added by completed task DRYTNK.
+      Impact: Every evaluator-path PR fails the targeted fast route before its scoped tests, blocking WWQP4B integration and all downstream 0.7 work.
+      Resolution: Regenerate the canonical script inventory in this dedicated post-merge task and keep the diff limited to generated output.
 extensions:
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
@@ -113,3 +116,7 @@ Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/R
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Hosted Core CI for PR #4719 failed in verify-routed because scripts/README.md did not include the TypeScript toolchain check added by completed task DRYTNK.
+  Impact: Every evaluator-path PR fails the targeted fast route before its scoped tests, blocking WWQP4B integration and all downstream 0.7 work.
+  Resolution: Regenerate the canonical script inventory in this dedicated post-merge task and keep the diff limited to generated output.
