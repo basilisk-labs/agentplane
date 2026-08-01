@@ -18,7 +18,8 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
 
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
-import { OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
+import { NO_CONTEXT_REQUIREMENTS, OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
+import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
 import {
   fromCommandsHooksHooksCommand,
   fromCommandsHooksInstallCommand,
@@ -33,7 +34,7 @@ import {
   loadReadySpec,
   loadDocsCliSpec,
   fromHooksUninstallSpec,
-  fromCleanupSpec,
+  loadCleanupSpec,
   loadCleanupMergedSpec,
   fromGuardSuggestAllowSpec,
   loadGuardCommitSpec,
@@ -76,8 +77,14 @@ export const LIFECYCLE_COMMANDS = [
   fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
   fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),
   fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {}),
-  fromCleanupSpec(cleanupSpec, "runCleanup", { needs: "none" }),
-  declareCommand(cleanupMergedSpec, { load: loadCleanupMergedSpec }),
+  declareSessionCommand(cleanupSpec, {
+    load: loadCleanupSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(cleanupMergedSpec, {
+    load: loadCleanupMergedSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
   fromCommandsGuardGuardCommand(guardSpec, "runGuard", { needs: "none" }),
   fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {}),
   fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow"),

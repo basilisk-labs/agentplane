@@ -107,23 +107,14 @@ export {
   integrateQueueSpec,
 } from "./integrate-queue.spec.js";
 
-async function runIntegrateQueueRootGroup(
-  _ctx: CommandCtx,
-  p: GroupCommandParsed,
-): Promise<number> {
+export const runIntegrateQueueGroup: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: integrateQueueSpec,
     cmd: p.cmd,
     subcommands: await loadDirectSubcommandNames(["integrate", "queue"]),
     command: "integrate queue",
   });
-}
-
-export function makeRunIntegrateQueueHandler(
-  _getCtx: (cmd: string) => Promise<CommandContext>,
-): CommandHandler<GroupCommandParsed> {
-  return runIntegrateQueueRootGroup;
-}
+};
 
 export function makeRunIntegrateQueueEnqueueHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,

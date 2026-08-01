@@ -239,6 +239,112 @@ describe("command catalog graph", () => {
     );
   });
 
+  it("publishes authority-aware provider, integration, release, and ops profiles", () => {
+    const providerRead = [
+      "project",
+      "config",
+      "backend.read",
+      "task.read",
+      "git.head",
+      "git.diff",
+      "route.local",
+      "policy",
+      "approvals",
+      "route.remote",
+      "provider",
+    ];
+    const providerWrite = [
+      "project",
+      "config",
+      "backend.read",
+      "task.read",
+      "backend.write",
+      "task.write",
+      "policy",
+      "approvals",
+      "git.head",
+      "git.diff",
+      "git.mutate",
+      "route.local",
+      "route.remote",
+      "provider",
+    ];
+
+    for (const id of [
+      ["pr", "check"],
+      ["pr", "flow", "status"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(providerRead);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    for (const id of [
+      ["pr", "open"],
+      ["pr", "update"],
+      ["pr", "conflict-rework"],
+      ["pr", "close"],
+      ["pr", "close-superseded"],
+      ["pr", "note"],
+      ["flow", "repair"],
+      ["integrate"],
+      ["integrate", "queue", "enqueue"],
+      ["integrate", "queue", "list"],
+      ["integrate", "queue", "doctor"],
+      ["integrate", "queue", "claim"],
+      ["integrate", "queue", "release"],
+      ["integrate", "queue", "adopt-legacy-protected-conflict"],
+      ["integrate", "queue", "run-next"],
+      ["task", "hosted-close"],
+      ["task", "hosted-close-pr"],
+      ["cleanup", "merged"],
+      ["release", "tasks", "reconcile"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(providerWrite);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    for (const id of [
+      ["work", "start"],
+      ["work", "resume"],
+    ]) {
+      const entry = findCommandEntry(id);
+      expect(entry?.compatibility, id.join(" ")).toBeNull();
+      expect(entry?.requirements, id.join(" ")).toEqual(
+        expect.arrayContaining(["task.write", "git.mutate", "route.local", "approvals"]),
+      );
+      expect(entry?.requirements, id.join(" ")).not.toContain("provider");
+    }
+
+    expect(findCommandEntry(["release", "plan"])?.requirements).toEqual([
+      "project",
+      "config",
+      "git.head",
+      "git.diff",
+      "policy",
+      "approvals",
+    ]);
+    for (const id of [
+      ["release", "apply"],
+      ["release", "candidate"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([
+        "project",
+        "config",
+        "git.head",
+        "git.diff",
+        "policy",
+        "approvals",
+        "git.mutate",
+        "provider",
+      ]);
+    }
+
+    expect(findCommandEntry(["pr"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["integrate", "queue"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["release"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["cleanup"])?.requirements).toEqual([]);
+  });
+
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {
     expect(findCommandEntry(["release"])?.surface).toBe("framework");
     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");

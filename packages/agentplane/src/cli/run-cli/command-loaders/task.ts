@@ -13,6 +13,7 @@ import type {
   TaskRouteSession,
   TaskWriteSession,
 } from "../command-catalog/task-capability-profiles.js";
+import type { ProviderWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
 
 function getSessionContext<
   TCapabilities extends CommandCapability,
@@ -78,13 +79,20 @@ export const fromCommandsTaskResumeContextCommand = commandModule(
 export const fromTaskHandoffShowSpec = commandModule(
   () => import("../../../commands/task/handoff-show.command.js"),
 );
-export const loadTaskHostedCloseSpec = (deps: RunDeps) =>
+const getProviderWriteContext = (session: ProviderWriteSession) => async (command: string) => {
+  await session.require("git.mutate", command);
+  await session.require("route.remote", command);
+  await session.require("approvals", command);
+  return await session.require("provider", command);
+};
+
+export const loadTaskHostedCloseSpec = (session: ProviderWriteSession) =>
   import("../../../commands/task/hosted-close.command.js").then((m) =>
-    m.makeRunTaskHostedCloseHandler(deps.getCtx),
+    m.makeRunTaskHostedCloseHandler(getProviderWriteContext(session)),
   );
-export const loadTaskHostedClosePrSpec = (deps: RunDeps) =>
+export const loadTaskHostedClosePrSpec = (session: ProviderWriteSession) =>
   import("../../../commands/task/hosted-close-pr.command.js").then((m) =>
-    m.makeRunTaskHostedClosePrHandler(deps.getCtx),
+    m.makeRunTaskHostedClosePrHandler(getProviderWriteContext(session)),
   );
 export const loadTaskActiveSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/task/active.command.js").then((m) =>

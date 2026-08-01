@@ -82,6 +82,7 @@ import {
   TASK_ROUTE_REQUIREMENTS,
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
+import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
 import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
@@ -167,13 +168,15 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskHostedCloseSpec, {
+  declareSessionCommand(taskHostedCloseSpec, {
     load: loadTaskHostedCloseSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskHostedClosePrSpec, {
+  declareSessionCommand(taskHostedClosePrSpec, {
     load: loadTaskHostedClosePrSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),

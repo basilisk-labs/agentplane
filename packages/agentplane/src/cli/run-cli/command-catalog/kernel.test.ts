@@ -11,6 +11,10 @@ import {
   PROJECT_CONFIG_REQUIREMENTS,
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
+import {
+  LOCAL_OPS_WRITE_REQUIREMENTS,
+  PROVIDER_READ_REQUIREMENTS,
+} from "./provider-ops-capability-profiles.js";
 
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
@@ -185,5 +189,34 @@ describe("CommandSession", () => {
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();
     }
+  });
+
+  it("denies undeclared provider mutation and local-ops network access", async () => {
+    const providerReadResolvers = makeResolvers();
+    const providerReadSession = createCommandSession({
+      command: "pr check",
+      requirements: PROVIDER_READ_REQUIREMENTS,
+      resolvers: providerReadResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(providerReadSession.require("git.mutate", "pr check")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(providerReadResolvers.getCtx).not.toHaveBeenCalled();
+
+    const localOpsResolvers = makeResolvers();
+    const localOpsSession = createCommandSession({
+      command: "work start",
+      requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+      resolvers: localOpsResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(localOpsSession.require("provider", "work start")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    await expect(localOpsSession.require("route.remote", "work start")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(localOpsResolvers.getCtx).not.toHaveBeenCalled();
   });
 });

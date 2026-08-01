@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com",
   "created_at": "2026-08-01T03:23:48.490Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:bdb1c27c86510a3f43cba695d73dbb130c6c8aa209bf4634461533a9abecc85d",
   "last_verified_at": null,
+  "pr_number": 4718,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4718",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221908-7WV0A7",
-  "updated_at": "2026-08-01T03:23:48.490Z",
+  "updated_at": "2026-08-01T03:24:25.275Z",
   "verify": {
     "status": "skipped"
   }

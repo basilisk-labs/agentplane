@@ -56,11 +56,17 @@ import {
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
 import {
+  PROVIDER_WRITE_REQUIREMENTS,
+  RELEASE_PLAN_REQUIREMENTS,
+  RELEASE_PUBLISH_REQUIREMENTS,
+} from "./provider-ops-capability-profiles.js";
+import {
   fromCommandsInit,
   fromCommandsUpgradeCommand,
-  fromCommandsReleaseReleaseCommand,
-  fromCommandsReleasePlanCommand,
-  fromCommandsReleaseApplyCommand,
+  loadReleaseSpec,
+  loadReleasePlanSpec,
+  loadReleaseApplySpec,
+  loadReleaseCandidateSpec,
   fromCommandsCoreQuickstart,
   fromCommandsCorePreflight,
   fromCommandsCodex,
@@ -105,29 +111,33 @@ export const CORE_COMMANDS = [
     invocation: requireCanonicalCommandInvocation(["init"]),
   }),
   fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", { needs: "none" }),
-  fromCommandsReleaseReleaseCommand(releaseSpec, "runRelease", {
-    needs: "none",
+  declareSessionCommand(releaseSpec, {
+    load: loadReleaseSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  fromCommandsReleasePlanCommand(releasePlanSpec, "runReleasePlan", {
-    needs: "project",
+  declareSessionCommand(releasePlanSpec, {
+    load: loadReleasePlanSpec,
+    requirements: RELEASE_PLAN_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  fromCommandsReleaseApplyCommand(releaseApplySpec, "runReleaseApply", {
-    needs: "project",
+  declareSessionCommand(releaseApplySpec, {
+    load: loadReleaseApplySpec,
+    requirements: RELEASE_PUBLISH_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  fromCommandsReleaseApplyCommand(releaseCandidateSpec, "runReleaseCandidate", {
-    needs: "project",
+  declareSessionCommand(releaseCandidateSpec, {
+    load: loadReleaseCandidateSpec,
+    requirements: RELEASE_PUBLISH_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  declareCommand(releaseTasksReconcileSpec, {
+  declareSessionCommand(releaseTasksReconcileSpec, {
     load: loadReleaseTasksReconcileSpec,
-    needs: "project+config+task",
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),

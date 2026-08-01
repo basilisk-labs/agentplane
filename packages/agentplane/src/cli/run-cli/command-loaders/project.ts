@@ -1,17 +1,34 @@
-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import type { CommandContext } from "../../../commands/shared/task-backend.js";
+import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
+import type {
+  LocalOpsWriteSession,
+  ProviderReadSession,
+  ProviderWriteSession,
+} from "../command-catalog/provider-ops-capability-profiles.js";
 
-type PrCheckSession = CommandSession<
-  | "project"
-  | "config"
-  | "backend.read"
-  | "task.read"
-  | "git.head"
-  | "git.diff"
-  | "route.remote"
-  | "policy"
-  | "approvals"
-  | "provider"
->;
+async function getProviderReadContext(
+  session: ProviderReadSession,
+  command: string,
+): Promise<CommandContext> {
+  await session.require("route.remote", command);
+  await session.require("approvals", command);
+  return await session.require("provider", command);
+}
+
+async function getProviderWriteContext(
+  session: ProviderWriteSession,
+  command: string,
+): Promise<CommandContext> {
+  await session.require("git.mutate", command);
+  await session.require("route.remote", command);
+  await session.require("approvals", command);
+  return await session.require("provider", command);
+}
+
+function getLocalOpsWriteContext(session: LocalOpsWriteSession) {
+  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
+}
 
 export const loadAcrSpec = (deps: RunDeps) =>
   import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
@@ -137,13 +154,13 @@ export const fromCommandsBranchBaseCommand = commandModule(
 export const fromCommandsBranchStatusCommand = commandModule(
   () => import("../../../commands/branch/status.command.js"),
 );
-export const loadWorkStartSpec = (deps: RunDeps) =>
+export const loadWorkStartSpec = (session: LocalOpsWriteSession) =>
   import("../../../commands/branch/work-start.command.js").then((m) =>
-    m.makeRunWorkStartHandler(deps.getCtx),
+    m.makeRunWorkStartHandler(getLocalOpsWriteContext(session)),
   );
-export const loadWorkResumeSpec = (deps: RunDeps) =>
+export const loadWorkResumeSpec = (session: LocalOpsWriteSession) =>
   import("../../../commands/branch/work-resume.command.js").then((m) =>
-    m.makeRunWorkResumeHandler(deps.getCtx),
+    m.makeRunWorkResumeHandler(getLocalOpsWriteContext(session)),
   );
 export const fromRecipesActiveSpec = commandModule(
   () => import("../../../commands/recipes/active.command.js"),
@@ -202,75 +219,80 @@ export const loadContextIngestSpec = (deps: RunDeps) =>
   import("../../../commands/context/ingest.command.js").then((m) =>
     m.makeRunContextIngestHandler(deps.getCtx),
   );
-export const loadPrSpec = (deps: RunDeps) =>
-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx));
-export const loadPrOpenSpec = (deps: RunDeps) =>
-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrOpenHandler(deps.getCtx));
-export const loadPrUpdateSpec = (deps: RunDeps) =>
-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrUpdateHandler(deps.getCtx));
-export const loadPrCheckSpec = (session: PrCheckSession) =>
+export const loadPrSpec = (_session: NoContextSession) =>
+  import("../../../commands/pr/pr.command.js").then((m) => m.runPrGroup);
+export const loadPrOpenSpec = (session: ProviderWriteSession) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
-    m.makeRunPrCheckHandler(async (command) => {
-      await session.require("route.remote", command);
-      return await session.require("provider", command);
-    }),
+    m.makeRunPrOpenHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadPrConflictReworkSpec = (deps: RunDeps) =>
+export const loadPrUpdateSpec = (session: ProviderWriteSession) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
-    m.makeRunPrConflictReworkHandler(deps.getCtx),
+    m.makeRunPrUpdateHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadPrFlowStatusSpec = (deps: RunDeps) =>
+export const loadPrCheckSpec = (session: ProviderReadSession) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
-    m.makeRunPrFlowStatusHandler(deps.getCtx),
+    m.makeRunPrCheckHandler((command) => getProviderReadContext(session, command)),
   );
-export const loadPrCloseSpec = (deps: RunDeps) =>
-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCloseHandler(deps.getCtx));
-export const loadPrCloseSupersededSpec = (deps: RunDeps) =>
+export const loadPrConflictReworkSpec = (session: ProviderWriteSession) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
-    m.makeRunPrCloseSupersededHandler(deps.getCtx),
+    m.makeRunPrConflictReworkHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadPrNoteSpec = (deps: RunDeps) =>
-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx));
+export const loadPrFlowStatusSpec = (session: ProviderReadSession) =>
+  import("../../../commands/pr/pr.command.js").then((m) =>
+    m.makeRunPrFlowStatusHandler((command) => getProviderReadContext(session, command)),
+  );
+export const loadPrCloseSpec = (session: ProviderWriteSession) =>
+  import("../../../commands/pr/pr.command.js").then((m) =>
+    m.makeRunPrCloseHandler((command) => getProviderWriteContext(session, command)),
+  );
+export const loadPrCloseSupersededSpec = (session: ProviderWriteSession) =>
+  import("../../../commands/pr/pr.command.js").then((m) =>
+    m.makeRunPrCloseSupersededHandler((command) => getProviderWriteContext(session, command)),
+  );
+export const loadPrNoteSpec = (session: ProviderWriteSession) =>
+  import("../../../commands/pr/pr.command.js").then((m) =>
+    m.makeRunPrNoteHandler((command) => getProviderWriteContext(session, command)),
+  );
 export const fromCommandsFlowCommand = commandModule(
   () => import("../../../commands/flow/flow.command.js"),
 );
-export const loadFlowRepairSpec = (deps: RunDeps) =>
+export const loadFlowRepairSpec = (session: ProviderWriteSession) =>
   import("../../../commands/flow/repair.command.js").then((m) =>
-    m.makeRunFlowRepairHandler(deps.getCtx),
+    m.makeRunFlowRepairHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateSpec = (deps: RunDeps) =>
+export const loadIntegrateSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate.command.js").then((m) =>
-    m.makeRunIntegrateHandler(deps.getCtx),
+    m.makeRunIntegrateHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateQueueSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueSpec = (_session: NoContextSession) =>
+  import("../../../commands/integrate-queue.command.js").then((m) => m.runIntegrateQueueGroup);
+export const loadIntegrateQueueEnqueueSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueHandler(deps.getCtx),
+    m.makeRunIntegrateQueueEnqueueHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateQueueEnqueueSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueListSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueEnqueueHandler(deps.getCtx),
+    m.makeRunIntegrateQueueListHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateQueueListSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueDoctorSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueListHandler(deps.getCtx),
+    m.makeRunIntegrateQueueDoctorHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateQueueDoctorSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueClaimSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueDoctorHandler(deps.getCtx),
+    m.makeRunIntegrateQueueClaimHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateQueueClaimSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueReleaseSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueClaimHandler(deps.getCtx),
+    m.makeRunIntegrateQueueReleaseHandler((command) => getProviderWriteContext(session, command)),
   );
-export const loadIntegrateQueueReleaseSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueReleaseHandler(deps.getCtx),
+    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler((command) =>
+      getProviderWriteContext(session, command),
+    ),
   );
-export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (deps: RunDeps) =>
+export const loadIntegrateQueueRunNextSpec = (session: ProviderWriteSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(deps.getCtx),
-  );
-export const loadIntegrateQueueRunNextSpec = (deps: RunDeps) =>
-  import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueRunNextHandler(deps.getCtx),
+    m.makeRunIntegrateQueueRunNextHandler((command) => getProviderWriteContext(session, command)),
   );
