@@ -1,0 +1,34 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run guards:check",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T11:00:09.576Z",
+    "updated_by": "TESTER",
+    "note": "PASS evidence refresh for implementation d227dc0acf705edf48b5f165b92b8a368496b5d7; deterministic SHA-bound records cover the runner and Hermes matrix plus all declared repository gates."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221908-RC1DX8/verification/20260801110009576-ddea32e8d0d9c0fe.json",
+      "sha256": "sha256:d65c488151105e9f5c47f641dde5845080639d111c83985ba428632a2cfc1237"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/verification/202607221908-RC1DX8-d227dc0-checks.json",
+      "sha256": "sha256:8762071bf994bf0845ad59647c2d0adaed6c7d7d887dfef72cd13b692b20aac5"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -5,6 +5,7 @@ import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { CliError } from "../../shared/errors.js";
 import { applyEvaluatorSgrReview } from "../evaluator/evaluator-review-apply.js";
 import { executeEvaluatorSupervisorEpisode } from "../evaluator/evaluator-execute-supervisor.js";
+import { createEvaluatorArtifactPreparationPort } from "../evaluator/evaluator-artifact-port.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 
@@ -42,6 +43,7 @@ export async function runAndApplyDirectTaskEvaluator(opts: {
     evaluator,
     task_id: opts.task_id,
     replacement: false,
+    artifacts: createEvaluatorArtifactPreparationPort(opts.command),
   });
   const currentTask = await loadTaskFromContext({ ctx: opts.command, taskId: opts.task_id });
   const resultRef = path.relative(opts.command.resolvedProject.gitRoot, execution.result_path);

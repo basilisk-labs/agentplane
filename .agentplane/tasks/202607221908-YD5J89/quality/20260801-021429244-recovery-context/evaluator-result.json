@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "`evaluator run --no-record` is assigned a read-only session but still writes a new evaluator evidence packet directly to the task quality directory.",
+      "broken_invariant": "A read-only evaluator invocation must deny mutation. The conditional catalog selection removes write capabilities, but `runEvaluatorCommand` still calls `prepareEvaluatorReview`, which creates the review directory and writes diff, observed-checks, blueprint, work-order, and prompt artifacts through direct filesystem operations. The session capability denial therefore does not constrain the actual mutation path.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-021429244-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8acd4487a596ef305c908d9e5cc4ddf38a650f7bd0f0c6ae4b3dba1c24353bb2",
+          "line": 1779,
+          "lines": "The catalog assigns `record=false` to `EVALUATOR_READ_REQUIREMENTS`, while the evaluator command diff shows the no-record branch is reached only after `prepareEvaluatorReview` returns paths for newly generated artifacts.",
+          "section": "Evaluator run authority rework and evaluator command implementation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:e22223fe72b38c2ca725e8266f720b8cb130862662d578c003b5c355c7280577",
+          "line": 219,
+          "lines": "Verify Step 3 requires attempted mutation from a read-only evaluator to produce a typed denial.",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run the real `evaluator run --no-record` handler against a repository snapshot and assert that no task-quality files or directories are created or changed, rather than only asserting that undeclared capabilities cannot be resolved from the session.",
+    "Exercise evaluator preparation through an explicitly write-authorized capability or prove that preparation is side-effect-free; assert a typed denial when the same write path is invoked through `EVALUATOR_READ_REQUIREMENTS`."
+  ],
+  "hidden_assumptions": [
+    "Declaring a read-only `CommandSession` is assumed to make the handler read-only even though the resolved shared `CommandContext` and evaluator preparation use case retain unrestricted direct filesystem access.",
+    "The implementation treats `--no-record` as excluding quality-state recording but implicitly permits evidence-artifact writes, while the approved verification contract describes read-only evaluator mutation as denied."
+  ],
+  "recovery_context": "Route evaluator evidence-packet creation through an explicitly write-authorized capability, or redefine the no-record path so it performs no filesystem writes. Re-run the real registry-dispatched no-record command with before/after filesystem assertions and typed-denial coverage; session.require-only tests are insufficient."
+}

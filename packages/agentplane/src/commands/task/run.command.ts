@@ -296,9 +296,19 @@ function reportTaskSupervision(opts: {
   });
 }
 
-export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+export type TaskRunContextDependencies = {
+  getPreparationContext?: (
+    command: string,
+    options: { includeRemote: boolean },
+  ) => Promise<CommandContext>;
+  getExecutionContext?: (
+    command: string,
+    options: { includeRemote: boolean },
+  ) => Promise<CommandContext>;
+};
+
+export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
   return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
-    const commandCtx = await getCtx("task run");
     const output = createCliEmitter();
     const dangerAuthority = parsed.allowDangerFullAccess
       ? {
@@ -308,6 +318,12 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         }
       : null;
     if (parsed.dryRun) {
+      if (!deps.getPreparationContext) {
+        throw new Error("task run dry-run was loaded without preparation capabilities");
+      }
+      const commandCtx = await deps.getPreparationContext("task run", {
+        includeRemote: parsed.remote,
+      });
       const prepared = await prepareTaskRunnerExecution({
         ctx: commandCtx,
         cwd: ctx.cwd,
@@ -330,6 +346,13 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       }
       return 0;
     }
+
+    if (!deps.getExecutionContext) {
+      throw new Error("task run execution was loaded without execution capabilities");
+    }
+    const commandCtx = await deps.getExecutionContext("task run", {
+      includeRemote: parsed.remote,
+    });
 
     if (commandCtx.config?.workflow_mode === "direct") {
       const supervised = await superviseDirectTaskRun({

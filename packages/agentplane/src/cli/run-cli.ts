@@ -5,6 +5,7 @@ import { exitCodeForError } from "./exit-codes.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError } from "../shared/errors.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
+import type { EvaluatorArtifactPreparationPort } from "../commands/evaluator/evaluator-artifact-port.js";
 import { resolveCommandContext } from "../runtime/execution-context.js";
 import { getVersion } from "../meta/version.js";
 import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
@@ -188,6 +189,17 @@ export async function runCli(argv: string[]): Promise<number> {
       return await getCtx(commandForErrorContext);
     };
 
+    let evaluatorArtifactPortPromise: Promise<EvaluatorArtifactPreparationPort> | null = null;
+    const getEvaluatorArtifactPort = async (commandForErrorContext: string) => {
+      evaluatorArtifactPortPromise ??= (async () => {
+        const command = await getCtx(commandForErrorContext);
+        const { createEvaluatorArtifactPreparationPort } =
+          await import("../commands/evaluator/evaluator-artifact-port.js");
+        return createEvaluatorArtifactPreparationPort(command);
+      })();
+      return await evaluatorArtifactPortPromise;
+    };
+
     withFeedbackIssuePromptContext = async (err: CliError): Promise<CliError> => {
       if (
         err.code !== "E_INTERNAL" ||
@@ -219,6 +231,7 @@ export async function runCli(argv: string[]): Promise<number> {
         getCtx: getCtxOrThrow,
         getResolvedProject,
         getLoadedConfig,
+        getEvaluatorArtifactPort,
         onPreparationTrace: (event) =>
           emitTraceEvent({
             component: "command-session",

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T02:15:37.083Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "9ef73324a40ab1a66bd831eb2c31d2402c4fdb11",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "`evaluator run --no-record` is assigned a read-only session but still writes a new evaluator evidence packet directly to the task quality directory."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-021429244-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-YD5J89/README.md"
+  ],
+  "missing_tests": [
+    "Run the real `evaluator run --no-record` handler against a repository snapshot and assert that no task-quality files or directories are created or changed, rather than only asserting that undeclared capabilities cannot be resolved from the session.",
+    "Exercise evaluator preparation through an explicitly write-authorized capability or prove that preparation is side-effect-free; assert a typed denial when the same write path is invoked through `EVALUATOR_READ_REQUIREMENTS`."
+  ],
+  "hidden_assumptions": [
+    "Declaring a read-only `CommandSession` is assumed to make the handler read-only even though the resolved shared `CommandContext` and evaluator preparation use case retain unrestricted direct filesystem access.",
+    "The implementation treats `--no-record` as excluding quality-state recording but implicitly permits evidence-artifact writes, while the approved verification contract describes read-only evaluator mutation as denied."
+  ],
+  "residual_risks": [
+    "Route evaluator evidence-packet creation through an explicitly write-authorized capability, or redefine the no-record path so it performs no filesystem writes. Re-run the real registry-dispatched no-record command with before/after filesystem assertions and typed-denial coverage; session.require-only tests are insufficient."
+  ]
+}

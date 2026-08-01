@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The new evaluator.artifacts.write capability is not a confined artifact-write port: resolving it returns the full CommandContext, so a no-record evaluator handler can access broader mutation facilities without requesting task.write.",
+      "broken_invariant": "Evaluator preparation and no-record execution must have granular authority limited to evidence-packet creation, with typed denial for undeclared mutation capabilities.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2305c45bfce5562ed863c7612c4075445f9bbbe10727b8313fd37f3a5898e6eb",
+          "line": 2212,
+          "lines": "2212-2239",
+          "section": "loadEvaluatorPrepareSpec and loadEvaluatorRunPrepareSpec"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2305c45bfce5562ed863c7612c4075445f9bbbe10727b8313fd37f3a5898e6eb",
+          "line": 1452,
+          "lines": "1452-1460",
+          "section": "Evaluator artifact authority rework"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:af01a4d70409e0baafc38b2ff1e4428d02c321d0916c431c8fad2e8ed6c1a9b3",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A registry-dispatched no-record evaluator test whose injected artifact authority exposes only a path-confined evidence-packet writer and proves that attempts to write the task README, arbitrary repository files, Git state, or backend task state are rejected by the supplied port itself."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that requesting evaluator.artifacts.write before returning a full CommandContext is equivalent to capability confinement; it only records authority selection and does not restrict what the receiving handler can do with that context.",
+    "The regression test assumes that absence of a task.write trace and an unchanged README proves least privilege, although it verifies one observed execution rather than the authority surface exposed to the handler."
+  ],
+  "recovery_context": "Replace the full-CommandContext result of evaluator.artifacts.write with a narrow evidence-packet preparation port, or otherwise enforce path- and operation-level confinement at the resolver boundary; then test denied task, repository, Git, and backend mutations through the real registry-dispatched no-record path."
+}

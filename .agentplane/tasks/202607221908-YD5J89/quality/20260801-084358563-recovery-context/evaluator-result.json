@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Verification at the evaluated SHA does not cover the complete declared verification contract.",
+      "broken_invariant": "All checks listed in Verify Steps must be executed and recorded for the evaluated implementation; the frozen observed checks only record knip, typecheck, targeted ESLint, and focused suites, while guards:check, schemas:check, and test:critical are not evidenced at evaluated SHA 29d67bf216448202b058df3aba33508f06d58613.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:53645ccf6a72765f721ec7a24f9c2c7f8d9a629643e9b12a5e9549058875062c",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:c2f97e5316e378e3b5c2688bd8edaaa98b11ffcc2e9a11ad9072dddc3fa2ca58",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "summary": "The patch adds session-owned capability and context boundaries without frozen evidence for concurrent invocation isolation.",
+      "broken_invariant": "A pass requires verification of concurrency-sensitive paths relevant to the task; the added tests cover sequential denial, dispatch, typed results, and single-context reuse, but do not demonstrate that simultaneous context or evaluator commands cannot share authority, context, or artifact state.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3b1ae28f80eaa867812fa72e66287df838cf325d4eac77d1c9b52491895229eb",
+          "section": "command-session, kernel, registry, and context/evaluator tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:c2f97e5316e378e3b5c2688bd8edaaa98b11ffcc2e9a11ad9072dddc3fa2ca58",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and record bun run guards:check, bun run schemas:check, and bun run test:critical against evaluated SHA 29d67bf216448202b058df3aba33508f06d58613.",
+    "Add a concurrent-dispatch test that interleaves read-only evaluator, evaluator artifact preparation, and context mutation sessions and asserts that capabilities, CommandContext instances, and artifact destinations remain invocation-local."
+  ],
+  "hidden_assumptions": [
+    "Removing unused type exports cannot affect guards, schemas, critical tests, generated declarations, or downstream package consumers.",
+    "CommandSession capability resolution and evaluator artifact ports remain isolated under simultaneous invocations despite only sequential tests being present."
+  ],
+  "recovery_context": "Preserve the current authority-boundary implementation, complete the three missing declared checks at the evaluated SHA, and add deterministic concurrent-dispatch isolation coverage before repeating semantic evaluation."
+}

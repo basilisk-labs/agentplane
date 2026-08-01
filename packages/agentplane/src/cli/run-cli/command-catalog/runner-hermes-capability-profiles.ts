@@ -1,0 +1,72 @@
+import type { CommandCapability, CommandSession } from "./command-session.js";
+import {
+  TASK_LIFECYCLE_REQUIREMENTS,
+  TASK_READ_REQUIREMENTS,
+  TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
+  TASK_ROUTE_LOCAL_REQUIREMENTS,
+  TASK_WRITE_REQUIREMENTS,
+} from "./task-capability-profiles.js";
+
+export const RUNNER_READ_REQUIREMENTS = [
+  ...TASK_READ_REQUIREMENTS,
+] as const satisfies readonly CommandCapability[];
+
+export const RUNNER_WRITE_REQUIREMENTS = [
+  ...TASK_WRITE_REQUIREMENTS,
+] as const satisfies readonly CommandCapability[];
+
+export const RUNNER_PREPARATION_REQUIREMENTS = [
+  ...TASK_ROUTE_LOCAL_REQUIREMENTS,
+  "route.remote",
+  "context.search",
+] as const satisfies readonly CommandCapability[];
+
+export const RUNNER_EXECUTION_REQUIREMENTS = [
+  ...TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
+  "context.search",
+] as const satisfies readonly CommandCapability[];
+
+export const HERMES_PROJECTION_REQUIREMENTS = [
+  ...TASK_ROUTE_LOCAL_REQUIREMENTS,
+  "context.search",
+] as const satisfies readonly CommandCapability[];
+
+export const HERMES_REMOTE_PREPARATION_REQUIREMENTS = [
+  ...HERMES_PROJECTION_REQUIREMENTS,
+  "route.remote",
+] as const satisfies readonly CommandCapability[];
+
+export const HERMES_LOCAL_EXECUTION_REQUIREMENTS = [
+  ...TASK_LIFECYCLE_REQUIREMENTS,
+  "provider",
+  "context.search",
+] as const satisfies readonly CommandCapability[];
+
+export const HERMES_REMOTE_EXECUTION_REQUIREMENTS = [
+  ...RUNNER_EXECUTION_REQUIREMENTS,
+] as const satisfies readonly CommandCapability[];
+
+export const INSIGHTS_READ_REQUIREMENTS = [
+  "project",
+  "config",
+] as const satisfies readonly CommandCapability[];
+
+export type RunnerReadSession = CommandSession<(typeof RUNNER_READ_REQUIREMENTS)[number]>;
+export type RunnerWriteSession = CommandSession<(typeof RUNNER_WRITE_REQUIREMENTS)[number]>;
+export type RunnerPreparationSession = CommandSession<
+  (typeof RUNNER_PREPARATION_REQUIREMENTS)[number]
+>;
+export type RunnerExecutionSession = CommandSession<(typeof RUNNER_EXECUTION_REQUIREMENTS)[number]>;
+export type HermesProjectionSession = CommandSession<
+  (typeof HERMES_PROJECTION_REQUIREMENTS)[number]
+>;
+export type HermesRemotePreparationSession = CommandSession<
+  (typeof HERMES_REMOTE_PREPARATION_REQUIREMENTS)[number]
+>;
+export type HermesLocalExecutionSession = CommandSession<
+  (typeof HERMES_LOCAL_EXECUTION_REQUIREMENTS)[number]
+>;
+export type HermesRemoteExecutionSession = CommandSession<
+  (typeof HERMES_REMOTE_EXECUTION_REQUIREMENTS)[number]
+>;
+export type InsightsReadSession = CommandSession<(typeof INSIGHTS_READ_REQUIREMENTS)[number]>;

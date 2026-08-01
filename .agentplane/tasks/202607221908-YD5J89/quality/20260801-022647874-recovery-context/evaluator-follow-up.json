@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-YD5J89-cadb767cc2a088cc4cfb58d0",
+  "task_id": "202607221908-YD5J89",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace the full-CommandContext result of evaluator.artifacts.write with a narrow evidence-packet preparation port, or otherwise enforce path- and operation-level confinement at the resolver boundary; then test denied task, repository, Git, and backend mutations through the real registry-dispatched no-record path.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The new evaluator.artifacts.write capability is not a confined artifact-write port: resolving it returns the full CommandContext, so a no-record evaluator handler can access broader mutation facilities without requesting task.write.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2305c45bfce5562ed863c7612c4075445f9bbbe10727b8313fd37f3a5898e6eb",
+          "line": 2212,
+          "lines": "2212-2239",
+          "section": "loadEvaluatorPrepareSpec and loadEvaluatorRunPrepareSpec"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2305c45bfce5562ed863c7612c4075445f9bbbe10727b8313fd37f3a5898e6eb",
+          "line": 1452,
+          "lines": "1452-1460",
+          "section": "Evaluator artifact authority rework"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:af01a4d70409e0baafc38b2ff1e4428d02c321d0916c431c8fad2e8ed6c1a9b3",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-result.json"
+}

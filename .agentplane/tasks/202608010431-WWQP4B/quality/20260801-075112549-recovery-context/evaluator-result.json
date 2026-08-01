@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation matches the approved bounded-diff contract: it excludes only the active task artifact subtree while retaining source, binary, rename, and unrelated-task changes.",
+      "broken_invariant": "No invariant is broken; the implementation and regression coverage preserve the required implementation and concurrency-sensitive evidence boundaries.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:1391c87bcc0895868b23b69c483ba807c2dc42097a0f1f9e772f56e840a954f1"
+        },
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/README.md",
+          "sha256": "sha256:06dd1ebe005c1b251840c3db3f057f19c2aa026f485a7c822b13cdd29df6cb9d",
+          "section": "Scope and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:17be8e7829b597582c3f621890d043c8c153eb0c80f1a45a3ee8b13c08553e10",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The task artifact root passed to renderActualDiff is the normalized repository-relative active-task subtree supplied by trusted evaluator preparation code."
+  ]
+}

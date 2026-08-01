@@ -7,6 +7,22 @@ import {
   getHelpCommandEntries,
   matchCommandCatalog,
 } from "./command-catalog.js";
+import {
+  CONTEXT_PROJECT_REQUIREMENTS,
+  CONTEXT_TASK_READ_REQUIREMENTS,
+  CONTEXT_TASK_WRITE_REQUIREMENTS,
+  EVALUATOR_EXECUTE_REQUIREMENTS,
+  EVALUATOR_PREPARE_REQUIREMENTS,
+  EVALUATOR_WRITE_REQUIREMENTS,
+} from "./command-catalog/context-evaluator-capability-profiles.js";
+import {
+  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
+  HERMES_PROJECTION_REQUIREMENTS,
+  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
+  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
+  RUNNER_EXECUTION_REQUIREMENTS,
+  RUNNER_PREPARATION_REQUIREMENTS,
+} from "./command-catalog/runner-hermes-capability-profiles.js";
 
 describe("command catalog graph", () => {
   it("uses one graph for longest-prefix match and exact lookup", () => {
@@ -141,6 +157,91 @@ describe("command catalog graph", () => {
     }
     expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
     expect(findCommandEntry(["docs", "cli"])?.compatibility).toBeNull();
+  });
+
+  it("publishes exact context and evaluator capability profiles", () => {
+    for (const id of [
+      ["context"],
+      ["context", "init"],
+      ["context", "learn"],
+      ["context", "wiki"],
+      ["context", "graph"],
+      ["context", "harvest"],
+      ["context", "capability"],
+      ["evaluator"],
+      ["evaluator", "list"],
+      ["evaluator", "show"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    for (const id of [
+      ["context", "search"],
+      ["context", "show"],
+      ["context", "reindex"],
+      ["context", "wiki", "lint"],
+      ["context", "graph", "summary"],
+      ["context", "doctor"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        CONTEXT_PROJECT_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    expect(findCommandEntry(["context", "verify-task"])?.requirements).toEqual(
+      CONTEXT_TASK_READ_REQUIREMENTS,
+    );
+    expect(findCommandEntry(["context", "verify-task"])?.requirements).not.toContain("task.write");
+
+    for (const id of [
+      ["context", "ingest"],
+      ["context", "learn", "files"],
+      ["context", "learn", "changes"],
+      ["context", "learn", "tasks"],
+      ["context", "harvest", "tasks"],
+      ["context", "supervise-task"],
+      ["context", "finalize-task"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        CONTEXT_TASK_WRITE_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
+      EVALUATOR_PREPARE_REQUIREMENTS,
+    );
+    expect(findCommandEntry(["evaluator", "prepare"])?.preparationNodes).toEqual([
+      "project",
+      "config",
+      "evaluator_artifacts",
+    ]);
+    expect(findCommandEntry(["evaluator", "prepare"])?.dispatch.taskContext).toBe(false);
+    for (const id of [["evaluator", "apply"]]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        EVALUATOR_WRITE_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toContain("task.read");
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toContain("git.diff");
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+    }
+    const evaluatorRun = findCommandEntry(["evaluator", "run"]);
+    expect(evaluatorRun?.requirements).toEqual(EVALUATOR_PREPARE_REQUIREMENTS);
+    expect(evaluatorRun?.dispatch.taskContext).toBe(true);
+    expect(evaluatorRun?.selectSession?.({ record: false }).requirements).toEqual(
+      EVALUATOR_PREPARE_REQUIREMENTS,
+    );
+    expect(evaluatorRun?.selectSession?.({ record: true }).requirements).toEqual(
+      EVALUATOR_WRITE_REQUIREMENTS,
+    );
+    expect(findCommandEntry(["evaluator", "execute"])?.requirements).toEqual(
+      EVALUATOR_EXECUTE_REQUIREMENTS,
+    );
+    expect(findCommandEntry(["evaluator", "execute"])?.requirements).toContain("task.read");
+    expect(findCommandEntry(["evaluator", "execute"])?.requirements).toContain("route.local");
   });
 
   it("publishes exact task, lifecycle, and route capability profiles", () => {
@@ -343,6 +444,117 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["integrate", "queue"])?.requirements).toEqual([]);
     expect(findCommandEntry(["release"])?.requirements).toEqual([]);
     expect(findCommandEntry(["cleanup"])?.requirements).toEqual([]);
+  });
+
+  it("publishes phase-scoped runner, Hermes, and insights capability profiles", () => {
+    const taskRead = ["project", "config", "backend.read", "task.read"];
+    const taskWrite = [...taskRead, "backend.write", "task.write", "policy", "approvals"];
+    const runnerExecution = [
+      ...taskWrite,
+      "git.head",
+      "git.diff",
+      "git.mutate",
+      "route.local",
+      "route.remote",
+      "provider",
+      "context.search",
+    ];
+
+    for (const id of [
+      ["task", "run", "status"],
+      ["task", "run", "inspect"],
+      ["task", "run", "logs"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskRead);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    for (const id of [
+      ["task", "run", "reconcile"],
+      ["task", "run", "resolve-effect"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    for (const id of [["task", "run", "resume-effect"]]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    const taskRun = findCommandEntry(["task", "run"]);
+    expect(taskRun?.requirements).toEqual(RUNNER_PREPARATION_REQUIREMENTS);
+    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).toEqual(
+      RUNNER_PREPARATION_REQUIREMENTS,
+    );
+    expect(taskRun?.selectSession?.({ dryRun: false }).requirements).toEqual(
+      RUNNER_EXECUTION_REQUIREMENTS,
+    );
+    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("provider");
+    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("git.mutate");
+    expect(taskRun?.compatibility).toBeNull();
+
+    const hermesSupervise = findCommandEntry(["hermes", "supervise"]);
+    expect(hermesSupervise?.requirements).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: false, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: false, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: true })
+        .requirements,
+    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: true })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_LOCAL_EXECUTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_EXECUTION_REQUIREMENTS);
+    for (const parsed of [
+      { remote: false, executeStep: false, dryRun: false },
+      { remote: true, executeStep: false, dryRun: false },
+      { remote: false, executeStep: true, dryRun: true },
+      { remote: true, executeStep: true, dryRun: true },
+    ]) {
+      const requirements = hermesSupervise?.selectSession?.(parsed).requirements;
+      expect(requirements).not.toContain("provider");
+      expect(requirements).not.toContain("git.mutate");
+    }
+    expect(hermesSupervise?.compatibility).toBeNull();
+
+    const hermesProjection = [
+      ...taskRead,
+      "git.head",
+      "git.diff",
+      "route.local",
+      "policy",
+      "approvals",
+      "context.search",
+    ];
+    for (const id of [
+      ["hermes", "enqueue"],
+      ["hermes", "reconcile"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(hermesProjection);
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    expect(findCommandEntry(["task", "run", "tool"])?.requirements).toEqual(["project"]);
+    expect(findCommandEntry(["hermes"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["hermes", "lifecycle"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["hermes", "doctor"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["insights"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["insights", "report"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["insights", "triage"])?.requirements).toEqual(["project", "config"]);
   });
 
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {

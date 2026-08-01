@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The confined evaluator artifact port closes the prior authority leak: callers receive only a frozen prepare operation, while recording and provider capabilities remain separately declared.",
+      "broken_invariant": "No invariant is broken; evaluator preparation is confined to canonical evidence-packet creation without exposing CommandContext, task mutation, Git mutation, generic file writes, approvals, or provider execution.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:1286da4c328396d89f43b486b7da6d2c2c9f8b416d2a7ce1d6614c701a107100",
+          "section": "EvaluatorArtifactPreparationPort implementation, capability profiles, registry dispatch, and denial tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:3d9ea622edb2fbcc9ac3e5da638a8acef77238a71e05b04a99cbc19fc83d28ef",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The existing task-loading and evaluator-review preparation layers continue to enforce canonical task paths and safe artifact publication beneath the resolved repository root."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c01484b9e3de1277635eb6f5aed9c58db48d3e2526c3999f6c7b1a660b401446",
+  "implementation_sha": "1d315e9e1a465b9e87ad476759e0e41ea1d4a69b",
+  "kind": "task_verification_record",
+  "note": "Focused 97/97, doctor/wiki 20/20, critical 12/12 chunks (77 tests), format, schemas, guards, TS7 typecheck, full lint, architecture, knip, and diff checks passed.",
+  "recorded_at": "2026-08-01T01:34:41.204Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run guards:check",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T10:53:56.140Z",
+    "updated_by": "CODER",
+    "note": "PASS after integration rework at d227dc0acf705edf48b5f165b92b8a368496b5d7: task run dry-run selects RUNNER_PREPARATION_REQUIREMENTS without provider or git.mutate; execute retains RUNNER_EXECUTION_REQUIREMENTS. Focused runner/Hermes/direct/branch matrix 71/71, critical 12/12 chunks, guards, lifecycle 8/8, TypeScript 7 typecheck, core lint, architecture, schemas, Knip 545/545, and changed-file formatting passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

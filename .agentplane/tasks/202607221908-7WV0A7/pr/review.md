@@ -30,19 +30,19 @@ Created: 2026-08-01T03:23:48.490Z
 
 ```text
  .../src/cli/run-cli/command-catalog.test.ts        | 106 +++++++++++++++
- .../src/cli/run-cli/command-catalog/core.ts        |  36 ++++--
+ .../src/cli/run-cli/command-catalog/core.ts        |  36 +++--
  .../src/cli/run-cli/command-catalog/kernel.test.ts |  33 +++++
  .../src/cli/run-cli/command-catalog/lifecycle.ts   |  15 ++-
- .../src/cli/run-cli/command-catalog/project.ts     | 119 ++++++++++++-----
+ .../src/cli/run-cli/command-catalog/project.ts     | 118 ++++++++++++-----
  .../provider-ops-capability-profiles.ts            |  39 ++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +-
  .../src/cli/run-cli/command-loaders/core.ts        |  52 ++++++--
  .../src/cli/run-cli/command-loaders/lifecycle.ts   |  20 ++-
- .../src/cli/run-cli/command-loaders/project.ts     | 142 ++++++++++++---------
+ .../src/cli/run-cli/command-loaders/project.ts     | 145 ++++++++++++---------
  .../src/cli/run-cli/command-loaders/task.ts        |  16 ++-
  .../src/commands/integrate-queue.command.ts        |  13 +-
  packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
- 13 files changed, 456 insertions(+), 152 deletions(-)
+ 13 files changed, 458 insertions(+), 152 deletions(-)
 ```
 
 </details>

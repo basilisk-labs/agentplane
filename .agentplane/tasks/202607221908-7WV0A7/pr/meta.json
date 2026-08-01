@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com",
   "created_at": "2026-08-01T03:23:48.490Z",
-  "diffstat_sha256": "sha256:bdb1c27c86510a3f43cba695d73dbb130c6c8aa209bf4634461533a9abecc85d",
+  "diffstat_sha256": "sha256:f09588c1349b113f4d0fe9b50ebe81d5de635c7e242edee9b97767a3ef9157ee",
   "last_verified_at": "2026-08-01T03:43:10.720Z",
   "last_verified_diffstat_sha256": "sha256:bdb1c27c86510a3f43cba695d73dbb130c6c8aa209bf4634461533a9abecc85d",
   "pr_number": 4718,

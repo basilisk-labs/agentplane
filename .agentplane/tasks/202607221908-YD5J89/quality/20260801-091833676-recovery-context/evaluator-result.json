@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "none",
+      "severity": "low",
+      "summary": "No contract violations found in the frozen implementation and verification evidence.",
+      "broken_invariant": "None; the implementation preserves the reviewed context/evaluator command-boundary invariants.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-091833676-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:9952105ca3b4b8b9be0fd6763900e4c5284a3cba18037349a98d35785cef99d0"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/verification/20260801091812405-e26eb1f28224f116.json",
+          "sha256": "sha256:29edf099ff07d701cae8fe5fc4b40a9756cec2418ac830043437857c44d57f6d"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Capability-to-member allowlists must remain synchronized with future TaskBackend and GitContext interface additions; unknown members currently default to write or mutate authority."
+  ]
+}

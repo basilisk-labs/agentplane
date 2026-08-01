@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
 import { advanceSupervisorExecutionEpisodeState } from "@agentplaneorg/core/schemas";
 
 import {
@@ -8,26 +7,62 @@ import {
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
+import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
-import { CliError, GitError } from "../../shared/errors.js";
-import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
+import { CliError } from "../../shared/errors.js";
+import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   evaluatorSpec,
   type EvaluatorApplyParsed,
   type EvaluatorExecuteParsed,
-  type EvaluatorListParsed,
   type EvaluatorPrepareParsed,
   type EvaluatorRunParsed,
-  type EvaluatorShowParsed,
 } from "./evaluator.spec.js";
-import {
-  prepareEvaluatorReview,
-  type PreparedEvaluatorReview,
-} from "./evaluator-review-usecase.js";
+import { loadEvaluatorCatalogForCommand } from "./evaluator-catalog.command.js";
+import type { PreparedEvaluatorReview } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
 import { executeEvaluatorSupervisorEpisode } from "./evaluator-execute-supervisor.js";
+import {
+  createEvaluatorArtifactPreparationPort,
+  type EvaluatorArtifactPreparationPort,
+} from "./evaluator-artifact-port.js";
+
+const output = createCliEmitter();
+
+export type EvaluatorCommandDeps = {
+  getCommandContext: (
+    ctx: CommandCtx,
+    command: string,
+  ) => Promise<Awaited<ReturnType<typeof loadCommandContext>>>;
+};
+
+export type EvaluatorArtifactCommandDeps = {
+  getEvaluatorArtifactPort: (
+    ctx: CommandCtx,
+    command: string,
+  ) => Promise<EvaluatorArtifactPreparationPort>;
+};
+
+export type EvaluatorReviewCommandDeps = EvaluatorCommandDeps & EvaluatorArtifactCommandDeps;
+
+const DEFAULT_EVALUATOR_COMMAND_DEPS: EvaluatorCommandDeps = {
+  getCommandContext: async (ctx) =>
+    await loadCommandContext({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null }),
+};
+
+const DEFAULT_EVALUATOR_ARTIFACT_DEPS: EvaluatorArtifactCommandDeps = {
+  getEvaluatorArtifactPort: async (ctx) =>
+    createEvaluatorArtifactPreparationPort(
+      await DEFAULT_EVALUATOR_COMMAND_DEPS.getCommandContext(ctx, "evaluator artifacts"),
+    ),
+};
+
+const DEFAULT_EVALUATOR_REVIEW_DEPS: EvaluatorReviewCommandDeps = {
+  ...DEFAULT_EVALUATOR_COMMAND_DEPS,
+  ...DEFAULT_EVALUATOR_ARTIFACT_DEPS,
+};
 
 export {
   evaluatorApplySpec,
@@ -38,6 +73,14 @@ export {
   evaluatorSpec,
 } from "./evaluator.spec.js";
 export { evaluatorExecuteSpec } from "./evaluator.spec.js";
+export {
+  listEvaluators,
+  runEvaluatorList,
+  runEvaluatorShow,
+  showEvaluator,
+  type EvaluatorListResult,
+  type EvaluatorShowResult,
+} from "./evaluator-catalog.command.js";
 
 export async function runEvaluatorGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return throwGroupCommandUsage({
@@ -47,59 +90,6 @@ export async function runEvaluatorGroup(_ctx: CommandCtx, p: GroupCommandParsed)
     command: "evaluator",
     contextCommand: "evaluator",
   });
-}
-
-function evaluatorMetadata(row: EvaluatorModule) {
-  return {
-    id: row.id,
-    title: row.title,
-    version: row.version,
-    status: row.status,
-    profile: row.profile,
-    tags: row.tags,
-    source: row.source,
-    path: row.path,
-    result_contract: row.result_contract,
-  };
-}
-
-function formatEvaluatorList(rows: EvaluatorModule[]): string {
-  const widthId = Math.max(...rows.map((row) => row.id.length), "ID".length);
-  const widthStatus = Math.max(...rows.map((row) => row.status.length), "STATUS".length);
-  const widthSource = Math.max(...rows.map((row) => row.source.length), "SOURCE".length);
-  return [
-    `${"ID".padEnd(widthId)}  ${"STATUS".padEnd(widthStatus)}  ${"SOURCE".padEnd(widthSource)}  PROFILE    TITLE`,
-    `${"-".repeat(widthId)}  ${"-".repeat(widthStatus)}  ${"-".repeat(widthSource)}  -------    -----`,
-    ...rows.map(
-      (row) =>
-        `${row.id.padEnd(widthId)}  ${row.status.padEnd(widthStatus)}  ${row.source.padEnd(widthSource)}  ${row.profile.padEnd(7)}    ${row.title}`,
-    ),
-  ].join("\n");
-}
-
-async function loadCatalogForCommand(ctx: CommandCtx, includeBuiltin: boolean) {
-  let projectRoot: string | null = null;
-  try {
-    const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
-    projectRoot = resolved.gitRoot;
-  } catch (err) {
-    if (ctx.rootOverride) {
-      const message = err instanceof Error ? err.message : String(err);
-      throw new GitError({
-        message,
-        context: { command: "evaluator", root: ctx.rootOverride },
-      });
-    }
-    projectRoot = await findGitRoot(ctx.cwd);
-  }
-  if (!projectRoot && !includeBuiltin) {
-    throw new GitError({
-      message:
-        "No AgentPlane project root found for project-local evaluator catalog lookup. Run from a repository checkout or pass --root <path>.",
-      context: { command: "evaluator", root: ctx.rootOverride ?? null },
-    });
-  }
-  return await loadEvaluatorCatalog({ projectRoot, includeBuiltin });
 }
 
 function assertRunnableReviewInput(parsed: EvaluatorRunParsed): void {
@@ -133,52 +123,17 @@ function assertRunnableReviewInput(parsed: EvaluatorRunParsed): void {
   }
 }
 
-export const runEvaluatorList: CommandHandler<EvaluatorListParsed> = async (ctx, p) => {
-  const rows = await loadCatalogForCommand(ctx, p.builtin);
-  if (p.json) {
-    process.stdout.write(
-      `${JSON.stringify({ evaluators: rows.map((row) => evaluatorMetadata(row)) }, null, 2)}\n`,
-    );
-    return 0;
-  }
-  if (rows.length === 0) {
-    process.stdout.write("No evaluator prompt modules found.\n");
-    return 0;
-  }
-  process.stdout.write(`${formatEvaluatorList(rows)}\n`);
-  return 0;
-};
-
-export const runEvaluatorShow: CommandHandler<EvaluatorShowParsed> = async (ctx, p) => {
-  const rows = await loadCatalogForCommand(ctx, p.builtin);
-  const found = rows.find((row) => row.id === p.id);
-  if (!found) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: `Unknown evaluator id: ${p.id}`,
-    });
-  }
-  if (p.json) {
-    process.stdout.write(
-      `${JSON.stringify({ evaluator: { ...evaluatorMetadata(found), content: found.content } }, null, 2)}\n`,
-    );
-    return 0;
-  }
-  process.stdout.write(found.content.endsWith("\n") ? found.content : `${found.content}\n`);
-  return 0;
-};
-
 async function loadEvaluatorReviewContext(opts: {
   ctx: CommandCtx;
   taskId: string;
   evaluatorId: string;
+  deps: EvaluatorCommandDeps;
 }): Promise<{
   command: Awaited<ReturnType<typeof loadCommandContext>>;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   evaluator: EvaluatorModule;
 }> {
-  const rows = await loadCatalogForCommand(opts.ctx, true);
+  const rows = await loadEvaluatorCatalogForCommand(opts.ctx, true);
   const evaluator = rows.find((row) => row.id === opts.evaluatorId);
   if (!evaluator) {
     throw new CliError({
@@ -187,30 +142,27 @@ async function loadEvaluatorReviewContext(opts: {
       message: `Unknown evaluator id: ${opts.evaluatorId}`,
     });
   }
-  const command = await loadCommandContext({
-    cwd: opts.ctx.cwd,
-    rootOverride: opts.ctx.rootOverride ?? null,
-  });
+  const command = await opts.deps.getCommandContext(opts.ctx, "evaluator review");
   const task = await loadTaskFromContext({ ctx: command, taskId: opts.taskId });
   return { command, task, evaluator };
 }
 
-function printEvaluatorPayload(opts: {
+function renderEvaluatorPayload(opts: {
   json: boolean;
   title: string;
   payload: Record<string, unknown>;
 }): void {
   if (opts.json) {
-    process.stdout.write(`${JSON.stringify(opts.payload, null, 2)}\n`);
+    output.json(opts.payload);
     return;
   }
-  process.stdout.write(
+  output.line(
     [
       opts.title,
       ...Object.entries(opts.payload)
         .filter(([, value]) => value !== null && value !== undefined)
         .map(([key, value]) => `${key.replaceAll("_", " ")}: ${String(value)}`),
-    ].join("\n") + "\n",
+    ].join("\n"),
   );
 }
 
@@ -228,39 +180,73 @@ function projectPath(gitRoot: string, value: string, label: string): string {
   return absolute;
 }
 
-export const runEvaluatorPrepare: CommandHandler<EvaluatorPrepareParsed> = async (ctx, p) => {
-  const { command, task, evaluator } = await loadEvaluatorReviewContext({
-    ctx,
-    taskId: p.taskId,
-    evaluatorId: p.evaluator,
-  });
-  const prepared = await prepareEvaluatorReview({
-    ctx: command,
-    task,
-    evaluator,
-    provenance: "evaluator_supplied",
-  });
-  printEvaluatorPayload({
-    json: p.json,
-    title: `evaluator prepare ${p.taskId}`,
-    payload: {
-      work_order_id: prepared.work_order.work_order_id,
-      work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
-      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
-      evaluated_sha: prepared.work_order.evaluated_sha,
-      sandbox: prepared.work_order.authority.sandbox,
-    },
-  });
-  return 0;
+export type EvaluatorPrepareResult = {
+  work_order_id: string;
+  work_order: string;
+  prompt: string;
+  evaluated_sha: string | null;
+  sandbox: string;
 };
 
-export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ctx, p) => {
-  const command = await loadCommandContext({
-    cwd: ctx.cwd,
-    rootOverride: ctx.rootOverride ?? null,
+export async function prepareEvaluatorCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorPrepareParsed,
+  deps: EvaluatorArtifactCommandDeps,
+): Promise<EvaluatorPrepareResult> {
+  const artifacts = await deps.getEvaluatorArtifactPort(ctx, "evaluator prepare");
+  const packet = await artifacts.prepare({
+    ctx,
+    taskId: parsed.taskId,
+    evaluatorId: parsed.evaluator,
+    provenance: "evaluator_supplied",
   });
-  const task = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
-  const resultPath = projectPath(command.resolvedProject.gitRoot, p.resultPath, "Evaluator result");
+  const { prepared } = packet;
+  return {
+    work_order_id: prepared.work_order.work_order_id,
+    work_order: relativeToProject(packet.git_root, prepared.work_order_path),
+    prompt: relativeToProject(packet.git_root, prepared.prompt_path),
+    evaluated_sha: prepared.work_order.evaluated_sha,
+    sandbox: prepared.work_order.authority.sandbox,
+  };
+}
+
+export function makeRunEvaluatorPrepareHandler(
+  deps: EvaluatorArtifactCommandDeps,
+): CommandHandler<EvaluatorPrepareParsed> {
+  return async (ctx, parsed) => {
+    const result = await prepareEvaluatorCommand(ctx, parsed, deps);
+    renderEvaluatorPayload({
+      json: parsed.json,
+      title: `evaluator prepare ${parsed.taskId}`,
+      payload: result,
+    });
+    return 0;
+  };
+}
+
+export const runEvaluatorPrepare = makeRunEvaluatorPrepareHandler(DEFAULT_EVALUATOR_ARTIFACT_DEPS);
+
+export type EvaluatorApplyResult = {
+  work_order_id: string;
+  evaluator: string;
+  verdict: unknown;
+  report: string;
+  result: string;
+  recorded: true;
+};
+
+export async function applyEvaluatorCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorApplyParsed,
+  deps: EvaluatorCommandDeps,
+): Promise<EvaluatorApplyResult> {
+  const command = await deps.getCommandContext(ctx, "evaluator apply");
+  const task = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
+  const resultPath = projectPath(
+    command.resolvedProject.gitRoot,
+    parsed.resultPath,
+    "Evaluator result",
+  );
   let rawResult: unknown;
   try {
     rawResult = JSON.parse(await readFile(resultPath, "utf8"));
@@ -273,43 +259,79 @@ export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ct
   const applied = await applyEvaluatorSgrReview({
     ctx: command,
     task,
-    workOrderPath: p.workOrderPath,
+    workOrderPath: parsed.workOrderPath,
     result: rawResult,
   });
-  printEvaluatorPayload({
-    json: p.json,
-    title: `evaluator apply ${p.taskId}`,
-    payload: {
-      work_order_id: applied.work_order.work_order_id,
-      evaluator: applied.work_order.evaluator.id,
-      verdict:
-        rawResult && typeof rawResult === "object"
-          ? (rawResult as { verdict?: unknown }).verdict
-          : null,
-      report: applied.report_path,
-      result: applied.result_path,
-      recorded: true,
-    },
-  });
-  return 0;
+  return {
+    work_order_id: applied.work_order.work_order_id,
+    evaluator: applied.work_order.evaluator.id,
+    verdict:
+      rawResult && typeof rawResult === "object"
+        ? (rawResult as { verdict?: unknown }).verdict
+        : null,
+    report: applied.report_path,
+    result: applied.result_path,
+    recorded: true,
+  };
+}
+
+export function makeRunEvaluatorApplyHandler(
+  deps: EvaluatorCommandDeps,
+): CommandHandler<EvaluatorApplyParsed> {
+  return async (ctx, parsed) => {
+    const result = await applyEvaluatorCommand(ctx, parsed, deps);
+    renderEvaluatorPayload({
+      json: parsed.json,
+      title: `evaluator apply ${parsed.taskId}`,
+      payload: result,
+    });
+    return 0;
+  };
+}
+
+export const runEvaluatorApply = makeRunEvaluatorApplyHandler(DEFAULT_EVALUATOR_COMMAND_DEPS);
+
+export type EvaluatorExecuteResult = {
+  work_order_id: string;
+  evaluator: string;
+  provider: string;
+  sandbox: string;
+  verdict: string;
+  report: string;
+  result: string;
+  receipt: string;
+  supervisor_episode: {
+    status: string;
+    cursor: unknown;
+    usage: unknown;
+    stop: unknown;
+    digest: string;
+  };
+  recorded: true;
 };
 
-export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async (ctx, p) => {
+export async function executeEvaluatorCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorExecuteParsed,
+  deps: EvaluatorReviewCommandDeps,
+): Promise<EvaluatorExecuteResult> {
   const { command, task, evaluator } = await loadEvaluatorReviewContext({
     ctx,
-    taskId: p.taskId,
-    evaluatorId: p.evaluator,
+    taskId: parsed.taskId,
+    evaluatorId: parsed.evaluator,
+    deps,
   });
   const execution = await executeEvaluatorSupervisorEpisode({
     ctx,
     command,
     task,
     evaluator,
-    task_id: p.taskId,
-    replacement: p.replacement,
+    task_id: parsed.taskId,
+    replacement: parsed.replacement,
+    artifacts: await deps.getEvaluatorArtifactPort(ctx, "evaluator execute"),
   });
 
-  const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+  const currentTask = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
   const resultRef = relativeToProject(command.resolvedProject.gitRoot, execution.result_path);
   const alreadyApplied = currentTask.quality_review?.evidence_refs?.includes(resultRef) ?? false;
   const applied = alreadyApplied
@@ -327,7 +349,7 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
     ctx: command,
     cwd: ctx.cwd,
     rootOverride: ctx.rootOverride ?? null,
-    taskId: p.taskId,
+    taskId: parsed.taskId,
     includeRemote: false,
   });
   const journal = advanceSupervisorExecutionEpisodeState({
@@ -336,33 +358,44 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
     route_observation: { step_id: postDecision.workflowStep.id },
   });
   await execution.store.write(journal);
-  printEvaluatorPayload({
-    json: p.json,
-    title: `evaluator execute ${p.taskId}`,
-    payload: {
-      work_order_id: execution.receipt.work_order_id,
-      evaluator: execution.result.evaluator_id,
-      provider: execution.receipt.provider,
-      sandbox: execution.receipt.authority.sandbox,
-      verdict: execution.result.verdict,
-      report: applied.report_path,
-      result: applied.result_path,
-      receipt: relativeToProject(
-        command.resolvedProject.gitRoot,
-        path.join(path.dirname(execution.work_order_path), "evaluator-episode.json"),
-      ),
-      supervisor_episode: {
-        status: journal.status,
-        cursor: journal.cursor,
-        usage: journal.usage,
-        stop: journal.stop,
-        digest: journal.digest,
-      },
-      recorded: true,
+  return {
+    work_order_id: execution.receipt.work_order_id,
+    evaluator: execution.result.evaluator_id,
+    provider: execution.receipt.provider,
+    sandbox: execution.receipt.authority.sandbox,
+    verdict: execution.result.verdict,
+    report: applied.report_path,
+    result: applied.result_path,
+    receipt: relativeToProject(
+      command.resolvedProject.gitRoot,
+      path.join(path.dirname(execution.work_order_path), "evaluator-episode.json"),
+    ),
+    supervisor_episode: {
+      status: journal.status,
+      cursor: journal.cursor,
+      usage: journal.usage,
+      stop: journal.stop,
+      digest: journal.digest,
     },
-  });
-  return 0;
-};
+    recorded: true,
+  };
+}
+
+export function makeRunEvaluatorExecuteHandler(
+  deps: EvaluatorReviewCommandDeps,
+): CommandHandler<EvaluatorExecuteParsed> {
+  return async (ctx, parsed) => {
+    const result = await executeEvaluatorCommand(ctx, parsed, deps);
+    renderEvaluatorPayload({
+      json: parsed.json,
+      title: `evaluator execute ${parsed.taskId}`,
+      payload: result,
+    });
+    return 0;
+  };
+}
+
+export const runEvaluatorExecute = makeRunEvaluatorExecuteHandler(DEFAULT_EVALUATOR_REVIEW_DEPS);
 
 function relativeToProject(gitRoot: string, absolutePath: string): string {
   return path.relative(gitRoot, absolutePath).replaceAll("\\", "/");
@@ -403,67 +436,131 @@ function compatibilityResult(opts: {
   };
 }
 
-export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p) => {
-  assertRunnableReviewInput(p);
-  const { command, task, evaluator } = await loadEvaluatorReviewContext({
+export type EvaluatorRunResult = {
+  provenance: EvaluatorRunParsed["provenance"];
+  verdict: EvaluatorRunParsed["verdict"];
+  recorded: boolean;
+  work_order?: string;
+  work_order_id?: string;
+  report?: string;
+  prompt: string;
+  opinion?: string;
+};
+
+async function prepareEvaluatorRunArtifacts(
+  ctx: CommandCtx,
+  parsed: EvaluatorRunParsed,
+  deps: EvaluatorArtifactCommandDeps,
+) {
+  const artifacts = await deps.getEvaluatorArtifactPort(ctx, "evaluator run");
+  return await artifacts.prepare({
     ctx,
-    taskId: p.taskId,
-    evaluatorId: p.evaluator,
+    taskId: parsed.taskId,
+    evaluatorId: parsed.evaluator,
+    provenance: parsed.provenance,
   });
-  const prepared = await prepareEvaluatorReview({
-    ctx: command,
-    task,
-    evaluator,
-    provenance: p.provenance,
-  });
-  if (!p.record) {
-    printEvaluatorPayload({
-      json: p.json,
-      title: `evaluator run ${p.taskId}`,
-      payload: {
-        provenance: p.provenance,
-        verdict: p.verdict,
-        recorded: false,
-        work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
-        prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
-      },
+}
+
+export async function runEvaluatorPrepareOnlyCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorRunParsed,
+  deps: EvaluatorArtifactCommandDeps,
+): Promise<EvaluatorRunResult> {
+  assertRunnableReviewInput(parsed);
+  if (parsed.record) {
+    throw new CliError({
+      code: "E_INTERNAL",
+      message: "Internal error: preparation-only evaluator handler received a recording request.",
     });
-    return 0;
   }
+  const packet = await prepareEvaluatorRunArtifacts(ctx, parsed, deps);
+  return {
+    provenance: parsed.provenance,
+    verdict: parsed.verdict,
+    recorded: false,
+    work_order: relativeToProject(packet.git_root, packet.prepared.work_order_path),
+    prompt: relativeToProject(packet.git_root, packet.prepared.prompt_path),
+  };
+}
+
+export async function runEvaluatorCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorRunParsed,
+  deps: EvaluatorReviewCommandDeps,
+): Promise<EvaluatorRunResult> {
+  assertRunnableReviewInput(parsed);
+  const packet = await prepareEvaluatorRunArtifacts(ctx, parsed, deps);
+  const { prepared } = packet;
+  if (!parsed.record) {
+    return {
+      provenance: parsed.provenance,
+      verdict: parsed.verdict,
+      recorded: false,
+      work_order: relativeToProject(packet.git_root, prepared.work_order_path),
+      prompt: relativeToProject(packet.git_root, prepared.prompt_path),
+    };
+  }
+  const command = await deps.getCommandContext(ctx, "evaluator run record");
+  const task = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
   const applied =
-    p.provenance === "human_supplied"
+    parsed.provenance === "human_supplied"
       ? await applyHumanEvaluatorReview({
           ctx: command,
           task,
           workOrderPath: prepared.work_order_path,
           input: {
-            verdict: p.verdict,
-            summary: p.summary,
-            findings: p.findings,
-            evidence_refs: p.evidenceRefs,
-            missing_tests: p.missingTests,
-            hidden_assumptions: p.hiddenAssumptions,
-            residual_risks: p.residualRisks,
+            verdict: parsed.verdict,
+            summary: parsed.summary,
+            findings: parsed.findings,
+            evidence_refs: parsed.evidenceRefs,
+            missing_tests: parsed.missingTests,
+            hidden_assumptions: parsed.hiddenAssumptions,
+            residual_risks: parsed.residualRisks,
           },
         })
       : await applyEvaluatorSgrReview({
           ctx: command,
           task,
           workOrderPath: prepared.work_order_path,
-          result: compatibilityResult({ parsed: p, prepared }),
+          result: compatibilityResult({ parsed, prepared }),
         });
-  printEvaluatorPayload({
-    json: p.json,
-    title: `evaluator run ${p.taskId}`,
-    payload: {
-      provenance: p.provenance,
-      verdict: p.verdict,
-      recorded: true,
-      work_order_id: applied.work_order.work_order_id,
-      report: applied.report_path,
-      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
-      opinion: relativeToProject(command.resolvedProject.gitRoot, prepared.opinion_path),
-    },
-  });
-  return 0;
-};
+  return {
+    provenance: parsed.provenance,
+    verdict: parsed.verdict,
+    recorded: true,
+    work_order_id: applied.work_order.work_order_id,
+    report: applied.report_path,
+    prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
+    opinion: relativeToProject(command.resolvedProject.gitRoot, prepared.opinion_path),
+  };
+}
+
+export function makeRunEvaluatorRunHandler(
+  deps: EvaluatorReviewCommandDeps,
+): CommandHandler<EvaluatorRunParsed> {
+  return async (ctx, parsed) => {
+    const result = await runEvaluatorCommand(ctx, parsed, deps);
+    renderEvaluatorPayload({
+      json: parsed.json,
+      title: `evaluator run ${parsed.taskId}`,
+      payload: result,
+    });
+    return 0;
+  };
+}
+
+export function makeRunEvaluatorRunPrepareHandler(
+  deps: EvaluatorArtifactCommandDeps,
+): CommandHandler<EvaluatorRunParsed> {
+  return async (ctx, parsed) => {
+    const result = await runEvaluatorPrepareOnlyCommand(ctx, parsed, deps);
+    renderEvaluatorPayload({
+      json: parsed.json,
+      title: `evaluator run ${parsed.taskId}`,
+      payload: result,
+    });
+    return 0;
+  };
+}
+
+export const runEvaluatorRun = makeRunEvaluatorRunHandler(DEFAULT_EVALUATOR_REVIEW_DEPS);

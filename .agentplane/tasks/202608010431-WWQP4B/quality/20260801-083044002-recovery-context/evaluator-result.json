@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen packet contains only a narrative verification assertion; it contains no command-level deterministic results proving the declared focused tests, typecheck, guards, or diff checks ran successfully against the evaluated SHA.",
+      "broken_invariant": "Pass requires verification evidence covering the relevant positive, negative, and concurrency-sensitive paths, and DoD requires all Verify Steps to be executed with recorded command, result, evidence, and scope.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:9fe47fe01cc52f53b47b6c342af9a27805d1153d6bb739d669dfbbe8922cd1ee",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/README.md",
+          "sha256": "sha256:1e7d56ecb29b201a0be1124cba82724ece72ee8efb0ccd60ba406cd284f9456b",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen command-level results for the focused evaluator suite, typecheck, guards, and git diff --check at evaluated SHA 0179801532c99db510bbcbbab1724561d8cab331."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note is assumed to be sufficient proof of execution despite the frozen packet containing no verification records, runner history, or runtime evidence."
+  ],
+  "recovery_context": "Rebuild the frozen review packet with deterministic command-level verification evidence tied to evaluated SHA 0179801532c99db510bbcbbab1724561d8cab331; the implementation diff itself shows the intended active-task exclusion and preservation of source, binary, rename, and unrelated-task changes.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

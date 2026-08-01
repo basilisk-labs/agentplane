@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b841ecabeb790bddffe123354bacb816ede02c3abe6fd46a702382fc91812fa1",
+  "implementation_sha": "c074e8b126972091c6591ac028c39d407e0b7da2",
+  "kind": "task_verification_record",
+  "note": "Verified generated inventory scope and determinism; docs:scripts:check, TypeScript toolchain contract, policy routing, and diff checks pass. Full local fast suite passed: 511 files, 3583 tests, plus 12/12 critical CLI chunks.",
+  "recorded_at": "2026-08-01T08:10:38.058Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun run docs:scripts:generate` and inspect the diff. Expected: only the current `ci:contract` command, the `typescript:toolchain:check` inventory row, its generated grouping note, and deterministic table-width formatting change.\n2. Run `bun run docs:scripts:check`. Expected: the generated script inventory is current.\n3. Run `bun run typescript:toolchain:check`. Expected: TypeScript 7 remains the typecheck compiler, TypeScript 6 remains the compiler-API surface, and runtime packages do not depend on `@typescript/native`.\n4. Run `git diff --check` and inspect final status. Expected: no unrelated tracked file changes.",
+  "scope_digest": "sha256:0dc400c9007e916499caf75d45eed56eabfd6ba5efb9dcc1a5f29ea6bf89c33c",
+  "task_id": "202608010758-DF63K4",
+  "verification_command": "agentplane verify 202608010758-DF63K4 --ok --by TESTER",
+  "verifier": "TESTER"
+}

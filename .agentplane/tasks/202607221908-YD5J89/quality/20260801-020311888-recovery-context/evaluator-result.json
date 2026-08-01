@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "`evaluator run --no-record` still enters a command catalog boundary declared with write and Git-mutation capabilities, despite selecting a read dependency inside the handler. The implementation therefore does not provide the promised read-only evaluator authority boundary.",
+      "broken_invariant": "Evaluator operations must declare exact granular capabilities, and read-only evaluator paths must not receive undeclared mutation authority. Handler-level dependency selection cannot compensate for an over-privileged session declaration.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:83996b7dc339e07c6c99d209c2c18e3b78a10b86fc511ffe3d729a07acf52987",
+          "line": 1447,
+          "lines": "1447-1450",
+          "section": "PROJECT_COMMANDS evaluator run declaration"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:83996b7dc339e07c6c99d209c2c18e3b78a10b86fc511ffe3d729a07acf52987",
+          "line": 1235,
+          "lines": "1235-1247",
+          "section": "EVALUATOR_WRITE_REQUIREMENTS"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:83996b7dc339e07c6c99d209c2c18e3b78a10b86fc511ffe3d729a07acf52987",
+          "line": 1713,
+          "lines": "1713-1718",
+          "section": "loadEvaluatorRunSpec"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:9d6ebc32376203a0b2c4b61e370de6dd97615652f7b2e111eed0290ff87919d0",
+          "line": 128,
+          "lines": "128-131",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a catalog-level `evaluator run --no-record` test that exercises normal command dispatch and proves the created session excludes `backend.write`, `task.write`, `git.mutate`, and `approvals`, rather than testing only the handler with injected read/write callbacks.",
+    "Add the corresponding recording-path test proving `evaluator run` receives write capabilities only when recording is enabled."
+  ],
+  "hidden_assumptions": [
+    "Selecting `session.require(\"task.read\")` inside a session declared with `EVALUATOR_WRITE_REQUIREMENTS` is assumed to be equivalent to creating a genuinely read-only authority boundary.",
+    "The handler-level test is assumed to validate catalog/session capability allocation, although it bypasses normal catalog dispatch and session construction."
+  ],
+  "recovery_context": "Split `evaluator run` authority selection at or before command-session construction so `--no-record` creates an evaluator-read session and the recording path creates an evaluator-write session. Re-run capability-denial coverage through normal catalog dispatch; existing deterministic checks do not cover this boundary mismatch."
+}

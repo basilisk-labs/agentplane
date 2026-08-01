@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "No contract divergence found: runner and Hermes commands select phase- and intent-scoped sessions, while the SHA-bound verification covers compatibility, provenance, typed denials, direct and branch_pr supervision, and repository gates.",
+      "broken_invariant": "None; the approved command-boundary and least-authority invariants are preserved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-112416854-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fd3ca88622858c4d79bac398be74040156f33519f5d2bc9a3272566ef253207c"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json",
+          "sha256": "sha256:8a031bcf38b2cac3fd405724c9390867869802a48a8b3ef742576932b28135ff"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/verification/20260801112341783-588c240dbee87684.json",
+          "sha256": "sha256:b989ee2cc2fd9cbbd58df401d5c392a192579b59715b90101aa7fb1c936750a2"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:be4c6941531be540ae106e58482125e536b0acb319fd71d08c7e1f35ca2b3dd8",
+  "implementation_sha": "253943c427b60c81673f4442fbe7d277cb41a4e9",
+  "kind": "task_verification_record",
+  "note": "PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12, typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed.",
+  "recorded_at": "2026-08-01T03:21:53.917Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run direct and branch_pr runner/Hermes fixtures. Expected: typed in-process results, minimal capabilities, and no lifecycle command parsing.\n2. Render human/JSON/insights outputs. Expected: compatibility and provenance are preserved.\n3. Attempt cross-phase or undeclared provider/lifecycle access. Expected: typed denial.\n4. Run runner/Hermes tests, lifecycle invariants, guards, and typecheck.",
+  "scope_digest": "sha256:37018661039d255b8db6848f76a0c989406a2fc609faa7afbdaa318279087623",
+  "task_id": "202607221908-RC1DX8",
+  "verification_command": "agentplane verify 202607221908-RC1DX8 --ok --by TESTER",
+  "verifier": "TESTER"
+}

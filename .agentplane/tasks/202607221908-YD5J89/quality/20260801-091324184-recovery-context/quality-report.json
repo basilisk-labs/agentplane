@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T09:14:11.794Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "8c1035a4368ed34b57e1e78ff1811752fbf8a35b",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "The scoped task-backend proxy conflates backend and task capabilities: either backend.write or task.write enables every backend member, so a command declaring only one capability can exercise operations governed by the other."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-091324184-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Create sessions that declare backend.write without task.write and task.write without backend.write, then verify that cross-capability taskBackend operations return typed E_INTERNAL denial and do not mutate state."
+  ],
+  "hidden_assumptions": [
+    "All current callers declare backend and task read/write capabilities together, so the proxy's OR-based authorization is assumed not to create a privilege escalation."
+  ],
+  "residual_risks": [
+    "Split taskBackend member authorization by the exact backend.read/backend.write/task.read/task.write capability required for each operation, then add asymmetric capability tests and rerun the focused denial, concurrency, schema, guard, critical, and typecheck evidence."
+  ]
+}

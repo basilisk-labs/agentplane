@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T09:38:41.388Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "The frozen packet contains no deterministic check results for the evaluated SHA c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093756633-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221908-YD5J89/README.md"
+  ],
+  "missing_tests": [
+    "Record deterministic results on c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 for bun run guards:check, bun run schemas:check, bun run test:critical, and bun run typecheck.",
+    "Record focused evaluator capability tests on the evaluated SHA covering read authority, artifact-only no-record authority, mutation denial, and concurrent invocation isolation."
+  ],
+  "hidden_assumptions": [
+    "The CODER verification note is assumed to represent executed checks even though the frozen packet contains no command-level results, runner history, or runtime evidence."
+  ],
+  "residual_risks": [
+    "Rebuild the frozen verification evidence for c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 with command-level results for all declared and focused capability checks, then rerun semantic evaluation."
+  ]
+}

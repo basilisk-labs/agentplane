@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "No contract-breaking defect was identified; the frozen diff and verification evidence cover typed in-process context/evaluator results, capability-scoped denial, artifact-only evaluator authority, and invocation-local concurrency isolation at the evaluated SHA.",
+      "broken_invariant": "No invariant is broken; the implementation satisfies the approved context/evaluator command-boundary contract and relevant recovery/concurrency requirements.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/README.md",
+          "sha256": "sha256:0581d28b79ba3c6f57fc145f9e6acc0f96f3280e34f0ea2590441752ea7adf15",
+          "section": "Scope, Plan, Verify Steps, Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:a018c2ac0c2be169d8e9793278e6de1b8b6a49be8b82751c5609200742798ba0",
+          "section": "Command sessions, context/evaluator handlers, artifact port, and regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:eff93f06efe1819fd096f69640fafc99f7d7bc997f14fb7b276ce15341d4fad5",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:26310c0e9494dc13e1cdbc7e2109988390eed8e59ac753d7c7ba3175d5784fb6",
+          "section": "plan"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The repository-wide fast verification at c00ecad0034a9bea01df07e0c0cffc34a6cf229c remains applicable to evaluated SHA 346e9681ba68631bd22d5e40c328654c30a8892e because the intervening implementation change is documented and independently checked as comment-only."
+  ]
+}

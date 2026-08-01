@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-RC1DX8-b918e6c94ddc3869bc83b0ff",
+  "task_id": "202607221908-RC1DX8",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Split `hermes supervise` session selection by parsed execution/remote intent, analogous to `task run`, then refresh SHA-bound focused and repository verification evidence. The current deterministic evidence passes but asserts the overly broad static Hermes supervision profile rather than the required least-authority behavior.",
+  "findings": [
+    {
+      "id": "RECOVERY-CONTEXT-001",
+      "summary": "Hermes inspect-only supervision receives execution authority even when neither remote access nor step execution is requested.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-110030699-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:17350e1e8a15ba94133d78e94c053c572ebf6172a618e844d894c939e0070739",
+          "section": "runner-hermes-capability-profiles.ts, command-catalog/project.ts, command-loaders/project.ts, hermes.command.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/README.md",
+          "sha256": "sha256:95e0ec832201beb25bb5de809fa39eba5c5e8e74fe7507b4a419c95e9aa22de1",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-110030699-recovery-context/evaluator-result.json"
+}

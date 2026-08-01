@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "recovery-context-001",
+      "severity": "low",
+      "summary": "No contract divergence found: Hermes supervision now selects phase- and intent-scoped sessions, and deterministic evidence covers local inspection, remote inspection, dry-run execution, real execution, compatibility, provenance, and cross-phase denial.",
+      "broken_invariant": "None; the reviewed implementation satisfies the task's minimal-capability, phase-boundary, compatibility, and verification invariants.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-111241286-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d006f700bba7f2508f9c0a211f09a6f9e7f90330be1246de8a12140513a5e939"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607221908-RC1DX8-b9473bd-checks.json",
+          "sha256": "sha256:e0fa14ceb863a80c58e31758ff0d7904d08b0e65c503dee60387ae14f2129d13"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/verification/20260801111225369-0fcf3e5de8670adb.json",
+          "sha256": "sha256:5a67c4fd1a8bffc0c5118a9377e92222e1309af306e3a7225272ac564ee73162"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
