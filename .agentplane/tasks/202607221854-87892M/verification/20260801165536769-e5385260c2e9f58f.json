@@ -1,0 +1,15 @@
+{
+  "details": "Command: 25-pair external-process cold and warm preparation benchmark\nResult: pass\nEvidence: .agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json\nScope: raw samples, environment, method, formulas, declared threshold, exact-output result, and no-go decision\n\nCommand: bun run typecheck && bun run ci:contract && bun run test:critical\nResult: pass\nEvidence: .agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json\nScope: deterministic type, contract, critical regression, artifact parsing, and exact-output checks\n\nCommand: git diff --name-status <base>..<implementation> && rg -n <persistent-cache-symbols> packages/agentplane/src\nResult: pass\nEvidence: .agentplane/cache/evaluator/202607221854-87892M/repository-state.json\nScope: evaluated source diff, clean prototype removal, and live semantic-resolution proof",
+  "digest": "sha256:e5385260c2e9f58f18d47b54636837a4e37713e0ad7f92094dc1f0f8659f4284",
+  "implementation_sha": "6e1e19174162ba5361e7dfe03985d5092a9d61d5",
+  "kind": "task_verification_record",
+  "note": "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains.",
+  "recorded_at": "2026-08-01T16:55:36.769Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Repeat unchanged golden scenarios. Expected: selected nodes hit cache and warm preparation improves by the declared benchmark threshold.\n2. Change task, Git, backend, policy, blueprint, knowledge, provider, and authority inputs independently. Expected: every affected node misses/invalidates and no stale value reaches a work order.\n3. Corrupt or version-mismatch cache entries. Expected: controlled miss/rebuild with no functional failure or silent reuse.\n4. Inspect semantic result paths. Expected: no semantic decision is cached without explicit provenance and invalidation.\n5. Run cache tests, contract CI, typecheck, and cold/warm benchmarks.",
+  "scope_digest": "sha256:e7b862a47cf21a72b15dbd0b18e43dab413e0d738dfeb569e3ccd8c104b90d47",
+  "task_id": "202607221854-87892M",
+  "verification_command": "agentplane verify 202607221854-87892M --ok --by TESTER",
+  "verifier": "TESTER"
+}

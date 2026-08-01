@@ -16,13 +16,7 @@ RF-26b: cache only measured expensive deterministic nodes by exact StateFingerpr
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Fresh deterministic evidence: raw benchmark arrays and formulas, exact-output proof, command-level
-pass records, evaluated no-source-change diff, and explicit no-cache applicability are frozen for
-evaluator review.
-```
+- Note: RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,7 +27,13 @@ evaluator review.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../workflow-step-fingerprint-preparation.ts       | 154 +++++++++++++
+ .../commands/shared/workflow-step-fingerprint.ts   | 157 ++++----------
+ .../observation/git-snapshot.capture.unit.test.ts  |  65 ++++++
+ .../src/runner/observation/git-snapshot.test.ts    |  31 +++
+ .../src/runner/observation/git-snapshot.ts         |   6 +-
+ .../src/runner/observation/git-snapshot/capture.ts | 240 +++++++++++++++------
+ 6 files changed, 473 insertions(+), 180 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221854-87892M-53b10f19bf6e40fb01d85f8f",
+  "prepared_at": "2026-08-01T16:56:10.881Z",
+  "task": {
+    "id": "202607221854-87892M",
+    "revision": 15,
+    "objective": "Add fingerprinted preparation caches\n\nRF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: caches for selected measured nodes, exact keys/TTL, dependency invalidation, provider freshness policy, corruption fallback, receipts, bounded storage, warm/cold benchmarks, and stale-state negative tests.\n- Out of scope: caching semantic decisions without provenance/invalidation or adding a DAG whose benchmark does not justify complexity.",
+      "1. Choose nodes whose measured cost and determinism justify caching.\n2. Define exact keys from fingerprint components plus TTL/freshness policy.\n3. Implement bounded cache storage and hit/miss/invalidation receipts.\n4. Fall back safely on corruption, missing provider truth, or version mismatch.\n5. Prove warm improvement and exhaustive stale-state rejection.",
+      "1. Repeat unchanged golden scenarios. Expected: selected nodes hit cache and warm preparation improves by the declared benchmark threshold.\n2. Change task, Git, backend, policy, blueprint, knowledge, provider, and authority inputs independently. Expected: every affected node misses/invalidates and no stale value reaches a work order.\n3. Corrupt or version-mismatch cache entries. Expected: controlled miss/rebuild with no functional failure or silent reuse.\n4. Inspect semantic result paths. Expected: no semantic decision is cached without explicit provenance and invalidation.\n5. Run cache tests, contract CI, typecheck, and cold/warm benchmarks."
+    ]
+  },
+  "evaluated_sha": "6e1e19174162ba5361e7dfe03985d5092a9d61d5",
+  "diff_base_sha": "451a8a6e980f9f2724bce718e807a8675fd89eeb",
+  "blueprint_digest": "653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221854-87892M/README.md",
+      "sha256": "sha256:17c55610904e9d12bc153ab4e898e44077fdcc79185f6e62c957bcd5fbaf2daa",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:c6d0c883e2bd5251ca9945ae0f83e6870754bbbb9b798caf514a799ffd49f684",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221854-87892M/verification/20260801165536769-e5385260c2e9f58f.json",
+      "sha256": "sha256:7909139cd8fedf90265184c780f69dca84d07eb2e409b06f3cc0b6a7ffdc9fed",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json",
+      "sha256": "sha256:42a33290ea5e28d7a5fb5480ea1f0bae6666702d9fff05e452aef69502b2d112",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-2",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json",
+      "sha256": "sha256:91cf26bb4c02fdf781dd1525f20a581961259d2c3a7b1d49cf56090e8cb55e12",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-3",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json",
+      "sha256": "sha256:a544921a4b7e3ce23a79527c3258a265b128ab182d7a42ad7f2b3fea613124d0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
