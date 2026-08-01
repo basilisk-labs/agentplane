@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The measured no-go leaves runtime behavior unchanged and removes all cache and concurrent-observation prototypes; therefore the cache-specific stale-state, corruption, and concurrency reuse paths are unreachable in the evaluated tree.",
+      "broken_invariant": "No invariant is broken: the approved scope explicitly excludes complexity whose benchmark does not justify it, and the frozen current-SHA evidence records passing regression checks plus zero production and test delta.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:3f2e79c3be6bdd9bef41b6765face053b4c56fa73773a2fc52b3810ba31eeb5c",
+          "section": "Scope"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json",
+          "sha256": "sha256:6b18e064b5297d265e28376714b6852d6d528bc4e3e3feac5307c07c3c75bab1",
+          "section": "decision"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json",
+          "sha256": "sha256:6a628480d3333ba40330a41d5c605562fc10a5394c1730953eb1c62a73f0f97b",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json",
+          "sha256": "sha256:5f04ed2cf7cfe9b8f021a2a0362596a65d2779bfb1bb8c3052f218a0c2c38004",
+          "section": "repository state"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The five-percent end-to-end improvement threshold is treated as sufficient justification for rejecting persistent cache complexity.",
+    "The recorded machine and dirty-worktree benchmark scenario are representative enough for the no-go decision; the frozen evidence explicitly identifies this as machine- and scenario-specific."
+  ]
+}
