@@ -657,13 +657,6 @@
           "line": 52,
           "col": 17
         }
-      ],
-      "types": [
-        {
-          "name": "RunDeps",
-          "line": 11,
-          "col": 29
-        }
       ]
     },
     {

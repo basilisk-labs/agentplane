@@ -8,13 +8,12 @@ import {
   type CommandEntry,
   type CommandPreparationTrace,
   type CommandSessionResolvers,
-  type RunDeps,
 } from "./command-catalog/kernel.js";
 
 export function buildRegistry(opts: {
-  getCtx: RunDeps["getCtx"];
-  getResolvedProject: RunDeps["getResolvedProject"];
-  getLoadedConfig: RunDeps["getLoadedConfig"];
+  getCtx: CommandSessionResolvers["getCtx"];
+  getResolvedProject: CommandSessionResolvers["getResolvedProject"];
+  getLoadedConfig: CommandSessionResolvers["getLoadedConfig"];
   getEvaluatorArtifactPort: CommandSessionResolvers["getEvaluatorArtifactPort"];
   onPreparationTrace?: (event: CommandPreparationTrace) => void;
   entries?: readonly CommandEntry[];
@@ -25,14 +24,11 @@ export function buildRegistry(opts: {
       helpSpec,
       ...getHelpCommandEntries("user").map((entry) => makeHelpSpecForEntry(entry)),
     ]);
-  const deps: RunDeps = {
+  const resolvers: CommandSessionResolvers = {
     getCtx: opts.getCtx,
     getResolvedProject: opts.getResolvedProject,
     getLoadedConfig: opts.getLoadedConfig,
     getHelpJsonForDocs,
-  };
-  const resolvers: CommandSessionResolvers = {
-    ...deps,
     getEvaluatorArtifactPort: opts.getEvaluatorArtifactPort,
     onPreparationTrace: opts.onPreparationTrace,
   };

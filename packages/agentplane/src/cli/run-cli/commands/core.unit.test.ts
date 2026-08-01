@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RunDeps } from "../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
 
 const mockResolveProject =
   vi.fn<
@@ -186,13 +186,9 @@ describe("core commands (unit)", () => {
     }) as unknown as typeof process.stdout.write);
 
     const { makeRunAgentsHandler } = await import("./core/agents.js");
-    const deps: RunDeps = {
-      getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
+    const deps: Pick<CommandSessionResolvers, "getResolvedProject"> = {
       getResolvedProject: (_cmd) =>
         Promise.resolve({ gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" }),
-      getLoadedConfig: (_cmd) =>
-        Promise.reject(new Error("getLoadedConfig not used in agents unit tests")),
-      getHelpJsonForDocs: () => [],
     };
     const runAgents = makeRunAgentsHandler(deps);
 
@@ -237,13 +233,9 @@ describe("core commands (unit)", () => {
     );
 
     const { makeRunAgentsHandler } = await import("./core/agents.js");
-    const deps: RunDeps = {
-      getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
+    const deps: Pick<CommandSessionResolvers, "getResolvedProject"> = {
       getResolvedProject: (_cmd) =>
         Promise.resolve({ gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" }),
-      getLoadedConfig: (_cmd) =>
-        Promise.reject(new Error("getLoadedConfig not used in agents unit tests")),
-      getHelpJsonForDocs: () => [],
     };
     const runAgents = makeRunAgentsHandler(deps);
     const rc = await runAgents(ctx, {});

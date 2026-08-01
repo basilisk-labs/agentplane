@@ -6,7 +6,7 @@ import { CliError } from "../../../../shared/errors.js";
 import { createCliEmitter } from "../../../output.js";
 import type { CommandHandler, CommandSpec } from "../../../spec/spec.js";
 import { fileExists } from "../../../fs-utils.js";
-import type { RunDeps } from "../../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../../command-catalog/kernel.js";
 
 import { parseAgentProfileJson } from "./agent-profiles.js";
 import { wrapCommand } from "../wrap-command.js";
@@ -50,7 +50,7 @@ function formatAgentsTableLines(
 }
 
 export function makeRunAgentsHandler(
-  deps: Pick<RunDeps, "getResolvedProject">,
+  deps: Pick<CommandSessionResolvers, "getResolvedProject">,
 ): CommandHandler<AgentsParsed> {
   return async (ctx) =>
     wrapCommand({ command: "agents", rootOverride: ctx.rootOverride }, async () => {
