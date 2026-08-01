@@ -2,10 +2,10 @@
 id: "202607221908-YD5J89"
 title: "Migrate context and evaluator command boundaries"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
   findings:
     - "The confined evaluator artifact port closes the prior authority leak: callers receive only a frozen prepare operation, while recording and provider capabilities remain separately declared."
 commit:
-  hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
-  message: "🔐 YD5J89 task: confine evaluator artifact preparation"
+  hash: "83961c5ebfbaac7489f08cf055535d5c386d4b8d"
+  message: "✅ YD5J89 task: record confined port quality pass"
 comments:
   -
     author: "CODER"
@@ -91,6 +91,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: evaluator preparation now resolves a path-confined frozen port and no-record handlers cannot obtain CommandContext, task, Git, backend, approval, or generic file-write services."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -184,8 +187,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52 tests; real registry no-record execution created the canonical evidence packet with task README unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed."
+  -
+    type: "status"
+    at: "2026-08-01T02:44:23.288Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:42:01.481Z"
+doc_updated_at: "2026-08-01T02:44:23.289Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -420,8 +430,8 @@ sections:
       Resolution: Accepted after compile-time surface checks, real registry/filesystem regression coverage, traversal rejection, and repository critical/architecture gates.
 extensions:
   implementation_commit:
-    hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
-    message: "♻️ YD5J89 task: route task-aware context sessions"
+    hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
+    message: "🔐 YD5J89 task: confine evaluator artifact preparation"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
