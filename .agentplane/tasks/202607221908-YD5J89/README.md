@@ -4,7 +4,7 @@ title: "Migrate context and evaluator command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +38,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "1d315e9e1a465b9e87ad476759e0e41ea1d4a69b"
+  message: "♻️ YD5J89 task: migrate context evaluator command boundaries"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: granular context/evaluator sessions, typed in-process results, renderer boundaries, and single-context supervision."
 events:
   -
     type: "status"
@@ -51,8 +56,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T01:34:08.660Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: granular context/evaluator sessions, typed in-process results, renderer boundaries, and single-context supervision."
 doc_version: 3
-doc_updated_at: "2026-08-01T00:38:26.014Z"
+doc_updated_at: "2026-08-01T01:34:08.660Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
