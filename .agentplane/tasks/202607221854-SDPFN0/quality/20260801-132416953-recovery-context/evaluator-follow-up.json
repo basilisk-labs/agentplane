@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221854-SDPFN0-0fb31f2e118d0b4ae0d4751f",
+  "task_id": "202607221854-SDPFN0",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Повторно подготовить замороженный пакет с детерминированными результатами обязательных и фокусных проверок на evaluated_sha d89988611fbdd3efaba3c9054d122104e6717a2b; текущий diff и контекст задачи присутствуют, но проверить заявленный успех по имеющимся evidence невозможно.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Замороженный пакет содержит только итоговую заметку TESTER о прохождении проверок, но не содержит детерминированных записей, истории запусков или runtime-доказательств, поэтому нельзя подтвердить положительные, отрицательные и чувствительные к ленивой подготовке пути.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:90f4f2bfed2a88e523e20b39ad9a7efee5f2566b1395a8f913d0da8e90686ae1",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-result.json"
+}

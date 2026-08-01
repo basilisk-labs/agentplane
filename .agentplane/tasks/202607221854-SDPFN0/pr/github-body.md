@@ -19,10 +19,8 @@ Integrate the five independently verified command-family vertical slices, remove
 - Note:
 
 ```text
-PASS at implementation d89988611fbd: all five dependency slices are DONE; explicit capability
-catalog and typed loaders verified; coarse CommandNeeds metadata absent; ci:contract, arch:check,
-guards:check, typecheck, critical CLI (77 tests), full agentplane suite (3206 tests), and focused
-catalog/session tests (34 tests) passed.
+PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at
+d89988611fbd.
 ```
 - Canonical workflow state lives in the task README.
 
