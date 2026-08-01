@@ -8,6 +8,7 @@ const VERIFY_OUTPUT_TAIL_BYTES = 1024 * 1024;
 const VERIFY_EXECUTABLES = new Set([
   "bash",
   "bun",
+  "bunx",
   "cat",
   "chmod",
   "gh",
