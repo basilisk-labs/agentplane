@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -35,8 +35,8 @@ verification:
   note: null
   attempts: 0
 commit:
-  hash: "cd1c7119b85dd9e524e52293da33684a847ddabd"
-  message: "🔄 4FNZPG task: merge current main for release verification"
+  hash: "2f97bc12ef804fc734114b8d8544649d1442de65"
+  message: "🧹 4FNZPG release: satisfy migration matrix lint"
 comments:
   -
     author: "TESTER"
@@ -44,6 +44,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: installed-tarball migration matrix covers fresh installs, active upgrades from v0.6.24 and v0.6.26 in direct and branch_pr, task README v2/v3, and exact WORKFLOW v1 rollback; current main is merged for final release verification."
+  -
+    author: "CODER"
+    body: "Implementation refreshed after the full release gate found and focused checks cleared seven lint-only findings in the installed migration matrix."
 events:
   -
     type: "status"
@@ -59,8 +62,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation recorded: installed-tarball migration matrix covers fresh installs, active upgrades from v0.6.24 and v0.6.26 in direct and branch_pr, task README v2/v3, and exact WORKFLOW v1 rollback; current main is merged for final release verification."
+  -
+    type: "status"
+    at: "2026-08-01T20:29:23.836Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation refreshed after the full release gate found and focused checks cleared seven lint-only findings in the installed migration matrix."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:24:53.056Z"
+doc_updated_at: "2026-08-01T20:29:23.836Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
