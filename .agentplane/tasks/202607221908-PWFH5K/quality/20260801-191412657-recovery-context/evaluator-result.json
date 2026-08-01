@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The closure contract is manually enumerated, so the guard cannot independently detect a mandatory task omitted from both the contract and the release-root ancestry.",
+      "broken_invariant": "The guard proves dependency closure only relative to the declared required-task set, not the semantic completeness of that set; this is acceptable under the explicit out-of-scope constraint but remains a residual assumption.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-PWFH5K/README.md",
+          "sha256": "sha256:53abb8e6a6e766b1885aa55640727e483304a5f6490084cfb00cc9e7c6133cfe",
+          "section": "Scope"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-PWFH5K/quality/20260801-191412657-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:dda06fbe343a03ced502a15c283a8285ff423bff362a596a20f7d087471ce271",
+          "section": "docs/internal/v0.7-release-task-closure.json"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A negative fixture where a dependency reachable from the release root is absent from both required_task_ids and optional_tasks, asserting the unclassified-node diagnostic and dependency path.",
+    "Malformed-contract fixtures covering duplicate classifications, a task present in both required and optional sets, and an unknown task referenced directly by the contract."
+  ],
+  "hidden_assumptions": [
+    "The manually maintained required_task_ids list is the authoritative and complete universe of mandatory v0.7 tasks.",
+    "Concurrent task-document updates cannot occur during one checker invocation in a way that produces an inconsistent filesystem snapshot."
+  ]
+}

@@ -1,1 +1,1 @@
-🚧 PWFH5K task: Enforce mandatory release dependency closure [202607221908-PWFH5K]
+✅ PWFH5K task: Enforce mandatory release dependency closure [202607221908-PWFH5K]

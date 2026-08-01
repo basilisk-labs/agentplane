@@ -3,14 +3,22 @@
   "branch": "task/202607221908-PWFH5K/enforce-mandatory-release-dependency-closure",
   "created_at": "2026-08-01T18:48:16.365Z",
   "diffstat_sha256": "sha256:453610e10b53085da2e6b8a062f4ebe41d512c67d969fd3723cd0f6a040ca57d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-01T19:13:13.772Z",
+  "last_verified_diffstat_sha256": "sha256:453610e10b53085da2e6b8a062f4ebe41d512c67d969fd3723cd0f6a040ca57d",
   "pr_number": 4726,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4726",
+  "pre_merge_closure": {
+    "basis_commit": "24183b04ebd63e8c6bf8bcbcaafe85ba72328b51",
+    "branch": "task/202607221908-PWFH5K/enforce-mandatory-release-dependency-closure",
+    "pr_number": 4726,
+    "recorded_at": "2026-08-01T19:16:02.434Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221908-PWFH5K",
   "updated_at": "2026-08-01T18:52:52.216Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

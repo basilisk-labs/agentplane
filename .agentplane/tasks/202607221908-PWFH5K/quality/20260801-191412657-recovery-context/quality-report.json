@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-PWFH5K",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T19:14:59.579Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "24183b04ebd63e8c6bf8bcbcaafe85ba72328b51",
+  "blueprint_digest": "cae53404e3ae8d03a273e2e42e39c2587fc164f6d4557386182d5eb5917897a6",
+  "findings": [
+    "The closure contract is manually enumerated, so the guard cannot independently detect a mandatory task omitted from both the contract and the release-root ancestry."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-PWFH5K/README.md",
+    ".agentplane/tasks/202607221908-PWFH5K/quality/20260801-191412657-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "A negative fixture where a dependency reachable from the release root is absent from both required_task_ids and optional_tasks, asserting the unclassified-node diagnostic and dependency path.",
+    "Malformed-contract fixtures covering duplicate classifications, a task present in both required and optional sets, and an unknown task referenced directly by the contract."
+  ],
+  "hidden_assumptions": [
+    "The manually maintained required_task_ids list is the authoritative and complete universe of mandatory v0.7 tasks.",
+    "Concurrent task-document updates cannot occur during one checker invocation in a way that produces an inconsistent filesystem snapshot."
+  ],
+  "residual_risks": []
+}
