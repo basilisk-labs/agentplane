@@ -24,12 +24,15 @@ Created: 2026-08-01T18:07:23.250Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T18:07:23.250Z
+- Updated: 2026-08-01T18:09:19.425Z
 - Branch: task/202607221854-K7799B/close-all-agentplane-0-7-architecture-guard-viol
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/architecture/layering.imports.test.ts      | 97 ++--------------------
+ .../src/commands/doctor/layering.test.ts           | 62 ++++++++++++++
+ .../agentplane/src/commands/doctor/layering.ts     | 94 ++++++++++++++-------
+ 3 files changed, 132 insertions(+), 121 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,4 @@
+ .../src/architecture/layering.imports.test.ts      | 97 ++--------------------
+ .../src/commands/doctor/layering.test.ts           | 62 ++++++++++++++
+ .../agentplane/src/commands/doctor/layering.ts     | 94 ++++++++++++++-------
+ 3 files changed, 132 insertions(+), 121 deletions(-)
