@@ -24,7 +24,7 @@ Created: 2026-08-01T15:52:24.595Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T15:52:24.595Z
+- Updated: 2026-08-01T15:52:59.720Z
 - Branch: task/202607221854-87892M/add-fingerprinted-preparation-caches
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
