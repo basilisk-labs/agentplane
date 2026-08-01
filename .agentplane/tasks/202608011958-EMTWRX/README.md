@@ -4,7 +4,7 @@ title: "Archive resolved RF-24/RF-25 help snapshot incident"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -34,6 +34,33 @@ verification:
   updated_by: "TESTER"
   note: "PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-01T20:11:27.318Z"
+  updated_by: "HUMAN"
+  note: "The archival is complete, evidence-backed, and bounded to the resolved incident; it removes the release blocker without weakening policy enforcement."
+  evaluated_sha: "a544a527fcf6940a683bf97aec4afe33c2b65a7b"
+  blueprint_digest: "565fcfd0088aebd9e02c6a8fd1602f53946eb082a29fa0d4760c15f7f70c5703"
+  evidence_refs:
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608011958-EMTWRX/README.md"
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608011958-EMTWRX/quality/20260801-201127047-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/dod.docs.md"
+    - ".agentplane/policy/security.must.md"
+    - "docs/developer/incident-archive.mdx"
+    - ".agentplane/policy/incidents.md"
+    - "packages/agentplane/assets/policy/incidents.md"
+    - ".agentplane/tasks/202608011958-EMTWRX/verification/20260801201028900-65ce8a3a85b7ff78.json"
+  findings:
+    - "The historical archive preserves the complete INC-20260801-01 record, source implementation commit 8fc6ef287988, merged main commit e6314937c7de05d3a3a68c9e666c6a4aaaf4fc9b, focused regression evidence, final state, archive owner, and closure reason."
+    - "The active source and packaged incident registries remove the same single entry and remain byte-identical; no runtime implementation or canonical policy rule changes."
 commit:
   hash: "5832d8fed38943727e4380d3aefc472f822f10c1"
   message: "🗂️ EMTWRX docs: archive resolved help snapshot incident"
