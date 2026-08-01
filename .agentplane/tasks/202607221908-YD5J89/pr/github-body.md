@@ -16,12 +16,7 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator
-51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
-```
+- Note: Reverified evaluator capability boundaries at c9f9423d36b7 after hosted contract rework.
 - Canonical workflow state lives in the task README.
 
 <details>

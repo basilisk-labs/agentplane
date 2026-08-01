@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run guards:check",
+    "bun run schemas:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T09:18:12.405Z",
+    "updated_by": "TESTER",
+    "note": "Verified exact backend/task/Git capability separation on cef1b58cb88c: focused context/evaluator 51/51, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
