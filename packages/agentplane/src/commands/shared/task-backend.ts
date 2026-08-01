@@ -7,6 +7,10 @@ import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
 import { emitTraceEvent } from "../../shared/trace-events.js";
 import {
+  measurePreparationNode,
+  type PreparationTraceRecorder,
+} from "../../shared/preparation-trace.js";
+import {
   loadTaskBackend,
   type TaskBackendCapabilities,
   type TaskBackend,
@@ -38,6 +42,7 @@ export type CommandContext = {
   backendId: string;
   backendConfigPath: string;
   git: GitContext;
+  preparationTrace?: PreparationTraceRecorder | null;
 
   memo: CommandMemo;
 };
@@ -155,6 +160,7 @@ export async function loadCommandContext(opts: {
   rootOverride?: string | null;
   resolvedProject?: ResolvedProject;
   config?: AgentplaneConfig;
+  preparationTrace?: PreparationTraceRecorder | null;
 }): Promise<CommandContext> {
   const backendLoaded = await loadTaskBackend({
     cwd: opts.cwd,
@@ -179,6 +185,7 @@ export async function loadCommandContext(opts: {
     backendId,
     backendConfigPath,
     git: new GitContext({ gitRoot: resolved.gitRoot }),
+    preparationTrace: opts.preparationTrace ?? null,
     memo: {},
   };
 }
@@ -249,11 +256,28 @@ export async function loadBackendTask(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const task = await loadTaskFromContext({
-    ctx,
-    taskId: opts.taskId,
-    preferBranchSnapshot: opts.preferBranchSnapshot,
-    branchSnapshotBranch: opts.branchSnapshotBranch,
+  const task = await measurePreparationNode({
+    recorder: ctx.preparationTrace,
+    node: "task_backend_read",
+    scope: `task:${opts.taskId}`,
+    dependencies: ["command_context"],
+    cacheability: "exact",
+    cachePolicyReason:
+      "Task identity, revision, backend, and complete projection are fingerprinted.",
+    operation: async () =>
+      await loadTaskFromContext({
+        ctx,
+        taskId: opts.taskId,
+        preferBranchSnapshot: opts.preferBranchSnapshot,
+        branchSnapshotBranch: opts.branchSnapshotBranch,
+      }),
+    fingerprintInputs: (task) => ({
+      task_id: opts.taskId,
+      backend_id: ctx.backendId,
+      backend_config_path: ctx.backendConfigPath,
+      task_projection: task,
+    }),
+    output: (task) => task,
   });
   return {
     backend: ctx.taskBackend,

@@ -12,9 +12,11 @@ import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
 import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
 import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import type { CommandContext } from "./task-backend.js";
 import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
 import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
+import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
 import {
   observeWorkflowPolicyScope,
   type WorkflowPolicyScopeObservation,
@@ -433,14 +435,32 @@ export async function captureWorkflowStepFingerprint(opts: {
     "blueprint",
     "resolved-snapshot.json",
   );
+  const traceScope = `task:${opts.state.task.id}:route_fingerprint`;
   const blueprintObservation = repositoryRoot
-    ? await observeWorkflowBlueprint({
-        ctx: opts.ctx,
-        repositoryRoot,
-        task: opts.state.task,
-        step: opts.step,
-        workflowMode: opts.state.workflowMode,
-        relativePath: blueprintPath,
+    ? await measurePreparationNode({
+        recorder: opts.ctx.preparationTrace,
+        node: "blueprint_resolution",
+        scope: traceScope,
+        dependencies: ["task_backend_read"],
+        cacheability: "exact",
+        cachePolicyReason:
+          "Blueprint source, task state, workflow mode, and resolved projection are fingerprinted.",
+        operation: async () =>
+          await observeWorkflowBlueprint({
+            ctx: opts.ctx,
+            repositoryRoot,
+            task: opts.state.task,
+            step: opts.step,
+            workflowMode: opts.state.workflowMode,
+            relativePath: blueprintPath,
+          }),
+        fingerprintInputs: (observation) => ({
+          task: semanticTaskComponent(opts.state),
+          workflow_mode: opts.state.workflowMode,
+          step: workflowAuthority(opts.step),
+          blueprint_observation: observation,
+        }),
+        output: (observation) => observation,
       })
     : {
         component: unavailableComponent(
@@ -450,9 +470,24 @@ export async function captureWorkflowStepFingerprint(opts: {
         policyModules: [],
       };
   const policyScope = repositoryRoot
-    ? await observeWorkflowPolicyScope({
-        repositoryRoot,
-        state: opts.state,
+    ? await measurePreparationNode({
+        recorder: opts.ctx.preparationTrace,
+        node: "policy_scope",
+        scope: traceScope,
+        dependencies: ["task_backend_read"],
+        cacheability: "exact",
+        cachePolicyReason: "Policy selection is bound to the observed task and changed-path scope.",
+        operation: async () =>
+          await observeWorkflowPolicyScope({
+            repositoryRoot,
+            state: opts.state,
+          }),
+        fingerprintInputs: (scope) => ({
+          task_id: opts.state.task.id,
+          workflow_mode: opts.state.workflowMode,
+          policy_scope: scope,
+        }),
+        output: (scope) => scope,
       })
     : {
         state: "unavailable" as const,
@@ -465,40 +500,57 @@ export async function captureWorkflowStepFingerprint(opts: {
     policyScope.state === "present" ? policyScope.changedPaths : [],
   );
   const [knowledge, policy, backendProjection] = repositoryRoot
-    ? await Promise.all([
-        observeKnowledgeProjection(repositoryRoot),
-        policyScope.state === "present"
-          ? observeWorkflowPolicy({
-              ctx: opts.ctx,
-              repositoryRoot,
-              policyPaths: selectedPolicyPaths,
-              scope: policyScope,
-            })
-          : Promise.resolve(
-              unavailableComponent(
+    ? await traceWorkflowFingerprintComponents({
+        recorder: opts.ctx.preparationTrace,
+        scope: traceScope,
+        backendId: opts.ctx.backendId,
+        policyScope,
+        selectedPolicyPaths,
+        observeKnowledge: async () => await observeKnowledgeProjection(repositoryRoot),
+        observePolicy: async () =>
+          policyScope.state === "present"
+            ? await observeWorkflowPolicy({
+                ctx: opts.ctx,
+                repositoryRoot,
+                policyPaths: selectedPolicyPaths,
+                scope: policyScope,
+              })
+            : unavailableComponent(
                 "workflow_route_policy",
                 "policy_graph_observation_unavailable",
-                {
-                  reason: policyScope.reason,
-                  ...policyScope.evidence,
-                },
+                { reason: policyScope.reason, ...policyScope.evidence },
               ),
-            ),
-        observeBackendProjection(opts.ctx, { repository_root: repositoryRoot }),
-      ])
+        observeBackend: async () =>
+          await observeBackendProjection(opts.ctx, { repository_root: repositoryRoot }),
+      })
     : [
         unavailableComponent("context_manifest_lock", "authoritative_checkout_unavailable"),
         unavailableComponent("workflow_route_policy", "authoritative_checkout_unavailable"),
         unavailableComponent("task_backend_runtime", "authoritative_checkout_unavailable"),
       ];
   const git = repositoryRoot
-    ? await captureGitSnapshot({
-        repository_root: repositoryRoot,
-        excluded_roots: semanticGitExclusions({
-          ctx: opts.ctx,
-          taskId: opts.state.task.id,
-          policyPaths: selectedPolicyPaths,
+    ? await measurePreparationNode({
+        recorder: opts.ctx.preparationTrace,
+        node: "git_snapshot",
+        scope: traceScope,
+        dependencies: ["policy_scope", "backend_projection"],
+        cacheability: "exact",
+        cachePolicyReason:
+          "HEAD, index, dirty paths, path digests, and exclusions are fingerprinted.",
+        operation: async () =>
+          await captureGitSnapshot({
+            repository_root: repositoryRoot,
+            excluded_roots: semanticGitExclusions({
+              ctx: opts.ctx,
+              taskId: opts.state.task.id,
+              policyPaths: selectedPolicyPaths,
+            }),
+          }),
+        fingerprintInputs: (snapshot) => ({
+          repository_root: repositoryRoot,
+          git_snapshot: snapshot,
         }),
+        output: (snapshot) => snapshot,
       })
     : null;
   const gitComponent =

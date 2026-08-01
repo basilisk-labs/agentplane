@@ -19,6 +19,7 @@ import {
   type ResolvedExecutionProfileRuntime,
 } from "../../runtime/execution-profile/index.js";
 import { CliError } from "../../shared/errors.js";
+import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import {
   collectRunnerBasePrompts,
   RunnerPromptModuleCompilationError,
@@ -164,28 +165,80 @@ export async function prepareAgentWorkOrder(opts: {
     phase: "discovery",
   });
   try {
-    const taskEnvelope = await assembleRunnerTaskContext({
-      ctx: executionContext.command,
-      cwd: opts.cwd,
-      rootOverride: opts.root_override ?? null,
-      task_id: opts.task_id,
+    const traceScope = `task:${opts.task_id}:work_order`;
+    const taskEnvelope = await measurePreparationNode({
+      recorder: executionContext.command.preparationTrace,
+      node: "task_context_assembly",
+      scope: traceScope,
+      dependencies: ["task_backend_read", "command_context"],
+      cacheability: "exact",
+      cachePolicyReason:
+        "The task envelope is bound to the complete source task and repository context.",
+      operation: async () =>
+        await assembleRunnerTaskContext({
+          ctx: executionContext.command,
+          cwd: opts.cwd,
+          rootOverride: opts.root_override ?? null,
+          task_id: opts.task_id,
+        }),
+      fingerprintInputs: (envelope) => ({
+        task_id: opts.task_id,
+        source_task: envelope.source_task,
+        task_projection: envelope.task,
+      }),
+      output: (envelope) => envelope,
     });
-    const basePrompts = await collectRunnerBasePrompts({
-      git_root: executionContext.repo.git_root,
-      owner_id: taskEnvelope.source_task.owner,
-      agents_dir: executionContext.harness.workflow.paths.agents_dir,
-      task: taskEnvelope.task,
-      command: opts.runner_command ?? "task run",
-      recipe: opts.recipe,
-      harness: executionContext.harness,
-      execution_profile: executionProfile,
+    const basePrompts = await measurePreparationNode({
+      recorder: executionContext.command.preparationTrace,
+      node: "prompt_compilation",
+      scope: traceScope,
+      dependencies: ["task_context_assembly", "policy_evaluation"],
+      cacheability: "exact",
+      cachePolicyReason:
+        "Formal prompt modules, task projection, harness, recipe, and execution profile are fingerprinted.",
+      operation: async () =>
+        await collectRunnerBasePrompts({
+          git_root: executionContext.repo.git_root,
+          owner_id: taskEnvelope.source_task.owner,
+          agents_dir: executionContext.harness.workflow.paths.agents_dir,
+          task: taskEnvelope.task,
+          command: opts.runner_command ?? "task run",
+          recipe: opts.recipe,
+          harness: executionContext.harness,
+          execution_profile: executionProfile,
+        }),
+      fingerprintInputs: (prompts) => ({
+        task: taskEnvelope.task,
+        harness: executionContext.harness,
+        recipe: opts.recipe ?? null,
+        execution_profile: executionProfile,
+        compiled_prompts: prompts,
+      }),
+      output: (prompts) => prompts,
     });
-    const blueprint = await resolveRunnerBlueprintPlan({
-      taskEnvelope,
-      config: executionContext.config,
-      projectRoot: executionContext.repo.git_root,
-      recipe: opts.recipe,
-      basePrompts,
+    const blueprint = await measurePreparationNode({
+      recorder: executionContext.command.preparationTrace,
+      node: "blueprint_resolution",
+      scope: traceScope,
+      dependencies: ["task_context_assembly", "prompt_compilation"],
+      cacheability: "exact",
+      cachePolicyReason: "Blueprint inputs and the resolved plan are fingerprinted.",
+      operation: async () =>
+        await resolveRunnerBlueprintPlan({
+          taskEnvelope,
+          config: executionContext.config,
+          projectRoot: executionContext.repo.git_root,
+          recipe: opts.recipe,
+          basePrompts,
+        }),
+      fingerprintInputs: (resolved) => ({
+        task: taskEnvelope.task,
+        config: executionContext.config,
+        recipe: opts.recipe ?? null,
+        prompts: basePrompts,
+        resolved_blueprint: resolved,
+      }),
+      output: (resolved) => resolved,
     });
     if (!blueprint) {
       return {
@@ -212,17 +265,50 @@ export async function prepareAgentWorkOrder(opts: {
         execution_context: executionContext,
       },
     });
-    const knowledgeRetrieval = await prepareTaskKnowledgeRetrieval({
-      command_ctx: executionContext.command,
-      task_envelope: taskEnvelope,
-      blueprint,
-      repository_root: executionContext.repo.git_root,
-      semantic_selector: opts.semantic_selector,
+    const knowledgeRetrieval = await measurePreparationNode({
+      recorder: executionContext.command.preparationTrace,
+      node: "knowledge_retrieval",
+      scope: traceScope,
+      dependencies: ["task_context_assembly", "blueprint_resolution"],
+      cacheability: "exact",
+      cachePolicyReason:
+        "Knowledge references are digest-bound to the task, blueprint, and manifest inputs.",
+      operation: async () =>
+        await prepareTaskKnowledgeRetrieval({
+          command_ctx: executionContext.command,
+          task_envelope: taskEnvelope,
+          blueprint,
+          repository_root: executionContext.repo.git_root,
+          semantic_selector: opts.semantic_selector,
+        }),
+      fingerprintInputs: (retrieval) => ({
+        task: taskEnvelope.task,
+        blueprint,
+        retrieval_receipt: retrieval.receipt,
+        knowledge_refs: retrieval.knowledge_refs,
+      }),
+      output: (retrieval) => retrieval,
     });
-    const briefProjection = await buildAgentWorkOrderLegacyBriefProjection({
-      command_ctx: executionContext.command,
-      task_envelope: taskEnvelope,
-      blueprint,
+    const briefProjection = await measurePreparationNode({
+      recorder: executionContext.command.preparationTrace,
+      node: "rendering",
+      scope: traceScope,
+      dependencies: ["task_context_assembly", "blueprint_resolution"],
+      cacheability: "exact",
+      cachePolicyReason:
+        "The compatibility projection is a deterministic rendering of typed inputs.",
+      operation: async () =>
+        await buildAgentWorkOrderLegacyBriefProjection({
+          command_ctx: executionContext.command,
+          task_envelope: taskEnvelope,
+          blueprint,
+        }),
+      fingerprintInputs: (projection) => ({
+        task: taskEnvelope.task,
+        blueprint,
+        rendered_projection: projection,
+      }),
+      output: (projection) => projection,
     });
     const canonicalWorkOrder = buildCanonicalAgentWorkOrder({
       prepared: {

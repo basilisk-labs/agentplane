@@ -26,6 +26,10 @@ import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 import { resolveAgentModeArgv } from "./run-cli/agent-mode.js";
 import { emitTraceEvent } from "../shared/trace-events.js";
+import {
+  createPreparationTraceRecorder,
+  preparationTraceDetails,
+} from "../shared/preparation-trace.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json", "--all"]);
 
 type CliResolvedProject = Awaited<ReturnType<typeof resolveProject>>;
@@ -53,6 +57,7 @@ async function maybeResolveProject(opts: {
 }
 
 export async function runCli(argv: string[]): Promise<number> {
+  const preparationTrace = createPreparationTraceRecorder();
   let jsonErrors = false;
   let withFeedbackIssuePromptContext: (err: CliError) => Promise<CliError> = function passthrough(
     err,
@@ -170,6 +175,7 @@ export async function runCli(argv: string[]): Promise<number> {
           rootOverride: globals.root ?? null,
           resolvedProject,
           config: loadedConfig.config,
+          preparationTrace,
         });
       })();
       try {
@@ -236,13 +242,7 @@ export async function runCli(argv: string[]): Promise<number> {
           emitTraceEvent({
             component: "command-session",
             event: "preparation_node",
-            details: {
-              command: event.command,
-              capability: event.capability,
-              node: event.node,
-              status: event.status,
-              duration_ms: event.durationMs,
-            },
+            details: preparationTraceDetails(event),
           }),
       });
     };

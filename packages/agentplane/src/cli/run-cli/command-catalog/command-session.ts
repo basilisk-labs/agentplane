@@ -4,6 +4,10 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
 import type { EvaluatorArtifactPreparationPort } from "../../../commands/evaluator/evaluator-artifact-port.js";
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
+import {
+  PreparationTraceRecorder,
+  type PreparationTraceEvent,
+} from "../../../shared/preparation-trace.js";
 import { exitCodeForError } from "../../exit-codes.js";
 import type { HelpJson } from "../../spec/help-render.js";
 
@@ -35,12 +39,13 @@ export type CommandPreparationNode =
   | "evaluator_artifacts"
   | "output";
 
-export type CommandPreparationTrace = {
+export type CommandPreparationTrace = Omit<
+  PreparationTraceEvent,
+  "command" | "capability" | "node"
+> & {
   command: string;
   capability: CommandCapability;
   node: CommandPreparationNode;
-  status: "resolved" | "reused" | "denied" | "failed";
-  durationMs: number;
 };
 
 type AsyncCommandCapability = Exclude<CommandCapability, "output">;
@@ -140,6 +145,47 @@ function undeclaredCapabilityError(opts: {
   });
 }
 
+const NODE_DEPENDENCIES: Record<CommandPreparationNode, readonly CommandPreparationNode[]> = {
+  project: [],
+  config: ["project"],
+  command_context: ["config"],
+  evaluator_artifacts: ["config"],
+  output: [],
+};
+
+function commandContextProjection(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value;
+  const context = value as Partial<CommandContext>;
+  return {
+    resolved_project: context.resolvedProject ?? null,
+    config: context.config ?? null,
+    backend_id: context.backendId ?? null,
+    backend_config_path: context.backendConfigPath ?? null,
+  };
+}
+
+function nodeProjection(node: CommandPreparationNode, value: unknown): unknown {
+  if (node === "command_context") return commandContextProjection(value);
+  if (node === "evaluator_artifacts") return { prepared: value !== null && value !== undefined };
+  return value;
+}
+
+function cachePolicy(node: CommandPreparationNode): {
+  cacheability: "exact" | "none";
+  cachePolicyReason: string;
+} {
+  if (node === "evaluator_artifacts") {
+    return {
+      cacheability: "none",
+      cachePolicyReason: "Evaluator artifact preparation exposes a write port.",
+    };
+  }
+  return {
+    cacheability: "exact",
+    cachePolicyReason: "The structured preparation result has explicit fingerprint inputs.",
+  };
+}
+
 export function createCommandSession<
   const TRequirements extends readonly CommandCapability[],
 >(opts: {
@@ -154,19 +200,55 @@ export function createCommandSession<
   const nodePromises = new Map<CommandPreparationNode, Promise<unknown>>();
   const now = opts.resolvers.now ?? (() => performance.now());
 
-  const record = (event: CommandPreparationTrace): void => {
-    traces.push(event);
-    opts.resolvers.onPreparationTrace?.(event);
+  const recorder = new PreparationTraceRecorder({
+    emit: (event) => {
+      const commandEvent = event as CommandPreparationTrace;
+      traces.push(commandEvent);
+      opts.resolvers.onPreparationTrace?.(commandEvent);
+    },
+  });
+
+  const record = (event: {
+    capability: CommandCapability;
+    node: CommandPreparationNode;
+    status: "resolved" | "reused" | "denied" | "failed";
+    durationMs: number;
+    value?: unknown;
+    reason?: string;
+  }): void => {
+    const dependencyValues = Object.fromEntries(
+      NODE_DEPENDENCIES[event.node].map((dependency) => [
+        dependency,
+        nodeProjection(dependency, nodeValues.get(dependency)),
+      ]),
+    );
+    const projection = nodeProjection(event.node, event.value);
+    recorder.record({
+      command: opts.command,
+      capability: event.capability,
+      node: event.node,
+      scope: `command:${opts.command}`,
+      status: event.status,
+      durationMs: event.durationMs,
+      dependencies: NODE_DEPENDENCIES[event.node],
+      fingerprintInputs:
+        event.status === "denied"
+          ? { declared_requirements: opts.requirements }
+          : { ...dependencyValues, result: projection },
+      output: projection,
+      ...cachePolicy(event.node),
+      reason: event.reason,
+    });
   };
 
   const deny = (capability: CommandCapability, operation?: string): never => {
     const node = preparationNodeForCapability(capability);
     record({
-      command: opts.command,
       capability,
       node,
       status: "denied",
       durationMs: 0,
+      reason: "capability_not_declared",
     });
     throw undeclaredCapabilityError({ command: opts.command, capability, operation });
   };
@@ -180,11 +262,11 @@ export function createCommandSession<
     const existing = nodePromises.get(node);
     if (existing) {
       record({
-        command: opts.command,
         capability,
         node,
         status: "reused",
         durationMs: 0,
+        value: nodeValues.get(node),
       });
       return await existing;
     }
@@ -220,21 +302,22 @@ export function createCommandSession<
       const value = await promise;
       nodeValues.set(node, value);
       record({
-        command: opts.command,
         capability,
         node,
         status: "resolved",
         durationMs: Math.max(0, now() - startedAt),
+        value,
       });
       return value;
     } catch (error) {
       nodePromises.delete(node);
       record({
-        command: opts.command,
         capability,
         node,
         status: "failed",
         durationMs: Math.max(0, now() - startedAt),
+        value: error instanceof Error ? { error: error.name } : null,
+        reason: "resolver_failed",
       });
       throw error;
     }
@@ -246,11 +329,11 @@ export function createCommandSession<
     const node = preparationNodeForCapability(capability);
     if (nodeValues.has(node)) {
       record({
-        command: opts.command,
         capability,
         node,
         status: "reused",
         durationMs: 0,
+        value: nodeValues.get(node),
       });
       return nodeValues.get(node) as readonly HelpJson[];
     }
@@ -259,20 +342,21 @@ export function createCommandSession<
       const value = opts.resolvers.getHelpJsonForDocs();
       nodeValues.set(node, value);
       record({
-        command: opts.command,
         capability,
         node,
         status: "resolved",
         durationMs: Math.max(0, now() - startedAt),
+        value,
       });
       return value;
     } catch (error) {
       record({
-        command: opts.command,
         capability,
         node,
         status: "failed",
         durationMs: Math.max(0, now() - startedAt),
+        value: error instanceof Error ? { error: error.name } : null,
+        reason: "resolver_failed",
       });
       throw error;
     }
