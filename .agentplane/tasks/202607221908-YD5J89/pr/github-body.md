@@ -19,8 +19,9 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 - Note:
 
 ```text
-Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch
-48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests,
+focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI
+chunks passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,13 +35,14 @@ Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator
 ```text
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  89 ++++
- .../cli/run-cli/command-catalog/command-session.ts |  28 +-
+ .../command-catalog/command-context-port.ts        | 137 +++++
+ .../cli/run-cli/command-catalog/command-session.ts |  45 +-
  .../context-evaluator-capability-profiles.ts       |  71 +++
- .../src/cli/run-cli/command-catalog/kernel.test.ts |  74 +++
+ .../src/cli/run-cli/command-catalog/kernel.test.ts | 134 ++++-
  .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
  .../src/cli/run-cli/command-loaders/project.ts     | 215 +++++++-
- .../src/cli/run-cli/registry.run.test.ts           | 299 +++++++++++
+ .../src/cli/run-cli/registry.run.test.ts           | 377 ++++++++++++++
  .../agentplane/src/cli/run-cli/registry.run.ts     |  42 +-
  .../commands/context/context-results.unit.test.ts  | 175 +++++++
  .../src/commands/context/context-runner.ts         | 344 ++++++++-----
@@ -60,7 +62,7 @@ Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 28 files changed, 2612 insertions(+), 687 deletions(-)
+ 29 files changed, 2898 insertions(+), 693 deletions(-)
 ```
 
 </details>

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T08:54:48.940Z"
+  updated_at: "2026-08-01T09:13:02.541Z"
   updated_by: "TESTER"
-  note: "Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
+  note: "Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -218,8 +218,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
+  -
+    type: "verify"
+    at: "2026-08-01T09:13:02.541Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T08:54:49.812Z"
+doc_updated_at: "2026-08-01T09:13:03.519Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -513,6 +519,71 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T09:13:02.541Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T08:54:49.812Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: formatting, schema/template/policy/release checks, builds, cold-start, generated docs, hotspot, lint, 513 test files with 3593 tests, and 12 critical CLI chunks passed.
+    Scope: repository-wide regression surface for the shared command-session runtime guard.
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: 5 files and 50 tests passed on 8c1035a4368; read-only taskBackend.writeTask and git.stage attempts return E_INTERNAL, leave README/backend/git status unchanged, and concurrent dispatches retain distinct contexts and artifact destinations.
+    Scope: in-process context/evaluator results, runtime capability denial, filesystem non-mutation, artifact confinement, and concurrent session isolation.
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: shared guards OK; trust-boundary ratchet OK with reviewed baseline unchanged.
+    Scope: source trust boundaries.
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: schemas OK.
+    Scope: generated schemas and compatibility fixtures.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed, 77 tests total, on 8c1035a4368.
+    Scope: critical CLI, Git/path isolation, and trust-boundary contracts.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript 7 build check exited 0 on 8c1035a4368.
+    Scope: workspace type and declaration compatibility.
+
+    Command: git diff --check 49254048af47..8c1035a4368 -- <semantic paths>
+    Result: pass
+    Evidence: no whitespace errors in the capability-port implementation diff.
+    Scope: command-context port, session integration, and regression tests.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -550,6 +621,10 @@ sections:
     - Observation: The registry previously cached one non-conditional CommandSession and its bound handler across in-process dispatches.
       Impact: Concurrent invocations of the same command could share prepared authority, CommandContext, or evaluator artifact destination state.
       Resolution: Construct and load a fresh session-bound handler per dispatch; deterministic concurrent coverage now proves isolated capability profiles, contexts, and artifact destinations.
+
+    - Observation: A declared read capability previously returned the raw mutable CommandContext even though undeclared session.require calls were denied.
+      Impact: A read-only handler could bypass the session API and reach taskBackend write or Git mutation methods through the returned object.
+      Resolution: Return a guarded per-session CommandContext view; backend and Git mutation members now emit typed capability denials before touching real state, with mock and real-filesystem negative tests.
 extensions:
   implementation_commit:
     hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
@@ -858,6 +933,71 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T09:13:02.541Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified guarded read-only context ports on 8c1035a4368: full fast CI passed 513 files/3593 tests, focused context/evaluator 50/50, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T08:54:49.812Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: formatting, schema/template/policy/release checks, builds, cold-start, generated docs, hotspot, lint, 513 test files with 3593 tests, and 12 critical CLI chunks passed.
+Scope: repository-wide regression surface for the shared command-session runtime guard.
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: 5 files and 50 tests passed on 8c1035a4368; read-only taskBackend.writeTask and git.stage attempts return E_INTERNAL, leave README/backend/git status unchanged, and concurrent dispatches retain distinct contexts and artifact destinations.
+Scope: in-process context/evaluator results, runtime capability denial, filesystem non-mutation, artifact confinement, and concurrent session isolation.
+
+Command: bun run guards:check
+Result: pass
+Evidence: shared guards OK; trust-boundary ratchet OK with reviewed baseline unchanged.
+Scope: source trust boundaries.
+
+Command: bun run schemas:check
+Result: pass
+Evidence: schemas OK.
+Scope: generated schemas and compatibility fixtures.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed, 77 tests total, on 8c1035a4368.
+Scope: critical CLI, Git/path isolation, and trust-boundary contracts.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript 7 build check exited 0 on 8c1035a4368.
+Scope: workspace type and declaration compatibility.
+
+Command: git diff --check 49254048af47..8c1035a4368 -- <semantic paths>
+Result: pass
+Evidence: no whitespace errors in the capability-port implementation diff.
+Scope: command-context port, session integration, and regression tests.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -899,3 +1039,7 @@ DecisionContextRef:
 - Observation: The registry previously cached one non-conditional CommandSession and its bound handler across in-process dispatches.
   Impact: Concurrent invocations of the same command could share prepared authority, CommandContext, or evaluator artifact destination state.
   Resolution: Construct and load a fresh session-bound handler per dispatch; deterministic concurrent coverage now proves isolated capability profiles, contexts, and artifact destinations.
+
+- Observation: A declared read capability previously returned the raw mutable CommandContext even though undeclared session.require calls were denied.
+  Impact: A read-only handler could bypass the session API and reach taskBackend write or Git mutation methods through the returned object.
+  Resolution: Return a guarded per-session CommandContext view; backend and Git mutation members now emit typed capability denials before touching real state, with mock and real-filesystem negative tests.
