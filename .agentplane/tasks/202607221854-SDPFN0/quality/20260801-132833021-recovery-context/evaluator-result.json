@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Замороженный пакет не содержит детерминированных результатов проверок, привязанных к evaluated_sha: verification_records, runner_history и runtime_evidence пусты.",
+      "broken_invariant": "Вердикт pass допустим только при наличии проверяемых доказательств положительных, отрицательных и чувствительных к ленивой подготовке путей; текстовая отметка verification.state=ok сама по себе этого не доказывает.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:e2e41b46789d4af60c372f11ca25d35916b007098a801b8f0cbdd1c10679c6f1",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/README.md",
+          "sha256": "sha256:e67f5c1f7a46cd7e41b77d8de12b95e913ea6d0419cfb8f7972e491522dfeab4",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Включить в замороженные evidence детерминированные результаты catalog/session-тестов для минимальных capability-профилей, условных команд и запрета недекларированных возможностей.",
+    "Включить SHA-привязанные результаты поиска нулевых production-потребителей CommandNeeds, legacy-command-needs, needs и дублирующей loader-метаинформации.",
+    "Включить результаты command/help/JSON snapshots, preparation profiles, arch:check, guards:check, ci:contract, typecheck и test:critical."
+  ],
+  "hidden_assumptions": [
+    "Текстовая заметка TESTER предполагается достаточным подтверждением запусков, хотя соответствующие записи и runtime-доказательства отсутствуют в замороженном пакете.",
+    "Упомянутый в README файл кэша проверки предполагается корректным и привязанным к evaluated_sha, но он не входит в work_order.evidence и поэтому не может использоваться evaluator."
+  ],
+  "recovery_context": "Сформировать новый замороженный пакет, включающий детерминированные SHA-привязанные результаты заявленных и специализированных проверок; затем повторить семантическую оценку без изменения реализации.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

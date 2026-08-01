@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221854-SDPFN0-e76075c43d9ea982a2e2f047",
+  "task_id": "202607221854-SDPFN0",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Сформировать новый замороженный пакет, включающий детерминированные SHA-привязанные результаты заявленных и специализированных проверок; затем повторить семантическую оценку без изменения реализации.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Замороженный пакет не содержит детерминированных результатов проверок, привязанных к evaluated_sha: verification_records, runner_history и runtime_evidence пусты.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:e2e41b46789d4af60c372f11ca25d35916b007098a801b8f0cbdd1c10679c6f1",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/README.md",
+          "sha256": "sha256:e67f5c1f7a46cd7e41b77d8de12b95e913ea6d0419cfb8f7972e491522dfeab4",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-result.json"
+}
