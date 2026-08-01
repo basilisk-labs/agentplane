@@ -4,7 +4,7 @@ title: "Add fingerprinted preparation caches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -36,7 +36,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
+  message: "🚧 87892M task: record cache benchmark no-go"
 comments:
   -
     author: "CODER"
@@ -44,6 +46,9 @@ comments:
   -
     author: "CODER"
     body: "Benchmark verdict: no-go. Exact stdout remained unchanged, semantic/authority/provider results were never cached, and the complete prototype was removed because it failed the complexity threshold."
+  -
+    author: "CODER"
+    body: "Implementation recorded: benchmarked exact persistent and command-local cache candidates; both failed the declared complexity threshold, prototypes were removed, and commit 6e1e19174162 preserves the reproducible no-go evidence."
 events:
   -
     type: "status"
@@ -57,8 +62,15 @@ events:
     at: "2026-08-01T16:38:49.110Z"
     author: "CODER"
     body: "Benchmark verdict: no-go. Exact stdout remained unchanged, semantic/authority/provider results were never cached, and the complete prototype was removed because it failed the complexity threshold."
+  -
+    type: "status"
+    at: "2026-08-01T16:43:14.186Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: benchmarked exact persistent and command-local cache candidates; both failed the declared complexity threshold, prototypes were removed, and commit 6e1e19174162 preserves the reproducible no-go evidence."
 doc_version: 3
-doc_updated_at: "2026-08-01T16:38:49.110Z"
+doc_updated_at: "2026-08-01T16:43:14.186Z"
 doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
