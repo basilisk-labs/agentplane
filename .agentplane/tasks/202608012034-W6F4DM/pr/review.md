@@ -6,7 +6,7 @@ Created: 2026-08-01T20:35:26.394Z
 
 - Task: `202608012034-W6F4DM`
 - Title: Prevent artifact gate buffer overflow on large repositories
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608012034-W6F4DM/prevent-artifact-gate-buffer-overflow-on-large-r`
 - Canonical task record: `.agentplane/tasks/202608012034-W6F4DM/README.md`
 
