@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608010431-WWQP4B-335c1a676bf9eb34a8431310",
+  "prepared_at": "2026-08-01T08:34:59.056Z",
+  "task": {
+    "id": "202608010431-WWQP4B",
+    "revision": 15,
+    "objective": "Bound evaluator review packets to implementation evidence\n\nFix the measured evaluator timeout by excluding the active task's generated control artifacts from actual_diff while preserving the task document, blueprint, observed checks, policy, and complete implementation delta as separately digest-verified evidence.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts",
+      "- In scope: change evaluator actual_diff preparation so the active task artifact subtree is excluded from the patch because task README, blueprint, observed checks, and policy are already separate digest-verified evidence; add regression coverage for generated README/blueprint/pr/verification/quality artifacts and preserve implementation plus unrelated-task changes.\n- In scope: record before/after line and byte counts on the YD5J89 review surface.\n- Out of scope: changing evaluator verdict rules, provider selection, frozen digest validation, or excluding another task's intentional artifacts.",
+      "1. Reproduce the oversized actual_diff against the YD5J89 branch and record line/byte composition.\n2. Change renderActualDiff to exclude the complete active task artifact subtree while retaining the full implementation delta and any other-task artifacts.\n3. Extend focused fixtures for README, blueprint, PR, verification, quality, source, rename, binary, and other-task changes.\n4. Measure the compacted surface and run focused tests, typecheck, guards, and diff checks.\n5. Record residual risk and route the bounded repair through independent quality review and hosted integration.",
+      "1. Run the focused evaluator diff/review suite. Expected: active-task generated artifacts are absent from actual_diff, source changes and other-task changes remain, and frozen digest validation still passes.\n2. Rebuild the YD5J89-style review surface before and after the change. Expected: exact line/byte counts decrease without removing task_document, blueprint, observed_checks, or policy evidence.\n3. Run typecheck and guards. Expected: no schema, trust-boundary, or lifecycle regression.\n4. Run git diff --check and inspect the final task scope. Expected: only evaluator evidence preparation, focused tests, and task artifacts changed."
+    ]
+  },
+  "evaluated_sha": "0179801532c99db510bbcbbab1724561d8cab331",
+  "diff_base_sha": "8c0b06ef744ff4c13e95d8ff579477215d84e989",
+  "blueprint_digest": "636a8dcbfd32efc90e7ff96d659bce2e3bf154b9bd72a551263b5492de4c1abf",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608010431-WWQP4B/README.md",
+      "sha256": "sha256:93a3400820cd15802ad835dce7d20cfa81b7426b313c51c0a0a82c8831be199d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:1391c87bcc0895868b23b69c483ba807c2dc42097a0f1f9e772f56e840a954f1",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:7f5890262801226be89b47a3ad04722f2f50cf4f0ca245b1e24b4977c02b1ef4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608010431-WWQP4B/verification/20260801083354942-8a620912490997fa.json",
+      "sha256": "sha256:a9ab448bdd08d2bd946f513d5b15c0175a39fa5d1ec3d6db01f70446e7570457",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:a372c1934b5b8b6b2038db154e9f5d454183325ae0a68c037421732d346632c3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

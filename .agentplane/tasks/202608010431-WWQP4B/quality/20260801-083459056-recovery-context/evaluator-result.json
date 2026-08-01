@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "CONTRACT_COVERAGE_CONFIRMED",
+      "severity": "low",
+      "summary": "The implementation excludes only the active task artifact subtree while retaining implementation changes and unrelated-task artifacts; frozen verification covers positive, negative, rename, binary, and scope-sensitive cases.",
+      "broken_invariant": "No invariant is broken; the approved implementation-evidence boundary is preserved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:1391c87bcc0895868b23b69c483ba807c2dc42097a0f1f9e772f56e840a954f1"
+        },
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/verification/20260801083354942-8a620912490997fa.json",
+          "sha256": "sha256:a9ab448bdd08d2bd946f513d5b15c0175a39fa5d1ec3d6db01f70446e7570457"
+        },
+        {
+          "path": ".agentplane/tasks/202608010431-WWQP4B/README.md",
+          "sha256": "sha256:93a3400820cd15802ad835dce7d20cfa81b7426b313c51c0a0a82c8831be199d",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "taskArtifactRoot is always a repository-relative path identifying exactly the active task subtree."
+  ]
+}

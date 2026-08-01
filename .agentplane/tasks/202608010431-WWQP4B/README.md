@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -35,31 +35,30 @@ verification:
   note: "Reverified provider-updated head 017980153: focused evaluator suite 31/31, typecheck, guards, generated-doc freshness, and scoped diff checks pass with command-level evidence."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T08:31:42.735Z"
+  updated_at: "2026-08-01T08:35:38.513Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "0179801532c99db510bbcbbab1724561d8cab331"
   blueprint_digest: "636a8dcbfd32efc90e7ff96d659bce2e3bf154b9bd72a551263b5492de4c1abf"
   evidence_refs:
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608010431-WWQP4B/README.md"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083044002-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/verification/20260801083354942-8a620912490997fa.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-083459056-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet contains only a narrative verification assertion; it contains no command-level deterministic results proving the declared focused tests, typecheck, guards, or diff checks ran successfully against the evaluated SHA."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The implementation excludes only the active task artifact subtree while retaining implementation changes and unrelated-task artifacts; frozen verification covers positive, negative, rename, binary, and scope-sensitive cases."
 commit:
   hash: "7f77c56b3e4de624d1b7ab9bc4ad9cb74d537cff"
   message: "🧾 WWQP4B task: preserve prepared quality review"
