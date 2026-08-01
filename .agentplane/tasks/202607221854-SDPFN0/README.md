@@ -4,7 +4,7 @@ title: "Complete CommandSession capability migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -41,11 +41,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "d89988611fbdd3efaba3c9054d122104e6717a2b"
+  message: "♻️ SDPFN0 task: complete CommandSession capability migration"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed and locally verified: CommandNeeds compatibility metadata removed, all catalog entries use explicit capabilities, and command catalog modules remain below the hotspot threshold."
 events:
   -
     type: "status"
@@ -54,8 +59,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T13:22:41.038Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed and locally verified: CommandNeeds compatibility metadata removed, all catalog entries use explicit capabilities, and command catalog modules remain below the hotspot threshold."
 doc_version: 3
-doc_updated_at: "2026-08-01T12:47:37.404Z"
+doc_updated_at: "2026-08-01T13:22:41.038Z"
 doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
