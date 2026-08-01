@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -35,8 +35,8 @@ verification:
   note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
   attempts: 1
 commit:
-  hash: "78398e83e674b4c98d6e08238f90be9828c9020d"
-  message: "🧪 4FNZPG release: align generic backend sync fixtures"
+  hash: "7ce2d55e29271a90f839188fb1c2a5057ff39e71"
+  message: "🧪 4FNZPG release: refresh evaluator route fixtures"
 comments:
   -
     author: "TESTER"
@@ -56,6 +56,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework extended: removed stale cloud-only identity expectations from generic redmine backend sync fixtures. The shared sync contract remains generic while the existing cloud-specific tests continue to cover explicit identity transitions; the affected chunk passes 22/22."
+  -
+    author: "CODER"
+    body: "Implementation rework extended: refreshed dormant release-suite fixtures for required evaluator policy evidence, a valid main diff base, and scoped authority before pre-merge closure. The affected direct closeout, quality routing, and task-complete files pass 13/13."
 events:
   -
     type: "status"
@@ -105,8 +108,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework extended: removed stale cloud-only identity expectations from generic redmine backend sync fixtures. The shared sync contract remains generic while the existing cloud-specific tests continue to cover explicit identity transitions; the affected chunk passes 22/22."
+  -
+    type: "status"
+    at: "2026-08-01T21:22:30.246Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework extended: refreshed dormant release-suite fixtures for required evaluator policy evidence, a valid main diff base, and scoped authority before pre-merge closure. The affected direct closeout, quality routing, and task-complete files pass 13/13."
 doc_version: 3
-doc_updated_at: "2026-08-01T21:07:14.953Z"
+doc_updated_at: "2026-08-01T21:22:30.246Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
