@@ -4,7 +4,7 @@ title: "Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -35,11 +35,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "e2acc9d90c46ace69c61fa45916570949a86cc8a"
+  message: "🧩 1JRXBT release: assimilate 0.6.26 fixes"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation recorded: ported the missing v0.6.25-v0.6.26 terminal handoff, immutable finalization, and isolated bounded verification behavior into the typed 0.7 architecture; retained the stronger current cleanup path and extended the rc.2 release closure."
 events:
   -
     type: "status"
@@ -48,8 +53,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T22:35:49.059Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: ported the missing v0.6.25-v0.6.26 terminal handoff, immutable finalization, and isolated bounded verification behavior into the typed 0.7 architecture; retained the stronger current cleanup path and extended the rc.2 release closure."
 doc_version: 3
-doc_updated_at: "2026-08-01T22:26:47.334Z"
+doc_updated_at: "2026-08-01T22:35:49.059Z"
 doc_updated_by: "CODER"
 description: "Port the behaviorally missing stable-line fixes for direct runner closeout, immutable integration finalization, and isolated streaming verification into the refactored 0.7 architecture; retain stronger 0.7 cleanup behavior and add regression coverage."
 sections:
