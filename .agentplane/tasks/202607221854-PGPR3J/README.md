@@ -1,10 +1,10 @@
 ---
 id: "202607221854-PGPR3J"
 title: "Complete typed use-case and CLI rendering boundaries"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T14:08:41.502Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T14:09:09.394Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:12:11.698Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T14:09:09.394Z"
+doc_updated_by: "CODER"
 description: "RF-25e fan-in: integrate the typed-result/rendering work proven by every command-family slice, remove remaining internal subprocess/stdout orchestration, and validate centralized output/error/exit compatibility."
 sections:
   Summary: |-
@@ -71,6 +81,10 @@ sections:
     - Restore only centralized compatibility renderers, never internal subprocess/stdout parsing.
     - Re-run family and repository-wide snapshots before retry.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "89409146383825b0e6df835d2fa414eb0c60e0d1"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
