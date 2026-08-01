@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "No contract-breaking divergence was found in the frozen implementation or verification evidence.",
+      "broken_invariant": "None; the frozen diff and verification record cover the declared positive, negative, and concurrency-sensitive regression paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-225726220-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3e3906e7fa2a94a90645f4a82fea71124b342c134cbb1793e1bb2c4a5229e5b2"
+        },
+        {
+          "path": ".agentplane/tasks/202608011949-1JRXBT/verification/20260801225354539-629e2b2270b4513d.json",
+          "sha256": "sha256:f2961c9cd3078975da1d3e9deb88a1e72944e91b36969336e15c3cfeaaf5111b"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI is intentionally deferred to the branch_pr hosted-check gate and is not part of this local semantic evaluation."
+  ]
+}

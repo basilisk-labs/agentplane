@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608011949-1JRXBT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T22:58:03.615Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "a65844caf03aaef728ad412c847d7e3967313dba",
+  "blueprint_digest": "f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461",
+  "findings": [
+    "No contract-breaking divergence was found in the frozen implementation or verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-225726220-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608011949-1JRXBT/verification/20260801225354539-629e2b2270b4513d.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI is intentionally deferred to the branch_pr hosted-check gate and is not part of this local semantic evaluation."
+  ],
+  "residual_risks": []
+}
