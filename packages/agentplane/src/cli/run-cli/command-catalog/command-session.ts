@@ -21,6 +21,7 @@ export type CommandCapability =
   | "policy"
   | "approvals"
   | "context.search"
+  | "evaluator.artifacts.write"
   | "provider"
   | "output";
 
@@ -77,6 +78,7 @@ const CONTEXT_CAPABILITIES = new Set<CommandCapability>([
   "policy",
   "approvals",
   "context.search",
+  "evaluator.artifacts.write",
   "provider",
 ]);
 

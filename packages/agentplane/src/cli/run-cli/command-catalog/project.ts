@@ -159,7 +159,7 @@ import {
   CONTEXT_TASK_READ_REQUIREMENTS,
   CONTEXT_TASK_WRITE_REQUIREMENTS,
   EVALUATOR_EXECUTE_REQUIREMENTS,
-  EVALUATOR_READ_REQUIREMENTS,
+  EVALUATOR_PREPARE_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./context-evaluator-capability-profiles.js";
 import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
@@ -243,7 +243,7 @@ import {
   loadEvaluatorPrepareSpec,
   loadEvaluatorApplySpec,
   loadEvaluatorExecuteSpec,
-  loadEvaluatorRunReadSpec,
+  loadEvaluatorRunPrepareSpec,
   loadEvaluatorRunWriteSpec,
   fromCommandsBlueprintsCommand,
   loadContextIngestSpec,
@@ -324,7 +324,7 @@ export const PROJECT_COMMANDS = [
   }),
   declareSessionCommand(evaluatorPrepareSpec, {
     load: loadEvaluatorPrepareSpec,
-    requirements: EVALUATOR_READ_REQUIREMENTS,
+    requirements: EVALUATOR_PREPARE_REQUIREMENTS,
   }),
   declareSessionCommand(evaluatorApplySpec, {
     load: loadEvaluatorApplySpec,
@@ -336,8 +336,8 @@ export const PROJECT_COMMANDS = [
   }),
   declareConditionalSessionCommand(evaluatorRunSpec, {
     default: {
-      load: loadEvaluatorRunReadSpec,
-      requirements: EVALUATOR_READ_REQUIREMENTS,
+      load: loadEvaluatorRunPrepareSpec,
+      requirements: EVALUATOR_PREPARE_REQUIREMENTS,
     },
     selected: {
       when: (parsed) => parsed.record,

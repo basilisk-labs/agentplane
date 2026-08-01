@@ -36,8 +36,13 @@ export const EVALUATOR_READ_REQUIREMENTS = [
   "context.search",
 ] as const satisfies readonly CommandCapability[];
 
-export const EVALUATOR_WRITE_REQUIREMENTS = [
+export const EVALUATOR_PREPARE_REQUIREMENTS = [
   ...EVALUATOR_READ_REQUIREMENTS,
+  "evaluator.artifacts.write",
+] as const satisfies readonly CommandCapability[];
+
+export const EVALUATOR_WRITE_REQUIREMENTS = [
+  ...EVALUATOR_PREPARE_REQUIREMENTS,
   "backend.write",
   "task.write",
   "git.mutate",
@@ -57,6 +62,9 @@ export type ContextTaskWriteSession = CommandSession<
   (typeof CONTEXT_TASK_WRITE_REQUIREMENTS)[number]
 >;
 export type EvaluatorReadSession = CommandSession<(typeof EVALUATOR_READ_REQUIREMENTS)[number]>;
+export type EvaluatorPrepareSession = CommandSession<
+  (typeof EVALUATOR_PREPARE_REQUIREMENTS)[number]
+>;
 export type EvaluatorWriteSession = CommandSession<(typeof EVALUATOR_WRITE_REQUIREMENTS)[number]>;
 export type EvaluatorExecuteSession = CommandSession<
   (typeof EVALUATOR_EXECUTE_REQUIREMENTS)[number]

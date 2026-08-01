@@ -4,7 +4,7 @@ import type {
   ContextTaskReadSession,
   ContextTaskWriteSession,
   EvaluatorExecuteSession,
-  EvaluatorReadSession,
+  EvaluatorPrepareSession,
   EvaluatorWriteSession,
 } from "../command-catalog/context-evaluator-capability-profiles.js";
 import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
@@ -110,34 +110,44 @@ export const loadEvaluatorListSpec = (_session: NoContextSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorList);
 export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorShow);
-export const loadEvaluatorPrepareSpec = (session: EvaluatorReadSession) =>
+export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorPrepareHandler({
-      getCommandContext: (_ctx, command) => session.require("task.read", command),
+      getCommandContext: (_ctx, command) => session.require("evaluator.artifacts.write", command),
     }),
   );
 export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorApplyHandler({
-      getCommandContext: (_ctx, command) => session.require("task.write", command),
+      getCommandContext: async (_ctx, command) => {
+        await session.require("evaluator.artifacts.write", command);
+        return await session.require("task.write", command);
+      },
     }),
   );
 export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorExecuteHandler({
-      getCommandContext: (_ctx, command) => session.require("provider", command),
+      getCommandContext: async (_ctx, command) => {
+        await session.require("evaluator.artifacts.write", command);
+        await session.require("task.write", command);
+        return await session.require("provider", command);
+      },
     }),
   );
-export const loadEvaluatorRunReadSpec = (session: EvaluatorReadSession) =>
+export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorRunHandler({
-      getCommandContext: (_ctx, command) => session.require("task.read", command),
+      getCommandContext: (_ctx, command) => session.require("evaluator.artifacts.write", command),
     }),
   );
 export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorRunHandler({
-      getCommandContext: (_ctx, command) => session.require("task.write", command),
+      getCommandContext: async (_ctx, command) => {
+        await session.require("evaluator.artifacts.write", command);
+        return await session.require("task.write", command);
+      },
     }),
   );
 

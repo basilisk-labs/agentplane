@@ -1,10 +1,17 @@
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
+import { loadConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
+import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it, vi } from "vitest";
 
 import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
+import { addTask, commitPath } from "../../commands/evaluator/evaluator-test-helpers.js";
+import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { parseCommandArgv } from "../spec/parse.js";
 import { findCommandEntry } from "./command-catalog.js";
 import {
-  EVALUATOR_READ_REQUIREMENTS,
+  EVALUATOR_PREPARE_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./command-catalog/context-evaluator-capability-profiles.js";
 import type { CommandCapability, CommandEntry, CommandSession } from "./command-catalog/kernel.js";
@@ -71,10 +78,70 @@ describe("runtime registry session selection", () => {
     if (!runtime) throw new Error("runtime registry did not register evaluator run");
 
     await runtime.handler({ cwd: "/repo" }, evaluatorRunParsed(true));
-    expect(observed.at(-1)).toEqual(EVALUATOR_READ_REQUIREMENTS);
+    expect(observed.at(-1)).toEqual(EVALUATOR_PREPARE_REQUIREMENTS);
     expect(getCtx).not.toHaveBeenCalled();
 
     await runtime.handler({ cwd: "/repo" }, evaluatorRunParsed(false));
     expect(observed.at(-1)).toEqual(EVALUATOR_WRITE_REQUIREMENTS);
+  });
+
+  it("dispatches the real no-record handler with artifact-only write authority", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202608010000-EVRN";
+    await addTask(root, taskId);
+    await commitPath(root, "src/review-target.ts", "export const target = true;\n", "feat: target");
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readmeBefore = await readFile(readmePath, "utf8");
+    const resolvedProject = await resolveProject({ cwd: root, rootOverride: root });
+    const loadedConfig = await loadConfig(resolvedProject.agentplaneDir);
+    const commandContext = await loadCommandContext({ cwd: root, rootOverride: root });
+    const traces: { capability: CommandCapability; status: string }[] = [];
+    const entry = findCommandEntry(["evaluator", "run"]);
+    if (!entry) throw new Error("evaluator run catalog entry is missing");
+    const registry = buildRegistry({
+      entries: [entry],
+      getCtx: () => Promise.resolve(commandContext),
+      getResolvedProject: () => Promise.resolve(resolvedProject),
+      getLoadedConfig: () => Promise.resolve(loadedConfig),
+      onPreparationTrace: (event) => traces.push(event),
+    });
+    const runtime = registry.lookup(["evaluator", "run"]);
+    if (!runtime) throw new Error("runtime registry did not register evaluator run");
+    const io = captureStdIO();
+    try {
+      await runtime.handler(
+        { cwd: root, rootOverride: root },
+        {
+          ...evaluatorRunParsed(true),
+          taskId,
+        },
+      );
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(readmePath, "utf8")).toBe(readmeBefore);
+    const qualityRoot = path.join(root, ".agentplane", "tasks", taskId, "quality");
+    const reviewDirectories = await readdir(qualityRoot);
+    expect(reviewDirectories).toHaveLength(1);
+    const packetFiles = await readdir(path.join(qualityRoot, reviewDirectories[0] ?? ""));
+    expect(packetFiles).toEqual(
+      expect.arrayContaining([
+        "evaluator-diff.patch",
+        "evaluator-observed-checks.json",
+        "evaluator-prompt.md",
+        "evaluator-work-order.json",
+      ]),
+    );
+    expect(traces).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          capability: "evaluator.artifacts.write",
+          status: "resolved",
+        }),
+      ]),
+    );
+    expect(traces.some((event) => event.capability === "task.write")).toBe(false);
   });
 });

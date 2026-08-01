@@ -1,10 +1,11 @@
  .../src/cli/run-cli/command-catalog.test.ts        |  82 ++++
- .../context-evaluator-capability-profiles.ts       |  63 +++
- .../src/cli/run-cli/command-catalog/kernel.test.ts |  43 ++
+ .../cli/run-cli/command-catalog/command-session.ts |   2 +
+ .../context-evaluator-capability-profiles.ts       |  71 ++++
+ .../src/cli/run-cli/command-catalog/kernel.test.ts |  63 +++
  .../src/cli/run-cli/command-catalog/kernel.ts      |  64 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++++--
- .../src/cli/run-cli/command-loaders/project.ts     | 203 ++++++++-
- .../src/cli/run-cli/registry.run.test.ts           |  80 ++++
+ .../src/cli/run-cli/command-loaders/project.ts     | 213 +++++++++-
+ .../src/cli/run-cli/registry.run.test.ts           | 147 +++++++
  .../agentplane/src/cli/run-cli/registry.run.ts     |  21 +-
  .../commands/context/context-results.unit.test.ts  | 175 ++++++++
  .../src/commands/context/context-runner.ts         | 339 +++++++++------
@@ -21,4 +22,4 @@
  packages/agentplane/src/context/ingest.ts          | 121 ++++--
  packages/agentplane/src/context/reindex.ts         | 101 +++--
  scripts/README.md                                  |  40 +-
- 23 files changed, 2127 insertions(+), 652 deletions(-)
+ 24 files changed, 2234 insertions(+), 652 deletions(-)

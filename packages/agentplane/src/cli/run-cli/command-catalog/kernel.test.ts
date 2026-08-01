@@ -14,6 +14,7 @@ import {
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
+  EVALUATOR_PREPARE_REQUIREMENTS,
   EVALUATOR_READ_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./context-evaluator-capability-profiles.js";
@@ -228,5 +229,24 @@ describe("CommandSession", () => {
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();
     }
+
+    const evaluatorReadResolvers = makeResolvers();
+    const evaluatorReadSession = createCommandSession({
+      command: "evaluator list",
+      requirements: EVALUATOR_READ_REQUIREMENTS,
+      resolvers: evaluatorReadResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(
+      evaluatorReadSession.require("evaluator.artifacts.write", "evaluator list"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(evaluatorReadResolvers.getCtx).not.toHaveBeenCalled();
+
+    const evaluatorPrepareSession = createCommandSession({
+      command: "evaluator prepare",
+      requirements: EVALUATOR_PREPARE_REQUIREMENTS,
+      resolvers: makeResolvers(),
+    });
+    expect(evaluatorPrepareSession.requirements).not.toContain("task.write");
+    expect(evaluatorPrepareSession.requirements).not.toContain("git.mutate");
   });
 });

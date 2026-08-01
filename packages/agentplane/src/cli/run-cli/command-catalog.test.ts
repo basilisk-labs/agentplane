@@ -12,7 +12,7 @@ import {
   CONTEXT_TASK_READ_REQUIREMENTS,
   CONTEXT_TASK_WRITE_REQUIREMENTS,
   EVALUATOR_EXECUTE_REQUIREMENTS,
-  EVALUATOR_READ_REQUIREMENTS,
+  EVALUATOR_PREPARE_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./command-catalog/context-evaluator-capability-profiles.js";
 
@@ -204,7 +204,7 @@ describe("command catalog graph", () => {
     }
 
     expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
-      EVALUATOR_READ_REQUIREMENTS,
+      EVALUATOR_PREPARE_REQUIREMENTS,
     );
     for (const id of [["evaluator", "apply"]]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
@@ -213,9 +213,9 @@ describe("command catalog graph", () => {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
     }
     const evaluatorRun = findCommandEntry(["evaluator", "run"]);
-    expect(evaluatorRun?.requirements).toEqual(EVALUATOR_READ_REQUIREMENTS);
+    expect(evaluatorRun?.requirements).toEqual(EVALUATOR_PREPARE_REQUIREMENTS);
     expect(evaluatorRun?.selectSession?.({ record: false }).requirements).toEqual(
-      EVALUATOR_READ_REQUIREMENTS,
+      EVALUATOR_PREPARE_REQUIREMENTS,
     );
     expect(evaluatorRun?.selectSession?.({ record: true }).requirements).toEqual(
       EVALUATOR_WRITE_REQUIREMENTS,

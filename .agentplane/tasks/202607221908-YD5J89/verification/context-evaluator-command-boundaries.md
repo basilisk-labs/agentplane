@@ -74,3 +74,24 @@ Authority rework verification:
 - `bun run hotspots:check`: passed.
 - `bun run docs:scripts:check`: passed.
 - `bun run test:critical`: 12 of 12 chunks passed, 77 tests total.
+
+## Evaluator artifact authority rework
+
+The next EVALUATOR review found that preparation still writes a durable evidence packet, so the no-record path could not truthfully remain read-only. The command kernel now models that side effect explicitly:
+
+- `evaluator.artifacts.write` authorizes only evaluator evidence-packet preparation.
+- `evaluator prepare` and `evaluator run --no-record` use `EVALUATOR_PREPARE_REQUIREMENTS` and do not receive `task.write`, `git.mutate`, or approval authority.
+- Recording paths use `EVALUATOR_WRITE_REQUIREMENTS`, which composes artifact preparation with task-state mutation authority.
+- Provider execution composes artifact preparation, task-state mutation, and provider authority.
+- A real registry-dispatched no-record regression test proves that evidence files are created while the task README remains byte-for-byte unchanged and no `task.write` capability is resolved.
+
+Artifact-authority rework verification:
+
+- Catalog/kernel/evaluator/registry suite: 4 files, 41 tests passed.
+- `bun run typecheck`: passed with the TypeScript 7 default compiler.
+- Targeted ESLint for all changed implementation/test files: passed.
+- `bun run guards:check`: passed.
+- `bun run arch:check`: passed with zero dependency violations.
+- `bun run hotspots:check`: passed.
+- `bun run test:critical`: 12 of 12 chunks passed, 77 tests total.
+- `git diff --check`: passed.
