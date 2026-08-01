@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "none",
+      "severity": "low",
+      "summary": "No contract-breaking findings identified.",
+      "broken_invariant": "None.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-123330043-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:ae3f59f0337d481bcbe84c5942449d63aa1100a1dcc2a9896a84371bf9e7464e"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607221908-7WV0A7-8c8bf30b4b6f-checks.json",
+          "sha256": "sha256:f9641bc2b826f7df477beed3b03ae93732a1a255dbbe37f751cf63a4e85c45f0",
+          "section": "checks and runtime_assertions"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/verification/20260801123005123-a5cccc4fdbad3cfd.json",
+          "sha256": "sha256:871cb4e5e7d9154ac8dd496b38869aed680318e96f9c1bb76b09de1f14c90b15",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

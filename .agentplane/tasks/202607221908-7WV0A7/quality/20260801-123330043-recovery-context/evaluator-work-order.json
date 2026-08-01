@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-7WV0A7-968d384430c9500160bd81ac",
+  "prepared_at": "2026-08-01T12:33:30.043Z",
+  "task": {
+    "id": "202607221908-7WV0A7",
+    "revision": 19,
+    "objective": "Migrate provider, integration, release, and ops command boundaries\n\nRF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run lifecycle:invariants",
+      "bun run release:parity",
+      "bun run test:critical",
+      "- In scope: exact CommandSession capability profiles for PR, integration queue, hosted-close, cleanup, release, and adjacent provider/ops command families; parsed-intent session selection; representative typed result and renderer seams for integration queue list/doctor and release plan; runtime authority-denial, recovery, output-parity, and exact-SHA regression evidence.\n- Out of scope: repository-wide removal of legacy CommandNeeds/coarse context consumers and completion of typed use-case/rendering boundaries for every command; those remain owned by 202607221854-SDPFN0 and 202607221854-PGPR3J. Granting publication authority or changing protected-main policy also remains out of scope.",
+      "1. Classify and declare exact provider, Git, network, task, and authority capabilities for each command in this vertical.\n2. Select narrower sessions from parsed operation intent where read-only, dry-run, and execution modes differ.\n3. Extract representative typed integration-queue and release-plan results from CLI rendering while preserving shared CliError and exit-code contracts.\n4. Prove capability denial before context preparation and preserve bounded hosted-check, conflict, partial-publication, and recovery behavior.\n5. Freeze command-backed verification evidence for the current implementation SHA; leave repository-wide typed-result and CommandSession fan-in to their declared downstream tasks.",
+      "1. Inspect the provider/integration/release/ops command catalog matrix. Expected: every command in this vertical declares an explicit session, read/dry-run variants omit write authority, and denied capabilities fail before context preparation.\n2. Execute conditional registry paths for integration queue and release commands. Expected: parsed intent selects the exact session and repeated capability requests reuse one prepared context.\n3. Exercise typed list/doctor/release-plan results and human/JSON renderers, plus late checks, network failure, merge conflict, partial publication, and recovery regressions. Expected: compatible output, exact-SHA provenance, bounded retries, and no duplicated effects.\n4. Run focused provider/release tests, guards, lifecycle invariants, release parity, critical CLI, typecheck, lint, Knip, formatting, and hotspot guards; record exact commands and scope."
+    ]
+  },
+  "evaluated_sha": "8c8bf30b4b6fe5fd3cce7d6be67eeb7267834290",
+  "diff_base_sha": "111e4286c2aca8332a2fce23cc0e03091738fd71",
+  "blueprint_digest": "f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+      "sha256": "sha256:979b459bd36ef81eddac6915a415a47d31b359e1c056b746fb6524bdccdce23f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-123330043-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:ae3f59f0337d481bcbe84c5942449d63aa1100a1dcc2a9896a84371bf9e7464e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-123330043-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:561541fde2bf32704286c4ff34f3120898f38f177d8e64360963d91d78024ca5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/verification/20260801123005123-a5cccc4fdbad3cfd.json",
+      "sha256": "sha256:871cb4e5e7d9154ac8dd496b38869aed680318e96f9c1bb76b09de1f14c90b15",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/verification/202607221908-7WV0A7-8c8bf30b4b6f-checks.json",
+      "sha256": "sha256:f9641bc2b826f7df477beed3b03ae93732a1a255dbbe37f751cf63a4e85c45f0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-123330043-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:88d1389f46d1c7a05b8a530b9fee0792ab5621ceee51c6265e96f16a025c0b92",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-7WV0A7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T12:34:06.614Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8c8bf30b4b6fe5fd3cce7d6be67eeb7267834290",
+  "blueprint_digest": "f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c",
+  "findings": [
+    "No contract-breaking findings identified."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-123330043-recovery-context/evaluator-diff.patch",
+    ".agentplane/cache/verification/202607221908-7WV0A7-8c8bf30b4b6f-checks.json",
+    ".agentplane/tasks/202607221908-7WV0A7/verification/20260801123005123-a5cccc4fdbad3cfd.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
