@@ -233,7 +233,7 @@ export type ReleasePlanResult = {
   audit: {
     authority: "local_release_plan";
     attempts: 1;
-    effects_applied: 4;
+    effects_applied: number;
   };
 };
 
@@ -299,27 +299,28 @@ export async function createReleasePlan(
   const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
   const baseDir = path.join(gitRoot, ".agentplane", ".release", "plan", runId);
   await mkdir(baseDir, { recursive: true });
-
-  await writeFile(
-    path.join(baseDir, "version.json"),
-    JSON.stringify(
-      { prevTag, prevVersion: coreVersion, nextTag, nextVersion, bump: flags.bump, baseSha },
-      null,
-      2,
-    ) + "\n",
-    "utf8",
-  );
-  await writeFile(
-    path.join(baseDir, "changes.json"),
-    JSON.stringify(changes, null, 2) + "\n",
-    "utf8",
-  );
-  await writeFile(path.join(baseDir, "changes.md"), changesMarkdown(changes), "utf8");
-  await writeFile(
-    path.join(baseDir, "instructions.md"),
-    releaseInstructions({ nextTag, prevTag, bump: flags.bump, minBullets }),
-    "utf8",
-  );
+  const artifacts = [
+    {
+      name: "version.json",
+      contents:
+        JSON.stringify(
+          { prevTag, prevVersion: coreVersion, nextTag, nextVersion, bump: flags.bump, baseSha },
+          null,
+          2,
+        ) + "\n",
+    },
+    { name: "changes.json", contents: JSON.stringify(changes, null, 2) + "\n" },
+    { name: "changes.md", contents: changesMarkdown(changes) },
+    {
+      name: "instructions.md",
+      contents: releaseInstructions({ nextTag, prevTag, bump: flags.bump, minBullets }),
+    },
+  ];
+  let effectsApplied = 0;
+  for (const artifact of artifacts) {
+    await writeFile(path.join(baseDir, artifact.name), artifact.contents, "utf8");
+    effectsApplied += 1;
+  }
 
   const planDir = path.relative(gitRoot, baseDir);
   return {
@@ -332,18 +333,13 @@ export async function createReleasePlan(
     bump: flags.bump,
     base_sha: baseSha,
     plan_dir: planDir,
-    artifact_paths: [
-      path.join(planDir, "version.json"),
-      path.join(planDir, "changes.json"),
-      path.join(planDir, "changes.md"),
-      path.join(planDir, "instructions.md"),
-    ],
+    artifact_paths: artifacts.map((artifact) => path.join(planDir, artifact.name)),
     change_count: changes.length,
     minimum_release_note_bullets: minBullets,
     audit: {
       authority: "local_release_plan",
       attempts: 1,
-      effects_applied: 4,
+      effects_applied: effectsApplied,
     },
   };
 }

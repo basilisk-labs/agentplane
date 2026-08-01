@@ -50,10 +50,10 @@ Created: 2026-08-01T03:23:48.490Z
  .../src/commands/integrate-queue.command.ts        |  67 +++----
  packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
  .../src/commands/provider-ops-results.test.ts      | 134 ++++++++++++++
- .../src/commands/release/plan.command.ts           |  67 ++++++-
+ .../src/commands/release/plan.command.ts           | 105 +++++++----
  .../agentplane/src/commands/release/plan.render.ts |  13 ++
- .../agentplane/src/commands/release/plan.test.ts   |  35 +++-
- 24 files changed, 1328 insertions(+), 273 deletions(-)
+ .../agentplane/src/commands/release/plan.test.ts   |  36 +++-
+ 24 files changed, 1346 insertions(+), 294 deletions(-)
 ```
 
 </details>

@@ -71,6 +71,7 @@ describeWhenNotHook("release plan", () => {
         path.join(result.plan_dir, "changes.md"),
         path.join(result.plan_dir, "instructions.md"),
       ]);
+      expect(result.audit.effects_applied).toBe(result.artifact_paths.length);
 
       const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
       expect(instructions).toContain("docs/releases/v0.2.7.md");
