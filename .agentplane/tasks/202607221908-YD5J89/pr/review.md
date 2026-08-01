@@ -6,14 +6,14 @@ Created: 2026-08-01T00:38:26.423Z
 
 - Task: `202607221908-YD5J89`
 - Title: Migrate context and evaluator command boundaries
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221908-YD5J89/migrate-context-and-evaluator-command-boundaries`
 - Canonical task record: `.agentplane/tasks/202607221908-YD5J89/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Post-rework verification passed: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39.
+- Note: Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

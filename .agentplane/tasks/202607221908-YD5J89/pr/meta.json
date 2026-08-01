@@ -3,7 +3,7 @@
   "branch": "task/202607221908-YD5J89/migrate-context-and-evaluator-command-boundaries",
   "created_at": "2026-08-01T00:38:26.423Z",
   "diffstat_sha256": "sha256:a21515297583fa962d73422d14ae1d5361f88f2f71e424bf74b14f1bac122dd0",
-  "last_verified_at": "2026-08-01T02:00:46.131Z",
+  "last_verified_at": "2026-08-01T02:02:31.821Z",
   "last_verified_diffstat_sha256": "sha256:a21515297583fa962d73422d14ae1d5361f88f2f71e424bf74b14f1bac122dd0",
   "pr_number": 4716,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4716",

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T02:00:46.131Z"
+  updated_at: "2026-08-01T02:02:31.821Z"
   updated_by: "TESTER"
-  note: "Post-rework verification passed: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39."
+  note: "Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39."
   attempts: 0
 quality_review:
   state: "rework"
@@ -131,8 +131,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Implementation rework complete: repaired hosted CI gates, restored generated script inventory parity, and extracted evaluator catalog rendering below the runtime module size limit."
+  -
+    type: "verify"
+    at: "2026-08-01T02:02:31.821Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:02:16.675Z"
+doc_updated_at: "2026-08-01T02:02:32.842Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -216,6 +222,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T02:02:31.821Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:02:16.675Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -229,6 +265,10 @@ sections:
     - Observation: Hosted CI exposed a stale generated script inventory and an oversized evaluator command module after implementation rework.
       Impact: The PR could not satisfy verify-routed despite the behavioral checks passing.
       Resolution: Regenerated scripts/README.md, extracted evaluator catalog/list/show boundaries, and reran the complete declared verification contract against the repaired implementation.
+
+    - Observation: Hosted CI exposed a stale generated script inventory and an oversized evaluator command module.
+      Impact: The PR could not satisfy verify-routed until both deterministic gates were repaired.
+      Resolution: Regenerated scripts/README.md, extracted evaluator catalog/list/show boundaries, recorded f404121e0 as the implementation rework commit, and verified the complete declared contract.
 extensions:
   implementation_commit:
     hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
@@ -327,6 +367,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T02:02:31.821Z — VERIFY — ok
+
+By: TESTER
+
+Note: Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:02:16.675Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -344,3 +414,7 @@ DecisionContextRef:
 - Observation: Hosted CI exposed a stale generated script inventory and an oversized evaluator command module after implementation rework.
   Impact: The PR could not satisfy verify-routed despite the behavioral checks passing.
   Resolution: Regenerated scripts/README.md, extracted evaluator catalog/list/show boundaries, and reran the complete declared verification contract against the repaired implementation.
+
+- Observation: Hosted CI exposed a stale generated script inventory and an oversized evaluator command module.
+  Impact: The PR could not satisfy verify-routed until both deterministic gates were repaired.
+  Resolution: Regenerated scripts/README.md, extracted evaluator catalog/list/show boundaries, recorded f404121e0 as the implementation rework commit, and verified the complete declared contract.

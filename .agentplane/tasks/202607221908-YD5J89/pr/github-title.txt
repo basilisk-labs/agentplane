@@ -1,1 +1,1 @@
-✅ YD5J89 task: Migrate context and evaluator command boundaries [202607221908-YD5J89]
+🚧 YD5J89 task: Migrate context and evaluator command boundaries [202607221908-YD5J89]
