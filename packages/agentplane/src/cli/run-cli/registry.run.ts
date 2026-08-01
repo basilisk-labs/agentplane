@@ -51,15 +51,13 @@ export function buildRegistry(opts: {
       });
       continue;
     }
-    const session = createCommandSession({
-      command: entry.spec.id.join(" "),
-      requirements: entry.requirements,
-      resolvers,
-    });
-    let loaded: ReturnType<(typeof entry)["load"]> | null = null;
     registry.register(entry.spec, async (ctx, parsed) => {
-      loaded ??= entry.load(session);
-      const handler = await loaded;
+      const session = createCommandSession({
+        command: entry.spec.id.join(" "),
+        requirements: entry.requirements,
+        resolvers,
+      });
+      const handler = await entry.load(session);
       return await handler(ctx, parsed);
     });
   }

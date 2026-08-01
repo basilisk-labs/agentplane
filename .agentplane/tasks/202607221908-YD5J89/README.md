@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -40,29 +40,31 @@ verification:
   note: "Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T02:43:24.797Z"
+  updated_at: "2026-08-01T08:44:55.948Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "29d67bf216448202b058df3aba33508f06d58613"
   blueprint_digest: "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221908-YD5J89/README.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-084358563-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The confined evaluator artifact port closes the prior authority leak: callers receive only a frozen prepare operation, while recording and provider capabilities remain separately declared."
+    - "Verification at the evaluated SHA does not cover the complete declared verification contract."
+    - "The patch adds session-owned capability and context boundaries without frozen evidence for concurrent invocation isolation."
 commit:
   hash: "29d67bf216448202b058df3aba33508f06d58613"
   message: "🧹 YD5J89 task: remove unused type exports"

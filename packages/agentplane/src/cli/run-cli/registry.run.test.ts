@@ -12,10 +12,17 @@ import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { parseCommandArgv } from "../spec/parse.js";
 import { findCommandEntry } from "./command-catalog.js";
 import {
+  CONTEXT_TASK_WRITE_REQUIREMENTS,
   EVALUATOR_PREPARE_REQUIREMENTS,
+  EVALUATOR_READ_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./command-catalog/context-evaluator-capability-profiles.js";
-import type { CommandCapability, CommandEntry, CommandSession } from "./command-catalog/kernel.js";
+import {
+  declareSessionCommand,
+  type CommandCapability,
+  type CommandEntry,
+  type CommandSession,
+} from "./command-catalog/kernel.js";
 import { buildRegistry } from "./registry.run.js";
 
 function evaluatorRunParsed(noRecord: boolean) {
@@ -36,6 +43,129 @@ function evaluatorRunParsed(noRecord: boolean) {
 }
 
 describe("runtime registry session selection", () => {
+  it("isolates capabilities, contexts, and artifact destinations across concurrent dispatches", async () => {
+    const capabilityProfiles = new Map<string, CommandCapability[][]>();
+    const readContexts: unknown[] = [];
+    const mutationContexts: unknown[] = [];
+    const artifactDestinations: string[] = [];
+    const captureProfile = (command: string, requirements: readonly CommandCapability[]) => {
+      const profiles = capabilityProfiles.get(command) ?? [];
+      profiles.push([...requirements]);
+      capabilityProfiles.set(command, profiles);
+    };
+
+    const evaluatorReadEntry = declareSessionCommand(
+      {
+        id: ["test", "evaluator-read"],
+        group: "test",
+        summary: "Exercise read-only evaluator authority.",
+      },
+      {
+        requirements: EVALUATOR_READ_REQUIREMENTS,
+        load: async (session) => {
+          captureProfile("evaluator-read", session.requirements);
+          return async () => {
+            readContexts.push(await session.require("task.read", "test evaluator-read"));
+            return 0;
+          };
+        },
+      },
+    );
+    const evaluatorPrepareEntry = declareSessionCommand(
+      {
+        id: ["test", "evaluator-prepare"],
+        group: "test",
+        summary: "Exercise evaluator artifact preparation authority.",
+      },
+      {
+        requirements: EVALUATOR_PREPARE_REQUIREMENTS,
+        load: async (session) => {
+          captureProfile("evaluator-prepare", session.requirements);
+          return async () => {
+            const port = await session.require(
+              "evaluator.artifacts.write",
+              "test evaluator-prepare",
+            );
+            const packet = await port.prepare({
+              ctx: { cwd: "/repo" },
+              taskId: "TASK-1",
+              evaluatorId: "recovery-context",
+              provenance: "evaluator_supplied",
+            });
+            artifactDestinations.push(packet.git_root);
+            return 0;
+          };
+        },
+      },
+    );
+    const contextMutationEntry = declareSessionCommand(
+      {
+        id: ["test", "context-mutation"],
+        group: "test",
+        summary: "Exercise context mutation authority.",
+      },
+      {
+        requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
+        load: async (session) => {
+          captureProfile("context-mutation", session.requirements);
+          return async () => {
+            mutationContexts.push(await session.require("task.write", "test context-mutation"));
+            return 0;
+          };
+        },
+      },
+    );
+
+    let contextIndex = 0;
+    let artifactIndex = 0;
+    const getCtx = vi.fn(async () => ({ invocation: `context-${contextIndex++}` }) as never);
+    const getEvaluatorArtifactPort = vi.fn(async () => {
+      const destination = `/repo/.agentplane/tasks/TASK-${artifactIndex++}/quality/review`;
+      return Object.freeze({
+        prepare: async () => ({ git_root: destination, prepared: {} }),
+      }) as never;
+    });
+    const registry = buildRegistry({
+      entries: [evaluatorReadEntry, evaluatorPrepareEntry, contextMutationEntry],
+      getCtx,
+      getResolvedProject: vi.fn(async () => ({ marker: "project" }) as never),
+      getLoadedConfig: vi.fn(async () => ({ marker: "config" }) as never),
+      getEvaluatorArtifactPort,
+    });
+    const evaluatorRead = registry.lookup(["test", "evaluator-read"]);
+    const evaluatorPrepare = registry.lookup(["test", "evaluator-prepare"]);
+    const contextMutation = registry.lookup(["test", "context-mutation"]);
+    if (!evaluatorRead || !evaluatorPrepare || !contextMutation) {
+      throw new Error("concurrent isolation commands were not registered");
+    }
+
+    await Promise.all([
+      evaluatorRead.handler({ cwd: "/repo" }, {}),
+      evaluatorPrepare.handler({ cwd: "/repo" }, {}),
+      contextMutation.handler({ cwd: "/repo" }, {}),
+      evaluatorRead.handler({ cwd: "/repo" }, {}),
+      evaluatorPrepare.handler({ cwd: "/repo" }, {}),
+      contextMutation.handler({ cwd: "/repo" }, {}),
+    ]);
+
+    expect(capabilityProfiles.get("evaluator-read")).toEqual([
+      EVALUATOR_READ_REQUIREMENTS,
+      EVALUATOR_READ_REQUIREMENTS,
+    ]);
+    expect(capabilityProfiles.get("evaluator-prepare")).toEqual([
+      EVALUATOR_PREPARE_REQUIREMENTS,
+      EVALUATOR_PREPARE_REQUIREMENTS,
+    ]);
+    expect(capabilityProfiles.get("context-mutation")).toEqual([
+      CONTEXT_TASK_WRITE_REQUIREMENTS,
+      CONTEXT_TASK_WRITE_REQUIREMENTS,
+    ]);
+    expect(new Set([...readContexts, ...mutationContexts])).toHaveLength(4);
+    expect(new Set(artifactDestinations)).toHaveLength(2);
+    expect(getCtx).toHaveBeenCalledTimes(4);
+    expect(getEvaluatorArtifactPort).toHaveBeenCalledTimes(2);
+  });
+
   it("constructs evaluator run authority from parsed persistence mode before loading its handler", async () => {
     const catalogEntry = findCommandEntry(["evaluator", "run"]);
     if (!catalogEntry?.selectSession) throw new Error("evaluator run must select a session");
