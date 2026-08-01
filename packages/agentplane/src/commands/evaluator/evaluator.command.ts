@@ -37,11 +37,6 @@ export type EvaluatorCommandDeps = {
   ) => Promise<Awaited<ReturnType<typeof loadCommandContext>>>;
 };
 
-export type EvaluatorRunCommandDeps = {
-  getReadCommandContext: EvaluatorCommandDeps["getCommandContext"];
-  getWriteCommandContext: EvaluatorCommandDeps["getCommandContext"];
-};
-
 const DEFAULT_EVALUATOR_COMMAND_DEPS: EvaluatorCommandDeps = {
   getCommandContext: async (ctx) =>
     await loadCommandContext({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null }),
@@ -494,12 +489,10 @@ export async function runEvaluatorCommand(
 }
 
 export function makeRunEvaluatorRunHandler(
-  deps: EvaluatorRunCommandDeps,
+  deps: EvaluatorCommandDeps,
 ): CommandHandler<EvaluatorRunParsed> {
   return async (ctx, parsed) => {
-    const result = await runEvaluatorCommand(ctx, parsed, {
-      getCommandContext: parsed.record ? deps.getWriteCommandContext : deps.getReadCommandContext,
-    });
+    const result = await runEvaluatorCommand(ctx, parsed, deps);
     renderEvaluatorPayload({
       json: parsed.json,
       title: `evaluator run ${parsed.taskId}`,
@@ -510,6 +503,5 @@ export function makeRunEvaluatorRunHandler(
 }
 
 export const runEvaluatorRun = makeRunEvaluatorRunHandler({
-  getReadCommandContext: DEFAULT_EVALUATOR_COMMAND_DEPS.getCommandContext,
-  getWriteCommandContext: DEFAULT_EVALUATOR_COMMAND_DEPS.getCommandContext,
+  getCommandContext: DEFAULT_EVALUATOR_COMMAND_DEPS.getCommandContext,
 });

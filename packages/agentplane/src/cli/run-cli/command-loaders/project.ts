@@ -128,11 +128,16 @@ export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
       getCommandContext: (_ctx, command) => session.require("provider", command),
     }),
   );
-export const loadEvaluatorRunSpec = (session: EvaluatorWriteSession) =>
+export const loadEvaluatorRunReadSpec = (session: EvaluatorReadSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorRunHandler({
-      getReadCommandContext: (_ctx, command) => session.require("task.read", command),
-      getWriteCommandContext: (_ctx, command) => session.require("task.write", command),
+      getCommandContext: (_ctx, command) => session.require("task.read", command),
+    }),
+  );
+export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+    m.makeRunEvaluatorRunHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
     }),
   );
 

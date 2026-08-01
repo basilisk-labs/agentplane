@@ -54,3 +54,23 @@ Rework verification:
 - `bun run hotspots:check`: passed.
 - `bun run docs:scripts:check`: passed.
 - `bun run ci:local:fast`: passed, including 512 unit-test files / 3589 tests and all 12 critical CLI chunks.
+
+## Evaluator run authority rework
+
+The follow-up EVALUATOR review found that `evaluator run --no-record` selected a read dependency only after entering a write-capable session. The command catalog now resolves a conditional session plan from parsed arguments before handler loading:
+
+- `record=false` creates `EVALUATOR_READ_REQUIREMENTS` and denies `backend.write`, `task.write`, `git.mutate`, and `approvals` before context preparation.
+- `record=true` creates `EVALUATOR_WRITE_REQUIREMENTS`.
+- The evaluator handler receives exactly one context dependency; it no longer chooses between read/write callbacks inside the authority boundary.
+
+Authority rework verification:
+
+- Catalog/kernel/evaluator/registry suite: 4 files, 40 tests passed.
+- Command-session regression suite: 1 file, 5 tests passed.
+- `bun run typecheck`: passed with the TypeScript 7 default compiler.
+- `bun run guards:check`: passed.
+- `bun run arch:check`: passed with zero dependency violations.
+- `bun run lint:core`: passed.
+- `bun run hotspots:check`: passed.
+- `bun run docs:scripts:check`: passed.
+- `bun run test:critical`: 12 of 12 chunks passed, 77 tests total.

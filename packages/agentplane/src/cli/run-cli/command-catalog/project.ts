@@ -148,7 +148,12 @@ import {
   evaluatorSpec,
 } from "../../../commands/evaluator/evaluator.command.js";
 
-import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+import {
+  declareCommand,
+  declareConditionalSessionCommand,
+  declareSessionCommand,
+  type CommandEntry,
+} from "./kernel.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
@@ -238,7 +243,8 @@ import {
   loadEvaluatorPrepareSpec,
   loadEvaluatorApplySpec,
   loadEvaluatorExecuteSpec,
-  loadEvaluatorRunSpec,
+  loadEvaluatorRunReadSpec,
+  loadEvaluatorRunWriteSpec,
   fromCommandsBlueprintsCommand,
   loadContextIngestSpec,
   loadContextGroupSpec,
@@ -328,9 +334,16 @@ export const PROJECT_COMMANDS = [
     load: loadEvaluatorExecuteSpec,
     requirements: EVALUATOR_EXECUTE_REQUIREMENTS,
   }),
-  declareSessionCommand(evaluatorRunSpec, {
-    load: loadEvaluatorRunSpec,
-    requirements: EVALUATOR_WRITE_REQUIREMENTS,
+  declareConditionalSessionCommand(evaluatorRunSpec, {
+    default: {
+      load: loadEvaluatorRunReadSpec,
+      requirements: EVALUATOR_READ_REQUIREMENTS,
+    },
+    selected: {
+      when: (parsed) => parsed.record,
+      load: loadEvaluatorRunWriteSpec,
+      requirements: EVALUATOR_WRITE_REQUIREMENTS,
+    },
   }),
   fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),

@@ -206,15 +206,20 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
       EVALUATOR_READ_REQUIREMENTS,
     );
-    for (const id of [
-      ["evaluator", "apply"],
-      ["evaluator", "run"],
-    ]) {
+    for (const id of [["evaluator", "apply"]]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
         EVALUATOR_WRITE_REQUIREMENTS,
       );
       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
     }
+    const evaluatorRun = findCommandEntry(["evaluator", "run"]);
+    expect(evaluatorRun?.requirements).toEqual(EVALUATOR_READ_REQUIREMENTS);
+    expect(evaluatorRun?.selectSession?.({ record: false }).requirements).toEqual(
+      EVALUATOR_READ_REQUIREMENTS,
+    );
+    expect(evaluatorRun?.selectSession?.({ record: true }).requirements).toEqual(
+      EVALUATOR_WRITE_REQUIREMENTS,
+    );
     expect(findCommandEntry(["evaluator", "execute"])?.requirements).toEqual(
       EVALUATOR_EXECUTE_REQUIREMENTS,
     );

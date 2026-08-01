@@ -5,6 +5,7 @@ import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
 import { COMMANDS, getHelpCommandEntries, makeHelpSpecForEntry } from "./command-catalog.js";
 import {
   createCommandSession,
+  type CommandEntry,
   type CommandPreparationTrace,
   type RunDeps,
 } from "./command-catalog/kernel.js";
@@ -14,6 +15,7 @@ export function buildRegistry(opts: {
   getResolvedProject: RunDeps["getResolvedProject"];
   getLoadedConfig: RunDeps["getLoadedConfig"];
   onPreparationTrace?: (event: CommandPreparationTrace) => void;
+  entries?: readonly CommandEntry[];
 }): CommandRegistry {
   const registry = new CommandRegistry();
   const getHelpJsonForDocs = () =>
@@ -27,7 +29,24 @@ export function buildRegistry(opts: {
     getLoadedConfig: opts.getLoadedConfig,
     getHelpJsonForDocs,
   };
-  for (const entry of COMMANDS) {
+  for (const entry of opts.entries ?? COMMANDS) {
+    if (entry.selectSession) {
+      registry.register(entry.spec, async (ctx, parsed) => {
+        const selected = entry.selectSession?.(parsed);
+        if (!selected) throw new Error("Conditional command did not select a session");
+        const session = createCommandSession({
+          command: entry.spec.id.join(" "),
+          requirements: selected.requirements,
+          resolvers: {
+            ...deps,
+            onPreparationTrace: opts.onPreparationTrace,
+          },
+        });
+        const handler = await selected.load(session);
+        return await handler(ctx, parsed);
+      });
+      continue;
+    }
     const session = createCommandSession({
       command: entry.spec.id.join(" "),
       requirements: entry.requirements,

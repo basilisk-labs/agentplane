@@ -137,11 +137,9 @@ describe("evaluator run command", () => {
       expect(io.stdout).toBe("");
       expect(io.stderr).toBe("");
 
-      const getReadCommandContext = vi.fn(() => Promise.resolve(command));
-      const getWriteCommandContext = vi.fn(() => Promise.reject(new Error("unexpected write")));
+      const getCommandContext = vi.fn(() => Promise.resolve(command));
       const handler = makeRunEvaluatorRunHandler({
-        getReadCommandContext,
-        getWriteCommandContext,
+        getCommandContext,
       });
       await handler(
         { cwd: root, rootOverride: root },
@@ -160,8 +158,7 @@ describe("evaluator run command", () => {
           record: false,
         },
       );
-      expect(getReadCommandContext).toHaveBeenCalledOnce();
-      expect(getWriteCommandContext).not.toHaveBeenCalled();
+      expect(getCommandContext).toHaveBeenCalledOnce();
     } finally {
       io.restore();
     }

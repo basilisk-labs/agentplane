@@ -1,8 +1,11 @@
- .../src/cli/run-cli/command-catalog.test.ts        |  77 ++++
+ .../src/cli/run-cli/command-catalog.test.ts        |  82 ++++
  .../context-evaluator-capability-profiles.ts       |  63 +++
  .../src/cli/run-cli/command-catalog/kernel.test.ts |  43 ++
- .../src/cli/run-cli/command-catalog/project.ts     | 270 ++++++++++--
- .../src/cli/run-cli/command-loaders/project.ts     | 198 ++++++++-
+ .../src/cli/run-cli/command-catalog/kernel.ts      |  64 +++
+ .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++++--
+ .../src/cli/run-cli/command-loaders/project.ts     | 203 ++++++++-
+ .../src/cli/run-cli/registry.run.test.ts           |  80 ++++
+ .../agentplane/src/cli/run-cli/registry.run.ts     |  21 +-
  .../commands/context/context-results.unit.test.ts  | 175 ++++++++
  .../src/commands/context/context-runner.ts         | 339 +++++++++------
  .../agentplane/src/commands/context/finalize.ts    |   5 +-
@@ -12,10 +15,10 @@
  .../src/commands/context/wiki-reports.ts           |  28 +-
  packages/agentplane/src/commands/context/wiki.ts   |  94 ++--
  .../evaluator/evaluator-catalog.command.ts         | 122 ++++++
- .../evaluator/evaluator-run.command.test.ts        |  79 +++-
- .../src/commands/evaluator/evaluator.command.ts    | 480 +++++++++++----------
+ .../evaluator/evaluator-run.command.test.ts        |  76 +++-
+ .../src/commands/evaluator/evaluator.command.ts    | 472 +++++++++++----------
  packages/agentplane/src/context/doctor.ts          |  60 ++-
  packages/agentplane/src/context/ingest.ts          | 121 ++++--
  packages/agentplane/src/context/reindex.ts         | 101 +++--
  scripts/README.md                                  |  40 +-
- 20 files changed, 1950 insertions(+), 650 deletions(-)
+ 23 files changed, 2127 insertions(+), 652 deletions(-)
