@@ -1,10 +1,11 @@
 ---
 id: "202607221908-YD5J89"
 title: "Migrate context and evaluator command boundaries"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +66,8 @@ quality_review:
     - "context finalize-task is declared with CONTEXT_TASK_WRITE_REQUIREMENTS and passes the same prepared CommandContext into final verification, removing the duplicate hidden load identified in the prior review."
     - "Typed context/evaluator use cases and edge renderers preserve existing human/JSON contracts while context supervision invokes evaluator execution in-process without stdout capture."
 commit:
-  hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
-  message: "♻️ YD5J89 task: route task-aware context sessions"
+  hash: "a6d31caa2b555554c74e067ffd812028fc03c72d"
+  message: "🧪 YD5J89 task: record passing quality review"
 comments:
   -
     author: "CODER"
@@ -77,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: verify-task now resolves task.read once; finalize-task resolves task.write once and passes the session-owned context through final verification."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -105,8 +109,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: verify-task now resolves task.read once; finalize-task resolves task.write once and passes the session-owned context through final verification."
+  -
+    type: "status"
+    at: "2026-08-01T01:43:17.379Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T01:42:14.637Z"
+doc_updated_at: "2026-08-01T01:43:17.379Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -170,6 +181,9 @@ sections:
       Impact: RF-24/RF-25 command boundaries are enforced without changing existing CLI output or durable schema contracts.
       Resolution: Implementation commit 1d315e9e1a465b9e87ad476759e0e41ea1d4a69b satisfies the task scope and verification steps.
 extensions:
+  implementation_commit:
+    hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
+    message: "♻️ YD5J89 task: route task-aware context sessions"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
