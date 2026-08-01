@@ -28,10 +28,11 @@ Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr
 
 ```text
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  18 +
+ ...n-cli.core.branch-meta.sync-maintenance.test.ts |   4 -
  .../installed-migration-matrix-script.test.ts      | 103 ++++
  scripts/lib/installed-migration-matrix.mjs         | 649 +++++++++++++++++++++
  .../release/check-local-tarball-install-smoke.mjs  |  10 +
- 4 files changed, 780 insertions(+)
+ 5 files changed, 780 insertions(+), 4 deletions(-)
 ```
 
 </details>
