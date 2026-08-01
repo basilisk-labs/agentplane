@@ -4,7 +4,7 @@ title: "Prevent artifact gate buffer overflow on large repositories"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -32,6 +32,32 @@ verification:
   updated_by: "TESTER"
   note: "PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-01T20:40:57.866Z"
+  updated_by: "HUMAN"
+  note: "The repair is minimal and closes the demonstrated buffer failure without weakening artifact policy or introducing unbounded process output."
+  evaluated_sha: "390bfc5a8817d63450b606c9453246bec377731e"
+  blueprint_digest: "2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac"
+  evidence_refs:
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608012034-W6F4DM/README.md"
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "scripts/checks/check-agentplane-artifacts.mjs"
+    - ".agentplane/tasks/202608012034-W6F4DM/verification/20260801204021289-75039c2a37d923b8.json"
+  findings:
+    - "A single 64 MiB constant is applied to the tracked-file git query, git archive invocation, and tar inventory; all buffered child-process paths in this gate are covered."
+    - "The volatile-path predicates, historical cutoff, offender reporting, and export-ignore validation are unchanged, so the fix changes capacity rather than acceptance semantics."
 commit:
   hash: "390bfc5a8817d63450b606c9453246bec377731e"
   message: "🛡️ W6F4DM release: bound artifact gate buffers"
