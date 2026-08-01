@@ -12,8 +12,8 @@ Created: 2026-08-01T19:31:51.047Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Heavy prepublish gate is not yet reproducibly green on the recorded implementation head.
+- State: ok
+- Note: Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
