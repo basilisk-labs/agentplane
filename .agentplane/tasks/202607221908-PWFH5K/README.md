@@ -1,10 +1,10 @@
 ---
 id: "202607221908-PWFH5K"
 title: "Enforce mandatory release dependency closure"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,9 +24,9 @@ verify:
   - "bun run task-state:check"
   - "bun run test:critical"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T18:47:48.669Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -35,11 +35,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T18:48:16.237Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:08:26.450Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T18:48:16.237Z"
+doc_updated_by: "CODER"
 description: "RF-27 release guard: automatically prove that every required open v0.7 implementation, migration, documentation, and gate task is an ancestor of the final 0.7.0 release task."
 sections:
   Summary: |-
@@ -68,6 +78,10 @@ sections:
     - Preserve the corrected release fan-in in task documents.
     - Re-run the previous task-state check and manually record closure evidence until the guard is restored.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "a7391f6733a069b0ad1e4e4c6aebf622983c3781"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
