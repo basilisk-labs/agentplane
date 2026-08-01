@@ -4,7 +4,7 @@ title: "Migrate provider, integration, release, and ops command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -97,7 +97,7 @@ events:
     state: "ok"
     note: "Provider/integration/release boundary verification passed: focused family matrix 65 files/414 tests; critical CLI 12/12 chunks and 77 tests; typecheck, format, lint, Knip 545/545, guards, trust ratchet, lifecycle 8/8, release parity, and architecture dependency checks all passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T03:43:11.530Z"
+doc_updated_at: "2026-08-01T11:59:56.227Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers."
 sections:
@@ -160,6 +160,10 @@ sections:
     - Observation: Read-only provider sessions deny git.mutate before context preparation; local work sessions deny provider and route.remote; provider-write and release-publish commands declare exact catalog capabilities while group commands prepare no context.
       Impact: Provider/network/Git mutation authority is explicit at the command boundary without changing public output or release version parity.
       Resolution: Keep shared CommandContext as a compatibility value until RF-24 fan-in removes the coarse resolver; no flake or regression observed in this verification.
+
+    - Observation: Semantic rework showed that integration queue list, doctor, claim, release, and run-next shared a provider-write CommandSession even when parsed operation intent required only local read or provider read authority.
+      Impact: Read-oriented commands prepared backend/task write and Git mutation capabilities unnecessarily, while queue and release outputs still coupled typed orchestration data to CLI rendering.
+      Resolution: Split exact local-read, provider-read, task-provider-read, and execution profiles; select release and run-next sessions from parsed intent; make queue list side-effect free; add typed list, doctor, and release-plan results with audit metadata plus separate compatibility renderers; verify negative authority, recovery, human/JSON parity, and exact-SHA paths.
 extensions:
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
@@ -238,3 +242,7 @@ DecisionContextRef:
 - Observation: Read-only provider sessions deny git.mutate before context preparation; local work sessions deny provider and route.remote; provider-write and release-publish commands declare exact catalog capabilities while group commands prepare no context.
   Impact: Provider/network/Git mutation authority is explicit at the command boundary without changing public output or release version parity.
   Resolution: Keep shared CommandContext as a compatibility value until RF-24 fan-in removes the coarse resolver; no flake or regression observed in this verification.
+
+- Observation: Semantic rework showed that integration queue list, doctor, claim, release, and run-next shared a provider-write CommandSession even when parsed operation intent required only local read or provider read authority.
+  Impact: Read-oriented commands prepared backend/task write and Git mutation capabilities unnecessarily, while queue and release outputs still coupled typed orchestration data to CLI rendering.
+  Resolution: Split exact local-read, provider-read, task-provider-read, and execution profiles; select release and run-next sessions from parsed intent; make queue list side-effect free; add typed list, doctor, and release-plan results with audit metadata plus separate compatibility renderers; verify negative authority, recovery, human/JSON parity, and exact-SHA paths.

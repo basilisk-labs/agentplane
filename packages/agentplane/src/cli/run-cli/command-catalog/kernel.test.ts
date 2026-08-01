@@ -12,6 +12,8 @@ import {
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
 import {
+  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+  INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
   LOCAL_OPS_WRITE_REQUIREMENTS,
   PROVIDER_READ_REQUIREMENTS,
 } from "./provider-ops-capability-profiles.js";
@@ -219,7 +221,42 @@ describe("CommandSession", () => {
     await expect(providerReadSession.require("git.mutate", "pr check")).rejects.toMatchObject({
       code: "E_INTERNAL",
     });
+    await expect(providerReadSession.require("task.write", "pr check")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
     expect(providerReadResolvers.getCtx).not.toHaveBeenCalled();
+
+    const queueListResolvers = makeResolvers();
+    const queueListSession = createCommandSession({
+      command: "integrate queue list",
+      requirements: INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+      resolvers: queueListResolvers,
+    }) as CommandSession<CommandCapability>;
+    for (const capability of [
+      "backend.write",
+      "task.write",
+      "git.mutate",
+      "route.remote",
+      "provider",
+    ] as const) {
+      await expect(
+        queueListSession.require(capability, "integrate queue list"),
+      ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    }
+    expect(queueListResolvers.getCtx).not.toHaveBeenCalled();
+
+    const queueClaimResolvers = makeResolvers();
+    const queueClaimSession = createCommandSession({
+      command: "integrate queue claim",
+      requirements: INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
+      resolvers: queueClaimResolvers,
+    }) as CommandSession<CommandCapability>;
+    for (const capability of ["task.read", "task.write", "git.mutate"] as const) {
+      await expect(
+        queueClaimSession.require(capability, "integrate queue claim"),
+      ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    }
+    expect(queueClaimResolvers.getCtx).not.toHaveBeenCalled();
 
     const localOpsResolvers = makeResolvers();
     const localOpsSession = createCommandSession({

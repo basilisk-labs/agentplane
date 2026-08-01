@@ -1,10 +1,10 @@
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
-import {
-  commandModule,
-  type CommandSession,
-  type RunDeps,
-} from "../command-catalog/kernel.js";
+import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
 import type {
+  IntegrationQueueExecutionSession,
+  IntegrationQueueListSession,
+  IntegrationQueueProviderReadSession,
+  IntegrationQueueTaskProviderReadSession,
   LocalOpsWriteSession,
   ProviderReadSession,
   ProviderWriteSession,
@@ -32,6 +32,15 @@ import type * as ContextCommandModule from "../../../commands/context/context.co
 
 async function getProviderReadContext(
   session: ProviderReadSession,
+  command: string,
+): Promise<CommandContext> {
+  await session.require("route.remote", command);
+  await session.require("approvals", command);
+  return await session.require("provider", command);
+}
+
+async function getIntegrationQueueProviderReadContext(
+  session: IntegrationQueueProviderReadSession,
   command: string,
 ): Promise<CommandContext> {
   await session.require("route.remote", command);
@@ -518,33 +527,57 @@ export const loadIntegrateSpec = (session: ProviderWriteSession) =>
   );
 export const loadIntegrateQueueSpec = (_session: NoContextSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) => m.runIntegrateQueueGroup);
-export const loadIntegrateQueueEnqueueSpec = (session: ProviderWriteSession) =>
+export const loadIntegrateQueueEnqueueSpec = (session: IntegrationQueueTaskProviderReadSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueEnqueueHandler((command) => getProviderWriteContext(session, command)),
+    m.makeRunIntegrateQueueEnqueueHandler((command) => getProviderReadContext(session, command)),
   );
-export const loadIntegrateQueueListSpec = (session: ProviderWriteSession) =>
+export const loadIntegrateQueueListSpec = (session: IntegrationQueueListSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueListHandler((command) => getProviderWriteContext(session, command)),
-  );
-export const loadIntegrateQueueDoctorSpec = (session: ProviderWriteSession) =>
-  import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueDoctorHandler((command) => getProviderWriteContext(session, command)),
-  );
-export const loadIntegrateQueueClaimSpec = (session: ProviderWriteSession) =>
-  import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueClaimHandler((command) => getProviderWriteContext(session, command)),
-  );
-export const loadIntegrateQueueReleaseSpec = (session: ProviderWriteSession) =>
-  import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueReleaseHandler((command) => getProviderWriteContext(session, command)),
-  );
-export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (session: ProviderWriteSession) =>
-  import("../../../commands/integrate-queue.command.js").then((m) =>
-    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler((command) =>
-      getProviderWriteContext(session, command),
+    m.makeRunIntegrateQueueListHandler(
+      async (command) => (await session.require("project", command)).gitRoot,
     ),
   );
-export const loadIntegrateQueueRunNextSpec = (session: ProviderWriteSession) =>
+export const loadIntegrateQueueDoctorSpec = (session: IntegrationQueueTaskProviderReadSession) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueDoctorHandler((command) => getProviderReadContext(session, command)),
+  );
+export const loadIntegrateQueueClaimSpec = (session: IntegrationQueueProviderReadSession) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueClaimHandler((command) =>
+      getIntegrationQueueProviderReadContext(session, command),
+    ),
+  );
+export const loadIntegrateQueueReleaseLocalSpec = (session: IntegrationQueueListSession) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueReleaseHandler({
+      getGitRoot: async (command) => (await session.require("project", command)).gitRoot,
+    }),
+  );
+export const loadIntegrateQueueReleaseProviderSpec = (
+  session: IntegrationQueueTaskProviderReadSession,
+) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueReleaseHandler({
+      getGitRoot: async (command) =>
+        (await getProviderReadContext(session, command)).resolvedProject.gitRoot,
+      getCtx: (command) => getProviderReadContext(session, command),
+    }),
+  );
+export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (
+  session: IntegrationQueueTaskProviderReadSession,
+) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler((command) =>
+      getProviderReadContext(session, command),
+    ),
+  );
+export const loadIntegrateQueueRunNextPreparationSpec = (
+  session: IntegrationQueueTaskProviderReadSession,
+) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueRunNextHandler((command) => getProviderReadContext(session, command)),
+  );
+export const loadIntegrateQueueRunNextSpec = (session: IntegrationQueueExecutionSession) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueRunNextHandler((command) => getProviderWriteContext(session, command)),
   );

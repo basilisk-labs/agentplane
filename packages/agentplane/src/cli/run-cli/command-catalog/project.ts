@@ -53,16 +53,6 @@ import { workStartSpec } from "../../../commands/branch/work-start.command.js";
 import { workResumeSpec } from "../../../commands/branch/work-resume.command.js";
 import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
-  integrateQueueAdoptLegacyProtectedConflictSpec,
-  integrateQueueClaimSpec,
-  integrateQueueDoctorSpec,
-  integrateQueueEnqueueSpec,
-  integrateQueueListSpec,
-  integrateQueueReleaseSpec,
-  integrateQueueRunNextSpec,
-  integrateQueueSpec,
-} from "../../../commands/integrate-queue.spec.js";
-import {
   prCheckSpec,
   prCloseSpec,
   prCloseSupersededSpec,
@@ -147,6 +137,7 @@ import {
   type CommandEntry,
 } from "./kernel.js";
 import { HERMES_COMMANDS } from "./hermes.js";
+import { INTEGRATION_QUEUE_COMMANDS } from "./integration-queue.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
@@ -203,14 +194,6 @@ import {
   fromCommandsFlowCommand,
   loadFlowRepairSpec,
   loadIntegrateSpec,
-  loadIntegrateQueueSpec,
-  loadIntegrateQueueEnqueueSpec,
-  loadIntegrateQueueListSpec,
-  loadIntegrateQueueClaimSpec,
-  loadIntegrateQueueDoctorSpec,
-  loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
-  loadIntegrateQueueReleaseSpec,
-  loadIntegrateQueueRunNextSpec,
   loadAcrSpec,
   loadAcrSchemaSpec,
   loadAcrGenerateSpec,
@@ -596,36 +579,5 @@ export const PROJECT_COMMANDS = [
     load: loadIntegrateSpec,
     requirements: PROVIDER_WRITE_REQUIREMENTS,
   }),
-  declareSessionCommand(integrateQueueSpec, {
-    load: loadIntegrateQueueSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueEnqueueSpec, {
-    load: loadIntegrateQueueEnqueueSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueListSpec, {
-    load: loadIntegrateQueueListSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueDoctorSpec, {
-    load: loadIntegrateQueueDoctorSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueClaimSpec, {
-    load: loadIntegrateQueueClaimSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueReleaseSpec, {
-    load: loadIntegrateQueueReleaseSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
-    load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
-  declareSessionCommand(integrateQueueRunNextSpec, {
-    load: loadIntegrateQueueRunNextSpec,
-    requirements: PROVIDER_WRITE_REQUIREMENTS,
-  }),
+  ...INTEGRATION_QUEUE_COMMANDS,
 ] as const satisfies readonly CommandEntry[];

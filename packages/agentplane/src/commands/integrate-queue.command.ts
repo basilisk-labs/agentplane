@@ -4,7 +4,7 @@ import {
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../cli/group-command.js";
-import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
+import { createCliEmitter, emitCommandResults, emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { sleep } from "../backends/task-backend/shared/concurrency.js";
 import type { CommandContext } from "./shared/task-backend.js";
@@ -38,11 +38,12 @@ import {
   validateClaimedEntryPublication,
 } from "./integrate-queue-reservation.js";
 import { runIntegrationQueueDoctor } from "./integrate-queue-doctor-command.js";
+import { inspectIntegrationQueueList } from "./integrate-queue-list.js";
+import { renderIntegrationQueueListResult } from "./integrate-queue-render.js";
 import {
   defaultIntegrationQueueWorker,
   findActiveIntegrationLane,
   hasQueuedIntegrationEntries,
-  normalizeTerminalQueueEntries,
   recoverStaleActiveLane,
   rejectIfQueuedEntryIsStale,
   renderIntegrationQueueEntry,
@@ -178,31 +179,11 @@ export function makeRunIntegrateQueueEnqueueHandler(
   };
 }
 
-export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
-  return async (ctx: CommandCtx, p: IntegrateQueueListParsed): Promise<number> => {
-    const commandCtx = await getCtx("integrate queue list");
-    const gitRoot = commandCtx.resolvedProject.gitRoot;
-    await normalizeTerminalQueueEntries({
-      ctx: commandCtx,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride,
-      gitRoot,
-      quiet: p.json,
-    });
-    const queue = await readIntegrationQueue(gitRoot);
-    const output = createCliEmitter();
-    if (p.json) {
-      output.json(queue);
-      return 0;
-    }
-    const active = queue.entries.filter(
-      (entry) => entry.status !== "done" && entry.status !== "superseded",
-    );
-    if (active.length === 0) {
-      output.line(emptyStateMessage("integration queue entries"));
-      return 0;
-    }
-    output.lines(active.map((entry) => renderIntegrationQueueEntry(entry)));
+export function makeRunIntegrateQueueListHandler(getGitRoot: (cmd: string) => Promise<string>) {
+  return async (_ctx: CommandCtx, p: IntegrateQueueListParsed): Promise<number> => {
+    const gitRoot = await getGitRoot("integrate queue list");
+    const result = await inspectIntegrationQueueList(gitRoot);
+    emitCommandResults(createCliEmitter(), renderIntegrationQueueListResult(result, p.json));
     return 0;
   };
 }
@@ -244,13 +225,21 @@ export function makeRunIntegrateQueueClaimHandler(
   };
 }
 
-export function makeRunIntegrateQueueReleaseHandler(
-  getCtx: (cmd: string) => Promise<CommandContext>,
-) {
+export function makeRunIntegrateQueueReleaseHandler(deps: {
+  getGitRoot: (cmd: string) => Promise<string>;
+  getCtx?: (cmd: string) => Promise<CommandContext>;
+}) {
   return async (_ctx: CommandCtx, p: IntegrateQueueReleaseParsed): Promise<number> => {
-    const commandCtx = await getCtx("integrate queue release");
-    const gitRoot = commandCtx.resolvedProject.gitRoot;
+    const command = "integrate queue release";
+    const gitRoot = await deps.getGitRoot(command);
     if (p.status === "superseded") {
+      const commandCtx = await deps.getCtx?.(command);
+      if (!commandCtx) {
+        throw new CliError({
+          code: "E_INTERNAL",
+          message: "integrate queue release superseded requires provider read context",
+        });
+      }
       const [legacy, successor, report] = await Promise.all([
         loadBackendTask({
           ctx: commandCtx,

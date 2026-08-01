@@ -4,8 +4,8 @@ import path from "node:path";
 import { loadConfig } from "@agentplaneorg/core/config";
 import { gitEnv, resolveBaseBranch } from "@agentplaneorg/core/git";
 import { resolveProject } from "@agentplaneorg/core/project";
-import { createCliEmitter } from "../../cli/output.js";
-import type { CommandHandler } from "../../cli/spec/spec.js";
+import { createCliEmitter, emitCommandResults } from "../../cli/output.js";
+import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
@@ -21,7 +21,7 @@ import {
   requiredBulletCount,
   type Change,
 } from "./plan.helpers.js";
-const output = createCliEmitter();
+import { renderReleasePlanResult } from "./plan.render.js";
 
 export { releasePlanSpec } from "./plan.spec.js";
 
@@ -215,7 +215,32 @@ async function resolveProtectedBaseShaForPlan(opts: {
   });
 }
 
-export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, flags) => {
+export const RELEASE_PLAN_RESULT_SCHEMA = "agentplane.release.plan.v1" as const;
+
+export type ReleasePlanResult = {
+  schema: typeof RELEASE_PLAN_RESULT_SCHEMA;
+  operation: "release.plan";
+  previous_tag: string | null;
+  previous_version: string;
+  next_tag: string;
+  next_version: string;
+  bump: ReleasePlanParsed["bump"];
+  base_sha: string;
+  plan_dir: string;
+  artifact_paths: string[];
+  change_count: number;
+  minimum_release_note_bullets: number;
+  audit: {
+    authority: "local_release_plan";
+    attempts: 1;
+    effects_applied: 4;
+  };
+};
+
+export async function createReleasePlan(
+  ctx: CommandCtx,
+  flags: ReleasePlanParsed,
+): Promise<ReleasePlanResult> {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const gitRoot = resolved.gitRoot;
   await ensureReleaseIncidentsClean(gitRoot);
@@ -296,11 +321,35 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
     "utf8",
   );
 
-  output.lines([
-    `Release plan written: ${path.relative(gitRoot, baseDir)}`,
-    `Next tag: ${nextTag}`,
-    `Hint: Create a DOCS task to write docs/releases/${nextTag}.md based on this plan.`,
-  ]);
+  const planDir = path.relative(gitRoot, baseDir);
+  return {
+    schema: RELEASE_PLAN_RESULT_SCHEMA,
+    operation: "release.plan",
+    previous_tag: prevTag,
+    previous_version: coreVersion,
+    next_tag: nextTag,
+    next_version: nextVersion,
+    bump: flags.bump,
+    base_sha: baseSha,
+    plan_dir: planDir,
+    artifact_paths: [
+      path.join(planDir, "version.json"),
+      path.join(planDir, "changes.json"),
+      path.join(planDir, "changes.md"),
+      path.join(planDir, "instructions.md"),
+    ],
+    change_count: changes.length,
+    minimum_release_note_bullets: minBullets,
+    audit: {
+      authority: "local_release_plan",
+      attempts: 1,
+      effects_applied: 4,
+    },
+  };
+}
 
+export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, flags) => {
+  const result = await createReleasePlan(ctx, flags);
+  emitCommandResults(createCliEmitter(), renderReleasePlanResult(result));
   return 0;
 };

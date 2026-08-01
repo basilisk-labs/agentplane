@@ -23,6 +23,14 @@ import {
   RUNNER_EXECUTION_REQUIREMENTS,
   RUNNER_PREPARATION_REQUIREMENTS,
 } from "./command-catalog/runner-hermes-capability-profiles.js";
+import {
+  INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
+  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+  INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
+  INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+  PROVIDER_READ_REQUIREMENTS,
+  PROVIDER_WRITE_REQUIREMENTS,
+} from "./command-catalog/provider-ops-capability-profiles.js";
 
 describe("command catalog graph", () => {
   it("uses one graph for longest-prefix match and exact lookup", () => {
@@ -341,41 +349,11 @@ describe("command catalog graph", () => {
   });
 
   it("publishes authority-aware provider, integration, release, and ops profiles", () => {
-    const providerRead = [
-      "project",
-      "config",
-      "backend.read",
-      "task.read",
-      "git.head",
-      "git.diff",
-      "route.local",
-      "policy",
-      "approvals",
-      "route.remote",
-      "provider",
-    ];
-    const providerWrite = [
-      "project",
-      "config",
-      "backend.read",
-      "task.read",
-      "backend.write",
-      "task.write",
-      "policy",
-      "approvals",
-      "git.head",
-      "git.diff",
-      "git.mutate",
-      "route.local",
-      "route.remote",
-      "provider",
-    ];
-
     for (const id of [
       ["pr", "check"],
       ["pr", "flow", "status"],
     ]) {
-      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(providerRead);
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_READ_REQUIREMENTS);
       expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
 
@@ -388,21 +366,51 @@ describe("command catalog graph", () => {
       ["pr", "note"],
       ["flow", "repair"],
       ["integrate"],
-      ["integrate", "queue", "enqueue"],
-      ["integrate", "queue", "list"],
-      ["integrate", "queue", "doctor"],
-      ["integrate", "queue", "claim"],
-      ["integrate", "queue", "release"],
-      ["integrate", "queue", "adopt-legacy-protected-conflict"],
-      ["integrate", "queue", "run-next"],
       ["task", "hosted-close"],
       ["task", "hosted-close-pr"],
       ["cleanup", "merged"],
       ["release", "tasks", "reconcile"],
     ]) {
-      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(providerWrite);
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_WRITE_REQUIREMENTS);
       expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
     }
+
+    for (const id of [
+      ["integrate", "queue", "enqueue"],
+      ["integrate", "queue", "doctor"],
+      ["integrate", "queue", "adopt-legacy-protected-conflict"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("task.write");
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("git.mutate");
+    }
+
+    expect(findCommandEntry(["integrate", "queue", "list"])?.requirements).toEqual(
+      INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+    );
+    expect(findCommandEntry(["integrate", "queue", "claim"])?.requirements).toEqual(
+      INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
+    );
+
+    const release = findCommandEntry(["integrate", "queue", "release"]);
+    expect(release?.requirements).toEqual(INTEGRATION_QUEUE_LIST_REQUIREMENTS);
+    expect(release?.selectSession?.({ status: "done" }).requirements).toEqual(
+      INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+    );
+    expect(release?.selectSession?.({ status: "superseded" }).requirements).toEqual(
+      INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+    );
+
+    const runNext = findCommandEntry(["integrate", "queue", "run-next"]);
+    expect(runNext?.requirements).toEqual(INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS);
+    expect(runNext?.selectSession?.({ dryRun: true }).requirements).toEqual(
+      INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+    );
+    expect(runNext?.selectSession?.({ dryRun: false }).requirements).toEqual(
+      INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
+    );
 
     for (const id of [
       ["work", "start"],

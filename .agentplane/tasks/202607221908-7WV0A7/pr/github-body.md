@@ -33,20 +33,31 @@ ratchet, lifecycle 8/8, release parity, and architecture dependency checks all p
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli/command-catalog.test.ts        | 106 +++++++++++++++
+ .../src/cli/run-cli/command-catalog.test.ts        | 114 ++++++++++++++
  .../src/cli/run-cli/command-catalog/core.ts        |  36 +++--
- .../src/cli/run-cli/command-catalog/kernel.test.ts |  33 +++++
- .../src/cli/run-cli/command-catalog/lifecycle.ts   |  15 ++-
- .../src/cli/run-cli/command-catalog/project.ts     | 118 ++++++++++++-----
- .../provider-ops-capability-profiles.ts            |  39 ++++++
+ .../run-cli/command-catalog/integration-queue.ts   |  83 ++++++++++
+ .../src/cli/run-cli/command-catalog/kernel.test.ts |  70 +++++++++
+ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  15 +-
+ .../src/cli/run-cli/command-catalog/project.ts     | 110 ++++++-------
+ .../provider-ops-capability-profiles.ts            |  82 ++++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +-
- .../src/cli/run-cli/command-loaders/core.ts        |  52 ++++++--
+ .../src/cli/run-cli/command-loaders/core.ts        |  52 +++++--
  .../src/cli/run-cli/command-loaders/lifecycle.ts   |  20 ++-
- .../src/cli/run-cli/command-loaders/project.ts     | 145 ++++++++++++---------
- .../src/cli/run-cli/command-loaders/task.ts        |  16 ++-
- .../src/commands/integrate-queue.command.ts        |  13 +-
+ .../src/cli/run-cli/command-loaders/project.ts     | 172 ++++++++++++++-------
+ .../src/cli/run-cli/command-loaders/task.ts        |  16 +-
+ .../src/cli/run-cli/registry.run.test.ts           | 102 ++++++++++++
+ .../src/commands/integrate-queue-doctor-command.ts | 128 +++++++++------
+ .../src/commands/integrate-queue-lane.test.ts      |  56 ++++++-
+ .../src/commands/integrate-queue-list.ts           |  38 +++++
+ .../src/commands/integrate-queue-render.ts         |  64 ++++++++
+ .../src/commands/integrate-queue.command.test.ts   |  10 +-
+ .../src/commands/integrate-queue.command.ts        |  66 +++-----
  packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
- 13 files changed, 458 insertions(+), 152 deletions(-)
+ .../src/commands/provider-ops-results.test.ts      | 134 ++++++++++++++++
+ .../src/commands/release/plan.command.ts           |  67 ++++++--
+ .../agentplane/src/commands/release/plan.render.ts |  13 ++
+ .../agentplane/src/commands/release/plan.test.ts   |  35 +++--
+ 24 files changed, 1229 insertions(+), 271 deletions(-)
 ```
 
 </details>
