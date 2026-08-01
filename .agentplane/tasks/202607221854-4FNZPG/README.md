@@ -1,10 +1,11 @@
 ---
 id: "202607221854-4FNZPG"
 title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +65,8 @@ quality_review:
     - "Dry-run non-mutation, idempotent upgrade, exact workflow rollback, worktree resume uniqueness, typed task route, runner, evaluator, package, and full release gates are asserted with deterministic local fixtures."
     - "The auxiliary test-only fixture changes align dormant tests with already-enforced projection identity, evaluator policy, scoped side-effect authority, and git-common-dir persistence contracts; they do not weaken production behavior."
 commit:
-  hash: "c958ab897b9a81d619be4adfdb4bfbaf4ba446ab"
-  message: "🧪 4FNZPG release: align authority persistence fixture"
+  hash: "7938f7dfb34e994dfc568370710ded957df4dcaf"
+  message: "✅ 4FNZPG quality: record evaluator pass"
 comments:
   -
     author: "TESTER"
@@ -91,6 +92,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework extended: updated the branch_pr authority fixture to assert the current out-of-band git-common-dir persistence contract. Granting scoped authority no longer mutates the task branch, and the authorized pr.open operation is still restored; the focused file passes 3/3."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -160,9 +164,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication."
+  -
+    type: "status"
+    at: "2026-08-01T21:54:52.014Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T21:52:39.850Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-01T21:54:52.014Z"
+doc_updated_by: "TESTER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
   Summary: |-
@@ -264,6 +275,9 @@ sections:
       Impact: RF-29 is locally release-qualified across fresh, v0.6.24, and v0.6.26 repositories in direct and branch_pr modes.
       Resolution: Publish the final verification/evaluator head, wait for its successful Core CI release-ready artifact, then run release:e2e:local --skip-prepublish against that exact SHA before integration.
 extensions:
+  implementation_commit:
+    hash: "cec72a74caf380d60fc084dbd837ae43b1eea970"
+    message: "📝 4FNZPG task: record release verification evidence"
   workflow_route_baseline:
     start_head_sha: "14185e94deadff666a1544413ba5ae728dcacdfb"
     version: 1

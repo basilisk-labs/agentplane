@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:40e38e48a6f33fa01c8e06236736bc6055b521c90d760849f5f377a491735d91",
   "pr_number": 4727,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4727",
+  "pre_merge_closure": {
+    "basis_commit": "7938f7dfb34e994dfc568370710ded957df4dcaf",
+    "branch": "task/202607221854-4FNZPG/validate-the-0-6-24-to-0-7-migration-and-install",
+    "pr_number": 4727,
+    "recorded_at": "2026-08-01T21:54:52.068Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221854-4FNZPG",
