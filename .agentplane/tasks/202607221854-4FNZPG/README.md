@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -35,8 +35,8 @@ verification:
   note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
   attempts: 1
 commit:
-  hash: "8eadfda8cc3519f262d25058854cedb985df1419"
-  message: "🔄 4FNZPG task: merge current main for release verification"
+  hash: "c81cdcd145b65f7d4dd1a2e7460ffdad116d0444"
+  message: "🧪 4FNZPG release: bind cloud preflight fixture"
 comments:
   -
     author: "TESTER"
@@ -50,6 +50,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework completed: merged task 202608012034-W6F4DM from current main so the heavy artifact gate can process repositories with more than 1 MiB of tracked-path output; rerun the complete release matrix against this implementation head."
+  -
+    author: "CODER"
+    body: "Implementation rework extended: the full release suite exposed a stale cloud preflight fixture that could no longer reach its intended HTTP 502 path after projection-identity hardening. The fixture now binds the expected identity; the focused 18-test file and lint/format checks pass."
 events:
   -
     type: "status"
@@ -85,8 +88,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework completed: merged task 202608012034-W6F4DM from current main so the heavy artifact gate can process repositories with more than 1 MiB of tracked-path output; rerun the complete release matrix against this implementation head."
+  -
+    type: "status"
+    at: "2026-08-01T21:01:45.965Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework extended: the full release suite exposed a stale cloud preflight fixture that could no longer reach its intended HTTP 502 path after projection-identity hardening. The fixture now binds the expected identity; the focused 18-test file and lint/format checks pass."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:54:33.077Z"
+doc_updated_at: "2026-08-01T21:01:45.965Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
