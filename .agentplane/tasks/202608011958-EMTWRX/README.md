@@ -1,10 +1,11 @@
 ---
 id: "202608011958-EMTWRX"
 title: "Archive resolved RF-24/RF-25 help snapshot incident"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +63,8 @@ quality_review:
     - "The historical archive preserves the complete INC-20260801-01 record, source implementation commit 8fc6ef287988, merged main commit e6314937c7de05d3a3a68c9e666c6a4aaaf4fc9b, focused regression evidence, final state, archive owner, and closure reason."
     - "The active source and packaged incident registries remove the same single entry and remain byte-identical; no runtime implementation or canonical policy rule changes."
 commit:
-  hash: "5832d8fed38943727e4380d3aefc472f822f10c1"
-  message: "🗂️ EMTWRX docs: archive resolved help snapshot incident"
+  hash: "fcf2998104879ad6d8a1da39f5b3c02bc16dbf16"
+  message: "🔍 EMTWRX task: record quality review"
 comments:
   -
     author: "DOCS"
@@ -71,6 +72,9 @@ comments:
   -
     author: "DOCS"
     body: "Implementation recorded: archived INC-20260801-01 with merged-main and focused regression evidence; active source and packaged registries are empty and synchronized."
+  -
+    author: "DOCS"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -92,8 +96,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings."
+  -
+    type: "status"
+    at: "2026-08-01T20:12:25.540Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:10:29.773Z"
+doc_updated_at: "2026-08-01T20:12:25.541Z"
 doc_updated_by: "DOCS"
 description: "Reconcile INC-20260801-01 against merged main evidence, preserve its final state in the historical archive, remove it from the active source and packaged registries, and reopen the release gates without changing runtime behavior."
 sections:
@@ -157,6 +168,9 @@ sections:
       Impact: Archival cannot create installed-policy drift.
       Resolution: Preserved the complete final record in docs/developer/incident-archive.mdx and passed release:incidents:check, assets:builtin:check, policy routing, and doctor. Doctor exited 0 with four unrelated historical workflow/task-metadata warnings already present on main.
 extensions:
+  implementation_commit:
+    hash: "a544a527fcf6940a683bf97aec4afe33c2b65a7b"
+    message: "🗂️ EMTWRX docs: archive resolved help snapshot incident"
   workflow_route_baseline:
     start_head_sha: "14185e94deadff666a1544413ba5ae728dcacdfb"
     version: 1
