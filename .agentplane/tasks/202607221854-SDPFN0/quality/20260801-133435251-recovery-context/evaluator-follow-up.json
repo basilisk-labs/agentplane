@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221854-SDPFN0-45ae4cd39d1cc7e83c51b26a",
+  "task_id": "202607221854-SDPFN0",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Regenerate SHA-bound deterministic evidence using the exact five dependency IDs declared in the task README and include evidence of independent verification for each; then rerun semantic evaluation without changing the implementation unless the exact dependency closure reveals an incompatibility.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The deterministic receipt validates four task IDs that are not the task's declared dependencies, so the required dependency closure is not proven.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/README.md",
+          "sha256": "sha256:7ef3834edaa0854a19908316e630f4beaff45a28680bb7cb3052be9484955304",
+          "section": "depends_on"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json",
+          "sha256": "sha256:7a279126460f054de891f39c6362dbfe4d12593c4177a6b910efbc24022513b7",
+          "section": "dependency_closure"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-result.json"
+}

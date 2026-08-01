@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The deterministic receipt validates four task IDs that are not the task's declared dependencies, so the required dependency closure is not proven.",
+      "broken_invariant": "The approved contract requires all five exact command-family slice dependencies to be DONE with independent verification. The task declares 202607221908-TZTE5V, 202607221908-2NDXVB, 202607221908-YD5J89, and 202607221908-RC1DX8, but the runtime receipt records corresponding IDs with the 202607221854 prefix; only 202607221908-7WV0A7 matches.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/README.md",
+          "sha256": "sha256:7ef3834edaa0854a19908316e630f4beaff45a28680bb7cb3052be9484955304",
+          "section": "depends_on"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json",
+          "sha256": "sha256:7a279126460f054de891f39c6362dbfe4d12593c4177a6b910efbc24022513b7",
+          "section": "dependency_closure"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A deterministic verification check that compares the dependency_closure task IDs against the exact depends_on set from the frozen task document and fails on missing, substituted, or extra IDs.",
+    "Evidence that each exact declared dependency has independent successful verification, not only DONE status."
+  ],
+  "hidden_assumptions": [
+    "The receipt assumes that similarly suffixed task IDs with a different timestamp prefix identify the intended dependency slices.",
+    "The recorded DONE statuses are assumed to imply independent verification, but the frozen evidence does not establish that for the exact declared dependencies."
+  ],
+  "recovery_context": "Regenerate SHA-bound deterministic evidence using the exact five dependency IDs declared in the task README and include evidence of independent verification for each; then rerun semantic evaluation without changing the implementation unless the exact dependency closure reveals an incompatibility."
+}
