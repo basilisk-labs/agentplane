@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -35,8 +35,8 @@ verification:
   note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
   attempts: 1
 commit:
-  hash: "c81cdcd145b65f7d4dd1a2e7460ffdad116d0444"
-  message: "🧪 4FNZPG release: bind cloud preflight fixture"
+  hash: "78398e83e674b4c98d6e08238f90be9828c9020d"
+  message: "🧪 4FNZPG release: align generic backend sync fixtures"
 comments:
   -
     author: "TESTER"
@@ -53,6 +53,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework extended: the full release suite exposed a stale cloud preflight fixture that could no longer reach its intended HTTP 502 path after projection-identity hardening. The fixture now binds the expected identity; the focused 18-test file and lint/format checks pass."
+  -
+    author: "CODER"
+    body: "Implementation rework extended: removed stale cloud-only identity expectations from generic redmine backend sync fixtures. The shared sync contract remains generic while the existing cloud-specific tests continue to cover explicit identity transitions; the affected chunk passes 22/22."
 events:
   -
     type: "status"
@@ -95,8 +98,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework extended: the full release suite exposed a stale cloud preflight fixture that could no longer reach its intended HTTP 502 path after projection-identity hardening. The fixture now binds the expected identity; the focused 18-test file and lint/format checks pass."
+  -
+    type: "status"
+    at: "2026-08-01T21:07:14.953Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework extended: removed stale cloud-only identity expectations from generic redmine backend sync fixtures. The shared sync contract remains generic while the existing cloud-specific tests continue to cover explicit identity transitions; the affected chunk passes 22/22."
 doc_version: 3
-doc_updated_at: "2026-08-01T21:01:45.965Z"
+doc_updated_at: "2026-08-01T21:07:14.953Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
