@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -42,28 +42,28 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T01:59:41.580Z"
+  updated_at: "2026-08-01T02:04:19.037Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "f404121e09d0447deac5d8001481b63ced9269cd"
   blueprint_digest: "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221908-YD5J89/README.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-015813828-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-020311888-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The recorded deterministic verification predates the implementation rework and therefore does not verify the evaluated SHA."
+    - "`evaluator run --no-record` still enters a command catalog boundary declared with write and Git-mutation capabilities, despite selecting a read dependency inside the handler. The implementation therefore does not provide the promised read-only evaluator authority boundary."
 commit:
   hash: "f404121e09d0447deac5d8001481b63ced9269cd"
   message: "🐛 YD5J89 task: repair hosted CI gates"
