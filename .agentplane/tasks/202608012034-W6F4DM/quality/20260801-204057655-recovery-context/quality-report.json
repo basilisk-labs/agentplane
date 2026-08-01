@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608012034-W6F4DM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T20:40:57.866Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The repair is minimal and closes the demonstrated buffer failure without weakening artifact policy or introducing unbounded process output.",
+  "evaluated_sha": "390bfc5a8817d63450b606c9453246bec377731e",
+  "blueprint_digest": "2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac",
+  "findings": [
+    "A single 64 MiB constant is applied to the tracked-file git query, git archive invocation, and tar inventory; all buffered child-process paths in this gate are covered.",
+    "The volatile-path predicates, historical cutoff, offender reporting, and export-ignore validation are unchanged, so the fix changes capacity rather than acceptance semantics."
+  ],
+  "evidence_refs": [
+    "scripts/checks/check-agentplane-artifacts.mjs",
+    ".agentplane/tasks/202608012034-W6F4DM/verification/20260801204021289-75039c2a37d923b8.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Inventories exceeding the explicit 64 MiB ceiling still fail closed; that size is far above the current 1.23 MiB repository and remains bounded."
+  ]
+}
