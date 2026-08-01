@@ -1,10 +1,10 @@
 ---
 id: "202607221854-YMYYQ8"
 title: "Publish the AgentPlane 0.7 architecture and migration guide"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ verify:
   - "bun run docs:site:generate:check"
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T23:22:10.769Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -36,11 +36,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T23:22:30.774Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:37.465Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T23:22:30.774Z"
+doc_updated_by: "DOCS"
 description: "Document the final CLI-versus-agent responsibility boundary, WorkOrder/SemanticResult/Receipt contracts, supervisor flows, knowledge lifecycle, authority model, compatibility window, migration, metrics, and operator recovery."
 sections:
   Summary: |-
@@ -69,6 +79,10 @@ sections:
     - Restore the previous roadmap/changelog state without altering product code or migration fixtures.
     - Re-run docs generation and link/IA checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "5319bbdeecb05adc2c436e4039f5046a5bfeb89a"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
