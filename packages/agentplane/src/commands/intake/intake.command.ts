@@ -1,7 +1,7 @@
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
-import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../../cli/run-cli/command-catalog/kernel.js";
 import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
 
 import { buildIntakeReport, writeTaskIntakeManifest, type IntakeReport } from "./intake-report.js";
@@ -153,7 +153,7 @@ function renderIntakeReport(
 }
 
 export function makeRunIntakeHandler(
-  deps: Pick<RunDeps, "getResolvedProject" | "getLoadedConfig">,
+  deps: Pick<CommandSessionResolvers, "getResolvedProject" | "getLoadedConfig">,
 ): CommandHandler<IntakeParsed> {
   return async (ctx, parsed) =>
     wrapCommand({ command: "intake", rootOverride: ctx.rootOverride }, async () => {

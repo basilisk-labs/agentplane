@@ -1,5 +1,5 @@
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
-import type { RunDeps } from "../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
 
 import { makeRunIdePlatformSyncHandler } from "./platform.js";
 
@@ -30,7 +30,7 @@ export const ideSyncSpec: CommandSpec<IdeSyncParsed> = {
 };
 
 export function makeRunIdeSyncHandler(
-  deps: Pick<RunDeps, "getResolvedProject">,
+  deps: Pick<CommandSessionResolvers, "getResolvedProject">,
 ): CommandHandler<IdeSyncParsed> {
   return makeRunIdePlatformSyncHandler(deps);
 }

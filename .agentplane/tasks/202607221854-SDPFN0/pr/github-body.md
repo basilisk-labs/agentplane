@@ -33,9 +33,10 @@ independent verification are proven; implementation remains d89988611fbd.
 
 ```text
  .../src/cli/run-cli/command-catalog.test.ts        |  72 +--
+ .../agentplane/src/cli/run-cli/command-catalog.ts  |   2 +-
  .../run-cli/command-catalog/context-evaluator.ts   | 321 ++++++++++++++
  .../src/cli/run-cli/command-catalog/core.ts        |  78 ++--
- .../src/cli/run-cli/command-catalog/kernel.ts      | 155 +------
+ .../src/cli/run-cli/command-catalog/kernel.ts      | 161 +------
  .../src/cli/run-cli/command-catalog/lifecycle.ts   |  33 +-
  .../src/cli/run-cli/command-catalog/project.ts     | 483 +++++++--------------
  .../src/cli/run-cli/command-catalog/task.ts        |  61 ++-
@@ -44,13 +45,20 @@ independent verification are proven; implementation remains d89988611fbd.
  .../src/cli/run-cli/command-loaders/lifecycle.ts   |   6 +-
  .../src/cli/run-cli/command-loaders/project.ts     | 162 +++----
  .../src/cli/run-cli/command-loaders/task.ts        |  17 +-
- .../agentplane/src/cli/run-cli/commands/codex.ts   |  11 +-
+ .../agentplane/src/cli/run-cli/commands/codex.ts   |  13 +-
+ .../agentplane/src/cli/run-cli/commands/config.ts  |   8 +-
+ .../src/cli/run-cli/commands/core.unit.test.ts     |  14 +-
+ .../src/cli/run-cli/commands/core/agents.ts        |   4 +-
+ .../agentplane/src/cli/run-cli/commands/ide.ts     |   4 +-
+ .../src/cli/run-cli/commands/init/ide-sync.ts      |   8 +-
+ .../src/cli/run-cli/commands/platform.ts           |   4 +-
+ .../agentplane/src/cli/run-cli/registry.run.ts     |  12 +-
  .../agentplane/src/commands/acr/acr.command.ts     |   2 +-
  .../src/commands/backend/sync.command.ts           |   2 +-
  .../src/commands/blueprint/blueprint.command.ts    |   2 +-
- .../src/commands/intake/intake.command.ts          |   4 +-
- scripts/baselines/knip-baseline.json               |   9 +-
- 18 files changed, 848 insertions(+), 665 deletions(-)
+ .../src/commands/intake/intake.command.ts          |   6 +-
+ scripts/baselines/knip-baseline.json               |  16 +-
+ 26 files changed, 871 insertions(+), 715 deletions(-)
 ```
 
 </details>

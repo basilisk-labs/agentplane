@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { fileExists } from "../../../fs-utils.js";
 
-import type { RunDeps } from "../../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../../command-catalog/kernel.js";
 import type { PlatformId } from "../platform-registry.js";
 import { syncPlatforms } from "../platform.js";
 
@@ -15,16 +15,12 @@ export async function maybeSyncIde(opts: {
   if (opts.ide === "none") return { installPaths: [] };
   if (opts.ide === "codex") return { installPaths: [] };
 
-  const deps: RunDeps = {
-    getCtx: (_cmd) => Promise.reject(new Error("getCtx is not available during init")),
+  const deps: Pick<CommandSessionResolvers, "getResolvedProject"> = {
     getResolvedProject: (_cmd) =>
       Promise.resolve({
         gitRoot: opts.gitRoot,
         agentplaneDir: path.join(opts.gitRoot, ".agentplane"),
       }),
-    getLoadedConfig: (_cmd) =>
-      Promise.reject(new Error("getLoadedConfig is not available during init")),
-    getHelpJsonForDocs: () => [],
   };
   const platforms: PlatformId[] = opts.ide === "cursor" ? ["cursor"] : ["windsurf"];
   await syncPlatforms({

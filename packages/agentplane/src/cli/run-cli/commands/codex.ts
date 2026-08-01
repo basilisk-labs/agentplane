@@ -11,7 +11,7 @@ import {
   resolveCodexInstallRoot,
   type CodexPluginInstallScope,
 } from "../../../commands/codex/plugin-install.js";
-import type { RunDeps } from "../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
 
 import { wrapCommand } from "./wrap-command.js";
 
@@ -96,7 +96,7 @@ export const runCodexPlugin: CommandHandler<GroupCommandParsed> = async (_ctx, p
 };
 
 export function makeRunCodexPluginInstallHandler(
-  deps: Pick<RunDeps, "getResolvedProject"> | null,
+  deps: Pick<CommandSessionResolvers, "getResolvedProject"> | null,
 ): CommandHandler<CodexPluginInstallParsed> {
   return async (ctx, p) =>
     wrapCommand({ command: "codex plugin install", rootOverride: ctx.rootOverride }, async () => {
@@ -134,8 +134,8 @@ export function makeRunCodexPluginInstallHandler(
 }
 
 function requireRepoProjectResolver(
-  deps: Pick<RunDeps, "getResolvedProject"> | null,
-): RunDeps["getResolvedProject"] {
+  deps: Pick<CommandSessionResolvers, "getResolvedProject"> | null,
+): CommandSessionResolvers["getResolvedProject"] {
   if (deps) return deps.getResolvedProject;
   throw new Error("Repo-scoped Codex plugin install requires the project capability");
 }

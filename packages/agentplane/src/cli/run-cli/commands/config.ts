@@ -6,14 +6,16 @@ import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
-import type { RunDeps } from "../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
 import { wrapCommand } from "./wrap-command.js";
 
 const output = createCliEmitter();
 
-type ConfigCommandDeps = Pick<RunDeps, "getResolvedProject" | "getLoadedConfig">;
+type ConfigCommandDeps = Pick<CommandSessionResolvers, "getResolvedProject" | "getLoadedConfig">;
 
-export type ConfigShowResult = { raw: Awaited<ReturnType<RunDeps["getLoadedConfig"]>>["raw"] };
+export type ConfigShowResult = {
+  raw: Awaited<ReturnType<CommandSessionResolvers["getLoadedConfig"]>>["raw"];
+};
 export type ConfigWriteResult = { value: string; workflowPath: string };
 
 type ConfigShowParsed = Record<string, never>;

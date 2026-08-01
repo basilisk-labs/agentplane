@@ -12,7 +12,7 @@ import {
 import { createCliEmitter } from "../../output.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { usageError } from "../../spec/errors.js";
-import type { RunDeps } from "../command-catalog/kernel.js";
+import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
 
 import {
   PLATFORM_IDS,
@@ -27,7 +27,7 @@ import { wrapCommand } from "./wrap-command.js";
 
 const output = createCliEmitter();
 
-type ProjectCommandDeps = Pick<RunDeps, "getResolvedProject">;
+type ProjectCommandDeps = Pick<CommandSessionResolvers, "getResolvedProject">;
 
 type PlatformSyncParsed = {
   platforms: PlatformId[];

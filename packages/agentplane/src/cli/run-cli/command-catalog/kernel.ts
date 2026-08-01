@@ -6,7 +6,6 @@ import {
   type CommandCapability,
   type CommandPreparationNode,
   type CommandSession,
-  type CommandSessionResolvers,
 } from "./command-session.js";
 
 export { createCommandSession } from "./command-session.js";
@@ -16,11 +15,6 @@ export type {
   CommandSession,
   CommandSessionResolvers,
 } from "./command-session.js";
-
-export type RunDeps = Pick<
-  CommandSessionResolvers,
-  "getCtx" | "getResolvedProject" | "getLoadedConfig" | "getHelpJsonForDocs"
->;
 
 export type DispatchNeeds = {
   project: boolean;
