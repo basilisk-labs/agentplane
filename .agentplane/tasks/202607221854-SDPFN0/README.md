@@ -4,7 +4,7 @@ title: "Complete CommandSession capability migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -69,8 +69,8 @@ quality_review:
   findings:
     - "The deterministic receipt validates four task IDs that are not the task's declared dependencies, so the required dependency closure is not proven."
 commit:
-  hash: "d89988611fbdd3efaba3c9054d122104e6717a2b"
-  message: "♻️ SDPFN0 task: complete CommandSession capability migration"
+  hash: "4f808df120a6d205d1cb27821aae048a61b8ecff"
+  message: "♻️ SDPFN0 task: remove legacy RunDeps aggregate"
 comments:
   -
     author: "CODER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Rework completed without implementation changes: corrected the deterministic dependency-closure receipt to the exact five depends_on IDs and added independent verification and passing quality artifact references for each slice."
+  -
+    author: "CODER"
+    body: "Rework: removed the remaining RunDeps aggregate and replaced fake init dependencies with the exact project resolver capability. Full ci:contract passed."
 events:
   -
     type: "status"
@@ -127,8 +130,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: evaluator-requested dependency evidence rework verified; exact declared closure and independent verification are proven; implementation remains d89988611fbd."
+  -
+    type: "status"
+    at: "2026-08-01T13:50:35.949Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: removed the remaining RunDeps aggregate and replaced fake init dependencies with the exact project resolver capability. Full ci:contract passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T13:37:46.535Z"
+doc_updated_at: "2026-08-01T13:50:35.949Z"
 doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
