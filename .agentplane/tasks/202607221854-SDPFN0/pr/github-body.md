@@ -19,8 +19,8 @@ Integrate the five independently verified command-family vertical slices, remove
 - Note:
 
 ```text
-PASS: evaluator-requested dependency evidence rework verified; exact declared closure and
-independent verification are proven; implementation remains d89988611fbd.
+PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical
+tests, typecheck, and ci:contract verified for 4f808df120a6.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -4,7 +4,7 @@ title: "Complete CommandSession capability migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -37,9 +37,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T13:37:45.505Z"
+  updated_at: "2026-08-01T13:57:05.557Z"
   updated_by: "TESTER"
-  note: "PASS: evaluator-requested dependency evidence rework verified; exact declared closure and independent verification are proven; implementation remains d89988611fbd."
+  note: "PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical tests, typecheck, and ci:contract verified for 4f808df120a6."
   attempts: 0
 quality_review:
   state: "rework"
@@ -137,8 +137,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: removed the remaining RunDeps aggregate and replaced fake init dependencies with the exact project resolver capability. Full ci:contract passed."
+  -
+    type: "verify"
+    at: "2026-08-01T13:57:05.557Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical tests, typecheck, and ci:contract verified for 4f808df120a6."
 doc_version: 3
-doc_updated_at: "2026-08-01T13:50:35.949Z"
+doc_updated_at: "2026-08-01T13:57:06.597Z"
 doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
@@ -389,6 +395,71 @@ sections:
     Result: pass
     Evidence: .agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json
     Scope: Unused-code baseline passed at 544 of 544 entries after removing CommandNeeds.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-SDPFN0-complete-commandsession-capability-migration/.agentplane/tasks/202607221854-SDPFN0/blueprint/resolved-snapshot.json
+    - old_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+    - current_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-SDPFN0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T13:57:05.557Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical tests, typecheck, and ci:contract verified for 4f808df120a6.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T13:50:35.949Z, excerpt_hash=sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326
+
+    Details:
+
+    Command: node dependency-closure exact-set and independent-verification assertion
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: Receipt IDs exactly equal depends_on; all five exact task documents are DONE with verification.state=ok and quality_review.state=pass; cited verification and quality artifacts exist and record pass.
+
+    Command: git diff --exit-code 4f808df120a6d205d1cb27821aae048a61b8ecff..4e9d0ce80bda3624e59e2f8e8de986ff909c6de5 -- packages scripts
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: No implementation or script drift after the recorded semantic implementation commit.
+
+    Command: rg -n 'CommandNeeds|legacy-command-needs|\bRunDeps\b' packages/agentplane/src --glob '*.ts'
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: Zero coarse CommandNeeds or RunDeps consumers remain; rg exit 1 means no matches.
+
+    Command: bun run --filter=agentplane test -- src/cli/run-cli/command-catalog.test.ts src/cli/run-cli/commands/core.unit.test.ts src/cli/run-cli/command-catalog/command-session.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: Focused catalog, session, and handler tests passed with 19 tests across the discovered files.
+
+    Command: bun run --filter=agentplane test
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: Full AgentPlane package suite passed with 477 files and 3206 tests against implementation SHA 4f808df120a6.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: All 12 critical CLI chunks and 77 tests passed.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+    Scope: Full deterministic contract passed, including TypeScript 7.0.2 typecheck, architecture, guards, Knip, hotspot, compatibility, efficiency, and coverage gates.
 
     BlueprintSnapshotRef:
     - state: current
@@ -680,6 +751,71 @@ Command: bun run knip:check
 Result: pass
 Evidence: .agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json
 Scope: Unused-code baseline passed at 544 of 544 entries after removing CommandNeeds.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-SDPFN0-complete-commandsession-capability-migration/.agentplane/tasks/202607221854-SDPFN0/blueprint/resolved-snapshot.json
+- old_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+- current_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-SDPFN0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T13:57:05.557Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical tests, typecheck, and ci:contract verified for 4f808df120a6.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T13:50:35.949Z, excerpt_hash=sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326
+
+Details:
+
+Command: node dependency-closure exact-set and independent-verification assertion
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: Receipt IDs exactly equal depends_on; all five exact task documents are DONE with verification.state=ok and quality_review.state=pass; cited verification and quality artifacts exist and record pass.
+
+Command: git diff --exit-code 4f808df120a6d205d1cb27821aae048a61b8ecff..4e9d0ce80bda3624e59e2f8e8de986ff909c6de5 -- packages scripts
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: No implementation or script drift after the recorded semantic implementation commit.
+
+Command: rg -n 'CommandNeeds|legacy-command-needs|\bRunDeps\b' packages/agentplane/src --glob '*.ts'
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: Zero coarse CommandNeeds or RunDeps consumers remain; rg exit 1 means no matches.
+
+Command: bun run --filter=agentplane test -- src/cli/run-cli/command-catalog.test.ts src/cli/run-cli/commands/core.unit.test.ts src/cli/run-cli/command-catalog/command-session.test.ts
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: Focused catalog, session, and handler tests passed with 19 tests across the discovered files.
+
+Command: bun run --filter=agentplane test
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: Full AgentPlane package suite passed with 477 files and 3206 tests against implementation SHA 4f808df120a6.
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: All 12 critical CLI chunks and 77 tests passed.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json
+Scope: Full deterministic contract passed, including TypeScript 7.0.2 typecheck, architecture, guards, Knip, hotspot, compatibility, efficiency, and coverage gates.
 
 BlueprintSnapshotRef:
 - state: current
