@@ -10,14 +10,14 @@ import {
 } from "./evaluator-review-usecase.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 
-export type EvaluatorArtifactPreparationRequest = {
+type EvaluatorArtifactPreparationRequest = {
   ctx: CommandCtx;
   taskId: string;
   evaluatorId: string;
   provenance: EvaluatorRunProvenance;
 };
 
-export type PreparedEvaluatorArtifactPacket = Readonly<{
+type PreparedEvaluatorArtifactPacket = Readonly<{
   git_root: string;
   prepared: PreparedEvaluatorReview;
 }>;

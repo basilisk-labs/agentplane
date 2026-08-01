@@ -62,7 +62,6 @@ export type ContextTaskReadSession = CommandSession<
 export type ContextTaskWriteSession = CommandSession<
   (typeof CONTEXT_TASK_WRITE_REQUIREMENTS)[number]
 >;
-export type EvaluatorReadSession = CommandSession<(typeof EVALUATOR_READ_REQUIREMENTS)[number]>;
 export type EvaluatorPrepareSession = CommandSession<
   (typeof EVALUATOR_PREPARE_REQUIREMENTS)[number]
 >;

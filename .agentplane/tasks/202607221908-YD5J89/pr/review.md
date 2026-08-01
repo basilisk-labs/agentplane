@@ -32,7 +32,7 @@ Created: 2026-08-01T00:38:26.423Z
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  89 ++++
  .../cli/run-cli/command-catalog/command-session.ts |  28 +-
- .../context-evaluator-capability-profiles.ts       |  72 +++
+ .../context-evaluator-capability-profiles.ts       |  71 +++
  .../src/cli/run-cli/command-catalog/kernel.test.ts |  74 +++
  .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
@@ -57,7 +57,7 @@ Created: 2026-08-01T00:38:26.423Z
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 28 files changed, 2478 insertions(+), 680 deletions(-)
+ 28 files changed, 2477 insertions(+), 680 deletions(-)
 ```
 
 </details>

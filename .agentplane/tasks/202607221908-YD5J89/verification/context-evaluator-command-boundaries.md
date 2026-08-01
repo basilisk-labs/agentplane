@@ -118,3 +118,12 @@ Confined-port verification:
 - `bun run hotspots:check`: passed; `evaluator.command.ts` remains below the 600-line limit.
 - `bun run test:critical`: 12 of 12 chunks passed, 77 tests total.
 - `git diff --check`: passed.
+
+## Hosted dead-code baseline rework
+
+Hosted `verify-static` found four newly unused exported type declarations after the confined-port split. The runtime and type shapes were already correct; the rework removes the obsolete `EvaluatorReadSession` alias and makes three implementation-only helper types private to their modules.
+
+- Hosted run `30680635633`: every job except `verify-static` passed; `verify-static` failed only at `bun run knip:check`.
+- `bun run knip:check`: passed at the reviewed baseline after the export cleanup (`545/545` total entries).
+- `bun run typecheck`: passed with the TypeScript 7 default compiler.
+- Targeted ESLint and `git diff --check`: passed.

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221908-YD5J89/migrate-context-and-evaluator-command-boundaries",
   "created_at": "2026-08-01T00:38:26.423Z",
-  "diffstat_sha256": "sha256:f8a5969de0635e207f7ec04b54970251d1c281e729daa259d5b29017821cd050",
+  "diffstat_sha256": "sha256:caed536e9e39c4fcd9f9578abf08ba094f4b02d8501882c80d9beb937878acdd",
   "last_verified_at": "2026-08-01T02:42:00.472Z",
   "last_verified_diffstat_sha256": "sha256:f8a5969de0635e207f7ec04b54970251d1c281e729daa259d5b29017821cd050",
   "pr_number": 4716,

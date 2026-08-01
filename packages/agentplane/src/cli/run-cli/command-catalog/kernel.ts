@@ -47,7 +47,7 @@ export type CommandEntry = {
   invocation?: string;
 };
 
-export type CommandSessionSelection = {
+type CommandSessionSelection = {
   requirements: readonly CommandCapability[];
   load: (session: CommandSession<CommandCapability>) => Promise<CommandHandler<unknown>>;
 };
