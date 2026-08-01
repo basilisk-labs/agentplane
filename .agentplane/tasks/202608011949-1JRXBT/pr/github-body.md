@@ -19,14 +19,9 @@ Port the behaviorally missing stable-line fixes for direct runner closeout, immu
 - Note:
 
 ```text
-Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI
-5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed
-including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast
-passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports
-terminal direct verification, immutable-head diffstat, streamed bounded verification output, and
-runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is
-stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check
-gate.
+Verified implementation a65844caf03aaef728ad412c847d7e3967313dba after evaluator rework: bunx is
+allowlisted with direct process-start coverage; all declared checks passed; maintenance diff remains
+behavior-only and hosted CI remains the only external gate.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -41,20 +36,20 @@ gate.
  .agentplane/tasks/202607221908-83Y4AF/README.md    |   4 +-
  docs/internal/v0.7-refactor-plan.md                |   5 +-
  docs/internal/v0.7-release-task-closure.json       |   5 +-
- ...cli.core.route-decision.direct-closeout.test.ts | 131 +++++++++++++++++-
+ ...cli.core.route-decision.direct-closeout.test.ts | 131 ++++++++++++++++-
  .../pr/integrate/internal/finalize.test.ts         |   1 +
  .../src/commands/pr/integrate/internal/finalize.ts |   2 +-
  .../src/commands/pr/integrate/verify.test.ts       |  49 +++++++
  .../agentplane/src/commands/pr/integrate/verify.ts |   9 ++
- .../agentplane/src/commands/shared/pr-meta.test.ts | 122 ++++++++++++++--
- .../src/commands/shared/pr-meta/verify-log.ts      | 154 +++++++++++++++++++--
+ .../agentplane/src/commands/shared/pr-meta.test.ts | 142 +++++++++++++++++--
+ .../src/commands/shared/pr-meta/verify-log.ts      | 155 +++++++++++++++++++--
  .../src/commands/shared/task-handoff.test.ts       |  36 +++++
  .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
  .../shared/workflow-operation-projection.ts        |   3 -
  .../src/commands/shared/workflow-step-factory.ts   |  27 +++-
  .../src/commands/shared/workflow-step.ts           |   1 -
  .../task/direct-task-supervisor-closeout.ts        |   9 +-
- 16 files changed, 521 insertions(+), 39 deletions(-)
+ 16 files changed, 542 insertions(+), 39 deletions(-)
 ```
 
 </details>
