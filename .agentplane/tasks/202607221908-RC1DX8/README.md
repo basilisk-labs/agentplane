@@ -4,7 +4,7 @@ title: "Migrate runner and Hermes command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -33,10 +33,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-01T03:21:53.917Z"
+  updated_by: "TESTER"
+  note: "PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12, typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed."
   attempts: 0
 commit:
   hash: "253943c427b60c81673f4442fbe7d277cb41a4e9"
@@ -63,8 +63,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation: migrated runner, Hermes, and local insights commands to phase-scoped CommandSession profiles; preserved typed in-process supervisor use cases and compatibility output."
+  -
+    type: "verify"
+    at: "2026-08-01T03:21:53.917Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12, typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T03:19:35.108Z"
+doc_updated_at: "2026-08-01T03:21:54.703Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session capabilities, shared supervisor use cases, typed episode results, and compatibility renderers."
 sections:
@@ -88,12 +94,45 @@ sections:
     4. Run runner/Hermes tests, lifecycle invariants, guards, and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-01T03:21:53.917Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12, typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T03:19:35.108Z, excerpt_hash=sha256:37018661039d255b8db6848f76a0c989406a2fc609faa7afbdaa318279087623
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-RC1DX8-migrate-runner-and-hermes-command-boundaries/.agentplane/tasks/202607221908-RC1DX8/blueprint/resolved-snapshot.json
+    - old_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+    - current_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-RC1DX8
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221908-RC1DX8
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert runner/Hermes surfaces to explicit typed compatibility adapters without discarding receipts or work orders.
     - Do not restore raw shell route execution.
     - Re-run adapter and supervision fixtures.
-  Findings: ""
+  Findings: |-
+    - Observation: The broad 683-test runner/Hermes matrix had one 2-second timeout in protected-filesystem FIFO replacement under concurrent suite load.
+      Impact: No changed runner/Hermes command path failed; the timed-out filesystem test is unrelated to this diff.
+      Resolution: The complete protected-filesystem file passed 11/11 in isolation, including the timed-out case in 34 ms; classified as suite-load flakiness.
 extensions:
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
@@ -129,6 +168,36 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-01T03:21:53.917Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12, typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T03:19:35.108Z, excerpt_hash=sha256:37018661039d255b8db6848f76a0c989406a2fc609faa7afbdaa318279087623
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-RC1DX8-migrate-runner-and-hermes-command-boundaries/.agentplane/tasks/202607221908-RC1DX8/blueprint/resolved-snapshot.json
+- old_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+- current_digest: 589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-RC1DX8
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221908-RC1DX8
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -138,3 +207,7 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
 - Re-run adapter and supervision fixtures.
 
 ## Findings
+
+- Observation: The broad 683-test runner/Hermes matrix had one 2-second timeout in protected-filesystem FIFO replacement under concurrent suite load.
+  Impact: No changed runner/Hermes command path failed; the timed-out filesystem test is unrelated to this diff.
+  Resolution: The complete protected-filesystem file passed 11/11 in isolation, including the timed-out case in 34 ms; classified as suite-load flakiness.
