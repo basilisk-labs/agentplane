@@ -2,10 +2,10 @@
 id: "202607221908-YD5J89"
 title: "Migrate context and evaluator command boundaries"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
   findings:
     - "The confined evaluator artifact port closes the prior authority leak: callers receive only a frozen prepare operation, while recording and provider capabilities remain separately declared."
 commit:
-  hash: "83961c5ebfbaac7489f08cf055535d5c386d4b8d"
-  message: "✅ YD5J89 task: record confined port quality pass"
+  hash: "29d67bf216448202b058df3aba33508f06d58613"
+  message: "🧹 YD5J89 task: remove unused type exports"
 comments:
   -
     author: "CODER"
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Hosted static rework committed: removed four newly unused exported type declarations; runtime behavior is unchanged and the local knip baseline now passes."
 events:
   -
     type: "status"
@@ -194,8 +197,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-08-01T02:53:25.870Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Hosted static rework committed: removed four newly unused exported type declarations; runtime behavior is unchanged and the local knip baseline now passes."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:44:23.289Z"
+doc_updated_at: "2026-08-01T02:53:25.870Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
