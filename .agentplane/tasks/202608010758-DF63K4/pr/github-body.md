@@ -15,19 +15,25 @@ Repair the post-merge TypeScript 7 documentation drift by regenerating scripts/R
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Recorded deterministic command evidence for generated inventory repair at c074e8b12; all scoped
+checks and the full-fast regression suite pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T07:59:56.084Z
+- Updated: 2026-08-01T08:00:25.136Z
 - Branch: task/202608010758-DF63K4/refresh-generated-script-inventory-after-typescr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ scripts/README.md | 40 +++++++++++++++++++++-------------------
+ 1 file changed, 21 insertions(+), 19 deletions(-)
 ```
 
 </details>
