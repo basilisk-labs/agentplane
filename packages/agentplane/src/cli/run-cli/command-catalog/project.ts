@@ -13,14 +13,6 @@ import {
   evidenceVerifySpec,
 } from "../../../commands/evidence/evidence.command.js";
 import {
-  hermesDoctorSpec,
-  hermesEnqueueSpec,
-  hermesLifecycleSpec,
-  hermesReconcileSpec,
-  hermesSpec,
-  hermesSuperviseSpec,
-} from "../../../commands/hermes/hermes.command.js";
-import {
   blueprintDriftSpec,
   blueprintExamplesSpec,
   blueprintExplainSpec,
@@ -151,11 +143,10 @@ import {
 import {
   declareCommand,
   declareConditionalSessionCommand,
-  declareMultiSessionCommand,
   declareSessionCommand,
-  defineCommandSessionSelection,
   type CommandEntry,
 } from "./kernel.js";
+import { HERMES_COMMANDS } from "./hermes.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
@@ -164,16 +155,7 @@ import {
   EVALUATOR_PREPARE_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./context-evaluator-capability-profiles.js";
-import {
-  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
-  HERMES_PROJECTION_REQUIREMENTS,
-  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
-  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
-} from "./runner-hermes-capability-profiles.js";
-import {
-  NO_CONTEXT_REQUIREMENTS,
-  PROJECT_CONFIG_REQUIREMENTS,
-} from "./project-capability-profiles.js";
+import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
 import {
   fromCommandsRecipesRecipesCommand,
   fromCommandsRecipesCacheCommand,
@@ -233,15 +215,6 @@ import {
   fromCommandsEvidenceCommand,
   loadEvidenceBundleSpec,
   loadEvidenceVerifySpec,
-  loadHermesSpec,
-  loadHermesDoctorSpec,
-  loadHermesEnqueueSpec,
-  loadHermesLifecycleSpec,
-  loadHermesReconcileSpec,
-  loadHermesSuperviseLocalExecutionSpec,
-  loadHermesSuperviseLocalPreparationSpec,
-  loadHermesSuperviseRemoteExecutionSpec,
-  loadHermesSuperviseRemotePreparationSpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
   loadBlueprintExamplesSpec,
@@ -299,23 +272,6 @@ import {
   loadContextSuperviseTaskSpec,
 } from "../command-loaders/project.js";
 
-const HERMES_SUPERVISE_LOCAL_PREPARATION = defineCommandSessionSelection({
-  load: loadHermesSuperviseLocalPreparationSpec,
-  requirements: HERMES_PROJECTION_REQUIREMENTS,
-});
-const HERMES_SUPERVISE_REMOTE_PREPARATION = defineCommandSessionSelection({
-  load: loadHermesSuperviseRemotePreparationSpec,
-  requirements: HERMES_REMOTE_PREPARATION_REQUIREMENTS,
-});
-const HERMES_SUPERVISE_LOCAL_EXECUTION = defineCommandSessionSelection({
-  load: loadHermesSuperviseLocalExecutionSpec,
-  requirements: HERMES_LOCAL_EXECUTION_REQUIREMENTS,
-});
-const HERMES_SUPERVISE_REMOTE_EXECUTION = defineCommandSessionSelection({
-  load: loadHermesSuperviseRemoteExecutionSpec,
-  requirements: HERMES_REMOTE_EXECUTION_REQUIREMENTS,
-});
-
 export const PROJECT_COMMANDS = [
   declareCommand(acrSpec, { load: loadAcrSpec, needs: "none" }),
   declareCommand(acrSchemaSpec, { load: loadAcrSchemaSpec, needs: "none" }),
@@ -326,43 +282,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
   declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
   declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
-  declareSessionCommand(hermesSpec, {
-    load: loadHermesSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareSessionCommand(hermesEnqueueSpec, {
-    load: loadHermesEnqueueSpec,
-    requirements: HERMES_PROJECTION_REQUIREMENTS,
-  }),
-  declareMultiSessionCommand(hermesSuperviseSpec, {
-    default: HERMES_SUPERVISE_LOCAL_PREPARATION,
-    variants: [
-      {
-        when: (parsed) => parsed.executeStep && !parsed.dryRun && parsed.remote,
-        selection: HERMES_SUPERVISE_REMOTE_EXECUTION,
-      },
-      {
-        when: (parsed) => parsed.executeStep && !parsed.dryRun,
-        selection: HERMES_SUPERVISE_LOCAL_EXECUTION,
-      },
-      {
-        when: (parsed) => parsed.remote,
-        selection: HERMES_SUPERVISE_REMOTE_PREPARATION,
-      },
-    ],
-  }),
-  declareSessionCommand(hermesReconcileSpec, {
-    load: loadHermesReconcileSpec,
-    requirements: HERMES_PROJECTION_REQUIREMENTS,
-  }),
-  declareSessionCommand(hermesLifecycleSpec, {
-    load: loadHermesLifecycleSpec,
-    requirements: NO_CONTEXT_REQUIREMENTS,
-  }),
-  declareSessionCommand(hermesDoctorSpec, {
-    load: loadHermesDoctorSpec,
-    requirements: PROJECT_CONFIG_REQUIREMENTS,
-  }),
+  ...HERMES_COMMANDS,
   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
   declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),

@@ -33,9 +33,10 @@ Created: 2026-08-01T02:58:47.934Z
  .../src/cli/run-cli/command-catalog.test.ts        | 119 ++++++++++++++++++++
  .../command-catalog/command-context-port.ts        |   1 +
  .../src/cli/run-cli/command-catalog/core.ts        |  16 ++-
+ .../src/cli/run-cli/command-catalog/hermes.ts      |  92 +++++++++++++++
  .../src/cli/run-cli/command-catalog/kernel.test.ts |  67 +++++++++++
  .../src/cli/run-cli/command-catalog/kernel.ts      |  61 ++++++++++
- .../src/cli/run-cli/command-catalog/project.ts     |  80 +++++++++++--
+ .../src/cli/run-cli/command-catalog/project.ts     |  22 +---
  .../runner-hermes-capability-profiles.ts           |  72 ++++++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |  49 ++++++--
  .../src/cli/run-cli/command-loaders/core.ts        |  14 +--
@@ -46,7 +47,7 @@ Created: 2026-08-01T02:58:47.934Z
  .../src/commands/insights/insights-report.ts       |  10 +-
  .../src/commands/insights/insights.command.ts      |  19 +++-
  .../agentplane/src/commands/task/run.command.ts    |  27 ++++-
- 17 files changed, 801 insertions(+), 121 deletions(-)
+ 18 files changed, 824 insertions(+), 132 deletions(-)
 ```
 
 </details>
