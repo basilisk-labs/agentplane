@@ -27,6 +27,7 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.core.task-run.test.ts          | 14 ++++-
  .../src/cli/run-cli/command-catalog.test.ts        | 65 ++++++++++++++++++++++
  .../src/cli/run-cli/command-catalog/core.ts        | 16 ++++--
  .../src/cli/run-cli/command-catalog/kernel.test.ts | 36 ++++++++++++
@@ -40,7 +41,7 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
  .../src/commands/insights/insights-report.ts       | 10 +++-
  .../src/commands/insights/insights.command.ts      | 19 +++++--
  .../agentplane/src/commands/task/run.command.ts    | 21 ++++++-
- 13 files changed, 368 insertions(+), 81 deletions(-)
+ 14 files changed, 381 insertions(+), 82 deletions(-)
 ```
 
 </details>

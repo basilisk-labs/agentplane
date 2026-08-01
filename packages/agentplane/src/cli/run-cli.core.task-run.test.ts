@@ -147,9 +147,17 @@ describe("runCli task run", () => {
     const executeSpy = vi
       .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
       .mockResolvedValue(executed);
-    const handler = makeRunTaskRunHandler(async () => {
+    const getPreparationContext = vi.fn(async () => {
       await Promise.resolve();
       return {} as never;
+    });
+    const getExecutionContext = vi.fn(async () => {
+      await Promise.resolve();
+      return {} as never;
+    });
+    const handler = makeRunTaskRunHandler({
+      getPreparationContext,
+      getExecutionContext,
     });
     const commandContext = { cwd: "/repo", rootOverride: null } as never;
     const parsed = {
@@ -170,6 +178,10 @@ describe("runCli task run", () => {
           };
           expect(payload.lifecycle_status).toBe("degraded");
           expect(payload.active_claim_cleanup).toEqual(cleanup);
+          expect(getPreparationContext).not.toHaveBeenCalled();
+          expect(getExecutionContext).toHaveBeenCalledWith("task run", {
+            includeRemote: false,
+          });
         } finally {
           io.restore();
         }
