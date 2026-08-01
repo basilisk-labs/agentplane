@@ -4,7 +4,7 @@ title: "Add fingerprinted preparation caches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -39,32 +39,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T16:57:03.512Z"
+  updated_at: "2026-08-01T17:29:49.807Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "370da2c0b0489d3939d66ed93bb8cc6916fd1e0d"
   blueprint_digest: "653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221854-87892M/README.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-87892M/verification/20260801165536769-e5385260c2e9f58f.json"
-    - ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json"
-    - ".agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json"
-    - ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-165610881-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen evidence supports rejecting one persistent Git-snapshot cache, but it does not support the broader conclusion that no preparation cache should be implemented. The task requires selecting measured deterministic nodes, while the benchmark evidence covers only one candidate and explicitly recommends benchmarking another approach; the task record also claims a command-local candidate was tested without freezing corresponding measurements."
+    - "The evaluated change implements stateless parallel Git observation under the cache task, although the approved recovery record explicitly routes that optimization to a separate task. No fingerprinted preparation cache, TTL, bounded storage, or cache receipt implementation is present."
+    - "Verification is stale for the evaluated SHA: the frozen checks describe SHA 6e1e191 and assert zero production-source changes and no retained prototype, while the work order evaluates SHA 370da2c with production changes across Git snapshot and workflow fingerprint preparation paths."
+    - "The new implementation reconstructs status from concurrent tracked-status and untracked-file commands without proving behavior when repository state changes between those observations. The added equivalence test covers only a stable repository, so duplicate, omitted, or differently classified paths under concurrent Git mutation remain untested."
 commit:
   hash: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
   message: "🚧 87892M task: record cache benchmark no-go"
@@ -117,7 +115,7 @@ events:
     state: "ok"
     note: "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains."
 doc_version: 3
-doc_updated_at: "2026-08-01T16:55:37.745Z"
+doc_updated_at: "2026-08-01T17:39:30.920Z"
 doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
@@ -329,6 +327,10 @@ sections:
     - Observation: Persistent and command-local cache prototypes failed the declared performance threshold while exact functional output remained unchanged.
       Impact: Merging the prototypes would add persistent invalidation and concurrency state without sufficient end-to-end benefit.
       Resolution: Accept the documented no-go, retain only benchmark/lifecycle evidence, and route stateless Git observation optimization to a separate task.
+
+    - Observation: The persistent cache pilot failed its declared five-percent threshold, and the operator subsequently authorized continued AgentPlane 0.7 implementation without repeated approval requests. The first stateless replacement exposed a split-status race during evaluator review.
+      Impact: The earlier separate-task recovery note is superseded for this task: retaining cache machinery would add unjustified state, while split tracked/untracked observation could combine different repository states.
+      Resolution: Use this approved rework episode for the bounded stateless replacement: keep one canonical Git status invocation, overlap only independent preparation work, require exact output parity and at least five-percent median improvement, and keep semantic, authority, and provider truth live.
 extensions:
   workflow_route_baseline:
     start_head_sha: "451a8a6e980f9f2724bce718e807a8675fd89eeb"
@@ -556,3 +558,7 @@ DecisionContextRef:
 - Observation: Persistent and command-local cache prototypes failed the declared performance threshold while exact functional output remained unchanged.
   Impact: Merging the prototypes would add persistent invalidation and concurrency state without sufficient end-to-end benefit.
   Resolution: Accept the documented no-go, retain only benchmark/lifecycle evidence, and route stateless Git observation optimization to a separate task.
+
+- Observation: The persistent cache pilot failed its declared five-percent threshold, and the operator subsequently authorized continued AgentPlane 0.7 implementation without repeated approval requests. The first stateless replacement exposed a split-status race during evaluator review.
+  Impact: The earlier separate-task recovery note is superseded for this task: retaining cache machinery would add unjustified state, while split tracked/untracked observation could combine different repository states.
+  Resolution: Use this approved rework episode for the bounded stateless replacement: keep one canonical Git status invocation, overlap only independent preparation work, require exact output parity and at least five-percent median improvement, and keep semantic, authority, and provider truth live.

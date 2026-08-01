@@ -63,11 +63,17 @@ function expectSha256(value: string | null): void {
 describe("Git execution snapshot observation", () => {
   it("matches canonical porcelain status while observing tracked and untracked paths in parallel", async () => {
     const root = await createRepository({
+      "deleted.txt": "delete\n",
       "modified.txt": "base\n",
+      "removed-from-index.txt": "keep in worktree\n",
       "renamed.txt": "rename\n",
       "staged.txt": "stage\n",
     });
+    await unlink(path.join(root, "deleted.txt"));
     await writeRepoFile(root, "modified.txt", "modified\n");
+    await git(root, ["rm", "-q", "--cached", "--", "removed-from-index.txt"]);
+    await writeRepoFile(root, "newly-staged.txt", "new stage\n");
+    await git(root, ["add", "--", "newly-staged.txt"]);
     await writeRepoFile(root, "staged.txt", "staged\n");
     await git(root, ["add", "--", "staged.txt"]);
     await git(root, ["mv", "--", "renamed.txt", "destination.txt"]);

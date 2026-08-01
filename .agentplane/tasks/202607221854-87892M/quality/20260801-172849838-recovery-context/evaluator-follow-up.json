@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221854-87892M-3bec1c5d67f2198be5ee3942",
+  "task_id": "202607221854-87892M",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Return the stateless Git-observation optimization to a separately approved task as already specified in the task Findings, or explicitly re-approve this task's changed scope. Then verify and benchmark the actual evaluated SHA, including repository mutation during concurrent observation. If the original cache contract remains active, implement and verify its cache-specific invariants instead of substituting the parallelization change.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The evaluated change implements stateless parallel Git observation under the cache task, although the approved recovery record explicitly routes that optimization to a separate task. No fingerprinted preparation cache, TTL, bounded storage, or cache receipt implementation is present.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:6d7e4ce41c9d10ac3f54a597a1444f1242bcdb6bbf0b7d177a4a3495f2c9d31d",
+          "section": "Scope, Plan, Findings"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:01d890643ab1fa84a8e230bfcbbb88988e39998e99a915887d627822954f04d5",
+          "section": "workflow-step-fingerprint-preparation.ts and git-snapshot/capture.ts"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Verification is stale for the evaluated SHA: the frozen checks describe SHA 6e1e191 and assert zero production-source changes and no retained prototype, while the work order evaluates SHA 370da2c with production changes across Git snapshot and workflow fingerprint preparation paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:6d7e4ce41c9d10ac3f54a597a1444f1242bcdb6bbf0b7d177a4a3495f2c9d31d",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:dd6c2b156f71b886dde4ec673adc2b7d86e3074fa0983ec32e2693fbcedfe407",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:01d890643ab1fa84a8e230bfcbbb88988e39998e99a915887d627822954f04d5",
+          "section": "complete patch"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "The new implementation reconstructs status from concurrent tracked-status and untracked-file commands without proving behavior when repository state changes between those observations. The added equivalence test covers only a stable repository, so duplicate, omitted, or differently classified paths under concurrent Git mutation remain untested.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:01d890643ab1fa84a8e230bfcbbb88988e39998e99a915887d627822954f04d5",
+          "section": "git-snapshot/capture.ts and git-snapshot.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:6d7e4ce41c9d10ac3f54a597a1444f1242bcdb6bbf0b7d177a4a3495f2c9d31d",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-result.json"
+}

@@ -7,7 +7,6 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   GIT_MAX_BUFFER_BYTES,
   GIT_TIMEOUT_MS,
-  assertGitPath,
   isExcluded,
   normalizeExcludedRoots,
   normalizeRepositoryRoot,
@@ -16,7 +15,6 @@ import {
   sha256,
   sha256File,
   sortFingerprints,
-  sortStatusEntries,
   stableJson,
   statusEntryPaths,
   uniqSorted,
@@ -65,14 +63,14 @@ async function validateRepositoryRoot(repositoryRoot: string): Promise<void> {
   }
 }
 
-async function captureTrackedStatusEntries(repositoryRoot: string): Promise<GitStatusEntry[]> {
+async function captureStatusEntries(repositoryRoot: string): Promise<GitStatusEntry[]> {
   const { stdout } = await execFileAsync(
     "git",
     [
       "status",
       "--porcelain=v1",
       "-z",
-      "--untracked-files=no",
+      "--untracked-files=all",
       "--renames",
       "--ignore-submodules=none",
     ],
@@ -85,30 +83,6 @@ async function captureTrackedStatusEntries(repositoryRoot: string): Promise<GitS
     },
   );
   return parsePorcelainStatus(stdout);
-}
-
-async function captureUntrackedStatusEntries(repositoryRoot: string): Promise<GitStatusEntry[]> {
-  const { stdout } = await execFileAsync(
-    "git",
-    ["ls-files", "--others", "--exclude-standard", "-z"],
-    {
-      cwd: repositoryRoot,
-      env: gitEnv(),
-      encoding: "buffer",
-      maxBuffer: GIT_MAX_BUFFER_BYTES,
-      timeout: GIT_TIMEOUT_MS,
-    },
-  );
-  return stdout
-    .toString("utf8")
-    .split("\0")
-    .filter((entryPath) => entryPath.length > 0)
-    .map((entryPath) => ({
-      index_status: "?",
-      worktree_status: "?",
-      path: assertGitPath(entryPath),
-      original_path: null,
-    }));
 }
 
 async function captureIndexEntries(repositoryRoot: string): Promise<GitSnapshot["index_entries"]> {
@@ -273,8 +247,7 @@ type GitSnapshotObservation =
       repository_root: string;
       root_result: PromiseSettledResult<void>;
       head_result: PromiseSettledResult<string | null>;
-      tracked_status_result: PromiseSettledResult<GitStatusEntry[]>;
-      untracked_status_result: PromiseSettledResult<GitStatusEntry[]>;
+      status_result: PromiseSettledResult<GitStatusEntry[]>;
       index_result: PromiseSettledResult<GitSnapshot["index_entries"]>;
     };
 
@@ -288,22 +261,19 @@ export async function captureGitSnapshotObservation(
     return { state: "invalid", repository_root: repositoryRoot, error };
   }
 
-  const [rootResult, headResult, trackedStatusResult, untrackedStatusResult, indexResult] =
-    await Promise.allSettled([
-      validateRepositoryRoot(repositoryRoot),
-      captureHead(repositoryRoot),
-      captureTrackedStatusEntries(repositoryRoot),
-      captureUntrackedStatusEntries(repositoryRoot),
-      captureIndexEntries(repositoryRoot),
-    ]);
+  const [rootResult, headResult, statusResult, indexResult] = await Promise.allSettled([
+    validateRepositoryRoot(repositoryRoot),
+    captureHead(repositoryRoot),
+    captureStatusEntries(repositoryRoot),
+    captureIndexEntries(repositoryRoot),
+  ]);
 
   return {
     state: "observed",
     repository_root: repositoryRoot,
     root_result: rootResult,
     head_result: headResult,
-    tracked_status_result: trackedStatusResult,
-    untracked_status_result: untrackedStatusResult,
+    status_result: statusResult,
     index_result: indexResult,
   };
 }
@@ -335,8 +305,7 @@ export async function materializeGitSnapshot(
   const {
     root_result: rootResult,
     head_result: headResult,
-    tracked_status_result: trackedStatusResult,
-    untracked_status_result: untrackedStatusResult,
+    status_result: statusResult,
     index_result: indexResult,
   } = observation;
 
@@ -357,27 +326,16 @@ export async function materializeGitSnapshot(
   }
   const headCommit = headResult.value;
 
-  if (trackedStatusResult.status === "rejected") {
+  if (statusResult.status === "rejected") {
     return unavailableSnapshot({
       repositoryRoot,
       excludedPaths,
       headCommit,
-      errors: [observationError("git_status", trackedStatusResult.reason)],
+      errors: [observationError("git_status", statusResult.reason)],
     });
   }
-  if (untrackedStatusResult.status === "rejected") {
-    return unavailableSnapshot({
-      repositoryRoot,
-      excludedPaths,
-      headCommit,
-      statusEntries: trackedStatusResult.value,
-      errors: [observationError("git_status", untrackedStatusResult.reason)],
-    });
-  }
-  const statusEntries = sortStatusEntries(
-    [...trackedStatusResult.value, ...untrackedStatusResult.value].filter((entry) =>
-      statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
-    ),
+  const statusEntries = statusResult.value.filter((entry) =>
+    statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
   );
 
   if (indexResult.status === "rejected") {

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The evaluated change implements stateless parallel Git observation under the cache task, although the approved recovery record explicitly routes that optimization to a separate task. No fingerprinted preparation cache, TTL, bounded storage, or cache receipt implementation is present.",
+      "broken_invariant": "Implementation must remain within the approved cache contract and must stop for re-approval on material scope drift.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:6d7e4ce41c9d10ac3f54a597a1444f1242bcdb6bbf0b7d177a4a3495f2c9d31d",
+          "section": "Scope, Plan, Findings"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:01d890643ab1fa84a8e230bfcbbb88988e39998e99a915887d627822954f04d5",
+          "section": "workflow-step-fingerprint-preparation.ts and git-snapshot/capture.ts"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "Verification is stale for the evaluated SHA: the frozen checks describe SHA 6e1e191 and assert zero production-source changes and no retained prototype, while the work order evaluates SHA 370da2c with production changes across Git snapshot and workflow fingerprint preparation paths.",
+      "broken_invariant": "Verification evidence must cover the actual evaluated implementation and all declared Verify Steps or record approved skips.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:6d7e4ce41c9d10ac3f54a597a1444f1242bcdb6bbf0b7d177a4a3495f2c9d31d",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:dd6c2b156f71b886dde4ec673adc2b7d86e3074fa0983ec32e2693fbcedfe407",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:01d890643ab1fa84a8e230bfcbbb88988e39998e99a915887d627822954f04d5",
+          "section": "complete patch"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "The new implementation reconstructs status from concurrent tracked-status and untracked-file commands without proving behavior when repository state changes between those observations. The added equivalence test covers only a stable repository, so duplicate, omitted, or differently classified paths under concurrent Git mutation remain untested.",
+      "broken_invariant": "Concurrency-sensitive paths must preserve authoritative Git state and be covered by negative verification before a pass verdict.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-172849838-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:01d890643ab1fa84a8e230bfcbbb88988e39998e99a915887d627822954f04d5",
+          "section": "git-snapshot/capture.ts and git-snapshot.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:6d7e4ce41c9d10ac3f54a597a1444f1242bcdb6bbf0b7d177a4a3495f2c9d31d",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run the declared checks and focused Git snapshot tests against evaluated SHA 370da2c0b0489d3939d66ed93bb8cc6916fd1e0d.",
+    "Benchmark the retained parallel-observation implementation against its baseline with raw cold/warm results and the predeclared threshold.",
+    "Add mutation-during-observation tests covering tracked-to-untracked, untracked-to-staged, rename, deletion, and index/worktree changes between concurrent Git commands; assert deterministic conservative output or controlled unavailability.",
+    "If this task is re-approved to implement caching, add the declared independent invalidation, corruption, version-mismatch, bounded-storage, receipt, TTL, and concurrency tests."
+  ],
+  "hidden_assumptions": [
+    "A stateless parallel-observation optimization may replace the approved fingerprinted-cache deliverable without re-approval.",
+    "Verification recorded for SHA 6e1e191 remains applicable after production code changes at SHA 370da2c.",
+    "Separate concurrent Git commands collectively represent one coherent repository state.",
+    "Stable-repository equivalence to porcelain status is sufficient evidence for concurrent mutation behavior."
+  ],
+  "recovery_context": "Return the stateless Git-observation optimization to a separately approved task as already specified in the task Findings, or explicitly re-approve this task's changed scope. Then verify and benchmark the actual evaluated SHA, including repository mutation during concurrent observation. If the original cache contract remains active, implement and verify its cache-specific invariants instead of substituting the parallelization change."
+}
