@@ -19,8 +19,9 @@ RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session cap
 - Note:
 
 ```text
-PASS evidence refresh for implementation d227dc0acf705edf48b5f165b92b8a368496b5d7; deterministic
-SHA-bound records cover the runner and Hermes matrix plus all declared repository gates.
+PASS implementation rework at b9473bd1de4a9246378fbc6e7156a79cd582ded4: Hermes supervision now
+selects least-authority sessions from parsed remote, execute-step, and dry-run intent; all focused
+and repository gates passed.
 ```
 - Canonical workflow state lives in the task README.
 

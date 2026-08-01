@@ -6,14 +6,14 @@ Created: 2026-08-01T02:58:47.934Z
 
 - Task: `202607221908-RC1DX8`
 - Title: Migrate runner and Hermes command boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221908-RC1DX8/migrate-runner-and-hermes-command-boundaries`
 - Canonical task record: `.agentplane/tasks/202607221908-RC1DX8/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS evidence refresh for implementation d227dc0acf705edf48b5f165b92b8a368496b5d7; deterministic SHA-bound records cover the runner and Hermes matrix plus all declared repository gates.
+- Note: PASS implementation rework at b9473bd1de4a9246378fbc6e7156a79cd582ded4: Hermes supervision now selects least-authority sessions from parsed remote, execute-step, and dry-run intent; all focused and repository gates passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
