@@ -816,6 +816,6 @@ describeCritical("critical: trust-boundary architecture ratchet", () => {
       env: process.env,
     });
     expect(result.stderr).toBe("");
-    expect(result.stdout).toContain("trust-boundary ratchet OK (");
+    expect(result.stdout).toContain("trust-boundary ratchet OK (0 reviewed violation(s))");
   });
 });

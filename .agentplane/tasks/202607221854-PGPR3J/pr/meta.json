@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607221854-PGPR3J/complete-typed-use-case-and-cli-rendering-bounda",
   "created_at": "2026-08-01T14:09:09.518Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:1d6cb6d53adc4be09c7c3bb7912ea906ae938cb178edd4d7abd4b5fc27dac45c",
   "last_verified_at": null,
+  "pr_number": 4722,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4722",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221854-PGPR3J",
-  "updated_at": "2026-08-01T14:09:09.518Z",
+  "updated_at": "2026-08-01T14:09:35.347Z",
   "verify": {
     "status": "skipped"
   }

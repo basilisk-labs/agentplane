@@ -75,12 +75,11 @@ const main = defineCheck({
         .toSorted()
         .map((ruleId) => [ruleId, violations.filter((entry) => entry.rule_id === ruleId).length]),
     );
+    const countSummary = Object.entries(counts)
+      .map(([ruleId, count]) => `${ruleId}=${String(count)}`)
+      .join(", ");
     stdout.write(
-      `trust-boundary ratchet OK (${String(violations.length)} reviewed violation(s); ${Object.entries(
-        counts,
-      )
-        .map(([ruleId, count]) => `${ruleId}=${String(count)}`)
-        .join(", ")})\n`,
+      `trust-boundary ratchet OK (${String(violations.length)} reviewed violation(s)${countSummary ? `; ${countSummary}` : ""})\n`,
     );
   },
 });

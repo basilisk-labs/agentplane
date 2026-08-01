@@ -1,0 +1,7 @@
+ docs/developer/workflow-harness-test-matrix.mdx    |   2 +-
+ ...run-cli.critical.trust-boundary-ratchet.test.ts |   2 +-
+ .../agentplane/src/harness/hooks-lifecycle.test.ts |  45 ---------
+ packages/agentplane/src/harness/hooks-lifecycle.ts | 104 ---------------------
+ scripts/baselines/trust-boundary-violations.json   |  12 +--
+ scripts/checks/check-trust-boundary-ratchet.mjs    |   9 +-
+ 6 files changed, 7 insertions(+), 167 deletions(-)
