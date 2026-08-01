@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -34,7 +34,9 @@ verification:
   updated_by: "TESTER"
   note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
   attempts: 1
-commit: null
+commit:
+  hash: "8eadfda8cc3519f262d25058854cedb985df1419"
+  message: "🔄 4FNZPG task: merge current main for release verification"
 comments:
   -
     author: "TESTER"
@@ -45,6 +47,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation refreshed after the full release gate found and focused checks cleared seven lint-only findings in the installed migration matrix."
+  -
+    author: "CODER"
+    body: "Implementation rework completed: merged task 202608012034-W6F4DM from current main so the heavy artifact gate can process repositories with more than 1 MiB of tracked-path output; rerun the complete release matrix against this implementation head."
 events:
   -
     type: "status"
@@ -73,8 +78,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
+  -
+    type: "status"
+    at: "2026-08-01T20:54:33.077Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework completed: merged task 202608012034-W6F4DM from current main so the heavy artifact gate can process repositories with more than 1 MiB of tracked-path output; rerun the complete release matrix against this implementation head."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:52:46.966Z"
+doc_updated_at: "2026-08-01T20:54:33.077Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
