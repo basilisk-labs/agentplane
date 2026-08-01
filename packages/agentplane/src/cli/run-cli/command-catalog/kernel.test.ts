@@ -22,6 +22,7 @@ import {
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
 const config = { marker: "config" };
+const evaluatorArtifactPort = { prepare: vi.fn() };
 const zeroHandler = () => Promise.resolve(0);
 
 function makeResolvers() {
@@ -29,6 +30,7 @@ function makeResolvers() {
     getCtx: vi.fn(() => Promise.resolve(commandContext)),
     getResolvedProject: vi.fn(() => Promise.resolve(project)),
     getLoadedConfig: vi.fn(() => Promise.resolve(config)),
+    getEvaluatorArtifactPort: vi.fn(() => Promise.resolve(evaluatorArtifactPort as never)),
     getHelpJsonForDocs: vi.fn(() => []),
   };
 }
@@ -248,5 +250,14 @@ describe("CommandSession", () => {
     });
     expect(evaluatorPrepareSession.requirements).not.toContain("task.write");
     expect(evaluatorPrepareSession.requirements).not.toContain("git.mutate");
+    const port = await evaluatorPrepareSession.require(
+      "evaluator.artifacts.write",
+      "evaluator prepare",
+    );
+    expect(port).toBe(evaluatorArtifactPort);
+    // @ts-expect-error the artifact port does not expose the underlying Git service
+    expect(port.git).toBeUndefined();
+    // @ts-expect-error the artifact port does not expose the task backend
+    expect(port.taskBackend).toBeUndefined();
   });
 });

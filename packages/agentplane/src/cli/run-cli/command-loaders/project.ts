@@ -113,7 +113,8 @@ export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
 export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorPrepareHandler({
-      getCommandContext: (_ctx, command) => session.require("evaluator.artifacts.write", command),
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
     }),
   );
 export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
@@ -128,8 +129,9 @@ export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
 export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorExecuteHandler({
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
       getCommandContext: async (_ctx, command) => {
-        await session.require("evaluator.artifacts.write", command);
         await session.require("task.write", command);
         return await session.require("provider", command);
       },
@@ -137,17 +139,17 @@ export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
   );
 export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
-    m.makeRunEvaluatorRunHandler({
-      getCommandContext: (_ctx, command) => session.require("evaluator.artifacts.write", command),
+    m.makeRunEvaluatorRunPrepareHandler({
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
     }),
   );
 export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
   import("../../../commands/evaluator/evaluator.command.js").then((m) =>
     m.makeRunEvaluatorRunHandler({
-      getCommandContext: async (_ctx, command) => {
-        await session.require("evaluator.artifacts.write", command);
-        return await session.require("task.write", command);
-      },
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
     }),
   );
 

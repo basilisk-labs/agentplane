@@ -11,10 +11,11 @@ import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
 import {
-  makeRunEvaluatorRunHandler,
-  runEvaluatorCommand,
+  makeRunEvaluatorRunPrepareHandler,
+  runEvaluatorPrepareOnlyCommand,
   runEvaluatorRun,
 } from "./evaluator.command.js";
+import { createEvaluatorArtifactPreparationPort } from "./evaluator-artifact-port.js";
 import {
   renderActualDiff,
   resolveEvaluatorDiffBase,
@@ -108,7 +109,7 @@ describe("evaluator run command", () => {
     const io = captureStdIO();
 
     try {
-      const result = await runEvaluatorCommand(
+      const result = await runEvaluatorPrepareOnlyCommand(
         { cwd: root, rootOverride: root },
         {
           taskId,
@@ -124,7 +125,10 @@ describe("evaluator run command", () => {
           json: true,
           record: false,
         },
-        { getCommandContext: () => Promise.resolve(command) },
+        {
+          getEvaluatorArtifactPort: () =>
+            Promise.resolve(createEvaluatorArtifactPreparationPort(command)),
+        },
       );
 
       expect(result).toMatchObject({
@@ -137,9 +141,11 @@ describe("evaluator run command", () => {
       expect(io.stdout).toBe("");
       expect(io.stderr).toBe("");
 
-      const getCommandContext = vi.fn(() => Promise.resolve(command));
-      const handler = makeRunEvaluatorRunHandler({
-        getCommandContext,
+      const getEvaluatorArtifactPort = vi.fn(() =>
+        Promise.resolve(createEvaluatorArtifactPreparationPort(command)),
+      );
+      const handler = makeRunEvaluatorRunPrepareHandler({
+        getEvaluatorArtifactPort,
       });
       await handler(
         { cwd: root, rootOverride: root },
@@ -158,7 +164,7 @@ describe("evaluator run command", () => {
           record: false,
         },
       );
-      expect(getCommandContext).toHaveBeenCalledOnce();
+      expect(getEvaluatorArtifactPort).toHaveBeenCalledOnce();
     } finally {
       io.restore();
     }

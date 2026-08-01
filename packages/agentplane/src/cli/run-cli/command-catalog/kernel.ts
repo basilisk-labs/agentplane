@@ -16,6 +16,7 @@ export type {
   CommandCapability,
   CommandPreparationTrace,
   CommandSession,
+  CommandSessionResolvers,
 } from "./command-session.js";
 
 export type RunDeps = Pick<

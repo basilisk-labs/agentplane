@@ -34,31 +34,35 @@ guards, architecture, hotspots, and all 12 critical CLI chunks passed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli/command-catalog.test.ts        |  82 ++++
- .../cli/run-cli/command-catalog/command-session.ts |   2 +
- .../context-evaluator-capability-profiles.ts       |  71 ++++
- .../src/cli/run-cli/command-catalog/kernel.test.ts |  63 +++
- .../src/cli/run-cli/command-catalog/kernel.ts      |  64 +++
- .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++++--
- .../src/cli/run-cli/command-loaders/project.ts     | 213 +++++++++-
- .../src/cli/run-cli/registry.run.test.ts           | 147 +++++++
- .../agentplane/src/cli/run-cli/registry.run.ts     |  21 +-
- .../commands/context/context-results.unit.test.ts  | 175 ++++++++
- .../src/commands/context/context-runner.ts         | 339 +++++++++------
+ packages/agentplane/src/cli/run-cli.ts             |  13 +
+ .../src/cli/run-cli/command-catalog.test.ts        |  89 ++++
+ .../cli/run-cli/command-catalog/command-session.ts |  28 +-
+ .../context-evaluator-capability-profiles.ts       |  72 +++
+ .../src/cli/run-cli/command-catalog/kernel.test.ts |  74 +++
+ .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
+ .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
+ .../src/cli/run-cli/command-loaders/project.ts     | 215 +++++++-
+ .../src/cli/run-cli/registry.run.test.ts           | 169 +++++++
+ .../agentplane/src/cli/run-cli/registry.run.ts     |  30 +-
+ .../commands/context/context-results.unit.test.ts  | 175 +++++++
+ .../src/commands/context/context-runner.ts         | 344 ++++++++-----
  .../agentplane/src/commands/context/finalize.ts    |   5 +-
- packages/agentplane/src/commands/context/graph.ts  | 129 ++++--
- packages/agentplane/src/commands/context/search.ts | 141 +++---
+ packages/agentplane/src/commands/context/graph.ts  | 129 +++--
+ packages/agentplane/src/commands/context/search.ts | 141 ++++--
  packages/agentplane/src/commands/context/show.ts   |  35 +-
  .../src/commands/context/wiki-reports.ts           |  28 +-
- packages/agentplane/src/commands/context/wiki.ts   |  94 ++--
- .../evaluator/evaluator-catalog.command.ts         | 122 ++++++
- .../evaluator/evaluator-run.command.test.ts        |  76 +++-
- .../src/commands/evaluator/evaluator.command.ts    | 472 +++++++++++----------
+ packages/agentplane/src/commands/context/wiki.ts   |  94 +++-
+ .../commands/evaluator/evaluator-artifact-port.ts  |  67 +++
+ .../evaluator/evaluator-catalog.command.ts         | 122 +++++
+ .../evaluator/evaluator-execute-supervisor.ts      |  11 +-
+ .../evaluator/evaluator-run.command.test.ts        |  82 ++-
+ .../src/commands/evaluator/evaluator.command.ts    | 561 ++++++++++++---------
+ .../task/direct-task-supervisor-evaluator.ts       |   2 +
  packages/agentplane/src/context/doctor.ts          |  60 ++-
- packages/agentplane/src/context/ingest.ts          | 121 ++++--
- packages/agentplane/src/context/reindex.ts         | 101 +++--
+ packages/agentplane/src/context/ingest.ts          | 121 +++--
+ packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 24 files changed, 2234 insertions(+), 652 deletions(-)
+ 28 files changed, 2478 insertions(+), 680 deletions(-)
 ```
 
 </details>

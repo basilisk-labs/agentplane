@@ -37,7 +37,8 @@ export const EVALUATOR_READ_REQUIREMENTS = [
 ] as const satisfies readonly CommandCapability[];
 
 export const EVALUATOR_PREPARE_REQUIREMENTS = [
-  ...EVALUATOR_READ_REQUIREMENTS,
+  "project",
+  "config",
   "evaluator.artifacts.write",
 ] as const satisfies readonly CommandCapability[];
 

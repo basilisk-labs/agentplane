@@ -95,3 +95,26 @@ Artifact-authority rework verification:
 - `bun run hotspots:check`: passed.
 - `bun run test:critical`: 12 of 12 chunks passed, 77 tests total.
 - `git diff --check`: passed.
+
+## Confined evaluator preparation port
+
+The next EVALUATOR review correctly identified that a capability check followed by returning the full `CommandContext` did not enforce least privilege. The boundary now supplies a dedicated `EvaluatorArtifactPreparationPort` instead:
+
+- The port exposes one frozen `prepare` operation and accepts no destination path.
+- The implementation resolves the task and evaluator internally and writes only the canonical task-local quality packet.
+- `EVALUATOR_PREPARE_REQUIREMENTS` no longer includes any command-context capability; its preparation nodes are only project, config, and evaluator artifacts.
+- The real registry-dispatched no-record handler succeeds while its `getCtx` resolver is configured to fail, proving the handler cannot obtain the full command context.
+- The supplied port has no Git, task-backend, generic file-write, lifecycle, or approval surface; traversal-shaped task identifiers are rejected.
+- Recording and provider paths receive the same confined preparation port separately from their explicitly declared task/provider authority.
+
+Confined-port verification:
+
+- Catalog/kernel/registry/evaluator run/evaluator execute suite: 5 files, 52 tests passed.
+- Real no-record filesystem regression: evidence packet created, task README unchanged, full `CommandContext` resolver unused.
+- `bun run typecheck`: passed with the TypeScript 7 default compiler.
+- Targeted ESLint for all changed implementation/test files: passed.
+- `bun run guards:check`: passed.
+- `bun run arch:check`: passed with zero dependency violations.
+- `bun run hotspots:check`: passed; `evaluator.command.ts` remains below the 600-line limit.
+- `bun run test:critical`: 12 of 12 chunks passed, 77 tests total.
+- `git diff --check`: passed.

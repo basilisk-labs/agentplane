@@ -206,6 +206,12 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
       EVALUATOR_PREPARE_REQUIREMENTS,
     );
+    expect(findCommandEntry(["evaluator", "prepare"])?.preparationNodes).toEqual([
+      "project",
+      "config",
+      "evaluator_artifacts",
+    ]);
+    expect(findCommandEntry(["evaluator", "prepare"])?.dispatch.taskContext).toBe(false);
     for (const id of [["evaluator", "apply"]]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
         EVALUATOR_WRITE_REQUIREMENTS,
@@ -214,6 +220,7 @@ describe("command catalog graph", () => {
     }
     const evaluatorRun = findCommandEntry(["evaluator", "run"]);
     expect(evaluatorRun?.requirements).toEqual(EVALUATOR_PREPARE_REQUIREMENTS);
+    expect(evaluatorRun?.dispatch.taskContext).toBe(true);
     expect(evaluatorRun?.selectSession?.({ record: false }).requirements).toEqual(
       EVALUATOR_PREPARE_REQUIREMENTS,
     );

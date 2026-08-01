@@ -1,6 +1,7 @@
 import type { LoadedConfig } from "@agentplaneorg/core/config";
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 
+import type { EvaluatorArtifactPreparationPort } from "../../../commands/evaluator/evaluator-artifact-port.js";
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
 import { exitCodeForError } from "../../exit-codes.js";
@@ -25,7 +26,12 @@ export type CommandCapability =
   | "provider"
   | "output";
 
-export type CommandPreparationNode = "project" | "config" | "command_context" | "output";
+export type CommandPreparationNode =
+  | "project"
+  | "config"
+  | "command_context"
+  | "evaluator_artifacts"
+  | "output";
 
 export type CommandPreparationTrace = {
   command: string;
@@ -41,7 +47,9 @@ type CommandCapabilityValue<TCapability extends AsyncCommandCapability> =
     ? ResolvedProject
     : TCapability extends "config"
       ? LoadedConfig
-      : CommandContext;
+      : TCapability extends "evaluator.artifacts.write"
+        ? EvaluatorArtifactPreparationPort
+        : CommandContext;
 
 type CommandSessionOutput<TCapabilities extends CommandCapability> = "output" extends TCapabilities
   ? { getHelpJsonForDocs: () => readonly HelpJson[] }
@@ -60,6 +68,9 @@ export type CommandSessionResolvers = {
   getCtx: (commandForErrorContext: string) => Promise<CommandContext>;
   getResolvedProject: (commandForErrorContext: string) => Promise<ResolvedProject>;
   getLoadedConfig: (commandForErrorContext: string) => Promise<LoadedConfig>;
+  getEvaluatorArtifactPort: (
+    commandForErrorContext: string,
+  ) => Promise<EvaluatorArtifactPreparationPort>;
   getHelpJsonForDocs: () => readonly HelpJson[];
   onPreparationTrace?: (event: CommandPreparationTrace) => void;
   now?: () => number;
@@ -78,7 +89,6 @@ const CONTEXT_CAPABILITIES = new Set<CommandCapability>([
   "policy",
   "approvals",
   "context.search",
-  "evaluator.artifacts.write",
   "provider",
 ]);
 
@@ -89,6 +99,7 @@ export function isCommandContextCapability(capability: CommandCapability): boole
 export function preparationNodeForCapability(
   capability: CommandCapability,
 ): CommandPreparationNode {
+  if (capability === "evaluator.artifacts.write") return "evaluator_artifacts";
   if (capability === "project" || capability === "config" || capability === "output") {
     return capability;
   }
@@ -99,8 +110,11 @@ export function validateCommandRequirements(requirements: readonly CommandCapabi
   if (new Set(requirements).size !== requirements.length) {
     throw new Error("Command capability requirements must not contain duplicates");
   }
-  const hasContext = requirements.some((capability) => isCommandContextCapability(capability));
-  const needsConfig = hasContext || requirements.includes("config");
+  const hasPreparedRuntime = requirements.some(
+    (capability) =>
+      isCommandContextCapability(capability) || capability === "evaluator.artifacts.write",
+  );
+  const needsConfig = hasPreparedRuntime || requirements.includes("config");
   const needsProject = needsConfig || requirements.includes("project");
   if (needsConfig && !requirements.includes("config")) {
     throw new Error("Command context capabilities require the config capability");
@@ -182,6 +196,10 @@ export function createCommandSession<
         case "command_context": {
           await resolveNode("config", commandForErrorContext);
           return await opts.resolvers.getCtx(commandForErrorContext);
+        }
+        case "evaluator_artifacts": {
+          await resolveNode("config", commandForErrorContext);
+          return await opts.resolvers.getEvaluatorArtifactPort(commandForErrorContext);
         }
         case "output": {
           throw new Error("Output capability is resolved synchronously");

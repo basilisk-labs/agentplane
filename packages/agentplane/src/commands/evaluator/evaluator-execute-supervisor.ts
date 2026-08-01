@@ -20,6 +20,7 @@ import {
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { EvaluatorArtifactPreparationPort } from "./evaluator-artifact-port.js";
 
 import {
   evaluatorProviderFailureRecord,
@@ -28,7 +29,6 @@ import {
 } from "./evaluator-episode.js";
 import {
   isWithinRoot,
-  prepareEvaluatorReview,
   readWorkOrder,
   reportPaths,
   validateStrictEvaluatorResult,
@@ -232,6 +232,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
   evaluator: EvaluatorModule;
   task_id: string;
   replacement: boolean;
+  artifacts: EvaluatorArtifactPreparationPort;
 }): Promise<EvaluatorSupervisorExecution> {
   const decision = await buildTaskRouteDecision({
     ctx: opts.command,
@@ -355,10 +356,10 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
             "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
         });
       }
-      const prepared = await prepareEvaluatorReview({
-        ctx: opts.command,
-        task: opts.task,
-        evaluator: opts.evaluator,
+      const { prepared } = await opts.artifacts.prepare({
+        ctx: opts.ctx,
+        taskId: opts.task_id,
+        evaluatorId: opts.evaluator.id,
         provenance: "evaluator_supplied",
       });
       const replacementBinding = replacementOfOperationKey

@@ -6,6 +6,7 @@ import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/tes
 import { describe, expect, it, vi } from "vitest";
 
 import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
+import { createEvaluatorArtifactPreparationPort } from "../../commands/evaluator/evaluator-artifact-port.js";
 import { addTask, commitPath } from "../../commands/evaluator/evaluator-test-helpers.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { parseCommandArgv } from "../spec/parse.js";
@@ -40,6 +41,7 @@ describe("runtime registry session selection", () => {
     if (!catalogEntry?.selectSession) throw new Error("evaluator run must select a session");
     const observed: CommandCapability[][] = [];
     const getCtx = vi.fn(() => Promise.resolve({ marker: "command-context" } as never));
+    const getEvaluatorArtifactPort = vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never));
     const entry: CommandEntry = {
       ...catalogEntry,
       selectSession: (parsed) => {
@@ -51,6 +53,7 @@ describe("runtime registry session selection", () => {
             observed.push([...session.requirements]);
             return Promise.resolve(async () => {
               if ((parsed as { record: boolean }).record) return 0;
+              await session.require("evaluator.artifacts.write", "evaluator run --no-record");
               const unsafe = session as CommandSession<CommandCapability>;
               for (const capability of [
                 "backend.write",
@@ -73,6 +76,7 @@ describe("runtime registry session selection", () => {
       getCtx,
       getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
       getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
+      getEvaluatorArtifactPort,
     });
     const runtime = registry.lookup(["evaluator", "run"]);
     if (!runtime) throw new Error("runtime registry did not register evaluator run");
@@ -80,6 +84,7 @@ describe("runtime registry session selection", () => {
     await runtime.handler({ cwd: "/repo" }, evaluatorRunParsed(true));
     expect(observed.at(-1)).toEqual(EVALUATOR_PREPARE_REQUIREMENTS);
     expect(getCtx).not.toHaveBeenCalled();
+    expect(getEvaluatorArtifactPort).toHaveBeenCalledOnce();
 
     await runtime.handler({ cwd: "/repo" }, evaluatorRunParsed(false));
     expect(observed.at(-1)).toEqual(EVALUATOR_WRITE_REQUIREMENTS);
@@ -96,14 +101,17 @@ describe("runtime registry session selection", () => {
     const resolvedProject = await resolveProject({ cwd: root, rootOverride: root });
     const loadedConfig = await loadConfig(resolvedProject.agentplaneDir);
     const commandContext = await loadCommandContext({ cwd: root, rootOverride: root });
+    const artifactPort = createEvaluatorArtifactPreparationPort(commandContext);
+    const getCtx = vi.fn(() => Promise.reject(new Error("full CommandContext must stay confined")));
     const traces: { capability: CommandCapability; status: string }[] = [];
     const entry = findCommandEntry(["evaluator", "run"]);
     if (!entry) throw new Error("evaluator run catalog entry is missing");
     const registry = buildRegistry({
       entries: [entry],
-      getCtx: () => Promise.resolve(commandContext),
+      getCtx,
       getResolvedProject: () => Promise.resolve(resolvedProject),
       getLoadedConfig: () => Promise.resolve(loadedConfig),
+      getEvaluatorArtifactPort: () => Promise.resolve(artifactPort),
       onPreparationTrace: (event) => traces.push(event),
     });
     const runtime = registry.lookup(["evaluator", "run"]);
@@ -143,5 +151,19 @@ describe("runtime registry session selection", () => {
       ]),
     );
     expect(traces.some((event) => event.capability === "task.write")).toBe(false);
+    expect(getCtx).not.toHaveBeenCalled();
+    expect(Object.keys(artifactPort)).toEqual(["prepare"]);
+    expect(Object.isFrozen(artifactPort)).toBe(true);
+    expect(Reflect.get(artifactPort, "git")).toBeUndefined();
+    expect(Reflect.get(artifactPort, "taskBackend")).toBeUndefined();
+    expect(Reflect.get(artifactPort, "writeFile")).toBeUndefined();
+    await expect(
+      artifactPort.prepare({
+        ctx: { cwd: root, rootOverride: root },
+        taskId: "../outside-task",
+        evaluatorId: "recovery-context",
+        provenance: "evaluator_supplied",
+      }),
+    ).rejects.toThrow();
   });
 });

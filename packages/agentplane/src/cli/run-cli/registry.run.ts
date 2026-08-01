@@ -7,6 +7,7 @@ import {
   createCommandSession,
   type CommandEntry,
   type CommandPreparationTrace,
+  type CommandSessionResolvers,
   type RunDeps,
 } from "./command-catalog/kernel.js";
 
@@ -14,6 +15,7 @@ export function buildRegistry(opts: {
   getCtx: RunDeps["getCtx"];
   getResolvedProject: RunDeps["getResolvedProject"];
   getLoadedConfig: RunDeps["getLoadedConfig"];
+  getEvaluatorArtifactPort: CommandSessionResolvers["getEvaluatorArtifactPort"];
   onPreparationTrace?: (event: CommandPreparationTrace) => void;
   entries?: readonly CommandEntry[];
 }): CommandRegistry {
@@ -29,6 +31,11 @@ export function buildRegistry(opts: {
     getLoadedConfig: opts.getLoadedConfig,
     getHelpJsonForDocs,
   };
+  const resolvers: CommandSessionResolvers = {
+    ...deps,
+    getEvaluatorArtifactPort: opts.getEvaluatorArtifactPort,
+    onPreparationTrace: opts.onPreparationTrace,
+  };
   for (const entry of opts.entries ?? COMMANDS) {
     if (entry.selectSession) {
       registry.register(entry.spec, async (ctx, parsed) => {
@@ -37,10 +44,7 @@ export function buildRegistry(opts: {
         const session = createCommandSession({
           command: entry.spec.id.join(" "),
           requirements: selected.requirements,
-          resolvers: {
-            ...deps,
-            onPreparationTrace: opts.onPreparationTrace,
-          },
+          resolvers,
         });
         const handler = await selected.load(session);
         return await handler(ctx, parsed);
@@ -50,10 +54,7 @@ export function buildRegistry(opts: {
     const session = createCommandSession({
       command: entry.spec.id.join(" "),
       requirements: entry.requirements,
-      resolvers: {
-        ...deps,
-        onPreparationTrace: opts.onPreparationTrace,
-      },
+      resolvers,
     });
     let loaded: ReturnType<(typeof entry)["load"]> | null = null;
     registry.register(entry.spec, async (ctx, parsed) => {

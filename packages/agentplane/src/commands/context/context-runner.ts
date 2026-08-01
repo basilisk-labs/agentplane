@@ -2,6 +2,7 @@ import type { CommandCtx } from "../../cli/spec/spec.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { generateAcr, validateAcrTarget, writeAcrFile } from "../acr/acr.command.js";
 import { executeEvaluatorCommand } from "../evaluator/evaluator.command.js";
+import { createEvaluatorArtifactPreparationPort } from "../evaluator/evaluator-artifact-port.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { runContextAssimilationSupervisor } from "./assimilation-supervisor.js";
 import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
@@ -295,7 +296,11 @@ export async function superviseContextTask(
             replacement: false,
             json: true,
           },
-          { getCommandContext: () => Promise.resolve(command) },
+          {
+            getCommandContext: () => Promise.resolve(command),
+            getEvaluatorArtifactPort: () =>
+              Promise.resolve(createEvaluatorArtifactPreparationPort(command)),
+          },
         );
       },
       createAcr: async () => {

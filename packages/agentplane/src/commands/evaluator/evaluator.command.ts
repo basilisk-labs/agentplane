@@ -21,12 +21,13 @@ import {
   type EvaluatorRunParsed,
 } from "./evaluator.spec.js";
 import { loadEvaluatorCatalogForCommand } from "./evaluator-catalog.command.js";
-import {
-  prepareEvaluatorReview,
-  type PreparedEvaluatorReview,
-} from "./evaluator-review-usecase.js";
+import type { PreparedEvaluatorReview } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
 import { executeEvaluatorSupervisorEpisode } from "./evaluator-execute-supervisor.js";
+import {
+  createEvaluatorArtifactPreparationPort,
+  type EvaluatorArtifactPreparationPort,
+} from "./evaluator-artifact-port.js";
 
 const output = createCliEmitter();
 
@@ -37,9 +38,30 @@ export type EvaluatorCommandDeps = {
   ) => Promise<Awaited<ReturnType<typeof loadCommandContext>>>;
 };
 
+export type EvaluatorArtifactCommandDeps = {
+  getEvaluatorArtifactPort: (
+    ctx: CommandCtx,
+    command: string,
+  ) => Promise<EvaluatorArtifactPreparationPort>;
+};
+
+export type EvaluatorReviewCommandDeps = EvaluatorCommandDeps & EvaluatorArtifactCommandDeps;
+
 const DEFAULT_EVALUATOR_COMMAND_DEPS: EvaluatorCommandDeps = {
   getCommandContext: async (ctx) =>
     await loadCommandContext({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null }),
+};
+
+const DEFAULT_EVALUATOR_ARTIFACT_DEPS: EvaluatorArtifactCommandDeps = {
+  getEvaluatorArtifactPort: async (ctx) =>
+    createEvaluatorArtifactPreparationPort(
+      await DEFAULT_EVALUATOR_COMMAND_DEPS.getCommandContext(ctx, "evaluator artifacts"),
+    ),
+};
+
+const DEFAULT_EVALUATOR_REVIEW_DEPS: EvaluatorReviewCommandDeps = {
+  ...DEFAULT_EVALUATOR_COMMAND_DEPS,
+  ...DEFAULT_EVALUATOR_ARTIFACT_DEPS,
 };
 
 export {
@@ -169,31 +191,27 @@ export type EvaluatorPrepareResult = {
 export async function prepareEvaluatorCommand(
   ctx: CommandCtx,
   parsed: EvaluatorPrepareParsed,
-  deps: EvaluatorCommandDeps,
+  deps: EvaluatorArtifactCommandDeps,
 ): Promise<EvaluatorPrepareResult> {
-  const { command, task, evaluator } = await loadEvaluatorReviewContext({
+  const artifacts = await deps.getEvaluatorArtifactPort(ctx, "evaluator prepare");
+  const packet = await artifacts.prepare({
     ctx,
     taskId: parsed.taskId,
     evaluatorId: parsed.evaluator,
-    deps,
-  });
-  const prepared = await prepareEvaluatorReview({
-    ctx: command,
-    task,
-    evaluator,
     provenance: "evaluator_supplied",
   });
+  const { prepared } = packet;
   return {
     work_order_id: prepared.work_order.work_order_id,
-    work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
-    prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
+    work_order: relativeToProject(packet.git_root, prepared.work_order_path),
+    prompt: relativeToProject(packet.git_root, prepared.prompt_path),
     evaluated_sha: prepared.work_order.evaluated_sha,
     sandbox: prepared.work_order.authority.sandbox,
   };
 }
 
 export function makeRunEvaluatorPrepareHandler(
-  deps: EvaluatorCommandDeps,
+  deps: EvaluatorArtifactCommandDeps,
 ): CommandHandler<EvaluatorPrepareParsed> {
   return async (ctx, parsed) => {
     const result = await prepareEvaluatorCommand(ctx, parsed, deps);
@@ -206,7 +224,7 @@ export function makeRunEvaluatorPrepareHandler(
   };
 }
 
-export const runEvaluatorPrepare = makeRunEvaluatorPrepareHandler(DEFAULT_EVALUATOR_COMMAND_DEPS);
+export const runEvaluatorPrepare = makeRunEvaluatorPrepareHandler(DEFAULT_EVALUATOR_ARTIFACT_DEPS);
 
 export type EvaluatorApplyResult = {
   work_order_id: string;
@@ -295,7 +313,7 @@ export type EvaluatorExecuteResult = {
 export async function executeEvaluatorCommand(
   ctx: CommandCtx,
   parsed: EvaluatorExecuteParsed,
-  deps: EvaluatorCommandDeps,
+  deps: EvaluatorReviewCommandDeps,
 ): Promise<EvaluatorExecuteResult> {
   const { command, task, evaluator } = await loadEvaluatorReviewContext({
     ctx,
@@ -310,6 +328,7 @@ export async function executeEvaluatorCommand(
     evaluator,
     task_id: parsed.taskId,
     replacement: parsed.replacement,
+    artifacts: await deps.getEvaluatorArtifactPort(ctx, "evaluator execute"),
   });
 
   const currentTask = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
@@ -363,7 +382,7 @@ export async function executeEvaluatorCommand(
 }
 
 export function makeRunEvaluatorExecuteHandler(
-  deps: EvaluatorCommandDeps,
+  deps: EvaluatorReviewCommandDeps,
 ): CommandHandler<EvaluatorExecuteParsed> {
   return async (ctx, parsed) => {
     const result = await executeEvaluatorCommand(ctx, parsed, deps);
@@ -376,7 +395,7 @@ export function makeRunEvaluatorExecuteHandler(
   };
 }
 
-export const runEvaluatorExecute = makeRunEvaluatorExecuteHandler(DEFAULT_EVALUATOR_COMMAND_DEPS);
+export const runEvaluatorExecute = makeRunEvaluatorExecuteHandler(DEFAULT_EVALUATOR_REVIEW_DEPS);
 
 function relativeToProject(gitRoot: string, absolutePath: string): string {
   return path.relative(gitRoot, absolutePath).replaceAll("\\", "/");
@@ -428,33 +447,61 @@ export type EvaluatorRunResult = {
   opinion?: string;
 };
 
-export async function runEvaluatorCommand(
+async function prepareEvaluatorRunArtifacts(
   ctx: CommandCtx,
   parsed: EvaluatorRunParsed,
-  deps: EvaluatorCommandDeps,
-): Promise<EvaluatorRunResult> {
-  assertRunnableReviewInput(parsed);
-  const { command, task, evaluator } = await loadEvaluatorReviewContext({
+  deps: EvaluatorArtifactCommandDeps,
+) {
+  const artifacts = await deps.getEvaluatorArtifactPort(ctx, "evaluator run");
+  return await artifacts.prepare({
     ctx,
     taskId: parsed.taskId,
     evaluatorId: parsed.evaluator,
-    deps,
-  });
-  const prepared = await prepareEvaluatorReview({
-    ctx: command,
-    task,
-    evaluator,
     provenance: parsed.provenance,
   });
+}
+
+export async function runEvaluatorPrepareOnlyCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorRunParsed,
+  deps: EvaluatorArtifactCommandDeps,
+): Promise<EvaluatorRunResult> {
+  assertRunnableReviewInput(parsed);
+  if (parsed.record) {
+    throw new CliError({
+      code: "E_INTERNAL",
+      message: "Internal error: preparation-only evaluator handler received a recording request.",
+    });
+  }
+  const packet = await prepareEvaluatorRunArtifacts(ctx, parsed, deps);
+  return {
+    provenance: parsed.provenance,
+    verdict: parsed.verdict,
+    recorded: false,
+    work_order: relativeToProject(packet.git_root, packet.prepared.work_order_path),
+    prompt: relativeToProject(packet.git_root, packet.prepared.prompt_path),
+  };
+}
+
+export async function runEvaluatorCommand(
+  ctx: CommandCtx,
+  parsed: EvaluatorRunParsed,
+  deps: EvaluatorReviewCommandDeps,
+): Promise<EvaluatorRunResult> {
+  assertRunnableReviewInput(parsed);
+  const packet = await prepareEvaluatorRunArtifacts(ctx, parsed, deps);
+  const { prepared } = packet;
   if (!parsed.record) {
     return {
       provenance: parsed.provenance,
       verdict: parsed.verdict,
       recorded: false,
-      work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
-      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
+      work_order: relativeToProject(packet.git_root, prepared.work_order_path),
+      prompt: relativeToProject(packet.git_root, prepared.prompt_path),
     };
   }
+  const command = await deps.getCommandContext(ctx, "evaluator run record");
+  const task = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
   const applied =
     parsed.provenance === "human_supplied"
       ? await applyHumanEvaluatorReview({
@@ -489,7 +536,7 @@ export async function runEvaluatorCommand(
 }
 
 export function makeRunEvaluatorRunHandler(
-  deps: EvaluatorCommandDeps,
+  deps: EvaluatorReviewCommandDeps,
 ): CommandHandler<EvaluatorRunParsed> {
   return async (ctx, parsed) => {
     const result = await runEvaluatorCommand(ctx, parsed, deps);
@@ -502,6 +549,18 @@ export function makeRunEvaluatorRunHandler(
   };
 }
 
-export const runEvaluatorRun = makeRunEvaluatorRunHandler({
-  getCommandContext: DEFAULT_EVALUATOR_COMMAND_DEPS.getCommandContext,
-});
+export function makeRunEvaluatorRunPrepareHandler(
+  deps: EvaluatorArtifactCommandDeps,
+): CommandHandler<EvaluatorRunParsed> {
+  return async (ctx, parsed) => {
+    const result = await runEvaluatorPrepareOnlyCommand(ctx, parsed, deps);
+    renderEvaluatorPayload({
+      json: parsed.json,
+      title: `evaluator run ${parsed.taskId}`,
+      payload: result,
+    });
+    return 0;
+  };
+}
+
+export const runEvaluatorRun = makeRunEvaluatorRunHandler(DEFAULT_EVALUATOR_REVIEW_DEPS);
