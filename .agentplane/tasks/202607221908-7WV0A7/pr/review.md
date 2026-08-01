@@ -13,7 +13,7 @@ Created: 2026-08-01T03:23:48.490Z
 ## Verification
 
 - State: ok
-- Note: PASS: provider/release vertical verified with SHA-bound command and runtime recovery evidence.
+- Note: PASS: semantic rework verified at 8c8bf30b4b6f with measured effects and SHA-bound recovery evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

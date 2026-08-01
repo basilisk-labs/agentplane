@@ -16,7 +16,7 @@ RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands 
 ## Verification
 
 - State: ok
-- Note: PASS: provider/release vertical verified with SHA-bound command and runtime recovery evidence.
+- Note: PASS: semantic rework verified at 8c8bf30b4b6f with measured effects and SHA-bound recovery evidence.
 - Canonical workflow state lives in the task README.
 
 <details>
