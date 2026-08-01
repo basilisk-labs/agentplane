@@ -19,8 +19,10 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 - Note:
 
 ```text
-Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5,
-critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness.
+Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused
+catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence
+packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint,
+guards, architecture, hotspots, and all 12 critical CLI chunks passed.
 ```
 - Canonical workflow state lives in the task README.
 

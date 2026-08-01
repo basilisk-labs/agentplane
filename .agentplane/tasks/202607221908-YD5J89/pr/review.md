@@ -13,7 +13,7 @@ Created: 2026-08-01T00:38:26.423Z
 ## Verification
 
 - State: ok
-- Note: Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness.
+- Note: Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

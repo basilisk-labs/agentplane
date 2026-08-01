@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T02:14:11.126Z"
+  updated_at: "2026-08-01T02:23:07.500Z"
   updated_by: "TESTER"
-  note: "Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness."
+  note: "Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -163,8 +163,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: evaluator preparation and no-record execution now use explicit artifact-write authority without task or Git mutation rights."
+  -
+    type: "verify"
+    at: "2026-08-01T02:23:07.500Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:22:46.707Z"
+doc_updated_at: "2026-08-01T02:23:08.424Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -308,6 +314,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T02:23:07.500Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:22:46.707Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -329,6 +365,10 @@ sections:
     - Observation: evaluator run --no-record previously entered a write-capable catalog session before choosing its read dependency.
       Impact: A non-recording review held backend/task/Git mutation authority that its semantic operation did not require.
       Resolution: Select EVALUATOR_READ_REQUIREMENTS or EVALUATOR_WRITE_REQUIREMENTS from parsed record mode before CommandSession construction and verify denials through normal registry dispatch.
+
+    - Observation: Evaluator preparation and no-record execution now resolve evaluator.artifacts.write as a distinct capability; task.write, git.mutate, and approvals remain absent from the preparation profile.
+      Impact: The CLI can prepare durable evaluator context while preserving a machine-enforced boundary between evidence generation and lifecycle or Git mutation.
+      Resolution: Accepted after focused filesystem regression coverage and the repository critical/architecture gates completed successfully.
 extensions:
   implementation_commit:
     hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
@@ -487,6 +527,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T02:23:07.500Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:22:46.707Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -512,3 +582,7 @@ DecisionContextRef:
 - Observation: evaluator run --no-record previously entered a write-capable catalog session before choosing its read dependency.
   Impact: A non-recording review held backend/task/Git mutation authority that its semantic operation did not require.
   Resolution: Select EVALUATOR_READ_REQUIREMENTS or EVALUATOR_WRITE_REQUIREMENTS from parsed record mode before CommandSession construction and verify denials through normal registry dispatch.
+
+- Observation: Evaluator preparation and no-record execution now resolve evaluator.artifacts.write as a distinct capability; task.write, git.mutate, and approvals remain absent from the preparation profile.
+  Impact: The CLI can prepare durable evaluator context while preserving a machine-enforced boundary between evidence generation and lifecycle or Git mutation.
+  Resolution: Accepted after focused filesystem regression coverage and the repository critical/architecture gates completed successfully.
