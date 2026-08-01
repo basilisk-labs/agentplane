@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "context verify-task is declared with CONTEXT_TASK_READ_REQUIREMENTS and receives the session-owned CommandContext through makeRunContextVerifyTaskHandler without task.write authority.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-014237050-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "context finalize-task is declared with CONTEXT_TASK_WRITE_REQUIREMENTS and passes the same prepared CommandContext into final verification, removing the duplicate hidden load identified in the prior review.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-014237050-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Typed context/evaluator use cases and edge renderers preserve existing human/JSON contracts while context supervision invokes evaluator execution in-process without stdout capture.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-014237050-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "No additional missing test within the approved command-boundary scope."
+  ],
+  "hidden_assumptions": [
+    "Granular capabilities currently coalesce onto one physical CommandContext node; this is documented residual infrastructure work, not a contract mismatch."
+  ]
+}
