@@ -4,7 +4,7 @@ title: "Bound evaluator review packets to implementation evidence"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "a6b5051e73fdbbcd59fce21ee4be58833775e0f5"
+  message: "♻️ WWQP4B task: bound evaluator implementation evidence"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: active-task generated artifacts are excluded from actual_diff while implementation and other-task deltas remain. YD5J89 measurement dropped from 6,043 lines/277,075 bytes to 4,306 lines/194,186 bytes; focused and full local gates passed."
 events:
   -
     type: "status"
@@ -46,8 +51,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T04:39:10.247Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: active-task generated artifacts are excluded from actual_diff while implementation and other-task deltas remain. YD5J89 measurement dropped from 6,043 lines/277,075 bytes to 4,306 lines/194,186 bytes; focused and full local gates passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T04:37:29.834Z"
+doc_updated_at: "2026-08-01T04:39:10.247Z"
 doc_updated_by: "CODER"
 description: "Fix the measured evaluator timeout by excluding the active task's generated control artifacts from actual_diff while preserving the task document, blueprint, observed checks, policy, and complete implementation delta as separately digest-verified evidence."
 sections:
