@@ -291,6 +291,6 @@
     "benchmark.comparison": "comparison",
     "benchmark.verdict": "persistent_cache_no_go; concurrent_git_observation_no_go; safe_outer_overlap_no_go",
     "benchmark.quality": "pending evaluator gate",
-    "benchmark.commit": "pending artifact commit"
+    "benchmark.commit": "d1605fe622f4341242563c847e8e7b88cd3908c4"
   }
 }
