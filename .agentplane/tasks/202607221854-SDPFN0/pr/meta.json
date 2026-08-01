@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1e0f2a49f733c1d6a6b0e7417a6bf86ab7bc9f8afdbffba6bfeb0df3d5fedead",
   "pr_number": 4721,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4721",
+  "pre_merge_closure": {
+    "basis_commit": "73d5648ba759a35309c122886b1d09ef1eb5f8b6",
+    "branch": "task/202607221854-SDPFN0/complete-commandsession-capability-migration",
+    "pr_number": 4721,
+    "recorded_at": "2026-08-01T13:59:31.206Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221854-SDPFN0",

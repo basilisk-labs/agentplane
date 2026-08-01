@@ -1,10 +1,11 @@
 ---
 id: "202607221854-SDPFN0"
 title: "Complete CommandSession capability migration"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -68,8 +69,8 @@ quality_review:
   findings:
     - "Frozen evidence shows the implementation satisfies the approved migration contract at the evaluated SHA."
 commit:
-  hash: "4f808df120a6d205d1cb27821aae048a61b8ecff"
-  message: "♻️ SDPFN0 task: remove legacy RunDeps aggregate"
+  hash: "73d5648ba759a35309c122886b1d09ef1eb5f8b6"
+  message: "✅ SDPFN0 task: record passing semantic review"
 comments:
   -
     author: "CODER"
@@ -83,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: removed the remaining RunDeps aggregate and replaced fake init dependencies with the exact project resolver capability. Full ci:contract passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -142,8 +146,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: exact dependency closure, complete capability migration without RunDeps, focused/full/critical tests, typecheck, and ci:contract verified for 4f808df120a6."
+  -
+    type: "status"
+    at: "2026-08-01T13:59:31.152Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T13:57:06.597Z"
+doc_updated_at: "2026-08-01T13:59:31.152Z"
 doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
@@ -489,6 +500,9 @@ sections:
       Impact: CLI preparation is capability-authoritative and avoids unnecessary provider, Git, task, project, or config context for migrated commands.
       Resolution: Accepted. Residual risk is limited to hosted CI and evaluator semantic review.
 extensions:
+  implementation_commit:
+    hash: "4f808df120a6d205d1cb27821aae048a61b8ecff"
+    message: "♻️ SDPFN0 task: remove legacy RunDeps aggregate"
   workflow_route_baseline:
     start_head_sha: "395235931a6b78f8c0f1afb0060b136053e9c315"
     version: 1
