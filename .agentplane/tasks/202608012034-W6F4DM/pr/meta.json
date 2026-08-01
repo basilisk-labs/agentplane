@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:ea06cf2c18864a69a3446f00f9578b07b1764af6fd4781579370c817dce84e01",
   "pr_number": 4729,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4729",
+  "pre_merge_closure": {
+    "basis_commit": "64064c6d87e206a8e7d080f593228c60d3b56ef4",
+    "branch": "task/202608012034-W6F4DM/prevent-artifact-gate-buffer-overflow-on-large-r",
+    "pr_number": 4729,
+    "recorded_at": "2026-08-01T20:41:50.958Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608012034-W6F4DM",
