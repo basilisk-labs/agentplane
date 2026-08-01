@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608011958-EMTWRX/archive-resolved-rf-24-rf-25-help-snapshot-incid",
+  "created_at": "2026-08-01T20:00:08.016Z",
+  "diffstat_sha256": "sha256:f321e4480a111f75749d641c5051c5e4884da96ef2ec42b713cc98b6144659db",
+  "last_verified_at": "2026-08-01T20:10:28.900Z",
+  "last_verified_diffstat_sha256": "sha256:f321e4480a111f75749d641c5051c5e4884da96ef2ec42b713cc98b6144659db",
+  "pr_number": 4728,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4728",
+  "pre_merge_closure": {
+    "basis_commit": "fcf2998104879ad6d8a1da39f5b3c02bc16dbf16",
+    "branch": "task/202608011958-EMTWRX/archive-resolved-rf-24-rf-25-help-snapshot-incid",
+    "pr_number": 4728,
+    "recorded_at": "2026-08-01T20:12:25.596Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608011958-EMTWRX",
+  "updated_at": "2026-08-01T20:08:22.699Z",
+  "verify": {
+    "status": "pass"
+  }
+}
