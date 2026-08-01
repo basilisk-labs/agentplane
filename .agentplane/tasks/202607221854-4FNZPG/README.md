@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -35,8 +35,8 @@ verification:
   note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
   attempts: 1
 commit:
-  hash: "7ce2d55e29271a90f839188fb1c2a5057ff39e71"
-  message: "🧪 4FNZPG release: refresh evaluator route fixtures"
+  hash: "c958ab897b9a81d619be4adfdb4bfbaf4ba446ab"
+  message: "🧪 4FNZPG release: align authority persistence fixture"
 comments:
   -
     author: "TESTER"
@@ -59,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework extended: refreshed dormant release-suite fixtures for required evaluator policy evidence, a valid main diff base, and scoped authority before pre-merge closure. The affected direct closeout, quality routing, and task-complete files pass 13/13."
+  -
+    author: "CODER"
+    body: "Implementation rework extended: updated the branch_pr authority fixture to assert the current out-of-band git-common-dir persistence contract. Granting scoped authority no longer mutates the task branch, and the authorized pr.open operation is still restored; the focused file passes 3/3."
 events:
   -
     type: "status"
@@ -115,8 +118,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework extended: refreshed dormant release-suite fixtures for required evaluator policy evidence, a valid main diff base, and scoped authority before pre-merge closure. The affected direct closeout, quality routing, and task-complete files pass 13/13."
+  -
+    type: "status"
+    at: "2026-08-01T21:24:32.052Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework extended: updated the branch_pr authority fixture to assert the current out-of-band git-common-dir persistence contract. Granting scoped authority no longer mutates the task branch, and the authorized pr.open operation is still restored; the focused file passes 3/3."
 doc_version: 3
-doc_updated_at: "2026-08-01T21:22:30.246Z"
+doc_updated_at: "2026-08-01T21:24:32.052Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
