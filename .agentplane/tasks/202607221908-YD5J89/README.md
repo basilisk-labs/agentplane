@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T02:02:31.821Z"
+  updated_at: "2026-08-01T02:14:11.126Z"
   updated_by: "TESTER"
-  note: "Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39."
+  note: "Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness."
   attempts: 0
 quality_review:
   state: "rework"
@@ -147,8 +147,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: evaluator run now selects read/write authority before CommandSession construction, with normal registry-dispatch denial coverage."
+  -
+    type: "verify"
+    at: "2026-08-01T02:14:11.126Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:13:55.928Z"
+doc_updated_at: "2026-08-01T02:14:12.145Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -262,6 +268,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T02:14:11.126Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:13:55.928Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -279,6 +315,10 @@ sections:
     - Observation: Hosted CI exposed a stale generated script inventory and an oversized evaluator command module.
       Impact: The PR could not satisfy verify-routed until both deterministic gates were repaired.
       Resolution: Regenerated scripts/README.md, extracted evaluator catalog/list/show boundaries, recorded f404121e0 as the implementation rework commit, and verified the complete declared contract.
+
+    - Observation: evaluator run --no-record previously entered a write-capable catalog session before choosing its read dependency.
+      Impact: A non-recording review held backend/task/Git mutation authority that its semantic operation did not require.
+      Resolution: Select EVALUATOR_READ_REQUIREMENTS or EVALUATOR_WRITE_REQUIREMENTS from parsed record mode before CommandSession construction and verify denials through normal registry dispatch.
 extensions:
   implementation_commit:
     hash: "8e4f2872a896a86a61319bef7047fdc9da0abe19"
@@ -407,6 +447,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T02:14:11.126Z — VERIFY — ok
+
+By: TESTER
+
+Note: Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:13:55.928Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -428,3 +498,7 @@ DecisionContextRef:
 - Observation: Hosted CI exposed a stale generated script inventory and an oversized evaluator command module.
   Impact: The PR could not satisfy verify-routed until both deterministic gates were repaired.
   Resolution: Regenerated scripts/README.md, extracted evaluator catalog/list/show boundaries, recorded f404121e0 as the implementation rework commit, and verified the complete declared contract.
+
+- Observation: evaluator run --no-record previously entered a write-capable catalog session before choosing its read dependency.
+  Impact: A non-recording review held backend/task/Git mutation authority that its semantic operation did not require.
+  Resolution: Select EVALUATOR_READ_REQUIREMENTS or EVALUATOR_WRITE_REQUIREMENTS from parsed record mode before CommandSession construction and verify denials through normal registry dispatch.
