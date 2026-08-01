@@ -3,6 +3,36 @@ import path from "node:path";
 
 type FileEntry = { absPath: string; relPath: string };
 
+const BANNED_USECASE_IMPORTS = [
+  "node:fs",
+  "fs",
+  "node:path",
+  "path",
+  "node:child_process",
+  "child_process",
+  "node:http",
+  "http",
+  "node:https",
+  "https",
+  "node:http2",
+  "http2",
+  "node:net",
+  "net",
+  "node:tls",
+  "tls",
+  "node:dgram",
+  "dgram",
+  "node:dns",
+  "dns",
+  "undici",
+  "node-fetch",
+  "got",
+  "axios",
+  "simple-git",
+  "isomorphic-git",
+  "@agentplaneorg/core/git",
+] as const;
+
 async function listTsFiles(rootDir: string): Promise<FileEntry[]> {
   const out: FileEntry[] = [];
   async function walk(absDir: string) {
@@ -26,12 +56,19 @@ async function listTsFiles(rootDir: string): Promise<FileEntry[]> {
 }
 
 function extractImports(source: string): string[] {
-  const imports: string[] = [];
-  const re = /^\s*import\s+(?:type\s+)?(?:[^"']*?\s+from\s+)?["']([^"']+)["']\s*;?/gm;
-  for (const match of source.matchAll(re)) {
-    imports.push(match[1] ?? "");
+  const imports = new Set<string>();
+  const patterns = [
+    /^\s*(?:import|export)\s+(?:type\s+)?(?:[^"']*?\s+from\s+)?["']([^"']+)["']\s*;?/gm,
+    /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,
+    /\brequire\s*\(\s*["']([^"']+)["']\s*\)/g,
+  ];
+  for (const pattern of patterns) {
+    for (const match of source.matchAll(pattern)) {
+      const dependency = match[1];
+      if (dependency) imports.add(dependency);
+    }
   }
-  return imports.filter(Boolean);
+  return [...imports];
 }
 
 async function isDirectory(absPath: string): Promise<boolean> {
@@ -54,39 +91,38 @@ export async function checkLayering(repoRoot: string): Promise<string[]> {
   }
 
   const cliRoot = path.join(agentplaneSrcRoot, "cli");
-  const cliFiles = await listTsFiles(cliRoot);
-  for (const f of cliFiles) {
-    const src = await fs.readFile(f.absPath, "utf8");
-    const imports = extractImports(src);
-    const hits = imports.filter(
-      (s) =>
-        s.includes("/adapters/") ||
-        s.includes("../adapters") ||
-        s.includes("../../adapters") ||
-        s.includes("../../../adapters"),
-    );
-    if (hits.length > 0) {
-      problems.push(`${f.relPath} imports adapters directly: ${hits.join(", ")}`);
+  if (await isDirectory(cliRoot)) {
+    const cliFiles = await listTsFiles(cliRoot);
+    for (const f of cliFiles) {
+      const src = await fs.readFile(f.absPath, "utf8");
+      const imports = extractImports(src);
+      const hits = imports.filter(
+        (s) =>
+          s.includes("/adapters/") ||
+          s.includes("../adapters") ||
+          s.includes("../../adapters") ||
+          s.includes("../../../adapters"),
+      );
+      if (hits.length > 0) {
+        problems.push(`${f.relPath} imports adapters directly: ${hits.join(", ")}`);
+      }
     }
+  } else {
+    problems.push("Dev source checks requested but packages/agentplane/src/cli was not found.");
   }
 
   const roots = [path.join(agentplaneSrcRoot, "usecases"), path.join(agentplaneSrcRoot, "ports")];
-  const banned = [
-    "node:fs",
-    "node:fs/promises",
-    "fs",
-    "fs/promises",
-    "node:path",
-    "path",
-    "simple-git",
-    "isomorphic-git",
-  ];
   for (const root of roots) {
+    // The clean usecase layer is introduced incrementally. Its absence must not make
+    // doctor crash, while any future file placed there is checked immediately.
+    if (!(await isDirectory(root))) continue;
     const files = await listTsFiles(root);
     for (const f of files) {
       const src = await fs.readFile(f.absPath, "utf8");
       const imports = extractImports(src);
-      const hits = imports.filter((s) => banned.some((b) => s === b || s.startsWith(`${b}/`)));
+      const hits = imports.filter((s) =>
+        BANNED_USECASE_IMPORTS.some((b) => s === b || s.startsWith(`${b}/`)),
+      );
       if (hits.length > 0) {
         problems.push(`${f.relPath} imports banned modules: ${hits.join(", ")}`);
       }
