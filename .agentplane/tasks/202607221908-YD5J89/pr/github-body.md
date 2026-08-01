@@ -28,7 +28,7 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 
 ```text
  ...-cli.core.lifecycle.finish-close-commit.test.ts |  37 +-
- ...un-cli.core.lifecycle.finish-validation.test.ts |  71 ++-
+ ...un-cli.core.lifecycle.finish-validation.test.ts |  72 ++-
  .../src/cli/run-cli.core.tasks.incidents.test.ts   |  37 +-
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  93 ++++
@@ -59,7 +59,7 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  packages/testkit/src/cli-harness.ts                |  50 +-
- 32 files changed, 3116 insertions(+), 741 deletions(-)
+ 32 files changed, 3116 insertions(+), 742 deletions(-)
 ```
 
 </details>

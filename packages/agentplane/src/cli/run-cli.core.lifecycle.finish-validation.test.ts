@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { execFile } from "node:child_process";
 import { chmod, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
