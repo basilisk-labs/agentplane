@@ -7,6 +7,7 @@ import { describe } from "vitest";
 
 import {
   captureStdIO,
+  commitAll,
   defaultConfig,
   expect,
   it,
@@ -15,8 +16,21 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { withEvaluatorPolicyFixture } from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
+
+async function runCliExpectOk(args: string[], evaluatorRoot?: string): Promise<void> {
+  const io = captureStdIO();
+  try {
+    const code = evaluatorRoot
+      ? await withEvaluatorPolicyFixture(evaluatorRoot, () => runCli(args))
+      : await runCli(args);
+    expect(code, io.stderr).toBe(0);
+  } finally {
+    io.restore();
+  }
+}
 
 async function createBranchPrTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
@@ -141,6 +155,7 @@ async function setupRoot(): Promise<string> {
   config.workflow_mode = "branch_pr";
   await writeConfig(root, config);
   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+  await commitAll(root, "seed quality route fixture");
   return root;
 }
 
@@ -214,23 +229,26 @@ describe("runCli quality route decisions", () => {
   it("stops for a stale quality review without synthesizing a replacement verdict", async () => {
     const root = await setupRoot();
     const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise stale review routing.");
-    await runCliSilent([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "pass",
-      "--summary",
-      "The reviewed implementation satisfies the task contract.",
-      "--finding",
-      "The implementation and verification evidence were reviewed independently.",
-      "--evidence",
-      `.agentplane/tasks/${taskId}/README.md`,
-      "--root",
+    await runCliExpectOk(
+      [
+        "evaluator",
+        "run",
+        taskId,
+        "--provenance",
+        "evaluator_supplied",
+        "--verdict",
+        "pass",
+        "--summary",
+        "The reviewed implementation satisfies the task contract.",
+        "--finding",
+        "The implementation and verification evidence were reviewed independently.",
+        "--evidence",
+        `.agentplane/tasks/${taskId}/README.md`,
+        "--root",
+        root,
+      ],
       root,
-    ]);
+    );
     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
 
@@ -277,23 +295,26 @@ describe("runCli quality route decisions", () => {
   it("hands fresh evaluator rework findings back to the CODER without a PR command", async () => {
     const root = await setupRoot();
     const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise rework routing.");
-    await runCliSilent([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "rework",
-      "--summary",
-      "The implementation requires a focused route correction.",
-      "--finding",
-      "The current route advances to PR handling instead of returning control to implementation.",
-      "--evidence",
-      `.agentplane/tasks/${taskId}/README.md`,
-      "--root",
+    await runCliExpectOk(
+      [
+        "evaluator",
+        "run",
+        taskId,
+        "--provenance",
+        "evaluator_supplied",
+        "--verdict",
+        "rework",
+        "--summary",
+        "The implementation requires a focused route correction.",
+        "--finding",
+        "The current route advances to PR handling instead of returning control to implementation.",
+        "--evidence",
+        `.agentplane/tasks/${taskId}/README.md`,
+        "--root",
+        root,
+      ],
       root,
-    ]);
+    );
     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: evaluator rework artifacts"], { cwd: root });
 
@@ -320,7 +341,7 @@ describe("runCli quality route decisions", () => {
       freshReviewIo.restore();
     }
 
-    await runCliSilent([
+    await runCliExpectOk([
       "verify",
       taskId,
       "--rework",
@@ -431,29 +452,32 @@ describe("runCli quality route decisions", () => {
     }
   });
 
-  it("records pre-merge closure before integration for a quality-reviewed open PR", async () => {
+  it("requires scoped authority before pre-merge closure for a quality-reviewed open PR", async () => {
     const root = await setupRoot();
     const { taskId } = await createVerifiedOpenPrFixture(
       root,
       "Exercise pre-merge closure routing.",
     );
-    await runCliSilent([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "pass",
-      "--summary",
-      "Quality review passed.",
-      "--finding",
-      "No route regression found.",
-      "--evidence",
-      `.agentplane/tasks/${taskId}/README.md`,
-      "--root",
+    await runCliExpectOk(
+      [
+        "evaluator",
+        "run",
+        taskId,
+        "--provenance",
+        "evaluator_supplied",
+        "--verdict",
+        "pass",
+        "--summary",
+        "Quality review passed.",
+        "--finding",
+        "No route regression found.",
+        "--evidence",
+        `.agentplane/tasks/${taskId}/README.md`,
+        "--root",
+        root,
+      ],
       root,
-    ]);
+    );
     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
 
@@ -469,15 +493,15 @@ describe("runCli quality route decisions", () => {
       };
       expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pre_merge_closure_missing");
       expect(parsed.route_oracle).toMatchObject({
-        phase: "pre_merge_closure_needed",
+        phase: "side_effect_authority_required",
         authoritativeCheckout: "task_worktree",
         blocker: { code: "pre_merge_closure_missing" },
       });
-      expect(parsed.execution_packet.recommendedRole).toBe("CODER");
+      expect(parsed.execution_packet.recommendedRole).toBe("USER");
       expect(parsed.execution_packet.evidenceMissing).toContain("pre_merge_closure");
       expect(parsed.next_action.code).toBe("record_pre_merge_closure");
-      expect(parsed.next_action.command).toContain(`agentplane finish ${taskId}`);
-      expect(parsed.next_action.command).toContain("--pre-merge-closure");
+      expect(parsed.next_action.command).toContain(`agentplane task authority grant ${taskId}`);
+      expect(parsed.next_action.command).toContain("--operation task.pre_merge_close");
     } finally {
       nextIo.restore();
     }

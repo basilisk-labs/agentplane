@@ -31,10 +31,13 @@ Created: 2026-08-01T19:31:51.047Z
 ```text
  .../cli/run-cli.core.branch-meta.readiness.test.ts |  18 +
  ...n-cli.core.branch-meta.sync-maintenance.test.ts |   4 -
+ ...cli.core.route-decision.direct-closeout.test.ts |  83 ++-
+ .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
+ .../src/cli/run-cli.core.task-guided.test.ts       |  39 +-
  .../installed-migration-matrix-script.test.ts      | 103 ++++
  scripts/lib/installed-migration-matrix.mjs         | 649 +++++++++++++++++++++
  .../release/check-local-tarball-install-smoke.mjs  |  10 +
- 5 files changed, 780 insertions(+), 4 deletions(-)
+ 8 files changed, 930 insertions(+), 108 deletions(-)
 ```
 
 </details>
