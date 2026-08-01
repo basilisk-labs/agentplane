@@ -6,7 +6,7 @@ Created: 2026-08-01T19:31:51.047Z
 
 - Task: `202607221854-4FNZPG`
 - Title: Validate the 0.6.24-to-0.7 migration and installed-package matrix
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221854-4FNZPG/validate-the-0-6-24-to-0-7-migration-and-install`
 - Canonical task record: `.agentplane/tasks/202607221854-4FNZPG/README.md`
 
