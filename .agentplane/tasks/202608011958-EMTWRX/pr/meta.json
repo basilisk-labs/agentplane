@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608011958-EMTWRX/archive-resolved-rf-24-rf-25-help-snapshot-incid",
+  "created_at": "2026-08-01T20:00:08.016Z",
+  "diffstat_sha256": "sha256:f321e4480a111f75749d641c5051c5e4884da96ef2ec42b713cc98b6144659db",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608011958-EMTWRX",
+  "updated_at": "2026-08-01T20:00:08.016Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
