@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on:
@@ -61,28 +61,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T09:40:47.826Z"
+  updated_at: "2026-08-01T10:25:16.589Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557"
+  evaluated_sha: "346e9681ba68631bd22d5e40c328654c30a8892e"
   blueprint_digest: "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221908-YD5J89/README.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-YD5J89/verification/20260801093951504-893338dfb120657f.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-102430670-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No contract-breaking defect was identified; frozen verification covers typed in-process results, read-only mutation denial, artifact-only authority, and concurrent session isolation at the evaluated SHA."
+    - "No contract-breaking defect was identified; the frozen diff and verification evidence cover typed in-process context/evaluator results, capability-scoped denial, artifact-only evaluator authority, and invocation-local concurrency isolation at the evaluated SHA."
 commit:
   hash: "67bc603c94ed475f796ae5f5aeba75b7c0666c19"
   message: "🧩 YD5J89 quality: record final evaluator pass"
