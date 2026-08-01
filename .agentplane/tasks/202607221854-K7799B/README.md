@@ -1,10 +1,10 @@
 ---
 id: "202607221854-K7799B"
 title: "Close all AgentPlane 0.7 architecture guard violations"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ verify:
   - "bun run guards:check"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T18:06:44.653Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -45,11 +45,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T18:07:23.121Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:31.784Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T18:07:23.121Z"
+doc_updated_by: "CODER"
 description: "RF-27b: reduce the trust/architecture baseline to zero for automatic verdicts, agent-owned observations, untyped durable boundaries, shell orchestration, duplicate task views, undeclared capabilities, and direct OS/Git/network imports in migrated use cases."
 sections:
   Summary: |-
@@ -78,6 +88,10 @@ sections:
     - Never restore the violation baseline without explicit scope re-approval and a named follow-up owner.
     - Re-run the full architecture and contract lane.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "365bd520baed0eac843fe41eb5df7bd2a505c4ca"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
