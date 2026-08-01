@@ -135,6 +135,26 @@ describe("pr-meta shell invocations", () => {
     expect(result).toEqual({ code: 0, output: "ok" });
   });
 
+  it("starts declared bunx verification commands through the allowlist", async () => {
+    const gitProcess = await import("@agentplaneorg/core/process");
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    const child = Object.assign(Promise.resolve({ exitCode: 0 }), { stdout, stderr });
+    const startProcess = vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
+
+    const pending = runShellCommand("bunx vitest --version", process.cwd());
+    stdout.end("vitest/4.0.18");
+    stderr.end("");
+
+    await expect(pending).resolves.toEqual({ code: 0, output: "vitest/4.0.18" });
+    expect(startProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: "bunx",
+        args: ["vitest", "--version"],
+      }),
+    );
+  });
+
   it("keeps only a bounded tail for release-sized verify output", async () => {
     const gitProcess = await import("@agentplaneorg/core/process");
     const stdout = new PassThrough();
