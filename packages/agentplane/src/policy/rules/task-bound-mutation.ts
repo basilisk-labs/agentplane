@@ -7,13 +7,17 @@ import type { PolicyContext, PolicyResult } from "../model.js";
 
 const DOC_FILE_RE = /(^|\/)(README|CHANGELOG|CONTRIBUTING|LICENSE)(\.[^/]*)?$/i;
 const DOC_EXT_RE = /\.(md|mdx|txt|adoc|rst)$/i;
+const DOCS_SITE_PATHS = new Set(["website/docusaurus.config.ts", "website/sidebars.ts"]);
+const GENERATED_DOCS_SOCIAL_PREFIX = "website/static/img/social";
 
 function isDocsOnlyPath(filePath: string): boolean {
   return (
     DOC_FILE_RE.test(filePath) ||
     DOC_EXT_RE.test(filePath) ||
     gitPathIsUnderPrefix(filePath, "docs") ||
-    gitPathIsUnderPrefix(filePath, "website/docs")
+    gitPathIsUnderPrefix(filePath, "website/docs") ||
+    DOCS_SITE_PATHS.has(filePath) ||
+    gitPathIsUnderPrefix(filePath, GENERATED_DOCS_SOCIAL_PREFIX)
   );
 }
 
