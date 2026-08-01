@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-TZTE5V-8f74547dd4fe8d3a492ba12c",
+  "prepared_at": "2026-08-01T00:23:10.968Z",
+  "task": {
+    "id": "202607221908-TZTE5V",
+    "revision": 10,
+    "objective": "Migrate project, config, help, and docs command boundaries\n\nRF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed session capabilities and typed results with centralized compatibility renderers.",
+    "acceptance_criteria": [
+      "bun run docs:cli:check",
+      "bun run guards:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: project/config/runtime explain/help/docs command catalog requirements, lazy session preparation, typed use-case result/error unions, human/JSON renderers, help/docs generation parity, and removal of direct stdout/business coupling in this family.\n- Out of scope: task, context, runner, provider, or release command families.",
+      "1. Inventory the family commands and declare minimal project/config/output capabilities.\n2. Extract typed results/errors from command handlers.\n3. Centralize human/JSON/help rendering and exit mapping.\n4. Remove eager task/Git/provider preparation and duplicate loader metadata.\n5. Run family snapshots, docs generation, laziness, and denial tests.",
+      "1. Execute project/config/help/docs fixtures. Expected: no task/Git/provider capability loads and typed results render compatible human/JSON output.\n2. Attempt undeclared session access. Expected: compile-time or typed boundary failure.\n3. Regenerate CLI/docs surfaces. Expected: no output/reference drift.\n4. Run family tests, docs CLI check, guards, and typecheck."
+    ]
+  },
+  "evaluated_sha": "8fc6ef287988ccec9dd88f7bfbf1094371d00b51",
+  "diff_base_sha": "0dca3d627916e8c36ecf46bcbbb523a3b0013317",
+  "blueprint_digest": "44c913dba6b9de430d88637869aa5b63d129c6b68eb64448eaa5c930836b800b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-TZTE5V/README.md",
+      "sha256": "sha256:2153f472caa7340f1dcc7442b1af59c00815a34333eb8bf2860cadd3bb419a67",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:374f8f44c4cb64d0ec7e890ca7bdbce042a9512cb8dbef37a29e6fd6c8537054",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:7ccf81250b588c4190a008dbc0bd72d82f340778a58bc6a7ea95437ed5ec38ff",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-TZTE5V/quality/20260801-002310968-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:af752bbd8a58416cb4efbe8143303ae6610bb980c5a2c4210b0609e048cd8b8e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

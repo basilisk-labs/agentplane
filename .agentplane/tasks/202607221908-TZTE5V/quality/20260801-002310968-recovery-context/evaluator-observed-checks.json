@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run docs:cli:check",
+    "bun run guards:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T00:22:32.323Z",
+    "updated_by": "TESTER",
+    "note": "Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md"
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

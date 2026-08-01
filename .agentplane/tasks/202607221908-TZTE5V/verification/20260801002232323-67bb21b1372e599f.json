@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:67bb21b1372e599f6afb034c47c7ea299b5a16989566b3b4072e4066b4e1f577",
+  "implementation_sha": "8fc6ef287988ccec9dd88f7bfbf1094371d00b51",
+  "kind": "task_verification_record",
+  "note": "Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md",
+  "recorded_at": "2026-08-01T00:22:32.323Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Execute project/config/help/docs fixtures. Expected: no task/Git/provider capability loads and typed results render compatible human/JSON output.\n2. Attempt undeclared session access. Expected: compile-time or typed boundary failure.\n3. Regenerate CLI/docs surfaces. Expected: no output/reference drift.\n4. Run family tests, docs CLI check, guards, and typecheck.",
+  "scope_digest": "sha256:9ce64a1d327e47cc63d1a606c55c68344c767e35a04bd14cd5a5225a8d14c3ee",
+  "task_id": "202607221908-TZTE5V",
+  "verification_command": "agentplane verify 202607221908-TZTE5V --ok --by TESTER",
+  "verifier": "TESTER"
+}

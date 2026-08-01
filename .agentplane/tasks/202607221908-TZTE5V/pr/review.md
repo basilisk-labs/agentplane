@@ -6,14 +6,14 @@ Created: 2026-08-01T00:02:28.030Z
 
 - Task: `202607221908-TZTE5V`
 - Title: Migrate project, config, help, and docs command boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221908-TZTE5V/migrate-project-config-help-and-docs-command-bou`
 - Canonical task record: `.agentplane/tasks/202607221908-TZTE5V/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified minimal capability profiles and typed renderer boundaries. Focused tests (100), docs CLI freshness, guards, critical tests (12/12), TS7 typecheck, format, lint, architecture, knip baseline, and diff check passed; evidence: .agentplane/tasks/202607221908-TZTE5V/verification/project-config-help-docs-migration.md
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-01T00:02:28.030Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T00:02:28.030Z
+- Updated: 2026-08-01T00:21:47.174Z
 - Branch: task/202607221908-TZTE5V/migrate-project-config-help-and-docs-command-bou
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
