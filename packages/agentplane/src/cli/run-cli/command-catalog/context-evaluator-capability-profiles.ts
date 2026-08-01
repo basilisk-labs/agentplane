@@ -43,7 +43,8 @@ export const EVALUATOR_PREPARE_REQUIREMENTS = [
 ] as const satisfies readonly CommandCapability[];
 
 export const EVALUATOR_WRITE_REQUIREMENTS = [
-  ...EVALUATOR_PREPARE_REQUIREMENTS,
+  ...EVALUATOR_READ_REQUIREMENTS,
+  "evaluator.artifacts.write",
   "backend.write",
   "task.write",
   "git.mutate",

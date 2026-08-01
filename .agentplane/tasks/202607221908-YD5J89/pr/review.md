@@ -30,10 +30,10 @@ Created: 2026-08-01T00:38:26.423Z
 
 ```text
  packages/agentplane/src/cli/run-cli.ts             |  13 +
- .../src/cli/run-cli/command-catalog.test.ts        |  89 ++++
+ .../src/cli/run-cli/command-catalog.test.ts        |  93 ++++
  .../command-catalog/command-context-port.ts        | 153 ++++++
  .../cli/run-cli/command-catalog/command-session.ts |  45 +-
- .../context-evaluator-capability-profiles.ts       |  71 +++
+ .../context-evaluator-capability-profiles.ts       |  72 +++
  .../src/cli/run-cli/command-catalog/kernel.test.ts | 224 +++++++-
  .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
@@ -58,7 +58,7 @@ Created: 2026-08-01T00:38:26.423Z
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 29 files changed, 3007 insertions(+), 690 deletions(-)
+ 29 files changed, 3012 insertions(+), 690 deletions(-)
 ```
 
 </details>

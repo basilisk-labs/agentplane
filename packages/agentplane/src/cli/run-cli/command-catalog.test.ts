@@ -216,6 +216,8 @@ describe("command catalog graph", () => {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
         EVALUATOR_WRITE_REQUIREMENTS,
       );
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toContain("task.read");
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toContain("git.diff");
       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
     }
     const evaluatorRun = findCommandEntry(["evaluator", "run"]);
@@ -230,6 +232,8 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["evaluator", "execute"])?.requirements).toEqual(
       EVALUATOR_EXECUTE_REQUIREMENTS,
     );
+    expect(findCommandEntry(["evaluator", "execute"])?.requirements).toContain("task.read");
+    expect(findCommandEntry(["evaluator", "execute"])?.requirements).toContain("route.local");
   });
 
   it("publishes exact task, lifecycle, and route capability profiles", () => {
