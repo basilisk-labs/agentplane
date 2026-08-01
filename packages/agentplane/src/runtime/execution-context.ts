@@ -5,6 +5,7 @@ import { buildAdapters } from "../adapters/index.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { PolicyEngine } from "../policy/engine.js";
 import { emitTraceEvent } from "../shared/trace-events.js";
+import type { PreparationTraceRecorder } from "../shared/preparation-trace.js";
 import { createApprovalRuntime, type ApprovalRuntime } from "./approvals/index.js";
 import {
   resolveTaskBackendCapabilityRegistry,
@@ -62,12 +63,14 @@ export async function resolveCommandContext(opts: {
   rootOverride?: string | null;
   resolvedProject?: ResolvedProject;
   config?: AgentplaneConfig;
+  preparationTrace?: PreparationTraceRecorder | null;
 }): Promise<CommandContext> {
   return await loadCommandContext({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     resolvedProject: opts.resolvedProject,
     config: opts.config,
+    preparationTrace: opts.preparationTrace ?? null,
   });
 }
 

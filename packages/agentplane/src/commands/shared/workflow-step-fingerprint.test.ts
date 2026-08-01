@@ -10,6 +10,7 @@ import {
   type StateFingerprintComponentInput,
 } from "@agentplaneorg/core/schemas";
 import {
+  captureStdIO,
   defaultConfig,
   expect,
   it,
@@ -19,6 +20,7 @@ import {
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { BlueprintResolvedSnapshotArtifact } from "../../blueprints/index.js";
+import { runWithPreparationTrace } from "../../shared/preparation-trace.js";
 import { buildTaskBlueprintResolvedSnapshot } from "../blueprint/snapshot-artifact.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
@@ -266,7 +268,33 @@ it("captures every live route component from the authoritative task worktree", a
   const taskWorktree = await writeObservedFiles(worktree, config, "task-worktree");
   const ctx = commandContext(root, config);
 
-  const fingerprint = await capture({ ctx, root, worktree });
+  const previousTrace = process.env.AGENTPLANE_TRACE;
+  process.env.AGENTPLANE_TRACE = "1";
+  const traceIo = captureStdIO();
+  let fingerprint: Awaited<ReturnType<typeof capture>>;
+  let preparationTrace = "";
+  try {
+    fingerprint = await runWithPreparationTrace(async () => await capture({ ctx, root, worktree }));
+    preparationTrace = traceIo.stderr;
+  } finally {
+    if (previousTrace === undefined) delete process.env.AGENTPLANE_TRACE;
+    else process.env.AGENTPLANE_TRACE = previousTrace;
+    traceIo.restore();
+  }
+  for (const node of [
+    "blueprint_resolution",
+    "policy_scope",
+    "knowledge_retrieval",
+    "policy_evaluation",
+    "backend_projection",
+    "git_snapshot",
+  ]) {
+    expect(preparationTrace).toContain(`"node":"${node}"`);
+  }
+  expect(preparationTrace).toContain('"input_bytes":');
+  expect(preparationTrace).toContain('"output_bytes":');
+  expect(preparationTrace).toContain('"fingerprint_inputs":');
+  expect(preparationTrace).toContain('"invalidation_reasons":["no_prior_observation"]');
   expect(fingerprint.worktree).toBe(worktree);
   expect(fingerprint.components.blueprint).toMatchObject({
     state: "present",

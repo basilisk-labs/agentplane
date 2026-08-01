@@ -11,7 +11,11 @@ import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
 import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
-import { addTaskWorktreeCleanlinessBlocker, deriveBlockers } from "./route-decision-blockers.js";
+import {
+  addTaskWorktreeCleanlinessBlocker,
+  deriveBlockers,
+  routeGatePriority,
+} from "./route-decision-blockers.js";
 import type { WorkflowStep } from "./workflow-step.js";
 import {
   projectWorkflowStepExecutionPacket,
@@ -37,6 +41,10 @@ import {
   type CommandContext,
 } from "./task-backend.js";
 import { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
+import {
+  tracePolicyAuthorityDecision,
+  traceRemoteProviderState,
+} from "./route-decision-preparation-trace.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 export { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
@@ -77,24 +85,6 @@ function inferredTaskBranch(
   return null;
 }
 
-function routeGatePriority(code: string): number {
-  if (
-    code === "plan_not_approved" ||
-    code === "human_input_required" ||
-    code === "missing_pr_branch" ||
-    code === "runner_alive" ||
-    code === "implementation_rework_required" ||
-    code === "legacy_protected_conflict_adoption_required" ||
-    code === "provider_merge_conflict" ||
-    code === "provider_conflict_context_invalid"
-  ) {
-    return 0;
-  }
-  if (code === "task_worktree_dirty" || code === "task_worktree_state_unavailable") return 1;
-  if (code === "verification_required") return 2;
-  return 3;
-}
-
 function deriveApprovalContract(
   ctx: CommandContext,
   workflowStep: WorkflowStep,
@@ -111,12 +101,6 @@ function deriveApprovalContract(
     effectiveMutationApprovalRequired: routeRequiresApproval,
     routeRequiresApproval,
   };
-}
-
-function deriveAmbiguities(opts: {
-  decision: Omit<TaskRouteDecision, "ambiguities" | "repairPlan" | "sourceConfidence">;
-}) {
-  return deriveRouteAmbiguities(opts);
 }
 
 function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">) {
@@ -403,12 +387,17 @@ export async function buildTaskRouteDecision(opts: {
   const remoteEnabled = ctx.config.workflow_mode === "branch_pr" && opts.includeRemote !== false;
   if (remoteEnabled) {
     try {
-      prFlow = await resolvePrFlowStatus({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? undefined,
-        integrationQueueRoot: baseCheckoutPath,
+      prFlow = await traceRemoteProviderState({
+        recorder: ctx.preparationTrace,
         taskId: opts.taskId,
+        operation: async () =>
+          await resolvePrFlowStatus({
+            ctx,
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride ?? undefined,
+            integrationQueueRoot: baseCheckoutPath,
+            taskId: opts.taskId,
+          }),
       });
     } catch (err) {
       if (!isCliUsageOrIo(err) && !(err instanceof SyntaxError)) throw err;
@@ -533,15 +522,22 @@ export async function buildTaskRouteDecision(opts: {
       batchOwnership.role === "included" ? taskWorktreeCleanliness.worktreePath : taskWorktreePath,
     currentCheckoutPath: resume.workspace_root,
   };
-  const workflowStep = await stabilizeWorkflowStepAfterFingerprint({
-    state: finalRouteStateInput,
-    draft: draftWorkflowStep,
-    capture: async (step) =>
-      await captureWorkflowStepFingerprint({
-        ctx,
+  const workflowStep = await tracePolicyAuthorityDecision({
+    recorder: ctx.preparationTrace,
+    taskId: opts.taskId,
+    remoteEnabled,
+    routeState: finalRouteStateInput,
+    operation: async () =>
+      await stabilizeWorkflowStepAfterFingerprint({
         state: finalRouteStateInput,
-        step,
-        paths: fingerprintPaths,
+        draft: draftWorkflowStep,
+        capture: async (step) =>
+          await captureWorkflowStepFingerprint({
+            ctx,
+            state: finalRouteStateInput,
+            step,
+            paths: fingerprintPaths,
+          }),
       }),
   });
   const routedBlockers = workflowStep.blockers.map((blocker) => ({ ...blocker }));
@@ -585,7 +581,10 @@ export async function buildTaskRouteDecision(opts: {
     oracle,
     executionPacket,
   };
-  const withAmbiguities = { ...partial, ambiguities: deriveAmbiguities({ decision: partial }) };
+  const withAmbiguities = {
+    ...partial,
+    ambiguities: deriveRouteAmbiguities({ decision: partial }),
+  };
   return {
     ...withAmbiguities,
     repairPlan: deriveRepairPlan(withAmbiguities),
