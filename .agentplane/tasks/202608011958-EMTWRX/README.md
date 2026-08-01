@@ -4,7 +4,7 @@ title: "Archive resolved RF-24/RF-25 help snapshot incident"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -34,11 +34,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "5832d8fed38943727e4380d3aefc472f822f10c1"
+  message: "🗂️ EMTWRX docs: archive resolved help snapshot incident"
 comments:
   -
     author: "DOCS"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "DOCS"
+    body: "Implementation recorded: archived INC-20260801-01 with merged-main and focused regression evidence; active source and packaged registries are empty and synchronized."
 events:
   -
     type: "status"
@@ -47,8 +52,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T20:09:17.615Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: archived INC-20260801-01 with merged-main and focused regression evidence; active source and packaged registries are empty and synchronized."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:06:46.242Z"
+doc_updated_at: "2026-08-01T20:09:17.615Z"
 doc_updated_by: "DOCS"
 description: "Reconcile INC-20260801-01 against merged main evidence, preserve its final state in the historical archive, remove it from the active source and packaged registries, and reopen the release gates without changing runtime behavior."
 sections:
