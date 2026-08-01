@@ -4,7 +4,7 @@ title: "Prevent artifact gate buffer overflow on large repositories"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +32,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "390bfc5a8817d63450b606c9453246bec377731e"
+  message: "🛡️ W6F4DM release: bound artifact gate buffers"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation recorded: artifact policy child processes use an explicit 64 MiB bound; the original 1,234,456-byte tracked inventory now passes without changing policy semantics."
 events:
   -
     type: "status"
@@ -45,8 +50,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T20:39:45.454Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: artifact policy child processes use an explicit 64 MiB bound; the original 1,234,456-byte tracked inventory now passes without changing policy semantics."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:38:29.799Z"
+doc_updated_at: "2026-08-01T20:39:45.454Z"
 doc_updated_by: "CODER"
 description: "Raise deterministic child-process output bounds in the artifact policy gate so tracked path inventories larger than Node's default 1 MiB buffer remain verifiable without weakening artifact exclusions."
 sections:
