@@ -20,9 +20,8 @@ Fix the measured evaluator timeout by excluding the active task's generated cont
 - Note:
 
 ```text
-Verified bounded evaluator evidence repair at a6b5051e7: focused evaluator suite 31/31, critical CLI
-77/77, typecheck, schemas, guards/trust ratchet, lifecycle 8/8, Knip, lint, format, and diff checks
-passed.
+Reverified provider-updated head 017980153: focused evaluator suite 31/31, typecheck, guards,
+generated-doc freshness, and scoped diff checks pass with command-level evidence.
 ```
 - Canonical workflow state lives in the task README.
 
