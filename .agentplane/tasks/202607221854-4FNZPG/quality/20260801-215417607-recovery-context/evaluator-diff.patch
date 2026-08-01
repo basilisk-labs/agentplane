@@ -1,0 +1,1261 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts b/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
+index bc930e8eb..5d537f00c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
+@@ -26,6 +26,7 @@ import {
+   loadAgentsTemplate,
+ } from "../agents/agents-template.js";
+ import * as taskBackend from "../backends/task-backend.js";
++import { cloudProjectionIdentitySha256 } from "../backends/task-backend/cloud-projection-identity.js";
+ import {
+   captureStdIO,
+   cleanGitEnv,
+@@ -349,6 +350,23 @@ describe("runCli", () => {
+       }),
+       "utf8",
+     );
++    await mkdir(path.join(root, ".agentplane", "backends", "cloud"), { recursive: true });
++    await writeFile(
++      path.join(root, ".agentplane", "backends", "cloud", "state.json"),
++      `${JSON.stringify(
++        {
++          last_checked_at: "2026-05-01T00:00:00.000Z",
++          projection_identity_sha256: cloudProjectionIdentitySha256({
++            endpoint: "https://cloud.example",
++            projectId: "proj_123",
++            provider: null,
++          }),
++        },
++        null,
++        2,
++      )}\n`,
++      "utf8",
++    );
+     const fetchSpy = vi
+       .spyOn(globalThis, "fetch")
+       .mockResolvedValue(new Response("", { status: 502, statusText: "Bad Gateway" }));
+diff --git a/packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts b/packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts
+index ab82a227f..dfb27b987 100644
+--- a/packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts
+@@ -89,8 +89,6 @@ describe("runCli", { timeout: BRANCH_META_MAINTENANCE_TIMEOUT_MS }, () => {
+         conflict: "prefer-remote",
+         quiet: false,
+         confirm: true,
+-        identityOrigin: "explicit",
+-        identityTransition: "routine",
+       });
+     } finally {
+       io.restore();
+@@ -124,8 +122,6 @@ describe("runCli", { timeout: BRANCH_META_MAINTENANCE_TIMEOUT_MS }, () => {
+         conflict: "diff",
+         quiet: false,
+         confirm: true,
+-        identityOrigin: "explicit",
+-        identityTransition: "routine",
+       });
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+index ddac05103..f3c119201 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+@@ -15,6 +15,7 @@ import {
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit/cli-core-pr-flow";
++import { withEvaluatorPolicyFixture } from "@agentplane/testkit";
+ 
+ async function createBranchPrTask(root: string): Promise<string> {
+   const taskIo = captureStdIO();
+@@ -44,23 +45,33 @@ async function createBranchPrTask(root: string): Promise<string> {
+ }
+ 
+ async function recordEvaluatorReview(root: string, taskId: string): Promise<void> {
+-  await runCliSilent([
+-    "evaluator",
+-    "run",
+-    taskId,
+-    "--provenance",
+-    "evaluator_supplied",
+-    "--verdict",
+-    "pass",
+-    "--summary",
+-    "EVALUATOR quality gate passed for route decision closeout regression.",
+-    "--finding",
+-    "No unresolved findings for this route decision closeout regression.",
+-    "--evidence",
+-    `.agentplane/tasks/${taskId}/README.md`,
+-    "--root",
+-    root,
+-  ]);
++  const io = captureStdIO();
++  try {
++    expect(
++      await withEvaluatorPolicyFixture(root, () =>
++        runCli([
++          "evaluator",
++          "run",
++          taskId,
++          "--provenance",
++          "evaluator_supplied",
++          "--verdict",
++          "pass",
++          "--summary",
++          "EVALUATOR quality gate passed for route decision closeout regression.",
++          "--finding",
++          "No unresolved findings for this route decision closeout regression.",
++          "--evidence",
++          `.agentplane/tasks/${taskId}/README.md`,
++          "--root",
++          root,
++        ]),
++      ),
++      io.stderr,
++    ).toBe(0);
++  } finally {
++    io.restore();
++  }
+ }
+ 
+ describe("runCli route decision direct closeout", () => {
+@@ -344,21 +355,29 @@ describe("runCli route decision direct closeout", () => {
+       await recordEvaluatorReview(root, taskId);
+       await commitAll(root, "track task artifacts before finish");
+ 
+-      await runCliSilent([
+-        "finish",
+-        taskId,
+-        "--author",
+-        "CODER",
+-        "--body",
+-        "Verified: direct finish leaves task artifacts for manual cleanup when no close commit is requested.",
+-        "--result",
+-        "finish without close commit",
+-        "--commit",
+-        implHash.trim(),
+-        "--no-close-commit",
+-        "--root",
+-        root,
+-      ]);
++      const finishIo = captureStdIO();
++      try {
++        expect(
++          await runCli([
++            "finish",
++            taskId,
++            "--author",
++            "CODER",
++            "--body",
++            "Verified: direct finish leaves task artifacts for manual cleanup when no close commit is requested.",
++            "--result",
++            "finish without close commit",
++            "--commit",
++            implHash.trim(),
++            "--no-close-commit",
++            "--root",
++            root,
++          ]),
++          finishIo.stderr,
++        ).toBe(0);
++      } finally {
++        finishIo.restore();
++      }
+ 
+       const trackedStatus = await execFileAsync(
+         "git",
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+index d154f2ced..50262401a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+@@ -7,6 +7,7 @@ import { describe } from "vitest";
+ 
+ import {
+   captureStdIO,
++  commitAll,
+   defaultConfig,
+   expect,
+   it,
+@@ -15,9 +16,22 @@ import {
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit/cli-core-pr-flow";
++import { withEvaluatorPolicyFixture } from "@agentplane/testkit";
+ 
+ const execFileAsync = promisify(execFile);
+ 
++async function runCliExpectOk(args: string[], evaluatorRoot?: string): Promise<void> {
++  const io = captureStdIO();
++  try {
++    const code = evaluatorRoot
++      ? await withEvaluatorPolicyFixture(evaluatorRoot, () => runCli(args))
++      : await runCli(args);
++    expect(code, io.stderr).toBe(0);
++  } finally {
++    io.restore();
++  }
++}
++
+ async function createBranchPrTask(root: string): Promise<string> {
+   const taskIo = captureStdIO();
+   try {
+@@ -141,6 +155,7 @@ async function setupRoot(): Promise<string> {
+   config.workflow_mode = "branch_pr";
+   await writeConfig(root, config);
+   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++  await commitAll(root, "seed quality route fixture");
+   return root;
+ }
+ 
+@@ -214,23 +229,26 @@ describe("runCli quality route decisions", () => {
+   it("stops for a stale quality review without synthesizing a replacement verdict", async () => {
+     const root = await setupRoot();
+     const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise stale review routing.");
+-    await runCliSilent([
+-      "evaluator",
+-      "run",
+-      taskId,
+-      "--provenance",
+-      "evaluator_supplied",
+-      "--verdict",
+-      "pass",
+-      "--summary",
+-      "The reviewed implementation satisfies the task contract.",
+-      "--finding",
+-      "The implementation and verification evidence were reviewed independently.",
+-      "--evidence",
+-      `.agentplane/tasks/${taskId}/README.md`,
+-      "--root",
++    await runCliExpectOk(
++      [
++        "evaluator",
++        "run",
++        taskId,
++        "--provenance",
++        "evaluator_supplied",
++        "--verdict",
++        "pass",
++        "--summary",
++        "The reviewed implementation satisfies the task contract.",
++        "--finding",
++        "The implementation and verification evidence were reviewed independently.",
++        "--evidence",
++        `.agentplane/tasks/${taskId}/README.md`,
++        "--root",
++        root,
++      ],
+       root,
+-    ]);
++    );
+     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
+ 
+@@ -277,23 +295,26 @@ describe("runCli quality route decisions", () => {
+   it("hands fresh evaluator rework findings back to the CODER without a PR command", async () => {
+     const root = await setupRoot();
+     const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise rework routing.");
+-    await runCliSilent([
+-      "evaluator",
+-      "run",
+-      taskId,
+-      "--provenance",
+-      "evaluator_supplied",
+-      "--verdict",
+-      "rework",
+-      "--summary",
+-      "The implementation requires a focused route correction.",
+-      "--finding",
+-      "The current route advances to PR handling instead of returning control to implementation.",
+-      "--evidence",
+-      `.agentplane/tasks/${taskId}/README.md`,
+-      "--root",
++    await runCliExpectOk(
++      [
++        "evaluator",
++        "run",
++        taskId,
++        "--provenance",
++        "evaluator_supplied",
++        "--verdict",
++        "rework",
++        "--summary",
++        "The implementation requires a focused route correction.",
++        "--finding",
++        "The current route advances to PR handling instead of returning control to implementation.",
++        "--evidence",
++        `.agentplane/tasks/${taskId}/README.md`,
++        "--root",
++        root,
++      ],
+       root,
+-    ]);
++    );
+     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "task: evaluator rework artifacts"], { cwd: root });
+ 
+@@ -320,7 +341,7 @@ describe("runCli quality route decisions", () => {
+       freshReviewIo.restore();
+     }
+ 
+-    await runCliSilent([
++    await runCliExpectOk([
+       "verify",
+       taskId,
+       "--rework",
+@@ -431,29 +452,32 @@ describe("runCli quality route decisions", () => {
+     }
+   });
+ 
+-  it("records pre-merge closure before integration for a quality-reviewed open PR", async () => {
++  it("requires scoped authority before pre-merge closure for a quality-reviewed open PR", async () => {
+     const root = await setupRoot();
+     const { taskId } = await createVerifiedOpenPrFixture(
+       root,
+       "Exercise pre-merge closure routing.",
+     );
+-    await runCliSilent([
+-      "evaluator",
+-      "run",
+-      taskId,
+-      "--provenance",
+-      "evaluator_supplied",
+-      "--verdict",
+-      "pass",
+-      "--summary",
+-      "Quality review passed.",
+-      "--finding",
+-      "No route regression found.",
+-      "--evidence",
+-      `.agentplane/tasks/${taskId}/README.md`,
+-      "--root",
++    await runCliExpectOk(
++      [
++        "evaluator",
++        "run",
++        taskId,
++        "--provenance",
++        "evaluator_supplied",
++        "--verdict",
++        "pass",
++        "--summary",
++        "Quality review passed.",
++        "--finding",
++        "No route regression found.",
++        "--evidence",
++        `.agentplane/tasks/${taskId}/README.md`,
++        "--root",
++        root,
++      ],
+       root,
+-    ]);
++    );
+     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
+ 
+@@ -469,15 +493,15 @@ describe("runCli quality route decisions", () => {
+       };
+       expect(parsed.blockers.map((blocker) => blocker.code)).toContain("pre_merge_closure_missing");
+       expect(parsed.route_oracle).toMatchObject({
+-        phase: "pre_merge_closure_needed",
++        phase: "side_effect_authority_required",
+         authoritativeCheckout: "task_worktree",
+         blocker: { code: "pre_merge_closure_missing" },
+       });
+-      expect(parsed.execution_packet.recommendedRole).toBe("CODER");
++      expect(parsed.execution_packet.recommendedRole).toBe("USER");
+       expect(parsed.execution_packet.evidenceMissing).toContain("pre_merge_closure");
+       expect(parsed.next_action.code).toBe("record_pre_merge_closure");
+-      expect(parsed.next_action.command).toContain(`agentplane finish ${taskId}`);
+-      expect(parsed.next_action.command).toContain("--pre-merge-closure");
++      expect(parsed.next_action.command).toContain(`agentplane task authority grant ${taskId}`);
++      expect(parsed.next_action.command).toContain("--operation task.pre_merge_close");
+     } finally {
+       nextIo.restore();
+     }
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+index 27cc1e2a8..083e20c75 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-guided.test.ts
+@@ -12,6 +12,7 @@ import {
+   configureGitUser,
+   installRunCliIntegrationHarness,
+   mkGitRepoRoot,
++  withEvaluatorPolicyFixture,
+   writeConfig,
+ } from "@agentplane/testkit";
+ 
+@@ -123,24 +124,26 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
+     const evidencePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+     const ioEvaluator = captureStdIO();
+     try {
+-      const code = await runCli([
+-        "evaluator",
+-        "run",
+-        taskId,
+-        "--provenance",
+-        "evaluator_supplied",
+-        "--verdict",
+-        "pass",
+-        "--summary",
+-        "Reviewed guided shortcut completion test.",
+-        "--finding",
+-        "No unresolved findings before task complete.",
+-        "--evidence",
+-        evidencePath,
+-        "--root",
+-        root,
+-      ]);
+-      expect(code).toBe(0);
++      const code = await withEvaluatorPolicyFixture(root, () =>
++        runCli([
++          "evaluator",
++          "run",
++          taskId,
++          "--provenance",
++          "evaluator_supplied",
++          "--verdict",
++          "pass",
++          "--summary",
++          "Reviewed guided shortcut completion test.",
++          "--finding",
++          "No unresolved findings before task complete.",
++          "--evidence",
++          evidencePath,
++          "--root",
++          root,
++        ]),
++      );
++      expect(code, ioEvaluator.stderr).toBe(0);
+     } finally {
+       ioEvaluator.restore();
+     }
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+index 433000aa3..bce6ad26c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+@@ -95,7 +95,7 @@ async function readNextActionJson(root: string, taskId: string): Promise<NextAct
+ }
+ 
+ describe("task next-action JSON", () => {
+-  it("commits a branch_pr authority record before returning the authorized PR operation", async () => {
++  it("stores branch_pr authority without changing the task branch before the authorized PR operation", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+@@ -149,6 +149,9 @@ describe("task next-action JSON", () => {
+       cwd: root,
+     });
+     expect(setupStatus.trim()).toBe("");
++    const { stdout: setupHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
+ 
+     const initial = await readNextActionJson(root, taskId);
+     expect(initial.workflow_step).toMatchObject({
+@@ -178,12 +181,10 @@ describe("task next-action JSON", () => {
+       root,
+     ]);
+ 
+-    const { stdout: subject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
++    const { stdout: authorizedHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+       cwd: root,
+     });
+-    expect(subject.trim()).toBe(
+-      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
+-    );
++    expect(authorizedHead.trim()).toBe(setupHead.trim());
+     const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
+     expect(status.trim()).toBe("");
+ 
+diff --git a/packages/agentplane/src/commands/release/installed-migration-matrix-script.test.ts b/packages/agentplane/src/commands/release/installed-migration-matrix-script.test.ts
+new file mode 100644
+index 000000000..2486852b0
+--- /dev/null
++++ b/packages/agentplane/src/commands/release/installed-migration-matrix-script.test.ts
+@@ -0,0 +1,103 @@
++import { readFileSync } from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++import * as matrixModule from "../../../../../scripts/lib/installed-migration-matrix.mjs";
++
++const { INSTALLED_MIGRATION_MATRIX, validateInstalledMigrationMatrixCoverage } = matrixModule as {
++  INSTALLED_MIGRATION_MATRIX: {
++    id: string;
++    kind: "fresh" | "upgrade" | "workflow_migration";
++    workflowMode: "direct" | "branch_pr";
++    workflowVersion: 1 | 2;
++    taskDocVersion: 2 | 3;
++    activeTask: boolean;
++    sourceTag: "v0.6.24" | "v0.6.26" | null;
++  }[];
++  validateInstalledMigrationMatrixCoverage: (
++    scenarios: {
++      id: string;
++      kind: "fresh" | "upgrade" | "workflow_migration";
++      workflowMode: "direct" | "branch_pr";
++      workflowVersion: 1 | 2;
++      taskDocVersion: 2 | 3;
++      activeTask: boolean;
++      sourceTag: "v0.6.24" | "v0.6.26" | null;
++    }[],
++  ) => {
++    scenarioCount: number;
++    workflowModes: string[];
++    workflowVersions: number[];
++    taskDocVersions: number[];
++    sourceTags: string[];
++  };
++};
++
++describe("installed migration matrix", () => {
++  it("covers the supported pairwise migration and fresh-install surfaces", () => {
++    expect(INSTALLED_MIGRATION_MATRIX.map((scenario) => scenario.id)).toEqual([
++      "fresh-direct-v2-doc3",
++      "fresh-branch-pr-v2-doc3",
++      "upgrade-0.6.24-direct-v2-doc2-active",
++      "upgrade-0.6.24-branch-pr-v2-doc3-active",
++      "upgrade-0.6.26-direct-v2-doc3-active",
++      "upgrade-0.6.26-branch-pr-v2-doc3-active",
++      "workflow-v1-direct-rollback",
++      "workflow-v1-branch-pr-rollback",
++    ]);
++
++    expect(validateInstalledMigrationMatrixCoverage(INSTALLED_MIGRATION_MATRIX)).toEqual({
++      scenarioCount: 8,
++      workflowModes: ["branch_pr", "direct"],
++      workflowVersions: [1, 2],
++      taskDocVersions: [2, 3],
++      sourceTags: ["v0.6.24", "v0.6.26"],
++    });
++  });
++
++  it.each([
++    [
++      "direct workflow",
++      (scenario: (typeof INSTALLED_MIGRATION_MATRIX)[number]) => scenario.workflowMode !== "direct",
++    ],
++    [
++      "branch_pr workflow",
++      (scenario: (typeof INSTALLED_MIGRATION_MATRIX)[number]) =>
++        scenario.workflowMode !== "branch_pr",
++    ],
++    [
++      "workflow v1",
++      (scenario: (typeof INSTALLED_MIGRATION_MATRIX)[number]) => scenario.workflowVersion !== 1,
++    ],
++    [
++      "task doc v2",
++      (scenario: (typeof INSTALLED_MIGRATION_MATRIX)[number]) => scenario.taskDocVersion !== 2,
++    ],
++    [
++      "active upgrade",
++      (scenario: (typeof INSTALLED_MIGRATION_MATRIX)[number]) =>
++        !(scenario.kind === "upgrade" && scenario.activeTask),
++    ],
++    [
++      "v0.6.26 source",
++      (scenario: (typeof INSTALLED_MIGRATION_MATRIX)[number]) => scenario.sourceTag !== "v0.6.26",
++    ],
++  ])("fails closed when %s coverage disappears", (_label, keep) => {
++    expect(() =>
++      validateInstalledMigrationMatrixCoverage(
++        INSTALLED_MIGRATION_MATRIX.filter((scenario) => keep(scenario)),
++      ),
++    ).toThrow(/installed migration matrix/iu);
++  });
++
++  it("runs the matrix from the existing installed-tarball smoke", () => {
++    const source = readFileSync(
++      path.resolve(process.cwd(), "scripts/release/check-local-tarball-install-smoke.mjs"),
++      "utf8",
++    );
++
++    expect(source).toContain("runInstalledMigrationMatrix");
++    expect(source).toContain("installed migration matrix OK");
++  });
++});
+diff --git a/scripts/lib/installed-migration-matrix.mjs b/scripts/lib/installed-migration-matrix.mjs
+new file mode 100644
+index 000000000..711d789f4
+--- /dev/null
++++ b/scripts/lib/installed-migration-matrix.mjs
+@@ -0,0 +1,649 @@
++import assert from "node:assert/strict";
++import { execFileSync } from "node:child_process";
++import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
++import path from "node:path";
++
++export const INSTALLED_MIGRATION_MATRIX = Object.freeze([
++  Object.freeze({
++    id: "fresh-direct-v2-doc3",
++    kind: "fresh",
++    workflowMode: "direct",
++    workflowVersion: 2,
++    taskDocVersion: 3,
++    activeTask: false,
++    sourceTag: null,
++  }),
++  Object.freeze({
++    id: "fresh-branch-pr-v2-doc3",
++    kind: "fresh",
++    workflowMode: "branch_pr",
++    workflowVersion: 2,
++    taskDocVersion: 3,
++    activeTask: false,
++    sourceTag: null,
++  }),
++  Object.freeze({
++    id: "upgrade-0.6.24-direct-v2-doc2-active",
++    kind: "upgrade",
++    workflowMode: "direct",
++    workflowVersion: 2,
++    taskDocVersion: 2,
++    activeTask: true,
++    sourceTag: "v0.6.24",
++  }),
++  Object.freeze({
++    id: "upgrade-0.6.24-branch-pr-v2-doc3-active",
++    kind: "upgrade",
++    workflowMode: "branch_pr",
++    workflowVersion: 2,
++    taskDocVersion: 3,
++    activeTask: true,
++    sourceTag: "v0.6.24",
++  }),
++  Object.freeze({
++    id: "upgrade-0.6.26-direct-v2-doc3-active",
++    kind: "upgrade",
++    workflowMode: "direct",
++    workflowVersion: 2,
++    taskDocVersion: 3,
++    activeTask: true,
++    sourceTag: "v0.6.26",
++  }),
++  Object.freeze({
++    id: "upgrade-0.6.26-branch-pr-v2-doc3-active",
++    kind: "upgrade",
++    workflowMode: "branch_pr",
++    workflowVersion: 2,
++    taskDocVersion: 3,
++    activeTask: true,
++    sourceTag: "v0.6.26",
++  }),
++  Object.freeze({
++    id: "workflow-v1-direct-rollback",
++    kind: "workflow_migration",
++    workflowMode: "direct",
++    workflowVersion: 1,
++    taskDocVersion: 3,
++    activeTask: false,
++    sourceTag: null,
++  }),
++  Object.freeze({
++    id: "workflow-v1-branch-pr-rollback",
++    kind: "workflow_migration",
++    workflowMode: "branch_pr",
++    workflowVersion: 1,
++    taskDocVersion: 3,
++    activeTask: false,
++    sourceTag: null,
++  }),
++]);
++
++function sortedUnique(values) {
++  return [...new Set(values)].toSorted((left, right) => String(left).localeCompare(String(right)));
++}
++
++export function validateInstalledMigrationMatrixCoverage(scenarios) {
++  assert.ok(Array.isArray(scenarios), "installed migration matrix must be an array");
++  assert.equal(
++    new Set(scenarios.map((scenario) => scenario.id)).size,
++    scenarios.length,
++    "installed migration matrix scenario ids must be unique",
++  );
++
++  const workflowModes = sortedUnique(scenarios.map((scenario) => scenario.workflowMode));
++  const workflowVersions = sortedUnique(scenarios.map((scenario) => scenario.workflowVersion));
++  const taskDocVersions = sortedUnique(scenarios.map((scenario) => scenario.taskDocVersion));
++  const sourceTags = sortedUnique(
++    scenarios.map((scenario) => scenario.sourceTag).filter((value) => value !== null),
++  );
++  assert.deepEqual(
++    workflowModes,
++    ["branch_pr", "direct"],
++    "installed migration matrix must cover direct and branch_pr workflows",
++  );
++  assert.deepEqual(
++    workflowVersions,
++    [1, 2],
++    "installed migration matrix must cover WORKFLOW v1 and v2",
++  );
++  assert.deepEqual(
++    taskDocVersions,
++    [2, 3],
++    "installed migration matrix must cover task README v2 and v3",
++  );
++  assert.deepEqual(
++    sourceTags,
++    ["v0.6.24", "v0.6.26"],
++    "installed migration matrix must cover the original and latest stable migration sources",
++  );
++
++  for (const workflowMode of workflowModes) {
++    assert.ok(
++      scenarios.some(
++        (scenario) => scenario.kind === "fresh" && scenario.workflowMode === workflowMode,
++      ),
++      `installed migration matrix must cover a fresh ${workflowMode} repository`,
++    );
++    assert.ok(
++      scenarios.some(
++        (scenario) =>
++          scenario.kind === "upgrade" &&
++          scenario.workflowMode === workflowMode &&
++          scenario.activeTask,
++      ),
++      `installed migration matrix must cover an active 0.6.24 ${workflowMode} upgrade`,
++    );
++    assert.ok(
++      scenarios.some(
++        (scenario) =>
++          scenario.kind === "workflow_migration" && scenario.workflowMode === workflowMode,
++      ),
++      `installed migration matrix must cover WORKFLOW v1 ${workflowMode} rollback`,
++    );
++  }
++  for (const sourceTag of sourceTags) {
++    for (const workflowMode of workflowModes) {
++      assert.ok(
++        scenarios.some(
++          (scenario) =>
++            scenario.kind === "upgrade" &&
++            scenario.sourceTag === sourceTag &&
++            scenario.workflowMode === workflowMode &&
++            scenario.activeTask,
++        ),
++        `installed migration matrix must cover an active ${sourceTag} ${workflowMode} upgrade`,
++      );
++    }
++  }
++
++  return {
++    scenarioCount: scenarios.length,
++    workflowModes,
++    workflowVersions,
++    taskDocVersions,
++    sourceTags,
++  };
++}
++
++function run(command, args, opts = {}) {
++  return execFileSync(command, args, {
++    cwd: opts.cwd,
++    encoding: "utf8",
++    env: {
++      ...process.env,
++      AGENTPLANE_NO_UPDATE_CHECK: "1",
++      ...(opts.env ?? {}),
++    },
++    stdio: ["ignore", "pipe", "pipe"],
++    maxBuffer: 64 * 1024 * 1024,
++  });
++}
++
++function git(root, args) {
++  return run("git", args, { cwd: root });
++}
++
++function commitAll(root, message) {
++  git(root, ["add", "-A"]);
++  git(root, ["commit", "--allow-empty", "-m", message]);
++}
++
++function initGitRepo(root) {
++  mkdirSync(root, { recursive: true });
++  git(root, ["init", "-q", "-b", "main"]);
++  git(root, ["config", "user.name", "AgentPlane Migration Matrix"]);
++  git(root, ["config", "user.email", "agentplane-matrix@example.com"]);
++  writeFileSync(path.join(root, "README.md"), "# Installed migration matrix\n", "utf8");
++  commitAll(root, "seed installed migration fixture");
++}
++
++function extractTaskId(output) {
++  const match = /\b\d{12}-[A-Z0-9]{6}\b/u.exec(output);
++  assert.ok(match, `installed migration matrix could not parse task id from: ${output}`);
++  return match[0];
++}
++
++function parseJson(output, label) {
++  try {
++    return JSON.parse(output);
++  } catch (error) {
++    throw new Error(`${label} did not emit JSON: ${error.message}\n${output}`);
++  }
++}
++
++function gitTrackedState(root) {
++  return git(root, ["status", "--short", "--untracked-files=all"]);
++}
++
++function initializeInstalledProject(agentplane, root, workflowMode) {
++  initGitRepo(root);
++  run(
++    agentplane,
++    [
++      "init",
++      "--yes",
++      "--setup-profile",
++      "light",
++      "--workflow",
++      workflowMode,
++      "--backend",
++      "local",
++      "--hooks",
++      "false",
++      "--require-plan-approval",
++      "true",
++    ],
++    { cwd: root },
++  );
++  commitAll(root, `initialize installed ${workflowMode} fixture`);
++}
++
++function createApprovedTask(agentplane, root, workflowMode) {
++  const taskId = extractTaskId(
++    run(
++      agentplane,
++      [
++        "task",
++        "new",
++        "--title",
++        `Installed ${workflowMode} migration task`,
++        "--description",
++        "Preserve active lifecycle truth across the installed migration matrix.",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++      ],
++      { cwd: root },
++    ),
++  );
++  run(
++    agentplane,
++    [
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "1. Preserve active task truth\n2. Exercise installed migration commands",
++      "--updated-by",
++      "ORCHESTRATOR",
++    ],
++    { cwd: root },
++  );
++  run(
++    agentplane,
++    ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--note", "Matrix plan"],
++    { cwd: root },
++  );
++  return taskId;
++}
++
++function legacyTaskReadme(taskId) {
++  return `---
++id: "${taskId}"
++title: "Installed direct migration task"
++status: "DOING"
++priority: "med"
++owner: "CODER"
++depends_on: []
++tags:
++  - "code"
++verify:
++  - "agentplane task brief ${taskId} --json"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-08-01T00:00:00.000Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Matrix plan"
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++commit: null
++comments: []
++events: []
++doc_version: 2
++doc_updated_at: "2026-08-01T00:00:00.000Z"
++doc_updated_by: "CODER"
++description: "Preserve active lifecycle truth across the installed migration matrix."
++id_source: "generated"
++---
++## Summary
++
++Installed direct migration task
++
++## Scope
++
++- In scope: preserve active task identity, owner, status, plan approval, and verification contract.
++
++## Plan
++
++1. Upgrade the installed framework bundle.
++2. Migrate this README without losing lifecycle truth.
++
++## Verify Steps
++
++- Run the installed task brief and next-action commands.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Restore the exact fixture snapshot.
++
++## Notes
++
++Legacy v2 lifecycle sentinel.
++`;
++}
++
++function installStableManagedAssets(repoRoot, fixtureRoot, sourceTag) {
++  const oldManifest = JSON.parse(
++    git(repoRoot, ["show", `${sourceTag}:packages/agentplane/assets/framework.manifest.json`]),
++  );
++  const currentManifest = JSON.parse(
++    readFileSync(path.join(repoRoot, "packages/agentplane/assets/framework.manifest.json"), "utf8"),
++  );
++  const oldPaths = new Set(oldManifest.files.map((entry) => entry.path));
++
++  for (const entry of currentManifest.files) {
++    if (!oldPaths.has(entry.path)) {
++      rmSync(path.join(fixtureRoot, entry.path), { recursive: true, force: true });
++    }
++  }
++  for (const entry of oldManifest.files) {
++    const sourcePath = entry.source_path ?? entry.path;
++    const contents = git(repoRoot, [
++      "show",
++      `${sourceTag}:packages/agentplane/assets/${sourcePath}`,
++    ]);
++    const targetPath = path.join(fixtureRoot, entry.path);
++    mkdirSync(path.dirname(targetPath), { recursive: true });
++    writeFileSync(targetPath, contents, "utf8");
++  }
++
++  const workflowPath = path.join(fixtureRoot, ".agentplane/WORKFLOW.md");
++  const workflow = readFileSync(workflowPath, "utf8").replace(
++    /expected_version:\s*[^\n]+/u,
++    `expected_version: ${sourceTag.slice(1)}`,
++  );
++  writeFileSync(workflowPath, workflow, "utf8");
++}
++
++function assertFreshScenario(agentplane, root, workflowMode) {
++  initializeInstalledProject(agentplane, root, workflowMode);
++  run(agentplane, ["doctor"], { cwd: root });
++  const config = run(agentplane, ["config", "show"], { cwd: root });
++  assert.match(config, new RegExp(`workflow_mode["']?[:=\\s]+["']?${workflowMode}`, "u"));
++  return { workflow_mode: workflowMode, doctor: "pass" };
++}
++
++function assertInstalledTaskSurfaces(agentplane, root, taskId) {
++  const brief = parseJson(
++    run(agentplane, ["task", "brief", taskId, "--json"], { cwd: root }),
++    "installed task brief",
++  );
++  assert.equal(brief.task?.id ?? brief.task_id, taskId, "installed task brief lost task identity");
++
++  const nextAction = parseJson(
++    run(agentplane, ["task", "next-action", taskId, "--json"], { cwd: root }),
++    "installed task next-action",
++  );
++  assert.ok(
++    nextAction.next_action ?? nextAction.action ?? nextAction.code,
++    "installed task next-action omitted its typed action",
++  );
++  return { brief: "pass", next_action: "pass" };
++}
++
++function assertDirectUpgradeScenario(agentplane, repoRoot, root, sourceTag, taskDocVersion) {
++  initializeInstalledProject(agentplane, root, "direct");
++  const taskId = createApprovedTask(agentplane, root, "direct");
++  run(
++    agentplane,
++    [
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: preserve the active direct task through the installed migration matrix.",
++    ],
++    { cwd: root },
++  );
++  if (taskDocVersion === 2) {
++    writeFileSync(
++      path.join(root, ".agentplane/tasks", taskId, "README.md"),
++      legacyTaskReadme(taskId),
++      "utf8",
++    );
++  }
++  installStableManagedAssets(repoRoot, root, sourceTag);
++  commitAll(root, `fixture ${sourceTag} direct active task with README v${taskDocVersion}`);
++
++  const beforeDryRun = gitTrackedState(root);
++  run(agentplane, ["upgrade", "--dry-run"], { cwd: root });
++  assert.equal(gitTrackedState(root), beforeDryRun, "upgrade dry-run mutated the direct fixture");
++
++  run(agentplane, ["upgrade", "--yes", "--migrate-task-docs"], { cwd: root });
++  const migrated = readFileSync(path.join(root, ".agentplane/tasks", taskId, "README.md"), "utf8");
++  assert.match(migrated, /status: "DOING"/u);
++  assert.match(migrated, /owner: "CODER"/u);
++  assert.match(migrated, /doc_version: 3/u);
++  if (taskDocVersion === 2) {
++    assert.match(migrated, /Legacy v2 lifecycle sentinel\./u);
++  }
++
++  const idempotent = run(agentplane, ["upgrade", "--dry-run"], { cwd: root });
++  assert.match(idempotent, /Upgrade dry-run: 0 add, 0 update, 0 remove/u);
++  const surfaces = assertInstalledTaskSurfaces(agentplane, root, taskId);
++
++  const runner = parseJson(
++    run(agentplane, ["task", "run", taskId, "--dry-run", "--json"], { cwd: root }),
++    "installed task runner dry-run",
++  );
++  assert.ok(runner.run_id ?? runner.run?.id, "installed task runner omitted run identity");
++  const runnerStatus = parseJson(
++    run(agentplane, ["task", "run", "status", taskId, "--json"], { cwd: root }),
++    "installed task runner status",
++  );
++  assert.ok(
++    runnerStatus.run_id ?? runnerStatus.run?.id,
++    "installed runner status lost run identity",
++  );
++
++  const evaluator = parseJson(
++    run(
++      agentplane,
++      [
++        "evaluator",
++        "run",
++        taskId,
++        "--provenance",
++        "human_supplied",
++        "--verdict",
++        "pass",
++        "--summary",
++        "Installed evaluator path is operational.",
++        "--finding",
++        "The migrated active task retained its typed route.",
++        "--evidence",
++        `.agentplane/tasks/${taskId}/README.md`,
++        "--no-record",
++        "--json",
++      ],
++      { cwd: root },
++    ),
++    "installed evaluator",
++  );
++  assert.equal(evaluator.verdict ?? evaluator.report?.verdict, "pass");
++
++  return {
++    task_id: taskId,
++    source_tag: sourceTag,
++    task_doc: taskDocVersion === 2 ? "v2_to_v3" : "v3_preserved",
++    ...surfaces,
++    runner: "dry_run_and_status_pass",
++    evaluator: "pass",
++  };
++}
++
++function worktreeCount(root) {
++  return git(root, ["worktree", "list", "--porcelain"])
++    .split("\n")
++    .filter((line) => line.startsWith("worktree ")).length;
++}
++
++function assertBranchPrUpgradeScenario(agentplane, repoRoot, root, sourceTag) {
++  initializeInstalledProject(agentplane, root, "branch_pr");
++  const taskId = createApprovedTask(agentplane, root, "branch_pr");
++  commitAll(root, "record approved branch_pr migration task");
++  git(root, ["remote", "add", "origin", "."]);
++  git(root, ["config", "branch.main.remote", "origin"]);
++  git(root, ["config", "branch.main.merge", "refs/heads/main"]);
++  git(root, ["update-ref", "refs/remotes/origin/main", "HEAD"]);
++
++  const slug = "installed-migration-matrix";
++  run(agentplane, ["work", "start", taskId, "--agent", "CODER", "--slug", slug, "--worktree"], {
++    cwd: root,
++  });
++  const taskWorktree = path.join(root, ".agentplane/worktrees", `${taskId}-${slug}`);
++  run(
++    agentplane,
++    [
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: preserve the active branch_pr task and its worktree through migration.",
++    ],
++    { cwd: taskWorktree },
++  );
++  commitAll(taskWorktree, "start active branch_pr migration task");
++
++  installStableManagedAssets(repoRoot, root, sourceTag);
++  commitAll(root, `fixture ${sourceTag} branch_pr active task with README v3`);
++  const countBefore = worktreeCount(root);
++  const beforeDryRun = gitTrackedState(root);
++  run(agentplane, ["upgrade", "--dry-run"], { cwd: root });
++  assert.equal(
++    gitTrackedState(root),
++    beforeDryRun,
++    "upgrade dry-run mutated the branch_pr fixture",
++  );
++  run(agentplane, ["upgrade", "--yes", "--migrate-task-docs"], { cwd: root });
++  const idempotent = run(agentplane, ["upgrade", "--dry-run"], { cwd: root });
++  assert.match(idempotent, /Upgrade dry-run: 0 add, 0 update, 0 remove/u);
++
++  const resumed = run(agentplane, ["work", "resume", taskId], { cwd: root });
++  assert.match(resumed, new RegExp(taskId, "u"));
++  assert.equal(worktreeCount(root), countBefore, "work resume created a duplicate worktree");
++  const surfaces = assertInstalledTaskSurfaces(agentplane, taskWorktree, taskId);
++
++  return {
++    task_id: taskId,
++    source_tag: sourceTag,
++    task_doc: "v3_preserved",
++    worktree_resume: "single_worktree",
++    ...surfaces,
++  };
++}
++
++function workflowV1Text(workflowMode) {
++  return [
++    "---",
++    "version: 1",
++    `mode: ${workflowMode}`,
++    "owners:",
++    "  orchestrator: ORCHESTRATOR",
++    "approvals:",
++    "  require_plan: true",
++    "  require_verify: true",
++    "  require_network: true",
++    "retry_policy:",
++    "  normal_exit_continuation: true",
++    "  abnormal_backoff: exponential",
++    "  max_attempts: 5",
++    "timeouts:",
++    "  stall_seconds: 900",
++    "in_scope_paths:",
++    '  - "**"',
++    "---",
++    "",
++    "## Prompt Template",
++    "Preserve {{ runtime.repo_name }} exactly.",
++    "",
++    "## Checks",
++    "- verify",
++    "",
++    "## Fallback",
++    "last_known_good: .agentplane/workflows/last-known-good.md",
++    "",
++  ].join("\r\n");
++}
++
++function assertWorkflowMigrationScenario(agentplane, root, workflowMode) {
++  initGitRepo(root);
++  const workflowPath = path.join(root, ".agentplane/WORKFLOW.md");
++  mkdirSync(path.dirname(workflowPath), { recursive: true });
++  const source = workflowV1Text(workflowMode);
++  writeFileSync(workflowPath, source, "utf8");
++
++  run(agentplane, ["workflow", "migrate", "--dry-run"], { cwd: root });
++  assert.equal(readFileSync(workflowPath, "utf8"), source, "workflow dry-run changed source bytes");
++  run(agentplane, ["workflow", "migrate"], { cwd: root });
++  const migrated = readFileSync(workflowPath, "utf8");
++  assert.match(migrated, /version: 2/u);
++  assert.match(migrated, new RegExp(`mode: ["']?${workflowMode}["']?`, "u"));
++  run(agentplane, ["workflow", "migrate"], { cwd: root });
++  assert.equal(
++    readFileSync(workflowPath, "utf8"),
++    migrated,
++    "workflow migration was not idempotent",
++  );
++
++  const receiptDir = path.join(root, ".agentplane/workflows/migrations");
++  const receipts = readdirSync(receiptDir).filter((entry) => entry.endsWith(".json"));
++  assert.equal(receipts.length, 1, "workflow migration must create one deterministic receipt");
++  const receipt = path.relative(root, path.join(receiptDir, receipts[0]));
++  run(agentplane, ["workflow", "migrate", "--rollback", receipt], { cwd: root });
++  assert.equal(readFileSync(workflowPath, "utf8"), source, "workflow rollback lost exact bytes");
++
++  return { workflow_mode: workflowMode, dry_run: "no_mutation", rollback: "exact_bytes" };
++}
++
++export function runInstalledMigrationMatrix({ agentplane, repoRoot, tempRoot }) {
++  const coverage = validateInstalledMigrationMatrixCoverage(INSTALLED_MIGRATION_MATRIX);
++  const results = [];
++  for (const scenario of INSTALLED_MIGRATION_MATRIX) {
++    const root = path.join(tempRoot, scenario.id);
++    let evidence;
++    if (scenario.kind === "fresh") {
++      evidence = assertFreshScenario(agentplane, root, scenario.workflowMode);
++    } else if (scenario.kind === "upgrade" && scenario.workflowMode === "direct") {
++      evidence = assertDirectUpgradeScenario(
++        agentplane,
++        repoRoot,
++        root,
++        scenario.sourceTag,
++        scenario.taskDocVersion,
++      );
++    } else if (scenario.kind === "upgrade") {
++      evidence = assertBranchPrUpgradeScenario(agentplane, repoRoot, root, scenario.sourceTag);
++    } else {
++      evidence = assertWorkflowMigrationScenario(agentplane, root, scenario.workflowMode);
++    }
++    results.push({ id: scenario.id, status: "pass", evidence });
++  }
++  return { schema_version: 1, coverage, results };
++}
+diff --git a/scripts/release/check-local-tarball-install-smoke.mjs b/scripts/release/check-local-tarball-install-smoke.mjs
+index 5d89a3172..bcd8a21e5 100644
+--- a/scripts/release/check-local-tarball-install-smoke.mjs
++++ b/scripts/release/check-local-tarball-install-smoke.mjs
+@@ -5,6 +5,7 @@ import os from "node:os";
+ import path from "node:path";
+ 
+ import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
++import { runInstalledMigrationMatrix } from "../lib/installed-migration-matrix.mjs";
+ 
+ const PACKAGES = ["core", "recipes", "agentplane"];
+ 
+@@ -368,6 +369,15 @@ const main = defineScript({
+         installedJsonErrorContract,
+       );
+ 
++      const migrationMatrix = runInstalledMigrationMatrix({
++        agentplane,
++        repoRoot: process.cwd(),
++        tempRoot: path.join(tempRoot, "migration-matrix"),
++      });
++      process.stdout.write(
++        `installed migration matrix OK (scenarios=${migrationMatrix.coverage.scenarioCount})\n`,
++      );
++
+       process.stdout.write(`local tarball install smoke OK (${taskId})\n`);
+     } finally {
+       rmSync(tempRoot, { recursive: true, force: true });

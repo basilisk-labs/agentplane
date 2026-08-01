@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -34,6 +34,35 @@ verification:
   updated_by: "TESTER"
   note: "Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-01T21:54:18.155Z"
+  updated_by: "HUMAN"
+  note: "The reviewed implementation satisfies the RF-29 migration and installed-package quality contract: it adds a bounded eight-scenario matrix to the existing tarball smoke, preserves both workflow modes and active-task truth, and changes no production runtime semantics."
+  evaluated_sha: "cec72a74caf380d60fc084dbd837ae43b1eea970"
+  blueprint_digest: "fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224"
+  evidence_refs:
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-4FNZPG/README.md"
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-4FNZPG/quality/20260801-215417607-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "scripts/lib/installed-migration-matrix.mjs"
+    - "packages/agentplane/src/commands/release/installed-migration-matrix-script.test.ts"
+    - "scripts/release/check-local-tarball-install-smoke.mjs"
+    - ".agentplane/tasks/202607221854-4FNZPG/verification/20260801215238950-c1c13360d98dfed4.json"
+  findings:
+    - "Coverage is fail-closed for fresh repositories, WORKFLOW v1/v2, task README v2/v3, and active upgrades from both v0.6.24 and v0.6.26 in direct and branch_pr modes."
+    - "Dry-run non-mutation, idempotent upgrade, exact workflow rollback, worktree resume uniqueness, typed task route, runner, evaluator, package, and full release gates are asserted with deterministic local fixtures."
+    - "The auxiliary test-only fixture changes align dormant tests with already-enforced projection identity, evaluator policy, scoped side-effect authority, and git-common-dir persistence contracts; they do not weaken production behavior."
 commit:
   hash: "c958ab897b9a81d619be4adfdb4bfbaf4ba446ab"
   message: "🧪 4FNZPG release: align authority persistence fixture"

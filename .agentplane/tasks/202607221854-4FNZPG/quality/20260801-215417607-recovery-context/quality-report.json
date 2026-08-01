@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-4FNZPG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T21:54:18.155Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The reviewed implementation satisfies the RF-29 migration and installed-package quality contract: it adds a bounded eight-scenario matrix to the existing tarball smoke, preserves both workflow modes and active-task truth, and changes no production runtime semantics.",
+  "evaluated_sha": "cec72a74caf380d60fc084dbd837ae43b1eea970",
+  "blueprint_digest": "fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224",
+  "findings": [
+    "Coverage is fail-closed for fresh repositories, WORKFLOW v1/v2, task README v2/v3, and active upgrades from both v0.6.24 and v0.6.26 in direct and branch_pr modes.",
+    "Dry-run non-mutation, idempotent upgrade, exact workflow rollback, worktree resume uniqueness, typed task route, runner, evaluator, package, and full release gates are asserted with deterministic local fixtures.",
+    "The auxiliary test-only fixture changes align dormant tests with already-enforced projection identity, evaluator policy, scoped side-effect authority, and git-common-dir persistence contracts; they do not weaken production behavior."
+  ],
+  "evidence_refs": [
+    "scripts/lib/installed-migration-matrix.mjs",
+    "packages/agentplane/src/commands/release/installed-migration-matrix-script.test.ts",
+    "scripts/release/check-local-tarball-install-smoke.mjs",
+    ".agentplane/tasks/202607221854-4FNZPG/verification/20260801215238950-c1c13360d98dfed4.json",
+    ".agentplane/tasks/202607221854-4FNZPG/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Historical upgrade fixtures reconstruct managed framework assets from signed repository tags while executing the current installed tarball; they validate the supported forward-upgrade boundary, not execution of obsolete binaries."
+  ],
+  "residual_risks": [
+    "Exact-SHA local release E2E depends on a GitHub release-ready artifact that can only exist after final PR-head publication; it remains a hard pre-integration check."
+  ]
+}
