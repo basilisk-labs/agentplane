@@ -381,7 +381,7 @@ function assertFreshScenario(agentplane, root, workflowMode) {
   initializeInstalledProject(agentplane, root, workflowMode);
   run(agentplane, ["doctor"], { cwd: root });
   const config = run(agentplane, ["config", "show"], { cwd: root });
-  assert.match(config, new RegExp(`workflow_mode[\"']?[:=\\s]+[\"']?${workflowMode}`, "u"));
+  assert.match(config, new RegExp(`workflow_mode["']?[:=\\s]+["']?${workflowMode}`, "u"));
   return { workflow_mode: workflowMode, doctor: "pass" };
 }
 
@@ -604,7 +604,7 @@ function assertWorkflowMigrationScenario(agentplane, root, workflowMode) {
   run(agentplane, ["workflow", "migrate"], { cwd: root });
   const migrated = readFileSync(workflowPath, "utf8");
   assert.match(migrated, /version: 2/u);
-  assert.match(migrated, new RegExp(`mode: [\"']?${workflowMode}[\"']?`, "u"));
+  assert.match(migrated, new RegExp(`mode: ["']?${workflowMode}["']?`, "u"));
   run(agentplane, ["workflow", "migrate"], { cwd: root });
   assert.equal(
     readFileSync(workflowPath, "utf8"),

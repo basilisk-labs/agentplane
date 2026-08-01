@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import * as matrixModule from "../../../../../scripts/lib/installed-migration-matrix.mjs";
 
 const { INSTALLED_MIGRATION_MATRIX, validateInstalledMigrationMatrixCoverage } = matrixModule as {
-  INSTALLED_MIGRATION_MATRIX: Array<{
+  INSTALLED_MIGRATION_MATRIX: {
     id: string;
     kind: "fresh" | "upgrade" | "workflow_migration";
     workflowMode: "direct" | "branch_pr";
@@ -14,9 +14,9 @@ const { INSTALLED_MIGRATION_MATRIX, validateInstalledMigrationMatrixCoverage } =
     taskDocVersion: 2 | 3;
     activeTask: boolean;
     sourceTag: "v0.6.24" | "v0.6.26" | null;
-  }>;
+  }[];
   validateInstalledMigrationMatrixCoverage: (
-    scenarios: Array<{
+    scenarios: {
       id: string;
       kind: "fresh" | "upgrade" | "workflow_migration";
       workflowMode: "direct" | "branch_pr";
@@ -24,7 +24,7 @@ const { INSTALLED_MIGRATION_MATRIX, validateInstalledMigrationMatrixCoverage } =
       taskDocVersion: 2 | 3;
       activeTask: boolean;
       sourceTag: "v0.6.24" | "v0.6.26" | null;
-    }>,
+    }[],
   ) => {
     scenarioCount: number;
     workflowModes: string[];
@@ -85,7 +85,9 @@ describe("installed migration matrix", () => {
     ],
   ])("fails closed when %s coverage disappears", (_label, keep) => {
     expect(() =>
-      validateInstalledMigrationMatrixCoverage(INSTALLED_MIGRATION_MATRIX.filter(keep)),
+      validateInstalledMigrationMatrixCoverage(
+        INSTALLED_MIGRATION_MATRIX.filter((scenario) => keep(scenario)),
+      ),
     ).toThrow(/installed migration matrix/iu);
   });
 
