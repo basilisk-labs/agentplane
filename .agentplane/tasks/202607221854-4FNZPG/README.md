@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-01T20:52:46.199Z"
+  state: "ok"
+  updated_at: "2026-08-01T21:52:38.950Z"
   updated_by: "TESTER"
-  note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
-  attempts: 1
+  note: "Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication."
+  attempts: 0
 commit:
   hash: "c958ab897b9a81d619be4adfdb4bfbaf4ba446ab"
   message: "🧪 4FNZPG release: align authority persistence fixture"
@@ -125,8 +125,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework extended: updated the branch_pr authority fixture to assert the current out-of-band git-common-dir persistence contract. Granting scoped authority no longer mutates the task branch, and the authorized pr.open operation is still restored; the focused file passes 3/3."
+  -
+    type: "verify"
+    at: "2026-08-01T21:52:38.950Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication."
 doc_version: 3
-doc_updated_at: "2026-08-01T21:51:22.605Z"
+doc_updated_at: "2026-08-01T21:52:39.850Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
@@ -181,6 +187,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T21:52:38.950Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T21:51:22.605Z, excerpt_hash=sha256:fd40926159d3fb06f3680eacdb96bce2bcacb99dcb43b1acbad15346ff97d4d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-4FNZPG-validate-the-0-6-24-to-0-7-migration-and-install/.agentplane/tasks/202607221854-4FNZPG/blueprint/resolved-snapshot.json
+    - old_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+    - current_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-4FNZPG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only migration test/harness changes; do not roll back user fixture data in place.
@@ -194,6 +230,10 @@ sections:
     - Observation: The installed-package matrix passed eight tarball scenarios: fresh direct/branch_pr, active v0.6.24 upgrades, active v0.6.26 upgrades, and exact WORKFLOW v1 rollback in both workflow modes. The complete release:prepublish gate also passed on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab.
       Impact: Migration and installed-package behavior is proven across both supported starting release lines and workflow modes; task, authority, context, Git, workflow, runner, evaluator, package, and release-critical contracts remain coherent.
       Resolution: Keep the matrix in package:install-smoke and require release:prepublish for RC closure; the dormant fixture drift found by the full gate was aligned with current projection identity, evaluator policy, scoped authority, and git-common-dir persistence contracts.
+
+    - Observation: Eight installed-tarball migration scenarios and the complete 99-chunk release suite pass reproducibly; earlier failures were deterministic stale-fixture drift, not product regressions or flakes.
+      Impact: RF-29 is locally release-qualified across fresh, v0.6.24, and v0.6.26 repositories in direct and branch_pr modes.
+      Resolution: Publish the final verification/evaluator head, wait for its successful Core CI release-ready artifact, then run release:e2e:local --skip-prepublish against that exact SHA before integration.
 extensions:
   workflow_route_baseline:
     start_head_sha: "14185e94deadff666a1544413ba5ae728dcacdfb"
@@ -260,6 +300,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T21:52:38.950Z — VERIFY — ok
+
+By: TESTER
+
+Note: Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T21:51:22.605Z, excerpt_hash=sha256:fd40926159d3fb06f3680eacdb96bce2bcacb99dcb43b1acbad15346ff97d4d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-4FNZPG-validate-the-0-6-24-to-0-7-migration-and-install/.agentplane/tasks/202607221854-4FNZPG/blueprint/resolved-snapshot.json
+- old_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+- current_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-4FNZPG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -277,3 +347,7 @@ DecisionContextRef:
 - Observation: The installed-package matrix passed eight tarball scenarios: fresh direct/branch_pr, active v0.6.24 upgrades, active v0.6.26 upgrades, and exact WORKFLOW v1 rollback in both workflow modes. The complete release:prepublish gate also passed on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab.
   Impact: Migration and installed-package behavior is proven across both supported starting release lines and workflow modes; task, authority, context, Git, workflow, runner, evaluator, package, and release-critical contracts remain coherent.
   Resolution: Keep the matrix in package:install-smoke and require release:prepublish for RC closure; the dormant fixture drift found by the full gate was aligned with current projection identity, evaluator policy, scoped authority, and git-common-dir persistence contracts.
+
+- Observation: Eight installed-tarball migration scenarios and the complete 99-chunk release suite pass reproducibly; earlier failures were deterministic stale-fixture drift, not product regressions or flakes.
+  Impact: RF-29 is locally release-qualified across fresh, v0.6.24, and v0.6.26 repositories in direct and branch_pr modes.
+  Resolution: Publish the final verification/evaluator head, wait for its successful Core CI release-ready artifact, then run release:e2e:local --skip-prepublish against that exact SHA before integration.

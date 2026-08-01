@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c1c13360d98dfed4e6d4bb197233115dec47add3c5c44268be4a12574d5ce957",
+  "implementation_sha": "cec72a74caf380d60fc084dbd837ae43b1eea970",
+  "kind": "task_verification_record",
+  "note": "Installed migration matrix, package smoke, full release:prepublish, workflow/significant coverage, and release-critical gates pass on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab. Exact-SHA local release E2E remains mandatory after publishing the final PR head because its canonical GitHub release-ready artifact cannot exist before publication.",
+  "recorded_at": "2026-08-01T21:52:38.950Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Migrate every matrix fixture. Expected: no task, authority, context, Git, or workflow truth is lost; second apply is a no-op and rollback is exact where supported.\n2. Resume active direct and branch_pr tasks. Expected: route/work order/fingerprint remain coherent and no duplicate worktree/PR/task is created.\n3. Install local tarballs into clean fixtures. Expected: task brief/next-action JSON, workflow migration/doctor, runner result, and evaluator paths work outside the monorepo.\n4. Run package export and supported Node matrices. Expected: declarations match executable support.\n5. Run local release E2E, install smoke, and heavy prepublish gates.",
+  "scope_digest": "sha256:fd40926159d3fb06f3680eacdb96bce2bcacb99dcb43b1acbad15346ff97d4d3",
+  "task_id": "202607221854-4FNZPG",
+  "verification_command": "agentplane verify 202607221854-4FNZPG --ok --by TESTER",
+  "verifier": "TESTER"
+}
