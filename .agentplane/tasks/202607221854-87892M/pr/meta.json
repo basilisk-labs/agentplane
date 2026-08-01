@@ -3,10 +3,17 @@
   "branch": "task/202607221854-87892M/add-fingerprinted-preparation-caches",
   "created_at": "2026-08-01T15:52:24.595Z",
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": "2026-08-01T16:55:36.769Z",
+  "last_verified_at": "2026-08-01T17:56:46.181Z",
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "pr_number": 4724,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4724",
+  "pre_merge_closure": {
+    "basis_commit": "727e928278bf4e257ddbbac5c4e1b529ac3b57bc",
+    "branch": "task/202607221854-87892M/add-fingerprinted-preparation-caches",
+    "pr_number": 4724,
+    "recorded_at": "2026-08-01T17:58:33.546Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221854-87892M",

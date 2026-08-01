@@ -16,7 +16,13 @@ RF-26b: cache only measured expensive deterministic nodes by exact StateFingerpr
 ## Verification
 
 - State: ok
-- Note: RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains.
+- Note:
+
+```text
+RF-26b current-SHA verification passes as a measured no-go: all runtime prototypes are removed,
+source matches RF-26a, contract/type/critical checks pass, and every measured candidate failed
+either the declared performance threshold or the coherent-snapshot safety gate.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

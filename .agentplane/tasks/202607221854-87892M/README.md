@@ -1,10 +1,11 @@
 ---
 id: "202607221854-87892M"
 title: "Add fingerprinted preparation caches"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -32,40 +33,41 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T16:55:36.769Z"
+  updated_at: "2026-08-01T17:56:46.181Z"
   updated_by: "TESTER"
-  note: "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains."
+  note: "RF-26b current-SHA verification passes as a measured no-go: all runtime prototypes are removed, source matches RF-26a, contract/type/critical checks pass, and every measured candidate failed either the declared performance threshold or the coherent-snapshot safety gate."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T17:45:35.485Z"
+  updated_at: "2026-08-01T17:57:50.110Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "96ddaf5b63888de328ba3ae74f1892962cb7dccd"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "727e928278bf4e257ddbbac5c4e1b529ac3b57bc"
   blueprint_digest: "653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221854-87892M/README.md"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-87892M/quality/20260801-174442968-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-87892M/verification/20260801175646181-45412367d79ebc7c.json"
+    - ".agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json"
+    - ".agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json"
+    - ".agentplane/cache/evaluator/202607221854-87892M/repository-state.json"
+    - ".agentplane/tasks/202607221854-87892M/quality/20260801-175716991-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated implementation can combine HEAD, status, and index observations from different repository states because all three Git commands run concurrently and their results are materialized as one snapshot."
-    - "No deterministic verification or benchmark evidence is frozen for evaluated SHA 96ddaf5b63888de328ba3ae74f1892962cb7dccd; the observed-checks artifact contains no verification records, runner history, or runtime evidence, while the task verification still describes the earlier no-prototype SHA."
-    - "The added tests prove command scheduling and stable-repository parity only; they do not exercise repository mutation between concurrent HEAD, status, index, and path-fingerprint observations."
+    - "The measured no-go leaves runtime behavior unchanged and removes all cache and concurrent-observation prototypes; therefore the cache-specific stale-state, corruption, and concurrency reuse paths are unreachable in the evaluated tree."
 commit:
-  hash: "6e1e19174162ba5361e7dfe03985d5092a9d61d5"
-  message: "🚧 87892M task: record cache benchmark no-go"
+  hash: "727e928278bf4e257ddbbac5c4e1b529ac3b57bc"
+  message: "🧪 87892M task: freeze final benchmark decision"
 comments:
   -
     author: "CODER"
@@ -76,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: benchmarked exact persistent and command-local cache candidates; both failed the declared complexity threshold, prototypes were removed, and commit 6e1e19174162 preserves the reproducible no-go evidence."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -114,8 +119,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "RF-26b deterministic evidence confirms the measured cache candidate is a no-go and no prototype remains."
+  -
+    type: "verify"
+    at: "2026-08-01T17:56:46.181Z"
+    author: "TESTER"
+    state: "ok"
+    note: "RF-26b current-SHA verification passes as a measured no-go: all runtime prototypes are removed, source matches RF-26a, contract/type/critical checks pass, and every measured candidate failed either the declared performance threshold or the coherent-snapshot safety gate."
+  -
+    type: "status"
+    at: "2026-08-01T17:58:33.489Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T17:49:43.544Z"
+doc_updated_at: "2026-08-01T17:58:33.489Z"
 doc_updated_by: "CODER"
 description: "RF-26b: cache only measured expensive deterministic nodes by exact StateFingerprint/TTL with explicit hit, miss, and invalidation receipts; never serve stale task, Git, provider, policy, or knowledge state."
 sections:
@@ -308,6 +326,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607221854-87892M
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T17:56:46.181Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: RF-26b current-SHA verification passes as a measured no-go: all runtime prototypes are removed, source matches RF-26a, contract/type/critical checks pass, and every measured candidate failed either the declared performance threshold or the coherent-snapshot safety gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T17:49:43.544Z, excerpt_hash=sha256:e7b862a47cf21a72b15dbd0b18e43dab413e0d738dfeb569e3ccd8c104b90d47
+
+    Details:
+
+    Command: bun run typecheck && bun run ci:contract && bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json
+    Scope: current-SHA type, contract, critical regression, RF-04 replay, architecture, and coverage checks
+
+    Command: persistent, concurrent-observation, and safe outer-overlap benchmarks
+    Result: pass
+    Evidence: .agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json
+    Scope: raw samples, declared threshold, exact-output checks, safety review, screening stop rule, and measured no-go decisions
+
+    Command: git diff --quiet <base>..<implementation> -- packages/agentplane/src
+    Result: pass
+    Evidence: .agentplane/cache/evaluator/202607221854-87892M/repository-state.json
+    Scope: zero production/test delta, complete prototype removal, and unchanged live observation semantics
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-87892M-add-fingerprinted-preparation-caches/.agentplane/tasks/202607221854-87892M/blueprint/resolved-snapshot.json
+    - old_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+    - current_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-87892M
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -539,6 +602,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607221854-87892M
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T17:56:46.181Z — VERIFY — ok
+
+By: TESTER
+
+Note: RF-26b current-SHA verification passes as a measured no-go: all runtime prototypes are removed, source matches RF-26a, contract/type/critical checks pass, and every measured candidate failed either the declared performance threshold or the coherent-snapshot safety gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T17:49:43.544Z, excerpt_hash=sha256:e7b862a47cf21a72b15dbd0b18e43dab413e0d738dfeb569e3ccd8c104b90d47
+
+Details:
+
+Command: bun run typecheck && bun run ci:contract && bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/evaluator/202607221854-87892M/deterministic-checks.json
+Scope: current-SHA type, contract, critical regression, RF-04 replay, architecture, and coverage checks
+
+Command: persistent, concurrent-observation, and safe outer-overlap benchmarks
+Result: pass
+Evidence: .agentplane/cache/evaluator/202607221854-87892M/benchmark-evidence.json
+Scope: raw samples, declared threshold, exact-output checks, safety review, screening stop rule, and measured no-go decisions
+
+Command: git diff --quiet <base>..<implementation> -- packages/agentplane/src
+Result: pass
+Evidence: .agentplane/cache/evaluator/202607221854-87892M/repository-state.json
+Scope: zero production/test delta, complete prototype removal, and unchanged live observation semantics
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-87892M-add-fingerprinted-preparation-caches/.agentplane/tasks/202607221854-87892M/blueprint/resolved-snapshot.json
+- old_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+- current_digest: 653110e94113cd4ed849d36666608e27f518459065cb0a031775b9bf15bcfee1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-87892M
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
