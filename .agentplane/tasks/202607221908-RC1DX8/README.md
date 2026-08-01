@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "No contract divergence found: runner and Hermes commands select phase- and intent-scoped sessions, while the SHA-bound verification covers compatibility, provenance, typed denials, direct and branch_pr supervision, and repository gates."
 commit:
-  hash: "b9473bd1de4a9246378fbc6e7156a79cd582ded4"
-  message: "♻️ RC1DX8 refactor: isolate Hermes supervision authority"
+  hash: "aea47446271320ba34a6548c17329c018dfd6c64"
+  message: "🧪 RC1DX8 task: record hosted contract quality pass"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -130,8 +133,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS hosted-contract rework at 70dbba1ebf95e36842902ac0f3d5e23fb45b31cc: Hermes catalog extraction restores the 600-line hotspot invariant without changing command graph or authority selection."
+  -
+    type: "status"
+    at: "2026-08-01T11:26:13.237Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T11:23:42.671Z"
+doc_updated_at: "2026-08-01T11:26:13.238Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session capabilities, shared supervisor use cases, typed episode results, and compatibility renderers."
 sections:
@@ -464,6 +474,9 @@ sections:
       Impact: Dry-run declared execution-only provider and Git mutation authority, violating least-capability phase boundaries.
       Resolution: Added parsed-phase conditional session selection, a preparation-only capability profile, denial and registry regressions, and reran deterministic supervisor and repository gates.
 extensions:
+  implementation_commit:
+    hash: "70dbba1ebf95e36842902ac0f3d5e23fb45b31cc"
+    message: "♻️ RC1DX8 refactor: split Hermes command catalog"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1

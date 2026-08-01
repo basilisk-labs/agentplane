@@ -8,10 +8,10 @@
   "pr_number": 4717,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4717",
   "pre_merge_closure": {
-    "basis_commit": "b9473bd1de4a9246378fbc6e7156a79cd582ded4",
+    "basis_commit": "aea47446271320ba34a6548c17329c018dfd6c64",
     "branch": "task/202607221908-RC1DX8/migrate-runner-and-hermes-command-boundaries",
     "pr_number": 4717,
-    "recorded_at": "2026-08-01T11:14:16.380Z",
+    "recorded_at": "2026-08-01T11:26:13.292Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
