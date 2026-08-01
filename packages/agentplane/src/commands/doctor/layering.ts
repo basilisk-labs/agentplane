@@ -8,6 +8,8 @@ const BANNED_USECASE_IMPORTS = [
   "fs",
   "node:path",
   "path",
+  "node:os",
+  "os",
   "node:child_process",
   "child_process",
   "node:http",

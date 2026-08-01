@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The tightened use-case import guard still permits direct operating-system access through node:os or os, so it cannot enforce the declared zero-violation boundary for direct OS imports.",
+      "broken_invariant": "New use cases must use ports and production must contain no undeclared direct OS imports; the guard's banned-module set must reject the relevant direct OS access paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:88f5f6c643fd30157ff072c9851a68933817766bf3cdf46c133e01ec3cb02149",
+          "section": "packages/agentplane/src/commands/doctor/layering.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/README.md",
+          "sha256": "sha256:a721c6233212914efce96b3d4a7cfbf1f90478909441086549ea614ebb2dde33",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "summary": "The frozen verification evidence contains only a combined narrative assertion: it has no per-command records, runner history, runtime evidence, exact key output, or coverage scope for the declared gates.",
+      "broken_invariant": "Code verification must record each Verify Step with the exact command, pass/fail result, key evidence, and covered scope; pass also requires evidence covering relevant positive and negative paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:96e2da1e692d0df2d7e8948408e9ed08fbaad5f22e9b0432fa126e90ecb26d02",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a negative layering regression proving that clean usecases and ports reject node:os and os imports.",
+    "Record reproducible per-command evidence for bun run arch:check, bun run ci:contract, bun run guards:check, and bun run typecheck, including result, key output, and scope.",
+    "Add equivalent negative import-form coverage for the ports root, not only the usecases root."
+  ],
+  "hidden_assumptions": [
+    "The enumerated BANNED_USECASE_IMPORTS list is assumed to cover every direct OS capability relevant to the architecture contract.",
+    "A TESTER-authored aggregate verification note is assumed to substitute for the required structured command-level evidence.",
+    "Exercising import-form negatives only under usecases is assumed to prove identical enforcement for ports."
+  ],
+  "recovery_context": "Extend the direct-capability guard and its negative tests to cover node:os/os in both clean usecases and ports, then regenerate frozen verification evidence with command-level results and coverage scope for every declared gate."
+}

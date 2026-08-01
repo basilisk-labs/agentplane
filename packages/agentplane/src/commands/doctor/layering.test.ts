@@ -50,6 +50,26 @@ describe("doctor source layering", () => {
     ]);
   });
 
+  it("applies the same literal import forms to ports", async () => {
+    const root = await sourceRoot();
+    const portPath = path.join(root, "packages", "agentplane", "src", "ports", "unsafe.ts");
+    await writeFile(
+      portPath,
+      [
+        'import os from "node:os";',
+        'export { platform } from "os";',
+        'const filesystem = import("node:fs/promises");',
+        'const git = require("@agentplaneorg/core/git");',
+        "void os; void filesystem; void git;",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await expect(checkLayering(root)).resolves.toEqual([
+      "unsafe.ts imports banned modules: node:os, os, node:fs/promises, @agentplaneorg/core/git",
+    ]);
+  });
+
   it("rejects direct adapter imports from the CLI", async () => {
     const root = await sourceRoot();
     const cliPath = path.join(root, "packages", "agentplane", "src", "cli", "unsafe.ts");

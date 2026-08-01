@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221854-K7799B-b97c3d4892650c652fcc8e4b",
+  "task_id": "202607221854-K7799B",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Extend the direct-capability guard and its negative tests to cover node:os/os in both clean usecases and ports, then regenerate frozen verification evidence with command-level results and coverage scope for every declared gate.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The tightened use-case import guard still permits direct operating-system access through node:os or os, so it cannot enforce the declared zero-violation boundary for direct OS imports.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:88f5f6c643fd30157ff072c9851a68933817766bf3cdf46c133e01ec3cb02149",
+          "section": "packages/agentplane/src/commands/doctor/layering.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/README.md",
+          "sha256": "sha256:a721c6233212914efce96b3d4a7cfbf1f90478909441086549ea614ebb2dde33",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "The frozen verification evidence contains only a combined narrative assertion: it has no per-command records, runner history, runtime evidence, exact key output, or coverage scope for the declared gates.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:96e2da1e692d0df2d7e8948408e9ed08fbaad5f22e9b0432fa126e90ecb26d02",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-K7799B/quality/20260801-182626460-recovery-context/evaluator-result.json"
+}
