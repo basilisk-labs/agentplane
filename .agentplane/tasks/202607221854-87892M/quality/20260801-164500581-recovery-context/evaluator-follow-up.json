@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221854-87892M-7bcbe7bfbab10c6289da99d5",
+  "task_id": "202607221854-87892M",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic benchmark artifacts, raw run data, command outputs, and a reviewable diff or explicit no-change comparison. The current packet supports only unverified narrative claims, so semantic correctness and the benchmark no-go cannot be independently evaluated.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains only asserted verification outcomes; it contains no raw benchmark runs, deterministic check records, runtime evidence, or reviewable implementation diff from which the no-go conclusion can be independently validated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:c830ef59e9470e9b06632d733f517707a5979e93ac94ec8aa0533bec25722cc4",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+          "line": 1
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+          "section": "requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-result.json"
+}

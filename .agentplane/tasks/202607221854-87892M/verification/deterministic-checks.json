@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.deterministic_verification_evidence",
+  "task_id": "202607221854-87892M",
+  "implementation_sha": "6e1e19174162ba5361e7dfe03985d5092a9d61d5",
+  "recorded_at": "2026-08-01T16:46:45.965Z",
+  "checks": [
+    {
+      "command": "bun run typecheck",
+      "exit_code": 0,
+      "result": "pass",
+      "summary": "TypeScript build completed through scripts/checks/run-typescript-build.mjs."
+    },
+    {
+      "command": "bun run ci:contract",
+      "exit_code": 0,
+      "result": "pass",
+      "summary": "Formatting, schemas, examples, ACR parity, agent templates, policy routing, release parity, generated docs, compatibility and agent-efficiency baselines, hotspots, lifecycle invariants, TypeScript toolchain, guards, lint, logging, dependency architecture, clone baseline, knip baseline, and coverage threshold guards passed."
+    },
+    {
+      "command": "bun run test:critical",
+      "exit_code": 0,
+      "result": "pass",
+      "summary": "All 12 critical-cli chunks passed; 77 tests passed across agent-efficiency, replay hardening, exit-code, Git-edge, protected-path, scope-leak, symlink-root, and trust-boundary suites."
+    },
+    {
+      "command": "node -e JSON.parse(benchmark-report.json)",
+      "exit_code": 0,
+      "result": "pass",
+      "summary": "The benchmark artifact is valid JSON."
+    },
+    {
+      "command": "rg -n exact-production-cache-symbols packages/agentplane/src",
+      "exit_code": 1,
+      "result": "pass",
+      "summary": "No PreparationCache, resolveCachedPreparationNode, or captureCachedGitSnapshot production symbol remains. Exit 1 is the expected no-match result."
+    }
+  ],
+  "benchmark": {
+    "artifact": ".agentplane/tasks/202607221854-87892M/benchmark-report.json",
+    "sha256": "sha256:3866537d485becd1f48c4290ffdb8ac51a0dc3890c5632c25b8b8beab545c526",
+    "raw_pair_count": 25,
+    "baseline_median_ms": 855.682042,
+    "candidate_median_ms": 821.98475,
+    "warm_improvement_formula": "(1 - candidate_median_ms / baseline_median_ms) * 100",
+    "warm_improvement_percent": 3.938062,
+    "cold_miss_overhead_formula": "(candidate_cold_miss_ms / baseline_cold_ms - 1) * 100",
+    "cold_miss_overhead_percent": 4.666447,
+    "declared_threshold_percent": 5,
+    "threshold_result": "fail",
+    "functional_output": "exact stdout equality across cold and all paired runs"
+  },
+  "evaluated_diff": {
+    "base_sha": "451a8a6e980f9f2724bce718e807a8675fd89eeb",
+    "head_sha": "6e1e19174162ba5361e7dfe03985d5092a9d61d5",
+    "production_source_files_changed": 0,
+    "task_artifact_files_changed": 8,
+    "prototype_retained": false,
+    "negative_cache_cases_applicability": "No cache implementation is present in the evaluated tree, so stale task, Git, backend, policy, blueprint, knowledge, provider, authority, corruption, version, and concurrency reuse paths are unreachable. Baseline live resolution remains authoritative."
+  },
+  "threshold_provenance": {
+    "declared_before_final_25_pair_run": true,
+    "repository_record": ".agentplane/tasks/202607221854-87892M/benchmark-report.json#threshold",
+    "rationale": "A persistent cross-process state surface must save at least five percent end to end; a lower threshold would not justify invalidation, corruption, retention, and locking complexity."
+  },
+  "verdict": "pass_no_go_evidence",
+  "residual_risk": "Wall-time results are specific to the recorded machine and dirty-worktree scenario. The candidate misses the threshold, so benchmark noise cannot turn this result into an implementation acceptance without a new approved task and benchmark."
+}

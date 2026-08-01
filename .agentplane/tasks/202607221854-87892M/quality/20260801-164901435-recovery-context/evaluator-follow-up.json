@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221854-87892M-fbcaf1c5b183071341539ff2",
+  "task_id": "202607221854-87892M",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic benchmark records: raw paired samples, method and environment, exact-output comparisons, command-level results, and a reviewable repository-state or source-diff proof that no cache implementation remains. The current packet contains only summary assertions, so the no-go conclusion cannot be independently validated.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet asserts a benchmark no-go but does not contain the raw benchmark samples, reproducible benchmark check record, or runtime evidence needed to validate the 3.94% result and exact-output claim independently.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:cce88ca535b306945599b3c3bba7d62926e326df780c3fe9b5e96121e4aa062c",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/README.md",
+          "sha256": "sha256:aac462d2033ee3eec1eb1453476f0388c775b61d5a4f72e87e41925fe9fc2f82",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+          "section": "No file diff was recorded for the evaluated commit."
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+          "section": "plan.requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-87892M/quality/20260801-164901435-recovery-context/evaluator-result.json"
+}

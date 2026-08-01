@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d292d5bd56aa9fa47b4d683dcfa539b3261aa0c881a4a8f4b780c25905cee883",
+  "implementation_sha": "6e1e19174162ba5361e7dfe03985d5092a9d61d5",
+  "kind": "task_verification_record",
+  "note": "Benchmark no-go is reproducible and preserves behavior: 25 paired external-process runs show 3.94% warm gain below the declared 5% threshold, exact stdout equality, 4.67% cold-miss overhead, and no cache implementation remains. Typecheck, ci:contract, and critical CLI suite passed.",
+  "recorded_at": "2026-08-01T16:44:08.542Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Repeat unchanged golden scenarios. Expected: selected nodes hit cache and warm preparation improves by the declared benchmark threshold.\n2. Change task, Git, backend, policy, blueprint, knowledge, provider, and authority inputs independently. Expected: every affected node misses/invalidates and no stale value reaches a work order.\n3. Corrupt or version-mismatch cache entries. Expected: controlled miss/rebuild with no functional failure or silent reuse.\n4. Inspect semantic result paths. Expected: no semantic decision is cached without explicit provenance and invalidation.\n5. Run cache tests, contract CI, typecheck, and cold/warm benchmarks.",
+  "scope_digest": "sha256:e7b862a47cf21a72b15dbd0b18e43dab413e0d738dfeb569e3ccd8c104b90d47",
+  "task_id": "202607221854-87892M",
+  "verification_command": "agentplane verify 202607221854-87892M --ok --by TESTER",
+  "verifier": "TESTER"
+}

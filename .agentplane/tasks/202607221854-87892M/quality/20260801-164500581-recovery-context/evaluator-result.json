@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet contains only asserted verification outcomes; it contains no raw benchmark runs, deterministic check records, runtime evidence, or reviewable implementation diff from which the no-go conclusion can be independently validated.",
+      "broken_invariant": "Pass requires frozen evidence covering the relevant positive, negative, and concurrency-sensitive paths; the blueprint also requires baseline, method, raw runs, threshold, and comparison evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:c830ef59e9470e9b06632d733f517707a5979e93ac94ec8aa0533bec25722cc4",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+          "line": 1
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-87892M/quality/20260801-164500581-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:3f5ac59800b9ffe085bd503c22bab1fe133e3e430cece96940e342915fdfc71a",
+          "section": "requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen raw results for the 25 paired external-process benchmark runs, including baseline, warm-cache, cold-miss, environment, variance/noise treatment, and the comparison calculation.",
+    "Frozen command-level results for bun run ci:contract, bun run test:critical, and bun run typecheck.",
+    "Evidence that independently changing task, Git, backend, policy, blueprint, knowledge, provider, and authority inputs cannot expose stale values, or an explicit demonstration that no cache implementation remains and these negative cases are therefore inapplicable.",
+    "Concurrency and corruption/version-mismatch evidence for any benchmarked persistent-cache prototype, sufficient to assess whether the measured candidate was safe before its no-go rejection."
+  ],
+  "hidden_assumptions": [
+    "The 5% end-to-end improvement threshold was approved before measurement, although the frozen task plan does not state that threshold.",
+    "The reported 3.94% warm gain and 4.67% cold-miss overhead are statistically meaningful rather than benchmark noise.",
+    "Removing all cache prototypes is an acceptable completion of a task whose stated objective is to add fingerprinted preparation caches because the scope excludes unjustified cache complexity."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet with deterministic benchmark artifacts, raw run data, command outputs, and a reviewable diff or explicit no-change comparison. The current packet supports only unverified narrative claims, so semantic correctness and the benchmark no-go cannot be independently evaluated.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
