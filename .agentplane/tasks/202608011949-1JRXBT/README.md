@@ -4,7 +4,7 @@ title: "Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -30,10 +30,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-01T22:43:30.355Z"
+  updated_by: "TESTER"
+  note: "Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI 5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports terminal direct verification, immutable-head diffstat, streamed bounded verification output, and runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check gate."
   attempts: 0
 commit:
   hash: "e2acc9d90c46ace69c61fa45916570949a86cc8a"
@@ -60,8 +60,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation recorded: ported the missing v0.6.25-v0.6.26 terminal handoff, immutable finalization, and isolated bounded verification behavior into the typed 0.7 architecture; retained the stronger current cleanup path and extended the rc.2 release closure."
+  -
+    type: "verify"
+    at: "2026-08-01T22:43:30.355Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI 5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports terminal direct verification, immutable-head diffstat, streamed bounded verification output, and runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check gate."
 doc_version: 3
-doc_updated_at: "2026-08-01T22:35:49.059Z"
+doc_updated_at: "2026-08-01T22:43:31.161Z"
 doc_updated_by: "CODER"
 description: "Port the behaviorally missing stable-line fixes for direct runner closeout, immutable integration finalization, and isolated streaming verification into the refactored 0.7 architecture; retain stronger 0.7 cleanup behavior and add regression coverage."
 sections:
@@ -87,6 +93,36 @@ sections:
     6. Inspect the final diff against the v0.6.25-v0.6.26 maintenance branch. Expected: only behavior missing from the refactored 0.7 architecture is ported; the stronger current cleanup implementation remains unchanged.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-01T22:43:30.355Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI 5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports terminal direct verification, immutable-head diffstat, streamed bounded verification output, and runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T22:35:49.059Z, excerpt_hash=sha256:e05f258289d36b3cbda4636c84832a48240539a8f9b58f83bb74bd01632dc40b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608011949-1JRXBT-assimilate-v0-6-25-v0-6-26-maintenance-fixes-int/.agentplane/tasks/202608011949-1JRXBT/blueprint/resolved-snapshot.json
+    - old_digest: f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461
+    - current_digest: f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608011949-1JRXBT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608011949-1JRXBT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -129,6 +165,36 @@ Port the behaviorally missing stable-line fixes for direct runner closeout, immu
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-01T22:43:30.355Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified c288fab658399b7ecadb2bd5a50bbd0e021ab29d: focused unit suite 49/49; direct-closeout CLI 5/5; TypeScript typecheck passed; critical CLI 12/12 chunks passed; full ci:contract passed including RF-04 50-run baseline, architecture, lint, clone, knip, and coverage; ci:local:fast passed; task-state closure passed with 72 required tasks. Diff audit against v0.6.25-v0.6.26 ports terminal direct verification, immutable-head diffstat, streamed bounded verification output, and runtime provenance isolation; obsolete cleanup-race patch was not ported because 0.7 cleanup is stronger. Residual risk: hosted CI remains pending and is handled by the branch_pr hosted-check gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T22:35:49.059Z, excerpt_hash=sha256:e05f258289d36b3cbda4636c84832a48240539a8f9b58f83bb74bd01632dc40b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608011949-1JRXBT-assimilate-v0-6-25-v0-6-26-maintenance-fixes-int/.agentplane/tasks/202608011949-1JRXBT/blueprint/resolved-snapshot.json
+- old_digest: f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461
+- current_digest: f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608011949-1JRXBT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608011949-1JRXBT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

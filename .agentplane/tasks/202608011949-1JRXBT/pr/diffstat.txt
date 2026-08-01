@@ -1,0 +1,17 @@
+ .agentplane/tasks/202607221908-83Y4AF/README.md    |   4 +-
+ docs/internal/v0.7-refactor-plan.md                |   5 +-
+ docs/internal/v0.7-release-task-closure.json       |   5 +-
+ ...cli.core.route-decision.direct-closeout.test.ts | 131 +++++++++++++++++-
+ .../pr/integrate/internal/finalize.test.ts         |   1 +
+ .../src/commands/pr/integrate/internal/finalize.ts |   2 +-
+ .../src/commands/pr/integrate/verify.test.ts       |  49 +++++++
+ .../agentplane/src/commands/pr/integrate/verify.ts |   9 ++
+ .../agentplane/src/commands/shared/pr-meta.test.ts | 122 ++++++++++++++--
+ .../src/commands/shared/pr-meta/verify-log.ts      | 154 +++++++++++++++++++--
+ .../src/commands/shared/task-handoff.test.ts       |  36 +++++
+ .../agentplane/src/commands/shared/task-handoff.ts |   2 +-
+ .../shared/workflow-operation-projection.ts        |   3 -
+ .../src/commands/shared/workflow-step-factory.ts   |  27 +++-
+ .../src/commands/shared/workflow-step.ts           |   1 -
+ .../task/direct-task-supervisor-closeout.ts        |   9 +-
+ 16 files changed, 521 insertions(+), 39 deletions(-)
