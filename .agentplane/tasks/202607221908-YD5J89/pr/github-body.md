@@ -19,10 +19,11 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 - Note:
 
 ```text
-Verified explicit evaluator artifact-write authority at implementation e21e0b573595: focused
-catalog/kernel/evaluator/registry suite passed 41 tests; real no-record dispatch created an evidence
-packet without changing task README or resolving task.write; TypeScript 7 typecheck, targeted lint,
-guards, architecture, hotspots, and all 12 critical CLI chunks passed.
+Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52
+tests; real registry no-record execution created the canonical evidence packet with task README
+unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only
+prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards,
+architecture, hotspots, and all 12 critical CLI chunks passed.
 ```
 - Canonical workflow state lives in the task README.
 
