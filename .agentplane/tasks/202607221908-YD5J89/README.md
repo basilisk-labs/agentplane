@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T02:54:11.355Z"
+  updated_at: "2026-08-01T08:54:48.940Z"
   updated_by: "TESTER"
-  note: "Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests."
+  note: "Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -212,8 +212,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests."
+  -
+    type: "verify"
+    at: "2026-08-01T08:54:48.940Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:54:12.326Z"
+doc_updated_at: "2026-08-01T08:54:49.812Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -447,6 +453,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-01T08:54:48.940Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:54:12.326Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: 5 test files and 48 tests passed; concurrent registry coverage observes two invocation-local read sessions, two mutation sessions, four distinct CommandContext values, and two distinct evaluator artifact destinations.
+    Scope: migrated context/evaluator in-process results, capability denials, real no-record packet behavior, and concurrent session isolation.
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: shared guards OK; trust-boundary ratchet OK with the single reviewed baseline violation unchanged.
+    Scope: source trust boundaries and rendered-command orchestration guard.
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: schemas OK.
+    Scope: generated schema fixtures and compatibility surfaces.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed, 77 tests total.
+    Scope: critical CLI behavior, exit codes, Git/path isolation, trust-boundary regressions, and agent-efficiency contracts.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript 7 build check exited 0.
+    Scope: workspace type and declaration compatibility.
+
+    Command: git diff --check HEAD^ HEAD -- packages/agentplane/src/cli/run-cli/registry.run.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts
+    Result: pass
+    Evidence: no whitespace errors in the semantic implementation diff.
+    Scope: invocation-local registry implementation and regression test.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert this family through explicit typed compatibility adapters without deleting context data or evaluation evidence.
@@ -480,6 +546,10 @@ sections:
     - Observation: Removing one obsolete session alias and three implementation-only export modifiers changes no runtime behavior or public CLI contract.
       Impact: Hosted verify-static can pass without accepting new dead-code debt or updating the reviewed baseline.
       Resolution: Accepted after exact local reproduction of the failed knip gate plus unchanged focused runtime coverage.
+
+    - Observation: The registry previously cached one non-conditional CommandSession and its bound handler across in-process dispatches.
+      Impact: Concurrent invocations of the same command could share prepared authority, CommandContext, or evaluator artifact destination state.
+      Resolution: Construct and load a fresh session-bound handler per dispatch; deterministic concurrent coverage now proves isolated capability profiles, contexts, and artifact destinations.
 extensions:
   implementation_commit:
     hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
@@ -728,6 +798,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-01T08:54:48.940Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T02:54:12.326Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: 5 test files and 48 tests passed; concurrent registry coverage observes two invocation-local read sessions, two mutation sessions, four distinct CommandContext values, and two distinct evaluator artifact destinations.
+Scope: migrated context/evaluator in-process results, capability denials, real no-record packet behavior, and concurrent session isolation.
+
+Command: bun run guards:check
+Result: pass
+Evidence: shared guards OK; trust-boundary ratchet OK with the single reviewed baseline violation unchanged.
+Scope: source trust boundaries and rendered-command orchestration guard.
+
+Command: bun run schemas:check
+Result: pass
+Evidence: schemas OK.
+Scope: generated schema fixtures and compatibility surfaces.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed, 77 tests total.
+Scope: critical CLI behavior, exit codes, Git/path isolation, trust-boundary regressions, and agent-efficiency contracts.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript 7 build check exited 0.
+Scope: workspace type and declaration compatibility.
+
+Command: git diff --check HEAD^ HEAD -- packages/agentplane/src/cli/run-cli/registry.run.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts
+Result: pass
+Evidence: no whitespace errors in the semantic implementation diff.
+Scope: invocation-local registry implementation and regression test.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -765,3 +895,7 @@ DecisionContextRef:
 - Observation: Removing one obsolete session alias and three implementation-only export modifiers changes no runtime behavior or public CLI contract.
   Impact: Hosted verify-static can pass without accepting new dead-code debt or updating the reviewed baseline.
   Resolution: Accepted after exact local reproduction of the failed knip gate plus unchanged focused runtime coverage.
+
+- Observation: The registry previously cached one non-conditional CommandSession and its bound handler across in-process dispatches.
+  Impact: Concurrent invocations of the same command could share prepared authority, CommandContext, or evaluator artifact destination state.
+  Resolution: Construct and load a fresh session-bound handler per dispatch; deterministic concurrent coverage now proves isolated capability profiles, contexts, and artifact destinations.

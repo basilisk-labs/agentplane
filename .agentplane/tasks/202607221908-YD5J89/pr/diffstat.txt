@@ -6,8 +6,8 @@
  .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
  .../src/cli/run-cli/command-loaders/project.ts     | 215 +++++++-
- .../src/cli/run-cli/registry.run.test.ts           | 169 +++++++
- .../agentplane/src/cli/run-cli/registry.run.ts     |  30 +-
+ .../src/cli/run-cli/registry.run.test.ts           | 299 +++++++++++
+ .../agentplane/src/cli/run-cli/registry.run.ts     |  42 +-
  .../commands/context/context-results.unit.test.ts  | 175 +++++++
  .../src/commands/context/context-runner.ts         | 344 ++++++++-----
  .../agentplane/src/commands/context/finalize.ts    |   5 +-
@@ -26,4 +26,4 @@
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 28 files changed, 2477 insertions(+), 680 deletions(-)
+ 28 files changed, 2612 insertions(+), 687 deletions(-)

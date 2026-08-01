@@ -13,7 +13,7 @@ Created: 2026-08-01T00:38:26.423Z
 ## Verification
 
 - State: ok
-- Note: Verified hosted static cleanup at implementation 29d67bf21644: reproduced failure was limited to four unused exported types; bun run knip:check now passes the 545/545 baseline, TypeScript 7 typecheck and targeted ESLint pass, and the five focused catalog/kernel/registry/evaluator suites still pass 52 tests.
+- Note: Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,8 +37,8 @@ Created: 2026-08-01T00:38:26.423Z
  .../src/cli/run-cli/command-catalog/kernel.ts      |  65 +++
  .../src/cli/run-cli/command-catalog/project.ts     | 285 +++++++++--
  .../src/cli/run-cli/command-loaders/project.ts     | 215 +++++++-
- .../src/cli/run-cli/registry.run.test.ts           | 169 +++++++
- .../agentplane/src/cli/run-cli/registry.run.ts     |  30 +-
+ .../src/cli/run-cli/registry.run.test.ts           | 299 +++++++++++
+ .../agentplane/src/cli/run-cli/registry.run.ts     |  42 +-
  .../commands/context/context-results.unit.test.ts  | 175 +++++++
  .../src/commands/context/context-runner.ts         | 344 ++++++++-----
  .../agentplane/src/commands/context/finalize.ts    |   5 +-
@@ -57,7 +57,7 @@ Created: 2026-08-01T00:38:26.423Z
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 28 files changed, 2477 insertions(+), 680 deletions(-)
+ 28 files changed, 2612 insertions(+), 687 deletions(-)
 ```
 
 </details>
