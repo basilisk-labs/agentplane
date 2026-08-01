@@ -34,6 +34,11 @@ import {
   INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
   INTEGRATION_QUEUE_LIST_REQUIREMENTS,
   INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+  LOCAL_OPS_WRITE_REQUIREMENTS,
+  PROVIDER_READ_REQUIREMENTS,
+  PROVIDER_WRITE_REQUIREMENTS,
+  RELEASE_PLAN_REQUIREMENTS,
+  RELEASE_PUBLISH_REQUIREMENTS,
 } from "./command-catalog/provider-ops-capability-profiles.js";
 import {
   declareSessionCommand,
@@ -462,6 +467,93 @@ describe("runtime registry session selection", () => {
     ]);
     expect(getCtx).not.toHaveBeenCalled();
     expect(getResolvedProject).toHaveBeenCalledOnce();
+  });
+
+  it("enforces provider, release, and local ops authority at runtime before preparation", async () => {
+    const cases = [
+      {
+        id: ["pr", "check"],
+        requirements: PROVIDER_READ_REQUIREMENTS,
+        allowed: ["provider", "route.remote"] as const,
+        denied: ["git.mutate", "task.write"] as const,
+      },
+      {
+        id: ["pr", "open"],
+        requirements: PROVIDER_WRITE_REQUIREMENTS,
+        allowed: ["provider", "git.mutate"] as const,
+        denied: ["context.search"] as const,
+      },
+      {
+        id: ["work", "start"],
+        requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+        allowed: ["git.mutate", "route.local"] as const,
+        denied: ["provider", "route.remote"] as const,
+      },
+      {
+        id: ["release", "plan"],
+        requirements: RELEASE_PLAN_REQUIREMENTS,
+        allowed: ["git.diff", "approvals"] as const,
+        denied: ["provider", "git.mutate"] as const,
+      },
+      {
+        id: ["release", "apply"],
+        requirements: RELEASE_PUBLISH_REQUIREMENTS,
+        allowed: ["provider", "git.mutate"] as const,
+        denied: ["route.remote", "task.write"] as const,
+      },
+    ] as const;
+    const observed = new Map<string, readonly CommandCapability[]>();
+    const traces: { command: string; node: string; status: string }[] = [];
+    const getCtx = vi.fn(() => Promise.resolve({ marker: "command-context" } as never));
+    const entries = cases.map((testCase) => {
+      const catalogEntry = findCommandEntry(testCase.id);
+      if (!catalogEntry) throw new Error(`missing catalog entry: ${testCase.id.join(" ")}`);
+      return {
+        ...catalogEntry,
+        load: (session: CommandSession<CommandCapability>) => {
+          const command = testCase.id.join(" ");
+          observed.set(command, [...session.requirements]);
+          return Promise.resolve(async () => {
+            const unsafe = session as CommandSession<CommandCapability>;
+            for (const capability of testCase.denied) {
+              await expect(unsafe.require(capability, command)).rejects.toMatchObject({
+                code: "E_INTERNAL",
+              });
+            }
+            for (const capability of testCase.allowed) {
+              await unsafe.require(capability, command);
+            }
+            return 0;
+          });
+        },
+      } satisfies CommandEntry;
+    });
+    const registry = buildRegistry({
+      entries,
+      getCtx,
+      getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
+      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
+      getEvaluatorArtifactPort: vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never)),
+      onPreparationTrace: (event) => traces.push(event),
+    });
+
+    for (const testCase of cases) {
+      const command = testCase.id.join(" ");
+      const runtime = registry.lookup(testCase.id);
+      if (!runtime) throw new Error(`runtime entry missing: ${command}`);
+      await runtime.handler({ cwd: "/repo" }, {});
+      expect(observed.get(command), command).toEqual(testCase.requirements);
+      expect(
+        traces.filter(
+          (event) =>
+            event.command === command &&
+            event.node === "command_context" &&
+            event.status === "resolved",
+        ),
+        command,
+      ).toHaveLength(1);
+    }
+    expect(getCtx).toHaveBeenCalledTimes(cases.length);
   });
 
   it("constructs Hermes supervision authority from parsed remote and execution intent", async () => {

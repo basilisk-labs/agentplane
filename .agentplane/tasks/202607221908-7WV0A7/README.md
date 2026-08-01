@@ -4,7 +4,7 @@ title: "Migrate provider, integration, release, and ops command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -29,7 +29,7 @@ verify:
   - "bun run test:critical"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-01T03:23:18.269Z"
+  updated_at: "2026-08-01T12:13:32.408Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -97,7 +97,7 @@ events:
     state: "ok"
     note: "Provider/integration/release boundary verification passed: focused family matrix 65 files/414 tests; critical CLI 12/12 chunks and 77 tests; typecheck, format, lint, Knip 545/545, guards, trust ratchet, lifecycle 8/8, release parity, and architecture dependency checks all passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T11:59:56.227Z"
+doc_updated_at: "2026-08-01T12:13:31.661Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers."
 sections:
@@ -106,19 +106,19 @@ sections:
 
     RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers.
   Scope: |-
-    - In scope: PR sync/open/check, integration queue/merge/hosted close/cleanup, release/publish/recovery, network/provider and ops commands, granular authority/provider/Git capabilities, typed results/errors, audit, and human/JSON renderers.
-    - Out of scope: granting publication authority or changing protected-main policy.
+    - In scope: exact CommandSession capability profiles for PR, integration queue, hosted-close, cleanup, release, and adjacent provider/ops command families; parsed-intent session selection; representative typed result and renderer seams for integration queue list/doctor and release plan; runtime authority-denial, recovery, output-parity, and exact-SHA regression evidence.
+    - Out of scope: repository-wide removal of legacy CommandNeeds/coarse context consumers and completion of typed use-case/rendering boundaries for every command; those remain owned by 202607221854-SDPFN0 and 202607221854-PGPR3J. Granting publication authority or changing protected-main policy also remains out of scope.
   Plan: |-
-    1. Classify exact provider/Git/network/authority capabilities for each operation.
-    2. Extract typed provider/integration/release results from CLI IO.
-    3. Centralize rendering, exit mapping, wait/retry, and audit surfaces.
-    4. Remove direct provider/network access from use cases and broad sessions.
-    5. Run authority, provider state, release parity, recovery, and snapshot tests.
+    1. Classify and declare exact provider, Git, network, task, and authority capabilities for each command in this vertical.
+    2. Select narrower sessions from parsed operation intent where read-only, dry-run, and execution modes differ.
+    3. Extract representative typed integration-queue and release-plan results from CLI rendering while preserving shared CliError and exit-code contracts.
+    4. Prove capability denial before context preparation and preserve bounded hosted-check, conflict, partial-publication, and recovery behavior.
+    5. Freeze command-backed verification evidence for the current implementation SHA; leave repository-wide typed-result and CommandSession fan-in to their declared downstream tasks.
   Verify Steps: |-
-    1. Exercise provider/integration/release state matrices with and without authority. Expected: only exact authorized capabilities execute and all outcomes are typed/audited.
-    2. Simulate late checks, network failure, merge conflict, partial publication, and recovery. Expected: bounded typed results without duplicated effects.
-    3. Compare human/JSON/release artifacts. Expected: compatibility and exact-SHA provenance.
-    4. Run provider/release tests, release parity, lifecycle invariants, and guards.
+    1. Inspect the provider/integration/release/ops command catalog matrix. Expected: every command in this vertical declares an explicit session, read/dry-run variants omit write authority, and denied capabilities fail before context preparation.
+    2. Execute conditional registry paths for integration queue and release commands. Expected: parsed intent selects the exact session and repeated capability requests reuse one prepared context.
+    3. Exercise typed list/doctor/release-plan results and human/JSON renderers, plus late checks, network failure, merge conflict, partial publication, and recovery regressions. Expected: compatible output, exact-SHA provenance, bounded retries, and no duplicated effects.
+    4. Run focused provider/release tests, guards, lifecycle invariants, release parity, critical CLI, typecheck, lint, Knip, formatting, and hotspot guards; record exact commands and scope.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-08-01T03:43:10.720Z — VERIFY — ok
@@ -178,23 +178,23 @@ RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands 
 
 ## Scope
 
-- In scope: PR sync/open/check, integration queue/merge/hosted close/cleanup, release/publish/recovery, network/provider and ops commands, granular authority/provider/Git capabilities, typed results/errors, audit, and human/JSON renderers.
-- Out of scope: granting publication authority or changing protected-main policy.
+- In scope: exact CommandSession capability profiles for PR, integration queue, hosted-close, cleanup, release, and adjacent provider/ops command families; parsed-intent session selection; representative typed result and renderer seams for integration queue list/doctor and release plan; runtime authority-denial, recovery, output-parity, and exact-SHA regression evidence.
+- Out of scope: repository-wide removal of legacy CommandNeeds/coarse context consumers and completion of typed use-case/rendering boundaries for every command; those remain owned by 202607221854-SDPFN0 and 202607221854-PGPR3J. Granting publication authority or changing protected-main policy also remains out of scope.
 
 ## Plan
 
-1. Classify exact provider/Git/network/authority capabilities for each operation.
-2. Extract typed provider/integration/release results from CLI IO.
-3. Centralize rendering, exit mapping, wait/retry, and audit surfaces.
-4. Remove direct provider/network access from use cases and broad sessions.
-5. Run authority, provider state, release parity, recovery, and snapshot tests.
+1. Classify and declare exact provider, Git, network, task, and authority capabilities for each command in this vertical.
+2. Select narrower sessions from parsed operation intent where read-only, dry-run, and execution modes differ.
+3. Extract representative typed integration-queue and release-plan results from CLI rendering while preserving shared CliError and exit-code contracts.
+4. Prove capability denial before context preparation and preserve bounded hosted-check, conflict, partial-publication, and recovery behavior.
+5. Freeze command-backed verification evidence for the current implementation SHA; leave repository-wide typed-result and CommandSession fan-in to their declared downstream tasks.
 
 ## Verify Steps
 
-1. Exercise provider/integration/release state matrices with and without authority. Expected: only exact authorized capabilities execute and all outcomes are typed/audited.
-2. Simulate late checks, network failure, merge conflict, partial publication, and recovery. Expected: bounded typed results without duplicated effects.
-3. Compare human/JSON/release artifacts. Expected: compatibility and exact-SHA provenance.
-4. Run provider/release tests, release parity, lifecycle invariants, and guards.
+1. Inspect the provider/integration/release/ops command catalog matrix. Expected: every command in this vertical declares an explicit session, read/dry-run variants omit write authority, and denied capabilities fail before context preparation.
+2. Execute conditional registry paths for integration queue and release commands. Expected: parsed intent selects the exact session and repeated capability requests reuse one prepared context.
+3. Exercise typed list/doctor/release-plan results and human/JSON renderers, plus late checks, network failure, merge conflict, partial publication, and recovery regressions. Expected: compatible output, exact-SHA provenance, bounded retries, and no duplicated effects.
+4. Run focused provider/release tests, guards, lifecycle invariants, release parity, critical CLI, typecheck, lint, Knip, formatting, and hotspot guards; record exact commands and scope.
 
 ## Verification
 
