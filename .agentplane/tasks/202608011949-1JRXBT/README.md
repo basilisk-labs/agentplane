@@ -1,10 +1,11 @@
 ---
 id: "202608011949-1JRXBT"
 title: "Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -61,8 +62,8 @@ quality_review:
   findings:
     - "No contract-breaking divergence was found in the frozen implementation or verification evidence."
 commit:
-  hash: "a65844caf03aaef728ad412c847d7e3967313dba"
-  message: "🐛 1JRXBT code: allow declared bunx checks"
+  hash: "d688c4162801817abcb58369add66ce9fc79aca6"
+  message: "✅ 1JRXBT quality: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -73,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: allowlisted the approved bunx verification executable and added a process-start regression test for bunx vitest; semantic scope remains limited to the v0.6.25-v0.6.26 maintenance assimilation."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -107,8 +111,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified implementation a65844caf03aaef728ad412c847d7e3967313dba after evaluator rework: bunx is allowlisted with direct process-start coverage; all declared checks passed; maintenance diff remains behavior-only and hosted CI remains the only external gate."
+  -
+    type: "status"
+    at: "2026-08-01T23:04:55.947Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T22:53:55.459Z"
+doc_updated_at: "2026-08-01T23:04:55.948Z"
 doc_updated_by: "CODER"
 description: "Port the behaviorally missing stable-line fixes for direct runner closeout, immutable integration finalization, and isolated streaming verification into the refactored 0.7 architecture; retain stronger 0.7 cleanup behavior and add regression coverage."
 sections:
@@ -230,6 +241,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "a65844caf03aaef728ad412c847d7e3967313dba"
+    message: "🐛 1JRXBT code: allow declared bunx checks"
   workflow_route_baseline:
     start_head_sha: "f9997263341ca21006d9df679d646c7477db8747"
     version: 1

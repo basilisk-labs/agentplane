@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d7d9480065a4a25e661586e131d0e146803632a216db43b4962050396da456e4",
   "pr_number": 4730,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4730",
+  "pre_merge_closure": {
+    "basis_commit": "d688c4162801817abcb58369add66ce9fc79aca6",
+    "branch": "task/202608011949-1JRXBT/assimilate-v0-6-25-v0-6-26-maintenance-fixes-int",
+    "pr_number": 4730,
+    "recorded_at": "2026-08-01T23:04:56.001Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608011949-1JRXBT",
