@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -40,30 +40,29 @@ verification:
   note: "Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52 tests; real registry no-record execution created the canonical evidence packet with task README unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T02:27:50.677Z"
+  updated_at: "2026-08-01T02:43:24.797Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "e21e0b57359539eb2a365afca7353c4239d7f9bc"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
   blueprint_digest: "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221908-YD5J89/README.md"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-022647874-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-YD5J89/quality/20260801-024222077-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The new evaluator.artifacts.write capability is not a confined artifact-write port: resolving it returns the full CommandContext, so a no-record evaluator handler can access broader mutation facilities without requesting task.write."
+    - "The confined evaluator artifact port closes the prior authority leak: callers receive only a frozen prepare operation, while recording and provider capabilities remain separately declared."
 commit:
   hash: "1eb11321fa08ffd660c64ca1e79f4a71c97100a7"
   message: "🔐 YD5J89 task: confine evaluator artifact preparation"
