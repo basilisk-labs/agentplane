@@ -6,7 +6,7 @@ Created: 2026-08-01T03:23:48.490Z
 
 - Task: `202607221908-7WV0A7`
 - Title: Migrate provider, integration, release, and ops command boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com`
 - Canonical task record: `.agentplane/tasks/202607221908-7WV0A7/README.md`
 
