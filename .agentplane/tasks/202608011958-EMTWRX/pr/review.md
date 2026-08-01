@@ -12,8 +12,8 @@ Created: 2026-08-01T20:00:08.016Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS at a6b69790d: help snapshot 13/13; release incident gate, builtin asset parity, source/package byte parity, policy routing, doctor, diff check, and clean worktree all pass. Doctor warnings are unrelated historical metadata drift already recorded in Findings.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-01T20:00:08.016Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T20:00:08.016Z
+- Updated: 2026-08-01T20:08:22.699Z
 - Branch: task/202608011958-EMTWRX/archive-resolved-rf-24-rf-25-help-snapshot-incid
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
