@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608011949-1JRXBT-9ea381187f8f9f478b1a9fc8",
+  "prepared_at": "2026-08-01T22:54:33.135Z",
+  "task": {
+    "id": "202608011949-1JRXBT",
+    "revision": 12,
+    "objective": "Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7\n\nPort the behaviorally missing stable-line fixes for direct runner closeout, immutable integration finalization, and isolated streaming verification into the refactored 0.7 architecture; retain stronger 0.7 cleanup behavior and add regression coverage.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/task-handoff.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/verify.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts",
+      "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+      "bun run typecheck",
+      "bun run test:critical",
+      "bun run ci:contract",
+      "- In scope: Port the behaviorally missing stable-line fixes for direct runner closeout, immutable integration finalization, and isolated streaming verification into the refactored 0.7 architecture; retain stronger 0.7 cleanup behavior and add regression coverage.\n- Out of scope: unrelated refactors not required for \"Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7\".",
+      "1. Reproduce the v0.6.25-v0.6.26 regressions against the refactored 0.7 route, integration, and verification boundaries.\n2. Port behavioral fixes rather than maintenance-branch commits: terminal direct runner handoff, immutable branch-head finalization, bounded streaming verify output, and runtime environment isolation.\n3. Retain the stronger 0.7 cleanup and route-state implementations where they supersede maintenance code.\n4. Add focused regression tests, then run critical and full contract gates.\n5. Add this repair task to the mandatory rc.2 dependency closure before integration.",
+      "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/task-handoff.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/verify.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.test.ts`. Expected: terminal handoff, immutable diffstat, bounded streaming verification, environment isolation, visible failure tails, and direct supervisor closeout regressions pass.\n2. Run `bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts`. Expected: a terminal successful runner yields a TESTER verification episode with no executable `verify-show` transition.\n3. Run `bun run typecheck`. Expected: the typed WorkflowStep and runner-operation changes compile under the repository TypeScript contract.\n4. Run `bun run test:critical`. Expected: all critical CLI chunks pass.\n5. Run `bun run ci:contract`. Expected: contract, architecture, task-state, formatting, lint, and coverage ratchets pass.\n6. Inspect the final diff against the v0.6.25-v0.6.26 maintenance branch. Expected: only behavior missing from the refactored 0.7 architecture is ported; the stronger current cleanup implementation remains unchanged."
+    ]
+  },
+  "evaluated_sha": "a65844caf03aaef728ad412c847d7e3967313dba",
+  "diff_base_sha": "f9997263341ca21006d9df679d646c7477db8747",
+  "blueprint_digest": "f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608011949-1JRXBT/README.md",
+      "sha256": "sha256:305146c35f885419686967f70eed030b965984312aa6900c8a86b24f2f809ab0",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-225433135-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:3e3906e7fa2a94a90645f4a82fea71124b342c134cbb1793e1bb2c4a5229e5b2",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-225433135-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:c1abc612bbecec1a9e1ddf26ed93ec0b5239da00c3201f62e035eed69de53dbf",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608011949-1JRXBT/verification/20260801225354539-629e2b2270b4513d.json",
+      "sha256": "sha256:f2961c9cd3078975da1d3e9deb88a1e72944e91b36969336e15c3cfeaaf5111b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-225433135-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:f80dd27ce4ffed473b26ce37e5e04956f013277f001f25548ce0273b1224d854",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
