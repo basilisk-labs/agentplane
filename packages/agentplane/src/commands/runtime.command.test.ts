@@ -1,12 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { loadConfig } from "@agentplaneorg/core/config";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { captureStdIO, clearRuntimeModeEnv } from "@agentplane/testkit";
 import {
   buildFrameworkDevWorkflow,
-  runRuntimeExplain,
+  makeRunRuntimeExplainHandler,
   renderRuntimeExplainText,
 } from "./runtime.command.js";
 import { compareVersions } from "../runtime/shared/version-compare.js";
@@ -23,6 +24,9 @@ const repoPackageVersion = JSON.parse(
   fs.readFileSync(path.join(workspaceRoot, "packages", "agentplane", "package.json"), "utf8"),
 ) as { version: string };
 const agentplaneVersion = repoPackageVersion.version;
+const runRuntimeExplain = makeRunRuntimeExplainHandler({
+  getLoadedConfig: () => loadConfig(path.join(workspaceRoot, ".agentplane")),
+});
 
 afterEach(() => {
   for (const key of Object.keys(process.env)) {

@@ -27,6 +27,8 @@ import { wrapCommand } from "./wrap-command.js";
 
 const output = createCliEmitter();
 
+type ProjectCommandDeps = Pick<RunDeps, "getResolvedProject">;
+
 type PlatformSyncParsed = {
   platforms: PlatformId[];
   dryRun: boolean;
@@ -179,7 +181,9 @@ export const runPlatformDoctor: CommandHandler<PlatformExplainParsed> = (ctx, pa
   return Promise.resolve(0);
 };
 
-export function makeRunPlatformSyncHandler(deps: RunDeps): CommandHandler<PlatformSyncParsed> {
+export function makeRunPlatformSyncHandler(
+  deps: ProjectCommandDeps,
+): CommandHandler<PlatformSyncParsed> {
   return async (ctx, parsed) =>
     wrapCommand({ command: "platform sync", rootOverride: ctx.rootOverride }, async () => {
       const result = await syncPlatforms({
@@ -209,7 +213,7 @@ export async function syncPlatforms(opts: {
   platforms: PlatformId[];
   dryRun: boolean;
   commandName?: string;
-  deps: RunDeps;
+  deps: ProjectCommandDeps;
 }): Promise<{
   source: string;
   dry_run: boolean;
@@ -292,7 +296,7 @@ export async function syncPlatforms(opts: {
 }
 
 export function makeRunIdePlatformSyncHandler(
-  deps: RunDeps,
+  deps: ProjectCommandDeps,
 ): CommandHandler<{ ide?: "cursor" | "windsurf" }> {
   return async (ctx, parsed) => {
     const platforms: PlatformId[] =

@@ -18,6 +18,7 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
 
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
+import { OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
 import {
   fromCommandsHooksHooksCommand,
   fromCommandsHooksInstallCommand,
@@ -67,7 +68,7 @@ export const LIFECYCLE_COMMANDS = [
   }),
   declareSessionCommand(docsCliSpec, {
     load: loadDocsCliSpec,
-    requirements: ["output"],
+    requirements: OUTPUT_REQUIREMENTS,
     surface: "framework",
     helpGroup: "Framework Dev",
   }),

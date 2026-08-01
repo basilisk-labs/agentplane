@@ -11,6 +11,11 @@ import { wrapCommand } from "./wrap-command.js";
 
 const output = createCliEmitter();
 
+type ConfigCommandDeps = Pick<RunDeps, "getResolvedProject" | "getLoadedConfig">;
+
+export type ConfigShowResult = { raw: Awaited<ReturnType<RunDeps["getLoadedConfig"]>>["raw"] };
+export type ConfigWriteResult = { value: string; workflowPath: string };
+
 type ConfigShowParsed = Record<string, never>;
 
 export const configShowSpec: CommandSpec<ConfigShowParsed> = {
@@ -24,19 +29,22 @@ export const configShowSpec: CommandSpec<ConfigShowParsed> = {
 async function cmdConfigShow(opts: {
   cwd: string;
   rootOverride?: string;
-  deps: Pick<RunDeps, "getLoadedConfig">;
-}): Promise<number> {
+  deps: Pick<ConfigCommandDeps, "getLoadedConfig">;
+}): Promise<ConfigShowResult> {
   return wrapCommand({ command: "config show", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("config show");
-    output.json(loaded.raw);
-    return 0;
+    return { raw: loaded.raw };
   });
 }
 
 export function makeRunConfigShowHandler(
-  deps: Pick<RunDeps, "getLoadedConfig">,
+  deps: Pick<ConfigCommandDeps, "getLoadedConfig">,
 ): CommandHandler<ConfigShowParsed> {
-  return (ctx) => cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
+  return async (ctx) => {
+    const result = await cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
+    output.json(result.raw);
+    return 0;
+  };
 }
 
 type ConfigSetParsed = { key: string; value: string };
@@ -64,8 +72,8 @@ async function cmdConfigSet(opts: {
   rootOverride?: string;
   key: string;
   value: string;
-  deps: RunDeps;
-}): Promise<number> {
+  deps: ConfigCommandDeps;
+}): Promise<ConfigWriteResult> {
   return wrapCommand(
     {
       command: "config set",
@@ -84,23 +92,29 @@ async function cmdConfigSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, opts.key, opts.value);
       await saveConfig(resolved.agentplaneDir, raw);
-      output.line(
-        path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "WORKFLOW.md")),
-      );
-      return 0;
+      return {
+        value: opts.value,
+        workflowPath: path.relative(
+          resolved.gitRoot,
+          path.join(resolved.agentplaneDir, "WORKFLOW.md"),
+        ),
+      };
     },
   );
 }
 
-export function makeRunConfigSetHandler(deps: RunDeps): CommandHandler<ConfigSetParsed> {
-  return (ctx, p) =>
-    cmdConfigSet({
+export function makeRunConfigSetHandler(deps: ConfigCommandDeps): CommandHandler<ConfigSetParsed> {
+  return async (ctx, p) => {
+    const result = await cmdConfigSet({
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       key: p.key,
       value: p.value,
       deps,
     });
+    output.line(result.workflowPath);
+    return 0;
+  };
 }
 
 type ModeGetParsed = Record<string, never>;
@@ -116,17 +130,20 @@ export const modeGetSpec: CommandSpec<ModeGetParsed> = {
 async function cmdModeGet(opts: {
   cwd: string;
   rootOverride?: string;
-  deps: RunDeps;
-}): Promise<number> {
+  deps: ConfigCommandDeps;
+}): Promise<{ mode: "direct" | "branch_pr" }> {
   return wrapCommand({ command: "mode get", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("mode get");
-    output.line(loaded.config.workflow_mode);
-    return 0;
+    return { mode: loaded.config.workflow_mode };
   });
 }
 
-export function makeRunModeGetHandler(deps: RunDeps): CommandHandler<ModeGetParsed> {
-  return (ctx) => cmdModeGet({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
+export function makeRunModeGetHandler(deps: ConfigCommandDeps): CommandHandler<ModeGetParsed> {
+  return async (ctx) => {
+    const result = await cmdModeGet({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
+    output.line(result.mode);
+    return 0;
+  };
 }
 
 type ModeSetParsed = { mode: string };
@@ -153,8 +170,8 @@ async function cmdModeSet(opts: {
   cwd: string;
   rootOverride?: string;
   mode: "direct" | "branch_pr";
-  deps: RunDeps;
-}): Promise<number> {
+  deps: ConfigCommandDeps;
+}): Promise<ConfigWriteResult> {
   return wrapCommand(
     {
       command: "mode set",
@@ -173,20 +190,28 @@ async function cmdModeSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, "workflow_mode", opts.mode);
       await saveConfig(resolved.agentplaneDir, raw);
-      output.line(opts.mode);
-      return 0;
+      return {
+        value: opts.mode,
+        workflowPath: path.relative(
+          resolved.gitRoot,
+          path.join(resolved.agentplaneDir, "WORKFLOW.md"),
+        ),
+      };
     },
   );
 }
 
-export function makeRunModeSetHandler(deps: RunDeps): CommandHandler<ModeSetParsed> {
-  return (ctx, p) =>
-    cmdModeSet({
+export function makeRunModeSetHandler(deps: ConfigCommandDeps): CommandHandler<ModeSetParsed> {
+  return async (ctx, p) => {
+    const result = await cmdModeSet({
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       mode: p.mode as "direct" | "branch_pr",
       deps,
     });
+    output.line(result.value);
+    return 0;
+  };
 }
 
 type ProfileSetParsed = { profile: string };
@@ -259,8 +284,8 @@ async function cmdProfileSet(opts: {
   cwd: string;
   rootOverride?: string;
   profile: "light" | "normal" | "full-harness";
-  deps: RunDeps;
-}): Promise<number> {
+  deps: ConfigCommandDeps;
+}): Promise<ConfigWriteResult> {
   return wrapCommand(
     {
       command: "profile set",
@@ -282,18 +307,28 @@ async function cmdProfileSet(opts: {
       setByDottedKey(raw, "execution", JSON.stringify(execution));
 
       await saveConfig(resolved.agentplaneDir, raw);
-      output.line(opts.profile);
-      return 0;
+      return {
+        value: opts.profile,
+        workflowPath: path.relative(
+          resolved.gitRoot,
+          path.join(resolved.agentplaneDir, "WORKFLOW.md"),
+        ),
+      };
     },
   );
 }
 
-export function makeRunProfileSetHandler(deps: RunDeps): CommandHandler<ProfileSetParsed> {
-  return (ctx, p) =>
-    cmdProfileSet({
+export function makeRunProfileSetHandler(
+  deps: ConfigCommandDeps,
+): CommandHandler<ProfileSetParsed> {
+  return async (ctx, p) => {
+    const result = await cmdProfileSet({
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       profile: normalizeProfile(p.profile)!,
       deps,
     });
+    output.line(result.value);
+    return 0;
+  };
 }

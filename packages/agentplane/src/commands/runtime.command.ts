@@ -1,5 +1,4 @@
-import { loadConfig } from "@agentplaneorg/core/config";
-import { resolveProject } from "@agentplaneorg/core/project";
+import type { LoadedConfig } from "@agentplaneorg/core/config";
 
 import { createCliEmitter } from "../cli/output.js";
 import type { CommandHandler } from "../cli/spec/spec.js";
@@ -65,6 +64,10 @@ export type RuntimeExplainPayload = RuntimeSourceInfo & {
     }[];
     diagnostics: { severity: string; code: string; message: string }[];
   };
+};
+
+export type RuntimeExplainDeps = {
+  getLoadedConfig: (command: string) => Promise<LoadedConfig>;
 };
 
 export { runtimeExplainSpec, runtimeSpec } from "./runtime.spec.js";
@@ -209,16 +212,11 @@ export function renderRuntimeExplainText(
 }
 
 async function resolveRepoCliExpectation(opts: {
-  cwd: string;
-  rootOverride?: string | null;
   report: RuntimeSourceInfo;
+  deps: RuntimeExplainDeps;
 }): Promise<RepoCliVersionExpectation> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const loaded = await loadConfig(resolved.agentplaneDir);
+    const loaded = await opts.deps.getLoadedConfig("runtime explain");
     return evaluateRepoCliVersionExpectation(loaded.config, opts.report);
   } catch {
     return {
@@ -241,34 +239,52 @@ export const runRuntime: CommandHandler<GroupCommandParsed> = async (_ctx, p) =>
   });
 };
 
-export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) => {
+export async function buildRuntimeExplainResult(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  parsed: RuntimeExplainParsed;
+  deps: RuntimeExplainDeps;
+}): Promise<RuntimeExplainPayload> {
   const report = resolveRuntimeSourceInfo({
-    cwd: ctx.cwd,
+    cwd: opts.cwd,
     entryModuleUrl: import.meta.url,
   });
-  return Promise.all([
+  const [repoCliExpectation, promptGraph] = await Promise.all([
     resolveRepoCliExpectation({
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride ?? null,
       report,
+      deps: opts.deps,
     }),
     inspectPromptGraphForCwd({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    }),
+  ]);
+  return {
+    ...buildRuntimeExplainPayload(report, promptGraph),
+    repoCliExpectation,
+    ...(opts.parsed.compact
+      ? { promptDiagnosticsCompact: buildCompactPromptDiagnostics(promptGraph) }
+      : {}),
+  };
+}
+
+export function makeRunRuntimeExplainHandler(
+  deps: RuntimeExplainDeps,
+): CommandHandler<RuntimeExplainParsed> {
+  return async (ctx, parsed) => {
+    const payload = await buildRuntimeExplainResult({
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
-    }),
-  ]).then(([repoCliExpectation, promptGraph]) => {
-    const payload = {
-      ...buildRuntimeExplainPayload(report, promptGraph),
-      repoCliExpectation,
-      ...(p.compact
-        ? { promptDiagnosticsCompact: buildCompactPromptDiagnostics(promptGraph) }
-        : {}),
-    };
-    if (p.json) {
+      parsed,
+      deps,
+    });
+    if (parsed.json) {
       output.json(payload);
-      return 0;
+    } else {
+      output.line(
+        renderRuntimeExplainText(payload, payload.repoCliExpectation, payload.promptGraph),
+      );
     }
-    output.line(renderRuntimeExplainText(report, repoCliExpectation, promptGraph));
     return 0;
-  });
-};
+  };
+}

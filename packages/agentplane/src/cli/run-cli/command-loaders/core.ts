@@ -1,4 +1,22 @@
-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import type {
+  NoContextSession,
+  ProjectConfigSession,
+  ProjectSession,
+} from "../command-catalog/project-capability-profiles.js";
+
+function getProjectDeps(session: ProjectSession) {
+  return {
+    getResolvedProject: (command: string) => session.require("project", command),
+  };
+}
+
+function getProjectConfigDeps(session: ProjectConfigSession) {
+  return {
+    getResolvedProject: (command: string) => session.require("project", command),
+    getLoadedConfig: (command: string) => session.require("config", command),
+  };
+}
 
 export const fromCommandsInit = commandModule(() => import("../commands/init/spec.js"));
 export const fromCommandsUpgradeCommand = commandModule(
@@ -26,9 +44,14 @@ export const fromCommandsCorePreflight = commandModule(
   () => import("../commands/core/preflight.js"),
 );
 export const fromCommandsCodex = commandModule(() => import("../commands/codex.js"));
-export const fromCommandsRuntimeCommand = commandModule(
-  () => import("../../../commands/runtime.command.js"),
-);
+export const loadRuntimeSpec = (_session: NoContextSession) =>
+  import("../../../commands/runtime.command.js").then((m) => m.runRuntime);
+export const loadRuntimeExplainSpec = (session: ProjectConfigSession) =>
+  import("../../../commands/runtime.command.js").then((m) =>
+    m.makeRunRuntimeExplainHandler({
+      getLoadedConfig: (command) => session.require("config", command),
+    }),
+  );
 export const fromCommandsInsightsCommand = commandModule(
   () => import("../../../commands/insights/insights.command.js"),
 );
@@ -36,7 +59,14 @@ export const fromCommandsIncidentsIncidentsCommand = commandModule(
   () => import("../../../commands/incidents/incidents.command.js"),
 );
 export const fromCommandsCoreRole = commandModule(() => import("../commands/core/role.js"));
-export const fromCommandsPlatform = commandModule(() => import("../commands/platform.js"));
+export const loadPlatformSpec = (_session: NoContextSession) =>
+  import("../commands/platform.js").then((m) => m.runPlatform);
+export const loadPlatformListSpec = (_session: NoContextSession) =>
+  import("../commands/platform.js").then((m) => m.runPlatformList);
+export const loadPlatformExplainSpec = (_session: NoContextSession) =>
+  import("../commands/platform.js").then((m) => m.runPlatformExplain);
+export const loadPlatformDoctorSpec = (_session: NoContextSession) =>
+  import("../commands/platform.js").then((m) => m.runPlatformDoctor);
 export const fromCommandsDoctorRun = commandModule(() => import("../../../commands/doctor.run.js"));
 export const fromCommandsDoctorGitLocksCommand = commandModule(
   () => import("../../../commands/doctor-git-locks.run.js"),
@@ -66,30 +96,40 @@ export const loadIncidentsAdviseSpec = (deps: RunDeps) =>
   import("../../../commands/incidents/advise.command.js").then((m) =>
     m.makeRunIncidentsAdviseHandler(deps.getCtx),
   );
-export const loadAgentsSpec = (session: CommandSession<"project">) =>
+export const loadAgentsSpec = (session: ProjectSession) =>
   import("../commands/core/agents.js").then((m) =>
     m.makeRunAgentsHandler({
       getResolvedProject: (command) => session.require("project", command),
     }),
   );
-export const loadConfigShowSpec = (session: CommandSession<"project" | "config">) =>
+export const loadConfigShowSpec = (session: ProjectConfigSession) =>
   import("../commands/config.js").then((m) =>
     m.makeRunConfigShowHandler({
       getLoadedConfig: (command) => session.require("config", command),
     }),
   );
-export const loadConfigSetSpec = (deps: RunDeps) =>
-  import("../commands/config.js").then((m) => m.makeRunConfigSetHandler(deps));
-export const loadModeGetSpec = (deps: RunDeps) =>
-  import("../commands/config.js").then((m) => m.makeRunModeGetHandler(deps));
-export const loadModeSetSpec = (deps: RunDeps) =>
-  import("../commands/config.js").then((m) => m.makeRunModeSetHandler(deps));
-export const loadProfileSetSpec = (deps: RunDeps) =>
-  import("../commands/config.js").then((m) => m.makeRunProfileSetHandler(deps));
-export const loadIdeSyncSpec = (deps: RunDeps) =>
-  import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps));
-export const loadPlatformSyncSpec = (deps: RunDeps) =>
-  import("../commands/platform.js").then((m) => m.makeRunPlatformSyncHandler(deps));
+export const loadConfigSetSpec = (session: ProjectConfigSession) =>
+  import("../commands/config.js").then((m) =>
+    m.makeRunConfigSetHandler(getProjectConfigDeps(session)),
+  );
+export const loadModeGetSpec = (session: ProjectConfigSession) =>
+  import("../commands/config.js").then((m) =>
+    m.makeRunModeGetHandler(getProjectConfigDeps(session)),
+  );
+export const loadModeSetSpec = (session: ProjectConfigSession) =>
+  import("../commands/config.js").then((m) =>
+    m.makeRunModeSetHandler(getProjectConfigDeps(session)),
+  );
+export const loadProfileSetSpec = (session: ProjectConfigSession) =>
+  import("../commands/config.js").then((m) =>
+    m.makeRunProfileSetHandler(getProjectConfigDeps(session)),
+  );
+export const loadIdeSyncSpec = (session: ProjectSession) =>
+  import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(getProjectDeps(session)));
+export const loadPlatformSyncSpec = (session: ProjectSession) =>
+  import("../commands/platform.js").then((m) =>
+    m.makeRunPlatformSyncHandler(getProjectDeps(session)),
+  );
 export const loadInsightsReportSpec = (deps: RunDeps) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
     m.makeRunInsightsReportHandler(deps),

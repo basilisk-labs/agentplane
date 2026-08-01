@@ -1,10 +1,10 @@
 ---
 id: "202607221908-TZTE5V"
 title: "Migrate project, config, help, and docs command boundaries"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T00:02:03.655Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -37,11 +37,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T00:02:27.922Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:08:12.619Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T00:21:05.286Z"
+doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed session capabilities and typed results with centralized compatibility renderers."
 sections:
   Summary: |-
@@ -69,7 +79,16 @@ sections:
     - Revert only this command family to the explicit legacy session/result adapter.
     - Preserve the shared capability and renderer contracts for other slices.
     - Re-run family snapshots and docs generation.
-  Findings: ""
+  Findings: |-
+    - Observation: The clean main baseline help registry snapshot did not match the current command catalog.
+      Impact: The help snapshot suite failed before this task's implementation could be evaluated.
+      Resolution: Reproduced the failure at main commit 0dca3d627916e8c36ecf46bcbbb523a3b0013317 and refreshed only the help snapshot owned by this vertical slice.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "0dca3d627916e8c36ecf46bcbbb523a3b0013317"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
@@ -110,3 +129,9 @@ RF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed
 - Re-run family snapshots and docs generation.
 
 ## Findings
+
+- Observation: The clean main baseline help registry snapshot did not match the current command catalog.
+  Impact: The help snapshot suite failed before this task's implementation could be evaluated.
+  Resolution: Reproduced the failure at main commit 0dca3d627916e8c36ecf46bcbbb523a3b0013317 and refreshed only the help snapshot owned by this vertical slice.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
