@@ -4,7 +4,7 @@ title: "Migrate provider, integration, release, and ops command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -38,6 +38,33 @@ verification:
   updated_by: "TESTER"
   note: "Provider/integration/release boundary verification passed: focused family matrix 65 files/414 tests; critical CLI 12/12 chunks and 77 tests; typecheck, format, lint, Knip 545/545, guards, trust ratchet, lifecycle 8/8, release parity, and architecture dependency checks all passed."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T11:36:44.952Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "d53ad1acb3f9473a2f5e493035b8bb8ba7b049fa"
+  blueprint_digest: "f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c"
+  evidence_refs:
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-7WV0A7/README.md"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The patch migrates command capability declarations and loaders but does not implement the approved typed results/errors, centralized rendering and exit mapping, retry/wait, or audit surfaces."
+    - "Read-oriented integration queue operations such as list and doctor receive the full provider-write profile, including backend/task writes and git mutation, so capabilities are not classified per operation."
+    - "The frozen verification record contains only a summary assertion and no command records, runner history, or runtime evidence demonstrating the required negative and recovery scenarios."
 commit:
   hash: "d53ad1acb3f9473a2f5e493035b8bb8ba7b049fa"
   message: "♻️ 7WV0A7 task: migrate provider and release command sessions"

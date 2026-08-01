@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-7WV0A7-c0e7a2fc1e6199c5216bf18a",
+  "prepared_at": "2026-08-01T11:35:50.169Z",
+  "task": {
+    "id": "202607221908-7WV0A7",
+    "revision": 9,
+    "objective": "Migrate provider, integration, release, and ops command boundaries\n\nRF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run lifecycle:invariants",
+      "bun run release:parity",
+      "bun run test:critical",
+      "- In scope: PR sync/open/check, integration queue/merge/hosted close/cleanup, release/publish/recovery, network/provider and ops commands, granular authority/provider/Git capabilities, typed results/errors, audit, and human/JSON renderers.\n- Out of scope: granting publication authority or changing protected-main policy.",
+      "1. Classify exact provider/Git/network/authority capabilities for each operation.\n2. Extract typed provider/integration/release results from CLI IO.\n3. Centralize rendering, exit mapping, wait/retry, and audit surfaces.\n4. Remove direct provider/network access from use cases and broad sessions.\n5. Run authority, provider state, release parity, recovery, and snapshot tests.",
+      "1. Exercise provider/integration/release state matrices with and without authority. Expected: only exact authorized capabilities execute and all outcomes are typed/audited.\n2. Simulate late checks, network failure, merge conflict, partial publication, and recovery. Expected: bounded typed results without duplicated effects.\n3. Compare human/JSON/release artifacts. Expected: compatibility and exact-SHA provenance.\n4. Run provider/release tests, release parity, lifecycle invariants, and guards."
+    ]
+  },
+  "evaluated_sha": "d53ad1acb3f9473a2f5e493035b8bb8ba7b049fa",
+  "diff_base_sha": "56bb919419e198f3ecfd1a074358e6ead81deaa7",
+  "blueprint_digest": "f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+      "sha256": "sha256:2344e15b74162a8458838fa59f9821f9101cb7d363d5a9e586b9e853689a2ced",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:75c6a2f0a0cf4e02dc0a64ed6e031bcd4463be8f9d5c937ec584d8d79b808373",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:cc01f477396d4e3ff43d24d3b99951ccfe66ea964575f51114aa96ff8b0a8b03",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:88d1389f46d1c7a05b8a530b9fee0792ab5621ceee51c6265e96f16a025c0b92",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

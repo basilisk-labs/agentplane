@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-7WV0A7-c0e7a2fc1e6199c5216bf18a",
+  "task_id": "202607221908-7WV0A7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Continue from evaluated SHA d53ad1acb3f9473a2f5e493035b8bb8ba7b049fa: split provider/integration/release/ops requirements into exact per-operation profiles, complete the typed-result/rendering/retry/audit portion of the approved plan, and attach deterministic evidence for the specified negative, recovery, parity, and concurrency-sensitive scenarios.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The patch migrates command capability declarations and loaders but does not implement the approved typed results/errors, centralized rendering and exit mapping, retry/wait, or audit surfaces.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:2344e15b74162a8458838fa59f9821f9101cb7d363d5a9e586b9e853689a2ced",
+          "line": 86,
+          "lines": "86-87",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:75c6a2f0a0cf4e02dc0a64ed6e031bcd4463be8f9d5c937ec584d8d79b808373",
+          "line": 839,
+          "lines": "839-1736"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Read-oriented integration queue operations such as list and doctor receive the full provider-write profile, including backend/task writes and git mutation, so capabilities are not classified per operation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:2344e15b74162a8458838fa59f9821f9101cb7d363d5a9e586b9e853689a2ced",
+          "line": 85,
+          "lines": "85-85",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:75c6a2f0a0cf4e02dc0a64ed6e031bcd4463be8f9d5c937ec584d8d79b808373",
+          "line": 1237,
+          "lines": "1237-1242"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:75c6a2f0a0cf4e02dc0a64ed6e031bcd4463be8f9d5c937ec584d8d79b808373",
+          "line": 1279,
+          "lines": "1279-1303"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "The frozen verification record contains only a summary assertion and no command records, runner history, or runtime evidence demonstrating the required negative and recovery scenarios.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:2344e15b74162a8458838fa59f9821f9101cb7d363d5a9e586b9e853689a2ced",
+          "line": 91,
+          "lines": "91-94",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:cc01f477396d4e3ff43d24d3b99951ccfe66ea964575f51114aa96ff8b0a8b03",
+          "line": 17,
+          "lines": "17-20"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "line": 14,
+          "lines": "14-23",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-113550169-recovery-context/evaluator-result.json"
+}
