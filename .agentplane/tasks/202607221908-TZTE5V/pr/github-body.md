@@ -34,6 +34,8 @@ and diff check passed; evidence:
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../run-cli.core.help-snap.test.ts.snap            |  14 ++-
  .../src/cli/run-cli.core.command-session.test.ts   |  69 ++++++++++++++
  .../src/cli/run-cli/command-catalog.test.ts        |  43 ++++++++-
@@ -50,7 +52,7 @@ and diff check passed; evidence:
  .../agentplane/src/commands/docs/cli.command.ts    |  27 +++++-
  .../src/commands/runtime.command.test.ts           |   6 +-
  .../agentplane/src/commands/runtime.command.ts     |  72 ++++++++------
- 16 files changed, 478 insertions(+), 153 deletions(-)
+ 18 files changed, 480 insertions(+), 153 deletions(-)
 ```
 
 </details>
