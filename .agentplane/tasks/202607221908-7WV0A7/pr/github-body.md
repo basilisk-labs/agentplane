@@ -15,8 +15,14 @@ RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Provider/integration/release boundary verification passed: focused family matrix 65 files/414 tests;
+critical CLI 12/12 chunks and 77 tests; typecheck, format, lint, Knip 545/545, guards, trust
+ratchet, lifecycle 8/8, release parity, and architecture dependency checks all passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
