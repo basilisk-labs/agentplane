@@ -1,0 +1,34 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run arch:check",
+    "bun run ci:contract",
+    "bun run guards:check",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T13:31:14.119Z",
+    "updated_by": "TESTER",
+    "note": "PASS: current verification now includes parser-valid SHA-bound check records and frozen runtime evidence for d89988611fbd."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221854-SDPFN0/verification/20260801133114119-25964763c8a28263.json",
+      "sha256": "sha256:da708d0ad462748e46b527da663acbdb4961dc2a660e305c8551196c40a25c11"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json",
+      "sha256": "sha256:7a279126460f054de891f39c6362dbfe4d12593c4177a6b910efbc24022513b7"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

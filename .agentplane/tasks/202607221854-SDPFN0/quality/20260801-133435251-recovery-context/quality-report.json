@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-SDPFN0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T13:35:12.487Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "d89988611fbdd3efaba3c9054d122104e6717a2b",
+  "blueprint_digest": "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62",
+  "findings": [
+    "The deterministic receipt validates four task IDs that are not the task's declared dependencies, so the required dependency closure is not proven."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-SDPFN0/README.md",
+    ".agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json"
+  ],
+  "missing_tests": [
+    "A deterministic verification check that compares the dependency_closure task IDs against the exact depends_on set from the frozen task document and fails on missing, substituted, or extra IDs.",
+    "Evidence that each exact declared dependency has independent successful verification, not only DONE status."
+  ],
+  "hidden_assumptions": [
+    "The receipt assumes that similarly suffixed task IDs with a different timestamp prefix identify the intended dependency slices.",
+    "The recorded DONE statuses are assumed to imply independent verification, but the frozen evidence does not establish that for the exact declared dependencies."
+  ],
+  "residual_risks": [
+    "Regenerate SHA-bound deterministic evidence using the exact five dependency IDs declared in the task README and include evidence of independent verification for each; then rerun semantic evaluation without changing the implementation unless the exact dependency closure reveals an incompatibility."
+  ]
+}

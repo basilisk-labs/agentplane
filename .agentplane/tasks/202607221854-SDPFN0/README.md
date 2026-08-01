@@ -4,7 +4,7 @@ title: "Complete CommandSession capability migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -42,31 +42,32 @@ verification:
   note: "PASS: current verification now includes parser-valid SHA-bound check records and frozen runtime evidence for d89988611fbd."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T13:29:06.967Z"
+  updated_at: "2026-08-01T13:35:12.487Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "d89988611fbdd3efaba3c9054d122104e6717a2b"
   blueprint_digest: "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221854-SDPFN0/README.md"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132833021-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/verification/20260801133114119-25964763c8a28263.json"
+    - ".agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-133435251-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Замороженный пакет не содержит детерминированных результатов проверок, привязанных к evaluated_sha: verification_records, runner_history и runtime_evidence пусты."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The deterministic receipt validates four task IDs that are not the task's declared dependencies, so the required dependency closure is not proven."
 commit:
   hash: "d89988611fbdd3efaba3c9054d122104e6717a2b"
   message: "♻️ SDPFN0 task: complete CommandSession capability migration"
@@ -77,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed and locally verified: CommandNeeds compatibility metadata removed, all catalog entries use explicit capabilities, and command catalog modules remain below the hotspot threshold."
+  -
+    author: "CODER"
+    body: "Rework completed without implementation changes: corrected the deterministic dependency-closure receipt to the exact five depends_on IDs and added independent verification and passing quality artifact references for each slice."
 events:
   -
     type: "status"
@@ -110,8 +114,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: current verification now includes parser-valid SHA-bound check records and frozen runtime evidence for d89988611fbd."
+  -
+    type: "status"
+    at: "2026-08-01T13:37:20.490Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework completed without implementation changes: corrected the deterministic dependency-closure receipt to the exact five depends_on IDs and added independent verification and passing quality artifact references for each slice."
 doc_version: 3
-doc_updated_at: "2026-08-01T13:31:14.996Z"
+doc_updated_at: "2026-08-01T13:37:20.490Z"
 doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
