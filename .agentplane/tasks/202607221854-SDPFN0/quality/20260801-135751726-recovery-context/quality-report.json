@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-SDPFN0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T13:58:34.620Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "4f808df120a6d205d1cb27821aae048a61b8ecff",
+  "blueprint_digest": "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62",
+  "findings": [
+    "Frozen evidence shows the implementation satisfies the approved migration contract at the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-135751726-recovery-context/evaluator-diff.patch",
+    ".agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json",
+    ".agentplane/tasks/202607221854-SDPFN0/verification/20260801135705557-69fb8ef2b7aac7d0.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI has not yet run; the verdict relies on the frozen SHA-bound local deterministic contract as the authoritative verification evidence."
+  ],
+  "residual_risks": []
+}

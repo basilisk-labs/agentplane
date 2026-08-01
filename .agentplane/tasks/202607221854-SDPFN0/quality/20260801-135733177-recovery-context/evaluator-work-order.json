@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221854-SDPFN0-5a1edd3ef137c5f3a1438515",
+  "prepared_at": "2026-08-01T13:57:33.177Z",
+  "task": {
+    "id": "202607221854-SDPFN0",
+    "revision": 23,
+    "objective": "Complete CommandSession capability migration\n\nIntegrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer after zero consumers remain, and prove catalog-wide minimal capability and lazy preparation invariants.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bun run ci:contract",
+      "bun run guards:check",
+      "bun run test:critical",
+      "- In scope: integrate the separately verified project/config/help/docs, task/lifecycle/route, context/evaluator, runner/Hermes, and provider/release/ops capability slices; remove the coarse CommandNeeds adapter after zero consumers; validate catalog-wide requirement visibility and lazy preparation profiles.\n- Out of scope: implementing family-specific migrations inside this fan-in task.",
+      "1. Confirm all five command-family slice tasks are DONE and based on compatible shared capability contracts.\n2. Integrate their catalog/session changes and resolve only cross-family type or registry conflicts.\n3. Remove the coarse CommandNeeds compatibility adapter when zero production consumers remain.\n4. Run catalog-wide capability, laziness, command snapshot, architecture, and preparation-profile checks.\n5. Record any residual compatibility adapter as a release blocker rather than widening this task.",
+      "1. Resolve this task's dependency closure. Expected: all five command-family vertical slices are DONE with independent verification.\n2. Inspect every command catalog entry and handler session type. Expected: granular requirements are explicit and no handler receives undeclared task/Git/provider capabilities.\n3. Search for active coarse CommandNeeds consumers and duplicate loader requirement metadata. Expected: none remain.\n4. Run command/help/JSON snapshots, preparation profiles, `bun run arch:check`, `bun run guards:check`, `bun run ci:contract`, and typecheck."
+    ]
+  },
+  "evaluated_sha": "4f808df120a6d205d1cb27821aae048a61b8ecff",
+  "diff_base_sha": "395235931a6b78f8c0f1afb0060b136053e9c315",
+  "blueprint_digest": "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221854-SDPFN0/README.md",
+      "sha256": "sha256:a2f5ea6666449ee27d8d98935e639b269b4aadacba0bbc6e5e74c2aae16f55f1",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-135733177-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d1f35e9cb5b835f79b8e6a97ace1753e8e73b92851e98684bda597a86ff89f9d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-135733177-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:e2b7152b3867ecbbab63c3c00a5f05724070a4149dba9cc59bb61e7989659c61",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221854-SDPFN0/verification/20260801135705557-69fb8ef2b7aac7d0.json",
+      "sha256": "sha256:e281c6b8b69180e21e4293a9dad0311cd6a48bf4c87015f3547fc0c166c52ebf",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json",
+      "sha256": "sha256:39918e9fda7adf8ae502a2e0457257d3689b70f7d66060d96bc9c7d0d60d3ecf",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-135733177-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:4b68bdcd71dc83e3aa4495d9ac046d69b02baa652d5111bec2d2f2411d708796",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

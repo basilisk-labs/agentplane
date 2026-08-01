@@ -1,0 +1,2644 @@
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index 0e2a43970..fb9b49cd0 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -1,6 +1,7 @@
+ import { describe, expect, it } from "vitest";
+ 
+ import {
++  COMMANDS,
+   findCommandEntry,
+   getDirectChildCommandEntries,
+   getDirectChildCommandNames,
+@@ -31,6 +32,14 @@ import {
+   PROVIDER_READ_REQUIREMENTS,
+   PROVIDER_WRITE_REQUIREMENTS,
+ } from "./command-catalog/provider-ops-capability-profiles.js";
++import {
++  NO_CONTEXT_REQUIREMENTS,
++  PROJECT_REQUIREMENTS,
++} from "./command-catalog/project-capability-profiles.js";
++import {
++  TASK_LIFECYCLE_REQUIREMENTS,
++  TASK_WRITE_REQUIREMENTS,
++} from "./command-catalog/task-capability-profiles.js";
+ 
+ describe("command catalog graph", () => {
+   it("uses one graph for longest-prefix match and exact lookup", () => {
+@@ -73,24 +82,19 @@ describe("command catalog graph", () => {
+   });
+ 
+   it("keeps dispatch metadata separate from handler loading", () => {
+-    expect(findCommandEntry(["ide", "sync"])?.needs).toBe("project");
+     expect(findCommandEntry(["ide", "sync"])?.requirements).toEqual(["project"]);
+-    expect(findCommandEntry(["ide", "sync"])?.compatibility).toBeNull();
+     expect(findCommandEntry(["ide", "sync"])?.dispatch).toEqual({
+       project: true,
+       loadedConfig: false,
+       taskContext: false,
+     });
+-    expect(findCommandEntry(["config", "show"])?.needs).toBe("project+config");
+     expect(findCommandEntry(["config", "show"])?.requirements).toEqual(["project", "config"]);
+     expect(findCommandEntry(["config", "show"])?.preparationNodes).toEqual(["project", "config"]);
+-    expect(findCommandEntry(["config", "show"])?.compatibility).toBeNull();
+     expect(findCommandEntry(["config", "show"])?.dispatch).toEqual({
+       project: true,
+       loadedConfig: true,
+       taskContext: false,
+     });
+-    expect(findCommandEntry(["task"])?.needs).toBe("none");
+     expect(findCommandEntry(["task"])?.requirements).toEqual([]);
+     expect(findCommandEntry(["task"])?.dispatch).toEqual({
+       project: false,
+@@ -99,6 +103,40 @@ describe("command catalog graph", () => {
+     });
+   });
+ 
++  it("contains no coarse command-needs compatibility metadata", () => {
++    for (const entry of COMMANDS) {
++      expect("needs" in entry, entry.spec.id.join(" ")).toBe(false);
++      expect("compatibility" in entry, entry.spec.id.join(" ")).toBe(false);
++    }
++  });
++
++  it("selects only the capabilities needed by conditional catalog entries", () => {
++    const codexInstall = findCommandEntry(["codex", "plugin", "install"]);
++    expect(codexInstall?.requirements).toEqual(NO_CONTEXT_REQUIREMENTS);
++    expect(codexInstall?.selectSession?.({ scope: "user" }).requirements).toEqual(
++      NO_CONTEXT_REQUIREMENTS,
++    );
++    expect(codexInstall?.selectSession?.({ scope: "repo" }).requirements).toEqual(
++      PROJECT_REQUIREMENTS,
++    );
++
++    const normalize = findCommandEntry(["task", "normalize"]);
++    expect(normalize?.requirements).toEqual(TASK_WRITE_REQUIREMENTS);
++    expect(
++      normalize?.selectSession?.({ syncHostedMerges: false, syncBranchPrState: false })
++        .requirements,
++    ).toEqual(TASK_WRITE_REQUIREMENTS);
++    expect(
++      normalize?.selectSession?.({ syncHostedMerges: false, syncBranchPrState: true }).requirements,
++    ).toEqual(TASK_LIFECYCLE_REQUIREMENTS);
++    expect(
++      normalize?.selectSession?.({ syncHostedMerges: true, syncBranchPrState: false }).requirements,
++    ).toEqual(PROVIDER_WRITE_REQUIREMENTS);
++    expect(
++      normalize?.selectSession?.({ syncHostedMerges: true, syncBranchPrState: true }).requirements,
++    ).toEqual(PROVIDER_WRITE_REQUIREMENTS);
++  });
++
+   it("publishes granular requirements for the migrated pilot slices", () => {
+     expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
+     expect(findCommandEntry(["docs", "cli"])?.preparationNodes).toEqual(["output"]);
+@@ -120,19 +158,16 @@ describe("command catalog graph", () => {
+     expect(routeRequirements).toEqual(
+       expect.arrayContaining(["task.read", "git.head", "route.local", "route.remote", "provider"]),
+     );
+-    expect(findCommandEntry(["task", "next-action"])?.compatibility).toBeNull();
+ 
+     const providerRequirements = findCommandEntry(["pr", "check"])?.requirements ?? [];
+     expect(providerRequirements).toEqual(
+       expect.arrayContaining(["task.read", "git.head", "git.diff", "route.remote", "provider"]),
+     );
+-    expect(findCommandEntry(["pr", "check"])?.compatibility).toBeNull();
+   });
+ 
+   it("publishes exact project, config, runtime, and docs capability profiles", () => {
+     for (const id of [["agents"], ["platform", "sync"], ["ide", "sync"]]) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual(["project"]);
+     }
+ 
+@@ -145,7 +180,6 @@ describe("command catalog graph", () => {
+       ["runtime", "explain"],
+     ]) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual(["project", "config"]);
+       expect(entry?.requirements, id.join(" ")).not.toEqual(
+         expect.arrayContaining(["task.read", "git.head", "provider"]),
+@@ -153,7 +187,6 @@ describe("command catalog graph", () => {
+     }
+ 
+     expect(findCommandEntry(["runtime"])?.requirements).toEqual([]);
+-    expect(findCommandEntry(["runtime"])?.compatibility).toBeNull();
+     for (const id of [
+       ["platform"],
+       ["platform", "list"],
+@@ -161,10 +194,8 @@ describe("command catalog graph", () => {
+       ["platform", "doctor"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+     expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
+-    expect(findCommandEntry(["docs", "cli"])?.compatibility).toBeNull();
+   });
+ 
+   it("publishes exact context and evaluator capability profiles", () => {
+@@ -181,7 +212,6 @@ describe("command catalog graph", () => {
+       ["evaluator", "show"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     for (const id of [
+@@ -195,7 +225,6 @@ describe("command catalog graph", () => {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+         CONTEXT_PROJECT_REQUIREMENTS,
+       );
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     expect(findCommandEntry(["context", "verify-task"])?.requirements).toEqual(
+@@ -216,7 +245,6 @@ describe("command catalog graph", () => {
+         CONTEXT_TASK_WRITE_REQUIREMENTS,
+       );
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
+@@ -264,7 +292,6 @@ describe("command catalog graph", () => {
+     ];
+     for (const id of taskReadCommands) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual([
+         "project",
+         "config",
+@@ -282,7 +309,6 @@ describe("command catalog graph", () => {
+     ];
+     for (const id of taskWriteCommands) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual([
+         "project",
+         "config",
+@@ -307,7 +333,6 @@ describe("command catalog graph", () => {
+     ];
+     for (const id of lifecycleCommands) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual(
+         expect.arrayContaining([
+           "task.read",
+@@ -329,14 +354,12 @@ describe("command catalog graph", () => {
+       ["task", "next-action"],
+     ]) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual(
+         expect.arrayContaining(["route.local", "route.remote", "provider"]),
+       );
+     }
+ 
+     const authorityGrant = findCommandEntry(["task", "authority", "grant"]);
+-    expect(authorityGrant?.compatibility).toBeNull();
+     expect(authorityGrant?.requirements).toEqual(
+       expect.arrayContaining([
+         "task.write",
+@@ -354,7 +377,6 @@ describe("command catalog graph", () => {
+       ["pr", "flow", "status"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_READ_REQUIREMENTS);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     for (const id of [
+@@ -372,7 +394,6 @@ describe("command catalog graph", () => {
+       ["release", "tasks", "reconcile"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_WRITE_REQUIREMENTS);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     for (const id of [
+@@ -417,7 +438,6 @@ describe("command catalog graph", () => {
+       ["work", "resume"],
+     ]) {
+       const entry = findCommandEntry(id);
+-      expect(entry?.compatibility, id.join(" ")).toBeNull();
+       expect(entry?.requirements, id.join(" ")).toEqual(
+         expect.arrayContaining(["task.write", "git.mutate", "route.local", "approvals"]),
+       );
+@@ -474,18 +494,15 @@ describe("command catalog graph", () => {
+       ["task", "run", "logs"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskRead);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+     for (const id of [
+       ["task", "run", "reconcile"],
+       ["task", "run", "resolve-effect"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+     for (const id of [["task", "run", "resume-effect"]]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     const taskRun = findCommandEntry(["task", "run"]);
+@@ -498,7 +515,6 @@ describe("command catalog graph", () => {
+     );
+     expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("provider");
+     expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("git.mutate");
+-    expect(taskRun?.compatibility).toBeNull();
+ 
+     const hermesSupervise = findCommandEntry(["hermes", "supervise"]);
+     expect(hermesSupervise?.requirements).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+@@ -536,7 +552,6 @@ describe("command catalog graph", () => {
+       expect(requirements).not.toContain("provider");
+       expect(requirements).not.toContain("git.mutate");
+     }
+-    expect(hermesSupervise?.compatibility).toBeNull();
+ 
+     const hermesProjection = [
+       ...taskRead,
+@@ -553,7 +568,6 @@ describe("command catalog graph", () => {
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(hermesProjection);
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+-      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+     }
+ 
+     expect(findCommandEntry(["task", "run", "tool"])?.requirements).toEqual(["project"]);
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.ts b/packages/agentplane/src/cli/run-cli/command-catalog.ts
+index b3a26b837..09f46fb05 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.ts
+@@ -8,7 +8,7 @@ import { LIFECYCLE_COMMANDS } from "./command-catalog/lifecycle.js";
+ import { PROJECT_COMMANDS } from "./command-catalog/project.js";
+ import { TASK_COMMANDS } from "./command-catalog/task.js";
+ 
+-export type { CommandEntry, RunDeps } from "./command-catalog/kernel.js";
++export type { CommandEntry } from "./command-catalog/kernel.js";
+ 
+ export const COMMANDS = [
+   ...CORE_COMMANDS,
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts b/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts
+new file mode 100644
+index 000000000..fedb2c548
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts
+@@ -0,0 +1,321 @@
++import { contextIngestSpec } from "../../../commands/context/ingest.spec.js";
++import {
++  contextCapabilityDiscoverSpec,
++  contextCapabilitySearchSpec,
++  contextCapabilitySpec,
++  contextCapabilityValidateSpec,
++  contextDashboardSpec,
++  contextDoctorSpec,
++  contextExtractionApplySpec,
++  contextFinalizeTaskSpec,
++  contextGraphExportSpec,
++  contextGraphNeighborsSpec,
++  contextGraphShowSpec,
++  contextGraphSpec,
++  contextGraphSummarySpec,
++  contextGraphValidateSpec,
++  contextHarvestSpec,
++  contextHarvestTasksSpec,
++  contextInitSpec,
++  contextMigrateSpec,
++  contextReindexSpec,
++  contextSearchSpec,
++  contextShowSpec,
++  contextSpec,
++  contextSuperviseTaskSpec,
++  contextVerifyTaskSpec,
++  contextWikiExplainSpec,
++  contextWikiIndexSpec,
++  contextWikiLinkSpec,
++  contextWikiLintSpec,
++  contextWikiNewSpec,
++  contextWikiReportSpec,
++  contextWikiSpec,
++} from "../../../commands/context/context.spec.js";
++import {
++  contextCheckSpec,
++  contextLearnChangesSpec,
++  contextLearnFilesSpec,
++  contextLearnSpec,
++  contextLearnTasksSpec,
++} from "../../../commands/context/context.learn.spec.js";
++import {
++  evaluatorApplySpec,
++  evaluatorExecuteSpec,
++  evaluatorListSpec,
++  evaluatorPrepareSpec,
++  evaluatorRunSpec,
++  evaluatorShowSpec,
++  evaluatorSpec,
++} from "../../../commands/evaluator/evaluator.command.js";
++import {
++  loadContextCapabilityDiscoverSpec,
++  loadContextCapabilityGroupSpec,
++  loadContextCapabilitySearchSpec,
++  loadContextCapabilityValidateSpec,
++  loadContextCheckSpec,
++  loadContextDashboardSpec,
++  loadContextDoctorSpec,
++  loadContextExtractionApplySpec,
++  loadContextFinalizeTaskSpec,
++  loadContextGraphExportSpec,
++  loadContextGraphGroupSpec,
++  loadContextGraphNeighborsSpec,
++  loadContextGraphShowSpec,
++  loadContextGraphSummarySpec,
++  loadContextGraphValidateSpec,
++  loadContextGroupSpec,
++  loadContextHarvestGroupSpec,
++  loadContextHarvestTasksSpec,
++  loadContextIngestSpec,
++  loadContextInitSpec,
++  loadContextLearnChangesSpec,
++  loadContextLearnFilesSpec,
++  loadContextLearnGroupSpec,
++  loadContextLearnTasksSpec,
++  loadContextMigrateSpec,
++  loadContextReindexSpec,
++  loadContextSearchSpec,
++  loadContextShowSpec,
++  loadContextSuperviseTaskSpec,
++  loadContextVerifyTaskSpec,
++  loadContextWikiExplainSpec,
++  loadContextWikiGroupSpec,
++  loadContextWikiIndexSpec,
++  loadContextWikiLinkSpec,
++  loadContextWikiLintSpec,
++  loadContextWikiNewSpec,
++  loadContextWikiReportSpec,
++} from "../command-loaders/project.js";
++import {
++  loadEvaluatorApplySpec,
++  loadEvaluatorExecuteSpec,
++  loadEvaluatorListSpec,
++  loadEvaluatorPrepareSpec,
++  loadEvaluatorRunPrepareSpec,
++  loadEvaluatorRunWriteSpec,
++  loadEvaluatorShowSpec,
++  loadEvaluatorSpec,
++} from "../command-loaders/evaluator.js";
++
++import {
++  declareConditionalSessionCommand,
++  declareSessionCommand,
++  type CommandEntry,
++} from "./kernel.js";
++import {
++  CONTEXT_PROJECT_REQUIREMENTS,
++  CONTEXT_TASK_READ_REQUIREMENTS,
++  CONTEXT_TASK_WRITE_REQUIREMENTS,
++  EVALUATOR_EXECUTE_REQUIREMENTS,
++  EVALUATOR_PREPARE_REQUIREMENTS,
++  EVALUATOR_WRITE_REQUIREMENTS,
++} from "./context-evaluator-capability-profiles.js";
++import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++
++export const EVALUATOR_COMMANDS = [
++  declareSessionCommand(evaluatorSpec, {
++    load: loadEvaluatorSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(evaluatorListSpec, {
++    load: loadEvaluatorListSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(evaluatorShowSpec, {
++    load: loadEvaluatorShowSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(evaluatorPrepareSpec, {
++    load: loadEvaluatorPrepareSpec,
++    requirements: EVALUATOR_PREPARE_REQUIREMENTS,
++  }),
++  declareSessionCommand(evaluatorApplySpec, {
++    load: loadEvaluatorApplySpec,
++    requirements: EVALUATOR_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(evaluatorExecuteSpec, {
++    load: loadEvaluatorExecuteSpec,
++    requirements: EVALUATOR_EXECUTE_REQUIREMENTS,
++  }),
++  declareConditionalSessionCommand(evaluatorRunSpec, {
++    default: {
++      load: loadEvaluatorRunPrepareSpec,
++      requirements: EVALUATOR_PREPARE_REQUIREMENTS,
++    },
++    selected: {
++      when: (parsed) => parsed.record,
++      load: loadEvaluatorRunWriteSpec,
++      requirements: EVALUATOR_WRITE_REQUIREMENTS,
++    },
++  }),
++] as const satisfies readonly CommandEntry[];
++
++export const CONTEXT_COMMANDS = [
++  declareSessionCommand(contextSpec, {
++    load: loadContextGroupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextIngestSpec, {
++    load: loadContextIngestSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextInitSpec, {
++    load: loadContextInitSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextMigrateSpec, {
++    load: loadContextMigrateSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextLearnSpec, {
++    load: loadContextLearnGroupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextLearnFilesSpec, {
++    load: loadContextLearnFilesSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextLearnChangesSpec, {
++    load: loadContextLearnChangesSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextLearnTasksSpec, {
++    load: loadContextLearnTasksSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextCheckSpec, {
++    load: loadContextCheckSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextReindexSpec, {
++    load: loadContextReindexSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextSearchSpec, {
++    load: loadContextSearchSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextDashboardSpec, {
++    load: loadContextDashboardSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextShowSpec, {
++    load: loadContextShowSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiSpec, {
++    load: loadContextWikiGroupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiNewSpec, {
++    load: loadContextWikiNewSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiLintSpec, {
++    load: loadContextWikiLintSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiExplainSpec, {
++    load: loadContextWikiExplainSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiLinkSpec, {
++    load: loadContextWikiLinkSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiIndexSpec, {
++    load: loadContextWikiIndexSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextWikiReportSpec, {
++    load: loadContextWikiReportSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextDoctorSpec, {
++    load: loadContextDoctorSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextFinalizeTaskSpec, {
++    load: loadContextFinalizeTaskSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextSuperviseTaskSpec, {
++    load: loadContextSuperviseTaskSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(contextVerifyTaskSpec, {
++    load: loadContextVerifyTaskSpec,
++    requirements: CONTEXT_TASK_READ_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextHarvestSpec, {
++    load: loadContextHarvestGroupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextHarvestTasksSpec, {
++    load: loadContextHarvestTasksSpec,
++    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextGraphSpec, {
++    load: loadContextGraphGroupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextGraphSummarySpec, {
++    load: loadContextGraphSummarySpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextGraphShowSpec, {
++    load: loadContextGraphShowSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextGraphNeighborsSpec, {
++    load: loadContextGraphNeighborsSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextGraphValidateSpec, {
++    load: loadContextGraphValidateSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextGraphExportSpec, {
++    load: loadContextGraphExportSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextExtractionApplySpec, {
++    load: loadContextExtractionApplySpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextCapabilitySpec, {
++    load: loadContextCapabilityGroupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextCapabilityValidateSpec, {
++    load: loadContextCapabilityValidateSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextCapabilitySearchSpec, {
++    load: loadContextCapabilitySearchSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(contextCapabilityDiscoverSpec, {
++    load: loadContextCapabilityDiscoverSpec,
++    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+index 4d59c6855..7c4f94ca4 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+@@ -49,7 +49,12 @@ import {
+ import { initSpec } from "../commands/init/spec.js";
+ import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
+ 
+-import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
++import {
++  declareCommand,
++  declareConditionalSessionCommand,
++  declareSessionCommand,
++  type CommandEntry,
++} from "./kernel.js";
+ import {
+   NO_CONTEXT_REQUIREMENTS,
+   PROJECT_CONFIG_REQUIREMENTS,
+@@ -61,6 +66,7 @@ import {
+   RELEASE_PLAN_REQUIREMENTS,
+   RELEASE_PUBLISH_REQUIREMENTS,
+ } from "./provider-ops-capability-profiles.js";
++import { TASK_READ_REQUIREMENTS, TASK_WRITE_REQUIREMENTS } from "./task-capability-profiles.js";
+ import {
+   fromCommandsInit,
+   fromCommandsUpgradeCommand,
+@@ -87,7 +93,8 @@ import {
+   fromCommandsWorkflowRestoreCommand,
+   fromCommandsWorkflowMigrateCommand,
+   fromCommandsWorkflowPlaybookCommand,
+-  loadCodexPluginInstallSpec,
++  loadCodexPluginInstallRepoSpec,
++  loadCodexPluginInstallUserSpec,
+   loadIncidentsCollectSpec,
+   loadIncidentsAdviseSpec,
+   loadAgentsSpec,
+@@ -108,10 +115,12 @@ import {
+ 
+ export const CORE_COMMANDS = [
+   fromCommandsInit(initSpec, "runInit", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["init"]),
+   }),
+-  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", { needs: "none" }),
++  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
+   declareSessionCommand(releaseSpec, {
+     load: loadReleaseSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+@@ -143,31 +152,38 @@ export const CORE_COMMANDS = [
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsCoreQuickstart(quickstartSpec, "runQuickstart", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["quickstart"]),
+   }),
+   declareCommand(demoSpec, {
+     load: loadDemoSpec,
+-    needs: "project+config+task",
++    requirements: TASK_WRITE_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["demo"]),
+   }),
+   fromCommandsCorePreflight(preflightSpec, "runPreflight", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["preflight"]),
+   }),
+   fromCommandsCodex(codexSpec, "runCodex", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsCodex(codexPluginSpec, "runCodexPlugin", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  declareCommand(codexPluginInstallSpec, {
+-    load: loadCodexPluginInstallSpec,
+-    needs: "none",
++  declareConditionalSessionCommand(codexPluginInstallSpec, {
++    default: {
++      load: loadCodexPluginInstallUserSpec,
++      requirements: NO_CONTEXT_REQUIREMENTS,
++    },
++    selected: {
++      when: (parsed) => parsed.scope === "repo",
++      load: loadCodexPluginInstallRepoSpec,
++      requirements: PROJECT_REQUIREMENTS,
++    },
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+@@ -193,20 +209,28 @@ export const CORE_COMMANDS = [
+   }),
+   declareCommand(insightsIssueSpec, {
+     load: loadInsightsIssueSpec,
+-    needs: "project+config",
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+   declareCommand(intakeSpec, {
+     load: loadIntakeSpec,
+-    needs: "project+config",
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+   fromCommandsDoctorGitLocksCommand(doctorGitLocksSpec, "runDoctorGitLocks", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
++  }),
++  fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(incidentsCollectSpec, {
++    load: loadIncidentsCollectSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++  }),
++  declareCommand(incidentsAdviseSpec, {
++    load: loadIncidentsAdviseSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+   }),
+-  fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", { needs: "none" }),
+-  declareCommand(incidentsCollectSpec, { load: loadIncidentsCollectSpec }),
+-  declareCommand(incidentsAdviseSpec, { load: loadIncidentsAdviseSpec }),
+   fromCommandsCoreRole(roleSpec, "runRole", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["role"]),
+   }),
+   declareSessionCommand(platformSpec, {
+@@ -258,37 +282,37 @@ export const CORE_COMMANDS = [
+     load: loadIdeSyncSpec,
+     requirements: PROJECT_REQUIREMENTS,
+   }),
+-  fromCommandsDoctorRun(doctorSpec, "runDoctor", { needs: "project" }),
++  fromCommandsDoctorRun(doctorSpec, "runDoctor", { requirements: PROJECT_REQUIREMENTS }),
+   fromCommandsWorkflowCommand(workflowSpec, "runWorkflow", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsWorkflowBuildCommand(workflowBuildSpec, "runWorkflowBuild", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsWorkflowRestoreCommand(workflowRestoreSpec, "runWorkflowRestore", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsWorkflowMigrateCommand(workflowMigrateSpec, "runWorkflowMigrate", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+   fromCommandsWorkflowPlaybookCommand(workflowDebugSpec, "runWorkflowDebug", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsWorkflowPlaybookCommand(workflowSyncSpec, "runWorkflowSync", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+   fromCommandsWorkflowPlaybookCommand(workflowLandSpec, "runWorkflowLand", {
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts
+index 6977ddaaa..bddb3051b 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts
+@@ -1,5 +1,3 @@
+-import { CliError } from "../../../shared/errors.js";
+-import { exitCodeForError } from "../../exit-codes.js";
+ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+ import {
+   isCommandContextCapability,
+@@ -8,7 +6,6 @@ import {
+   type CommandCapability,
+   type CommandPreparationNode,
+   type CommandSession,
+-  type CommandSessionResolvers,
+ } from "./command-session.js";
+ 
+ export { createCommandSession } from "./command-session.js";
+@@ -19,28 +16,20 @@ export type {
+   CommandSessionResolvers,
+ } from "./command-session.js";
+ 
+-export type RunDeps = Pick<
+-  CommandSessionResolvers,
+-  "getCtx" | "getResolvedProject" | "getLoadedConfig" | "getHelpJsonForDocs"
+->;
+-
+ export type DispatchNeeds = {
+   project: boolean;
+   loadedConfig: boolean;
+   taskContext: boolean;
+ };
+ 
+-export type CommandNeeds = "none" | "project" | "project+config" | "project+config+task";
+ export type CommandSurface = "user" | "advanced" | "framework" | "internal";
+ 
+ export type CommandEntry = {
+   spec: CommandSpec<unknown>;
+   load: (session: CommandSession<CommandCapability>) => Promise<CommandHandler<unknown>>;
+   selectSession?: (parsed: unknown) => CommandSessionSelection;
+-  needs: CommandNeeds;
+   requirements: readonly CommandCapability[];
+   preparationNodes: readonly CommandPreparationNode[];
+-  compatibility: { mode: "legacy-command-needs"; needs: CommandNeeds } | null;
+   dispatch: DispatchNeeds;
+   surface: CommandSurface;
+   helpGroup?: string;
+@@ -53,7 +42,6 @@ type CommandSessionSelection = {
+ };
+ 
+ export type CommandMeta = {
+-  needs?: CommandNeeds;
+   surface?: CommandSurface;
+   helpGroup?: string;
+   invocation?: string;
+@@ -61,55 +49,6 @@ export type CommandMeta = {
+ 
+ export type CommandModule = object;
+ 
+-type LoadedCommandDeclaration<TParsed> = CommandMeta & {
+-  load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>;
+-  module?: never;
+-  runExport?: never;
+-};
+-
+-type ExportedCommandDeclaration = CommandMeta & {
+-  module: () => Promise<CommandModule>;
+-  runExport: string;
+-  load?: never;
+-};
+-
+-type CommandDeclaration<TParsed> = LoadedCommandDeclaration<TParsed> | ExportedCommandDeclaration;
+-
+-const LEGACY_CONTEXT_REQUIREMENTS = [
+-  "project",
+-  "config",
+-  "backend.read",
+-  "backend.write",
+-  "task.read",
+-  "task.write",
+-  "git.head",
+-  "git.diff",
+-  "git.mutate",
+-  "route.local",
+-  "route.remote",
+-  "policy",
+-  "approvals",
+-  "context.search",
+-  "provider",
+-] as const satisfies readonly CommandCapability[];
+-
+-function legacyRequirements(needs: CommandNeeds): readonly CommandCapability[] {
+-  switch (needs) {
+-    case "none": {
+-      return [];
+-    }
+-    case "project": {
+-      return ["project"];
+-    }
+-    case "project+config": {
+-      return ["project", "config"];
+-    }
+-    case "project+config+task": {
+-      return LEGACY_CONTEXT_REQUIREMENTS;
+-    }
+-  }
+-}
+-
+ function preparationNodesForRequirements(
+   requirements: readonly CommandCapability[],
+ ): readonly CommandPreparationNode[] {
+@@ -123,64 +62,14 @@ function normalizeDispatchRequirements(requirements: readonly CommandCapability[
+   return { project, loadedConfig, taskContext };
+ }
+ 
+-function coarseNeedsForDispatch(dispatch: DispatchNeeds): CommandNeeds {
+-  if (dispatch.taskContext) return "project+config+task";
+-  if (dispatch.loadedConfig) return "project+config";
+-  if (dispatch.project) return "project";
+-  return "none";
+-}
+-
+-function legacyRunDeps(session: CommandSession<CommandCapability>, needs: CommandNeeds): RunDeps {
+-  const getCtx = async (command: string) => {
+-    if (needs !== "project+config+task") denyLegacyAccess(command, "task context", needs);
+-    return await session.require("task.read", command);
+-  };
+-  const getResolvedProject = async (command: string) => {
+-    if (needs === "none") denyLegacyAccess(command, "project", needs);
+-    return await session.require("project", command);
+-  };
+-  const getLoadedConfig = async (command: string) => {
+-    if (needs === "none" || needs === "project") denyLegacyAccess(command, "config", needs);
+-    return await session.require("config", command);
+-  };
+-  return {
+-    getCtx,
+-    getResolvedProject,
+-    getLoadedConfig,
+-    getHelpJsonForDocs: () => session.getHelpJsonForDocs(),
+-  };
+-}
+-
+-function denyLegacyAccess(command: string, capability: string, needs: CommandNeeds): never {
+-  throw new CliError({
+-    exitCode: exitCodeForError("E_INTERNAL"),
+-    code: "E_INTERNAL",
+-    message: `Internal error: legacy command "${command}" declared needs="${needs}" but attempted ${capability}`,
+-  });
+-}
+-
+-export function declareCommand<TParsed>(
++export function declareCommand<TParsed, const TRequirements extends readonly CommandCapability[]>(
+   spec: CommandSpec<TParsed>,
+-  declaration: CommandDeclaration<TParsed>,
++  declaration: CommandMeta & {
++    requirements: TRequirements;
++    load: (session: CommandSession<TRequirements[number]>) => Promise<CommandHandler<TParsed>>;
++  },
+ ): CommandEntry {
+-  const needs = declaration.needs ?? "project+config+task";
+-  const requirements = legacyRequirements(needs);
+-  const dispatch = normalizeDispatchRequirements(requirements);
+-  return {
+-    spec: spec as CommandSpec<unknown>,
+-    load: (session) =>
+-      loadDeclaredCommand(declaration, legacyRunDeps(session, needs)) as Promise<
+-        CommandHandler<unknown>
+-      >,
+-    needs,
+-    requirements,
+-    preparationNodes: preparationNodesForRequirements(requirements),
+-    compatibility: { mode: "legacy-command-needs", needs },
+-    dispatch,
+-    surface: declaration.surface ?? "user",
+-    helpGroup: declaration.helpGroup,
+-    invocation: declaration.invocation,
+-  };
++  return declareSessionCommand(spec, declaration);
+ }
+ 
+ export function declareSessionCommand<
+@@ -188,7 +77,7 @@ export function declareSessionCommand<
+   const TRequirements extends readonly CommandCapability[],
+ >(
+   spec: CommandSpec<TParsed>,
+-  declaration: Omit<CommandMeta, "needs"> & {
++  declaration: CommandMeta & {
+     requirements: TRequirements;
+     load: (session: CommandSession<TRequirements[number]>) => Promise<CommandHandler<TParsed>>;
+   },
+@@ -201,10 +90,8 @@ export function declareSessionCommand<
+       declaration.load(session as CommandSession<TRequirements[number]>) as Promise<
+         CommandHandler<unknown>
+       >,
+-    needs: coarseNeedsForDispatch(dispatch),
+     requirements: [...declaration.requirements],
+     preparationNodes: preparationNodesForRequirements(declaration.requirements),
+-    compatibility: null,
+     dispatch,
+     surface: declaration.surface ?? "user",
+     helpGroup: declaration.helpGroup,
+@@ -233,7 +120,7 @@ export function defineCommandSessionSelection<
+ 
+ export function declareMultiSessionCommand<TParsed>(
+   spec: CommandSpec<TParsed>,
+-  declaration: Omit<CommandMeta, "needs"> & {
++  declaration: CommandMeta & {
+     default: DeclaredCommandSessionSelection<TParsed>;
+     variants: readonly {
+       when: (parsed: TParsed) => boolean;
+@@ -262,10 +149,8 @@ export function declareMultiSessionCommand<TParsed>(
+         load: (session) => selected.load(session) as Promise<CommandHandler<unknown>>,
+       };
+     },
+-    needs: coarseNeedsForDispatch(dispatch),
+     requirements: [...declaration.default.requirements],
+     preparationNodes: preparationNodesForRequirements(declaration.default.requirements),
+-    compatibility: null,
+     dispatch,
+     surface: declaration.surface ?? "user",
+     helpGroup: declaration.helpGroup,
+@@ -279,7 +164,7 @@ export function declareConditionalSessionCommand<
+   const TSelectedRequirements extends readonly CommandCapability[],
+ >(
+   spec: CommandSpec<TParsed>,
+-  declaration: Omit<CommandMeta, "needs"> & {
++  declaration: CommandMeta & {
+     default: {
+       requirements: TDefaultRequirements;
+       load: (
+@@ -320,10 +205,8 @@ export function declareConditionalSessionCommand<
+     load: defaultSelection.load,
+     selectSession: (parsed) =>
+       declaration.selected.when(parsed as TParsed) ? selectedSelection : defaultSelection,
+-    needs: coarseNeedsForDispatch(dispatch),
+     requirements: [...declaration.default.requirements],
+     preparationNodes: preparationNodesForRequirements(declaration.default.requirements),
+-    compatibility: null,
+     dispatch,
+     surface: declaration.surface ?? "user",
+     helpGroup: declaration.helpGroup,
+@@ -332,27 +215,29 @@ export function declareConditionalSessionCommand<
+ }
+ 
+ export function commandModule<TModule extends CommandModule>(module: () => Promise<TModule>) {
+-  return function declareModuleCommand<TParsed>(
++  return function declareModuleCommand<
++    TParsed,
++    const TRequirements extends readonly CommandCapability[],
++  >(
+     spec: CommandSpec<TParsed>,
+     runExport: Extract<keyof TModule, string>,
+-    meta?: CommandMeta,
++    declaration: CommandMeta & { requirements: TRequirements },
+   ): CommandEntry {
+-    return declareCommand(spec, { module, runExport, ...meta });
++    return declareSessionCommand(spec, {
++      ...declaration,
++      load: async (_session) => await loadDeclaredCommand(module, runExport),
++    });
+   };
+ }
+ 
+ async function loadDeclaredCommand<TParsed>(
+-  declaration: CommandDeclaration<TParsed>,
+-  deps: RunDeps,
++  module: () => Promise<CommandModule>,
++  runExport: string,
+ ): Promise<CommandHandler<TParsed>> {
+-  if (typeof declaration.load === "function") {
+-    return declaration.load(deps);
+-  }
+-
+-  const module = await declaration.module();
+-  const handler = (module as Record<string, unknown>)[declaration.runExport];
++  const loaded = await module();
++  const handler = (loaded as Record<string, unknown>)[runExport];
+   if (typeof handler !== "function") {
+-    throw new Error(`Command module does not export handler "${declaration.runExport}"`);
++    throw new Error(`Command module does not export handler "${runExport}"`);
+   }
+   return handler as CommandHandler<TParsed>;
+ }
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+index 6a7c3507f..322555311 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+@@ -73,10 +73,18 @@ export const LIFECYCLE_COMMANDS = [
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsHooksHooksCommand(hooksSpec, "runHooks", { needs: "none" }),
+-  fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
+-  fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),
+-  fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {}),
++  fromCommandsHooksHooksCommand(hooksSpec, "runHooks", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
+   declareSessionCommand(cleanupSpec, {
+     load: loadCleanupSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+@@ -85,8 +93,17 @@ export const LIFECYCLE_COMMANDS = [
+     load: loadCleanupMergedSpec,
+     requirements: PROVIDER_WRITE_REQUIREMENTS,
+   }),
+-  fromCommandsGuardGuardCommand(guardSpec, "runGuard", { needs: "none" }),
+-  fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {}),
+-  fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow"),
+-  declareCommand(guardCommitSpec, { load: loadGuardCommitSpec }),
++  fromCommandsGuardGuardCommand(guardSpec, "runGuard", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(guardCommitSpec, {
++    load: loadGuardCommitSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
+ ] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index 411dd5a7a..1bb9191e4 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -79,74 +79,21 @@ import { recipesListSpec } from "../../../commands/recipes/list.command.js";
+ import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
+ import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
+ import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
+-import { contextIngestSpec } from "../../../commands/context/ingest.spec.js";
+-import {
+-  contextCapabilityDiscoverSpec,
+-  contextCapabilitySearchSpec,
+-  contextCapabilitySpec,
+-  contextCapabilityValidateSpec,
+-  contextDashboardSpec,
+-  contextDoctorSpec,
+-  contextFinalizeTaskSpec,
+-  contextExtractionApplySpec,
+-  contextSuperviseTaskSpec,
+-  contextGraphNeighborsSpec,
+-  contextGraphExportSpec,
+-  contextGraphShowSpec,
+-  contextGraphSpec,
+-  contextGraphSummarySpec,
+-  contextGraphValidateSpec,
+-  contextHarvestSpec,
+-  contextHarvestTasksSpec,
+-  contextInitSpec,
+-  contextMigrateSpec,
+-  contextReindexSpec,
+-  contextSearchSpec,
+-  contextShowSpec,
+-  contextSpec,
+-  contextVerifyTaskSpec,
+-  contextWikiExplainSpec,
+-  contextWikiIndexSpec,
+-  contextWikiLinkSpec,
+-  contextWikiLintSpec,
+-  contextWikiNewSpec,
+-  contextWikiReportSpec,
+-  contextWikiSpec,
+-} from "../../../commands/context/context.spec.js";
+-import {
+-  contextCheckSpec,
+-  contextLearnChangesSpec,
+-  contextLearnFilesSpec,
+-  contextLearnSpec,
+-  contextLearnTasksSpec,
+-} from "../../../commands/context/context.learn.spec.js";
+-import {
+-  evaluatorApplySpec,
+-  evaluatorExecuteSpec,
+-  evaluatorListSpec,
+-  evaluatorPrepareSpec,
+-  evaluatorRunSpec,
+-  evaluatorShowSpec,
+-  evaluatorSpec,
+-} from "../../../commands/evaluator/evaluator.command.js";
+-
+-import {
+-  declareCommand,
+-  declareConditionalSessionCommand,
+-  declareSessionCommand,
+-  type CommandEntry,
+-} from "./kernel.js";
++import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
++import { CONTEXT_COMMANDS, EVALUATOR_COMMANDS } from "./context-evaluator.js";
+ import { HERMES_COMMANDS } from "./hermes.js";
+ import { INTEGRATION_QUEUE_COMMANDS } from "./integration-queue.js";
+ import {
+-  CONTEXT_PROJECT_REQUIREMENTS,
+-  CONTEXT_TASK_READ_REQUIREMENTS,
+-  CONTEXT_TASK_WRITE_REQUIREMENTS,
+-  EVALUATOR_EXECUTE_REQUIREMENTS,
+-  EVALUATOR_PREPARE_REQUIREMENTS,
+-  EVALUATOR_WRITE_REQUIREMENTS,
+-} from "./context-evaluator-capability-profiles.js";
+-import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++  NO_CONTEXT_REQUIREMENTS,
++  PROJECT_CONFIG_REQUIREMENTS,
++  PROJECT_REQUIREMENTS,
++} from "./project-capability-profiles.js";
++import {
++  TASK_LIFECYCLE_REQUIREMENTS,
++  TASK_READ_REQUIREMENTS,
++  TASK_ROUTE_LOCAL_REQUIREMENTS,
++  TASK_WRITE_REQUIREMENTS,
++} from "./task-capability-profiles.js";
+ import {
+   LOCAL_OPS_WRITE_REQUIREMENTS,
+   PROVIDER_READ_REQUIREMENTS,
+@@ -212,121 +159,101 @@ import {
+   loadBlueprintReportSpec,
+   loadBlueprintValidateSpec,
+   loadBlueprintScaffoldSpec,
+-  loadEvaluatorSpec,
+-  loadEvaluatorListSpec,
+-  loadEvaluatorShowSpec,
+-  loadEvaluatorPrepareSpec,
+-  loadEvaluatorApplySpec,
+-  loadEvaluatorExecuteSpec,
+-  loadEvaluatorRunPrepareSpec,
+-  loadEvaluatorRunWriteSpec,
+   fromCommandsBlueprintsCommand,
+-  loadContextIngestSpec,
+-  loadContextGroupSpec,
+-  loadContextInitSpec,
+-  loadContextLearnGroupSpec,
+-  loadContextWikiGroupSpec,
+-  loadContextHarvestGroupSpec,
+-  loadContextGraphGroupSpec,
+-  loadContextCapabilityGroupSpec,
+-  loadContextMigrateSpec,
+-  loadContextCheckSpec,
+-  loadContextReindexSpec,
+-  loadContextSearchSpec,
+-  loadContextDashboardSpec,
+-  loadContextShowSpec,
+-  loadContextWikiNewSpec,
+-  loadContextWikiLintSpec,
+-  loadContextWikiExplainSpec,
+-  loadContextWikiLinkSpec,
+-  loadContextWikiIndexSpec,
+-  loadContextWikiReportSpec,
+-  loadContextDoctorSpec,
+-  loadContextFinalizeTaskSpec,
+-  loadContextVerifyTaskSpec,
+-  loadContextGraphSummarySpec,
+-  loadContextGraphShowSpec,
+-  loadContextGraphNeighborsSpec,
+-  loadContextGraphValidateSpec,
+-  loadContextGraphExportSpec,
+-  loadContextExtractionApplySpec,
+-  loadContextCapabilityValidateSpec,
+-  loadContextCapabilitySearchSpec,
+-  loadContextCapabilityDiscoverSpec,
+-  loadContextLearnFilesSpec,
+-  loadContextLearnChangesSpec,
+-  loadContextLearnTasksSpec,
+-  loadContextHarvestTasksSpec,
+-  loadContextSuperviseTaskSpec,
+ } from "../command-loaders/project.js";
+ 
+ export const PROJECT_COMMANDS = [
+-  declareCommand(acrSpec, { load: loadAcrSpec, needs: "none" }),
+-  declareCommand(acrSchemaSpec, { load: loadAcrSchemaSpec, needs: "none" }),
+-  declareCommand(acrGenerateSpec, { load: loadAcrGenerateSpec }),
+-  declareCommand(acrValidateSpec, { load: loadAcrValidateSpec }),
+-  declareCommand(acrCheckSpec, { load: loadAcrCheckSpec }),
+-  declareCommand(acrExplainSpec, { load: loadAcrExplainSpec }),
+-  fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
+-  declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
+-  declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
++  declareCommand(acrSpec, {
++    load: loadAcrSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(acrSchemaSpec, {
++    load: loadAcrSchemaSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(acrGenerateSpec, {
++    load: loadAcrGenerateSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareCommand(acrValidateSpec, {
++    load: loadAcrValidateSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareCommand(acrCheckSpec, {
++    load: loadAcrCheckSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareCommand(acrExplainSpec, {
++    load: loadAcrExplainSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(evidenceBundleSpec, {
++    load: loadEvidenceBundleSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareCommand(evidenceVerifySpec, {
++    load: loadEvidenceVerifySpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
+   ...HERMES_COMMANDS,
+-  declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
+-  declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
+-  declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),
+-  declareCommand(blueprintExplainSpec, { load: loadBlueprintExplainSpec }),
+-  declareCommand(blueprintSnapshotSpec, { load: loadBlueprintSnapshotSpec }),
+-  declareCommand(blueprintDriftSpec, { load: loadBlueprintDriftSpec }),
+-  declareCommand(blueprintReportSpec, { load: loadBlueprintReportSpec, needs: "none" }),
+-  declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
+-  declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
+-  declareSessionCommand(evaluatorSpec, {
+-    load: loadEvaluatorSpec,
++  declareCommand(blueprintSpec, {
++    load: loadBlueprintSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(evaluatorListSpec, {
+-    load: loadEvaluatorListSpec,
++  declareCommand(blueprintListSpec, {
++    load: loadBlueprintListSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(evaluatorShowSpec, {
+-    load: loadEvaluatorShowSpec,
++  declareCommand(blueprintExamplesSpec, {
++    load: loadBlueprintExamplesSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(blueprintExplainSpec, {
++    load: loadBlueprintExplainSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareCommand(blueprintSnapshotSpec, {
++    load: loadBlueprintSnapshotSpec,
++    requirements: TASK_LIFECYCLE_REQUIREMENTS,
++  }),
++  declareCommand(blueprintDriftSpec, {
++    load: loadBlueprintDriftSpec,
++    requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
++  }),
++  declareCommand(blueprintReportSpec, {
++    load: loadBlueprintReportSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(blueprintScaffoldSpec, {
++    load: loadBlueprintScaffoldSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareCommand(blueprintValidateSpec, {
++    load: loadBlueprintValidateSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  ...EVALUATOR_COMMANDS,
++  fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(evaluatorPrepareSpec, {
+-    load: loadEvaluatorPrepareSpec,
+-    requirements: EVALUATOR_PREPARE_REQUIREMENTS,
+-  }),
+-  declareSessionCommand(evaluatorApplySpec, {
+-    load: loadEvaluatorApplySpec,
+-    requirements: EVALUATOR_WRITE_REQUIREMENTS,
+-  }),
+-  declareSessionCommand(evaluatorExecuteSpec, {
+-    load: loadEvaluatorExecuteSpec,
+-    requirements: EVALUATOR_EXECUTE_REQUIREMENTS,
+-  }),
+-  declareConditionalSessionCommand(evaluatorRunSpec, {
+-    default: {
+-      load: loadEvaluatorRunPrepareSpec,
+-      requirements: EVALUATOR_PREPARE_REQUIREMENTS,
+-    },
+-    selected: {
+-      when: (parsed) => parsed.record,
+-      load: loadEvaluatorRunWriteSpec,
+-      requirements: EVALUATOR_WRITE_REQUIREMENTS,
+-    },
+-  }),
+-  fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
+-  fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),
+   fromCommandsBlueprintsCommand(blueprintsCatalogRefreshSpec, "runBlueprintsCatalogRefresh", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+   fromCommandsBlueprintsCommand(blueprintsCatalogListSpec, "runBlueprintsCatalogList", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+   fromCommandsBlueprintsCommand(blueprintsCatalogInfoSpec, "runBlueprintsCatalogInfo", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+-  fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
+   declareSessionCommand(workStartSpec, {
+     load: loadWorkStartSpec,
+     requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+@@ -335,210 +262,108 @@ export const PROJECT_COMMANDS = [
+     load: loadWorkResumeSpec,
+     requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+   }),
+-  fromCommandsFlowCommand(flowSpec, "runFlow", { needs: "none" }),
++  fromCommandsFlowCommand(flowSpec, "runFlow", { requirements: NO_CONTEXT_REQUIREMENTS }),
+   declareSessionCommand(flowRepairSpec, {
+     load: loadFlowRepairSpec,
+     requirements: PROVIDER_WRITE_REQUIREMENTS,
+   }),
+-  fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
+-  fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
+-  fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),
+-  fromRecipesActiveSpec(recipesActiveSpec, "runRecipesActive"),
+-  fromCommandsRecipesListCommand(recipesListSpec, "runRecipesList", { needs: "none" }),
+-  fromCommandsRecipesListRemoteCommand(recipesListRemoteSpec, "runRecipesListRemote", {}),
+-  fromRecipesInfoSpec(recipesInfoSpec, "runRecipesInfo", { needs: "none" }),
+-  fromCommandsRecipesExplainCommand(recipesExplainSpec, "runRecipesExplain", {}),
+-  declareCommand(recipesExplainActiveSpec, { load: loadRecipesExplainActiveSpec }),
+-  fromCommandsRecipesEnableCommand(recipesEnableSpec, "runRecipesEnable", {}),
+-  fromRecipesDisableSpec(recipesDisableSpec, "runRecipesDisable"),
+-  fromCommandsRecipesRemoveCommand(recipesRemoveSpec, "runRecipesRemove", {}),
+-  fromRecipesUpdateSpec(recipesUpdateSpec, "runRecipesUpdate"),
+-  fromCommandsRecipesDetachCommand(recipesDetachSpec, "runRecipesDetach", {}),
+-  fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune"),
+-  fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", { needs: "none" }),
+-  declareSessionCommand(contextSpec, {
+-    load: loadContextGroupSpec,
++  fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextIngestSpec, {
+-    load: loadContextIngestSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
+-    surface: "advanced",
++  fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextInitSpec, {
+-    load: loadContextInitSpec,
++  fromRecipesActiveSpec(recipesActiveSpec, "runRecipesActive", {
++    requirements: PROJECT_REQUIREMENTS,
++  }),
++  fromCommandsRecipesListCommand(recipesListSpec, "runRecipesList", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextMigrateSpec, {
+-    load: loadContextMigrateSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
++  fromCommandsRecipesListRemoteCommand(recipesListRemoteSpec, "runRecipesListRemote", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextLearnSpec, {
+-    load: loadContextLearnGroupSpec,
++  fromRecipesInfoSpec(recipesInfoSpec, "runRecipesInfo", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextLearnFilesSpec, {
+-    load: loadContextLearnFilesSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  fromCommandsRecipesExplainCommand(recipesExplainSpec, "runRecipesExplain", {
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextLearnChangesSpec, {
+-    load: loadContextLearnChangesSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  declareCommand(recipesExplainActiveSpec, {
++    load: loadRecipesExplainActiveSpec,
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextLearnTasksSpec, {
+-    load: loadContextLearnTasksSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  fromCommandsRecipesEnableCommand(recipesEnableSpec, "runRecipesEnable", {
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextCheckSpec, {
+-    load: loadContextCheckSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromRecipesDisableSpec(recipesDisableSpec, "runRecipesDisable", {
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextReindexSpec, {
+-    load: loadContextReindexSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
++  fromCommandsRecipesRemoveCommand(recipesRemoveSpec, "runRecipesRemove", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextSearchSpec, {
+-    load: loadContextSearchSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromRecipesUpdateSpec(recipesUpdateSpec, "runRecipesUpdate", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextDashboardSpec, {
+-    load: loadContextDashboardSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromCommandsRecipesDetachCommand(recipesDetachSpec, "runRecipesDetach", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextShowSpec, {
+-    load: loadContextShowSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune", {
++    requirements: PROJECT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextWikiSpec, {
+-    load: loadContextWikiGroupSpec,
++  fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextWikiNewSpec, {
+-    load: loadContextWikiNewSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-  }),
+-  declareSessionCommand(contextWikiLintSpec, {
+-    load: loadContextWikiLintSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  ...CONTEXT_COMMANDS,
++  fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextWikiExplainSpec, {
+-    load: loadContextWikiExplainSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextWikiLinkSpec, {
+-    load: loadContextWikiLinkSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextWikiIndexSpec, {
+-    load: loadContextWikiIndexSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromCommandsBranchBaseCommand(branchBaseClearSpec, "runBranchBaseClear", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextWikiReportSpec, {
+-    load: loadContextWikiReportSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
++  fromBranchBaseExplainSpec(branchBaseExplainSpec, "runBranchBaseExplain", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextDoctorSpec, {
+-    load: loadContextDoctorSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
++  fromCommandsBranchStatusCommand(branchStatusSpec, "runBranchStatus", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextFinalizeTaskSpec, {
+-    load: loadContextFinalizeTaskSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  fromBranchRemoveSpec(branchRemoveSpec, "runBranchRemove", {
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextSuperviseTaskSpec, {
+-    load: loadContextSuperviseTaskSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
++  declareCommand(backendSpec, {
++    load: loadBackendSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextVerifyTaskSpec, {
+-    load: loadContextVerifyTaskSpec,
+-    requirements: CONTEXT_TASK_READ_REQUIREMENTS,
+-    surface: "advanced",
++  declareCommand(backendSyncSpec, {
++    load: loadBackendSyncSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextHarvestSpec, {
+-    load: loadContextHarvestGroupSpec,
+-    requirements: NO_CONTEXT_REQUIREMENTS,
+-    surface: "advanced",
++  declareCommand(backendInspectSpec, {
++    load: loadBackendInspectSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextHarvestTasksSpec, {
+-    load: loadContextHarvestTasksSpec,
+-    requirements: CONTEXT_TASK_WRITE_REQUIREMENTS,
+-    surface: "advanced",
++  declareCommand(backendConnectSpec, {
++    load: loadBackendConnectSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+   }),
+-  declareSessionCommand(contextGraphSpec, {
+-    load: loadContextGraphGroupSpec,
+-    requirements: NO_CONTEXT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextGraphSummarySpec, {
+-    load: loadContextGraphSummarySpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextGraphShowSpec, {
+-    load: loadContextGraphShowSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextGraphNeighborsSpec, {
+-    load: loadContextGraphNeighborsSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextGraphValidateSpec, {
+-    load: loadContextGraphValidateSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextGraphExportSpec, {
+-    load: loadContextGraphExportSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextExtractionApplySpec, {
+-    load: loadContextExtractionApplySpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextCapabilitySpec, {
+-    load: loadContextCapabilityGroupSpec,
+-    requirements: NO_CONTEXT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextCapabilityValidateSpec, {
+-    load: loadContextCapabilityValidateSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextCapabilitySearchSpec, {
+-    load: loadContextCapabilitySearchSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  declareSessionCommand(contextCapabilityDiscoverSpec, {
+-    load: loadContextCapabilityDiscoverSpec,
+-    requirements: CONTEXT_PROJECT_REQUIREMENTS,
+-    surface: "advanced",
+-  }),
+-  fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", { needs: "none" }),
+-  fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {}),
+-  fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet"),
+-  fromCommandsBranchBaseCommand(branchBaseClearSpec, "runBranchBaseClear", {}),
+-  fromBranchBaseExplainSpec(branchBaseExplainSpec, "runBranchBaseExplain"),
+-  fromCommandsBranchStatusCommand(branchStatusSpec, "runBranchStatus", {}),
+-  fromBranchRemoveSpec(branchRemoveSpec, "runBranchRemove"),
+-  declareCommand(backendSpec, { load: loadBackendSpec, needs: "none" }),
+-  declareCommand(backendSyncSpec, { load: loadBackendSyncSpec }),
+-  declareCommand(backendInspectSpec, { load: loadBackendInspectSpec }),
+-  declareCommand(backendConnectSpec, { load: loadBackendConnectSpec }),
+   declareCommand(backendMigrateCanonicalStateSpec, {
+     load: loadBackendMigrateCanonicalStateSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(syncSpec, { load: loadSyncSpec }),
++  declareCommand(syncSpec, {
++    load: loadSyncSpec,
++    requirements: TASK_WRITE_REQUIREMENTS,
++  }),
+   declareSessionCommand(prSpec, {
+     load: loadPrSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index fef3e620e..35c4321f1 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -76,7 +76,9 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
+ import {
+   declareCommand,
+   declareConditionalSessionCommand,
++  declareMultiSessionCommand,
+   declareSessionCommand,
++  defineCommandSessionSelection,
+   type CommandEntry,
+ } from "./kernel.js";
+ import {
+@@ -94,7 +96,7 @@ import {
+   RUNNER_READ_REQUIREMENTS,
+   RUNNER_WRITE_REQUIREMENTS,
+ } from "./runner-hermes-capability-profiles.js";
+-import { PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
++import { NO_CONTEXT_REQUIREMENTS, PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
+ import {
+   fromCommandsTaskTaskCommand,
+   fromCommandsTaskHandoffCommand,
+@@ -151,7 +153,9 @@ import {
+   loadTaskDocSetSpec,
+   loadTaskScrubSpec,
+   loadTaskScaffoldSpec,
+-  loadTaskNormalizeSpec,
++  loadTaskNormalizeLifecycleSpec,
++  loadTaskNormalizeProviderSpec,
++  loadTaskNormalizeWriteSpec,
+   loadTaskObsidianCleanSpec,
+   loadTaskObsidianSpec,
+   loadTaskMigrateSpec,
+@@ -167,17 +171,21 @@ import {
+ } from "../command-loaders/task.js";
+ 
+ export const TASK_COMMANDS = [
+-  fromCommandsTaskTaskCommand(taskSpec, "runTask", { needs: "none" }),
++  fromCommandsTaskTaskCommand(taskSpec, "runTask", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
+   fromCommandsTaskHandoffCommand(taskHandoffSpec, "runTaskHandoff", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   fromCommandsTaskHandoffRecordCommand(taskHandoffRecordSpec, "runTaskHandoffRecord", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   fromTaskHandoffShowSpec(taskHandoffShowSpec, "runTaskHandoffShow", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -361,7 +369,7 @@ export const TASK_COMMANDS = [
+     helpGroup: "Advanced",
+   }),
+   fromCommandsTaskFindingsCommand(taskFindingsSpec, "runTaskFindings", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -372,7 +380,7 @@ export const TASK_COMMANDS = [
+     helpGroup: "Advanced",
+   }),
+   fromCommandsTaskObservationsCommand(taskObservationsSpec, "runTaskObservations", {
+-    needs: "none",
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -406,7 +414,9 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", { needs: "none" }),
++  fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
+   declareSessionCommand(taskDocShowSpec, {
+     load: loadTaskDocShowSpec,
+     requirements: TASK_READ_REQUIREMENTS,
+@@ -427,22 +437,44 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskNormalizeSpec, {
+-    load: loadTaskNormalizeSpec,
++  declareMultiSessionCommand(taskNormalizeSpec, {
++    default: defineCommandSessionSelection({
++      load: loadTaskNormalizeWriteSpec,
++      requirements: TASK_WRITE_REQUIREMENTS,
++    }),
++    variants: [
++      {
++        when: (parsed) => parsed.syncHostedMerges,
++        selection: defineCommandSessionSelection({
++          load: loadTaskNormalizeProviderSpec,
++          requirements: PROVIDER_WRITE_REQUIREMENTS,
++        }),
++      },
++      {
++        when: (parsed) => parsed.syncBranchPrState,
++        selection: defineCommandSessionSelection({
++          load: loadTaskNormalizeLifecycleSpec,
++          requirements: TASK_LIFECYCLE_REQUIREMENTS,
++        }),
++      },
++    ],
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+   declareCommand(taskObsidianSpec, {
+     load: loadTaskObsidianSpec,
++    requirements: TASK_READ_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   declareCommand(taskObsidianCleanSpec, {
+     load: loadTaskObsidianCleanSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   fromCommandsTaskLintCommand(taskLintSpec, "runTaskLint", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+@@ -453,10 +485,13 @@ export const TASK_COMMANDS = [
+     helpGroup: "Maintenance",
+   }),
+   fromCommandsTaskMigrateDocCommand(taskMigrateDocSpec, "runTaskMigrateDoc", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", { needs: "none" }),
++  fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
+   declareSessionCommand(taskPlanSetSpec, {
+     load: loadTaskPlanSetSpec,
+     requirements: TASK_WRITE_REQUIREMENTS,
+@@ -473,7 +508,9 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", { needs: "none" }),
++  fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
+   declareSessionCommand(taskVerifyOkSpec, {
+     load: loadTaskVerifyOkSpec,
+     requirements: TASK_LIFECYCLE_REQUIREMENTS,
+@@ -494,10 +531,12 @@ export const TASK_COMMANDS = [
+     helpGroup: "Maintenance",
+   }),
+   fromCommandsTaskResumeContextCommand(taskResumeContextSpec, "runTaskResumeContext", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+   fromTaskReclaimSpec(taskReclaimSpec, "runTaskReclaim", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+index 5f1344265..52c25040f 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+@@ -1,10 +1,14 @@
+-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import { commandModule } from "../command-catalog/kernel.js";
+ import type { CommandContext } from "../../../commands/shared/task-backend.js";
+ import type {
+   NoContextSession,
+   ProjectConfigSession,
+   ProjectSession,
+ } from "../command-catalog/project-capability-profiles.js";
++import type {
++  TaskReadSession,
++  TaskWriteSession,
++} from "../command-catalog/task-capability-profiles.js";
+ import type {
+   ProviderWriteSession,
+   ReleasePlanSession,
+@@ -69,8 +73,10 @@ export const loadReleaseTasksReconcileSpec = (session: ProviderWriteSession) =>
+ export const fromCommandsCoreQuickstart = commandModule(
+   () => import("../commands/core/quickstart.js"),
+ );
+-export const loadDemoSpec = (deps: RunDeps) =>
+-  import("../commands/core/demo.js").then((m) => m.makeRunDemoHandler(deps.getCtx));
++export const loadDemoSpec = (session: TaskWriteSession) =>
++  import("../commands/core/demo.js").then((m) =>
++    m.makeRunDemoHandler((command) => session.require("task.write", command)),
++  );
+ export const fromCommandsCorePreflight = commandModule(
+   () => import("../commands/core/preflight.js"),
+ );
+@@ -116,15 +122,21 @@ export const fromCommandsWorkflowMigrateCommand = commandModule(
+ export const fromCommandsWorkflowPlaybookCommand = commandModule(
+   () => import("../../../commands/workflow-playbook.command.js"),
+ );
+-export const loadCodexPluginInstallSpec = (deps: RunDeps) =>
+-  import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(deps));
+-export const loadIncidentsCollectSpec = (deps: RunDeps) =>
++export const loadCodexPluginInstallUserSpec = (_session: NoContextSession) =>
++  import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(null));
++export const loadCodexPluginInstallRepoSpec = (session: ProjectSession) =>
++  import("../commands/codex.js").then((m) =>
++    m.makeRunCodexPluginInstallHandler({
++      getResolvedProject: (command) => session.require("project", command),
++    }),
++  );
++export const loadIncidentsCollectSpec = (session: TaskWriteSession) =>
+   import("../../../commands/incidents/collect.command.js").then((m) =>
+-    m.makeRunIncidentsCollectHandler(deps.getCtx),
++    m.makeRunIncidentsCollectHandler((command) => session.require("task.write", command)),
+   );
+-export const loadIncidentsAdviseSpec = (deps: RunDeps) =>
++export const loadIncidentsAdviseSpec = (session: TaskReadSession) =>
+   import("../../../commands/incidents/advise.command.js").then((m) =>
+-    m.makeRunIncidentsAdviseHandler(deps.getCtx),
++    m.makeRunIncidentsAdviseHandler((command) => session.require("task.read", command)),
+   );
+ export const loadAgentsSpec = (session: ProjectSession) =>
+   import("../commands/core/agents.js").then((m) =>
+@@ -168,9 +180,11 @@ export const loadInsightsTriageSpec = (session: InsightsReadSession) =>
+   import("../../../commands/insights/insights.command.js").then((m) =>
+     m.makeRunInsightsTriageHandler(getProjectConfigDeps(session)),
+   );
+-export const loadInsightsIssueSpec = (deps: RunDeps) =>
++export const loadInsightsIssueSpec = (session: ProjectConfigSession) =>
+   import("../../../commands/insights/insights.command.js").then((m) =>
+-    m.makeRunInsightsIssueHandler(deps),
++    m.makeRunInsightsIssueHandler(getProjectConfigDeps(session)),
++  );
++export const loadIntakeSpec = (session: ProjectConfigSession) =>
++  import("../../../commands/intake/intake.command.js").then((m) =>
++    m.makeRunIntakeHandler(getProjectConfigDeps(session)),
+   );
+-export const loadIntakeSpec = (deps: RunDeps) =>
+-  import("../../../commands/intake/intake.command.js").then((m) => m.makeRunIntakeHandler(deps));
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts b/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts
+new file mode 100644
+index 000000000..7d4f2a3d4
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts
+@@ -0,0 +1,55 @@
++import type {
++  EvaluatorExecuteSession,
++  EvaluatorPrepareSession,
++  EvaluatorWriteSession,
++} from "../command-catalog/context-evaluator-capability-profiles.js";
++import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
++
++export const loadEvaluatorSpec = (_session: NoContextSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorGroup);
++export const loadEvaluatorListSpec = (_session: NoContextSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorList);
++export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorShow);
++export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++    m.makeRunEvaluatorPrepareHandler({
++      getEvaluatorArtifactPort: (_ctx, command) =>
++        session.require("evaluator.artifacts.write", command),
++    }),
++  );
++export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++    m.makeRunEvaluatorApplyHandler({
++      getCommandContext: async (_ctx, command) => {
++        await session.require("evaluator.artifacts.write", command);
++        return await session.require("task.write", command);
++      },
++    }),
++  );
++export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++    m.makeRunEvaluatorExecuteHandler({
++      getEvaluatorArtifactPort: (_ctx, command) =>
++        session.require("evaluator.artifacts.write", command),
++      getCommandContext: async (_ctx, command) => {
++        await session.require("task.write", command);
++        return await session.require("provider", command);
++      },
++    }),
++  );
++export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++    m.makeRunEvaluatorRunPrepareHandler({
++      getEvaluatorArtifactPort: (_ctx, command) =>
++        session.require("evaluator.artifacts.write", command),
++    }),
++  );
++export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
++  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++    m.makeRunEvaluatorRunHandler({
++      getEvaluatorArtifactPort: (_ctx, command) =>
++        session.require("evaluator.artifacts.write", command),
++      getCommandContext: (_ctx, command) => session.require("task.write", command),
++    }),
++  );
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+index f00e4e1f5..863a6c00b 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+@@ -1,5 +1,5 @@
+ import type { CommandContext } from "../../../commands/shared/task-backend.js";
+-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import { commandModule } from "../command-catalog/kernel.js";
+ import type {
+   NoContextSession,
+   OutputSession,
+@@ -78,7 +78,7 @@ export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
+ export const fromGuardSuggestAllowSpec = commandModule(
+   () => import("../../../commands/guard/suggest-allow.command.js"),
+ );
+-export const loadGuardCommitSpec = (deps: RunDeps) =>
++export const loadGuardCommitSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/guard/commit.command.js").then((m) =>
+-    m.makeRunGuardCommitHandler(deps.getCtx),
++    m.makeRunGuardCommitHandler(getLifecycleContext(session)),
+   );
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index f724f516b..3e9974df6 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -1,5 +1,5 @@
+ import type { CommandContext } from "../../../commands/shared/task-backend.js";
+-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import { commandModule } from "../command-catalog/kernel.js";
+ import type {
+   IntegrationQueueExecutionSession,
+   IntegrationQueueListSession,
+@@ -19,13 +19,16 @@ import type {
+   NoContextSession,
+   ProjectConfigSession,
+ } from "../command-catalog/project-capability-profiles.js";
++import type {
++  TaskLifecycleSession,
++  TaskReadSession,
++  TaskRouteLocalSession,
++  TaskWriteSession,
++} from "../command-catalog/task-capability-profiles.js";
+ import type {
+   ContextProjectSession,
+   ContextTaskReadSession,
+   ContextTaskWriteSession,
+-  EvaluatorExecuteSession,
+-  EvaluatorPrepareSession,
+-  EvaluatorWriteSession,
+ } from "../command-catalog/context-evaluator-capability-profiles.js";
+ import type { CommandHandler } from "../../spec/spec.js";
+ import type * as ContextCommandModule from "../../../commands/context/context.command.js";
+@@ -62,34 +65,52 @@ function getLocalOpsWriteContext(session: LocalOpsWriteSession) {
+   return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
+ }
+ 
+-export const loadAcrSpec = (deps: RunDeps) =>
+-  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
+-export const loadAcrSchemaSpec = () =>
++function getTaskReadContext(session: TaskReadSession) {
++  return (command: string) => session.require("task.read", command) as Promise<CommandContext>;
++}
++
++function getTaskWriteContext(session: TaskWriteSession) {
++  return (command: string) => session.require("task.write", command) as Promise<CommandContext>;
++}
++
++function getTaskRouteLocalContext(session: TaskRouteLocalSession) {
++  return (command: string) => session.require("route.local", command) as Promise<CommandContext>;
++}
++
++function getTaskLifecycleContext(session: TaskLifecycleSession) {
++  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
++}
++
++export const loadAcrSpec = (_session: NoContextSession) =>
++  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler());
++export const loadAcrSchemaSpec = (_session: NoContextSession) =>
+   import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrSchemaHandler());
+-export const loadAcrGenerateSpec = (deps: RunDeps) =>
++export const loadAcrGenerateSpec = (session: TaskRouteLocalSession) =>
++  import("../../../commands/acr/acr.command.js").then((m) =>
++    m.makeRunAcrGenerateHandler(getTaskRouteLocalContext(session)),
++  );
++export const loadAcrValidateSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/acr/acr.command.js").then((m) =>
+-    m.makeRunAcrGenerateHandler(deps.getCtx),
++    m.makeRunAcrValidateHandler(getTaskRouteLocalContext(session)),
+   );
+-export const loadAcrValidateSpec = (deps: RunDeps) =>
++export const loadAcrCheckSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/acr/acr.command.js").then((m) =>
+-    m.makeRunAcrValidateHandler(deps.getCtx),
++    m.makeRunAcrCheckHandler(getTaskRouteLocalContext(session)),
+   );
+-export const loadAcrCheckSpec = (deps: RunDeps) =>
+-  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrCheckHandler(deps.getCtx));
+-export const loadAcrExplainSpec = (deps: RunDeps) =>
++export const loadAcrExplainSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/acr/acr.command.js").then((m) =>
+-    m.makeRunAcrExplainHandler(deps.getCtx),
++    m.makeRunAcrExplainHandler(getTaskRouteLocalContext(session)),
+   );
+ export const fromCommandsEvidenceCommand = commandModule(
+   () => import("../../../commands/evidence/evidence.command.js"),
+ );
+-export const loadEvidenceBundleSpec = (deps: RunDeps) =>
++export const loadEvidenceBundleSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/evidence/evidence.command.js").then((m) =>
+-    m.makeRunEvidenceBundleHandler(deps.getCtx),
++    m.makeRunEvidenceBundleHandler(getTaskRouteLocalContext(session)),
+   );
+-export const loadEvidenceVerifySpec = (deps: RunDeps) =>
++export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/evidence/evidence.command.js").then((m) =>
+-    m.makeRunEvidenceVerifyHandler(deps.getCtx),
++    m.makeRunEvidenceVerifyHandler(getTaskRouteLocalContext(session)),
+   );
+ export const loadHermesSpec = (_session: NoContextSession) =>
+   import("../../../commands/hermes/hermes.command.js").then((m) => m.runHermesGroup);
+@@ -154,82 +175,33 @@ export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
+     }),
+   );
+ 
+-export const loadBlueprintSpec = (deps: RunDeps) =>
++export const loadBlueprintSpec = (_session: NoContextSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+-    m.makeRunBlueprintHandler(deps.getCtx),
++    m.makeRunBlueprintHandler(),
+   );
+-export const loadBlueprintListSpec = () =>
++export const loadBlueprintListSpec = (_session: NoContextSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintList);
+-export const loadBlueprintExamplesSpec = () =>
++export const loadBlueprintExamplesSpec = (_session: NoContextSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintExamples);
+-export const loadBlueprintExplainSpec = (deps: RunDeps) =>
++export const loadBlueprintExplainSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+-    m.makeRunBlueprintExplainHandler(deps.getCtx),
++    m.makeRunBlueprintExplainHandler(getTaskRouteLocalContext(session)),
+   );
+-export const loadBlueprintSnapshotSpec = (deps: RunDeps) =>
++export const loadBlueprintSnapshotSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+-    m.makeRunBlueprintSnapshotHandler(deps.getCtx),
++    m.makeRunBlueprintSnapshotHandler(getTaskLifecycleContext(session)),
+   );
+-export const loadBlueprintDriftSpec = (deps: RunDeps) =>
++export const loadBlueprintDriftSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+-    m.makeRunBlueprintDriftHandler(deps.getCtx),
++    m.makeRunBlueprintDriftHandler(getTaskRouteLocalContext(session)),
+   );
+-export const loadBlueprintReportSpec = () =>
++export const loadBlueprintReportSpec = (_session: NoContextSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintReport);
+-export const loadBlueprintValidateSpec = () =>
++export const loadBlueprintValidateSpec = (_session: NoContextSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintValidate);
+-export const loadBlueprintScaffoldSpec = () =>
++export const loadBlueprintScaffoldSpec = (_session: NoContextSession) =>
+   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintScaffold);
+ 
+-export const loadEvaluatorSpec = (_session: NoContextSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorGroup);
+-export const loadEvaluatorListSpec = (_session: NoContextSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorList);
+-export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorShow);
+-export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+-    m.makeRunEvaluatorPrepareHandler({
+-      getEvaluatorArtifactPort: (_ctx, command) =>
+-        session.require("evaluator.artifacts.write", command),
+-    }),
+-  );
+-export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+-    m.makeRunEvaluatorApplyHandler({
+-      getCommandContext: async (_ctx, command) => {
+-        await session.require("evaluator.artifacts.write", command);
+-        return await session.require("task.write", command);
+-      },
+-    }),
+-  );
+-export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+-    m.makeRunEvaluatorExecuteHandler({
+-      getEvaluatorArtifactPort: (_ctx, command) =>
+-        session.require("evaluator.artifacts.write", command),
+-      getCommandContext: async (_ctx, command) => {
+-        await session.require("task.write", command);
+-        return await session.require("provider", command);
+-      },
+-    }),
+-  );
+-export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+-    m.makeRunEvaluatorRunPrepareHandler({
+-      getEvaluatorArtifactPort: (_ctx, command) =>
+-        session.require("evaluator.artifacts.write", command),
+-    }),
+-  );
+-export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+-    m.makeRunEvaluatorRunHandler({
+-      getEvaluatorArtifactPort: (_ctx, command) =>
+-        session.require("evaluator.artifacts.write", command),
+-      getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
+-
+ export const fromCommandsBlueprintsCommand = commandModule(
+   () => import("../../../commands/blueprints/blueprints.command.js"),
+ );
+@@ -306,10 +278,8 @@ export const fromBranchBaseExplainSpec = commandModule(
+ export const fromBranchRemoveSpec = commandModule(
+   () => import("../../../commands/branch/remove.command.js"),
+ );
+-export const loadBackendSpec = (deps: RunDeps) =>
+-  import("../../../commands/backend/sync.command.js").then((m) =>
+-    m.makeRunBackendHandler(deps.getCtx),
+-  );
++export const loadBackendSpec = (_session: NoContextSession) =>
++  import("../../../commands/backend/sync.command.js").then((m) => m.makeRunBackendHandler());
+ type ContextCommandExport = Extract<keyof typeof ContextCommandModule, `runContext${string}`>;
+ 
+ async function loadContextNoContextHandler(
+@@ -458,24 +428,26 @@ export const loadContextSuperviseTaskSpec = (session: ContextTaskWriteSession) =
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+     }),
+   );
+-export const loadBackendSyncSpec = (deps: RunDeps) =>
++export const loadBackendSyncSpec = (session: TaskWriteSession) =>
+   import("../../../commands/backend/sync.command.js").then((m) =>
+-    m.makeRunBackendSyncHandler(deps.getCtx),
++    m.makeRunBackendSyncHandler(getTaskWriteContext(session)),
+   );
+-export const loadBackendInspectSpec = (deps: RunDeps) =>
++export const loadBackendInspectSpec = (session: TaskReadSession) =>
+   import("../../../commands/backend/sync.command.js").then((m) =>
+-    m.makeRunBackendInspectHandler(deps.getCtx),
++    m.makeRunBackendInspectHandler(getTaskReadContext(session)),
+   );
+-export const loadBackendConnectSpec = (deps: RunDeps) =>
++export const loadBackendConnectSpec = (session: TaskWriteSession) =>
+   import("../../../commands/backend/sync.command.js").then((m) =>
+-    m.makeRunBackendConnectHandler(deps.getCtx),
++    m.makeRunBackendConnectHandler(getTaskWriteContext(session)),
+   );
+-export const loadBackendMigrateCanonicalStateSpec = (deps: RunDeps) =>
++export const loadBackendMigrateCanonicalStateSpec = (session: TaskWriteSession) =>
+   import("../../../commands/backend/sync.command.js").then((m) =>
+-    m.makeRunBackendMigrateCanonicalStateHandler(deps.getCtx),
++    m.makeRunBackendMigrateCanonicalStateHandler(getTaskWriteContext(session)),
++  );
++export const loadSyncSpec = (session: TaskWriteSession) =>
++  import("../../../commands/sync.command.js").then((m) =>
++    m.makeRunSyncHandler(getTaskWriteContext(session)),
+   );
+-export const loadSyncSpec = (deps: RunDeps) =>
+-  import("../../../commands/sync.command.js").then((m) => m.makeRunSyncHandler(deps.getCtx));
+ export const loadContextIngestSpec = (session: ContextTaskWriteSession) =>
+   import("../../../commands/context/ingest.command.js").then((m) =>
+     m.makeRunContextIngestHandler((command) => session.require("task.write", command)),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index f88ac2a1a..fbc2d38f3 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -3,7 +3,6 @@ import {
+   commandModule,
+   type CommandCapability,
+   type CommandSession,
+-  type RunDeps,
+ } from "../command-catalog/kernel.js";
+ import type {
+   TaskLifecycleSession,
+@@ -289,13 +288,21 @@ export const loadTaskScaffoldSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/scaffold.command.js").then((m) =>
+     m.makeRunTaskScaffoldHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskNormalizeSpec = (deps: RunDeps) =>
++export const loadTaskNormalizeWriteSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/normalize.command.js").then((m) =>
+-    m.makeRunTaskNormalizeHandler(deps.getCtx),
++    m.makeRunTaskNormalizeHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskObsidianSpec = (deps: RunDeps) =>
++export const loadTaskNormalizeLifecycleSpec = (session: TaskLifecycleSession) =>
++  import("../../../commands/task/normalize.command.js").then((m) =>
++    m.makeRunTaskNormalizeHandler(getSessionContext(session, "git.mutate")),
++  );
++export const loadTaskNormalizeProviderSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/task/normalize.command.js").then((m) =>
++    m.makeRunTaskNormalizeHandler(getProviderWriteContext(session)),
++  );
++export const loadTaskObsidianSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/obsidian.command.js").then((m) =>
+-    m.makeRunTaskObsidianHandler(deps.getCtx),
++    m.makeRunTaskObsidianHandler(getSessionContext(session, "task.read")),
+   );
+ export const loadTaskObsidianCleanSpec = () =>
+   import("../../../commands/task/obsidian.command.js").then((m) =>
+diff --git a/packages/agentplane/src/cli/run-cli/commands/codex.ts b/packages/agentplane/src/cli/run-cli/commands/codex.ts
+index 0e606a6b4..dbe7b3006 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/codex.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/codex.ts
+@@ -11,7 +11,7 @@ import {
+   resolveCodexInstallRoot,
+   type CodexPluginInstallScope,
+ } from "../../../commands/codex/plugin-install.js";
+-import type { RunDeps } from "../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
+ 
+ import { wrapCommand } from "./wrap-command.js";
+ 
+@@ -96,12 +96,12 @@ export const runCodexPlugin: CommandHandler<GroupCommandParsed> = async (_ctx, p
+ };
+ 
+ export function makeRunCodexPluginInstallHandler(
+-  deps: RunDeps,
++  deps: Pick<CommandSessionResolvers, "getResolvedProject"> | null,
+ ): CommandHandler<CodexPluginInstallParsed> {
+   return async (ctx, p) =>
+     wrapCommand({ command: "codex plugin install", rootOverride: ctx.rootOverride }, async () => {
+       const resolvedProject =
+-        p.scope === "repo" ? await deps.getResolvedProject("codex plugin install") : null;
++        p.scope === "repo" ? await requireRepoProjectResolver(deps)("codex plugin install") : null;
+       const installRoot =
+         p.scope === "repo"
+           ? resolveCodexInstallRoot({
+@@ -132,3 +132,10 @@ export function makeRunCodexPluginInstallHandler(
+       return 0;
+     });
+ }
++
++function requireRepoProjectResolver(
++  deps: Pick<CommandSessionResolvers, "getResolvedProject"> | null,
++): CommandSessionResolvers["getResolvedProject"] {
++  if (deps) return deps.getResolvedProject;
++  throw new Error("Repo-scoped Codex plugin install requires the project capability");
++}
+diff --git a/packages/agentplane/src/cli/run-cli/commands/config.ts b/packages/agentplane/src/cli/run-cli/commands/config.ts
+index 2552b6bb1..0e9d09fb3 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/config.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/config.ts
+@@ -6,14 +6,16 @@ import { createCliEmitter } from "../../output.js";
+ import { usageError } from "../../spec/errors.js";
+ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+ import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
+-import type { RunDeps } from "../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
+ import { wrapCommand } from "./wrap-command.js";
+ 
+ const output = createCliEmitter();
+ 
+-type ConfigCommandDeps = Pick<RunDeps, "getResolvedProject" | "getLoadedConfig">;
++type ConfigCommandDeps = Pick<CommandSessionResolvers, "getResolvedProject" | "getLoadedConfig">;
+ 
+-export type ConfigShowResult = { raw: Awaited<ReturnType<RunDeps["getLoadedConfig"]>>["raw"] };
++export type ConfigShowResult = {
++  raw: Awaited<ReturnType<CommandSessionResolvers["getLoadedConfig"]>>["raw"];
++};
+ export type ConfigWriteResult = { value: string; workflowPath: string };
+ 
+ type ConfigShowParsed = Record<string, never>;
+diff --git a/packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts b/packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts
+index 45353a174..ce8fb830f 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts
+@@ -1,6 +1,6 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+-import type { RunDeps } from "../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
+ 
+ const mockResolveProject =
+   vi.fn<
+@@ -186,13 +186,9 @@ describe("core commands (unit)", () => {
+     }) as unknown as typeof process.stdout.write);
+ 
+     const { makeRunAgentsHandler } = await import("./core/agents.js");
+-    const deps: RunDeps = {
+-      getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
++    const deps: Pick<CommandSessionResolvers, "getResolvedProject"> = {
+       getResolvedProject: (_cmd) =>
+         Promise.resolve({ gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" }),
+-      getLoadedConfig: (_cmd) =>
+-        Promise.reject(new Error("getLoadedConfig not used in agents unit tests")),
+-      getHelpJsonForDocs: () => [],
+     };
+     const runAgents = makeRunAgentsHandler(deps);
+ 
+@@ -237,13 +233,9 @@ describe("core commands (unit)", () => {
+     );
+ 
+     const { makeRunAgentsHandler } = await import("./core/agents.js");
+-    const deps: RunDeps = {
+-      getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
++    const deps: Pick<CommandSessionResolvers, "getResolvedProject"> = {
+       getResolvedProject: (_cmd) =>
+         Promise.resolve({ gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" }),
+-      getLoadedConfig: (_cmd) =>
+-        Promise.reject(new Error("getLoadedConfig not used in agents unit tests")),
+-      getHelpJsonForDocs: () => [],
+     };
+     const runAgents = makeRunAgentsHandler(deps);
+     const rc = await runAgents(ctx, {});
+diff --git a/packages/agentplane/src/cli/run-cli/commands/core/agents.ts b/packages/agentplane/src/cli/run-cli/commands/core/agents.ts
+index b95eb7d77..1833170c4 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/core/agents.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/core/agents.ts
+@@ -6,7 +6,7 @@ import { CliError } from "../../../../shared/errors.js";
+ import { createCliEmitter } from "../../../output.js";
+ import type { CommandHandler, CommandSpec } from "../../../spec/spec.js";
+ import { fileExists } from "../../../fs-utils.js";
+-import type { RunDeps } from "../../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../../command-catalog/kernel.js";
+ 
+ import { parseAgentProfileJson } from "./agent-profiles.js";
+ import { wrapCommand } from "../wrap-command.js";
+@@ -50,7 +50,7 @@ function formatAgentsTableLines(
+ }
+ 
+ export function makeRunAgentsHandler(
+-  deps: Pick<RunDeps, "getResolvedProject">,
++  deps: Pick<CommandSessionResolvers, "getResolvedProject">,
+ ): CommandHandler<AgentsParsed> {
+   return async (ctx) =>
+     wrapCommand({ command: "agents", rootOverride: ctx.rootOverride }, async () => {
+diff --git a/packages/agentplane/src/cli/run-cli/commands/ide.ts b/packages/agentplane/src/cli/run-cli/commands/ide.ts
+index 3294a9e5e..28dae68e7 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/ide.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/ide.ts
+@@ -1,5 +1,5 @@
+ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+-import type { RunDeps } from "../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
+ 
+ import { makeRunIdePlatformSyncHandler } from "./platform.js";
+ 
+@@ -30,7 +30,7 @@ export const ideSyncSpec: CommandSpec<IdeSyncParsed> = {
+ };
+ 
+ export function makeRunIdeSyncHandler(
+-  deps: Pick<RunDeps, "getResolvedProject">,
++  deps: Pick<CommandSessionResolvers, "getResolvedProject">,
+ ): CommandHandler<IdeSyncParsed> {
+   return makeRunIdePlatformSyncHandler(deps);
+ }
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/ide-sync.ts b/packages/agentplane/src/cli/run-cli/commands/init/ide-sync.ts
+index e4868cab4..96bfe7fde 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/ide-sync.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/ide-sync.ts
+@@ -2,7 +2,7 @@ import path from "node:path";
+ 
+ import { fileExists } from "../../../fs-utils.js";
+ 
+-import type { RunDeps } from "../../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../../command-catalog/kernel.js";
+ import type { PlatformId } from "../platform-registry.js";
+ import { syncPlatforms } from "../platform.js";
+ 
+@@ -15,16 +15,12 @@ export async function maybeSyncIde(opts: {
+   if (opts.ide === "none") return { installPaths: [] };
+   if (opts.ide === "codex") return { installPaths: [] };
+ 
+-  const deps: RunDeps = {
+-    getCtx: (_cmd) => Promise.reject(new Error("getCtx is not available during init")),
++  const deps: Pick<CommandSessionResolvers, "getResolvedProject"> = {
+     getResolvedProject: (_cmd) =>
+       Promise.resolve({
+         gitRoot: opts.gitRoot,
+         agentplaneDir: path.join(opts.gitRoot, ".agentplane"),
+       }),
+-    getLoadedConfig: (_cmd) =>
+-      Promise.reject(new Error("getLoadedConfig is not available during init")),
+-    getHelpJsonForDocs: () => [],
+   };
+   const platforms: PlatformId[] = opts.ide === "cursor" ? ["cursor"] : ["windsurf"];
+   await syncPlatforms({
+diff --git a/packages/agentplane/src/cli/run-cli/commands/platform.ts b/packages/agentplane/src/cli/run-cli/commands/platform.ts
+index 8975c9001..78e984201 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/platform.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/platform.ts
+@@ -12,7 +12,7 @@ import {
+ import { createCliEmitter } from "../../output.js";
+ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+ import { usageError } from "../../spec/errors.js";
+-import type { RunDeps } from "../command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../command-catalog/kernel.js";
+ 
+ import {
+   PLATFORM_IDS,
+@@ -27,7 +27,7 @@ import { wrapCommand } from "./wrap-command.js";
+ 
+ const output = createCliEmitter();
+ 
+-type ProjectCommandDeps = Pick<RunDeps, "getResolvedProject">;
++type ProjectCommandDeps = Pick<CommandSessionResolvers, "getResolvedProject">;
+ 
+ type PlatformSyncParsed = {
+   platforms: PlatformId[];
+diff --git a/packages/agentplane/src/cli/run-cli/registry.run.ts b/packages/agentplane/src/cli/run-cli/registry.run.ts
+index fbf4e39d6..85f57a7b2 100644
+--- a/packages/agentplane/src/cli/run-cli/registry.run.ts
++++ b/packages/agentplane/src/cli/run-cli/registry.run.ts
+@@ -8,13 +8,12 @@ import {
+   type CommandEntry,
+   type CommandPreparationTrace,
+   type CommandSessionResolvers,
+-  type RunDeps,
+ } from "./command-catalog/kernel.js";
+ 
+ export function buildRegistry(opts: {
+-  getCtx: RunDeps["getCtx"];
+-  getResolvedProject: RunDeps["getResolvedProject"];
+-  getLoadedConfig: RunDeps["getLoadedConfig"];
++  getCtx: CommandSessionResolvers["getCtx"];
++  getResolvedProject: CommandSessionResolvers["getResolvedProject"];
++  getLoadedConfig: CommandSessionResolvers["getLoadedConfig"];
+   getEvaluatorArtifactPort: CommandSessionResolvers["getEvaluatorArtifactPort"];
+   onPreparationTrace?: (event: CommandPreparationTrace) => void;
+   entries?: readonly CommandEntry[];
+@@ -25,14 +24,11 @@ export function buildRegistry(opts: {
+       helpSpec,
+       ...getHelpCommandEntries("user").map((entry) => makeHelpSpecForEntry(entry)),
+     ]);
+-  const deps: RunDeps = {
++  const resolvers: CommandSessionResolvers = {
+     getCtx: opts.getCtx,
+     getResolvedProject: opts.getResolvedProject,
+     getLoadedConfig: opts.getLoadedConfig,
+     getHelpJsonForDocs,
+-  };
+-  const resolvers: CommandSessionResolvers = {
+-    ...deps,
+     getEvaluatorArtifactPort: opts.getEvaluatorArtifactPort,
+     onPreparationTrace: opts.onPreparationTrace,
+   };
+diff --git a/packages/agentplane/src/commands/acr/acr.command.ts b/packages/agentplane/src/commands/acr/acr.command.ts
+index 25e0c9bbf..b1829a2c3 100644
+--- a/packages/agentplane/src/commands/acr/acr.command.ts
++++ b/packages/agentplane/src/commands/acr/acr.command.ts
+@@ -51,7 +51,7 @@ async function runAcrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise
+   });
+ }
+ 
+-export function makeRunAcrHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
++export function makeRunAcrHandler() {
+   return runAcrRootGroup;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/backend/sync.command.ts b/packages/agentplane/src/commands/backend/sync.command.ts
+index cf1c39f08..18e77e56f 100644
+--- a/packages/agentplane/src/commands/backend/sync.command.ts
++++ b/packages/agentplane/src/commands/backend/sync.command.ts
+@@ -209,7 +209,7 @@ async function runBackendRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Pro
+   });
+ }
+ 
+-export function makeRunBackendHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
++export function makeRunBackendHandler() {
+   return runBackendRootGroup;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/blueprint/blueprint.command.ts b/packages/agentplane/src/commands/blueprint/blueprint.command.ts
+index 2c1d20d22..603e84d65 100644
+--- a/packages/agentplane/src/commands/blueprint/blueprint.command.ts
++++ b/packages/agentplane/src/commands/blueprint/blueprint.command.ts
+@@ -76,7 +76,7 @@ function syntheticInput(ctx: CommandContext, p: BlueprintExplainParsed): Bluepri
+   };
+ }
+ 
+-export function makeRunBlueprintHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
++export function makeRunBlueprintHandler() {
+   return runBlueprintRoot;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/intake/intake.command.ts b/packages/agentplane/src/commands/intake/intake.command.ts
+index c05335c96..ee02cb3c5 100644
+--- a/packages/agentplane/src/commands/intake/intake.command.ts
++++ b/packages/agentplane/src/commands/intake/intake.command.ts
+@@ -1,7 +1,7 @@
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+-import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
++import type { CommandSessionResolvers } from "../../cli/run-cli/command-catalog/kernel.js";
+ import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
+ 
+ import { buildIntakeReport, writeTaskIntakeManifest, type IntakeReport } from "./intake-report.js";
+@@ -152,7 +152,9 @@ function renderIntakeReport(
+   ];
+ }
+ 
+-export function makeRunIntakeHandler(deps: RunDeps): CommandHandler<IntakeParsed> {
++export function makeRunIntakeHandler(
++  deps: Pick<CommandSessionResolvers, "getResolvedProject" | "getLoadedConfig">,
++): CommandHandler<IntakeParsed> {
+   return async (ctx, parsed) =>
+     wrapCommand({ command: "intake", rootOverride: ctx.rootOverride }, async () => {
+       const [resolved, loaded] = await Promise.all([
+diff --git a/scripts/baselines/knip-baseline.json b/scripts/baselines/knip-baseline.json
+index 71b1ac13a..18c7a3bac 100644
+--- a/scripts/baselines/knip-baseline.json
++++ b/scripts/baselines/knip-baseline.json
+@@ -657,23 +657,11 @@
+           "line": 52,
+           "col": 17
+         }
+-      ],
+-      "types": [
+-        {
+-          "name": "RunDeps",
+-          "line": 11,
+-          "col": 29
+-        }
+       ]
+     },
+     {
+       "file": "packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts",
+       "types": [
+-        {
+-          "name": "CommandNeeds",
+-          "line": 21,
+-          "col": 13
+-        },
+         {
+           "name": "CommandSurface",
+           "line": 22,
+@@ -3499,9 +3487,9 @@
+   "counts": {
+     "files": 1,
+     "exports": 178,
+-    "types": 366,
++    "types": 365,
+     "enumMembers": 0,
+     "namespaceMembers": 0,
+-    "total": 545
++    "total": 544
+   }
+ }
