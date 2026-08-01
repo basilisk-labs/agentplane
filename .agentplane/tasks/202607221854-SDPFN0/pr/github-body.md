@@ -19,8 +19,8 @@ Integrate the five independently verified command-family vertical slices, remove
 - Note:
 
 ```text
-PASS: current verification now includes parser-valid SHA-bound check records and frozen runtime
-evidence for d89988611fbd.
+PASS: evaluator-requested dependency evidence rework verified; exact declared closure and
+independent verification are proven; implementation remains d89988611fbd.
 ```
 - Canonical workflow state lives in the task README.
 

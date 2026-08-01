@@ -3,7 +3,7 @@
   "branch": "task/202607221854-SDPFN0/complete-commandsession-capability-migration",
   "created_at": "2026-08-01T12:47:37.534Z",
   "diffstat_sha256": "sha256:4fb61af2c1c4e1a4f6d978ef4154c39fe8757b77085311223c1c8f1f8b6b3ad3",
-  "last_verified_at": "2026-08-01T13:31:14.119Z",
+  "last_verified_at": "2026-08-01T13:37:45.505Z",
   "last_verified_diffstat_sha256": "sha256:4fb61af2c1c4e1a4f6d978ef4154c39fe8757b77085311223c1c8f1f8b6b3ad3",
   "pr_number": 4721,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4721",
