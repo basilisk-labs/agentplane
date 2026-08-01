@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:75039c2a37d923b841e1c9a7a038280fe37401e586221a6e35ef96a1ca006cea",
+  "implementation_sha": "390bfc5a8817d63450b606c9453246bec377731e",
+  "kind": "task_verification_record",
+  "note": "PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass.",
+  "recorded_at": "2026-08-01T20:40:21.289Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `git ls-files -z | wc -c`. Expected: output exceeds 1 MiB, preserving the original failure precondition.\n2. Run `bun run artifacts:check`. Expected: the complete tracked/archive inventories are evaluated and the artifact policy passes without ENOBUFS.\n3. Run targeted ESLint and Prettier checks for `scripts/checks/check-agentplane-artifacts.mjs`. Expected: no findings.\n4. Run `bun run ci:contract`. Expected: all repository contract checks pass.\n5. Run `git diff --check` and inspect the final worktree. Expected: only the bounded script change and task evidence are present.",
+  "scope_digest": "sha256:e7a97de492472c83bec490bbc7748d59bd0b7eca7968d5aca446ec64ab21f549",
+  "task_id": "202608012034-W6F4DM",
+  "verification_command": "agentplane verify 202608012034-W6F4DM --ok --by TESTER",
+  "verifier": "TESTER"
+}

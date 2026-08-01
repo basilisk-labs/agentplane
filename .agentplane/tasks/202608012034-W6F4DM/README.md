@@ -4,7 +4,7 @@ title: "Prevent artifact gate buffer overflow on large repositories"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-01T20:40:21.289Z"
+  updated_by: "TESTER"
+  note: "PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass."
   attempts: 0
 commit:
   hash: "390bfc5a8817d63450b606c9453246bec377731e"
@@ -57,8 +57,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation recorded: artifact policy child processes use an explicit 64 MiB bound; the original 1,234,456-byte tracked inventory now passes without changing policy semantics."
+  -
+    type: "verify"
+    at: "2026-08-01T20:40:21.289Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:39:45.454Z"
+doc_updated_at: "2026-08-01T20:40:22.093Z"
 doc_updated_by: "CODER"
 description: "Raise deterministic child-process output bounds in the artifact policy gate so tracked path inventories larger than Node's default 1 MiB buffer remain verifiable without weakening artifact exclusions."
 sections:
@@ -78,6 +84,36 @@ sections:
     5. Run `git diff --check` and inspect the final worktree. Expected: only the bounded script change and task evidence are present.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-01T20:40:21.289Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T20:39:45.454Z, excerpt_hash=sha256:e7a97de492472c83bec490bbc7748d59bd0b7eca7968d5aca446ec64ab21f549
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012034-W6F4DM-prevent-artifact-gate-buffer-overflow-on-large-r/.agentplane/tasks/202608012034-W6F4DM/blueprint/resolved-snapshot.json
+    - old_digest: 2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac
+    - current_digest: 2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608012034-W6F4DM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608012034-W6F4DM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -128,6 +164,36 @@ Raise deterministic child-process output bounds in the artifact policy gate so t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-01T20:40:21.289Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T20:39:45.454Z, excerpt_hash=sha256:e7a97de492472c83bec490bbc7748d59bd0b7eca7968d5aca446ec64ab21f549
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012034-W6F4DM-prevent-artifact-gate-buffer-overflow-on-large-r/.agentplane/tasks/202608012034-W6F4DM/blueprint/resolved-snapshot.json
+- old_digest: 2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac
+- current_digest: 2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608012034-W6F4DM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608012034-W6F4DM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
