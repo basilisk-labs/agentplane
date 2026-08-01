@@ -1,10 +1,11 @@
 ---
 id: "202608012034-W6F4DM"
 title: "Prevent artifact gate buffer overflow on large repositories"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -59,8 +60,8 @@ quality_review:
     - "A single 64 MiB constant is applied to the tracked-file git query, git archive invocation, and tar inventory; all buffered child-process paths in this gate are covered."
     - "The volatile-path predicates, historical cutoff, offender reporting, and export-ignore validation are unchanged, so the fix changes capacity rather than acceptance semantics."
 commit:
-  hash: "390bfc5a8817d63450b606c9453246bec377731e"
-  message: "🛡️ W6F4DM release: bound artifact gate buffers"
+  hash: "64064c6d87e206a8e7d080f593228c60d3b56ef4"
+  message: "🔍 W6F4DM task: record quality review"
 comments:
   -
     author: "CODER"
@@ -68,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: artifact policy child processes use an explicit 64 MiB bound; the original 1,234,456-byte tracked inventory now passes without changing policy semantics."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -89,8 +93,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at implementation 390bfc5a8: reproduced ENOBUFS with 1,234,456-byte tracked inventory; after the bounded fix, the current 1,234,845-byte inventory passes artifacts:check. Targeted ESLint/Prettier, full ci:contract, diff check, and clean worktree pass."
+  -
+    type: "status"
+    at: "2026-08-01T20:41:50.909Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:40:22.093Z"
+doc_updated_at: "2026-08-01T20:41:50.909Z"
 doc_updated_by: "CODER"
 description: "Raise deterministic child-process output bounds in the artifact policy gate so tracked path inventories larger than Node's default 1 MiB buffer remain verifiable without weakening artifact exclusions."
 sections:
@@ -159,6 +170,9 @@ sections:
       Evidence: formatting, schemas, policy, compatibility, TypeScript 7 toolchain, lint, architecture, clone, Knip, and thresholds passed.
       Scope: bounded script change and repository contract.
 extensions:
+  implementation_commit:
+    hash: "390bfc5a8817d63450b606c9453246bec377731e"
+    message: "🛡️ W6F4DM release: bound artifact gate buffers"
   workflow_route_baseline:
     start_head_sha: "929105a503c42dcf9fe7af49c2d84627f246130e"
     version: 1
