@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run docs:site:generate:check\nResult: pass\nEvidence: generated reference and website/static/llms-full.txt are fresh.\nScope: generated documentation artifacts.\n\nCommand: bun run docs:site:check\nResult: pass\nEvidence: site typecheck, content, 220 social images, production build, navigation, and design checks passed.\nScope: full documentation site gate.\n\nDiff review: only website/static/llms-full.txt plus task-local evidence changed.\nResult: pass\nEvidence: generated text reflects canonical 0.6.26-assimilated evaluator and context documentation.\nScope: approved freshness repair.",
+  "digest": "sha256:b0e9b3a18b1089055a8ec5aca7deb23f2e3283f6fa2dc3c3ede61eb4c61932fb",
+  "implementation_sha": "4178a3da55dbf8b0f52eee5740f6c262d8d39ef2",
+  "kind": "task_verification_record",
+  "note": "Generated llms-full freshness repair is scoped and complete.",
+  "recorded_at": "2026-08-01T23:52:57.148Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Regenerate llms-full after 0.6.26 assimilation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Regenerate llms-full after 0.6.26 assimilation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:425d0547450261c11dedb3963bdf5671042f54afedbbec82807427fed3e87e48",
+  "task_id": "202608012350-3KR5T7",
+  "verification_command": "agentplane verify 202608012350-3KR5T7 --ok --by TESTER",
+  "verifier": "TESTER"
+}
