@@ -15,6 +15,14 @@ import {
   EVALUATOR_PREPARE_REQUIREMENTS,
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./command-catalog/context-evaluator-capability-profiles.js";
+import {
+  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
+  HERMES_PROJECTION_REQUIREMENTS,
+  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
+  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
+  RUNNER_EXECUTION_REQUIREMENTS,
+  RUNNER_PREPARATION_REQUIREMENTS,
+} from "./command-catalog/runner-hermes-capability-profiles.js";
 
 describe("command catalog graph", () => {
   it("uses one graph for longest-prefix match and exact lookup", () => {
@@ -330,6 +338,117 @@ describe("command catalog graph", () => {
         "provider",
       ]),
     );
+  });
+
+  it("publishes phase-scoped runner, Hermes, and insights capability profiles", () => {
+    const taskRead = ["project", "config", "backend.read", "task.read"];
+    const taskWrite = [...taskRead, "backend.write", "task.write", "policy", "approvals"];
+    const runnerExecution = [
+      ...taskWrite,
+      "git.head",
+      "git.diff",
+      "git.mutate",
+      "route.local",
+      "route.remote",
+      "provider",
+      "context.search",
+    ];
+
+    for (const id of [
+      ["task", "run", "status"],
+      ["task", "run", "inspect"],
+      ["task", "run", "logs"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskRead);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    for (const id of [
+      ["task", "run", "reconcile"],
+      ["task", "run", "resolve-effect"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    for (const id of [["task", "run", "resume-effect"]]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    const taskRun = findCommandEntry(["task", "run"]);
+    expect(taskRun?.requirements).toEqual(RUNNER_PREPARATION_REQUIREMENTS);
+    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).toEqual(
+      RUNNER_PREPARATION_REQUIREMENTS,
+    );
+    expect(taskRun?.selectSession?.({ dryRun: false }).requirements).toEqual(
+      RUNNER_EXECUTION_REQUIREMENTS,
+    );
+    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("provider");
+    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("git.mutate");
+    expect(taskRun?.compatibility).toBeNull();
+
+    const hermesSupervise = findCommandEntry(["hermes", "supervise"]);
+    expect(hermesSupervise?.requirements).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: false, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: false, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: true })
+        .requirements,
+    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: true })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_LOCAL_EXECUTION_REQUIREMENTS);
+    expect(
+      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: false })
+        .requirements,
+    ).toEqual(HERMES_REMOTE_EXECUTION_REQUIREMENTS);
+    for (const parsed of [
+      { remote: false, executeStep: false, dryRun: false },
+      { remote: true, executeStep: false, dryRun: false },
+      { remote: false, executeStep: true, dryRun: true },
+      { remote: true, executeStep: true, dryRun: true },
+    ]) {
+      const requirements = hermesSupervise?.selectSession?.(parsed).requirements;
+      expect(requirements).not.toContain("provider");
+      expect(requirements).not.toContain("git.mutate");
+    }
+    expect(hermesSupervise?.compatibility).toBeNull();
+
+    const hermesProjection = [
+      ...taskRead,
+      "git.head",
+      "git.diff",
+      "route.local",
+      "policy",
+      "approvals",
+      "context.search",
+    ];
+    for (const id of [
+      ["hermes", "enqueue"],
+      ["hermes", "reconcile"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(hermesProjection);
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    expect(findCommandEntry(["task", "run", "tool"])?.requirements).toEqual(["project"]);
+    expect(findCommandEntry(["hermes"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["hermes", "lifecycle"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["hermes", "doctor"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["insights"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["insights", "report"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["insights", "triage"])?.requirements).toEqual(["project", "config"]);
   });
 
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {

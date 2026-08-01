@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221908-RC1DX8-9bd6656385dc148904ba7751",
+  "task_id": "202607221908-RC1DX8",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Attach deterministic, SHA-bound check outputs or verification records for the declared repository checks and the direct/branch_pr runner-Hermes phase-boundary matrix, then rerun semantic evaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen evidence contains only a self-reported verification summary; deterministic check records and runtime evidence are absent.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-105442574-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:99b1e9b103e93d5ba9225892f1d0f5efd0b827f0cee3c02a20cd9656506961cd",
+          "line": 10,
+          "lines": "10-20",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-105442574-recovery-context/evaluator-result.json"
+}

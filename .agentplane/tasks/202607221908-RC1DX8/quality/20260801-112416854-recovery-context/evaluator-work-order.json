@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-RC1DX8-6811845be24d671629582c42",
+  "prepared_at": "2026-08-01T11:24:16.854Z",
+  "task": {
+    "id": "202607221908-RC1DX8",
+    "revision": 18,
+    "objective": "Migrate runner and Hermes command boundaries\n\nRF-24/RF-25 vertical slice: move runner/Hermes surfaces onto minimal session capabilities, shared supervisor use cases, typed episode results, and compatibility renderers.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: task run/bootstrap/status/insights and Hermes projection/supervision commands, runner/process/Git/policy/knowledge capability sets, typed results/errors, human/JSON renderers, and removal of internal AgentPlane subprocess parsing.\n- Out of scope: provider release operations and context/evaluator commands.",
+      "1. Declare runner/Hermes capabilities by preparation and execution phase.\n2. Call shared WorkOrder, supervisor, runner receipt, and evaluator use cases in-process.\n3. Centralize output, error, metrics, and exit rendering.\n4. Remove shell route parsing and broad session construction.\n5. Run adapter, episode, supervision, snapshot, and capability tests.",
+      "1. Run direct and branch_pr runner/Hermes fixtures. Expected: typed in-process results, minimal capabilities, and no lifecycle command parsing.\n2. Render human/JSON/insights outputs. Expected: compatibility and provenance are preserved.\n3. Attempt cross-phase or undeclared provider/lifecycle access. Expected: typed denial.\n4. Run runner/Hermes tests, lifecycle invariants, guards, and typecheck."
+    ]
+  },
+  "evaluated_sha": "70dbba1ebf95e36842902ac0f3d5e23fb45b31cc",
+  "diff_base_sha": "2c8efebdaa65b99d215ea561a84cefa145194807",
+  "blueprint_digest": "589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-RC1DX8/README.md",
+      "sha256": "sha256:b4b7245ddc74a693934309904f8ba7ece90aa9ca53c57649393cad35686df3ba",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-112416854-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:fd3ca88622858c4d79bac398be74040156f33519f5d2bc9a3272566ef253207c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-112416854-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:d871ac5d7171f3d9bfc441098e2ce8829c38e6f1e8472e8fb23b4d0a975b5685",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221908-RC1DX8/verification/20260801112341783-588c240dbee87684.json",
+      "sha256": "sha256:b989ee2cc2fd9cbbd58df401d5c392a192579b59715b90101aa7fb1c936750a2",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/verification/202607221908-RC1DX8-70dbba1-checks.json",
+      "sha256": "sha256:8a031bcf38b2cac3fd405724c9390867869802a48a8b3ef742576932b28135ff",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-112416854-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:314985d8b2f9ccf1ee554812777d207c41e11ae7044926e5da59c21039acd5d9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

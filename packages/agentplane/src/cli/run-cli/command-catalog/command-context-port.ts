@@ -6,6 +6,7 @@ type CapabilityDenial = (capability: CommandCapability, operation: string) => ne
 
 const BACKEND_READ_MEMBERS = new Set<PropertyKey>([
   "id",
+  "root",
   "capabilities",
   "listProjectionTasks",
   "getLastListWarnings",

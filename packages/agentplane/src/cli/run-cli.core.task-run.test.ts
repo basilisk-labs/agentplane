@@ -62,26 +62,25 @@ async function createStartedRunnerTask(root: string, title: string): Promise<str
   {
     const io = captureStdIO();
     try {
-      expect(
-        await runCli([
-          "task",
-          "new",
-          "--title",
-          title,
-          "--description",
-          "Exercise the public task runner path.",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "code",
-          "--verify",
-          "bun run test:critical",
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
+      const exitCode = await runCli([
+        "task",
+        "new",
+        "--title",
+        title,
+        "--description",
+        "Exercise the public task runner path.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "bun run test:critical",
+        "--root",
+        root,
+      ]);
+      expect(exitCode, io.stderr).toBe(0);
       taskId = io.stdout.trim();
     } finally {
       io.restore();
@@ -147,9 +146,17 @@ describe("runCli task run", () => {
     const executeSpy = vi
       .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
       .mockResolvedValue(executed);
-    const handler = makeRunTaskRunHandler(async () => {
+    const getPreparationContext = vi.fn(async () => {
       await Promise.resolve();
       return {} as never;
+    });
+    const getExecutionContext = vi.fn(async () => {
+      await Promise.resolve();
+      return {} as never;
+    });
+    const handler = makeRunTaskRunHandler({
+      getPreparationContext,
+      getExecutionContext,
     });
     const commandContext = { cwd: "/repo", rootOverride: null } as never;
     const parsed = {
@@ -170,6 +177,10 @@ describe("runCli task run", () => {
           };
           expect(payload.lifecycle_status).toBe("degraded");
           expect(payload.active_claim_cleanup).toEqual(cleanup);
+          expect(getPreparationContext).not.toHaveBeenCalled();
+          expect(getExecutionContext).toHaveBeenCalledWith("task run", {
+            includeRemote: false,
+          });
         } finally {
           io.restore();
         }
@@ -197,20 +208,19 @@ describe("runCli task run", () => {
     const io = captureStdIO();
     const prepareSpy = vi.spyOn(taskRunUsecases, "prepareTaskRunnerExecution");
     try {
-      expect(
-        await runCli([
-          "task",
-          "run",
-          taskId,
-          "--dry-run",
-          "--sandbox",
-          "danger-full-access",
-          "--allow-danger-full-access",
-          "--json",
-          "--root",
-          root,
-        ]),
-      ).toBe(0);
+      const exitCode = await runCli([
+        "task",
+        "run",
+        taskId,
+        "--dry-run",
+        "--sandbox",
+        "danger-full-access",
+        "--allow-danger-full-access",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(exitCode, io.stderr).toBe(0);
       expect(prepareSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           task_id: taskId,

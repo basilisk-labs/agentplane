@@ -73,7 +73,12 @@ import { taskVerifyShowSpec } from "../../../commands/task/verify-show.command.j
 import { taskVerifySpec } from "../../../commands/task/verify.command.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+import {
+  declareCommand,
+  declareConditionalSessionCommand,
+  declareSessionCommand,
+  type CommandEntry,
+} from "./kernel.js";
 import {
   TASK_LIFECYCLE_REQUIREMENTS,
   TASK_READ_REQUIREMENTS,
@@ -82,6 +87,13 @@ import {
   TASK_ROUTE_REQUIREMENTS,
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
+import {
+  RUNNER_EXECUTION_REQUIREMENTS,
+  RUNNER_PREPARATION_REQUIREMENTS,
+  RUNNER_READ_REQUIREMENTS,
+  RUNNER_WRITE_REQUIREMENTS,
+} from "./runner-hermes-capability-profiles.js";
+import { PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
 import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
@@ -114,6 +126,7 @@ import {
   loadTaskRunReconcileSpec,
   loadTaskRunResolveEffectSpec,
   loadTaskRunResumeEffectSpec,
+  loadTaskRunPreparationSpec,
   loadTaskRunSpec,
   loadTaskRunToolSpec,
   loadTaskRunStatusSpec,
@@ -234,44 +247,58 @@ export const TASK_COMMANDS = [
     load: loadTaskBriefSpec,
     requirements: TASK_ROUTE_REQUIREMENTS,
   }),
-  declareCommand(taskRunStatusSpec, {
+  declareSessionCommand(taskRunStatusSpec, {
     load: loadTaskRunStatusSpec,
+    requirements: RUNNER_READ_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunInspectSpec, {
+  declareSessionCommand(taskRunInspectSpec, {
     load: loadTaskRunInspectSpec,
+    requirements: RUNNER_READ_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunReconcileSpec, {
+  declareSessionCommand(taskRunReconcileSpec, {
     load: loadTaskRunReconcileSpec,
+    requirements: RUNNER_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunResolveEffectSpec, {
+  declareSessionCommand(taskRunResolveEffectSpec, {
     load: loadTaskRunResolveEffectSpec,
+    requirements: RUNNER_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunResumeEffectSpec, {
+  declareSessionCommand(taskRunResumeEffectSpec, {
     load: loadTaskRunResumeEffectSpec,
+    requirements: RUNNER_EXECUTION_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunLogsSpec, {
+  declareSessionCommand(taskRunLogsSpec, {
     load: loadTaskRunLogsSpec,
+    requirements: RUNNER_READ_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunSpec, {
-    load: loadTaskRunSpec,
+  declareConditionalSessionCommand(taskRunSpec, {
+    default: {
+      load: loadTaskRunPreparationSpec,
+      requirements: RUNNER_PREPARATION_REQUIREMENTS,
+    },
+    selected: {
+      when: (parsed) => !parsed.dryRun,
+      load: loadTaskRunSpec,
+      requirements: RUNNER_EXECUTION_REQUIREMENTS,
+    },
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunToolSpec, {
+  declareSessionCommand(taskRunToolSpec, {
     load: loadTaskRunToolSpec,
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),

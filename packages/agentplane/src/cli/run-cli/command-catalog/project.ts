@@ -13,14 +13,6 @@ import {
   evidenceVerifySpec,
 } from "../../../commands/evidence/evidence.command.js";
 import {
-  hermesDoctorSpec,
-  hermesEnqueueSpec,
-  hermesLifecycleSpec,
-  hermesReconcileSpec,
-  hermesSpec,
-  hermesSuperviseSpec,
-} from "../../../commands/hermes/hermes.command.js";
-import {
   blueprintDriftSpec,
   blueprintExamplesSpec,
   blueprintExplainSpec,
@@ -154,6 +146,7 @@ import {
   declareSessionCommand,
   type CommandEntry,
 } from "./kernel.js";
+import { HERMES_COMMANDS } from "./hermes.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
@@ -222,12 +215,6 @@ import {
   fromCommandsEvidenceCommand,
   loadEvidenceBundleSpec,
   loadEvidenceVerifySpec,
-  fromCommandsHermesCommand,
-  loadHermesDoctorSpec,
-  loadHermesEnqueueSpec,
-  loadHermesLifecycleSpec,
-  loadHermesReconcileSpec,
-  loadHermesSuperviseSpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
   loadBlueprintExamplesSpec,
@@ -295,12 +282,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
   declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
   declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
-  fromCommandsHermesCommand(hermesSpec, "runHermesGroup"),
-  declareCommand(hermesEnqueueSpec, { load: loadHermesEnqueueSpec }),
-  declareCommand(hermesSuperviseSpec, { load: loadHermesSuperviseSpec }),
-  declareCommand(hermesReconcileSpec, { load: loadHermesReconcileSpec }),
-  declareCommand(hermesLifecycleSpec, { load: loadHermesLifecycleSpec }),
-  declareCommand(hermesDoctorSpec, { load: loadHermesDoctorSpec }),
+  ...HERMES_COMMANDS,
   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
   declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),

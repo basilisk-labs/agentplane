@@ -12,6 +12,11 @@ import {
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
 import {
+  HERMES_PROJECTION_REQUIREMENTS,
+  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
+  RUNNER_PREPARATION_REQUIREMENTS,
+} from "./runner-hermes-capability-profiles.js";
+import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
   EVALUATOR_PREPARE_REQUIREMENTS,
@@ -197,6 +202,68 @@ describe("CommandSession", () => {
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();
     }
+  });
+
+  it("denies cross-phase runner and Hermes capabilities before context preparation", async () => {
+    const runnerResolvers = makeResolvers();
+    const runnerPreparationSession = createCommandSession({
+      command: "task run --dry-run",
+      requirements: RUNNER_PREPARATION_REQUIREMENTS,
+      resolvers: runnerResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    expect(runnerPreparationSession.requirements).not.toContain("git.mutate");
+    expect(runnerPreparationSession.requirements).not.toContain("provider");
+    await expect(
+      runnerPreparationSession.require("git.mutate", "task run --dry-run"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      runnerPreparationSession.require("provider", "task run --dry-run"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(runnerResolvers.getCtx).not.toHaveBeenCalled();
+
+    const hermesResolvers = makeResolvers();
+    const hermesProjectionSession = createCommandSession({
+      command: "hermes enqueue",
+      requirements: HERMES_PROJECTION_REQUIREMENTS,
+      resolvers: hermesResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(
+      hermesProjectionSession.require("provider", "hermes enqueue"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      hermesProjectionSession.require("git.mutate", "hermes enqueue"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(hermesResolvers.getCtx).not.toHaveBeenCalled();
+
+    const hermesInspectResolvers = makeResolvers();
+    const hermesInspectSession = createCommandSession({
+      command: "hermes supervise",
+      requirements: HERMES_PROJECTION_REQUIREMENTS,
+      resolvers: hermesInspectResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(
+      hermesInspectSession.require("provider", "hermes supervise"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      hermesInspectSession.require("git.mutate", "hermes supervise"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(hermesInspectResolvers.getCtx).not.toHaveBeenCalled();
+
+    const hermesRemoteResolvers = makeResolvers();
+    const hermesRemoteSession = createCommandSession({
+      command: "hermes supervise --remote",
+      requirements: HERMES_REMOTE_PREPARATION_REQUIREMENTS,
+      resolvers: hermesRemoteResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(
+      hermesRemoteSession.require("provider", "hermes supervise --remote"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      hermesRemoteSession.require("git.mutate", "hermes supervise --remote"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(hermesRemoteResolvers.getCtx).not.toHaveBeenCalled();
   });
 
   it("denies context mutation and provider execution from read-only context/evaluator sessions", async () => {

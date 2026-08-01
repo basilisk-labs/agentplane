@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-RC1DX8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T11:01:33.495Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "d227dc0acf705edf48b5f165b92b8a368496b5d7",
+  "blueprint_digest": "589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2",
+  "findings": [
+    "Hermes inspect-only supervision receives execution authority even when neither remote access nor step execution is requested."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-110030699-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-RC1DX8/README.md"
+  ],
+  "missing_tests": [
+    "Add runtime session-selection tests for `hermes supervise` covering inspect-only, remote inspection, dry-run execution, and real execution; assert that inspect-only authority excludes `provider` and `git.mutate` and that cross-phase access produces typed denial."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that avoiding calls to `session.require(\"provider\")` and `session.require(\"git.mutate\")` is equivalent to withholding those capabilities, although the command session was already constructed with both capabilities."
+  ],
+  "residual_risks": [
+    "Split `hermes supervise` session selection by parsed execution/remote intent, analogous to `task run`, then refresh SHA-bound focused and repository verification evidence. The current deterministic evidence passes but asserts the overly broad static Hermes supervision profile rather than the required least-authority behavior."
+  ]
+}

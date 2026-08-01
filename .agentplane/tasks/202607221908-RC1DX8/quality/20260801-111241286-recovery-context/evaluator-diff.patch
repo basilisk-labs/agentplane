@@ -1,0 +1,1427 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+index 3dd5dc02e..c017cf35b 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+@@ -62,26 +62,25 @@ async function createStartedRunnerTask(root: string, title: string): Promise<str
+   {
+     const io = captureStdIO();
+     try {
+-      expect(
+-        await runCli([
+-          "task",
+-          "new",
+-          "--title",
+-          title,
+-          "--description",
+-          "Exercise the public task runner path.",
+-          "--priority",
+-          "med",
+-          "--owner",
+-          "CODER",
+-          "--tag",
+-          "code",
+-          "--verify",
+-          "bun run test:critical",
+-          "--root",
+-          root,
+-        ]),
+-      ).toBe(0);
++      const exitCode = await runCli([
++        "task",
++        "new",
++        "--title",
++        title,
++        "--description",
++        "Exercise the public task runner path.",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "code",
++        "--verify",
++        "bun run test:critical",
++        "--root",
++        root,
++      ]);
++      expect(exitCode, io.stderr).toBe(0);
+       taskId = io.stdout.trim();
+     } finally {
+       io.restore();
+@@ -147,10 +146,18 @@ describe("runCli task run", () => {
+     const executeSpy = vi
+       .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
+       .mockResolvedValue(executed);
+-    const handler = makeRunTaskRunHandler(async () => {
++    const getPreparationContext = vi.fn(async () => {
++      await Promise.resolve();
++      return {} as never;
++    });
++    const getExecutionContext = vi.fn(async () => {
+       await Promise.resolve();
+       return {} as never;
+     });
++    const handler = makeRunTaskRunHandler({
++      getPreparationContext,
++      getExecutionContext,
++    });
+     const commandContext = { cwd: "/repo", rootOverride: null } as never;
+     const parsed = {
+       taskId: "202607241200-DEGRADED",
+@@ -170,6 +177,10 @@ describe("runCli task run", () => {
+           };
+           expect(payload.lifecycle_status).toBe("degraded");
+           expect(payload.active_claim_cleanup).toEqual(cleanup);
++          expect(getPreparationContext).not.toHaveBeenCalled();
++          expect(getExecutionContext).toHaveBeenCalledWith("task run", {
++            includeRemote: false,
++          });
+         } finally {
+           io.restore();
+         }
+@@ -197,20 +208,19 @@ describe("runCli task run", () => {
+     const io = captureStdIO();
+     const prepareSpy = vi.spyOn(taskRunUsecases, "prepareTaskRunnerExecution");
+     try {
+-      expect(
+-        await runCli([
+-          "task",
+-          "run",
+-          taskId,
+-          "--dry-run",
+-          "--sandbox",
+-          "danger-full-access",
+-          "--allow-danger-full-access",
+-          "--json",
+-          "--root",
+-          root,
+-        ]),
+-      ).toBe(0);
++      const exitCode = await runCli([
++        "task",
++        "run",
++        taskId,
++        "--dry-run",
++        "--sandbox",
++        "danger-full-access",
++        "--allow-danger-full-access",
++        "--json",
++        "--root",
++        root,
++      ]);
++      expect(exitCode, io.stderr).toBe(0);
+       expect(prepareSpy).toHaveBeenCalledWith(
+         expect.objectContaining({
+           task_id: taskId,
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index cadc81dd4..d2970703a 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -15,6 +15,14 @@ import {
+   EVALUATOR_PREPARE_REQUIREMENTS,
+   EVALUATOR_WRITE_REQUIREMENTS,
+ } from "./command-catalog/context-evaluator-capability-profiles.js";
++import {
++  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
++  HERMES_PROJECTION_REQUIREMENTS,
++  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
++  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
++  RUNNER_EXECUTION_REQUIREMENTS,
++  RUNNER_PREPARATION_REQUIREMENTS,
++} from "./command-catalog/runner-hermes-capability-profiles.js";
+ 
+ describe("command catalog graph", () => {
+   it("uses one graph for longest-prefix match and exact lookup", () => {
+@@ -332,6 +340,117 @@ describe("command catalog graph", () => {
+     );
+   });
+ 
++  it("publishes phase-scoped runner, Hermes, and insights capability profiles", () => {
++    const taskRead = ["project", "config", "backend.read", "task.read"];
++    const taskWrite = [...taskRead, "backend.write", "task.write", "policy", "approvals"];
++    const runnerExecution = [
++      ...taskWrite,
++      "git.head",
++      "git.diff",
++      "git.mutate",
++      "route.local",
++      "route.remote",
++      "provider",
++      "context.search",
++    ];
++
++    for (const id of [
++      ["task", "run", "status"],
++      ["task", "run", "inspect"],
++      ["task", "run", "logs"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskRead);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++    for (const id of [
++      ["task", "run", "reconcile"],
++      ["task", "run", "resolve-effect"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++    for (const id of [["task", "run", "resume-effect"]]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++
++    const taskRun = findCommandEntry(["task", "run"]);
++    expect(taskRun?.requirements).toEqual(RUNNER_PREPARATION_REQUIREMENTS);
++    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).toEqual(
++      RUNNER_PREPARATION_REQUIREMENTS,
++    );
++    expect(taskRun?.selectSession?.({ dryRun: false }).requirements).toEqual(
++      RUNNER_EXECUTION_REQUIREMENTS,
++    );
++    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("provider");
++    expect(taskRun?.selectSession?.({ dryRun: true }).requirements).not.toContain("git.mutate");
++    expect(taskRun?.compatibility).toBeNull();
++
++    const hermesSupervise = findCommandEntry(["hermes", "supervise"]);
++    expect(hermesSupervise?.requirements).toEqual(HERMES_PROJECTION_REQUIREMENTS);
++    expect(
++      hermesSupervise?.selectSession?.({ remote: false, executeStep: false, dryRun: false })
++        .requirements,
++    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
++    expect(
++      hermesSupervise?.selectSession?.({ remote: true, executeStep: false, dryRun: false })
++        .requirements,
++    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
++    expect(
++      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: true })
++        .requirements,
++    ).toEqual(HERMES_PROJECTION_REQUIREMENTS);
++    expect(
++      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: true })
++        .requirements,
++    ).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
++    expect(
++      hermesSupervise?.selectSession?.({ remote: false, executeStep: true, dryRun: false })
++        .requirements,
++    ).toEqual(HERMES_LOCAL_EXECUTION_REQUIREMENTS);
++    expect(
++      hermesSupervise?.selectSession?.({ remote: true, executeStep: true, dryRun: false })
++        .requirements,
++    ).toEqual(HERMES_REMOTE_EXECUTION_REQUIREMENTS);
++    for (const parsed of [
++      { remote: false, executeStep: false, dryRun: false },
++      { remote: true, executeStep: false, dryRun: false },
++      { remote: false, executeStep: true, dryRun: true },
++      { remote: true, executeStep: true, dryRun: true },
++    ]) {
++      const requirements = hermesSupervise?.selectSession?.(parsed).requirements;
++      expect(requirements).not.toContain("provider");
++      expect(requirements).not.toContain("git.mutate");
++    }
++    expect(hermesSupervise?.compatibility).toBeNull();
++
++    const hermesProjection = [
++      ...taskRead,
++      "git.head",
++      "git.diff",
++      "route.local",
++      "policy",
++      "approvals",
++      "context.search",
++    ];
++    for (const id of [
++      ["hermes", "enqueue"],
++      ["hermes", "reconcile"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(hermesProjection);
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++
++    expect(findCommandEntry(["task", "run", "tool"])?.requirements).toEqual(["project"]);
++    expect(findCommandEntry(["hermes"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["hermes", "lifecycle"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["hermes", "doctor"])?.requirements).toEqual(["project", "config"]);
++    expect(findCommandEntry(["insights"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["insights", "report"])?.requirements).toEqual(["project", "config"]);
++    expect(findCommandEntry(["insights", "triage"])?.requirements).toEqual(["project", "config"]);
++  });
++
+   it("keeps framework and internal commands out of normal help without removing dispatch", () => {
+     expect(findCommandEntry(["release"])?.surface).toBe("framework");
+     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/command-context-port.ts b/packages/agentplane/src/cli/run-cli/command-catalog/command-context-port.ts
+index ec4391332..8a5ce0066 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/command-context-port.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/command-context-port.ts
+@@ -6,6 +6,7 @@ type CapabilityDenial = (capability: CommandCapability, operation: string) => ne
+ 
+ const BACKEND_READ_MEMBERS = new Set<PropertyKey>([
+   "id",
++  "root",
+   "capabilities",
+   "listProjectionTasks",
+   "getLastListWarnings",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+index b843f228f..ca4c44db4 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+@@ -55,6 +55,7 @@ import {
+   PROJECT_CONFIG_REQUIREMENTS,
+   PROJECT_REQUIREMENTS,
+ } from "./project-capability-profiles.js";
++import { INSIGHTS_READ_REQUIREMENTS } from "./runner-hermes-capability-profiles.js";
+ import {
+   fromCommandsInit,
+   fromCommandsUpgradeCommand,
+@@ -66,7 +67,7 @@ import {
+   fromCommandsCodex,
+   loadRuntimeSpec,
+   loadRuntimeExplainSpec,
+-  fromCommandsInsightsCommand,
++  loadInsightsSpec,
+   fromCommandsIncidentsIncidentsCommand,
+   fromCommandsCoreRole,
+   loadPlatformSpec,
+@@ -168,14 +169,17 @@ export const CORE_COMMANDS = [
+     load: loadRuntimeExplainSpec,
+     requirements: PROJECT_CONFIG_REQUIREMENTS,
+   }),
+-  fromCommandsInsightsCommand(insightsSpec, "runInsights", { needs: "none" }),
+-  declareCommand(insightsReportSpec, {
++  declareSessionCommand(insightsSpec, {
++    load: loadInsightsSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(insightsReportSpec, {
+     load: loadInsightsReportSpec,
+-    needs: "project+config",
++    requirements: INSIGHTS_READ_REQUIREMENTS,
+   }),
+-  declareCommand(insightsTriageSpec, {
++  declareSessionCommand(insightsTriageSpec, {
+     load: loadInsightsTriageSpec,
+-    needs: "project+config",
++    requirements: INSIGHTS_READ_REQUIREMENTS,
+   }),
+   declareCommand(insightsIssueSpec, {
+     load: loadInsightsIssueSpec,
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+index 32c9ed30f..f4c4da095 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+@@ -11,6 +11,11 @@ import {
+   PROJECT_CONFIG_REQUIREMENTS,
+   PROJECT_REQUIREMENTS,
+ } from "./project-capability-profiles.js";
++import {
++  HERMES_PROJECTION_REQUIREMENTS,
++  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
++  RUNNER_PREPARATION_REQUIREMENTS,
++} from "./runner-hermes-capability-profiles.js";
+ import {
+   CONTEXT_PROJECT_REQUIREMENTS,
+   CONTEXT_TASK_READ_REQUIREMENTS,
+@@ -199,6 +204,68 @@ describe("CommandSession", () => {
+     }
+   });
+ 
++  it("denies cross-phase runner and Hermes capabilities before context preparation", async () => {
++    const runnerResolvers = makeResolvers();
++    const runnerPreparationSession = createCommandSession({
++      command: "task run --dry-run",
++      requirements: RUNNER_PREPARATION_REQUIREMENTS,
++      resolvers: runnerResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    expect(runnerPreparationSession.requirements).not.toContain("git.mutate");
++    expect(runnerPreparationSession.requirements).not.toContain("provider");
++    await expect(
++      runnerPreparationSession.require("git.mutate", "task run --dry-run"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    await expect(
++      runnerPreparationSession.require("provider", "task run --dry-run"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    expect(runnerResolvers.getCtx).not.toHaveBeenCalled();
++
++    const hermesResolvers = makeResolvers();
++    const hermesProjectionSession = createCommandSession({
++      command: "hermes enqueue",
++      requirements: HERMES_PROJECTION_REQUIREMENTS,
++      resolvers: hermesResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(
++      hermesProjectionSession.require("provider", "hermes enqueue"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    await expect(
++      hermesProjectionSession.require("git.mutate", "hermes enqueue"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    expect(hermesResolvers.getCtx).not.toHaveBeenCalled();
++
++    const hermesInspectResolvers = makeResolvers();
++    const hermesInspectSession = createCommandSession({
++      command: "hermes supervise",
++      requirements: HERMES_PROJECTION_REQUIREMENTS,
++      resolvers: hermesInspectResolvers,
++    }) as CommandSession<CommandCapability>;
++    await expect(
++      hermesInspectSession.require("provider", "hermes supervise"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    await expect(
++      hermesInspectSession.require("git.mutate", "hermes supervise"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    expect(hermesInspectResolvers.getCtx).not.toHaveBeenCalled();
++
++    const hermesRemoteResolvers = makeResolvers();
++    const hermesRemoteSession = createCommandSession({
++      command: "hermes supervise --remote",
++      requirements: HERMES_REMOTE_PREPARATION_REQUIREMENTS,
++      resolvers: hermesRemoteResolvers,
++    }) as CommandSession<CommandCapability>;
++    await expect(
++      hermesRemoteSession.require("provider", "hermes supervise --remote"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    await expect(
++      hermesRemoteSession.require("git.mutate", "hermes supervise --remote"),
++    ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    expect(hermesRemoteResolvers.getCtx).not.toHaveBeenCalled();
++  });
++
+   it("denies context mutation and provider execution from read-only context/evaluator sessions", async () => {
+     const projectResolvers = makeResolvers();
+     const projectSession = createCommandSession({
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts
+index 08cf116dd..6977ddaaa 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts
+@@ -212,6 +212,67 @@ export function declareSessionCommand<
+   };
+ }
+ 
++export type DeclaredCommandSessionSelection<TParsed> = {
++  requirements: readonly CommandCapability[];
++  load: (session: CommandSession<CommandCapability>) => Promise<CommandHandler<TParsed>>;
++};
++
++export function defineCommandSessionSelection<
++  TParsed,
++  const TRequirements extends readonly CommandCapability[],
++>(selection: {
++  requirements: TRequirements;
++  load: (session: CommandSession<TRequirements[number]>) => Promise<CommandHandler<TParsed>>;
++}): DeclaredCommandSessionSelection<TParsed> {
++  validateCommandRequirements(selection.requirements);
++  return {
++    requirements: [...selection.requirements],
++    load: (session) => selection.load(session as CommandSession<TRequirements[number]>),
++  };
++}
++
++export function declareMultiSessionCommand<TParsed>(
++  spec: CommandSpec<TParsed>,
++  declaration: Omit<CommandMeta, "needs"> & {
++    default: DeclaredCommandSessionSelection<TParsed>;
++    variants: readonly {
++      when: (parsed: TParsed) => boolean;
++      selection: DeclaredCommandSessionSelection<TParsed>;
++    }[];
++  },
++): CommandEntry {
++  const selections = [
++    declaration.default,
++    ...declaration.variants.map((variant) => variant.selection),
++  ];
++  for (const selection of selections) validateCommandRequirements(selection.requirements);
++  const dispatchRequirements = [
++    ...new Set(selections.flatMap((selection) => selection.requirements)),
++  ];
++  const dispatch = normalizeDispatchRequirements(dispatchRequirements);
++  return {
++    spec: spec as CommandSpec<unknown>,
++    load: (session) => declaration.default.load(session) as Promise<CommandHandler<unknown>>,
++    selectSession: (parsed) => {
++      const selected =
++        declaration.variants.find((variant) => variant.when(parsed as TParsed))?.selection ??
++        declaration.default;
++      return {
++        requirements: selected.requirements,
++        load: (session) => selected.load(session) as Promise<CommandHandler<unknown>>,
++      };
++    },
++    needs: coarseNeedsForDispatch(dispatch),
++    requirements: [...declaration.default.requirements],
++    preparationNodes: preparationNodesForRequirements(declaration.default.requirements),
++    compatibility: null,
++    dispatch,
++    surface: declaration.surface ?? "user",
++    helpGroup: declaration.helpGroup,
++    invocation: declaration.invocation,
++  };
++}
++
+ export function declareConditionalSessionCommand<
+   TParsed,
+   const TDefaultRequirements extends readonly CommandCapability[],
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index 411d747a0..01d232ea5 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -151,7 +151,9 @@ import {
+ import {
+   declareCommand,
+   declareConditionalSessionCommand,
++  declareMultiSessionCommand,
+   declareSessionCommand,
++  defineCommandSessionSelection,
+   type CommandEntry,
+ } from "./kernel.js";
+ import {
+@@ -162,7 +164,16 @@ import {
+   EVALUATOR_PREPARE_REQUIREMENTS,
+   EVALUATOR_WRITE_REQUIREMENTS,
+ } from "./context-evaluator-capability-profiles.js";
+-import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++import {
++  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
++  HERMES_PROJECTION_REQUIREMENTS,
++  HERMES_REMOTE_EXECUTION_REQUIREMENTS,
++  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
++} from "./runner-hermes-capability-profiles.js";
++import {
++  NO_CONTEXT_REQUIREMENTS,
++  PROJECT_CONFIG_REQUIREMENTS,
++} from "./project-capability-profiles.js";
+ import {
+   fromCommandsRecipesRecipesCommand,
+   fromCommandsRecipesCacheCommand,
+@@ -222,12 +233,15 @@ import {
+   fromCommandsEvidenceCommand,
+   loadEvidenceBundleSpec,
+   loadEvidenceVerifySpec,
+-  fromCommandsHermesCommand,
++  loadHermesSpec,
+   loadHermesDoctorSpec,
+   loadHermesEnqueueSpec,
+   loadHermesLifecycleSpec,
+   loadHermesReconcileSpec,
+-  loadHermesSuperviseSpec,
++  loadHermesSuperviseLocalExecutionSpec,
++  loadHermesSuperviseLocalPreparationSpec,
++  loadHermesSuperviseRemoteExecutionSpec,
++  loadHermesSuperviseRemotePreparationSpec,
+   loadBlueprintSpec,
+   loadBlueprintListSpec,
+   loadBlueprintExamplesSpec,
+@@ -285,6 +299,23 @@ import {
+   loadContextSuperviseTaskSpec,
+ } from "../command-loaders/project.js";
+ 
++const HERMES_SUPERVISE_LOCAL_PREPARATION = defineCommandSessionSelection({
++  load: loadHermesSuperviseLocalPreparationSpec,
++  requirements: HERMES_PROJECTION_REQUIREMENTS,
++});
++const HERMES_SUPERVISE_REMOTE_PREPARATION = defineCommandSessionSelection({
++  load: loadHermesSuperviseRemotePreparationSpec,
++  requirements: HERMES_REMOTE_PREPARATION_REQUIREMENTS,
++});
++const HERMES_SUPERVISE_LOCAL_EXECUTION = defineCommandSessionSelection({
++  load: loadHermesSuperviseLocalExecutionSpec,
++  requirements: HERMES_LOCAL_EXECUTION_REQUIREMENTS,
++});
++const HERMES_SUPERVISE_REMOTE_EXECUTION = defineCommandSessionSelection({
++  load: loadHermesSuperviseRemoteExecutionSpec,
++  requirements: HERMES_REMOTE_EXECUTION_REQUIREMENTS,
++});
++
+ export const PROJECT_COMMANDS = [
+   declareCommand(acrSpec, { load: loadAcrSpec, needs: "none" }),
+   declareCommand(acrSchemaSpec, { load: loadAcrSchemaSpec, needs: "none" }),
+@@ -295,12 +326,43 @@ export const PROJECT_COMMANDS = [
+   fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
+   declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
+   declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
+-  fromCommandsHermesCommand(hermesSpec, "runHermesGroup"),
+-  declareCommand(hermesEnqueueSpec, { load: loadHermesEnqueueSpec }),
+-  declareCommand(hermesSuperviseSpec, { load: loadHermesSuperviseSpec }),
+-  declareCommand(hermesReconcileSpec, { load: loadHermesReconcileSpec }),
+-  declareCommand(hermesLifecycleSpec, { load: loadHermesLifecycleSpec }),
+-  declareCommand(hermesDoctorSpec, { load: loadHermesDoctorSpec }),
++  declareSessionCommand(hermesSpec, {
++    load: loadHermesSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(hermesEnqueueSpec, {
++    load: loadHermesEnqueueSpec,
++    requirements: HERMES_PROJECTION_REQUIREMENTS,
++  }),
++  declareMultiSessionCommand(hermesSuperviseSpec, {
++    default: HERMES_SUPERVISE_LOCAL_PREPARATION,
++    variants: [
++      {
++        when: (parsed) => parsed.executeStep && !parsed.dryRun && parsed.remote,
++        selection: HERMES_SUPERVISE_REMOTE_EXECUTION,
++      },
++      {
++        when: (parsed) => parsed.executeStep && !parsed.dryRun,
++        selection: HERMES_SUPERVISE_LOCAL_EXECUTION,
++      },
++      {
++        when: (parsed) => parsed.remote,
++        selection: HERMES_SUPERVISE_REMOTE_PREPARATION,
++      },
++    ],
++  }),
++  declareSessionCommand(hermesReconcileSpec, {
++    load: loadHermesReconcileSpec,
++    requirements: HERMES_PROJECTION_REQUIREMENTS,
++  }),
++  declareSessionCommand(hermesLifecycleSpec, {
++    load: loadHermesLifecycleSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(hermesDoctorSpec, {
++    load: loadHermesDoctorSpec,
++    requirements: PROJECT_CONFIG_REQUIREMENTS,
++  }),
+   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
+   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
+   declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/runner-hermes-capability-profiles.ts b/packages/agentplane/src/cli/run-cli/command-catalog/runner-hermes-capability-profiles.ts
+new file mode 100644
+index 000000000..96e8a2079
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/runner-hermes-capability-profiles.ts
+@@ -0,0 +1,72 @@
++import type { CommandCapability, CommandSession } from "./command-session.js";
++import {
++  TASK_LIFECYCLE_REQUIREMENTS,
++  TASK_READ_REQUIREMENTS,
++  TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
++  TASK_ROUTE_LOCAL_REQUIREMENTS,
++  TASK_WRITE_REQUIREMENTS,
++} from "./task-capability-profiles.js";
++
++export const RUNNER_READ_REQUIREMENTS = [
++  ...TASK_READ_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const RUNNER_WRITE_REQUIREMENTS = [
++  ...TASK_WRITE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const RUNNER_PREPARATION_REQUIREMENTS = [
++  ...TASK_ROUTE_LOCAL_REQUIREMENTS,
++  "route.remote",
++  "context.search",
++] as const satisfies readonly CommandCapability[];
++
++export const RUNNER_EXECUTION_REQUIREMENTS = [
++  ...TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
++  "context.search",
++] as const satisfies readonly CommandCapability[];
++
++export const HERMES_PROJECTION_REQUIREMENTS = [
++  ...TASK_ROUTE_LOCAL_REQUIREMENTS,
++  "context.search",
++] as const satisfies readonly CommandCapability[];
++
++export const HERMES_REMOTE_PREPARATION_REQUIREMENTS = [
++  ...HERMES_PROJECTION_REQUIREMENTS,
++  "route.remote",
++] as const satisfies readonly CommandCapability[];
++
++export const HERMES_LOCAL_EXECUTION_REQUIREMENTS = [
++  ...TASK_LIFECYCLE_REQUIREMENTS,
++  "provider",
++  "context.search",
++] as const satisfies readonly CommandCapability[];
++
++export const HERMES_REMOTE_EXECUTION_REQUIREMENTS = [
++  ...RUNNER_EXECUTION_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const INSIGHTS_READ_REQUIREMENTS = [
++  "project",
++  "config",
++] as const satisfies readonly CommandCapability[];
++
++export type RunnerReadSession = CommandSession<(typeof RUNNER_READ_REQUIREMENTS)[number]>;
++export type RunnerWriteSession = CommandSession<(typeof RUNNER_WRITE_REQUIREMENTS)[number]>;
++export type RunnerPreparationSession = CommandSession<
++  (typeof RUNNER_PREPARATION_REQUIREMENTS)[number]
++>;
++export type RunnerExecutionSession = CommandSession<(typeof RUNNER_EXECUTION_REQUIREMENTS)[number]>;
++export type HermesProjectionSession = CommandSession<
++  (typeof HERMES_PROJECTION_REQUIREMENTS)[number]
++>;
++export type HermesRemotePreparationSession = CommandSession<
++  (typeof HERMES_REMOTE_PREPARATION_REQUIREMENTS)[number]
++>;
++export type HermesLocalExecutionSession = CommandSession<
++  (typeof HERMES_LOCAL_EXECUTION_REQUIREMENTS)[number]
++>;
++export type HermesRemoteExecutionSession = CommandSession<
++  (typeof HERMES_REMOTE_EXECUTION_REQUIREMENTS)[number]
++>;
++export type InsightsReadSession = CommandSession<(typeof INSIGHTS_READ_REQUIREMENTS)[number]>;
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 4856ae0b3..36a55010d 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -73,7 +73,12 @@ import { taskVerifyShowSpec } from "../../../commands/task/verify-show.command.j
+ import { taskVerifySpec } from "../../../commands/task/verify.command.js";
+ import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
+ 
+-import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
++import {
++  declareCommand,
++  declareConditionalSessionCommand,
++  declareSessionCommand,
++  type CommandEntry,
++} from "./kernel.js";
+ import {
+   TASK_LIFECYCLE_REQUIREMENTS,
+   TASK_READ_REQUIREMENTS,
+@@ -82,6 +87,13 @@ import {
+   TASK_ROUTE_REQUIREMENTS,
+   TASK_WRITE_REQUIREMENTS,
+ } from "./task-capability-profiles.js";
++import {
++  RUNNER_EXECUTION_REQUIREMENTS,
++  RUNNER_PREPARATION_REQUIREMENTS,
++  RUNNER_READ_REQUIREMENTS,
++  RUNNER_WRITE_REQUIREMENTS,
++} from "./runner-hermes-capability-profiles.js";
++import { PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
+ import {
+   fromCommandsTaskTaskCommand,
+   fromCommandsTaskHandoffCommand,
+@@ -114,6 +126,7 @@ import {
+   loadTaskRunReconcileSpec,
+   loadTaskRunResolveEffectSpec,
+   loadTaskRunResumeEffectSpec,
++  loadTaskRunPreparationSpec,
+   loadTaskRunSpec,
+   loadTaskRunToolSpec,
+   loadTaskRunStatusSpec,
+@@ -234,44 +247,58 @@ export const TASK_COMMANDS = [
+     load: loadTaskBriefSpec,
+     requirements: TASK_ROUTE_REQUIREMENTS,
+   }),
+-  declareCommand(taskRunStatusSpec, {
++  declareSessionCommand(taskRunStatusSpec, {
+     load: loadTaskRunStatusSpec,
++    requirements: RUNNER_READ_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunInspectSpec, {
++  declareSessionCommand(taskRunInspectSpec, {
+     load: loadTaskRunInspectSpec,
++    requirements: RUNNER_READ_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunReconcileSpec, {
++  declareSessionCommand(taskRunReconcileSpec, {
+     load: loadTaskRunReconcileSpec,
++    requirements: RUNNER_WRITE_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunResolveEffectSpec, {
++  declareSessionCommand(taskRunResolveEffectSpec, {
+     load: loadTaskRunResolveEffectSpec,
++    requirements: RUNNER_WRITE_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunResumeEffectSpec, {
++  declareSessionCommand(taskRunResumeEffectSpec, {
+     load: loadTaskRunResumeEffectSpec,
++    requirements: RUNNER_EXECUTION_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunLogsSpec, {
++  declareSessionCommand(taskRunLogsSpec, {
+     load: loadTaskRunLogsSpec,
++    requirements: RUNNER_READ_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunSpec, {
+-    load: loadTaskRunSpec,
++  declareConditionalSessionCommand(taskRunSpec, {
++    default: {
++      load: loadTaskRunPreparationSpec,
++      requirements: RUNNER_PREPARATION_REQUIREMENTS,
++    },
++    selected: {
++      when: (parsed) => !parsed.dryRun,
++      load: loadTaskRunSpec,
++      requirements: RUNNER_EXECUTION_REQUIREMENTS,
++    },
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+-  declareCommand(taskRunToolSpec, {
++  declareSessionCommand(taskRunToolSpec, {
+     load: loadTaskRunToolSpec,
+-    needs: "project",
++    requirements: PROJECT_REQUIREMENTS,
+     surface: "internal",
+     helpGroup: "Maintenance",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+index 41f1e9935..b501f0dfd 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+@@ -4,6 +4,7 @@ import type {
+   ProjectConfigSession,
+   ProjectSession,
+ } from "../command-catalog/project-capability-profiles.js";
++import type { InsightsReadSession } from "../command-catalog/runner-hermes-capability-profiles.js";
+ 
+ function getProjectDeps(session: ProjectSession) {
+   return {
+@@ -52,9 +53,8 @@ export const loadRuntimeExplainSpec = (session: ProjectConfigSession) =>
+       getLoadedConfig: (command) => session.require("config", command),
+     }),
+   );
+-export const fromCommandsInsightsCommand = commandModule(
+-  () => import("../../../commands/insights/insights.command.js"),
+-);
++export const loadInsightsSpec = (_session: NoContextSession) =>
++  import("../../../commands/insights/insights.command.js").then((m) => m.runInsights);
+ export const fromCommandsIncidentsIncidentsCommand = commandModule(
+   () => import("../../../commands/incidents/incidents.command.js"),
+ );
+@@ -130,13 +130,13 @@ export const loadPlatformSyncSpec = (session: ProjectSession) =>
+   import("../commands/platform.js").then((m) =>
+     m.makeRunPlatformSyncHandler(getProjectDeps(session)),
+   );
+-export const loadInsightsReportSpec = (deps: RunDeps) =>
++export const loadInsightsReportSpec = (session: InsightsReadSession) =>
+   import("../../../commands/insights/insights.command.js").then((m) =>
+-    m.makeRunInsightsReportHandler(deps),
++    m.makeRunInsightsReportHandler(getProjectConfigDeps(session)),
+   );
+-export const loadInsightsTriageSpec = (deps: RunDeps) =>
++export const loadInsightsTriageSpec = (session: InsightsReadSession) =>
+   import("../../../commands/insights/insights.command.js").then((m) =>
+-    m.makeRunInsightsTriageHandler(deps),
++    m.makeRunInsightsTriageHandler(getProjectConfigDeps(session)),
+   );
+ export const loadInsightsIssueSpec = (deps: RunDeps) =>
+   import("../../../commands/insights/insights.command.js").then((m) =>
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index 86d297d1d..5ee831a1a 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -1,4 +1,14 @@
+ import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
++import type {
++  HermesLocalExecutionSession,
++  HermesProjectionSession,
++  HermesRemoteExecutionSession,
++  HermesRemotePreparationSession,
++} from "../command-catalog/runner-hermes-capability-profiles.js";
++import type {
++  NoContextSession,
++  ProjectConfigSession,
++} from "../command-catalog/project-capability-profiles.js";
+ import type {
+   ContextProjectSession,
+   ContextTaskReadSession,
+@@ -7,7 +17,6 @@ import type {
+   EvaluatorPrepareSession,
+   EvaluatorWriteSession,
+ } from "../command-catalog/context-evaluator-capability-profiles.js";
+-import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
+ import type { CommandHandler } from "../../spec/spec.js";
+ import type * as ContextCommandModule from "../../../commands/context/context.command.js";
+ 
+@@ -45,9 +54,6 @@ export const loadAcrExplainSpec = (deps: RunDeps) =>
+ export const fromCommandsEvidenceCommand = commandModule(
+   () => import("../../../commands/evidence/evidence.command.js"),
+ );
+-export const fromCommandsHermesCommand = commandModule(
+-  () => import("../../../commands/hermes/hermes.command.js"),
+-);
+ export const loadEvidenceBundleSpec = (deps: RunDeps) =>
+   import("../../../commands/evidence/evidence.command.js").then((m) =>
+     m.makeRunEvidenceBundleHandler(deps.getCtx),
+@@ -56,25 +62,67 @@ export const loadEvidenceVerifySpec = (deps: RunDeps) =>
+   import("../../../commands/evidence/evidence.command.js").then((m) =>
+     m.makeRunEvidenceVerifyHandler(deps.getCtx),
+   );
+-export const loadHermesEnqueueSpec = (deps: RunDeps) =>
++export const loadHermesSpec = (_session: NoContextSession) =>
++  import("../../../commands/hermes/hermes.command.js").then((m) => m.runHermesGroup);
++export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>
++  import("../../../commands/hermes/hermes.command.js").then((m) =>
++    m.makeRunHermesEnqueueHandler((command) => session.require("context.search", command)),
++  );
++export const loadHermesSuperviseLocalPreparationSpec = (session: HermesProjectionSession) =>
++  import("../../../commands/hermes/hermes.command.js").then((m) =>
++    m.makeRunHermesSuperviseHandler(async (command) => {
++      await session.require("route.local", command);
++      await session.require("context.search", command);
++      return await session.require("context.search", command);
++    }),
++  );
++export const loadHermesSuperviseRemotePreparationSpec = (session: HermesRemotePreparationSession) =>
++  import("../../../commands/hermes/hermes.command.js").then((m) =>
++    m.makeRunHermesSuperviseHandler(async (command) => {
++      await session.require("route.local", command);
++      await session.require("context.search", command);
++      return await session.require("route.remote", command);
++    }),
++  );
++export const loadHermesSuperviseLocalExecutionSpec = (session: HermesLocalExecutionSession) =>
+   import("../../../commands/hermes/hermes.command.js").then((m) =>
+-    m.makeRunHermesEnqueueHandler(deps.getCtx),
++    m.makeRunHermesSuperviseHandler(async (command) => {
++      await session.require("route.local", command);
++      await session.require("git.mutate", command);
++      await session.require("context.search", command);
++      return await session.require("provider", command);
++    }),
+   );
+-export const loadHermesSuperviseSpec = (deps: RunDeps) =>
++export const loadHermesSuperviseRemoteExecutionSpec = (session: HermesRemoteExecutionSession) =>
+   import("../../../commands/hermes/hermes.command.js").then((m) =>
+-    m.makeRunHermesSuperviseHandler(deps.getCtx),
++    m.makeRunHermesSuperviseHandler(async (command) => {
++      await session.require("route.local", command);
++      await session.require("git.mutate", command);
++      await session.require("context.search", command);
++      await session.require("route.remote", command);
++      return await session.require("provider", command);
++    }),
+   );
+-export const loadHermesReconcileSpec = (deps: RunDeps) =>
++export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>
+   import("../../../commands/hermes/hermes.command.js").then((m) =>
+-    m.makeRunHermesReconcileHandler(deps.getCtx),
++    m.makeRunHermesReconcileHandler({
++      getProjectConfig: async (command) => ({
++        project: await session.require("project", command),
++        config: await session.require("config", command),
++      }),
++      getProjectionContext: (command) => session.require("context.search", command),
++    }),
+   );
+-export const loadHermesLifecycleSpec = () =>
++export const loadHermesLifecycleSpec = (_session: NoContextSession) =>
+   import("../../../commands/hermes/hermes.command.js").then((m) =>
+     m.makeRunHermesLifecycleHandler(),
+   );
+-export const loadHermesDoctorSpec = (deps: RunDeps) =>
++export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
+   import("../../../commands/hermes/hermes.command.js").then((m) =>
+-    m.makeRunHermesDoctorHandler(deps.getCtx),
++    m.makeRunHermesDoctorHandler({
++      getResolvedProject: (command) => session.require("project", command),
++      getLoadedConfig: (command) => session.require("config", command),
++    }),
+   );
+ 
+ export const loadBlueprintSpec = (deps: RunDeps) =>
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 39645667c..3d7e9c788 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -13,6 +13,13 @@ import type {
+   TaskRouteSession,
+   TaskWriteSession,
+ } from "../command-catalog/task-capability-profiles.js";
++import type {
++  RunnerExecutionSession,
++  RunnerPreparationSession,
++  RunnerReadSession,
++  RunnerWriteSession,
++} from "../command-catalog/runner-hermes-capability-profiles.js";
++import type { ProjectSession } from "../command-catalog/project-capability-profiles.js";
+ 
+ function getSessionContext<
+   TCapabilities extends CommandCapability,
+@@ -140,35 +147,59 @@ export const loadTaskBriefSpec = (session: TaskRouteSession) =>
+   import("../../../commands/task/brief.command.js").then((m) =>
+     m.makeRunTaskBriefHandler(getTaskRouteContexts(session)),
+   );
+-export const loadTaskRunSpec = (deps: RunDeps) =>
+-  import("../../../commands/task/run.command.js").then((m) => m.makeRunTaskRunHandler(deps.getCtx));
+-export const loadTaskRunToolSpec = (deps: RunDeps) =>
++export const loadTaskRunPreparationSpec = (session: RunnerPreparationSession) =>
++  import("../../../commands/task/run.command.js").then((m) =>
++    m.makeRunTaskRunHandler({
++      getPreparationContext: async (command, options) => {
++        await session.require("context.search", command);
++        return options.includeRemote
++          ? await session.require("route.remote", command)
++          : await session.require("route.local", command);
++      },
++    }),
++  );
++export const loadTaskRunSpec = (session: RunnerExecutionSession) =>
++  import("../../../commands/task/run.command.js").then((m) =>
++    m.makeRunTaskRunHandler({
++      getExecutionContext: async (command, options) => {
++        await session.require("git.mutate", command);
++        await session.require("context.search", command);
++        if (options.includeRemote) await session.require("route.remote", command);
++        return await session.require("provider", command);
++      },
++    }),
++  );
++export const loadTaskRunToolSpec = (session: ProjectSession) =>
+   import("../../../commands/task/run-tool.command.js").then((m) =>
+-    m.makeRunTaskRunToolHandler(deps.getResolvedProject),
++    m.makeRunTaskRunToolHandler((command) => session.require("project", command)),
+   );
+-export const loadTaskRunStatusSpec = (deps: RunDeps) =>
++export const loadTaskRunStatusSpec = (session: RunnerReadSession) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+-    m.makeRunTaskRunStatusHandler(deps.getCtx),
++    m.makeRunTaskRunStatusHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskRunInspectSpec = (deps: RunDeps) =>
++export const loadTaskRunInspectSpec = (session: RunnerReadSession) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+-    m.makeRunTaskRunInspectHandler(deps.getCtx),
++    m.makeRunTaskRunInspectHandler(getSessionContext(session, "task.read")),
+   );
+-export const loadTaskRunReconcileSpec = (deps: RunDeps) =>
++export const loadTaskRunReconcileSpec = (session: RunnerWriteSession) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+-    m.makeRunTaskRunReconcileHandler(deps.getCtx),
++    m.makeRunTaskRunReconcileHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskRunResolveEffectSpec = (deps: RunDeps) =>
++export const loadTaskRunResolveEffectSpec = (session: RunnerWriteSession) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+-    m.makeRunTaskRunResolveEffectHandler(deps.getCtx),
++    m.makeRunTaskRunResolveEffectHandler(getSessionContext(session, "task.write")),
+   );
+-export const loadTaskRunResumeEffectSpec = (deps: RunDeps) =>
++export const loadTaskRunResumeEffectSpec = (session: RunnerExecutionSession) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+-    m.makeRunTaskRunResumeEffectHandler(deps.getCtx),
++    m.makeRunTaskRunResumeEffectHandler(async (command) => {
++      await session.require("git.mutate", command);
++      await session.require("context.search", command);
++      return await session.require("provider", command);
++    }),
+   );
+-export const loadTaskRunLogsSpec = (deps: RunDeps) =>
++export const loadTaskRunLogsSpec = (session: RunnerReadSession) =>
+   import("../../../commands/task/run.command.js").then((m) =>
+-    m.makeRunTaskRunLogsHandler(deps.getCtx),
++    m.makeRunTaskRunLogsHandler(getSessionContext(session, "task.read")),
+   );
+ export const loadTaskCompleteSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/complete.command.js").then((m) =>
+diff --git a/packages/agentplane/src/cli/run-cli/registry.run.test.ts b/packages/agentplane/src/cli/run-cli/registry.run.test.ts
+index 369996ede..cf004959c 100644
+--- a/packages/agentplane/src/cli/run-cli/registry.run.test.ts
++++ b/packages/agentplane/src/cli/run-cli/registry.run.test.ts
+@@ -6,6 +6,8 @@ import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/tes
+ import { describe, expect, it, vi } from "vitest";
+ 
+ import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
++import { hermesSuperviseSpec } from "../../commands/hermes/hermes-specs.js";
++import { taskRunSpec } from "../../commands/task/run.command.js";
+ import { createEvaluatorArtifactPreparationPort } from "../../commands/evaluator/evaluator-artifact-port.js";
+ import {
+   addTask,
+@@ -21,6 +23,13 @@ import {
+   EVALUATOR_READ_REQUIREMENTS,
+   EVALUATOR_WRITE_REQUIREMENTS,
+ } from "./command-catalog/context-evaluator-capability-profiles.js";
++import {
++  HERMES_LOCAL_EXECUTION_REQUIREMENTS,
++  HERMES_PROJECTION_REQUIREMENTS,
++  HERMES_REMOTE_PREPARATION_REQUIREMENTS,
++  RUNNER_EXECUTION_REQUIREMENTS,
++  RUNNER_PREPARATION_REQUIREMENTS,
++} from "./command-catalog/runner-hermes-capability-profiles.js";
+ import {
+   declareSessionCommand,
+   type CommandCapability,
+@@ -46,6 +55,23 @@ function evaluatorRunParsed(noRecord: boolean) {
+   ]).parsed;
+ }
+ 
++function taskRunParsed(dryRun: boolean) {
++  return parseCommandArgv(taskRunSpec, ["TASK-1", ...(dryRun ? ["--dry-run"] : [])]).parsed;
++}
++
++function hermesSuperviseParsed(options: {
++  remote?: boolean;
++  executeStep?: boolean;
++  dryRun?: boolean;
++}) {
++  return parseCommandArgv(hermesSuperviseSpec, [
++    "TASK-1",
++    ...(options.remote ? ["--remote"] : []),
++    ...(options.executeStep ? ["--execute-step"] : []),
++    ...(options.dryRun ? ["--dry-run"] : []),
++  ]).parsed;
++}
++
+ describe("runtime registry session selection", () => {
+   it("isolates capabilities, contexts, and artifact destinations across concurrent dispatches", async () => {
+     const capabilityProfiles = new Map<string, CommandCapability[][]>();
+@@ -298,6 +324,104 @@ describe("runtime registry session selection", () => {
+     expect(observed.at(-1)).toEqual(EVALUATOR_WRITE_REQUIREMENTS);
+   });
+ 
++  it("constructs task run authority from the parsed preparation or execution phase", async () => {
++    const catalogEntry = findCommandEntry(["task", "run"]);
++    if (!catalogEntry?.selectSession) throw new Error("task run must select a session");
++    const observed: CommandCapability[][] = [];
++    const entry: CommandEntry = {
++      ...catalogEntry,
++      selectSession: (parsed) => {
++        const selected = catalogEntry.selectSession?.(parsed);
++        if (!selected) throw new Error("task run did not select a session");
++        return {
++          ...selected,
++          load: (session) => {
++            observed.push([...session.requirements]);
++            const handler = () => Promise.resolve(0);
++            return Promise.resolve(handler);
++          },
++        };
++      },
++    };
++    const registry = buildRegistry({
++      entries: [entry],
++      getCtx: vi.fn(() => Promise.resolve({ marker: "command-context" } as never)),
++      getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
++      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
++      getEvaluatorArtifactPort: vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never)),
++    });
++    const runtime = registry.lookup(["task", "run"]);
++    if (!runtime) throw new Error("runtime registry did not register task run");
++
++    await runtime.handler({ cwd: "/repo" }, taskRunParsed(true));
++    expect(observed.at(-1)).toEqual(RUNNER_PREPARATION_REQUIREMENTS);
++    expect(observed.at(-1)).not.toContain("provider");
++    expect(observed.at(-1)).not.toContain("git.mutate");
++
++    await runtime.handler({ cwd: "/repo" }, taskRunParsed(false));
++    expect(observed.at(-1)).toEqual(RUNNER_EXECUTION_REQUIREMENTS);
++  });
++
++  it("constructs Hermes supervision authority from parsed remote and execution intent", async () => {
++    const catalogEntry = findCommandEntry(["hermes", "supervise"]);
++    if (!catalogEntry?.selectSession) throw new Error("hermes supervise must select a session");
++    const observed: CommandCapability[][] = [];
++    const entry: CommandEntry = {
++      ...catalogEntry,
++      selectSession: (parsed) => {
++        const selected = catalogEntry.selectSession?.(parsed);
++        if (!selected) throw new Error("hermes supervise did not select a session");
++        return {
++          ...selected,
++          load: (session) => {
++            observed.push([...session.requirements]);
++            return Promise.resolve(async () => {
++              const options = parsed as { executeStep: boolean; dryRun: boolean };
++              if (!options.executeStep || options.dryRun) {
++                const unsafe = session as CommandSession<CommandCapability>;
++                await expect(
++                  unsafe.require("provider", "hermes supervise preparation"),
++                ).rejects.toMatchObject({ code: "E_INTERNAL" });
++                await expect(
++                  unsafe.require("git.mutate", "hermes supervise preparation"),
++                ).rejects.toMatchObject({ code: "E_INTERNAL" });
++              }
++              return 0;
++            });
++          },
++        };
++      },
++    };
++    const getCtx = vi.fn(() => Promise.resolve({ marker: "command-context" } as never));
++    const registry = buildRegistry({
++      entries: [entry],
++      getCtx,
++      getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
++      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
++      getEvaluatorArtifactPort: vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never)),
++    });
++    const runtime = registry.lookup(["hermes", "supervise"]);
++    if (!runtime) throw new Error("runtime registry did not register hermes supervise");
++
++    await runtime.handler({ cwd: "/repo" }, hermesSuperviseParsed({}));
++    expect(observed.at(-1)).toEqual(HERMES_PROJECTION_REQUIREMENTS);
++
++    await runtime.handler({ cwd: "/repo" }, hermesSuperviseParsed({ remote: true }));
++    expect(observed.at(-1)).toEqual(HERMES_REMOTE_PREPARATION_REQUIREMENTS);
++
++    await runtime.handler(
++      { cwd: "/repo" },
++      hermesSuperviseParsed({ executeStep: true, dryRun: true }),
++    );
++    expect(observed.at(-1)).toEqual(HERMES_PROJECTION_REQUIREMENTS);
++
++    await runtime.handler({ cwd: "/repo" }, hermesSuperviseParsed({ executeStep: true }));
++    expect(observed.at(-1)).toEqual(HERMES_LOCAL_EXECUTION_REQUIREMENTS);
++    expect(observed.at(-1)).toContain("provider");
++    expect(observed.at(-1)).toContain("git.mutate");
++    expect(getCtx).not.toHaveBeenCalled();
++  });
++
+   it("dispatches the real no-record handler with artifact-only write authority", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.ts b/packages/agentplane/src/commands/hermes/hermes.command.ts
+index edb493819..2a70cfd02 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.ts
+@@ -3,6 +3,8 @@ import {
+   throwGroupCommandUsage,
+   type GroupCommandParsed,
+ } from "../../cli/group-command.js";
++import type { LoadedConfig } from "@agentplaneorg/core/config";
++import type { ResolvedProject } from "@agentplaneorg/core/project";
+ import { createCliEmitter } from "../../cli/output.js";
+ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -120,10 +122,17 @@ export function makeRunHermesEnqueueHandler(
+ }
+ 
+ export function makeRunHermesSuperviseHandler(
+-  getCtx: (command: string) => Promise<CommandContext>,
++  getCtx: (
++    command: string,
++    options: { includeRemote: boolean; executeStep: boolean; dryRun: boolean },
++  ) => Promise<CommandContext>,
+ ): CommandHandler<HermesSuperviseParsed> {
+   return async (ctx, parsed) => {
+-    const commandCtx = await getCtx("hermes supervise");
++    const commandCtx = await getCtx("hermes supervise", {
++      includeRemote: parsed.remote,
++      executeStep: parsed.executeStep,
++      dryRun: parsed.dryRun,
++    });
+     const routeOpts = {
+       ctx: commandCtx,
+       cwd: ctx.cwd,
+@@ -225,14 +234,17 @@ export function makeRunHermesSuperviseHandler(
+   };
+ }
+ 
+-export function makeRunHermesReconcileHandler(
+-  getCtx: (command: string) => Promise<CommandContext>,
+-): CommandHandler<HermesReconcileParsed> {
++export function makeRunHermesReconcileHandler(deps: {
++  getProjectConfig: (
++    command: string,
++  ) => Promise<{ project: ResolvedProject; config: LoadedConfig }>;
++  getProjectionContext: (command: string) => Promise<CommandContext>;
++}): CommandHandler<HermesReconcileParsed> {
+   return async (ctx, parsed) => {
+-    const commandCtx = await getCtx("hermes reconcile");
++    const projectConfig = await deps.getProjectConfig("hermes reconcile");
+     const localProjection = parsed.taskId
+       ? await routePacket({
+-          ctx: commandCtx,
++          ctx: await deps.getProjectionContext("hermes reconcile"),
+           cwd: ctx.cwd,
+           rootOverride: ctx.rootOverride ?? null,
+           taskId: parsed.taskId,
+@@ -243,7 +255,7 @@ export function makeRunHermesReconcileHandler(
+       : null;
+     const payload = {
+       mode: "read_only",
+-      repo: commandCtx.resolvedProject.gitRoot,
++      repo: projectConfig.project.gitRoot,
+       task_id: parsed.taskId ?? null,
+       hermes_run: hermesEnvSnapshot(),
+       local_projection: localProjection,
+@@ -338,11 +350,15 @@ export function makeRunHermesLifecycleHandler(): CommandHandler<HermesLifecycleP
+   return runHermesLifecycleCommand;
+ }
+ 
+-export function makeRunHermesDoctorHandler(
+-  getCtx: (command: string) => Promise<CommandContext>,
+-): CommandHandler<HermesDoctorParsed> {
++export function makeRunHermesDoctorHandler(deps: {
++  getResolvedProject: (command: string) => Promise<ResolvedProject>;
++  getLoadedConfig: (command: string) => Promise<LoadedConfig>;
++}): CommandHandler<HermesDoctorParsed> {
+   return async (_ctx, parsed) => {
+-    const commandCtx = await getCtx("hermes doctor");
++    const [project, loadedConfig] = await Promise.all([
++      deps.getResolvedProject("hermes doctor"),
++      deps.getLoadedConfig("hermes doctor"),
++    ]);
+     const env = hermesEnvSnapshot();
+     const registry = await loadLaneRegistry();
+     const rawAgentplaneBin = process.env.AGENTPLANE_BIN?.trim();
+@@ -353,10 +369,10 @@ export function makeRunHermesDoctorHandler(
+     const hermesBin = hermesCliCommand();
+     const payload = {
+       ok: registry.error === null,
+-      repo: commandCtx.resolvedProject.gitRoot,
+-      workflow_mode: commandCtx.config.workflow_mode,
++      repo: project.gitRoot,
++      workflow_mode: loadedConfig.config.workflow_mode,
+       recommended_workflow_for_multi_agent: "branch_pr",
+-      branch_pr_ready: commandCtx.config.workflow_mode === "branch_pr",
++      branch_pr_ready: loadedConfig.config.workflow_mode === "branch_pr",
+       hermes_env: env,
+       missing_hermes_env: Object.entries(env)
+         .filter(([key, value]) => key !== "claim_lock_present" && value === null)
+diff --git a/packages/agentplane/src/commands/insights/insights-report.ts b/packages/agentplane/src/commands/insights/insights-report.ts
+index b627789c5..f233193f0 100644
+--- a/packages/agentplane/src/commands/insights/insights-report.ts
++++ b/packages/agentplane/src/commands/insights/insights-report.ts
+@@ -6,7 +6,8 @@ import { promisify } from "node:util";
+ 
+ import type { TaskRecord } from "@agentplaneorg/core/tasks";
+ 
+-import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
++import type { LoadedConfig } from "@agentplaneorg/core/config";
++import type { ResolvedProject } from "@agentplaneorg/core/project";
+ import { listTasksForInsights, pathExists } from "./insights-task-loader.js";
+ export { renderInsightsReport } from "./insights-report-render.js";
+ import { getVersion } from "../../meta/version.js";
+@@ -84,6 +85,11 @@ export type InsightsReport = {
+   };
+ };
+ 
++export type InsightsProjectDeps = {
++  getResolvedProject: (command: string) => Promise<ResolvedProject>;
++  getLoadedConfig: (command: string) => Promise<LoadedConfig>;
++};
++
+ function bump(counts: CountMap, raw: unknown, fallback = "unknown"): void {
+   const value = typeof raw === "string" && raw.trim() !== "" ? raw.trim() : fallback;
+   counts[value] = (counts[value] ?? 0) + 1;
+@@ -333,7 +339,7 @@ function summarizeRunner(tasks: TaskRecord[]): InsightsReport["runner"] {
+ }
+ 
+ export async function buildInsightsReport(opts: {
+-  deps: RunDeps;
++  deps: InsightsProjectDeps;
+   recentLimit: number;
+   failure?: FailureContextInput;
+ }): Promise<InsightsReport> {
+diff --git a/packages/agentplane/src/commands/insights/insights.command.ts b/packages/agentplane/src/commands/insights/insights.command.ts
+index 5bf7c5532..48304d1ef 100644
+--- a/packages/agentplane/src/commands/insights/insights.command.ts
++++ b/packages/agentplane/src/commands/insights/insights.command.ts
+@@ -5,7 +5,6 @@ import {
+ } from "../../cli/group-command.js";
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type { CommandHandler } from "../../cli/spec/spec.js";
+-import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
+ import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
+ import { exitCodeForError } from "../../cli/exit-codes.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -24,7 +23,11 @@ import {
+   normalizeIssueTransport,
+   type FeedbackGithubIssuesSettings,
+ } from "./insights-issue-publish.js";
+-import { buildInsightsReport, renderInsightsReport } from "./insights-report.js";
++import {
++  buildInsightsReport,
++  renderInsightsReport,
++  type InsightsProjectDeps,
++} from "./insights-report.js";
+ import {
+   buildInsightsTriage,
+   renderInsightsTriageMarkdown,
+@@ -51,7 +54,9 @@ export const runInsights: CommandHandler<GroupCommandParsed> = async (_ctx, p) =
+   });
+ };
+ 
+-export function makeRunInsightsReportHandler(deps: RunDeps): CommandHandler<InsightsReportParsed> {
++export function makeRunInsightsReportHandler(
++  deps: InsightsProjectDeps,
++): CommandHandler<InsightsReportParsed> {
+   return async (ctx, parsed) =>
+     wrapCommand({ command: "insights report", rootOverride: ctx.rootOverride }, async () => {
+       const report = await buildInsightsReport({ deps, recentLimit: parsed.recentLimit });
+@@ -66,7 +71,9 @@ export function makeRunInsightsReportHandler(deps: RunDeps): CommandHandler<Insi
+     });
+ }
+ 
+-export function makeRunInsightsTriageHandler(deps: RunDeps): CommandHandler<InsightsTriageParsed> {
++export function makeRunInsightsTriageHandler(
++  deps: InsightsProjectDeps,
++): CommandHandler<InsightsTriageParsed> {
+   return async (ctx, parsed) =>
+     wrapCommand({ command: "insights triage", rootOverride: ctx.rootOverride }, async () => {
+       const report = await buildInsightsReport({
+@@ -93,7 +100,9 @@ export function makeRunInsightsTriageHandler(deps: RunDeps): CommandHandler<Insi
+     });
+ }
+ 
+-export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<InsightsIssueParsed> {
++export function makeRunInsightsIssueHandler(
++  deps: InsightsProjectDeps,
++): CommandHandler<InsightsIssueParsed> {
+   return async (ctx, parsed) =>
+     wrapCommand({ command: "insights issue", rootOverride: ctx.rootOverride }, async () => {
+       const [resolved, loaded] = await Promise.all([
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index 536d17e5d..2536f297d 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -296,9 +296,19 @@ function reportTaskSupervision(opts: {
+   });
+ }
+ 
+-export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
++export type TaskRunContextDependencies = {
++  getPreparationContext?: (
++    command: string,
++    options: { includeRemote: boolean },
++  ) => Promise<CommandContext>;
++  getExecutionContext?: (
++    command: string,
++    options: { includeRemote: boolean },
++  ) => Promise<CommandContext>;
++};
++
++export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
+   return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
+-    const commandCtx = await getCtx("task run");
+     const output = createCliEmitter();
+     const dangerAuthority = parsed.allowDangerFullAccess
+       ? {
+@@ -308,6 +318,12 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+         }
+       : null;
+     if (parsed.dryRun) {
++      if (!deps.getPreparationContext) {
++        throw new Error("task run dry-run was loaded without preparation capabilities");
++      }
++      const commandCtx = await deps.getPreparationContext("task run", {
++        includeRemote: parsed.remote,
++      });
+       const prepared = await prepareTaskRunnerExecution({
+         ctx: commandCtx,
+         cwd: ctx.cwd,
+@@ -331,6 +347,13 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+       return 0;
+     }
+ 
++    if (!deps.getExecutionContext) {
++      throw new Error("task run execution was loaded without execution capabilities");
++    }
++    const commandCtx = await deps.getExecutionContext("task run", {
++      includeRemote: parsed.remote,
++    });
++
+     if (commandCtx.config?.workflow_mode === "direct") {
+       const supervised = await superviseDirectTaskRun({
+         ctx,

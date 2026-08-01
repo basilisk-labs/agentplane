@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-RC1DX8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T10:39:45.228Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "253943c427b60c81673f4442fbe7d277cb41a4e9",
+  "blueprint_digest": "589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2",
+  "findings": [
+    "`task run` uses one execution-capability profile for both dry-run preparation and execution, so preparation still declares provider and Git-mutation capabilities.",
+    "The frozen check evidence contains only a verification summary; verification records, runner history, runtime evidence, and direct-supervision evidence are empty."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-RC1DX8/README.md",
+    ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-blueprint.json"
+  ],
+  "missing_tests": [
+    "Assert that dry-run preparation receives a session whose declared requirements exclude `provider`, `git.mutate`, and other execution-only capabilities.",
+    "Exercise direct and branch_pr dry-run and execution fixtures while recording the resolved capability set for each phase.",
+    "Provide deterministic results for the declared guards, lifecycle invariants, critical tests, typecheck, focused runner/Hermes matrix, and concurrency-sensitive supervision paths."
+  ],
+  "hidden_assumptions": [
+    "Not calling `session.require` for an execution-only capability is assumed equivalent to not declaring that capability.",
+    "The aggregate TESTER note is assumed to faithfully represent all named checks despite the absence of frozen check records.",
+    "The unrelated FIFO timeout is assumed to be suite-load flakiness without frozen concurrency or rerun output."
+  ],
+  "residual_risks": [
+    "Split or otherwise constrain `task run` preparation and execution so dry-run preparation cannot declare execution-only provider or Git-mutation capabilities, add a capability-set assertion for the dry-run path, and freeze deterministic outputs for the declared and concurrency-sensitive checks before reevaluation."
+  ]
+}
