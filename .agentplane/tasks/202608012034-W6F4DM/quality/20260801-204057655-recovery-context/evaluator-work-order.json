@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608012034-W6F4DM-b4199e735c89a445b312216d",
+  "prepared_at": "2026-08-01T20:40:57.655Z",
+  "task": {
+    "id": "202608012034-W6F4DM",
+    "revision": 8,
+    "objective": "Prevent artifact gate buffer overflow on large repositories\n\nRaise deterministic child-process output bounds in the artifact policy gate so tracked path inventories larger than Node's default 1 MiB buffer remain verifiable without weakening artifact exclusions.",
+    "acceptance_criteria": [
+      "bun run artifacts:check",
+      "bun run ci:contract",
+      "bun run format:check",
+      "- In scope: Raise deterministic child-process output bounds in the artifact policy gate so tracked path inventories larger than Node's default 1 MiB buffer remain verifiable without weakening artifact exclusions.\n- Out of scope: unrelated refactors not required for \"Prevent artifact gate buffer overflow on large repositories\".",
+      "1. Preserve the failing evidence: tracked-path output is 1,234,923 bytes and artifacts:check exits with spawnSync git ENOBUFS under Node's default buffer. 2. Add one explicit bounded maxBuffer constant and apply it to every buffered git/tar child process in scripts/checks/check-agentplane-artifacts.mjs; do not relax volatile-artifact rules or cutoff semantics. 3. Re-run artifacts:check against the current repository, targeted lint/format, and the full ci:contract. 4. Publish and integrate the bounded repair before resuming RF-29 release:prepublish.",
+      "1. Run `git ls-files -z | wc -c`. Expected: output exceeds 1 MiB, preserving the original failure precondition.\n2. Run `bun run artifacts:check`. Expected: the complete tracked/archive inventories are evaluated and the artifact policy passes without ENOBUFS.\n3. Run targeted ESLint and Prettier checks for `scripts/checks/check-agentplane-artifacts.mjs`. Expected: no findings.\n4. Run `bun run ci:contract`. Expected: all repository contract checks pass.\n5. Run `git diff --check` and inspect the final worktree. Expected: only the bounded script change and task evidence are present."
+    ]
+  },
+  "evaluated_sha": "390bfc5a8817d63450b606c9453246bec377731e",
+  "diff_base_sha": "929105a503c42dcf9fe7af49c2d84627f246130e",
+  "blueprint_digest": "2e4070ab8e0b48ecf48cc918264488cd6ecfd02beb05944644f5593465ed5dac",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608012034-W6F4DM/README.md",
+      "sha256": "sha256:271b551cab2a9285a749e4c3029eede88df41b275a2da9810188b865367902df",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:e213633599794ad86003c49409b14e61bf9f41ab39465aebaf8f49d951a5b59b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:20d613b34afce6dc9ec4a94676d24bedbd2d89d3983bdb5d856dad2947039d16",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608012034-W6F4DM/quality/20260801-204057655-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:6f126638c0cfc648597baed167388733ab73e8ce2a2c2f3c3a23d3cf4dc25b4d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
