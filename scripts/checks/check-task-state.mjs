@@ -3,6 +3,10 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+import {
+  inspectReleaseTaskClosure,
+  readTaskFrontMatterList,
+} from "../lib/release-task-closure.mjs";
 
 const SCRIPT_NAME = "check-task-state.mjs";
 const ACTIVE_STATUSES = new Set(["TODO", "DOING", "BLOCKED"]);
@@ -30,19 +34,6 @@ function parseFrontMatter(text) {
     out[match[1]] = value.replaceAll(/^["']|["']$/gu, "");
   }
   return out;
-}
-
-function readFrontMatterList(text, key) {
-  const lines = text.replaceAll("\r\n", "\n").split("\n");
-  const start = lines.findIndex((line) => line.trim() === `${key}:`);
-  if (start === -1) return [];
-  const values = [];
-  for (const line of lines.slice(start + 1)) {
-    if (/^[A-Za-z0-9_-]+:\s*/u.test(line)) break;
-    const match = /^\s*-\s*["']?([^"']+)["']?\s*$/u.exec(line);
-    if (match?.[1]) values.push(match[1].trim());
-  }
-  return values;
 }
 
 function listTaskDirs(tasksRoot) {
@@ -154,7 +145,7 @@ export function checkTaskState(repoRoot, opts = {}) {
     }
     const status = String(frontMatter.status ?? "").trim();
     const title = String(frontMatter.title ?? "").trim();
-    const tags = new Set(readFrontMatterList(readmeText, "tags"));
+    const tags = new Set(readTaskFrontMatterList(readmeText, "tags"));
     const mergedPendingClose =
       status === "DONE" ? null : readMergedPendingCloseState(tasksRoot, taskId);
 
@@ -225,11 +216,24 @@ export function checkTaskState(repoRoot, opts = {}) {
     }
   }
 
+  const releaseClosure = inspectReleaseTaskClosure(repoRoot, {
+    planPath: opts.releasePlanPath,
+    required:
+      Boolean(opts.releasePlanPath) ||
+      existsSync(path.join(repoRoot, "docs", "internal", "v0.7-refactor-plan.md")),
+  });
+  for (const failure of releaseClosure.failures) {
+    failures.push(`release task closure: ${failure}`);
+  }
+
   if (failures.length > 0) {
     throw new Error(["task state check failed.", ...failures].join("\n"));
   }
   if (opts.quiet !== true) {
-    process.stdout.write(`task state OK (tasks=${taskIds.length})\n`);
+    const closureSummary = releaseClosure.checked
+      ? ` release_closure=${releaseClosure.reachableTaskIds.length}`
+      : "";
+    process.stdout.write(`task state OK (tasks=${taskIds.length}${closureSummary})\n`);
   }
 }
 
@@ -238,7 +242,7 @@ const main = defineScript({
   async run({ argv }) {
     const { flags } = parseScriptArgs(argv, {
       booleanFlags: ["release-ready", "allow-active-release-task"],
-      valueFlags: ["ignore-release-task"],
+      valueFlags: ["ignore-release-task", "release-plan"],
     });
     const ignoreReleaseTaskIds = Array.isArray(flags["ignore-release-task"])
       ? flags["ignore-release-task"]
@@ -249,6 +253,8 @@ const main = defineScript({
       releaseReady: flags["release-ready"] === true,
       ignoreReleaseTaskIds,
       allowActiveReleaseTask: flags["allow-active-release-task"] === true,
+      releasePlanPath:
+        typeof flags["release-plan"] === "string" ? flags["release-plan"] : undefined,
     });
   },
 });
