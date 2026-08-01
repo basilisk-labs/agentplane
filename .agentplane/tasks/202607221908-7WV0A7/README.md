@@ -4,7 +4,7 @@ title: "Migrate provider, integration, release, and ops command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +38,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "d53ad1acb3f9473a2f5e493035b8bb8ba7b049fa"
+  message: "♻️ 7WV0A7 task: migrate provider and release command sessions"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: provider, integration, release, hosted-close, cleanup, and local work commands now declare authority-aware CommandSession profiles; group commands no longer prepare broad context; focused and critical verification passed."
 events:
   -
     type: "status"
@@ -51,8 +56,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-01T03:42:34.295Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: provider, integration, release, hosted-close, cleanup, and local work commands now declare authority-aware CommandSession profiles; group commands no longer prepare broad context; focused and critical verification passed."
 doc_version: 3
-doc_updated_at: "2026-08-01T03:23:48.372Z"
+doc_updated_at: "2026-08-01T03:42:34.295Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers."
 sections:
