@@ -191,21 +191,69 @@
       "improvement_formula": "(1 - candidate_median_ms / baseline_median_ms) * 100",
       "improvement_percent": 5.803127888929227,
       "exact_stdout": true,
-      "threshold_passed": true,
-      "verdict": "go"
+      "performance_threshold_passed": true,
+      "safety_gate_passed": false,
+      "threshold_passed": false,
+      "verdict": "no_go"
     },
     "implementation": {
       "persistent_state": false,
       "cache_invalidation": false,
       "error_precedence": "git_root, git_head, git_status, git_index",
-      "semantic_projection": "one canonical porcelain status invocation observes tracked and untracked paths together before existing filtering and fingerprinting"
+      "semantic_projection": "one canonical porcelain status invocation observes tracked and untracked paths together before existing filtering and fingerprinting",
+      "safety_issue": "HEAD, status, and index commands can observe different repository states when they run concurrently; evaluator review rejected the combined snapshot even though stable-state output was exact"
+    }
+  },
+  "safe_outer_overlap_screening": {
+    "method": {
+      "mode": "alternating external-process screening pairs after one warmup per binary",
+      "command": "node packages/agentplane/dist/cli.js task next-action 202607221854-87892M --json --root <task-worktree>",
+      "baseline": "RF-26a main at 451a8a6e980f9f2724bce718e807a8675fd89eeb",
+      "candidate": "canonical serial Git snapshot observation overlapped only with independent blueprint and policy-scope preparation",
+      "functional_comparison": "Exact stdout equality for the warmup and every screening pair."
+    },
+    "threshold": {
+      "median_improvement_percent_gte": 5,
+      "functional_output_must_be_unchanged": true,
+      "declared_before_run": true,
+      "screening_rule": "Stop before the final 25-pair run when the short screening median is materially below threshold."
+    },
+    "runs": {
+      "pairs": 7,
+      "baseline_ms": [
+        890.3116669999999,
+        890.5826670000006,
+        897.1080000000002,
+        897.5274159999999,
+        893.1642499999998,
+        907.3275420000009,
+        909.7018750000007
+      ],
+      "candidate_ms": [
+        867.9627500000001,
+        873.7076670000001,
+        894.9831249999997,
+        887.3579579999996,
+        875.9942919999994,
+        900.8161250000012,
+        889.918040999999
+      ]
+    },
+    "comparison": {
+      "baseline_median_ms": 897.1080000000002,
+      "candidate_median_ms": 887.3579579999996,
+      "improvement_formula": "(1 - candidate_median_ms / baseline_median_ms) * 100",
+      "improvement_percent": 1.0868303481855635,
+      "exact_stdout": true,
+      "threshold_passed": false,
+      "verdict": "no_go"
     }
   },
   "candidate_selection": [
     {
       "node": "git_snapshot",
-      "result": "accepted_stateless",
-      "reason": "The persistent-cache design remained below threshold, while stateless parallel observation improved the end-to-end median by 5.80 percent with exact output parity and no persistent state."
+      "result": "rejected",
+      "reason": "Concurrent Git observation cleared the performance threshold but failed the coherent-snapshot safety gate; the safe outer-overlap variant improved the screening median by only 1.09 percent. Both prototypes were removed."
     },
     {
       "node": "task_context_assembly",
@@ -215,7 +263,7 @@
     {
       "node": "task_backend_read",
       "result": "rejected",
-      "reason": "The final accepted optimization removes the measured Git-observation serialization without introducing broad command-local task state."
+      "reason": "The measured node cost does not justify broad command-local task state or its dependency invalidation surface."
     },
     {
       "node": "remote_provider_state",
@@ -231,9 +279,9 @@
   "decision": {
     "persistent_cache_merged": false,
     "prototype_retained": false,
-    "stateless_parallel_observation_merged": true,
-    "reason": "The persistent cache failed its complexity threshold. Stateless parallel Git observation exceeded the same five-percent end-to-end threshold with exact output parity and no cache lifecycle surface.",
-    "recommended_follow_up": "Keep semantic authority and remote provider observations live; use the preparation trace to select future stateless scheduling improvements."
+    "stateless_parallel_observation_merged": false,
+    "reason": "The persistent cache missed the five-percent threshold; concurrent Git observation failed the coherent-snapshot safety gate; and the safe outer-overlap replacement missed the performance threshold. No runtime prototype is retained.",
+    "recommended_follow_up": "Keep Git, semantic authority, and remote provider observations live; use the preparation trace to select a different optimization whose consistency and end-to-end value can both be proven."
   },
   "evidence": {
     "benchmark.baseline": "runs.baseline_ms and runs.baseline_cold_ms",
@@ -241,7 +289,7 @@
     "benchmark.runs": "runs",
     "benchmark.threshold": "threshold",
     "benchmark.comparison": "comparison",
-    "benchmark.verdict": "persistent_cache_no_go; stateless_parallel_observation_go",
+    "benchmark.verdict": "persistent_cache_no_go; concurrent_git_observation_no_go; safe_outer_overlap_no_go",
     "benchmark.quality": "pending evaluator gate",
     "benchmark.commit": "pending artifact commit"
   }

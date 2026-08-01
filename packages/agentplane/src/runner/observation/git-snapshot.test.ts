@@ -13,7 +13,6 @@ import {
   type GitSnapshotDelta,
   type GitSnapshotDeltaEntry,
 } from "./git-snapshot.js";
-import { parsePorcelainStatus } from "./git-snapshot/parse.js";
 
 const tempRoots: string[] = [];
 
@@ -61,42 +60,6 @@ function expectSha256(value: string | null): void {
 }
 
 describe("Git execution snapshot observation", () => {
-  it("matches canonical porcelain status while observing tracked and untracked paths in parallel", async () => {
-    const root = await createRepository({
-      "deleted.txt": "delete\n",
-      "modified.txt": "base\n",
-      "removed-from-index.txt": "keep in worktree\n",
-      "renamed.txt": "rename\n",
-      "staged.txt": "stage\n",
-    });
-    await unlink(path.join(root, "deleted.txt"));
-    await writeRepoFile(root, "modified.txt", "modified\n");
-    await git(root, ["rm", "-q", "--cached", "--", "removed-from-index.txt"]);
-    await writeRepoFile(root, "newly-staged.txt", "new stage\n");
-    await git(root, ["add", "--", "newly-staged.txt"]);
-    await writeRepoFile(root, "staged.txt", "staged\n");
-    await git(root, ["add", "--", "staged.txt"]);
-    await git(root, ["mv", "--", "renamed.txt", "destination.txt"]);
-    await writeRepoFile(root, "untracked.txt", "untracked\n");
-
-    const { stdout } = await execFileAsync(
-      "git",
-      [
-        "status",
-        "--porcelain=v1",
-        "-z",
-        "--untracked-files=all",
-        "--renames",
-        "--ignore-submodules=none",
-      ],
-      { cwd: root, env: gitEnv(), encoding: "buffer" },
-    );
-    const snapshot = await captureGitSnapshot({ repository_root: root });
-
-    expect(snapshot.state, JSON.stringify(snapshot.errors)).toBe("available");
-    expect(snapshot.status_entries).toEqual(parsePorcelainStatus(stdout));
-  });
-
   it("attributes clean tracked modifications and unreported untracked writes", async () => {
     const root = await createRepository();
     const before = await captureGitSnapshot({ repository_root: root });

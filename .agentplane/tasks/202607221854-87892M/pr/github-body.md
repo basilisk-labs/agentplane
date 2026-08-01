@@ -27,13 +27,7 @@ RF-26b: cache only measured expensive deterministic nodes by exact StateFingerpr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../workflow-step-fingerprint-preparation.ts       | 154 ++++++++++++++++
- .../commands/shared/workflow-step-fingerprint.ts   | 157 +++++-----------
- .../observation/git-snapshot.capture.unit.test.ts  |  67 +++++++
- .../src/runner/observation/git-snapshot.test.ts    |  37 ++++
- .../src/runner/observation/git-snapshot.ts         |   6 +-
- .../src/runner/observation/git-snapshot/capture.ts | 198 ++++++++++++++-------
- 6 files changed, 439 insertions(+), 180 deletions(-)
+No changes detected.
 ```
 
 </details>
