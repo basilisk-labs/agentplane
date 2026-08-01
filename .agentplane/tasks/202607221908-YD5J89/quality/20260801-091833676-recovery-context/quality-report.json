@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T09:19:20.130Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "cef1b58cb88c6856a04ebadc824daa77ac1d93a9",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "No contract violations found in the frozen implementation and verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-091833676-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-YD5J89/verification/20260801091812405-e26eb1f28224f116.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Capability-to-member allowlists must remain synchronized with future TaskBackend and GitContext interface additions; unknown members currently default to write or mutate authority."
+  ],
+  "residual_risks": []
+}
