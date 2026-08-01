@@ -55,6 +55,18 @@ async function ensureEvaluatorPolicyFixture(root: string): Promise<string[]> {
   return createdPaths.filter((filePath): filePath is string => filePath !== null);
 }
 
+export async function withEvaluatorPolicyFixture<T>(
+  root: string,
+  operation: () => Promise<T>,
+): Promise<T> {
+  const policyFixturePaths = await ensureEvaluatorPolicyFixture(root);
+  try {
+    return await operation();
+  } finally {
+    await Promise.all(policyFixturePaths.map((filePath) => rm(filePath, { force: true })));
+  }
+}
+
 let agentplaneHome: string | null = null;
 const testRoots = new Set<string>();
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
@@ -314,30 +326,30 @@ export async function recordQualityReviewPass(root: string, taskId: string): Pro
       return;
     }
   }
-  const policyFixturePaths = await ensureEvaluatorPolicyFixture(root);
   const io = captureStdIO();
   let code: number;
   try {
-    code = await runCli([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "pass",
-      "--summary",
-      "Test harness quality review passed.",
-      "--finding",
-      "Harness fixture reviewed scope, verification state, and integration readiness.",
-      "--evidence",
-      `.agentplane/tasks/${taskId}/README.md`,
-      "--root",
-      root,
-    ]);
+    code = await withEvaluatorPolicyFixture(root, () =>
+      runCli([
+        "evaluator",
+        "run",
+        taskId,
+        "--provenance",
+        "evaluator_supplied",
+        "--verdict",
+        "pass",
+        "--summary",
+        "Test harness quality review passed.",
+        "--finding",
+        "Harness fixture reviewed scope, verification state, and integration readiness.",
+        "--evidence",
+        `.agentplane/tasks/${taskId}/README.md`,
+        "--root",
+        root,
+      ]),
+    );
   } finally {
     io.restore();
-    await Promise.all(policyFixturePaths.map((filePath) => rm(filePath, { force: true })));
   }
   if (code !== 0) {
     throw new Error(

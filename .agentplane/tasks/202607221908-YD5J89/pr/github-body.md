@@ -27,6 +27,9 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ ...-cli.core.lifecycle.finish-close-commit.test.ts |  37 +-
+ ...un-cli.core.lifecycle.finish-validation.test.ts |  71 ++-
+ .../src/cli/run-cli.core.tasks.incidents.test.ts   |  37 +-
  packages/agentplane/src/cli/run-cli.ts             |  13 +
  .../src/cli/run-cli/command-catalog.test.ts        |  93 ++++
  .../command-catalog/command-context-port.ts        | 153 ++++++
@@ -55,7 +58,8 @@ RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge
  packages/agentplane/src/context/doctor.ts          |  60 ++-
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
- 28 files changed, 2991 insertions(+), 671 deletions(-)
+ packages/testkit/src/cli-harness.ts                |  50 +-
+ 32 files changed, 3116 insertions(+), 741 deletions(-)
 ```
 
 </details>

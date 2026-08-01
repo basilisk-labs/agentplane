@@ -16,6 +16,7 @@ import {
   registerAgentplaneHome,
   runCliSilent,
   silenceStdIO,
+  withEvaluatorPolicyFixture,
   writeConfig,
   writeDefaultConfig,
 } from "@agentplane/testkit";
@@ -35,26 +36,56 @@ afterEach(() => {
 async function recordEvaluatorPass(root: string, taskId: string): Promise<void> {
   const io = captureStdIO();
   try {
-    const code = await runCli([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "pass",
-      "--summary",
-      "Structured finish fixture has verification evidence.",
-      "--finding",
-      "The finish fixture passed its targeted lifecycle checks.",
-      "--evidence",
-      "finish validation fixture",
-      "--root",
-      root,
-    ]);
+    const code = await withEvaluatorPolicyFixture(root, () =>
+      runCli([
+        "evaluator",
+        "run",
+        taskId,
+        "--provenance",
+        "evaluator_supplied",
+        "--verdict",
+        "pass",
+        "--summary",
+        "Structured finish fixture has verification evidence.",
+        "--finding",
+        "The finish fixture passed its targeted lifecycle checks.",
+        "--evidence",
+        "finish validation fixture",
+        "--root",
+        root,
+      ]),
+    );
     expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
   } finally {
     io.restore();
+  }
+}
+
+async function linkSharedTaskBatch(root: string, primaryTaskId: string, includedTaskId: string) {
+  for (const [taskId, role] of [
+    [primaryTaskId, "primary"],
+    [includedTaskId, "included"],
+  ] as const) {
+    const taskPath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const current = await readFile(taskPath, "utf8");
+    const frontmatterEnd = current.indexOf("\n---\n", 4);
+    expect(frontmatterEnd).toBeGreaterThan(0);
+    const extension = [
+      "extensions:",
+      "  branch_pr_batch:",
+      '    base: "main"',
+      '    branch: "task/shared/finish-multiple"',
+      "    included_task_ids:",
+      `      - "${includedTaskId}"`,
+      `    primary_task_id: "${primaryTaskId}"`,
+      `    role: "${role}"`,
+      '    updated_at: "2026-08-01T00:00:00.000Z"',
+    ].join("\n");
+    await writeFile(
+      taskPath,
+      `${current.slice(0, frontmatterEnd)}\n${extension}${current.slice(frontmatterEnd)}`,
+      "utf8",
+    );
   }
 }
 
@@ -439,6 +470,8 @@ describe("runCli", () => {
       }
     }
 
+    await linkSharedTaskBatch(root, taskA, taskB);
+
     await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "finish changes"], { cwd: root });
@@ -457,6 +490,8 @@ describe("runCli", () => {
       root,
     ]);
     await recordEvaluatorPass(root, taskA);
+    const reviewedA = await readTask({ cwd: root, rootOverride: root, taskId: taskA });
+    expect(reviewedA.frontmatter.quality_review?.evaluated_sha).toBe(implHash.trim());
     await runCliSilent(["blueprint", "snapshot", taskA, "--root", root]);
     await commitAll(root, "record task A quality gate");
     await runCliSilent([
@@ -472,6 +507,8 @@ describe("runCli", () => {
       root,
     ]);
     await recordEvaluatorPass(root, taskB);
+    const reviewedB = await readTask({ cwd: root, rootOverride: root, taskId: taskB });
+    expect(reviewedB.frontmatter.quality_review?.evaluated_sha).toBe(implHash.trim());
     await runCliSilent(["blueprint", "snapshot", taskB, "--root", root]);
 
     const io = captureStdIO();

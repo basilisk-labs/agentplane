@@ -42,6 +42,7 @@ import {
   pathExists,
   stageGitignoreIfPresent,
   stubTaskBackend,
+  withEvaluatorPolicyFixture,
   writeConfig,
   writeDefaultConfig,
 } from "@agentplane/testkit";
@@ -170,23 +171,25 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     {
       const io = captureStdIO();
       try {
-        const code = await runCli([
-          "evaluator",
-          "run",
-          taskId,
-          "--provenance",
-          "evaluator_supplied",
-          "--verdict",
-          "pass",
-          "--summary",
-          "Structured external incident promotion has verification evidence.",
-          "--finding",
-          "The release recovery finding is external, structured, and ready for promotion.",
-          "--evidence",
-          "targeted release workflow checks",
-          "--root",
-          root,
-        ]);
+        const code = await withEvaluatorPolicyFixture(root, () =>
+          runCli([
+            "evaluator",
+            "run",
+            taskId,
+            "--provenance",
+            "evaluator_supplied",
+            "--verdict",
+            "pass",
+            "--summary",
+            "Structured external incident promotion has verification evidence.",
+            "--finding",
+            "The release recovery finding is external, structured, and ready for promotion.",
+            "--evidence",
+            "targeted release workflow checks",
+            "--root",
+            root,
+          ]),
+        );
         expect(code).toBe(0);
       } finally {
         io.restore();

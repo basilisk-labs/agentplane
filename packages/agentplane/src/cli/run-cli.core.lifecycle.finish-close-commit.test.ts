@@ -16,6 +16,7 @@ import {
   registerAgentplaneHome,
   runCliSilent,
   silenceStdIO,
+  withEvaluatorPolicyFixture,
   writeConfig,
   writeDefaultConfig,
 } from "@agentplane/testkit";
@@ -39,23 +40,25 @@ afterEach(() => {
 async function recordEvaluatorReview(root: string, taskId: string, note: string): Promise<void> {
   const io = captureStdIO();
   try {
-    const code = await runCli([
-      "evaluator",
-      "run",
-      taskId,
-      "--provenance",
-      "evaluator_supplied",
-      "--verdict",
-      "pass",
-      "--summary",
-      note,
-      "--finding",
-      "No unresolved findings for this finish close-commit test path.",
-      "--evidence",
-      "file.txt",
-      "--root",
-      root,
-    ]);
+    const code = await withEvaluatorPolicyFixture(root, () =>
+      runCli([
+        "evaluator",
+        "run",
+        taskId,
+        "--provenance",
+        "evaluator_supplied",
+        "--verdict",
+        "pass",
+        "--summary",
+        note,
+        "--finding",
+        "No unresolved findings for this finish close-commit test path.",
+        "--evidence",
+        "file.txt",
+        "--root",
+        root,
+      ]),
+    );
     if (code !== 0) {
       const { stdout: status } = await promisify(execFile)(
         "git",
