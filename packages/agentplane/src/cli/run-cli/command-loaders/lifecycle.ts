@@ -1,6 +1,10 @@
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
-import type { OutputSession } from "../command-catalog/project-capability-profiles.js";
+import type {
+  NoContextSession,
+  OutputSession,
+} from "../command-catalog/project-capability-profiles.js";
+import type { ProviderWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
 import type {
   TaskLifecycleSession,
   TaskReadSession,
@@ -60,12 +64,16 @@ export const loadDocsCliSpec = (session: OutputSession) =>
 export const fromHooksUninstallSpec = commandModule(
   () => import("../../../commands/hooks/uninstall.command.js"),
 );
-export const fromCleanupSpec = commandModule(
-  () => import("../../../commands/cleanup/merged.command.js"),
-);
-export const loadCleanupMergedSpec = (deps: RunDeps) =>
+export const loadCleanupSpec = (_session: NoContextSession) =>
+  import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup);
+export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
   import("../../../commands/cleanup/merged.command.js").then((m) =>
-    m.makeRunCleanupMergedHandler(deps.getCtx),
+    m.makeRunCleanupMergedHandler(async (command) => {
+      await session.require("git.mutate", command);
+      await session.require("route.remote", command);
+      await session.require("approvals", command);
+      return await session.require("provider", command);
+    }),
   );
 export const fromGuardSuggestAllowSpec = commandModule(
   () => import("../../../commands/guard/suggest-allow.command.js"),

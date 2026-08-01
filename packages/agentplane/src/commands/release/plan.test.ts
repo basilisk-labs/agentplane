@@ -6,7 +6,7 @@ import { expect, it } from "vitest";
 
 import { commitAll, describeWhenNotHook, tempRepo } from "@agentplane/testkit";
 import { seedReleaseWorkspace, writeWorkflowMode } from "@agentplane/testkit/release";
-import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
+import { createReleasePlan, runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);
 describeWhenNotHook("release plan", () => {
@@ -25,18 +25,28 @@ describeWhenNotHook("release plan", () => {
       await writeFile(path.join(root, "file.txt"), "x", "utf8");
       await commitAll(root, "feat: add file");
 
-      const rc = await runReleasePlan(
+      const result = await createReleasePlan(
         { cwd: root, rootOverride: root },
         { bump: "patch", yes: false },
       );
-      expect(rc).toBe(0);
+      expect(result).toMatchObject({
+        schema: "agentplane.release.plan.v1",
+        operation: "release.plan",
+        previous_tag: "v0.2.6",
+        previous_version: "0.2.6",
+        next_tag: "v0.2.7",
+        next_version: "0.2.7",
+        bump: "patch",
+        change_count: 1,
+        minimum_release_note_bullets: 1,
+        audit: {
+          authority: "local_release_plan",
+          attempts: 1,
+          effects_applied: 4,
+        },
+      });
 
-      const plansDir = path.join(root, ".agentplane", ".release", "plan");
-      const runNames = await readdir(plansDir);
-      const runs = runNames.toSorted();
-      expect(runs.length).toBeGreaterThan(0);
-      const latest = runs.at(-1) ?? "";
-      const runDir = path.join(plansDir, latest);
+      const runDir = path.join(root, result.plan_dir);
 
       const version = JSON.parse(await readFile(path.join(runDir, "version.json"), "utf8")) as {
         prevTag?: string | null;
@@ -54,6 +64,14 @@ describeWhenNotHook("release plan", () => {
       expect(version.nextVersion).toBe("0.2.7");
       expect(version.bump).toBe("patch");
       expect(version.baseSha).toBe(headSha.trim());
+      expect(result.base_sha).toBe(headSha.trim());
+      expect(result.artifact_paths).toEqual([
+        path.join(result.plan_dir, "version.json"),
+        path.join(result.plan_dir, "changes.json"),
+        path.join(result.plan_dir, "changes.md"),
+        path.join(result.plan_dir, "instructions.md"),
+      ]);
+      expect(result.audit.effects_applied).toBe(result.artifact_paths.length);
 
       const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
       expect(instructions).toContain("docs/releases/v0.2.7.md");

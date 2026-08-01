@@ -313,7 +313,10 @@ describe("integrate queue claim publication guard", () => {
       pr: { source: "lookup", state: "CLOSED", headSha: "audited-head" },
       providerObservation: { state: "found", pr: { status: "CLOSED", headSha: "audited-head" } },
     });
-    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
+    const handler = makeRunIntegrateQueueReleaseHandler({
+      getGitRoot: () => Promise.resolve("/repo"),
+      getCtx: commandContext,
+    });
 
     await expect(
       handler({ cwd: "/repo", rootOverride: null } as never, {
@@ -353,7 +356,10 @@ describe("integrate queue claim publication guard", () => {
       pr: { source: "lookup", state: "CLOSED" },
       providerObservation: { state: "found", pr: { status: "CLOSED" } },
     });
-    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
+    const handler = makeRunIntegrateQueueReleaseHandler({
+      getGitRoot: () => Promise.resolve("/repo"),
+      getCtx: commandContext,
+    });
 
     await expect(
       handler({ cwd: "/repo", rootOverride: null } as never, {

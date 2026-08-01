@@ -51,16 +51,25 @@ vi.mock("./pr/provider-head.js", async (importOriginal) => {
   };
 });
 
-vi.mock("../cli/output.js", () => ({
-  createCliEmitter: () => mocks.output,
-}));
+vi.mock("../cli/output.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual = actualUnknown && typeof actualUnknown === "object" ? actualUnknown : {};
+  return {
+    ...actual,
+    createCliEmitter: () => mocks.output,
+  };
+});
 vi.mock("./shared/task-worktree-cleanliness.js", () => ({
   inspectTaskWorktreeCleanliness: mocks.inspectTaskWorktreeCleanliness,
   assertTaskWorktreeClean: mocks.assertTaskWorktreeClean,
   summarizeTaskWorktreeChanges: (paths: string[]) => paths.join(", "),
 }));
 
-import { runIntegrationQueueDoctor } from "./integrate-queue-doctor-command.js";
+import {
+  inspectIntegrationQueueDoctor,
+  runIntegrationQueueDoctor,
+} from "./integrate-queue-doctor-command.js";
+import { inspectIntegrationQueueList } from "./integrate-queue-list.js";
 import {
   findActiveIntegrationLane,
   normalizeTerminalQueueEntries,
@@ -237,6 +246,22 @@ describe("integration queue terminal recovery", () => {
     expect(mocks.resolvePrFlowStatus).toHaveBeenCalledOnce();
   });
 
+  it("returns a typed read-only list result without provider normalization", async () => {
+    const root = await makeQueueRoot();
+
+    const result = await inspectIntegrationQueueList(root);
+
+    expect(result).toMatchObject({
+      schema: "agentplane.integration_queue.list.v1",
+      operation: "integrate.queue.list",
+      active_entries: [{ task_id: "T-1", status: "queued" }],
+      audit: { authority: "local_read", attempts: 1, effects_applied: 0 },
+    });
+    expect(mocks.resolvePrFlowStatus).not.toHaveBeenCalled();
+    const persisted = await readIntegrationQueue(root);
+    expect(persisted.entries[0]?.status).toBe("queued");
+  });
+
   it("keeps doctor from repairing an open PR entry and closes it after Hosted Close evidence", async () => {
     const root = await makeQueueRoot();
     mocks.resolvePrFlowStatus.mockResolvedValueOnce(openReport);
@@ -267,6 +292,25 @@ describe("integration queue terminal recovery", () => {
     await mkdir(lockPath, { recursive: true });
     await writeFile(path.join(lockPath, "owner.json"), "{invalid", "utf8");
 
+    const typed = await inspectIntegrationQueueDoctor({
+      commandCtx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      ctx: { cwd: root, rootOverride: null } as never,
+      parsed: { fix: true, dryRun: false, json: true },
+    });
+    expect(typed).toMatchObject({
+      schema: "agentplane.integration_queue.doctor.v1",
+      operation: "integrate.queue.doctor",
+      exit_code: 5,
+      applied: false,
+      audit: {
+        authority: "provider_read",
+        attempts: 1,
+        effects_applied: 0,
+        requested_fix: true,
+        dry_run: false,
+      },
+    });
+
     const jsonCode = await runIntegrationQueueDoctor({
       commandCtx: { resolvedProject: { gitRoot: root } } as CommandContext,
       ctx: { cwd: root, rootOverride: null } as never,
@@ -296,7 +340,10 @@ describe("integration queue terminal recovery", () => {
       parsed: { fix: true, dryRun: false, json: false },
     });
     expect(textCode).toBe(5);
-    expect(mocks.output.line).toHaveBeenCalledWith(expect.stringContaining(`path=${lockPath}`));
+    expect(mocks.output.line).toHaveBeenCalledWith(
+      expect.stringContaining(`path=${lockPath}`),
+      undefined,
+    );
   });
 
   it("hands off provider unavailability without classifying implementation as rework", async () => {

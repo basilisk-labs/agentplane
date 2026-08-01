@@ -39,20 +39,14 @@ export {
   prUpdateSpec,
 } from "./pr.spec.js";
 
-async function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+export const runPrGroup: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: prSpec,
     cmd: p.cmd,
     subcommands: await loadDirectSubcommandNames(["pr"]),
     command: "pr",
   });
-}
-
-export function makeRunPrHandler(
-  _getCtx: (cmd: string) => Promise<CommandContext>,
-): CommandHandler<GroupCommandParsed> {
-  return runPrRootGroup;
-}
+};
 
 export function makeRunPrOpenHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: PrOpenParsed): Promise<number> => {

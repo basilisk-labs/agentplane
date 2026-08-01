@@ -1,0 +1,2181 @@
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index d2970703a..0e2a43970 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -23,6 +23,14 @@ import {
+   RUNNER_EXECUTION_REQUIREMENTS,
+   RUNNER_PREPARATION_REQUIREMENTS,
+ } from "./command-catalog/runner-hermes-capability-profiles.js";
++import {
++  INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
++  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++  INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
++  INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++  PROVIDER_READ_REQUIREMENTS,
++  PROVIDER_WRITE_REQUIREMENTS,
++} from "./command-catalog/provider-ops-capability-profiles.js";
+ 
+ describe("command catalog graph", () => {
+   it("uses one graph for longest-prefix match and exact lookup", () => {
+@@ -340,6 +348,112 @@ describe("command catalog graph", () => {
+     );
+   });
+ 
++  it("publishes authority-aware provider, integration, release, and ops profiles", () => {
++    for (const id of [
++      ["pr", "check"],
++      ["pr", "flow", "status"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_READ_REQUIREMENTS);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++
++    for (const id of [
++      ["pr", "open"],
++      ["pr", "update"],
++      ["pr", "conflict-rework"],
++      ["pr", "close"],
++      ["pr", "close-superseded"],
++      ["pr", "note"],
++      ["flow", "repair"],
++      ["integrate"],
++      ["task", "hosted-close"],
++      ["task", "hosted-close-pr"],
++      ["cleanup", "merged"],
++      ["release", "tasks", "reconcile"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(PROVIDER_WRITE_REQUIREMENTS);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++
++    for (const id of [
++      ["integrate", "queue", "enqueue"],
++      ["integrate", "queue", "doctor"],
++      ["integrate", "queue", "adopt-legacy-protected-conflict"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
++        INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++      );
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("task.write");
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("git.mutate");
++    }
++
++    expect(findCommandEntry(["integrate", "queue", "list"])?.requirements).toEqual(
++      INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++    );
++    expect(findCommandEntry(["integrate", "queue", "claim"])?.requirements).toEqual(
++      INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
++    );
++
++    const release = findCommandEntry(["integrate", "queue", "release"]);
++    expect(release?.requirements).toEqual(INTEGRATION_QUEUE_LIST_REQUIREMENTS);
++    expect(release?.selectSession?.({ status: "done" }).requirements).toEqual(
++      INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++    );
++    expect(release?.selectSession?.({ status: "superseded" }).requirements).toEqual(
++      INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    );
++
++    const runNext = findCommandEntry(["integrate", "queue", "run-next"]);
++    expect(runNext?.requirements).toEqual(INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS);
++    expect(runNext?.selectSession?.({ dryRun: true }).requirements).toEqual(
++      INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    );
++    expect(runNext?.selectSession?.({ dryRun: false }).requirements).toEqual(
++      INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
++    );
++
++    for (const id of [
++      ["work", "start"],
++      ["work", "resume"],
++    ]) {
++      const entry = findCommandEntry(id);
++      expect(entry?.compatibility, id.join(" ")).toBeNull();
++      expect(entry?.requirements, id.join(" ")).toEqual(
++        expect.arrayContaining(["task.write", "git.mutate", "route.local", "approvals"]),
++      );
++      expect(entry?.requirements, id.join(" ")).not.toContain("provider");
++    }
++
++    expect(findCommandEntry(["release", "plan"])?.requirements).toEqual([
++      "project",
++      "config",
++      "git.head",
++      "git.diff",
++      "policy",
++      "approvals",
++    ]);
++    for (const id of [
++      ["release", "apply"],
++      ["release", "candidate"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([
++        "project",
++        "config",
++        "git.head",
++        "git.diff",
++        "policy",
++        "approvals",
++        "git.mutate",
++        "provider",
++      ]);
++    }
++
++    expect(findCommandEntry(["pr"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["integrate", "queue"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["release"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["cleanup"])?.requirements).toEqual([]);
++  });
++
+   it("publishes phase-scoped runner, Hermes, and insights capability profiles", () => {
+     const taskRead = ["project", "config", "backend.read", "task.read"];
+     const taskWrite = [...taskRead, "backend.write", "task.write", "policy", "approvals"];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+index ca4c44db4..4d59c6855 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+@@ -56,12 +56,18 @@ import {
+   PROJECT_REQUIREMENTS,
+ } from "./project-capability-profiles.js";
+ import { INSIGHTS_READ_REQUIREMENTS } from "./runner-hermes-capability-profiles.js";
++import {
++  PROVIDER_WRITE_REQUIREMENTS,
++  RELEASE_PLAN_REQUIREMENTS,
++  RELEASE_PUBLISH_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsInit,
+   fromCommandsUpgradeCommand,
+-  fromCommandsReleaseReleaseCommand,
+-  fromCommandsReleasePlanCommand,
+-  fromCommandsReleaseApplyCommand,
++  loadReleaseSpec,
++  loadReleasePlanSpec,
++  loadReleaseApplySpec,
++  loadReleaseCandidateSpec,
+   fromCommandsCoreQuickstart,
+   fromCommandsCorePreflight,
+   fromCommandsCodex,
+@@ -106,29 +112,33 @@ export const CORE_COMMANDS = [
+     invocation: requireCanonicalCommandInvocation(["init"]),
+   }),
+   fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", { needs: "none" }),
+-  fromCommandsReleaseReleaseCommand(releaseSpec, "runRelease", {
+-    needs: "none",
++  declareSessionCommand(releaseSpec, {
++    load: loadReleaseSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsReleasePlanCommand(releasePlanSpec, "runReleasePlan", {
+-    needs: "project",
++  declareSessionCommand(releasePlanSpec, {
++    load: loadReleasePlanSpec,
++    requirements: RELEASE_PLAN_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsReleaseApplyCommand(releaseApplySpec, "runReleaseApply", {
+-    needs: "project",
++  declareSessionCommand(releaseApplySpec, {
++    load: loadReleaseApplySpec,
++    requirements: RELEASE_PUBLISH_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsReleaseApplyCommand(releaseCandidateSpec, "runReleaseCandidate", {
+-    needs: "project",
++  declareSessionCommand(releaseCandidateSpec, {
++    load: loadReleaseCandidateSpec,
++    requirements: RELEASE_PUBLISH_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  declareCommand(releaseTasksReconcileSpec, {
++  declareSessionCommand(releaseTasksReconcileSpec, {
+     load: loadReleaseTasksReconcileSpec,
+-    needs: "project+config+task",
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts b/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts
+new file mode 100644
+index 000000000..fad21e35a
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts
+@@ -0,0 +1,83 @@
++import {
++  integrateQueueAdoptLegacyProtectedConflictSpec,
++  integrateQueueClaimSpec,
++  integrateQueueDoctorSpec,
++  integrateQueueEnqueueSpec,
++  integrateQueueListSpec,
++  integrateQueueReleaseSpec,
++  integrateQueueRunNextSpec,
++  integrateQueueSpec,
++} from "../../../commands/integrate-queue.spec.js";
++import {
++  loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
++  loadIntegrateQueueClaimSpec,
++  loadIntegrateQueueDoctorSpec,
++  loadIntegrateQueueEnqueueSpec,
++  loadIntegrateQueueListSpec,
++  loadIntegrateQueueReleaseLocalSpec,
++  loadIntegrateQueueReleaseProviderSpec,
++  loadIntegrateQueueRunNextPreparationSpec,
++  loadIntegrateQueueRunNextSpec,
++  loadIntegrateQueueSpec,
++} from "../command-loaders/project.js";
++import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++import {
++  INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
++  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++  INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
++  INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
++import {
++  declareConditionalSessionCommand,
++  declareSessionCommand,
++  type CommandEntry,
++} from "./kernel.js";
++
++export const INTEGRATION_QUEUE_COMMANDS = [
++  declareSessionCommand(integrateQueueSpec, {
++    load: loadIntegrateQueueSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueEnqueueSpec, {
++    load: loadIntegrateQueueEnqueueSpec,
++    requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueListSpec, {
++    load: loadIntegrateQueueListSpec,
++    requirements: INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueDoctorSpec, {
++    load: loadIntegrateQueueDoctorSpec,
++    requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueClaimSpec, {
++    load: loadIntegrateQueueClaimSpec,
++    requirements: INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareConditionalSessionCommand(integrateQueueReleaseSpec, {
++    default: {
++      load: loadIntegrateQueueReleaseLocalSpec,
++      requirements: INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++    },
++    selected: {
++      when: (parsed) => parsed.status === "superseded",
++      load: loadIntegrateQueueReleaseProviderSpec,
++      requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    },
++  }),
++  declareSessionCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
++    load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
++    requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareConditionalSessionCommand(integrateQueueRunNextSpec, {
++    default: {
++      load: loadIntegrateQueueRunNextPreparationSpec,
++      requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    },
++    selected: {
++      when: (parsed) => !parsed.dryRun,
++      load: loadIntegrateQueueRunNextSpec,
++      requirements: INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
++    },
++  }),
++] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+index f4c4da095..75cd0d518 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+@@ -11,6 +11,12 @@ import {
+   PROJECT_CONFIG_REQUIREMENTS,
+   PROJECT_REQUIREMENTS,
+ } from "./project-capability-profiles.js";
++import {
++  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++  INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
++  LOCAL_OPS_WRITE_REQUIREMENTS,
++  PROVIDER_READ_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
+ import {
+   HERMES_PROJECTION_REQUIREMENTS,
+   HERMES_REMOTE_PREPARATION_REQUIREMENTS,
+@@ -204,6 +210,70 @@ describe("CommandSession", () => {
+     }
+   });
+ 
++  it("denies undeclared provider mutation and local-ops network access", async () => {
++    const providerReadResolvers = makeResolvers();
++    const providerReadSession = createCommandSession({
++      command: "pr check",
++      requirements: PROVIDER_READ_REQUIREMENTS,
++      resolvers: providerReadResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(providerReadSession.require("git.mutate", "pr check")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    await expect(providerReadSession.require("task.write", "pr check")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    expect(providerReadResolvers.getCtx).not.toHaveBeenCalled();
++
++    const queueListResolvers = makeResolvers();
++    const queueListSession = createCommandSession({
++      command: "integrate queue list",
++      requirements: INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++      resolvers: queueListResolvers,
++    }) as CommandSession<CommandCapability>;
++    for (const capability of [
++      "backend.write",
++      "task.write",
++      "git.mutate",
++      "route.remote",
++      "provider",
++    ] as const) {
++      await expect(
++        queueListSession.require(capability, "integrate queue list"),
++      ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    }
++    expect(queueListResolvers.getCtx).not.toHaveBeenCalled();
++
++    const queueClaimResolvers = makeResolvers();
++    const queueClaimSession = createCommandSession({
++      command: "integrate queue claim",
++      requirements: INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
++      resolvers: queueClaimResolvers,
++    }) as CommandSession<CommandCapability>;
++    for (const capability of ["task.read", "task.write", "git.mutate"] as const) {
++      await expect(
++        queueClaimSession.require(capability, "integrate queue claim"),
++      ).rejects.toMatchObject({ code: "E_INTERNAL" });
++    }
++    expect(queueClaimResolvers.getCtx).not.toHaveBeenCalled();
++
++    const localOpsResolvers = makeResolvers();
++    const localOpsSession = createCommandSession({
++      command: "work start",
++      requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++      resolvers: localOpsResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(localOpsSession.require("provider", "work start")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    await expect(localOpsSession.require("route.remote", "work start")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    expect(localOpsResolvers.getCtx).not.toHaveBeenCalled();
++  });
++
+   it("denies cross-phase runner and Hermes capabilities before context preparation", async () => {
+     const runnerResolvers = makeResolvers();
+     const runnerPreparationSession = createCommandSession({
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+index 54ec11f50..6a7c3507f 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+@@ -18,7 +18,8 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
+ 
+ import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+ import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
+-import { OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
++import { NO_CONTEXT_REQUIREMENTS, OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
++import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsHooksHooksCommand,
+   fromCommandsHooksInstallCommand,
+@@ -33,7 +34,7 @@ import {
+   loadReadySpec,
+   loadDocsCliSpec,
+   fromHooksUninstallSpec,
+-  fromCleanupSpec,
++  loadCleanupSpec,
+   loadCleanupMergedSpec,
+   fromGuardSuggestAllowSpec,
+   loadGuardCommitSpec,
+@@ -76,8 +77,14 @@ export const LIFECYCLE_COMMANDS = [
+   fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
+   fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),
+   fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {}),
+-  fromCleanupSpec(cleanupSpec, "runCleanup", { needs: "none" }),
+-  declareCommand(cleanupMergedSpec, { load: loadCleanupMergedSpec }),
++  declareSessionCommand(cleanupSpec, {
++    load: loadCleanupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(cleanupMergedSpec, {
++    load: loadCleanupMergedSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
+   fromCommandsGuardGuardCommand(guardSpec, "runGuard", { needs: "none" }),
+   fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {}),
+   fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow"),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index e47a7019f..411dd5a7a 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -52,16 +52,6 @@ import { flowSpec } from "../../../commands/flow/flow.command.js";
+ import { workStartSpec } from "../../../commands/branch/work-start.command.js";
+ import { workResumeSpec } from "../../../commands/branch/work-resume.command.js";
+ import { integrateSpec } from "../../../commands/integrate.spec.js";
+-import {
+-  integrateQueueAdoptLegacyProtectedConflictSpec,
+-  integrateQueueClaimSpec,
+-  integrateQueueDoctorSpec,
+-  integrateQueueEnqueueSpec,
+-  integrateQueueListSpec,
+-  integrateQueueReleaseSpec,
+-  integrateQueueRunNextSpec,
+-  integrateQueueSpec,
+-} from "../../../commands/integrate-queue.spec.js";
+ import {
+   prCheckSpec,
+   prCloseSpec,
+@@ -147,6 +137,7 @@ import {
+   type CommandEntry,
+ } from "./kernel.js";
+ import { HERMES_COMMANDS } from "./hermes.js";
++import { INTEGRATION_QUEUE_COMMANDS } from "./integration-queue.js";
+ import {
+   CONTEXT_PROJECT_REQUIREMENTS,
+   CONTEXT_TASK_READ_REQUIREMENTS,
+@@ -156,6 +147,11 @@ import {
+   EVALUATOR_WRITE_REQUIREMENTS,
+ } from "./context-evaluator-capability-profiles.js";
+ import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++import {
++  LOCAL_OPS_WRITE_REQUIREMENTS,
++  PROVIDER_READ_REQUIREMENTS,
++  PROVIDER_WRITE_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsRecipesRecipesCommand,
+   fromCommandsRecipesCacheCommand,
+@@ -198,14 +194,6 @@ import {
+   fromCommandsFlowCommand,
+   loadFlowRepairSpec,
+   loadIntegrateSpec,
+-  loadIntegrateQueueSpec,
+-  loadIntegrateQueueEnqueueSpec,
+-  loadIntegrateQueueListSpec,
+-  loadIntegrateQueueClaimSpec,
+-  loadIntegrateQueueDoctorSpec,
+-  loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
+-  loadIntegrateQueueReleaseSpec,
+-  loadIntegrateQueueRunNextSpec,
+   loadAcrSpec,
+   loadAcrSchemaSpec,
+   loadAcrGenerateSpec,
+@@ -339,10 +327,19 @@ export const PROJECT_COMMANDS = [
+     needs: "none",
+   }),
+   fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
+-  declareCommand(workStartSpec, { load: loadWorkStartSpec }),
+-  declareCommand(workResumeSpec, { load: loadWorkResumeSpec }),
++  declareSessionCommand(workStartSpec, {
++    load: loadWorkStartSpec,
++    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(workResumeSpec, {
++    load: loadWorkResumeSpec,
++    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++  }),
+   fromCommandsFlowCommand(flowSpec, "runFlow", { needs: "none" }),
+-  declareCommand(flowRepairSpec, { load: loadFlowRepairSpec }),
++  declareSessionCommand(flowRepairSpec, {
++    load: loadFlowRepairSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
+   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
+   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
+   fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),
+@@ -542,38 +539,45 @@ export const PROJECT_COMMANDS = [
+     helpGroup: "Maintenance",
+   }),
+   declareCommand(syncSpec, { load: loadSyncSpec }),
+-  declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),
+-  declareCommand(prOpenSpec, { load: loadPrOpenSpec }),
+-  declareCommand(prUpdateSpec, { load: loadPrUpdateSpec }),
++  declareSessionCommand(prSpec, {
++    load: loadPrSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(prOpenSpec, {
++    load: loadPrOpenSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prUpdateSpec, {
++    load: loadPrUpdateSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
+   declareSessionCommand(prCheckSpec, {
+     load: loadPrCheckSpec,
+-    requirements: [
+-      "project",
+-      "config",
+-      "backend.read",
+-      "task.read",
+-      "git.head",
+-      "git.diff",
+-      "route.remote",
+-      "policy",
+-      "approvals",
+-      "provider",
+-    ],
+-  }),
+-  declareCommand(prConflictReworkSpec, { load: loadPrConflictReworkSpec }),
+-  declareCommand(prFlowStatusSpec, { load: loadPrFlowStatusSpec }),
+-  declareCommand(prCloseSpec, { load: loadPrCloseSpec }),
+-  declareCommand(prCloseSupersededSpec, { load: loadPrCloseSupersededSpec }),
+-  declareCommand(prNoteSpec, { load: loadPrNoteSpec }),
+-  declareCommand(integrateSpec, { load: loadIntegrateSpec }),
+-  declareCommand(integrateQueueSpec, { load: loadIntegrateQueueSpec, needs: "none" }),
+-  declareCommand(integrateQueueEnqueueSpec, { load: loadIntegrateQueueEnqueueSpec }),
+-  declareCommand(integrateQueueListSpec, { load: loadIntegrateQueueListSpec }),
+-  declareCommand(integrateQueueDoctorSpec, { load: loadIntegrateQueueDoctorSpec }),
+-  declareCommand(integrateQueueClaimSpec, { load: loadIntegrateQueueClaimSpec }),
+-  declareCommand(integrateQueueReleaseSpec, { load: loadIntegrateQueueReleaseSpec }),
+-  declareCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
+-    load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
+-  }),
+-  declareCommand(integrateQueueRunNextSpec, { load: loadIntegrateQueueRunNextSpec }),
++    requirements: PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(prConflictReworkSpec, {
++    load: loadPrConflictReworkSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prFlowStatusSpec, {
++    load: loadPrFlowStatusSpec,
++    requirements: PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(prCloseSpec, {
++    load: loadPrCloseSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prCloseSupersededSpec, {
++    load: loadPrCloseSupersededSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prNoteSpec, {
++    load: loadPrNoteSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateSpec, {
++    load: loadIntegrateSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  ...INTEGRATION_QUEUE_COMMANDS,
+ ] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/provider-ops-capability-profiles.ts b/packages/agentplane/src/cli/run-cli/command-catalog/provider-ops-capability-profiles.ts
+new file mode 100644
+index 000000000..57a2fce95
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/provider-ops-capability-profiles.ts
+@@ -0,0 +1,82 @@
++import type { CommandCapability, CommandSession } from "./command-session.js";
++import { PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
++import {
++  TASK_READ_REQUIREMENTS,
++  TASK_LIFECYCLE_REQUIREMENTS,
++  TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
++} from "./task-capability-profiles.js";
++
++export const PROVIDER_READ_REQUIREMENTS = [
++  ...TASK_READ_REQUIREMENTS,
++  "git.head",
++  "git.diff",
++  "route.local",
++  "policy",
++  "approvals",
++  "route.remote",
++  "provider",
++] as const satisfies readonly CommandCapability[];
++
++export const PROVIDER_WRITE_REQUIREMENTS = [
++  ...TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const LOCAL_OPS_WRITE_REQUIREMENTS = [
++  ...TASK_LIFECYCLE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const INTEGRATION_QUEUE_LIST_REQUIREMENTS = [
++  ...PROJECT_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS = [
++  "project",
++  "config",
++  "git.head",
++  "git.diff",
++  "policy",
++  "approvals",
++  "route.remote",
++  "provider",
++] as const satisfies readonly CommandCapability[];
++
++export const INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS = [
++  ...PROVIDER_READ_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS = [
++  ...PROVIDER_WRITE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const RELEASE_PLAN_REQUIREMENTS = [
++  "project",
++  "config",
++  "git.head",
++  "git.diff",
++  "policy",
++  "approvals",
++] as const satisfies readonly CommandCapability[];
++
++export const RELEASE_PUBLISH_REQUIREMENTS = [
++  ...RELEASE_PLAN_REQUIREMENTS,
++  "git.mutate",
++  "provider",
++] as const satisfies readonly CommandCapability[];
++
++export type ProviderReadSession = CommandSession<(typeof PROVIDER_READ_REQUIREMENTS)[number]>;
++export type ProviderWriteSession = CommandSession<(typeof PROVIDER_WRITE_REQUIREMENTS)[number]>;
++export type LocalOpsWriteSession = CommandSession<(typeof LOCAL_OPS_WRITE_REQUIREMENTS)[number]>;
++export type IntegrationQueueListSession = CommandSession<
++  (typeof INTEGRATION_QUEUE_LIST_REQUIREMENTS)[number]
++>;
++export type IntegrationQueueProviderReadSession = CommandSession<
++  (typeof INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS)[number]
++>;
++export type IntegrationQueueTaskProviderReadSession = CommandSession<
++  (typeof INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS)[number]
++>;
++export type IntegrationQueueExecutionSession = CommandSession<
++  (typeof INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS)[number]
++>;
++export type ReleasePlanSession = CommandSession<(typeof RELEASE_PLAN_REQUIREMENTS)[number]>;
++export type ReleasePublishSession = CommandSession<(typeof RELEASE_PUBLISH_REQUIREMENTS)[number]>;
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 36a55010d..fef3e620e 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -87,6 +87,7 @@ import {
+   TASK_ROUTE_REQUIREMENTS,
+   TASK_WRITE_REQUIREMENTS,
+ } from "./task-capability-profiles.js";
++import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+ import {
+   RUNNER_EXECUTION_REQUIREMENTS,
+   RUNNER_PREPARATION_REQUIREMENTS,
+@@ -180,13 +181,15 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskHostedCloseSpec, {
++  declareSessionCommand(taskHostedCloseSpec, {
+     load: loadTaskHostedCloseSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskHostedClosePrSpec, {
++  declareSessionCommand(taskHostedClosePrSpec, {
+     load: loadTaskHostedClosePrSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+index b501f0dfd..5f1344265 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+@@ -1,9 +1,15 @@
+ import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
+ import type {
+   NoContextSession,
+   ProjectConfigSession,
+   ProjectSession,
+ } from "../command-catalog/project-capability-profiles.js";
++import type {
++  ProviderWriteSession,
++  ReleasePlanSession,
++  ReleasePublishSession,
++} from "../command-catalog/provider-ops-capability-profiles.js";
+ import type { InsightsReadSession } from "../command-catalog/runner-hermes-capability-profiles.js";
+ 
+ function getProjectDeps(session: ProjectSession) {
+@@ -23,18 +29,42 @@ export const fromCommandsInit = commandModule(() => import("../commands/init/spe
+ export const fromCommandsUpgradeCommand = commandModule(
+   () => import("../../../commands/upgrade.command.js"),
+ );
+-export const fromCommandsReleaseReleaseCommand = commandModule(
+-  () => import("../../../commands/release/release.command.js"),
+-);
+-export const fromCommandsReleasePlanCommand = commandModule(
+-  () => import("../../../commands/release/plan.command.js"),
+-);
+-export const fromCommandsReleaseApplyCommand = commandModule(
+-  () => import("../../../commands/release/apply.command.js"),
+-);
+-export const loadReleaseTasksReconcileSpec = (deps: RunDeps) =>
++export const loadReleaseSpec = (_session: NoContextSession) =>
++  import("../../../commands/release/release.command.js").then((m) => m.runRelease);
++export const loadReleasePlanSpec = (session: ReleasePlanSession) =>
++  import("../../../commands/release/plan.command.js").then((m) => {
++    const handler = m.runReleasePlan;
++    return async (...[ctx, parsed]: Parameters<typeof handler>) => {
++      await session.require("git.diff", "release plan");
++      await session.require("approvals", "release plan");
++      const project = await session.require("project", "release plan");
++      return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
++    };
++  });
++const loadReleasePublishHandler = (session: ReleasePublishSession, kind: "apply" | "candidate") =>
++  import("../../../commands/release/apply.command.js").then((m) => {
++    const handler = kind === "apply" ? m.runReleaseApply : m.runReleaseCandidate;
++    const command = `release ${kind}`;
++    return async (...[ctx, parsed]: Parameters<typeof handler>) => {
++      await session.require("git.mutate", command);
++      await session.require("approvals", command);
++      await session.require("provider", command);
++      const project = await session.require("project", command);
++      return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
++    };
++  });
++export const loadReleaseApplySpec = (session: ReleasePublishSession) =>
++  loadReleasePublishHandler(session, "apply");
++export const loadReleaseCandidateSpec = (session: ReleasePublishSession) =>
++  loadReleasePublishHandler(session, "candidate");
++export const loadReleaseTasksReconcileSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/release/tasks-reconcile.command.js").then((m) =>
+-    m.makeRunReleaseTasksReconcileHandler(deps.getCtx),
++    m.makeRunReleaseTasksReconcileHandler(async (command) => {
++      await session.require("git.mutate", command);
++      await session.require("route.remote", command);
++      await session.require("approvals", command);
++      return (await session.require("provider", command)) as CommandContext;
++    }),
+   );
+ export const fromCommandsCoreQuickstart = commandModule(
+   () => import("../commands/core/quickstart.js"),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+index 033cc5667..f00e4e1f5 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+@@ -1,6 +1,10 @@
+ import type { CommandContext } from "../../../commands/shared/task-backend.js";
+ import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+-import type { OutputSession } from "../command-catalog/project-capability-profiles.js";
++import type {
++  NoContextSession,
++  OutputSession,
++} from "../command-catalog/project-capability-profiles.js";
++import type { ProviderWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
+ import type {
+   TaskLifecycleSession,
+   TaskReadSession,
+@@ -60,12 +64,16 @@ export const loadDocsCliSpec = (session: OutputSession) =>
+ export const fromHooksUninstallSpec = commandModule(
+   () => import("../../../commands/hooks/uninstall.command.js"),
+ );
+-export const fromCleanupSpec = commandModule(
+-  () => import("../../../commands/cleanup/merged.command.js"),
+-);
+-export const loadCleanupMergedSpec = (deps: RunDeps) =>
++export const loadCleanupSpec = (_session: NoContextSession) =>
++  import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup);
++export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/cleanup/merged.command.js").then((m) =>
+-    m.makeRunCleanupMergedHandler(deps.getCtx),
++    m.makeRunCleanupMergedHandler(async (command) => {
++      await session.require("git.mutate", command);
++      await session.require("route.remote", command);
++      await session.require("approvals", command);
++      return await session.require("provider", command);
++    }),
+   );
+ export const fromGuardSuggestAllowSpec = commandModule(
+   () => import("../../../commands/guard/suggest-allow.command.js"),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index 5ee831a1a..f724f516b 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -1,4 +1,14 @@
+-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
++import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import type {
++  IntegrationQueueExecutionSession,
++  IntegrationQueueListSession,
++  IntegrationQueueProviderReadSession,
++  IntegrationQueueTaskProviderReadSession,
++  LocalOpsWriteSession,
++  ProviderReadSession,
++  ProviderWriteSession,
++} from "../command-catalog/provider-ops-capability-profiles.js";
+ import type {
+   HermesLocalExecutionSession,
+   HermesProjectionSession,
+@@ -20,18 +30,37 @@ import type {
+ import type { CommandHandler } from "../../spec/spec.js";
+ import type * as ContextCommandModule from "../../../commands/context/context.command.js";
+ 
+-type PrCheckSession = CommandSession<
+-  | "project"
+-  | "config"
+-  | "backend.read"
+-  | "task.read"
+-  | "git.head"
+-  | "git.diff"
+-  | "route.remote"
+-  | "policy"
+-  | "approvals"
+-  | "provider"
+->;
++async function getProviderReadContext(
++  session: ProviderReadSession,
++  command: string,
++): Promise<CommandContext> {
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++}
++
++async function getIntegrationQueueProviderReadContext(
++  session: IntegrationQueueProviderReadSession,
++  command: string,
++): Promise<CommandContext> {
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++}
++
++async function getProviderWriteContext(
++  session: ProviderWriteSession,
++  command: string,
++): Promise<CommandContext> {
++  await session.require("git.mutate", command);
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++}
++
++function getLocalOpsWriteContext(session: LocalOpsWriteSession) {
++  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
++}
+ 
+ export const loadAcrSpec = (deps: RunDeps) =>
+   import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
+@@ -241,13 +270,13 @@ export const fromCommandsBranchBaseCommand = commandModule(
+ export const fromCommandsBranchStatusCommand = commandModule(
+   () => import("../../../commands/branch/status.command.js"),
+ );
+-export const loadWorkStartSpec = (deps: RunDeps) =>
++export const loadWorkStartSpec = (session: LocalOpsWriteSession) =>
+   import("../../../commands/branch/work-start.command.js").then((m) =>
+-    m.makeRunWorkStartHandler(deps.getCtx),
++    m.makeRunWorkStartHandler(getLocalOpsWriteContext(session)),
+   );
+-export const loadWorkResumeSpec = (deps: RunDeps) =>
++export const loadWorkResumeSpec = (session: LocalOpsWriteSession) =>
+   import("../../../commands/branch/work-resume.command.js").then((m) =>
+-    m.makeRunWorkResumeHandler(deps.getCtx),
++    m.makeRunWorkResumeHandler(getLocalOpsWriteContext(session)),
+   );
+ export const fromRecipesActiveSpec = commandModule(
+   () => import("../../../commands/recipes/active.command.js"),
+@@ -451,75 +480,110 @@ export const loadContextIngestSpec = (session: ContextTaskWriteSession) =>
+   import("../../../commands/context/ingest.command.js").then((m) =>
+     m.makeRunContextIngestHandler((command) => session.require("task.write", command)),
+   );
+-export const loadPrSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx));
+-export const loadPrOpenSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrOpenHandler(deps.getCtx));
+-export const loadPrUpdateSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrUpdateHandler(deps.getCtx));
+-export const loadPrCheckSpec = (session: PrCheckSession) =>
++export const loadPrSpec = (_session: NoContextSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) => m.runPrGroup);
++export const loadPrOpenSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrCheckHandler(async (command) => {
+-      await session.require("route.remote", command);
+-      return await session.require("provider", command);
+-    }),
++    m.makeRunPrOpenHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadPrConflictReworkSpec = (deps: RunDeps) =>
++export const loadPrUpdateSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrConflictReworkHandler(deps.getCtx),
++    m.makeRunPrUpdateHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadPrFlowStatusSpec = (deps: RunDeps) =>
++export const loadPrCheckSpec = (session: ProviderReadSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrFlowStatusHandler(deps.getCtx),
++    m.makeRunPrCheckHandler((command) => getProviderReadContext(session, command)),
+   );
+-export const loadPrCloseSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCloseHandler(deps.getCtx));
+-export const loadPrCloseSupersededSpec = (deps: RunDeps) =>
++export const loadPrConflictReworkSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrCloseSupersededHandler(deps.getCtx),
++    m.makeRunPrConflictReworkHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrFlowStatusSpec = (session: ProviderReadSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrFlowStatusHandler((command) => getProviderReadContext(session, command)),
++  );
++export const loadPrCloseSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrCloseHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrCloseSupersededSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrCloseSupersededHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrNoteSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrNoteHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadPrNoteSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx));
+ export const fromCommandsFlowCommand = commandModule(
+   () => import("../../../commands/flow/flow.command.js"),
+ );
+-export const loadFlowRepairSpec = (deps: RunDeps) =>
++export const loadFlowRepairSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/flow/repair.command.js").then((m) =>
+-    m.makeRunFlowRepairHandler(deps.getCtx),
++    m.makeRunFlowRepairHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateSpec = (deps: RunDeps) =>
++export const loadIntegrateSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate.command.js").then((m) =>
+-    m.makeRunIntegrateHandler(deps.getCtx),
++    m.makeRunIntegrateHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueSpec = (_session: NoContextSession) =>
++  import("../../../commands/integrate-queue.command.js").then((m) => m.runIntegrateQueueGroup);
++export const loadIntegrateQueueEnqueueSpec = (session: IntegrationQueueTaskProviderReadSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueHandler(deps.getCtx),
++    m.makeRunIntegrateQueueEnqueueHandler((command) => getProviderReadContext(session, command)),
+   );
+-export const loadIntegrateQueueEnqueueSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueListSpec = (session: IntegrationQueueListSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueEnqueueHandler(deps.getCtx),
++    m.makeRunIntegrateQueueListHandler(async (command) => {
++      const project = await session.require("project", command);
++      return project.gitRoot;
++    }),
+   );
+-export const loadIntegrateQueueListSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueDoctorSpec = (session: IntegrationQueueTaskProviderReadSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueListHandler(deps.getCtx),
++    m.makeRunIntegrateQueueDoctorHandler((command) => getProviderReadContext(session, command)),
+   );
+-export const loadIntegrateQueueDoctorSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueClaimSpec = (session: IntegrationQueueProviderReadSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueDoctorHandler(deps.getCtx),
++    m.makeRunIntegrateQueueClaimHandler((command) =>
++      getIntegrationQueueProviderReadContext(session, command),
++    ),
+   );
+-export const loadIntegrateQueueClaimSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueReleaseLocalSpec = (session: IntegrationQueueListSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueClaimHandler(deps.getCtx),
++    m.makeRunIntegrateQueueReleaseHandler({
++      getGitRoot: async (command) => {
++        const project = await session.require("project", command);
++        return project.gitRoot;
++      },
++    }),
++  );
++export const loadIntegrateQueueReleaseProviderSpec = (
++  session: IntegrationQueueTaskProviderReadSession,
++) =>
++  import("../../../commands/integrate-queue.command.js").then((m) =>
++    m.makeRunIntegrateQueueReleaseHandler({
++      getGitRoot: async (command) => {
++        const context = await getProviderReadContext(session, command);
++        return context.resolvedProject.gitRoot;
++      },
++      getCtx: (command) => getProviderReadContext(session, command),
++    }),
+   );
+-export const loadIntegrateQueueReleaseSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (
++  session: IntegrationQueueTaskProviderReadSession,
++) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueReleaseHandler(deps.getCtx),
++    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler((command) =>
++      getProviderReadContext(session, command),
++    ),
+   );
+-export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueRunNextPreparationSpec = (
++  session: IntegrationQueueTaskProviderReadSession,
++) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(deps.getCtx),
++    m.makeRunIntegrateQueueRunNextHandler((command) => getProviderReadContext(session, command)),
+   );
+-export const loadIntegrateQueueRunNextSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueRunNextSpec = (session: IntegrationQueueExecutionSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueRunNextHandler(deps.getCtx),
++    m.makeRunIntegrateQueueRunNextHandler((command) => getProviderWriteContext(session, command)),
+   );
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 3d7e9c788..f88ac2a1a 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -13,6 +13,7 @@ import type {
+   TaskRouteSession,
+   TaskWriteSession,
+ } from "../command-catalog/task-capability-profiles.js";
++import type { ProviderWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
+ import type {
+   RunnerExecutionSession,
+   RunnerPreparationSession,
+@@ -85,13 +86,20 @@ export const fromCommandsTaskResumeContextCommand = commandModule(
+ export const fromTaskHandoffShowSpec = commandModule(
+   () => import("../../../commands/task/handoff-show.command.js"),
+ );
+-export const loadTaskHostedCloseSpec = (deps: RunDeps) =>
++const getProviderWriteContext = (session: ProviderWriteSession) => async (command: string) => {
++  await session.require("git.mutate", command);
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++};
++
++export const loadTaskHostedCloseSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/task/hosted-close.command.js").then((m) =>
+-    m.makeRunTaskHostedCloseHandler(deps.getCtx),
++    m.makeRunTaskHostedCloseHandler(getProviderWriteContext(session)),
+   );
+-export const loadTaskHostedClosePrSpec = (deps: RunDeps) =>
++export const loadTaskHostedClosePrSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/task/hosted-close-pr.command.js").then((m) =>
+-    m.makeRunTaskHostedClosePrHandler(deps.getCtx),
++    m.makeRunTaskHostedClosePrHandler(getProviderWriteContext(session)),
+   );
+ export const loadTaskActiveSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/task/active.command.js").then((m) =>
+diff --git a/packages/agentplane/src/cli/run-cli/registry.run.test.ts b/packages/agentplane/src/cli/run-cli/registry.run.test.ts
+index cf004959c..33dabea42 100644
+--- a/packages/agentplane/src/cli/run-cli/registry.run.test.ts
++++ b/packages/agentplane/src/cli/run-cli/registry.run.test.ts
+@@ -30,6 +30,16 @@ import {
+   RUNNER_EXECUTION_REQUIREMENTS,
+   RUNNER_PREPARATION_REQUIREMENTS,
+ } from "./command-catalog/runner-hermes-capability-profiles.js";
++import {
++  INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
++  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++  INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++  LOCAL_OPS_WRITE_REQUIREMENTS,
++  PROVIDER_READ_REQUIREMENTS,
++  PROVIDER_WRITE_REQUIREMENTS,
++  RELEASE_PLAN_REQUIREMENTS,
++  RELEASE_PUBLISH_REQUIREMENTS,
++} from "./command-catalog/provider-ops-capability-profiles.js";
+ import {
+   declareSessionCommand,
+   type CommandCapability,
+@@ -362,6 +372,190 @@ describe("runtime registry session selection", () => {
+     expect(observed.at(-1)).toEqual(RUNNER_EXECUTION_REQUIREMENTS);
+   });
+ 
++  it("constructs integration queue authority from the exact parsed operation", async () => {
++    const listCatalogEntry = findCommandEntry(["integrate", "queue", "list"]);
++    const releaseCatalogEntry = findCommandEntry(["integrate", "queue", "release"]);
++    const runNextCatalogEntry = findCommandEntry(["integrate", "queue", "run-next"]);
++    if (
++      !listCatalogEntry ||
++      !releaseCatalogEntry?.selectSession ||
++      !runNextCatalogEntry?.selectSession
++    ) {
++      throw new Error("integration queue catalog entries are incomplete");
++    }
++
++    const observed = new Map<string, CommandCapability[][]>();
++    const capture = (command: string, requirements: readonly CommandCapability[]) => {
++      const profiles = observed.get(command) ?? [];
++      profiles.push([...requirements]);
++      observed.set(command, profiles);
++    };
++    const denied = ["backend.write", "task.write", "git.mutate"] as const;
++    const listEntry: CommandEntry = {
++      ...listCatalogEntry,
++      load: (session) => {
++        capture("list", session.requirements);
++        return Promise.resolve(async () => {
++          await session.require("project", "integrate queue list");
++          const unsafe = session as CommandSession<CommandCapability>;
++          for (const capability of [...denied, "route.remote", "provider"] as const) {
++            await expect(unsafe.require(capability, "integrate queue list")).rejects.toMatchObject({
++              code: "E_INTERNAL",
++            });
++          }
++          return 0;
++        });
++      },
++    };
++    const conditionalEntry = (catalogEntry: CommandEntry, label: string): CommandEntry => ({
++      ...catalogEntry,
++      selectSession: (parsed) => {
++        const selected = catalogEntry.selectSession?.(parsed);
++        if (!selected) throw new Error(`${label} did not select a session`);
++        return {
++          ...selected,
++          load: (session) => {
++            capture(label, session.requirements);
++            return Promise.resolve(async () => {
++              if (!session.requirements.includes("git.mutate")) {
++                const unsafe = session as CommandSession<CommandCapability>;
++                for (const capability of denied) {
++                  await expect(unsafe.require(capability, label)).rejects.toMatchObject({
++                    code: "E_INTERNAL",
++                  });
++                }
++              }
++              return 0;
++            });
++          },
++        };
++      },
++    });
++
++    const getCtx = vi.fn(() => Promise.resolve({ marker: "command-context" } as never));
++    const getResolvedProject = vi.fn(() => Promise.resolve({ marker: "project" } as never));
++    const registry = buildRegistry({
++      entries: [
++        listEntry,
++        conditionalEntry(releaseCatalogEntry, "release"),
++        conditionalEntry(runNextCatalogEntry, "run-next"),
++      ],
++      getCtx,
++      getResolvedProject,
++      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
++      getEvaluatorArtifactPort: vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never)),
++    });
++    const list = registry.lookup(["integrate", "queue", "list"]);
++    const release = registry.lookup(["integrate", "queue", "release"]);
++    const runNext = registry.lookup(["integrate", "queue", "run-next"]);
++    if (!list || !release || !runNext) throw new Error("integration queue runtime entries missing");
++
++    await list.handler({ cwd: "/repo" }, { json: true });
++    await release.handler({ cwd: "/repo" }, { status: "done" });
++    await release.handler({ cwd: "/repo" }, { status: "superseded" });
++    await runNext.handler({ cwd: "/repo" }, { dryRun: true });
++    await runNext.handler({ cwd: "/repo" }, { dryRun: false });
++
++    expect(observed.get("list")).toEqual([INTEGRATION_QUEUE_LIST_REQUIREMENTS]);
++    expect(observed.get("release")).toEqual([
++      INTEGRATION_QUEUE_LIST_REQUIREMENTS,
++      INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    ]);
++    expect(observed.get("run-next")).toEqual([
++      INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++      INTEGRATION_QUEUE_EXECUTION_REQUIREMENTS,
++    ]);
++    expect(getCtx).not.toHaveBeenCalled();
++    expect(getResolvedProject).toHaveBeenCalledOnce();
++  });
++
++  it("enforces provider, release, and local ops authority at runtime before preparation", async () => {
++    const cases = [
++      {
++        id: ["pr", "check"],
++        requirements: PROVIDER_READ_REQUIREMENTS,
++        allowed: ["provider", "route.remote"] as const,
++        denied: ["git.mutate", "task.write"] as const,
++      },
++      {
++        id: ["pr", "open"],
++        requirements: PROVIDER_WRITE_REQUIREMENTS,
++        allowed: ["provider", "git.mutate"] as const,
++        denied: ["context.search"] as const,
++      },
++      {
++        id: ["work", "start"],
++        requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++        allowed: ["git.mutate", "route.local"] as const,
++        denied: ["provider", "route.remote"] as const,
++      },
++      {
++        id: ["release", "plan"],
++        requirements: RELEASE_PLAN_REQUIREMENTS,
++        allowed: ["git.diff", "approvals"] as const,
++        denied: ["provider", "git.mutate"] as const,
++      },
++      {
++        id: ["release", "apply"],
++        requirements: RELEASE_PUBLISH_REQUIREMENTS,
++        allowed: ["provider", "git.mutate"] as const,
++        denied: ["route.remote", "task.write"] as const,
++      },
++    ] as const;
++    const observed = new Map<string, readonly CommandCapability[]>();
++    const traces: { command: string; node: string; status: string }[] = [];
++    const getCtx = vi.fn(() => Promise.resolve({ marker: "command-context" } as never));
++    const entries = cases.map((testCase) => {
++      const catalogEntry = findCommandEntry(testCase.id);
++      if (!catalogEntry) throw new Error(`missing catalog entry: ${testCase.id.join(" ")}`);
++      return {
++        ...catalogEntry,
++        load: (session: CommandSession<CommandCapability>) => {
++          const command = testCase.id.join(" ");
++          observed.set(command, [...session.requirements]);
++          return Promise.resolve(async () => {
++            const unsafe = session as CommandSession<CommandCapability>;
++            for (const capability of testCase.denied) {
++              await expect(unsafe.require(capability, command)).rejects.toMatchObject({
++                code: "E_INTERNAL",
++              });
++            }
++            for (const capability of testCase.allowed) {
++              await unsafe.require(capability, command);
++            }
++            return 0;
++          });
++        },
++      } satisfies CommandEntry;
++    });
++    const registry = buildRegistry({
++      entries,
++      getCtx,
++      getResolvedProject: vi.fn(() => Promise.resolve({ marker: "project" } as never)),
++      getLoadedConfig: vi.fn(() => Promise.resolve({ marker: "config" } as never)),
++      getEvaluatorArtifactPort: vi.fn(() => Promise.resolve({ prepare: vi.fn() } as never)),
++      onPreparationTrace: (event) => traces.push(event),
++    });
++
++    for (const testCase of cases) {
++      const command = testCase.id.join(" ");
++      const runtime = registry.lookup(testCase.id);
++      if (!runtime) throw new Error(`runtime entry missing: ${command}`);
++      await runtime.handler({ cwd: "/repo" }, {});
++      expect(observed.get(command), command).toEqual(testCase.requirements);
++      expect(
++        traces.filter(
++          (event) =>
++            event.command === command &&
++            event.node === "command_context" &&
++            event.status === "resolved",
++        ),
++        command,
++      ).toHaveLength(1);
++    }
++    expect(getCtx).toHaveBeenCalledTimes(cases.length);
++  });
++
+   it("constructs Hermes supervision authority from parsed remote and execution intent", async () => {
+     const catalogEntry = findCommandEntry(["hermes", "supervise"]);
+     if (!catalogEntry?.selectSession) throw new Error("hermes supervise must select a session");
+diff --git a/packages/agentplane/src/commands/integrate-queue-doctor-command.ts b/packages/agentplane/src/commands/integrate-queue-doctor-command.ts
+index cff8f2c1e..8fc2c9898 100644
+--- a/packages/agentplane/src/commands/integrate-queue-doctor-command.ts
++++ b/packages/agentplane/src/commands/integrate-queue-doctor-command.ts
+@@ -1,12 +1,13 @@
+ import path from "node:path";
+ 
+ import type { CommandCtx } from "../cli/spec/spec.js";
+-import { createCliEmitter } from "../cli/output.js";
++import { createCliEmitter, emitCommandResults } from "../cli/output.js";
+ import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
+ import { resolvePrFlowStatus } from "./pr/flow-status.js";
+ import {
+   readIntegrationQueue,
+   inspectIntegrationQueueMutex,
++  type IntegrationQueueMutexInspection,
+   withIntegrationQueueMutex,
+   writeIntegrationQueue,
+ } from "./pr/integrate/queue-state.js";
+@@ -16,12 +17,42 @@ import {
+ } from "./integrate-queue-doctor.js";
+ import { decideIntegrationQueueRecovery } from "./integrate-queue-recovery.js";
+ import type { IntegrateQueueDoctorParsed } from "./integrate-queue.spec.js";
++import { renderIntegrationQueueDoctorResult } from "./integrate-queue-render.js";
+ 
+-export async function runIntegrationQueueDoctor(opts: {
++const INTEGRATION_QUEUE_DOCTOR_RESULT_SCHEMA = "agentplane.integration_queue.doctor.v1" as const;
++
++type IntegrationQueueDoctorFinding = {
++  task_id: string;
++  status: string;
++  reason: string;
++  repair: string | null;
++  disposition: "applied" | "blocked_manual_recovery" | "would_apply" | "not_applied";
++};
++
++export type IntegrationQueueDoctorResult = {
++  schema: typeof INTEGRATION_QUEUE_DOCTOR_RESULT_SCHEMA;
++  operation: "integrate.queue.doctor";
++  findings: IntegrationQueueDoctorFinding[];
++  applied: boolean;
++  mutex: IntegrationQueueMutexInspection & {
++    lock_path: string;
++    manual_recovery_required: boolean;
++  };
++  exit_code: number;
++  audit: {
++    authority: "provider_read";
++    attempts: 1;
++    effects_applied: number;
++    requested_fix: boolean;
++    dry_run: boolean;
++  };
++};
++
++export async function inspectIntegrationQueueDoctor(opts: {
+   commandCtx: CommandContext;
+   ctx: CommandCtx;
+   parsed: IntegrateQueueDoctorParsed;
+-}): Promise<number> {
++}): Promise<IntegrationQueueDoctorResult> {
+   const gitRoot = opts.commandCtx.resolvedProject.gitRoot;
+   const mutexLockPath = path.join(
+     gitRoot,
+@@ -34,7 +65,7 @@ export async function runIntegrationQueueDoctor(opts: {
+   const manualRecoveryRequired = mutexInspection.state !== "absent";
+   const applyRepairs = opts.parsed.fix && !opts.parsed.dryRun && !manualRecoveryRequired;
+   const before = await readIntegrationQueue(gitRoot);
+-  const findings: { task_id: string; status: string; reason: string; repair: string | null }[] = [];
++  const findings: IntegrationQueueDoctorFinding[] = [];
+   const repairs: IntegrationQueueDoctorRepair[] = [];
+ 
+   for (const entry of before.entries) {
+@@ -57,14 +88,27 @@ export async function runIntegrationQueueDoctor(opts: {
+     if (!report) continue;
+     const decision = decideIntegrationQueueRecovery({ entry, report });
+     if (decision.action !== "mark") continue;
+-    const finding = {
++    const finding: IntegrationQueueDoctorFinding = {
+       task_id: entry.task_id,
+       status: entry.status,
+       reason: decision.reason,
+       repair: `mark_${decision.status}`,
++      disposition: applyRepairs
++        ? "applied"
++        : opts.parsed.fix && !opts.parsed.dryRun && manualRecoveryRequired
++          ? "blocked_manual_recovery"
++          : opts.parsed.fix && opts.parsed.dryRun
++            ? "would_apply"
++            : "not_applied",
+     };
+     findings.push(finding);
+-    repairs.push({ ...finding, expected_entry: entry });
++    repairs.push({
++      task_id: finding.task_id,
++      status: finding.status,
++      reason: finding.reason,
++      repair: finding.repair,
++      expected_entry: entry,
++    });
+   }
+ 
+   if (applyRepairs) {
+@@ -76,44 +120,37 @@ export async function runIntegrationQueueDoctor(opts: {
+     });
+   }
+ 
+-  const output = createCliEmitter();
+-  if (opts.parsed.json) {
+-    output.json({
+-      findings,
+-      applied: applyRepairs,
+-      mutex: {
+-        ...mutexInspection,
+-        lock_path: mutexLockPath,
+-        manual_recovery_required: manualRecoveryRequired,
+-      },
+-    });
+-    return opts.parsed.fix && !opts.parsed.dryRun && manualRecoveryRequired ? 5 : 0;
+-  }
+-  if (manualRecoveryRequired) {
+-    const owner =
+-      "owner" in mutexInspection
+-        ? `${mutexInspection.owner.pid}@${mutexInspection.owner.host}`
+-        : "-";
+-    const reason = "reason" in mutexInspection ? ` reason=${mutexInspection.reason}` : "";
+-    output.line(
+-      `integration queue mutex: state=${mutexInspection.state} owner=${owner}${reason} path=${mutexLockPath} manual_recovery_required=yes`,
+-    );
+-  }
+-  if (findings.length === 0) {
+-    output.success("integration queue doctor", undefined, "no stale entries detected");
+-    return opts.parsed.fix && !opts.parsed.dryRun && manualRecoveryRequired ? 5 : 0;
+-  }
+-  output.lines(
+-    findings.map((finding) => {
+-      const suffix = applyRepairs
+-        ? "applied"
+-        : opts.parsed.fix && !opts.parsed.dryRun && manualRecoveryRequired
+-          ? "blocked_manual_recovery"
+-          : opts.parsed.fix && opts.parsed.dryRun
+-            ? "would_apply"
+-            : "not_applied";
+-      return `${finding.task_id} ${finding.status}: ${finding.reason} repair=${finding.repair ?? "none"} ${suffix}`;
+-    }),
++  const exitCode = opts.parsed.fix && !opts.parsed.dryRun && manualRecoveryRequired ? 5 : 0;
++  return {
++    schema: INTEGRATION_QUEUE_DOCTOR_RESULT_SCHEMA,
++    operation: "integrate.queue.doctor",
++    findings,
++    applied: applyRepairs,
++    mutex: {
++      ...mutexInspection,
++      lock_path: mutexLockPath,
++      manual_recovery_required: manualRecoveryRequired,
++    },
++    exit_code: exitCode,
++    audit: {
++      authority: "provider_read",
++      attempts: 1,
++      effects_applied: applyRepairs ? repairs.length : 0,
++      requested_fix: opts.parsed.fix,
++      dry_run: opts.parsed.dryRun,
++    },
++  };
++}
++
++export async function runIntegrationQueueDoctor(opts: {
++  commandCtx: CommandContext;
++  ctx: CommandCtx;
++  parsed: IntegrateQueueDoctorParsed;
++}): Promise<number> {
++  const result = await inspectIntegrationQueueDoctor(opts);
++  emitCommandResults(
++    createCliEmitter(),
++    renderIntegrationQueueDoctorResult(result, opts.parsed.json),
+   );
+-  return opts.parsed.fix && !opts.parsed.dryRun && manualRecoveryRequired ? 5 : 0;
++  return result.exit_code;
+ }
+diff --git a/packages/agentplane/src/commands/integrate-queue-lane.test.ts b/packages/agentplane/src/commands/integrate-queue-lane.test.ts
+index afb6ad2a5..86e5e02c8 100644
+--- a/packages/agentplane/src/commands/integrate-queue-lane.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue-lane.test.ts
+@@ -51,16 +51,25 @@ vi.mock("./pr/provider-head.js", async (importOriginal) => {
+   };
+ });
+ 
+-vi.mock("../cli/output.js", () => ({
+-  createCliEmitter: () => mocks.output,
+-}));
++vi.mock("../cli/output.js", async (importOriginal) => {
++  const actualUnknown: unknown = await importOriginal();
++  const actual = actualUnknown && typeof actualUnknown === "object" ? actualUnknown : {};
++  return {
++    ...actual,
++    createCliEmitter: () => mocks.output,
++  };
++});
+ vi.mock("./shared/task-worktree-cleanliness.js", () => ({
+   inspectTaskWorktreeCleanliness: mocks.inspectTaskWorktreeCleanliness,
+   assertTaskWorktreeClean: mocks.assertTaskWorktreeClean,
+   summarizeTaskWorktreeChanges: (paths: string[]) => paths.join(", "),
+ }));
+ 
+-import { runIntegrationQueueDoctor } from "./integrate-queue-doctor-command.js";
++import {
++  inspectIntegrationQueueDoctor,
++  runIntegrationQueueDoctor,
++} from "./integrate-queue-doctor-command.js";
++import { inspectIntegrationQueueList } from "./integrate-queue-list.js";
+ import {
+   findActiveIntegrationLane,
+   normalizeTerminalQueueEntries,
+@@ -237,6 +246,22 @@ describe("integration queue terminal recovery", () => {
+     expect(mocks.resolvePrFlowStatus).toHaveBeenCalledOnce();
+   });
+ 
++  it("returns a typed read-only list result without provider normalization", async () => {
++    const root = await makeQueueRoot();
++
++    const result = await inspectIntegrationQueueList(root);
++
++    expect(result).toMatchObject({
++      schema: "agentplane.integration_queue.list.v1",
++      operation: "integrate.queue.list",
++      active_entries: [{ task_id: "T-1", status: "queued" }],
++      audit: { authority: "local_read", attempts: 1, effects_applied: 0 },
++    });
++    expect(mocks.resolvePrFlowStatus).not.toHaveBeenCalled();
++    const persisted = await readIntegrationQueue(root);
++    expect(persisted.entries[0]?.status).toBe("queued");
++  });
++
+   it("keeps doctor from repairing an open PR entry and closes it after Hosted Close evidence", async () => {
+     const root = await makeQueueRoot();
+     mocks.resolvePrFlowStatus.mockResolvedValueOnce(openReport);
+@@ -267,6 +292,25 @@ describe("integration queue terminal recovery", () => {
+     await mkdir(lockPath, { recursive: true });
+     await writeFile(path.join(lockPath, "owner.json"), "{invalid", "utf8");
+ 
++    const typed = await inspectIntegrationQueueDoctor({
++      commandCtx: { resolvedProject: { gitRoot: root } } as CommandContext,
++      ctx: { cwd: root, rootOverride: null } as never,
++      parsed: { fix: true, dryRun: false, json: true },
++    });
++    expect(typed).toMatchObject({
++      schema: "agentplane.integration_queue.doctor.v1",
++      operation: "integrate.queue.doctor",
++      exit_code: 5,
++      applied: false,
++      audit: {
++        authority: "provider_read",
++        attempts: 1,
++        effects_applied: 0,
++        requested_fix: true,
++        dry_run: false,
++      },
++    });
++
+     const jsonCode = await runIntegrationQueueDoctor({
+       commandCtx: { resolvedProject: { gitRoot: root } } as CommandContext,
+       ctx: { cwd: root, rootOverride: null } as never,
+@@ -296,7 +340,10 @@ describe("integration queue terminal recovery", () => {
+       parsed: { fix: true, dryRun: false, json: false },
+     });
+     expect(textCode).toBe(5);
+-    expect(mocks.output.line).toHaveBeenCalledWith(expect.stringContaining(`path=${lockPath}`));
++    expect(mocks.output.line).toHaveBeenCalledWith(
++      expect.stringContaining(`path=${lockPath}`),
++      undefined,
++    );
+   });
+ 
+   it("hands off provider unavailability without classifying implementation as rework", async () => {
+diff --git a/packages/agentplane/src/commands/integrate-queue-list.ts b/packages/agentplane/src/commands/integrate-queue-list.ts
+new file mode 100644
+index 000000000..87c95c988
+--- /dev/null
++++ b/packages/agentplane/src/commands/integrate-queue-list.ts
+@@ -0,0 +1,38 @@
++import {
++  readIntegrationQueue,
++  type IntegrationQueueEntry,
++  type IntegrationQueueState,
++} from "./pr/integrate/queue-state.js";
++
++const INTEGRATION_QUEUE_LIST_RESULT_SCHEMA = "agentplane.integration_queue.list.v1" as const;
++
++export type IntegrationQueueListResult = {
++  schema: typeof INTEGRATION_QUEUE_LIST_RESULT_SCHEMA;
++  operation: "integrate.queue.list";
++  queue: IntegrationQueueState;
++  active_entries: IntegrationQueueEntry[];
++  audit: {
++    authority: "local_read";
++    attempts: 1;
++    effects_applied: 0;
++  };
++};
++
++export async function inspectIntegrationQueueList(
++  gitRoot: string,
++): Promise<IntegrationQueueListResult> {
++  const queue = await readIntegrationQueue(gitRoot);
++  return {
++    schema: INTEGRATION_QUEUE_LIST_RESULT_SCHEMA,
++    operation: "integrate.queue.list",
++    queue,
++    active_entries: queue.entries.filter(
++      (entry) => entry.status !== "done" && entry.status !== "superseded",
++    ),
++    audit: {
++      authority: "local_read",
++      attempts: 1,
++      effects_applied: 0,
++    },
++  };
++}
+diff --git a/packages/agentplane/src/commands/integrate-queue-render.ts b/packages/agentplane/src/commands/integrate-queue-render.ts
+new file mode 100644
+index 000000000..479b42077
+--- /dev/null
++++ b/packages/agentplane/src/commands/integrate-queue-render.ts
+@@ -0,0 +1,64 @@
++import { emptyStateMessage, type CommandResult } from "../cli/output.js";
++import type { IntegrationQueueDoctorResult } from "./integrate-queue-doctor-command.js";
++import type { IntegrationQueueListResult } from "./integrate-queue-list.js";
++import { renderIntegrationQueueEntry } from "./integrate-queue-lane.js";
++
++export function renderIntegrationQueueListResult(
++  result: IntegrationQueueListResult,
++  json: boolean,
++): CommandResult[] {
++  if (json) return [{ kind: "json", value: result.queue }];
++  if (result.active_entries.length === 0) {
++    return [{ kind: "line", text: emptyStateMessage("integration queue entries") }];
++  }
++  return result.active_entries.map((entry) => ({
++    kind: "line" as const,
++    text: renderIntegrationQueueEntry(entry),
++  }));
++}
++
++export function renderIntegrationQueueDoctorResult(
++  result: IntegrationQueueDoctorResult,
++  json: boolean,
++): CommandResult[] {
++  if (json) {
++    return [
++      {
++        kind: "json",
++        value: {
++          findings: result.findings.map(({ disposition: _disposition, ...finding }) => finding),
++          applied: result.applied,
++          mutex: result.mutex,
++        },
++      },
++    ];
++  }
++
++  const output: CommandResult[] = [];
++  if (result.mutex.manual_recovery_required) {
++    const inspection = result.mutex;
++    const owner = "owner" in inspection ? `${inspection.owner.pid}@${inspection.owner.host}` : "-";
++    const reason = "reason" in inspection ? ` reason=${inspection.reason}` : "";
++    output.push({
++      kind: "line",
++      text:
++        `integration queue mutex: state=${inspection.state} owner=${owner}${reason} ` +
++        `path=${result.mutex.lock_path} manual_recovery_required=yes`,
++    });
++  }
++  if (result.findings.length === 0) {
++    output.push({
++      kind: "success",
++      action: "integration queue doctor",
++      details: "no stale entries detected",
++    });
++    return output;
++  }
++  for (const finding of result.findings) {
++    output.push({
++      kind: "line",
++      text: `${finding.task_id} ${finding.status}: ${finding.reason} repair=${finding.repair ?? "none"} ${finding.disposition}`,
++    });
++  }
++  return output;
++}
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.test.ts b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+index 05c0d466d..957dc4e72 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+@@ -313,7 +313,10 @@ describe("integrate queue claim publication guard", () => {
+       pr: { source: "lookup", state: "CLOSED", headSha: "audited-head" },
+       providerObservation: { state: "found", pr: { status: "CLOSED", headSha: "audited-head" } },
+     });
+-    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
++    const handler = makeRunIntegrateQueueReleaseHandler({
++      getGitRoot: () => Promise.resolve("/repo"),
++      getCtx: commandContext,
++    });
+ 
+     await expect(
+       handler({ cwd: "/repo", rootOverride: null } as never, {
+@@ -353,7 +356,10 @@ describe("integrate queue claim publication guard", () => {
+       pr: { source: "lookup", state: "CLOSED" },
+       providerObservation: { state: "found", pr: { status: "CLOSED" } },
+     });
+-    const handler = makeRunIntegrateQueueReleaseHandler(commandContext);
++    const handler = makeRunIntegrateQueueReleaseHandler({
++      getGitRoot: () => Promise.resolve("/repo"),
++      getCtx: commandContext,
++    });
+ 
+     await expect(
+       handler({ cwd: "/repo", rootOverride: null } as never, {
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 05b823a23..88ca29a34 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -4,7 +4,7 @@ import {
+   throwGroupCommandUsage,
+   type GroupCommandParsed,
+ } from "../cli/group-command.js";
+-import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
++import { createCliEmitter, emitCommandResults, emptyStateMessage } from "../cli/output.js";
+ import { CliError } from "../shared/errors.js";
+ import { sleep } from "../backends/task-backend/shared/concurrency.js";
+ import type { CommandContext } from "./shared/task-backend.js";
+@@ -38,14 +38,14 @@ import {
+   validateClaimedEntryPublication,
+ } from "./integrate-queue-reservation.js";
+ import { runIntegrationQueueDoctor } from "./integrate-queue-doctor-command.js";
++import { inspectIntegrationQueueList } from "./integrate-queue-list.js";
++import { renderIntegrationQueueListResult } from "./integrate-queue-render.js";
+ import {
+   defaultIntegrationQueueWorker,
+   findActiveIntegrationLane,
+   hasQueuedIntegrationEntries,
+-  normalizeTerminalQueueEntries,
+   recoverStaleActiveLane,
+   rejectIfQueuedEntryIsStale,
+-  renderIntegrationQueueEntry,
+ } from "./integrate-queue-lane.js";
+ import type {
+   IntegrateQueueAdoptLegacyProtectedConflictParsed,
+@@ -107,23 +107,14 @@ export {
+   integrateQueueSpec,
+ } from "./integrate-queue.spec.js";
+ 
+-async function runIntegrateQueueRootGroup(
+-  _ctx: CommandCtx,
+-  p: GroupCommandParsed,
+-): Promise<number> {
++export const runIntegrateQueueGroup: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
+   throwGroupCommandUsage({
+     spec: integrateQueueSpec,
+     cmd: p.cmd,
+     subcommands: await loadDirectSubcommandNames(["integrate", "queue"]),
+     command: "integrate queue",
+   });
+-}
+-
+-export function makeRunIntegrateQueueHandler(
+-  _getCtx: (cmd: string) => Promise<CommandContext>,
+-): CommandHandler<GroupCommandParsed> {
+-  return runIntegrateQueueRootGroup;
+-}
++};
+ 
+ export function makeRunIntegrateQueueEnqueueHandler(
+   getCtx: (cmd: string) => Promise<CommandContext>,
+@@ -187,31 +178,11 @@ export function makeRunIntegrateQueueEnqueueHandler(
+   };
+ }
+ 
+-export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+-  return async (ctx: CommandCtx, p: IntegrateQueueListParsed): Promise<number> => {
+-    const commandCtx = await getCtx("integrate queue list");
+-    const gitRoot = commandCtx.resolvedProject.gitRoot;
+-    await normalizeTerminalQueueEntries({
+-      ctx: commandCtx,
+-      cwd: ctx.cwd,
+-      rootOverride: ctx.rootOverride,
+-      gitRoot,
+-      quiet: p.json,
+-    });
+-    const queue = await readIntegrationQueue(gitRoot);
+-    const output = createCliEmitter();
+-    if (p.json) {
+-      output.json(queue);
+-      return 0;
+-    }
+-    const active = queue.entries.filter(
+-      (entry) => entry.status !== "done" && entry.status !== "superseded",
+-    );
+-    if (active.length === 0) {
+-      output.line(emptyStateMessage("integration queue entries"));
+-      return 0;
+-    }
+-    output.lines(active.map((entry) => renderIntegrationQueueEntry(entry)));
++export function makeRunIntegrateQueueListHandler(getGitRoot: (cmd: string) => Promise<string>) {
++  return async (_ctx: CommandCtx, p: IntegrateQueueListParsed): Promise<number> => {
++    const gitRoot = await getGitRoot("integrate queue list");
++    const result = await inspectIntegrationQueueList(gitRoot);
++    emitCommandResults(createCliEmitter(), renderIntegrationQueueListResult(result, p.json));
+     return 0;
+   };
+ }
+@@ -253,13 +224,21 @@ export function makeRunIntegrateQueueClaimHandler(
+   };
+ }
+ 
+-export function makeRunIntegrateQueueReleaseHandler(
+-  getCtx: (cmd: string) => Promise<CommandContext>,
+-) {
++export function makeRunIntegrateQueueReleaseHandler(deps: {
++  getGitRoot: (cmd: string) => Promise<string>;
++  getCtx?: (cmd: string) => Promise<CommandContext>;
++}) {
+   return async (_ctx: CommandCtx, p: IntegrateQueueReleaseParsed): Promise<number> => {
+-    const commandCtx = await getCtx("integrate queue release");
+-    const gitRoot = commandCtx.resolvedProject.gitRoot;
++    const command = "integrate queue release";
++    const gitRoot = await deps.getGitRoot(command);
+     if (p.status === "superseded") {
++      const commandCtx = await deps.getCtx?.(command);
++      if (!commandCtx) {
++        throw new CliError({
++          code: "E_INTERNAL",
++          message: "integrate queue release superseded requires provider read context",
++        });
++      }
+       const [legacy, successor, report] = await Promise.all([
+         loadBackendTask({
+           ctx: commandCtx,
+diff --git a/packages/agentplane/src/commands/pr/pr.command.ts b/packages/agentplane/src/commands/pr/pr.command.ts
+index 676695ec6..b47ce1884 100644
+--- a/packages/agentplane/src/commands/pr/pr.command.ts
++++ b/packages/agentplane/src/commands/pr/pr.command.ts
+@@ -39,20 +39,14 @@ export {
+   prUpdateSpec,
+ } from "./pr.spec.js";
+ 
+-async function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
++export const runPrGroup: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
+   throwGroupCommandUsage({
+     spec: prSpec,
+     cmd: p.cmd,
+     subcommands: await loadDirectSubcommandNames(["pr"]),
+     command: "pr",
+   });
+-}
+-
+-export function makeRunPrHandler(
+-  _getCtx: (cmd: string) => Promise<CommandContext>,
+-): CommandHandler<GroupCommandParsed> {
+-  return runPrRootGroup;
+-}
++};
+ 
+ export function makeRunPrOpenHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+   return async (ctx: CommandCtx, p: PrOpenParsed): Promise<number> => {
+diff --git a/packages/agentplane/src/commands/provider-ops-results.test.ts b/packages/agentplane/src/commands/provider-ops-results.test.ts
+new file mode 100644
+index 000000000..01434593c
+--- /dev/null
++++ b/packages/agentplane/src/commands/provider-ops-results.test.ts
+@@ -0,0 +1,134 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  renderIntegrationQueueDoctorResult,
++  renderIntegrationQueueListResult,
++} from "./integrate-queue-render.js";
++import type { IntegrationQueueDoctorResult } from "./integrate-queue-doctor-command.js";
++import type { IntegrationQueueListResult } from "./integrate-queue-list.js";
++import { renderReleasePlanResult } from "./release/plan.render.js";
++import type { ReleasePlanResult } from "./release/plan.command.js";
++
++const queue = {
++  schema_version: 1 as const,
++  entries: [
++    {
++      task_id: "T-1",
++      branch: "task/T-1/work",
++      base: "main",
++      head_sha: "head-sha",
++      base_sha: "base-sha",
++      changed_paths: ["src/work.ts"],
++      pr_number: 101,
++      pr_url: "https://example.invalid/pull/101",
++      priority: 0,
++      status: "queued" as const,
++      enqueued_at: "2026-08-01T00:00:00.000Z",
++      updated_at: "2026-08-01T00:00:00.000Z",
++    },
++  ],
++};
++
++describe("typed provider and release result renderers", () => {
++  it("preserves integration queue human and JSON payload compatibility without exposing audit internals", () => {
++    const result: IntegrationQueueListResult = {
++      schema: "agentplane.integration_queue.list.v1",
++      operation: "integrate.queue.list",
++      queue,
++      active_entries: queue.entries,
++      audit: { authority: "local_read", attempts: 1, effects_applied: 0 },
++    };
++
++    expect(renderIntegrationQueueListResult(result, true)).toEqual([
++      { kind: "json", value: queue },
++    ]);
++    expect(renderIntegrationQueueListResult(result, false)).toEqual([
++      {
++        kind: "line",
++        text: "queued  T-1 #101 priority=0 branch=task/T-1/work",
++      },
++    ]);
++  });
++
++  it("maps a typed doctor outcome to one exit code while keeping audit and disposition out of JSON", () => {
++    const result: IntegrationQueueDoctorResult = {
++      schema: "agentplane.integration_queue.doctor.v1",
++      operation: "integrate.queue.doctor",
++      findings: [
++        {
++          task_id: "T-1",
++          status: "queued",
++          reason: "provider merge is complete",
++          repair: "mark_done",
++          disposition: "would_apply",
++        },
++      ],
++      applied: false,
++      mutex: {
++        state: "absent",
++        lock_path: "/repo/.agentplane/cache/locks/integration-queue.lock",
++        manual_recovery_required: false,
++      },
++      exit_code: 0,
++      audit: {
++        authority: "provider_read",
++        attempts: 1,
++        effects_applied: 0,
++        requested_fix: true,
++        dry_run: true,
++      },
++    };
++
++    expect(renderIntegrationQueueDoctorResult(result, true)).toEqual([
++      {
++        kind: "json",
++        value: {
++          findings: [
++            {
++              task_id: "T-1",
++              status: "queued",
++              reason: "provider merge is complete",
++              repair: "mark_done",
++            },
++          ],
++          applied: false,
++          mutex: result.mutex,
++        },
++      },
++    ]);
++    expect(renderIntegrationQueueDoctorResult(result, false)).toEqual([
++      {
++        kind: "line",
++        text: "T-1 queued: provider merge is complete repair=mark_done would_apply",
++      },
++    ]);
++  });
++
++  it("renders release artifacts from exact typed SHA provenance", () => {
++    const result: ReleasePlanResult = {
++      schema: "agentplane.release.plan.v1",
++      operation: "release.plan",
++      previous_tag: "v0.6.24",
++      previous_version: "0.6.24",
++      next_tag: "v0.6.25",
++      next_version: "0.6.25",
++      bump: "patch",
++      base_sha: "0123456789abcdef",
++      plan_dir: ".agentplane/.release/plan/run-1",
++      artifact_paths: [".agentplane/.release/plan/run-1/version.json"],
++      change_count: 1,
++      minimum_release_note_bullets: 1,
++      audit: { authority: "local_release_plan", attempts: 1, effects_applied: 4 },
++    };
++
++    expect(renderReleasePlanResult(result)).toEqual([
++      { kind: "line", text: "Release plan written: .agentplane/.release/plan/run-1" },
++      { kind: "line", text: "Next tag: v0.6.25" },
++      {
++        kind: "line",
++        text: "Hint: Create a DOCS task to write docs/releases/v0.6.25.md based on this plan.",
++      },
++    ]);
++    expect(result.base_sha).toBe("0123456789abcdef");
++  });
++});
+diff --git a/packages/agentplane/src/commands/release/plan.command.ts b/packages/agentplane/src/commands/release/plan.command.ts
+index 1f7a18b7b..3b085e6af 100644
+--- a/packages/agentplane/src/commands/release/plan.command.ts
++++ b/packages/agentplane/src/commands/release/plan.command.ts
+@@ -4,8 +4,8 @@ import path from "node:path";
+ import { loadConfig } from "@agentplaneorg/core/config";
+ import { gitEnv, resolveBaseBranch } from "@agentplaneorg/core/git";
+ import { resolveProject } from "@agentplaneorg/core/project";
+-import { createCliEmitter } from "../../cli/output.js";
+-import type { CommandHandler } from "../../cli/spec/spec.js";
++import { createCliEmitter, emitCommandResults } from "../../cli/output.js";
++import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
+ import { exitCodeForError } from "../../cli/exit-codes.js";
+ import { withDiagnosticContext } from "../shared/diagnostics.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -21,7 +21,7 @@ import {
+   requiredBulletCount,
+   type Change,
+ } from "./plan.helpers.js";
+-const output = createCliEmitter();
++import { renderReleasePlanResult } from "./plan.render.js";
+ 
+ export { releasePlanSpec } from "./plan.spec.js";
+ 
+@@ -215,7 +215,32 @@ async function resolveProtectedBaseShaForPlan(opts: {
+   });
+ }
+ 
+-export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, flags) => {
++export const RELEASE_PLAN_RESULT_SCHEMA = "agentplane.release.plan.v1" as const;
++
++export type ReleasePlanResult = {
++  schema: typeof RELEASE_PLAN_RESULT_SCHEMA;
++  operation: "release.plan";
++  previous_tag: string | null;
++  previous_version: string;
++  next_tag: string;
++  next_version: string;
++  bump: ReleasePlanParsed["bump"];
++  base_sha: string;
++  plan_dir: string;
++  artifact_paths: string[];
++  change_count: number;
++  minimum_release_note_bullets: number;
++  audit: {
++    authority: "local_release_plan";
++    attempts: 1;
++    effects_applied: 4;
++  };
++};
++
++export async function createReleasePlan(
++  ctx: CommandCtx,
++  flags: ReleasePlanParsed,
++): Promise<ReleasePlanResult> {
+   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+   const gitRoot = resolved.gitRoot;
+   await ensureReleaseIncidentsClean(gitRoot);
+@@ -296,11 +321,35 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
+     "utf8",
+   );
+ 
+-  output.lines([
+-    `Release plan written: ${path.relative(gitRoot, baseDir)}`,
+-    `Next tag: ${nextTag}`,
+-    `Hint: Create a DOCS task to write docs/releases/${nextTag}.md based on this plan.`,
+-  ]);
++  const planDir = path.relative(gitRoot, baseDir);
++  return {
++    schema: RELEASE_PLAN_RESULT_SCHEMA,
++    operation: "release.plan",
++    previous_tag: prevTag,
++    previous_version: coreVersion,
++    next_tag: nextTag,
++    next_version: nextVersion,
++    bump: flags.bump,
++    base_sha: baseSha,
++    plan_dir: planDir,
++    artifact_paths: [
++      path.join(planDir, "version.json"),
++      path.join(planDir, "changes.json"),
++      path.join(planDir, "changes.md"),
++      path.join(planDir, "instructions.md"),
++    ],
++    change_count: changes.length,
++    minimum_release_note_bullets: minBullets,
++    audit: {
++      authority: "local_release_plan",
++      attempts: 1,
++      effects_applied: 4,
++    },
++  };
++}
+ 
++export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, flags) => {
++  const result = await createReleasePlan(ctx, flags);
++  emitCommandResults(createCliEmitter(), renderReleasePlanResult(result));
+   return 0;
+ };
+diff --git a/packages/agentplane/src/commands/release/plan.render.ts b/packages/agentplane/src/commands/release/plan.render.ts
+new file mode 100644
+index 000000000..b0e75f630
+--- /dev/null
++++ b/packages/agentplane/src/commands/release/plan.render.ts
+@@ -0,0 +1,13 @@
++import type { CommandResult } from "../../cli/output.js";
++import type { ReleasePlanResult } from "./plan.command.js";
++
++export function renderReleasePlanResult(result: ReleasePlanResult): CommandResult[] {
++  return [
++    { kind: "line", text: `Release plan written: ${result.plan_dir}` },
++    { kind: "line", text: `Next tag: ${result.next_tag}` },
++    {
++      kind: "line",
++      text: `Hint: Create a DOCS task to write docs/releases/${result.next_tag}.md based on this plan.`,
++    },
++  ];
++}
+diff --git a/packages/agentplane/src/commands/release/plan.test.ts b/packages/agentplane/src/commands/release/plan.test.ts
+index bb7dc6be8..c92e3ad5a 100644
+--- a/packages/agentplane/src/commands/release/plan.test.ts
++++ b/packages/agentplane/src/commands/release/plan.test.ts
+@@ -6,7 +6,7 @@ import { expect, it } from "vitest";
+ 
+ import { commitAll, describeWhenNotHook, tempRepo } from "@agentplane/testkit";
+ import { seedReleaseWorkspace, writeWorkflowMode } from "@agentplane/testkit/release";
+-import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
++import { createReleasePlan, runReleasePlan, releasePlanSpec } from "./plan.command.js";
+ 
+ const execFileAsync = promisify(execFile);
+ describeWhenNotHook("release plan", () => {
+@@ -25,18 +25,28 @@ describeWhenNotHook("release plan", () => {
+       await writeFile(path.join(root, "file.txt"), "x", "utf8");
+       await commitAll(root, "feat: add file");
+ 
+-      const rc = await runReleasePlan(
++      const result = await createReleasePlan(
+         { cwd: root, rootOverride: root },
+         { bump: "patch", yes: false },
+       );
+-      expect(rc).toBe(0);
++      expect(result).toMatchObject({
++        schema: "agentplane.release.plan.v1",
++        operation: "release.plan",
++        previous_tag: "v0.2.6",
++        previous_version: "0.2.6",
++        next_tag: "v0.2.7",
++        next_version: "0.2.7",
++        bump: "patch",
++        change_count: 1,
++        minimum_release_note_bullets: 1,
++        audit: {
++          authority: "local_release_plan",
++          attempts: 1,
++          effects_applied: 4,
++        },
++      });
+ 
+-      const plansDir = path.join(root, ".agentplane", ".release", "plan");
+-      const runNames = await readdir(plansDir);
+-      const runs = runNames.toSorted();
+-      expect(runs.length).toBeGreaterThan(0);
+-      const latest = runs.at(-1) ?? "";
+-      const runDir = path.join(plansDir, latest);
++      const runDir = path.join(root, result.plan_dir);
+ 
+       const version = JSON.parse(await readFile(path.join(runDir, "version.json"), "utf8")) as {
+         prevTag?: string | null;
+@@ -54,6 +64,13 @@ describeWhenNotHook("release plan", () => {
+       expect(version.nextVersion).toBe("0.2.7");
+       expect(version.bump).toBe("patch");
+       expect(version.baseSha).toBe(headSha.trim());
++      expect(result.base_sha).toBe(headSha.trim());
++      expect(result.artifact_paths).toEqual([
++        path.join(result.plan_dir, "version.json"),
++        path.join(result.plan_dir, "changes.json"),
++        path.join(result.plan_dir, "changes.md"),
++        path.join(result.plan_dir, "instructions.md"),
++      ]);
+ 
+       const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
+       expect(instructions).toContain("docs/releases/v0.2.7.md");

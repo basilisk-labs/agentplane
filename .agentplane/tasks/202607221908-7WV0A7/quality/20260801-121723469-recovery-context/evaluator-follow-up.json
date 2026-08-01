@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-7WV0A7-928a4512f99e1e02cb5d7947",
+  "task_id": "202607221908-7WV0A7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Повторить верификацию на SHA 6c23608a30c55cc88770da4b0d1c15caae7bc0e2 и заморозить точные команды, результаты и runtime-доказательства для обязательных проверок, отказов, восстановления, ограниченных повторов, частичных эффектов, output parity и отсутствия дублированных эффектов; затем заново запустить семантическую оценку.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Замороженный пакет не содержит исполнимых записей проверок для текущего evaluated SHA: verification_records, runner_history и runtime_evidence пусты, хотя контракт требует command-backed доказательства обязательных проверок и сценариев отказа, восстановления и конкурентного выполнения.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-121723469-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:cc01f477396d4e3ff43d24d3b99951ccfe66ea964575f51114aa96ff8b0a8b03",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:603c9e2cfe635f94d30d76b818d64b65ffd39fda08251f9cee7dffdac6607276",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "Новые audit-поля attempts и effects_applied преимущественно заданы константами и проверяются на синтетических результатах рендереров; пакет не доказывает их соответствие реальным retry, partial-publication, recovery и duplicated-effect путям.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-121723469-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:588cdc4ff194be5d595fed57fb7f6e91af54d821d690b5ed5892448c98b53e23",
+          "section": "provider-ops-results.test.ts and release/plan.command.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/README.md",
+          "sha256": "sha256:603c9e2cfe635f94d30d76b818d64b65ffd39fda08251f9cee7dffdac6607276",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-121723469-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:cc01f477396d4e3ff43d24d3b99951ccfe66ea964575f51114aa96ff8b0a8b03",
+          "section": "runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-121723469-recovery-context/evaluator-result.json"
+}

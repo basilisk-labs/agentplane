@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-7WV0A7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T12:09:41.158Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "5f2bc4c45d4c076114db8ee89ab9948e20e11d9e",
+  "blueprint_digest": "f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c",
+  "findings": [
+    "The patch adds typed results and separate renderers only for integration queue list/doctor and release plan; the approved provider, integration, release, publication, recovery, and ops command surface remains only partially migrated.",
+    "The frozen verification packet contains no command records, runner history, or runtime evidence for the mandatory negative, failure, recovery, parity, and exact-SHA scenarios.",
+    "The new audit metadata is asserted through synthetic renderer fixtures, but the packet does not demonstrate that retries, partial effects, or duplicated-effect prevention are measured from real execution paths."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-7WV0A7/README.md",
+    ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-120857146-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-7WV0A7/quality/20260801-120857146-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "Recorded state-matrix checks for every in-scope provider, integration, release, publication, recovery, and ops operation with and without each required authority.",
+    "Runtime recovery tests covering late checks, network failure, merge conflict, partial publication, bounded retry/timeout, and prevention of duplicated effects.",
+    "Recorded human/JSON/release artifact parity checks proving compatibility and exact-SHA provenance across the full migrated command surface.",
+    "Command-backed records for bun run guards:check, bun run lifecycle:invariants, bun run release:parity, and bun run test:critical, including result and covered scope."
+  ],
+  "hidden_assumptions": [
+    "Migrating integration queue list/doctor and release plan is assumed to satisfy the task-wide typed-result and renderer requirement.",
+    "Constant audit fields in constructed results are assumed to represent real retry and side-effect behavior.",
+    "A tester summary is assumed to substitute for the verification evidence contract's exact command and result records.",
+    "Untouched provider, publication, recovery, and ops paths are assumed already compliant with the approved contract."
+  ],
+  "residual_risks": [
+    "Continue from the narrowed capability profiles and typed queue/release-plan seams, but treat them as partial remediation. Complete the typed result/error, renderer, exit mapping, retry/wait, and audit migration for every operation named in Scope, then freeze command-backed evidence for all negative, recovery, parity, concurrency, and exact-SHA Verify Steps."
+  ]
+}

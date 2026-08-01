@@ -1,9 +1,15 @@
 import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import type {
   NoContextSession,
   ProjectConfigSession,
   ProjectSession,
 } from "../command-catalog/project-capability-profiles.js";
+import type {
+  ProviderWriteSession,
+  ReleasePlanSession,
+  ReleasePublishSession,
+} from "../command-catalog/provider-ops-capability-profiles.js";
 import type { InsightsReadSession } from "../command-catalog/runner-hermes-capability-profiles.js";
 
 function getProjectDeps(session: ProjectSession) {
@@ -23,18 +29,42 @@ export const fromCommandsInit = commandModule(() => import("../commands/init/spe
 export const fromCommandsUpgradeCommand = commandModule(
   () => import("../../../commands/upgrade.command.js"),
 );
-export const fromCommandsReleaseReleaseCommand = commandModule(
-  () => import("../../../commands/release/release.command.js"),
-);
-export const fromCommandsReleasePlanCommand = commandModule(
-  () => import("../../../commands/release/plan.command.js"),
-);
-export const fromCommandsReleaseApplyCommand = commandModule(
-  () => import("../../../commands/release/apply.command.js"),
-);
-export const loadReleaseTasksReconcileSpec = (deps: RunDeps) =>
+export const loadReleaseSpec = (_session: NoContextSession) =>
+  import("../../../commands/release/release.command.js").then((m) => m.runRelease);
+export const loadReleasePlanSpec = (session: ReleasePlanSession) =>
+  import("../../../commands/release/plan.command.js").then((m) => {
+    const handler = m.runReleasePlan;
+    return async (...[ctx, parsed]: Parameters<typeof handler>) => {
+      await session.require("git.diff", "release plan");
+      await session.require("approvals", "release plan");
+      const project = await session.require("project", "release plan");
+      return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
+    };
+  });
+const loadReleasePublishHandler = (session: ReleasePublishSession, kind: "apply" | "candidate") =>
+  import("../../../commands/release/apply.command.js").then((m) => {
+    const handler = kind === "apply" ? m.runReleaseApply : m.runReleaseCandidate;
+    const command = `release ${kind}`;
+    return async (...[ctx, parsed]: Parameters<typeof handler>) => {
+      await session.require("git.mutate", command);
+      await session.require("approvals", command);
+      await session.require("provider", command);
+      const project = await session.require("project", command);
+      return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
+    };
+  });
+export const loadReleaseApplySpec = (session: ReleasePublishSession) =>
+  loadReleasePublishHandler(session, "apply");
+export const loadReleaseCandidateSpec = (session: ReleasePublishSession) =>
+  loadReleasePublishHandler(session, "candidate");
+export const loadReleaseTasksReconcileSpec = (session: ProviderWriteSession) =>
   import("../../../commands/release/tasks-reconcile.command.js").then((m) =>
-    m.makeRunReleaseTasksReconcileHandler(deps.getCtx),
+    m.makeRunReleaseTasksReconcileHandler(async (command) => {
+      await session.require("git.mutate", command);
+      await session.require("route.remote", command);
+      await session.require("approvals", command);
+      return (await session.require("provider", command)) as CommandContext;
+    }),
   );
 export const fromCommandsCoreQuickstart = commandModule(
   () => import("../commands/core/quickstart.js"),

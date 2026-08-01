@@ -1,0 +1,1736 @@
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/README.md b/.agentplane/tasks/202607221908-7WV0A7/README.md
+index f35063768..591ddf907 100644
+--- a/.agentplane/tasks/202607221908-7WV0A7/README.md
++++ b/.agentplane/tasks/202607221908-7WV0A7/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221908-7WV0A7"
+ title: "Migrate provider, integration, release, and ops command boundaries"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 7
+ origin:
+   system: "manual"
+ depends_on:
+@@ -28,9 +28,9 @@ verify:
+   - "bun run release:parity"
+   - "bun run test:critical"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-08-01T03:23:18.269Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -39,11 +39,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-08-01T03:23:48.372Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T19:08:23.678Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-08-01T03:23:48.372Z"
++doc_updated_by: "CODER"
+ description: "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers."
+ sections:
+   Summary: |-
+@@ -72,6 +82,10 @@ sections:
+     - Preserve provider/release evidence and use recovery versions after publication.
+     - Re-run release parity and provider state fixtures.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221908-7WV0A7/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..59e06ba28
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-7WV0A7/blueprint/resolved-snapshot.json
+@@ -0,0 +1,609 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221908-7WV0A7",
++    "title": "Migrate provider, integration, release, and ops command boundaries",
++    "description": "RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers.",
++    "tags": [
++      "milestone-rc2",
++      "refactor",
++      "rf-24",
++      "rf-25",
++      "v0.7",
++      "vertical-slice",
++      "wave-internals"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "quality.regression"
++  },
++  "selectedBlueprint": {
++    "id": "quality.regression",
++    "version": 1,
++    "title": "Quality regression",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "quality.regression",
++    "blueprintVersion": 1,
++    "title": "Quality regression",
++    "taskId": "202607221908-7WV0A7",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "quality.regression"
++    },
++    "whySelected": [
++      "explicit blueprint requested: quality.regression",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest",
++          "artifact"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "check_result"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "weak_links"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "regression.original_failure",
++        "kind": "artifact",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Original failure log or check output."
++      },
++      {
++        "id": "regression.reproduction",
++        "kind": "check_result",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Local reproduction or explicit non-reproduction result."
++      },
++      {
++        "id": "regression.focused_check",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Focused regression check."
++      },
++      {
++        "id": "regression.matrix_or_scope",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Affected test/check matrix or bounded scope."
++      },
++      {
++        "id": "regression.full_gate",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Full relevant gate or hosted check evidence."
++      },
++      {
++        "id": "regression.flake_classification",
++        "kind": "weak_links",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Flake classification or residual risk."
++      },
++      {
++        "id": "regression.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "regression.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "affected matrix or full relevant gate",
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "failure reproduction command",
++      "focused regression check",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest",
++        "artifact"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "check_result"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "weak_links"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "regression.original_failure",
++      "kind": "artifact",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Original failure log or check output."
++    },
++    {
++      "id": "regression.reproduction",
++      "kind": "check_result",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Local reproduction or explicit non-reproduction result."
++    },
++    {
++      "id": "regression.focused_check",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Focused regression check."
++    },
++    {
++      "id": "regression.matrix_or_scope",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Affected test/check matrix or bounded scope."
++    },
++    {
++      "id": "regression.full_gate",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Full relevant gate or hosted check evidence."
++    },
++    {
++      "id": "regression.flake_classification",
++      "kind": "weak_links",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Flake classification or residual risk."
++    },
++    {
++      "id": "regression.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "regression.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "affected matrix or full relevant gate",
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "failure reproduction command",
++    "focused regression check",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: quality.regression",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "f9952f89b4a423843b77a4ab1c48bbd06fb22b85e09d9a444355591cbd17d42c"
++  }
++}
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/pr/diffstat.txt b/.agentplane/tasks/202607221908-7WV0A7/pr/diffstat.txt
+new file mode 100644
+index 000000000..de73002c6
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-7WV0A7/pr/diffstat.txt
+@@ -0,0 +1,14 @@
++ .../src/cli/run-cli/command-catalog.test.ts        | 106 +++++++++++++++
++ .../src/cli/run-cli/command-catalog/core.ts        |  36 ++++--
++ .../src/cli/run-cli/command-catalog/kernel.test.ts |  33 +++++
++ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  15 ++-
++ .../src/cli/run-cli/command-catalog/project.ts     | 119 ++++++++++++-----
++ .../provider-ops-capability-profiles.ts            |  39 ++++++
++ .../src/cli/run-cli/command-catalog/task.ts        |   7 +-
++ .../src/cli/run-cli/command-loaders/core.ts        |  52 ++++++--
++ .../src/cli/run-cli/command-loaders/lifecycle.ts   |  20 ++-
++ .../src/cli/run-cli/command-loaders/project.ts     | 142 ++++++++++++---------
++ .../src/cli/run-cli/command-loaders/task.ts        |  16 ++-
++ .../src/commands/integrate-queue.command.ts        |  13 +-
++ packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
++ 13 files changed, 456 insertions(+), 152 deletions(-)
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/pr/github-body.md b/.agentplane/tasks/202607221908-7WV0A7/pr/github-body.md
+new file mode 100644
+index 000000000..d4874b332
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-7WV0A7/pr/github-body.md
+@@ -0,0 +1,46 @@
++Task: `202607221908-7WV0A7`
++Title: Migrate provider, integration, release, and ops command boundaries
++Canonical task record: `.agentplane/tasks/202607221908-7WV0A7/README.md`
++
++## Summary
++
++Migrate provider, integration, release, and ops command boundaries
++
++RF-24/RF-25 vertical slice: constrain provider/integration/release/ops commands to explicit authority-aware capabilities and typed results/renderers.
++
++## Scope
++
++- In scope: PR sync/open/check, integration queue/merge/hosted close/cleanup, release/publish/recovery, network/provider and ops commands, granular authority/provider/Git capabilities, typed results/errors, audit, and human/JSON renderers.
++- Out of scope: granting publication authority or changing protected-main policy.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-08-01T03:24:25.275Z
++- Branch: task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/cli/run-cli/command-catalog.test.ts        | 106 +++++++++++++++
++ .../src/cli/run-cli/command-catalog/core.ts        |  36 ++++--
++ .../src/cli/run-cli/command-catalog/kernel.test.ts |  33 +++++
++ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  15 ++-
++ .../src/cli/run-cli/command-catalog/project.ts     | 119 ++++++++++++-----
++ .../provider-ops-capability-profiles.ts            |  39 ++++++
++ .../src/cli/run-cli/command-catalog/task.ts        |   7 +-
++ .../src/cli/run-cli/command-loaders/core.ts        |  52 ++++++--
++ .../src/cli/run-cli/command-loaders/lifecycle.ts   |  20 ++-
++ .../src/cli/run-cli/command-loaders/project.ts     | 142 ++++++++++++---------
++ .../src/cli/run-cli/command-loaders/task.ts        |  16 ++-
++ .../src/commands/integrate-queue.command.ts        |  13 +-
++ packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
++ 13 files changed, 456 insertions(+), 152 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/pr/github-title.txt b/.agentplane/tasks/202607221908-7WV0A7/pr/github-title.txt
+new file mode 100644
+index 000000000..caa02028c
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-7WV0A7/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 7WV0A7 task: Migrate provider, integration, release, and ops command boundaries [202607221908-7WV0A7]
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/pr/meta.json b/.agentplane/tasks/202607221908-7WV0A7/pr/meta.json
+new file mode 100644
+index 000000000..29c28706b
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-7WV0A7/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com",
++  "created_at": "2026-08-01T03:23:48.490Z",
++  "diffstat_sha256": "sha256:bdb1c27c86510a3f43cba695d73dbb130c6c8aa209bf4634461533a9abecc85d",
++  "last_verified_at": null,
++  "pr_number": 4718,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4718",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221908-7WV0A7",
++  "updated_at": "2026-08-01T03:24:25.275Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221908-7WV0A7/pr/review.md b/.agentplane/tasks/202607221908-7WV0A7/pr/review.md
+new file mode 100644
+index 000000000..fa5023fc0
+--- /dev/null
++++ b/.agentplane/tasks/202607221908-7WV0A7/pr/review.md
+@@ -0,0 +1,49 @@
++# PR Review
++
++Created: 2026-08-01T03:23:48.490Z
++
++## Task
++
++- Task: `202607221908-7WV0A7`
++- Title: Migrate provider, integration, release, and ops command boundaries
++- Status: DOING
++- Branch: `task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com`
++- Canonical task record: `.agentplane/tasks/202607221908-7WV0A7/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-08-01T03:24:25.275Z
++- Branch: task/202607221908-7WV0A7/migrate-provider-integration-release-and-ops-com
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/cli/run-cli/command-catalog.test.ts        | 106 +++++++++++++++
++ .../src/cli/run-cli/command-catalog/core.ts        |  36 ++++--
++ .../src/cli/run-cli/command-catalog/kernel.test.ts |  33 +++++
++ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  15 ++-
++ .../src/cli/run-cli/command-catalog/project.ts     | 119 ++++++++++++-----
++ .../provider-ops-capability-profiles.ts            |  39 ++++++
++ .../src/cli/run-cli/command-catalog/task.ts        |   7 +-
++ .../src/cli/run-cli/command-loaders/core.ts        |  52 ++++++--
++ .../src/cli/run-cli/command-loaders/lifecycle.ts   |  20 ++-
++ .../src/cli/run-cli/command-loaders/project.ts     | 142 ++++++++++++---------
++ .../src/cli/run-cli/command-loaders/task.ts        |  16 ++-
++ .../src/commands/integrate-queue.command.ts        |  13 +-
++ packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
++ 13 files changed, 456 insertions(+), 152 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index ed9e1bf74..cb18da818 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -239,6 +239,112 @@ describe("command catalog graph", () => {
+     );
+   });
+ 
++  it("publishes authority-aware provider, integration, release, and ops profiles", () => {
++    const providerRead = [
++      "project",
++      "config",
++      "backend.read",
++      "task.read",
++      "git.head",
++      "git.diff",
++      "route.local",
++      "policy",
++      "approvals",
++      "route.remote",
++      "provider",
++    ];
++    const providerWrite = [
++      "project",
++      "config",
++      "backend.read",
++      "task.read",
++      "backend.write",
++      "task.write",
++      "policy",
++      "approvals",
++      "git.head",
++      "git.diff",
++      "git.mutate",
++      "route.local",
++      "route.remote",
++      "provider",
++    ];
++
++    for (const id of [
++      ["pr", "check"],
++      ["pr", "flow", "status"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(providerRead);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++
++    for (const id of [
++      ["pr", "open"],
++      ["pr", "update"],
++      ["pr", "conflict-rework"],
++      ["pr", "close"],
++      ["pr", "close-superseded"],
++      ["pr", "note"],
++      ["flow", "repair"],
++      ["integrate"],
++      ["integrate", "queue", "enqueue"],
++      ["integrate", "queue", "list"],
++      ["integrate", "queue", "doctor"],
++      ["integrate", "queue", "claim"],
++      ["integrate", "queue", "release"],
++      ["integrate", "queue", "adopt-legacy-protected-conflict"],
++      ["integrate", "queue", "run-next"],
++      ["task", "hosted-close"],
++      ["task", "hosted-close-pr"],
++      ["cleanup", "merged"],
++      ["release", "tasks", "reconcile"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(providerWrite);
++      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
++    }
++
++    for (const id of [
++      ["work", "start"],
++      ["work", "resume"],
++    ]) {
++      const entry = findCommandEntry(id);
++      expect(entry?.compatibility, id.join(" ")).toBeNull();
++      expect(entry?.requirements, id.join(" ")).toEqual(
++        expect.arrayContaining(["task.write", "git.mutate", "route.local", "approvals"]),
++      );
++      expect(entry?.requirements, id.join(" ")).not.toContain("provider");
++    }
++
++    expect(findCommandEntry(["release", "plan"])?.requirements).toEqual([
++      "project",
++      "config",
++      "git.head",
++      "git.diff",
++      "policy",
++      "approvals",
++    ]);
++    for (const id of [
++      ["release", "apply"],
++      ["release", "candidate"],
++    ]) {
++      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([
++        "project",
++        "config",
++        "git.head",
++        "git.diff",
++        "policy",
++        "approvals",
++        "git.mutate",
++        "provider",
++      ]);
++    }
++
++    expect(findCommandEntry(["pr"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["integrate", "queue"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["release"])?.requirements).toEqual([]);
++    expect(findCommandEntry(["cleanup"])?.requirements).toEqual([]);
++  });
++
+   it("keeps framework and internal commands out of normal help without removing dispatch", () => {
+     expect(findCommandEntry(["release"])?.surface).toBe("framework");
+     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+index b843f228f..41734d669 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+@@ -55,12 +55,18 @@ import {
+   PROJECT_CONFIG_REQUIREMENTS,
+   PROJECT_REQUIREMENTS,
+ } from "./project-capability-profiles.js";
++import {
++  PROVIDER_WRITE_REQUIREMENTS,
++  RELEASE_PLAN_REQUIREMENTS,
++  RELEASE_PUBLISH_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsInit,
+   fromCommandsUpgradeCommand,
+-  fromCommandsReleaseReleaseCommand,
+-  fromCommandsReleasePlanCommand,
+-  fromCommandsReleaseApplyCommand,
++  loadReleaseSpec,
++  loadReleasePlanSpec,
++  loadReleaseApplySpec,
++  loadReleaseCandidateSpec,
+   fromCommandsCoreQuickstart,
+   fromCommandsCorePreflight,
+   fromCommandsCodex,
+@@ -105,29 +111,33 @@ export const CORE_COMMANDS = [
+     invocation: requireCanonicalCommandInvocation(["init"]),
+   }),
+   fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", { needs: "none" }),
+-  fromCommandsReleaseReleaseCommand(releaseSpec, "runRelease", {
+-    needs: "none",
++  declareSessionCommand(releaseSpec, {
++    load: loadReleaseSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsReleasePlanCommand(releasePlanSpec, "runReleasePlan", {
+-    needs: "project",
++  declareSessionCommand(releasePlanSpec, {
++    load: loadReleasePlanSpec,
++    requirements: RELEASE_PLAN_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsReleaseApplyCommand(releaseApplySpec, "runReleaseApply", {
+-    needs: "project",
++  declareSessionCommand(releaseApplySpec, {
++    load: loadReleaseApplySpec,
++    requirements: RELEASE_PUBLISH_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  fromCommandsReleaseApplyCommand(releaseCandidateSpec, "runReleaseCandidate", {
+-    needs: "project",
++  declareSessionCommand(releaseCandidateSpec, {
++    load: loadReleaseCandidateSpec,
++    requirements: RELEASE_PUBLISH_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+-  declareCommand(releaseTasksReconcileSpec, {
++  declareSessionCommand(releaseTasksReconcileSpec, {
+     load: loadReleaseTasksReconcileSpec,
+-    needs: "project+config+task",
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+     surface: "framework",
+     helpGroup: "Framework Dev",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+index 5d3167b0f..6bd187a0b 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts
+@@ -11,6 +11,10 @@ import {
+   PROJECT_CONFIG_REQUIREMENTS,
+   PROJECT_REQUIREMENTS,
+ } from "./project-capability-profiles.js";
++import {
++  LOCAL_OPS_WRITE_REQUIREMENTS,
++  PROVIDER_READ_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
+ 
+ const commandContext = { marker: "command-context" };
+ const project = { marker: "project" };
+@@ -186,4 +190,33 @@ describe("CommandSession", () => {
+       expect(resolvers.getCtx).not.toHaveBeenCalled();
+     }
+   });
++
++  it("denies undeclared provider mutation and local-ops network access", async () => {
++    const providerReadResolvers = makeResolvers();
++    const providerReadSession = createCommandSession({
++      command: "pr check",
++      requirements: PROVIDER_READ_REQUIREMENTS,
++      resolvers: providerReadResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(providerReadSession.require("git.mutate", "pr check")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    expect(providerReadResolvers.getCtx).not.toHaveBeenCalled();
++
++    const localOpsResolvers = makeResolvers();
++    const localOpsSession = createCommandSession({
++      command: "work start",
++      requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++      resolvers: localOpsResolvers,
++    }) as CommandSession<CommandCapability>;
++
++    await expect(localOpsSession.require("provider", "work start")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    await expect(localOpsSession.require("route.remote", "work start")).rejects.toMatchObject({
++      code: "E_INTERNAL",
++    });
++    expect(localOpsResolvers.getCtx).not.toHaveBeenCalled();
++  });
+ });
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+index 54ec11f50..6a7c3507f 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+@@ -18,7 +18,8 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
+ 
+ import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
+ import { TASK_LIFECYCLE_REQUIREMENTS, TASK_READ_REQUIREMENTS } from "./task-capability-profiles.js";
+-import { OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
++import { NO_CONTEXT_REQUIREMENTS, OUTPUT_REQUIREMENTS } from "./project-capability-profiles.js";
++import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsHooksHooksCommand,
+   fromCommandsHooksInstallCommand,
+@@ -33,7 +34,7 @@ import {
+   loadReadySpec,
+   loadDocsCliSpec,
+   fromHooksUninstallSpec,
+-  fromCleanupSpec,
++  loadCleanupSpec,
+   loadCleanupMergedSpec,
+   fromGuardSuggestAllowSpec,
+   loadGuardCommitSpec,
+@@ -76,8 +77,14 @@ export const LIFECYCLE_COMMANDS = [
+   fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
+   fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),
+   fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {}),
+-  fromCleanupSpec(cleanupSpec, "runCleanup", { needs: "none" }),
+-  declareCommand(cleanupMergedSpec, { load: loadCleanupMergedSpec }),
++  declareSessionCommand(cleanupSpec, {
++    load: loadCleanupSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(cleanupMergedSpec, {
++    load: loadCleanupMergedSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
+   fromCommandsGuardGuardCommand(guardSpec, "runGuard", { needs: "none" }),
+   fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {}),
+   fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow"),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index 5253a8b82..c40aa34d2 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -149,6 +149,12 @@ import {
+ } from "../../../commands/evaluator/evaluator.command.js";
+ 
+ import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
++import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++import {
++  LOCAL_OPS_WRITE_REQUIREMENTS,
++  PROVIDER_READ_REQUIREMENTS,
++  PROVIDER_WRITE_REQUIREMENTS,
++} from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsRecipesRecipesCommand,
+   fromCommandsRecipesCacheCommand,
+@@ -273,10 +279,19 @@ export const PROJECT_COMMANDS = [
+     needs: "none",
+   }),
+   fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
+-  declareCommand(workStartSpec, { load: loadWorkStartSpec }),
+-  declareCommand(workResumeSpec, { load: loadWorkResumeSpec }),
++  declareSessionCommand(workStartSpec, {
++    load: loadWorkStartSpec,
++    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(workResumeSpec, {
++    load: loadWorkResumeSpec,
++    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
++  }),
+   fromCommandsFlowCommand(flowSpec, "runFlow", { needs: "none" }),
+-  declareCommand(flowRepairSpec, { load: loadFlowRepairSpec }),
++  declareSessionCommand(flowRepairSpec, {
++    load: loadFlowRepairSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
+   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
+   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
+   fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),
+@@ -369,38 +384,76 @@ export const PROJECT_COMMANDS = [
+     helpGroup: "Maintenance",
+   }),
+   declareCommand(syncSpec, { load: loadSyncSpec }),
+-  declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),
+-  declareCommand(prOpenSpec, { load: loadPrOpenSpec }),
+-  declareCommand(prUpdateSpec, { load: loadPrUpdateSpec }),
++  declareSessionCommand(prSpec, {
++    load: loadPrSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(prOpenSpec, {
++    load: loadPrOpenSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prUpdateSpec, {
++    load: loadPrUpdateSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
+   declareSessionCommand(prCheckSpec, {
+     load: loadPrCheckSpec,
+-    requirements: [
+-      "project",
+-      "config",
+-      "backend.read",
+-      "task.read",
+-      "git.head",
+-      "git.diff",
+-      "route.remote",
+-      "policy",
+-      "approvals",
+-      "provider",
+-    ],
+-  }),
+-  declareCommand(prConflictReworkSpec, { load: loadPrConflictReworkSpec }),
+-  declareCommand(prFlowStatusSpec, { load: loadPrFlowStatusSpec }),
+-  declareCommand(prCloseSpec, { load: loadPrCloseSpec }),
+-  declareCommand(prCloseSupersededSpec, { load: loadPrCloseSupersededSpec }),
+-  declareCommand(prNoteSpec, { load: loadPrNoteSpec }),
+-  declareCommand(integrateSpec, { load: loadIntegrateSpec }),
+-  declareCommand(integrateQueueSpec, { load: loadIntegrateQueueSpec, needs: "none" }),
+-  declareCommand(integrateQueueEnqueueSpec, { load: loadIntegrateQueueEnqueueSpec }),
+-  declareCommand(integrateQueueListSpec, { load: loadIntegrateQueueListSpec }),
+-  declareCommand(integrateQueueDoctorSpec, { load: loadIntegrateQueueDoctorSpec }),
+-  declareCommand(integrateQueueClaimSpec, { load: loadIntegrateQueueClaimSpec }),
+-  declareCommand(integrateQueueReleaseSpec, { load: loadIntegrateQueueReleaseSpec }),
+-  declareCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
++    requirements: PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(prConflictReworkSpec, {
++    load: loadPrConflictReworkSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prFlowStatusSpec, {
++    load: loadPrFlowStatusSpec,
++    requirements: PROVIDER_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(prCloseSpec, {
++    load: loadPrCloseSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prCloseSupersededSpec, {
++    load: loadPrCloseSupersededSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(prNoteSpec, {
++    load: loadPrNoteSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateSpec, {
++    load: loadIntegrateSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueSpec, {
++    load: loadIntegrateQueueSpec,
++    requirements: NO_CONTEXT_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueEnqueueSpec, {
++    load: loadIntegrateQueueEnqueueSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueListSpec, {
++    load: loadIntegrateQueueListSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueDoctorSpec, {
++    load: loadIntegrateQueueDoctorSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueClaimSpec, {
++    load: loadIntegrateQueueClaimSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueReleaseSpec, {
++    load: loadIntegrateQueueReleaseSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
+     load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
++  }),
++  declareSessionCommand(integrateQueueRunNextSpec, {
++    load: loadIntegrateQueueRunNextSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+   }),
+-  declareCommand(integrateQueueRunNextSpec, { load: loadIntegrateQueueRunNextSpec }),
+ ] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/provider-ops-capability-profiles.ts b/packages/agentplane/src/cli/run-cli/command-catalog/provider-ops-capability-profiles.ts
+new file mode 100644
+index 000000000..f41759286
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/provider-ops-capability-profiles.ts
+@@ -0,0 +1,39 @@
++import type { CommandCapability, CommandSession } from "./command-session.js";
++import {
++  TASK_LIFECYCLE_REQUIREMENTS,
++  TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
++  TASK_ROUTE_REQUIREMENTS,
++} from "./task-capability-profiles.js";
++
++export const PROVIDER_READ_REQUIREMENTS = [
++  ...TASK_ROUTE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const PROVIDER_WRITE_REQUIREMENTS = [
++  ...TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const LOCAL_OPS_WRITE_REQUIREMENTS = [
++  ...TASK_LIFECYCLE_REQUIREMENTS,
++] as const satisfies readonly CommandCapability[];
++
++export const RELEASE_PLAN_REQUIREMENTS = [
++  "project",
++  "config",
++  "git.head",
++  "git.diff",
++  "policy",
++  "approvals",
++] as const satisfies readonly CommandCapability[];
++
++export const RELEASE_PUBLISH_REQUIREMENTS = [
++  ...RELEASE_PLAN_REQUIREMENTS,
++  "git.mutate",
++  "provider",
++] as const satisfies readonly CommandCapability[];
++
++export type ProviderReadSession = CommandSession<(typeof PROVIDER_READ_REQUIREMENTS)[number]>;
++export type ProviderWriteSession = CommandSession<(typeof PROVIDER_WRITE_REQUIREMENTS)[number]>;
++export type LocalOpsWriteSession = CommandSession<(typeof LOCAL_OPS_WRITE_REQUIREMENTS)[number]>;
++export type ReleasePlanSession = CommandSession<(typeof RELEASE_PLAN_REQUIREMENTS)[number]>;
++export type ReleasePublishSession = CommandSession<(typeof RELEASE_PUBLISH_REQUIREMENTS)[number]>;
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 4856ae0b3..20f88727c 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -82,6 +82,7 @@ import {
+   TASK_ROUTE_REQUIREMENTS,
+   TASK_WRITE_REQUIREMENTS,
+ } from "./task-capability-profiles.js";
++import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+ import {
+   fromCommandsTaskTaskCommand,
+   fromCommandsTaskHandoffCommand,
+@@ -167,13 +168,15 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskHostedCloseSpec, {
++  declareSessionCommand(taskHostedCloseSpec, {
+     load: loadTaskHostedCloseSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+-  declareCommand(taskHostedClosePrSpec, {
++  declareSessionCommand(taskHostedClosePrSpec, {
+     load: loadTaskHostedClosePrSpec,
++    requirements: PROVIDER_WRITE_REQUIREMENTS,
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+index 41f1e9935..b66ee46fd 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+@@ -1,9 +1,15 @@
+ import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
+ import type {
+   NoContextSession,
+   ProjectConfigSession,
+   ProjectSession,
+ } from "../command-catalog/project-capability-profiles.js";
++import type {
++  ProviderWriteSession,
++  ReleasePlanSession,
++  ReleasePublishSession,
++} from "../command-catalog/provider-ops-capability-profiles.js";
+ 
+ function getProjectDeps(session: ProjectSession) {
+   return {
+@@ -22,18 +28,42 @@ export const fromCommandsInit = commandModule(() => import("../commands/init/spe
+ export const fromCommandsUpgradeCommand = commandModule(
+   () => import("../../../commands/upgrade.command.js"),
+ );
+-export const fromCommandsReleaseReleaseCommand = commandModule(
+-  () => import("../../../commands/release/release.command.js"),
+-);
+-export const fromCommandsReleasePlanCommand = commandModule(
+-  () => import("../../../commands/release/plan.command.js"),
+-);
+-export const fromCommandsReleaseApplyCommand = commandModule(
+-  () => import("../../../commands/release/apply.command.js"),
+-);
+-export const loadReleaseTasksReconcileSpec = (deps: RunDeps) =>
++export const loadReleaseSpec = (_session: NoContextSession) =>
++  import("../../../commands/release/release.command.js").then((m) => m.runRelease);
++export const loadReleasePlanSpec = (session: ReleasePlanSession) =>
++  import("../../../commands/release/plan.command.js").then((m) => {
++    const handler = m.runReleasePlan;
++    return async (...[ctx, parsed]: Parameters<typeof handler>) => {
++      await session.require("git.diff", "release plan");
++      await session.require("approvals", "release plan");
++      const project = await session.require("project", "release plan");
++      return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
++    };
++  });
++const loadReleasePublishHandler = (session: ReleasePublishSession, kind: "apply" | "candidate") =>
++  import("../../../commands/release/apply.command.js").then((m) => {
++    const handler = kind === "apply" ? m.runReleaseApply : m.runReleaseCandidate;
++    const command = `release ${kind}`;
++    return async (...[ctx, parsed]: Parameters<typeof handler>) => {
++      await session.require("git.mutate", command);
++      await session.require("approvals", command);
++      await session.require("provider", command);
++      const project = await session.require("project", command);
++      return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
++    };
++  });
++export const loadReleaseApplySpec = (session: ReleasePublishSession) =>
++  loadReleasePublishHandler(session, "apply");
++export const loadReleaseCandidateSpec = (session: ReleasePublishSession) =>
++  loadReleasePublishHandler(session, "candidate");
++export const loadReleaseTasksReconcileSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/release/tasks-reconcile.command.js").then((m) =>
+-    m.makeRunReleaseTasksReconcileHandler(deps.getCtx),
++    m.makeRunReleaseTasksReconcileHandler(async (command) => {
++      await session.require("git.mutate", command);
++      await session.require("route.remote", command);
++      await session.require("approvals", command);
++      return (await session.require("provider", command)) as CommandContext;
++    }),
+   );
+ export const fromCommandsCoreQuickstart = commandModule(
+   () => import("../commands/core/quickstart.js"),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+index 033cc5667..f00e4e1f5 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+@@ -1,6 +1,10 @@
+ import type { CommandContext } from "../../../commands/shared/task-backend.js";
+ import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+-import type { OutputSession } from "../command-catalog/project-capability-profiles.js";
++import type {
++  NoContextSession,
++  OutputSession,
++} from "../command-catalog/project-capability-profiles.js";
++import type { ProviderWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
+ import type {
+   TaskLifecycleSession,
+   TaskReadSession,
+@@ -60,12 +64,16 @@ export const loadDocsCliSpec = (session: OutputSession) =>
+ export const fromHooksUninstallSpec = commandModule(
+   () => import("../../../commands/hooks/uninstall.command.js"),
+ );
+-export const fromCleanupSpec = commandModule(
+-  () => import("../../../commands/cleanup/merged.command.js"),
+-);
+-export const loadCleanupMergedSpec = (deps: RunDeps) =>
++export const loadCleanupSpec = (_session: NoContextSession) =>
++  import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup);
++export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/cleanup/merged.command.js").then((m) =>
+-    m.makeRunCleanupMergedHandler(deps.getCtx),
++    m.makeRunCleanupMergedHandler(async (command) => {
++      await session.require("git.mutate", command);
++      await session.require("route.remote", command);
++      await session.require("approvals", command);
++      return await session.require("provider", command);
++    }),
+   );
+ export const fromGuardSuggestAllowSpec = commandModule(
+   () => import("../../../commands/guard/suggest-allow.command.js"),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index 427f42665..3a5a72a4c 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -1,17 +1,34 @@
+-import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
++import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
++import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
++import type {
++  LocalOpsWriteSession,
++  ProviderReadSession,
++  ProviderWriteSession,
++} from "../command-catalog/provider-ops-capability-profiles.js";
+ 
+-type PrCheckSession = CommandSession<
+-  | "project"
+-  | "config"
+-  | "backend.read"
+-  | "task.read"
+-  | "git.head"
+-  | "git.diff"
+-  | "route.remote"
+-  | "policy"
+-  | "approvals"
+-  | "provider"
+->;
++async function getProviderReadContext(
++  session: ProviderReadSession,
++  command: string,
++): Promise<CommandContext> {
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++}
++
++async function getProviderWriteContext(
++  session: ProviderWriteSession,
++  command: string,
++): Promise<CommandContext> {
++  await session.require("git.mutate", command);
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++}
++
++function getLocalOpsWriteContext(session: LocalOpsWriteSession) {
++  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
++}
+ 
+ export const loadAcrSpec = (deps: RunDeps) =>
+   import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
+@@ -137,13 +154,13 @@ export const fromCommandsBranchBaseCommand = commandModule(
+ export const fromCommandsBranchStatusCommand = commandModule(
+   () => import("../../../commands/branch/status.command.js"),
+ );
+-export const loadWorkStartSpec = (deps: RunDeps) =>
++export const loadWorkStartSpec = (session: LocalOpsWriteSession) =>
+   import("../../../commands/branch/work-start.command.js").then((m) =>
+-    m.makeRunWorkStartHandler(deps.getCtx),
++    m.makeRunWorkStartHandler(getLocalOpsWriteContext(session)),
+   );
+-export const loadWorkResumeSpec = (deps: RunDeps) =>
++export const loadWorkResumeSpec = (session: LocalOpsWriteSession) =>
+   import("../../../commands/branch/work-resume.command.js").then((m) =>
+-    m.makeRunWorkResumeHandler(deps.getCtx),
++    m.makeRunWorkResumeHandler(getLocalOpsWriteContext(session)),
+   );
+ export const fromRecipesActiveSpec = commandModule(
+   () => import("../../../commands/recipes/active.command.js"),
+@@ -202,75 +219,80 @@ export const loadContextIngestSpec = (deps: RunDeps) =>
+   import("../../../commands/context/ingest.command.js").then((m) =>
+     m.makeRunContextIngestHandler(deps.getCtx),
+   );
+-export const loadPrSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx));
+-export const loadPrOpenSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrOpenHandler(deps.getCtx));
+-export const loadPrUpdateSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrUpdateHandler(deps.getCtx));
+-export const loadPrCheckSpec = (session: PrCheckSession) =>
++export const loadPrSpec = (_session: NoContextSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) => m.runPrGroup);
++export const loadPrOpenSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrOpenHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrUpdateSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrUpdateHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrCheckSpec = (session: ProviderReadSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrCheckHandler(async (command) => {
+-      await session.require("route.remote", command);
+-      return await session.require("provider", command);
+-    }),
++    m.makeRunPrCheckHandler((command) => getProviderReadContext(session, command)),
+   );
+-export const loadPrConflictReworkSpec = (deps: RunDeps) =>
++export const loadPrConflictReworkSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrConflictReworkHandler(deps.getCtx),
++    m.makeRunPrConflictReworkHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadPrFlowStatusSpec = (deps: RunDeps) =>
++export const loadPrFlowStatusSpec = (session: ProviderReadSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrFlowStatusHandler(deps.getCtx),
++    m.makeRunPrFlowStatusHandler((command) => getProviderReadContext(session, command)),
+   );
+-export const loadPrCloseSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCloseHandler(deps.getCtx));
+-export const loadPrCloseSupersededSpec = (deps: RunDeps) =>
++export const loadPrCloseSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/pr/pr.command.js").then((m) =>
+-    m.makeRunPrCloseSupersededHandler(deps.getCtx),
++    m.makeRunPrCloseHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrCloseSupersededSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrCloseSupersededHandler((command) => getProviderWriteContext(session, command)),
++  );
++export const loadPrNoteSpec = (session: ProviderWriteSession) =>
++  import("../../../commands/pr/pr.command.js").then((m) =>
++    m.makeRunPrNoteHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadPrNoteSpec = (deps: RunDeps) =>
+-  import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx));
+ export const fromCommandsFlowCommand = commandModule(
+   () => import("../../../commands/flow/flow.command.js"),
+ );
+-export const loadFlowRepairSpec = (deps: RunDeps) =>
++export const loadFlowRepairSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/flow/repair.command.js").then((m) =>
+-    m.makeRunFlowRepairHandler(deps.getCtx),
++    m.makeRunFlowRepairHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateSpec = (deps: RunDeps) =>
++export const loadIntegrateSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate.command.js").then((m) =>
+-    m.makeRunIntegrateHandler(deps.getCtx),
+-  );
+-export const loadIntegrateQueueSpec = (deps: RunDeps) =>
+-  import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueHandler(deps.getCtx),
++    m.makeRunIntegrateHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueEnqueueSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueSpec = (_session: NoContextSession) =>
++  import("../../../commands/integrate-queue.command.js").then((m) => m.runIntegrateQueueGroup);
++export const loadIntegrateQueueEnqueueSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueEnqueueHandler(deps.getCtx),
++    m.makeRunIntegrateQueueEnqueueHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueListSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueListSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueListHandler(deps.getCtx),
++    m.makeRunIntegrateQueueListHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueDoctorSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueDoctorSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueDoctorHandler(deps.getCtx),
++    m.makeRunIntegrateQueueDoctorHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueClaimSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueClaimSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueClaimHandler(deps.getCtx),
++    m.makeRunIntegrateQueueClaimHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueReleaseSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueReleaseSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueReleaseHandler(deps.getCtx),
++    m.makeRunIntegrateQueueReleaseHandler((command) => getProviderWriteContext(session, command)),
+   );
+-export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(deps.getCtx),
++    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler((command) =>
++      getProviderWriteContext(session, command),
++    ),
+   );
+-export const loadIntegrateQueueRunNextSpec = (deps: RunDeps) =>
++export const loadIntegrateQueueRunNextSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/integrate-queue.command.js").then((m) =>
+-    m.makeRunIntegrateQueueRunNextHandler(deps.getCtx),
++    m.makeRunIntegrateQueueRunNextHandler((command) => getProviderWriteContext(session, command)),
+   );
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 39645667c..3c6c720a2 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -13,6 +13,7 @@ import type {
+   TaskRouteSession,
+   TaskWriteSession,
+ } from "../command-catalog/task-capability-profiles.js";
++import type { ProviderWriteSession } from "../command-catalog/provider-ops-capability-profiles.js";
+ 
+ function getSessionContext<
+   TCapabilities extends CommandCapability,
+@@ -78,13 +79,20 @@ export const fromCommandsTaskResumeContextCommand = commandModule(
+ export const fromTaskHandoffShowSpec = commandModule(
+   () => import("../../../commands/task/handoff-show.command.js"),
+ );
+-export const loadTaskHostedCloseSpec = (deps: RunDeps) =>
++const getProviderWriteContext = (session: ProviderWriteSession) => async (command: string) => {
++  await session.require("git.mutate", command);
++  await session.require("route.remote", command);
++  await session.require("approvals", command);
++  return await session.require("provider", command);
++};
++
++export const loadTaskHostedCloseSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/task/hosted-close.command.js").then((m) =>
+-    m.makeRunTaskHostedCloseHandler(deps.getCtx),
++    m.makeRunTaskHostedCloseHandler(getProviderWriteContext(session)),
+   );
+-export const loadTaskHostedClosePrSpec = (deps: RunDeps) =>
++export const loadTaskHostedClosePrSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/task/hosted-close-pr.command.js").then((m) =>
+-    m.makeRunTaskHostedClosePrHandler(deps.getCtx),
++    m.makeRunTaskHostedClosePrHandler(getProviderWriteContext(session)),
+   );
+ export const loadTaskActiveSpec = (session: TaskRouteLocalSession) =>
+   import("../../../commands/task/active.command.js").then((m) =>
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 05b823a23..338dd87f0 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -107,23 +107,14 @@ export {
+   integrateQueueSpec,
+ } from "./integrate-queue.spec.js";
+ 
+-async function runIntegrateQueueRootGroup(
+-  _ctx: CommandCtx,
+-  p: GroupCommandParsed,
+-): Promise<number> {
++export const runIntegrateQueueGroup: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
+   throwGroupCommandUsage({
+     spec: integrateQueueSpec,
+     cmd: p.cmd,
+     subcommands: await loadDirectSubcommandNames(["integrate", "queue"]),
+     command: "integrate queue",
+   });
+-}
+-
+-export function makeRunIntegrateQueueHandler(
+-  _getCtx: (cmd: string) => Promise<CommandContext>,
+-): CommandHandler<GroupCommandParsed> {
+-  return runIntegrateQueueRootGroup;
+-}
++};
+ 
+ export function makeRunIntegrateQueueEnqueueHandler(
+   getCtx: (cmd: string) => Promise<CommandContext>,
+diff --git a/packages/agentplane/src/commands/pr/pr.command.ts b/packages/agentplane/src/commands/pr/pr.command.ts
+index 676695ec6..b47ce1884 100644
+--- a/packages/agentplane/src/commands/pr/pr.command.ts
++++ b/packages/agentplane/src/commands/pr/pr.command.ts
+@@ -39,20 +39,14 @@ export {
+   prUpdateSpec,
+ } from "./pr.spec.js";
+ 
+-async function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
++export const runPrGroup: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
+   throwGroupCommandUsage({
+     spec: prSpec,
+     cmd: p.cmd,
+     subcommands: await loadDirectSubcommandNames(["pr"]),
+     command: "pr",
+   });
+-}
+-
+-export function makeRunPrHandler(
+-  _getCtx: (cmd: string) => Promise<CommandContext>,
+-): CommandHandler<GroupCommandParsed> {
+-  return runPrRootGroup;
+-}
++};
+ 
+ export function makeRunPrOpenHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+   return async (ctx: CommandCtx, p: PrOpenParsed): Promise<number> => {

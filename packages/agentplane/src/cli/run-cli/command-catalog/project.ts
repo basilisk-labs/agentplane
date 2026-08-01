@@ -53,16 +53,6 @@ import { workStartSpec } from "../../../commands/branch/work-start.command.js";
 import { workResumeSpec } from "../../../commands/branch/work-resume.command.js";
 import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
-  integrateQueueAdoptLegacyProtectedConflictSpec,
-  integrateQueueClaimSpec,
-  integrateQueueDoctorSpec,
-  integrateQueueEnqueueSpec,
-  integrateQueueListSpec,
-  integrateQueueReleaseSpec,
-  integrateQueueRunNextSpec,
-  integrateQueueSpec,
-} from "../../../commands/integrate-queue.spec.js";
-import {
   prCheckSpec,
   prCloseSpec,
   prCloseSupersededSpec,
@@ -147,6 +137,7 @@ import {
   type CommandEntry,
 } from "./kernel.js";
 import { HERMES_COMMANDS } from "./hermes.js";
+import { INTEGRATION_QUEUE_COMMANDS } from "./integration-queue.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
@@ -156,6 +147,11 @@ import {
   EVALUATOR_WRITE_REQUIREMENTS,
 } from "./context-evaluator-capability-profiles.js";
 import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
+import {
+  LOCAL_OPS_WRITE_REQUIREMENTS,
+  PROVIDER_READ_REQUIREMENTS,
+  PROVIDER_WRITE_REQUIREMENTS,
+} from "./provider-ops-capability-profiles.js";
 import {
   fromCommandsRecipesRecipesCommand,
   fromCommandsRecipesCacheCommand,
@@ -198,14 +194,6 @@ import {
   fromCommandsFlowCommand,
   loadFlowRepairSpec,
   loadIntegrateSpec,
-  loadIntegrateQueueSpec,
-  loadIntegrateQueueEnqueueSpec,
-  loadIntegrateQueueListSpec,
-  loadIntegrateQueueClaimSpec,
-  loadIntegrateQueueDoctorSpec,
-  loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
-  loadIntegrateQueueReleaseSpec,
-  loadIntegrateQueueRunNextSpec,
   loadAcrSpec,
   loadAcrSchemaSpec,
   loadAcrGenerateSpec,
@@ -339,10 +327,19 @@ export const PROJECT_COMMANDS = [
     needs: "none",
   }),
   fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
-  declareCommand(workStartSpec, { load: loadWorkStartSpec }),
-  declareCommand(workResumeSpec, { load: loadWorkResumeSpec }),
+  declareSessionCommand(workStartSpec, {
+    load: loadWorkStartSpec,
+    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(workResumeSpec, {
+    load: loadWorkResumeSpec,
+    requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+  }),
   fromCommandsFlowCommand(flowSpec, "runFlow", { needs: "none" }),
-  declareCommand(flowRepairSpec, { load: loadFlowRepairSpec }),
+  declareSessionCommand(flowRepairSpec, {
+    load: loadFlowRepairSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
   fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),
@@ -542,38 +539,45 @@ export const PROJECT_COMMANDS = [
     helpGroup: "Maintenance",
   }),
   declareCommand(syncSpec, { load: loadSyncSpec }),
-  declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),
-  declareCommand(prOpenSpec, { load: loadPrOpenSpec }),
-  declareCommand(prUpdateSpec, { load: loadPrUpdateSpec }),
+  declareSessionCommand(prSpec, {
+    load: loadPrSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(prOpenSpec, {
+    load: loadPrOpenSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(prUpdateSpec, {
+    load: loadPrUpdateSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
   declareSessionCommand(prCheckSpec, {
     load: loadPrCheckSpec,
-    requirements: [
-      "project",
-      "config",
-      "backend.read",
-      "task.read",
-      "git.head",
-      "git.diff",
-      "route.remote",
-      "policy",
-      "approvals",
-      "provider",
-    ],
+    requirements: PROVIDER_READ_REQUIREMENTS,
   }),
-  declareCommand(prConflictReworkSpec, { load: loadPrConflictReworkSpec }),
-  declareCommand(prFlowStatusSpec, { load: loadPrFlowStatusSpec }),
-  declareCommand(prCloseSpec, { load: loadPrCloseSpec }),
-  declareCommand(prCloseSupersededSpec, { load: loadPrCloseSupersededSpec }),
-  declareCommand(prNoteSpec, { load: loadPrNoteSpec }),
-  declareCommand(integrateSpec, { load: loadIntegrateSpec }),
-  declareCommand(integrateQueueSpec, { load: loadIntegrateQueueSpec, needs: "none" }),
-  declareCommand(integrateQueueEnqueueSpec, { load: loadIntegrateQueueEnqueueSpec }),
-  declareCommand(integrateQueueListSpec, { load: loadIntegrateQueueListSpec }),
-  declareCommand(integrateQueueDoctorSpec, { load: loadIntegrateQueueDoctorSpec }),
-  declareCommand(integrateQueueClaimSpec, { load: loadIntegrateQueueClaimSpec }),
-  declareCommand(integrateQueueReleaseSpec, { load: loadIntegrateQueueReleaseSpec }),
-  declareCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
-    load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
+  declareSessionCommand(prConflictReworkSpec, {
+    load: loadPrConflictReworkSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
   }),
-  declareCommand(integrateQueueRunNextSpec, { load: loadIntegrateQueueRunNextSpec }),
+  declareSessionCommand(prFlowStatusSpec, {
+    load: loadPrFlowStatusSpec,
+    requirements: PROVIDER_READ_REQUIREMENTS,
+  }),
+  declareSessionCommand(prCloseSpec, {
+    load: loadPrCloseSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(prCloseSupersededSpec, {
+    load: loadPrCloseSupersededSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(prNoteSpec, {
+    load: loadPrNoteSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(integrateSpec, {
+    load: loadIntegrateSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
+  ...INTEGRATION_QUEUE_COMMANDS,
 ] as const satisfies readonly CommandEntry[];

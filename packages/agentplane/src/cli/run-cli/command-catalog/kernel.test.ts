@@ -12,6 +12,12 @@ import {
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
 import {
+  INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+  INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
+  LOCAL_OPS_WRITE_REQUIREMENTS,
+  PROVIDER_READ_REQUIREMENTS,
+} from "./provider-ops-capability-profiles.js";
+import {
   HERMES_PROJECTION_REQUIREMENTS,
   HERMES_REMOTE_PREPARATION_REQUIREMENTS,
   RUNNER_PREPARATION_REQUIREMENTS,
@@ -202,6 +208,70 @@ describe("CommandSession", () => {
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();
     }
+  });
+
+  it("denies undeclared provider mutation and local-ops network access", async () => {
+    const providerReadResolvers = makeResolvers();
+    const providerReadSession = createCommandSession({
+      command: "pr check",
+      requirements: PROVIDER_READ_REQUIREMENTS,
+      resolvers: providerReadResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(providerReadSession.require("git.mutate", "pr check")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    await expect(providerReadSession.require("task.write", "pr check")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(providerReadResolvers.getCtx).not.toHaveBeenCalled();
+
+    const queueListResolvers = makeResolvers();
+    const queueListSession = createCommandSession({
+      command: "integrate queue list",
+      requirements: INTEGRATION_QUEUE_LIST_REQUIREMENTS,
+      resolvers: queueListResolvers,
+    }) as CommandSession<CommandCapability>;
+    for (const capability of [
+      "backend.write",
+      "task.write",
+      "git.mutate",
+      "route.remote",
+      "provider",
+    ] as const) {
+      await expect(
+        queueListSession.require(capability, "integrate queue list"),
+      ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    }
+    expect(queueListResolvers.getCtx).not.toHaveBeenCalled();
+
+    const queueClaimResolvers = makeResolvers();
+    const queueClaimSession = createCommandSession({
+      command: "integrate queue claim",
+      requirements: INTEGRATION_QUEUE_PROVIDER_READ_REQUIREMENTS,
+      resolvers: queueClaimResolvers,
+    }) as CommandSession<CommandCapability>;
+    for (const capability of ["task.read", "task.write", "git.mutate"] as const) {
+      await expect(
+        queueClaimSession.require(capability, "integrate queue claim"),
+      ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    }
+    expect(queueClaimResolvers.getCtx).not.toHaveBeenCalled();
+
+    const localOpsResolvers = makeResolvers();
+    const localOpsSession = createCommandSession({
+      command: "work start",
+      requirements: LOCAL_OPS_WRITE_REQUIREMENTS,
+      resolvers: localOpsResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(localOpsSession.require("provider", "work start")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    await expect(localOpsSession.require("route.remote", "work start")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(localOpsResolvers.getCtx).not.toHaveBeenCalled();
   });
 
   it("denies cross-phase runner and Hermes capabilities before context preparation", async () => {
