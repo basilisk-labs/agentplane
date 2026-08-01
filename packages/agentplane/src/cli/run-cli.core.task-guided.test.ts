@@ -12,6 +12,7 @@ import {
   configureGitUser,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  withEvaluatorPolicyFixture,
   writeConfig,
 } from "@agentplane/testkit";
 
@@ -123,24 +124,26 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     const evidencePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const ioEvaluator = captureStdIO();
     try {
-      const code = await runCli([
-        "evaluator",
-        "run",
-        taskId,
-        "--provenance",
-        "evaluator_supplied",
-        "--verdict",
-        "pass",
-        "--summary",
-        "Reviewed guided shortcut completion test.",
-        "--finding",
-        "No unresolved findings before task complete.",
-        "--evidence",
-        evidencePath,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
+      const code = await withEvaluatorPolicyFixture(root, () =>
+        runCli([
+          "evaluator",
+          "run",
+          taskId,
+          "--provenance",
+          "evaluator_supplied",
+          "--verdict",
+          "pass",
+          "--summary",
+          "Reviewed guided shortcut completion test.",
+          "--finding",
+          "No unresolved findings before task complete.",
+          "--evidence",
+          evidencePath,
+          "--root",
+          root,
+        ]),
+      );
+      expect(code, ioEvaluator.stderr).toBe(0);
     } finally {
       ioEvaluator.restore();
     }

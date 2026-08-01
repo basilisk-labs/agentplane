@@ -15,6 +15,7 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { withEvaluatorPolicyFixture } from "@agentplane/testkit";
 
 async function createBranchPrTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
@@ -44,23 +45,33 @@ async function createBranchPrTask(root: string): Promise<string> {
 }
 
 async function recordEvaluatorReview(root: string, taskId: string): Promise<void> {
-  await runCliSilent([
-    "evaluator",
-    "run",
-    taskId,
-    "--provenance",
-    "evaluator_supplied",
-    "--verdict",
-    "pass",
-    "--summary",
-    "EVALUATOR quality gate passed for route decision closeout regression.",
-    "--finding",
-    "No unresolved findings for this route decision closeout regression.",
-    "--evidence",
-    `.agentplane/tasks/${taskId}/README.md`,
-    "--root",
-    root,
-  ]);
+  const io = captureStdIO();
+  try {
+    expect(
+      await withEvaluatorPolicyFixture(root, () =>
+        runCli([
+          "evaluator",
+          "run",
+          taskId,
+          "--provenance",
+          "evaluator_supplied",
+          "--verdict",
+          "pass",
+          "--summary",
+          "EVALUATOR quality gate passed for route decision closeout regression.",
+          "--finding",
+          "No unresolved findings for this route decision closeout regression.",
+          "--evidence",
+          `.agentplane/tasks/${taskId}/README.md`,
+          "--root",
+          root,
+        ]),
+      ),
+      io.stderr,
+    ).toBe(0);
+  } finally {
+    io.restore();
+  }
 }
 
 describe("runCli route decision direct closeout", () => {
@@ -344,21 +355,29 @@ describe("runCli route decision direct closeout", () => {
       await recordEvaluatorReview(root, taskId);
       await commitAll(root, "track task artifacts before finish");
 
-      await runCliSilent([
-        "finish",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Verified: direct finish leaves task artifacts for manual cleanup when no close commit is requested.",
-        "--result",
-        "finish without close commit",
-        "--commit",
-        implHash.trim(),
-        "--no-close-commit",
-        "--root",
-        root,
-      ]);
+      const finishIo = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "finish",
+            taskId,
+            "--author",
+            "CODER",
+            "--body",
+            "Verified: direct finish leaves task artifacts for manual cleanup when no close commit is requested.",
+            "--result",
+            "finish without close commit",
+            "--commit",
+            implHash.trim(),
+            "--no-close-commit",
+            "--root",
+            root,
+          ]),
+          finishIo.stderr,
+        ).toBe(0);
+      } finally {
+        finishIo.restore();
+      }
 
       const trackedStatus = await execFileAsync(
         "git",
