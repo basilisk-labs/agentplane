@@ -10,6 +10,14 @@ const DOC_EXT_RE = /\.(md|mdx|txt|adoc|rst)$/i;
 const DOCS_SITE_PATHS = new Set(["website/docusaurus.config.ts", "website/sidebars.ts"]);
 const GENERATED_DOCS_SOCIAL_PREFIX = "website/static/img/social";
 
+function isGeneratedDocsSocialArtifact(filePath: string): boolean {
+  if (filePath === `${GENERATED_DOCS_SOCIAL_PREFIX}/manifest.json`) return true;
+  return (
+    gitPathIsUnderPrefix(filePath, GENERATED_DOCS_SOCIAL_PREFIX) &&
+    filePath.toLowerCase().endsWith(".png")
+  );
+}
+
 function isDocsOnlyPath(filePath: string): boolean {
   return (
     DOC_FILE_RE.test(filePath) ||
@@ -17,7 +25,7 @@ function isDocsOnlyPath(filePath: string): boolean {
     gitPathIsUnderPrefix(filePath, "docs") ||
     gitPathIsUnderPrefix(filePath, "website/docs") ||
     DOCS_SITE_PATHS.has(filePath) ||
-    gitPathIsUnderPrefix(filePath, GENERATED_DOCS_SOCIAL_PREFIX)
+    isGeneratedDocsSocialArtifact(filePath)
   );
 }
 

@@ -23,17 +23,38 @@ function makeDocsContext(stagedPaths: string[]): PolicyContext {
 }
 
 describe("stagedMutationRequiresTaskRule", () => {
-  it("allows canonical documentation-site navigation and generated social artifacts", () => {
+  it("allows canonical documentation-site navigation files", () => {
+    const result = stagedMutationRequiresTaskRule(
+      makeDocsContext(["website/docusaurus.config.ts", "website/sidebars.ts"]),
+    );
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("allows the social-card manifest and nested generated PNG artifacts", () => {
     const result = stagedMutationRequiresTaskRule(
       makeDocsContext([
-        "website/docusaurus.config.ts",
-        "website/sidebars.ts",
         "website/static/img/social/manifest.json",
         "website/static/img/social/docs/user/v0-7-migration.png",
       ]),
     );
 
     expect(result.ok).toBe(true);
+  });
+
+  it("blocks implementation and executable files inside the social-card output subtree", () => {
+    for (const stagedPath of [
+      "website/static/img/social/generate.ts",
+      "website/static/img/social/build.sh",
+      "website/static/img/social/manifest.json.bak",
+    ]) {
+      const result = stagedMutationRequiresTaskRule(makeDocsContext([stagedPath]));
+
+      expect(result.ok, stagedPath).toBe(false);
+      expect(result.errors.map((error) => error.message).join("\n")).toContain(
+        "not allowed to commit implementation-mutating paths",
+      );
+    }
   });
 
   it("still blocks implementation files for a documentation-only task", () => {

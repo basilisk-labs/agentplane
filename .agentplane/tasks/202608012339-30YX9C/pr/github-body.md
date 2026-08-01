@@ -15,19 +15,22 @@ Treat Docusaurus documentation navigation and generated social-card artifacts as
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Docs-site artifacts are correctly scoped and regression-protected.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T23:40:33.795Z
+- Updated: 2026-08-01T23:41:05.580Z
 - Branch: task/202608012339-30YX9C/allow-documentation-tasks-to-commit-canonical-si
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/policy/rules/task-bound-mutation.test.ts   | 49 ++++++++++++++++++++++
+ .../src/policy/rules/task-bound-mutation.ts        |  6 ++-
+ website/static/llms-full.txt                       | 49 +++++++++++++---------
+ 3 files changed, 83 insertions(+), 21 deletions(-)
 ```
 
 </details>
