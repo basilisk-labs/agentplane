@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-RC1DX8-a95cc0c3cc9a4d1533b911c2",
+  "task_id": "202607221908-RC1DX8",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Split or otherwise constrain `task run` preparation and execution so dry-run preparation cannot declare execution-only provider or Git-mutation capabilities, add a capability-set assertion for the dry-run path, and freeze deterministic outputs for the declared and concurrency-sensitive checks before reevaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "`task run` uses one execution-capability profile for both dry-run preparation and execution, so preparation still declares provider and Git-mutation capabilities.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:5ce57bf73cb5619c99de046348b76680ffa4c3a4e53c131c6d7a54e65c3abcdf",
+          "section": "task command catalog and loadTaskRunSpec changes"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/README.md",
+          "sha256": "sha256:4bae318a262165a79bdd1cb611727ea44fa7a5340727dad5c2a48f2d2f0365a8",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "The frozen check evidence contains only a verification summary; verification records, runner history, runtime evidence, and direct-supervision evidence are empty.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:28db51f618c230fa24f0bb1e668519e02eec5fd1e26e7c1bc040fa23e71d5423",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:314985d8b2f9ccf1ee554812777d207c41e11ae7044926e5da59c21039acd5d9",
+          "section": "requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-result.json"
+}

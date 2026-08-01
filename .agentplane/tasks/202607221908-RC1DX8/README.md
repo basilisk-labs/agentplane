@@ -4,7 +4,7 @@ title: "Migrate runner and Hermes command boundaries"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -38,6 +38,32 @@ verification:
   updated_by: "TESTER"
   note: "PASS: runner/Hermes capability profiles, lazy preparation/execution boundaries, typed in-process supervision, and human/JSON/insights compatibility verified; focused 46/46, critical 12/12, typecheck, guards, lifecycle 8/8, architecture, format, lint, and Knip 545/545 passed."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T10:39:45.228Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "253943c427b60c81673f4442fbe7d277cb41a4e9"
+  blueprint_digest: "589c28aae1c6769784dea459601bee9764aafd578985a5dc8c1e5a503a05acd2"
+  evidence_refs:
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-RC1DX8/README.md"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-103847124-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "`task run` uses one execution-capability profile for both dry-run preparation and execution, so preparation still declares provider and Git-mutation capabilities."
+    - "The frozen check evidence contains only a verification summary; verification records, runner history, runtime evidence, and direct-supervision evidence are empty."
 commit:
   hash: "253943c427b60c81673f4442fbe7d277cb41a4e9"
   message: "🧪 RC1DX8 task: cover runner capability phases"
