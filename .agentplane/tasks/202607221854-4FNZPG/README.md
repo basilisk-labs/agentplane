@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -126,7 +126,7 @@ events:
     to: "DOING"
     note: "Implementation rework extended: updated the branch_pr authority fixture to assert the current out-of-band git-common-dir persistence contract. Granting scoped authority no longer mutates the task branch, and the authorized pr.open operation is still restored; the focused file passes 3/3."
 doc_version: 3
-doc_updated_at: "2026-08-01T21:24:32.052Z"
+doc_updated_at: "2026-08-01T21:51:22.605Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
@@ -190,6 +190,10 @@ sections:
     - Observation: bun run release:prepublish reached artifacts:check and failed with spawnSync git ENOBUFS because the branch does not include the independently verified large-repository buffer fix from task 202608012034-W6F4DM.
       Impact: RF-29 cannot claim full release verification until current main is assimilated and the complete gate is rerun.
       Resolution: Merge current main into the RF-29 task branch, refresh the implementation record, and rerun the full migration/install/release verification matrix.
+
+    - Observation: The installed-package matrix passed eight tarball scenarios: fresh direct/branch_pr, active v0.6.24 upgrades, active v0.6.26 upgrades, and exact WORKFLOW v1 rollback in both workflow modes. The complete release:prepublish gate also passed on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab.
+      Impact: Migration and installed-package behavior is proven across both supported starting release lines and workflow modes; task, authority, context, Git, workflow, runner, evaluator, package, and release-critical contracts remain coherent.
+      Resolution: Keep the matrix in package:install-smoke and require release:prepublish for RC closure; the dormant fixture drift found by the full gate was aligned with current projection identity, evaluator policy, scoped authority, and git-common-dir persistence contracts.
 extensions:
   workflow_route_baseline:
     start_head_sha: "14185e94deadff666a1544413ba5ae728dcacdfb"
@@ -269,3 +273,7 @@ DecisionContextRef:
 - Observation: bun run release:prepublish reached artifacts:check and failed with spawnSync git ENOBUFS because the branch does not include the independently verified large-repository buffer fix from task 202608012034-W6F4DM.
   Impact: RF-29 cannot claim full release verification until current main is assimilated and the complete gate is rerun.
   Resolution: Merge current main into the RF-29 task branch, refresh the implementation record, and rerun the full migration/install/release verification matrix.
+
+- Observation: The installed-package matrix passed eight tarball scenarios: fresh direct/branch_pr, active v0.6.24 upgrades, active v0.6.26 upgrades, and exact WORKFLOW v1 rollback in both workflow modes. The complete release:prepublish gate also passed on implementation c958ab897b9a81d619be4adfdb4bfbaf4ba446ab.
+  Impact: Migration and installed-package behavior is proven across both supported starting release lines and workflow modes; task, authority, context, Git, workflow, runner, evaluator, package, and release-critical contracts remain coherent.
+  Resolution: Keep the matrix in package:install-smoke and require release:prepublish for RC closure; the dormant fixture drift found by the full gate was aligned with current projection identity, evaluator policy, scoped authority, and git-common-dir persistence contracts.
