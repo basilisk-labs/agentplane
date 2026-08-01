@@ -7,12 +7,14 @@ import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 
 const SCRIPT_NAME = "check-agentplane-artifacts.mjs";
 const HISTORICAL_VOLATILE_CUTOFF_EPOCH_SECONDS = 1_777_052_921;
+const COMMAND_MAX_BUFFER_BYTES = 64 * 1024 * 1024;
 
 function git(args, opts = {}) {
   return execFileSync("git", args, {
     cwd: opts.cwd ?? process.cwd(),
     encoding: "utf8",
     stdio: opts.stdio ?? ["ignore", "pipe", "pipe"],
+    maxBuffer: COMMAND_MAX_BUFFER_BYTES,
   });
 }
 
@@ -58,9 +60,13 @@ function listArchiveFiles() {
       {
         cwd: process.cwd(),
         stdio: ["ignore", "pipe", "pipe"],
+        maxBuffer: COMMAND_MAX_BUFFER_BYTES,
       },
     );
-    return execFileSync("tar", ["-tf", tarPath], { encoding: "utf8" })
+    return execFileSync("tar", ["-tf", tarPath], {
+      encoding: "utf8",
+      maxBuffer: COMMAND_MAX_BUFFER_BYTES,
+    })
       .split(/\r?\n/u)
       .filter(Boolean)
       .map((filePath) => normalize(filePath));
