@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
     - "No blocking finding in the implementation diff or close-tail metadata; the close commit records the verified implementation hash and mirrors the incident registry deterministically."
     - "The generated incident entry documents the reproduced stale help snapshot and does not change runtime behavior."
 commit:
-  hash: "8fc6ef287988ccec9dd88f7bfbf1094371d00b51"
-  message: "♻️ TZTE5V task: migrate project config command sessions"
+  hash: "607cc2753f554bef9fbb367068da22ea79a09963"
+  message: "🧪 TZTE5V task: refresh review evidence"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -103,8 +106,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-08-01T00:27:28.360Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T00:24:32.622Z"
+doc_updated_at: "2026-08-01T00:27:28.361Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give project/config/help/docs commands minimal typed session capabilities and typed results with centralized compatibility renderers."
 sections:
@@ -174,6 +184,9 @@ sections:
       Impact: The CLI now supplies formal context for this family without loading task or provider state, reducing agent context overhead while preserving output compatibility.
       Resolution: Keep this vertical slice and continue remaining command families in dedicated tasks.
 extensions:
+  implementation_commit:
+    hash: "9c86014e8a496a0522ef2476cb169ad4e85ae7ef"
+    message: "♻️ TZTE5V task: pre-merge closure"
   workflow_route_baseline:
     start_head_sha: "0dca3d627916e8c36ecf46bcbbb523a3b0013317"
     version: 1
