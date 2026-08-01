@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.preparation_cache_benchmark",
+  "task_id": "202607221854-87892M",
+  "measured_at": "2026-08-01T16:36:55.952Z",
+  "environment": {
+    "platform": "darwin-arm64",
+    "macos": "26.5.1",
+    "node": "26.5.1",
+    "bun": "1.3.6"
+  },
+  "method": {
+    "mode": "external-process paired alternating cache-disabled/warm-cache after one warmup",
+    "command": "node packages/agentplane/dist/cli.js task next-action 202607221854-87892M --json --root <task-worktree>",
+    "scenario": "branch_pr task with a dirty implementation worktree and complete AgentWorkOrder preparation",
+    "baseline": "The same candidate build with AGENTPLANE_PREPARATION_CACHE=0.",
+    "candidate": "An exact persistent Git snapshot cache under the Git common directory.",
+    "functional_comparison": "Exact stdout equality for the cold miss, first warm run, and every paired run.",
+    "candidate_key": [
+      "repository root",
+      "HEAD commit",
+      "SHA-256 of exact Git index bytes",
+      "porcelain status digest",
+      "dirty-path identity and content hashes",
+      "semantic exclusions"
+    ],
+    "candidate_safety": [
+      "versioned entries",
+      "stored-value digest",
+      "corruption and version mismatch fallback",
+      "32 MiB entry limit",
+      "eight entries per node",
+      "cross-process write lock",
+      "post-capture key consistency check"
+    ]
+  },
+  "threshold": {
+    "warm_median_improvement_percent_gte": 5,
+    "cold_miss_overhead_percent_lte": 10,
+    "functional_output_must_be_unchanged": true,
+    "reason": "A persistent cache with invalidation, corruption, locking, and retention machinery must save at least five percent end to end; smaller gains do not justify the new state surface."
+  },
+  "runs": {
+    "pairs": 25,
+    "baseline_cold_ms": 976.703917,
+    "candidate_cold_miss_ms": 1022.281291,
+    "candidate_first_warm_ms": 826.19725,
+    "baseline_ms": [
+      839.92975,
+      844.19925,
+      847.904334,
+      847.784209,
+      846.870542,
+      880.454416,
+      847.260209,
+      857.210542,
+      853.953584,
+      855.682042,
+      852.746167,
+      862.73825,
+      857.28675,
+      853.377208,
+      855.386584,
+      853.289917,
+      874.895666,
+      856.432,
+      855.516584,
+      859.110084,
+      861.365,
+      859.372333,
+      859.023667,
+      865.625833,
+      897.06225
+    ],
+    "warm_ms": [
+      817.3645,
+      802.435875,
+      805.254167,
+      809.964542,
+      818.579584,
+      844.872791,
+      822.212583,
+      897.536833,
+      815.889708,
+      813.924,
+      817.993833,
+      839.588917,
+      817.347542,
+      819.09475,
+      831.693583,
+      820.595958,
+      821.746,
+      851.244125,
+      825.889667,
+      827.15225,
+      827.683917,
+      821.98475,
+      823.129875,
+      847.511167,
+      828.764542
+    ]
+  },
+  "comparison": {
+    "baseline_median_ms": 855.682042,
+    "warm_median_ms": 821.98475,
+    "baseline_mean_ms": 857.779087,
+    "warm_mean_ms": 826.778218,
+    "warm_ratio": 0.960619,
+    "warm_improvement_percent": 3.938062,
+    "cold_miss_overhead_percent": 4.666447,
+    "exact_stdout": true,
+    "threshold_passed": false,
+    "verdict": "no_go"
+  },
+  "command_local_task_snapshot_experiment": {
+    "method": "Fifteen alternating external-process pairs against the RF-26a binary, with persistent cache disabled in both builds.",
+    "baseline_median_ms": 860.239625,
+    "candidate_median_ms": 850.077,
+    "improvement_percent": 1.181371,
+    "exact_stdout": true,
+    "verdict": "rejected_below_threshold"
+  },
+  "candidate_selection": [
+    {
+      "node": "git_snapshot",
+      "result": "rejected",
+      "reason": "The exact live pre-key repeats most of the expensive untracked-file scan, leaving only a 3.94 percent end-to-end warm gain."
+    },
+    {
+      "node": "task_context_assembly",
+      "result": "rejected",
+      "reason": "Complete invalidation requires the source task plus every dependency and backend projection; the measured node cost does not cover that state surface."
+    },
+    {
+      "node": "task_backend_read",
+      "result": "rejected",
+      "reason": "Branch snapshot discovery remains the dominant pre-key cost, while command-local coalescing improved the full command by only 1.18 percent."
+    },
+    {
+      "node": "remote_provider_state",
+      "result": "rejected",
+      "reason": "TTL reuse can serve stale hosted authority. Route and side-effect truth remain live even though the provider node is expensive."
+    },
+    {
+      "node": "policy_authority_decision",
+      "result": "not_eligible",
+      "reason": "The node is semantic authority state and requires live revalidation."
+    }
+  ],
+  "decision": {
+    "persistent_cache_merged": false,
+    "prototype_retained": false,
+    "reason": "The measured benefit fails the declared complexity threshold, while the cold path becomes slower and the cache adds a new persistent concurrency surface.",
+    "recommended_follow_up": "Benchmark parallel observation of independent Git root, HEAD, status, and index inputs without persistent state."
+  },
+  "evidence": {
+    "benchmark.baseline": "runs.baseline_ms and runs.baseline_cold_ms",
+    "benchmark.method": "method",
+    "benchmark.runs": "runs",
+    "benchmark.threshold": "threshold",
+    "benchmark.comparison": "comparison",
+    "benchmark.verdict": "no_go; prototype removed",
+    "benchmark.quality": "pending evaluator gate",
+    "benchmark.commit": "pending artifact commit"
+  }
+}
