@@ -23,12 +23,14 @@ Fix the measured evaluator timeout by excluding the active task's generated cont
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T04:33:32.635Z
+- Updated: 2026-08-01T04:34:08.720Z
 - Branch: task/202608010431-WWQP4B/bound-evaluator-review-packets-to-implementation
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/evaluator/evaluator-diff-evidence.ts  |  8 ++--
+ .../evaluator/evaluator-run.command.test.ts        | 45 ++++++++++++++++++----
+ 2 files changed, 42 insertions(+), 11 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Bound evaluator review packets to implementation evidence"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -47,7 +47,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-01T04:33:32.535Z"
+doc_updated_at: "2026-08-01T04:37:29.834Z"
 doc_updated_by: "CODER"
 description: "Fix the measured evaluator timeout by excluding the active task's generated control artifacts from actual_diff while preserving the task document, blueprint, observed checks, policy, and complete implementation delta as separately digest-verified evidence."
 sections:
@@ -77,7 +77,10 @@ sections:
     - Revert the evaluator diff-filter commit.
     - Re-run focused evaluator review tests and guards.
     - Existing frozen work orders remain valid because their digests and files are immutable.
-  Findings: ""
+  Findings: |-
+    - Observation: Two independent read-only Claude evaluator attempts against the frozen YD5J89 packet produced no terminal output within 20 minutes. The exact actual_diff was 6,043 lines and 277,075 bytes; 1,737 lines and 82,889 bytes were generated artifacts under the active task subtree that duplicated separately frozen task, blueprint, and verification evidence.
+      Impact: Provider substitution alone did not unblock the quality gate, and repeated review artifacts increased evaluator latency and token pressure without adding implementation evidence.
+      Resolution: Exclude only the active task artifact subtree from actual_diff while preserving the full implementation delta and artifacts of other tasks. The measured YD5J89 surface becomes 4,306 lines and 194,186 bytes, a 28.7% line and 29.9% byte reduction.
 extensions:
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
@@ -123,3 +126,7 @@ Fix the measured evaluator timeout by excluding the active task's generated cont
 - Existing frozen work orders remain valid because their digests and files are immutable.
 
 ## Findings
+
+- Observation: Two independent read-only Claude evaluator attempts against the frozen YD5J89 packet produced no terminal output within 20 minutes. The exact actual_diff was 6,043 lines and 277,075 bytes; 1,737 lines and 82,889 bytes were generated artifacts under the active task subtree that duplicated separately frozen task, blueprint, and verification evidence.
+  Impact: Provider substitution alone did not unblock the quality gate, and repeated review artifacts increased evaluator latency and token pressure without adding implementation evidence.
+  Resolution: Exclude only the active task artifact subtree from actual_diff while preserving the full implementation delta and artifacts of other tasks. The measured YD5J89 surface becomes 4,306 lines and 194,186 bytes, a 28.7% line and 29.9% byte reduction.

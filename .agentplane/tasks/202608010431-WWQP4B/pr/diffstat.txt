@@ -1,0 +1,3 @@
+ .../commands/evaluator/evaluator-diff-evidence.ts  |  8 ++--
+ .../evaluator/evaluator-run.command.test.ts        | 45 ++++++++++++++++++----
+ 2 files changed, 42 insertions(+), 11 deletions(-)
