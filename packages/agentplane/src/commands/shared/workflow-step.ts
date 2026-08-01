@@ -96,7 +96,6 @@ export type WorkflowOperationParams = {
   "runner.follow":
     | { mode: "reclaim"; taskId: string; author: string; reason: string }
     | { mode: "status"; taskId: string; runId: string | null }
-    | { mode: "verify"; taskId: string }
     | { mode: "run"; taskId: string };
   "task.artifacts.commit": { taskId: string };
   "task.branch.start": { taskId: string; author: string; body: string };

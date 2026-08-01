@@ -66,10 +66,17 @@ export type DirectTaskCloseoutOutcome =
 
 function verificationEligibleRoute(decision: TaskRouteDecision): boolean {
   const step = decision.workflowStep;
+  if (
+    step.kind === "agent_episode" &&
+    step.id === "agent.direct_verification" &&
+    step.episode.purpose === "verification"
+  ) {
+    return true;
+  }
   return (
     step.kind === "cli_operation" &&
     step.operation.id === "runner.follow" &&
-    (step.operation.params.mode === "run" || step.operation.params.mode === "verify")
+    step.operation.params.mode === "run"
   );
 }
 

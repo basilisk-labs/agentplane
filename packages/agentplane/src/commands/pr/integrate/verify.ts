@@ -61,6 +61,15 @@ export async function runVerifyCommands(opts: {
       content: result.output,
     });
     if (result.code !== 0) {
+      const visibleTail =
+        result.output.length > 32 * 1024
+          ? `[verify output truncated; showing final 32768 characters]\n${result.output.slice(
+              -32 * 1024,
+            )}`
+          : result.output;
+      if (visibleTail.trim()) {
+        output.line(visibleTail.trimEnd(), "stderr");
+      }
       throw new CliError({
         exitCode: exitCodeForError("E_IO"),
         code: "E_IO",

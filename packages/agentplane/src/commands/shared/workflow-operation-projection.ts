@@ -97,9 +97,6 @@ function operationArgv(operation: WorkflowOperation): string[] {
           ...(params.runId ? ["--run-id", params.runId] : []),
         ];
       }
-      if (params.mode === "verify") {
-        return ["agentplane", "task", "verify-show", params.taskId];
-      }
       return ["agentplane", "task", "run", params.taskId];
     }
     case "task.artifacts.commit": {

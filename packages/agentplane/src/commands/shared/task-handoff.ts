@@ -300,7 +300,7 @@ export function buildRunnerHintCommands(opts: {
   }
   return {
     next_action: "none",
-    next_command: `agentplane task verify-show ${opts.task_id}`,
+    next_command: null,
     resume_command: statusCommand,
     retry_command: runCommand,
   };

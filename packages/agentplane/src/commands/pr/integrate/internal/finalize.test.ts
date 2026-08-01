@@ -144,6 +144,7 @@ describe("pr/integrate/internal/finalize", () => {
       "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
       " src/app.ts | 1 +\n",
     );
+    expect(mocks.gitDiffStat).toHaveBeenCalledWith("/repo", "cafebabe", "deadbeef");
     expect(mocks.writeFinishedTasks).toHaveBeenCalledTimes(1);
     expect(mocks.writeFinishedTasks).toHaveBeenCalledWith(
       expect.objectContaining({

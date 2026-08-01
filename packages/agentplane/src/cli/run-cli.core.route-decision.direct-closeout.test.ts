@@ -1,5 +1,6 @@
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { writeFile } from "node:fs/promises";
+import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe } from "vitest";
 
@@ -203,6 +204,134 @@ describe("runCli route decision direct closeout", () => {
       expect(parsed.operator_guidance.runner_context).toMatchObject({
         runner_is_required: true,
         runner_is_allowed_now: true,
+      });
+    } finally {
+      nextIo.restore();
+    }
+  });
+
+  it("stops for verification evidence after a successful runner instead of looping verify-show", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await commitAll(root, "seed direct workflow config");
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise the direct terminal-runner verification gate.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: create a direct task whose runner reaches terminal success.",
+      "--root",
+      root,
+    ]);
+    await commitAll(root, "track direct task state before terminal runner simulation");
+    const policyDir = path.join(root, ".agentplane", "policy");
+    await mkdir(policyDir, { recursive: true });
+    for (const policy of ["security.must.md", "dod.core.md", "dod.code.md", "workflow.direct.md"]) {
+      await writeFile(path.join(policyDir, policy), `# ${policy}\n`, "utf8");
+    }
+    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
+
+    const statusIo = captureStdIO();
+    let statePath = "";
+    try {
+      expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
+      const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
+      statePath = payload.paths.state;
+    } finally {
+      statusIo.restore();
+    }
+    const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+    const fingerprint = state.state_fingerprint as {
+      precondition_fingerprint: Parameters<
+        typeof evaluateStateFingerprintPrecondition
+      >[0]["expected"];
+      precondition_policy: Parameters<typeof evaluateStateFingerprintPrecondition>[0]["policy"];
+    };
+    const completedAt = new Date().toISOString();
+    const expected = fingerprint.precondition_fingerprint;
+    state.state_fingerprint = {
+      ...fingerprint,
+      outcome: "accepted",
+      state_before: expected,
+      state_after: expected,
+      precondition: evaluateStateFingerprintPrecondition({
+        expected,
+        current: expected,
+        policy: fingerprint.precondition_policy,
+      }),
+      effect_applied: true,
+      post_state_reason_code: null,
+    };
+    state.result = {
+      status: "success",
+      exit_code: 0,
+      started_at: state.created_at,
+      ended_at: completedAt,
+    };
+    state.updated_at = completedAt;
+    await writeFile(
+      statePath,
+      `${JSON.stringify({ ...state, status: "success" }, null, 2)}\n`,
+      "utf8",
+    );
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code, nextIo.stderr).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        workflow_step: {
+          kind: string;
+          id: string;
+          episode?: { purpose: string; role: string };
+        };
+        next_action: { code: string; command: string | null; summary: string };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          exactArgv: string[] | null;
+        };
+        operator_guidance: { canExecuteNow: boolean; safeCommand: string | null };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "review_direct_verification",
+        command: null,
+      });
+      expect(parsed.next_action.summary).toContain(`agentplane verify ${taskId}`);
+      expect(parsed.next_action.summary).not.toContain("verify-show");
+      expect(parsed.workflow_step).toMatchObject({
+        kind: "agent_episode",
+        id: "agent.direct_verification",
+        episode: { purpose: "verification", role: "TESTER" },
+      });
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "stop",
+        safeToMutate: false,
+        exactArgv: null,
+      });
+      expect(parsed.operator_guidance).toMatchObject({
+        canExecuteNow: false,
+        safeCommand: null,
       });
     } finally {
       nextIo.restore();
