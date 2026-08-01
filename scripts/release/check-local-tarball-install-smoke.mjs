@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
+import { runInstalledMigrationMatrix } from "../lib/installed-migration-matrix.mjs";
 
 const PACKAGES = ["core", "recipes", "agentplane"];
 
@@ -366,6 +367,15 @@ const main = defineScript({
           fields: ["code", "message", "context"],
         },
         installedJsonErrorContract,
+      );
+
+      const migrationMatrix = runInstalledMigrationMatrix({
+        agentplane,
+        repoRoot: process.cwd(),
+        tempRoot: path.join(tempRoot, "migration-matrix"),
+      });
+      process.stdout.write(
+        `installed migration matrix OK (scenarios=${migrationMatrix.coverage.scenarioCount})\n`,
       );
 
       process.stdout.write(`local tarball install smoke OK (${taskId})\n`);
