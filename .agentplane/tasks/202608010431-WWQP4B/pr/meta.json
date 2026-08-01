@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:fc1d7ee12ed1b2c8387dbb952d8d34ebd9e2192614f3f41e4284f34fab915ff0",
   "pr_number": 4719,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4719",
+  "pre_merge_closure": {
+    "basis_commit": "7f77c56b3e4de624d1b7ab9bc4ad9cb74d537cff",
+    "branch": "task/202608010431-WWQP4B/bound-evaluator-review-packets-to-implementation",
+    "pr_number": 4719,
+    "recorded_at": "2026-08-01T07:52:46.310Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608010431-WWQP4B",

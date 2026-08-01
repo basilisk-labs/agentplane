@@ -1,10 +1,11 @@
 ---
 id: "202608010431-WWQP4B"
 title: "Bound evaluator review packets to implementation evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +34,33 @@ verification:
   updated_by: "TESTER"
   note: "Verified bounded evaluator evidence repair at a6b5051e7: focused evaluator suite 31/31, critical CLI 77/77, typecheck, schemas, guards/trust ratchet, lifecycle 8/8, Knip, lint, format, and diff checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T07:52:03.614Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "a6b5051e73fdbbcd59fce21ee4be58833775e0f5"
+  blueprint_digest: "636a8dcbfd32efc90e7ff96d659bce2e3bf154b9bd72a551263b5492de4c1abf"
+  evidence_refs:
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/README.md"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608010431-WWQP4B/quality/20260801-075112549-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation matches the approved bounded-diff contract: it excludes only the active task artifact subtree while retaining source, binary, rename, and unrelated-task changes."
 commit:
-  hash: "a6b5051e73fdbbcd59fce21ee4be58833775e0f5"
-  message: "♻️ WWQP4B task: bound evaluator implementation evidence"
+  hash: "7f77c56b3e4de624d1b7ab9bc4ad9cb74d537cff"
+  message: "🧾 WWQP4B task: preserve prepared quality review"
 comments:
   -
     author: "CODER"
@@ -43,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: active-task generated artifacts are excluded from actual_diff while implementation and other-task deltas remain. YD5J89 measurement dropped from 6,043 lines/277,075 bytes to 4,306 lines/194,186 bytes; focused and full local gates passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -64,8 +92,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified bounded evaluator evidence repair at a6b5051e7: focused evaluator suite 31/31, critical CLI 77/77, typecheck, schemas, guards/trust ratchet, lifecycle 8/8, Knip, lint, format, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-08-01T07:52:46.259Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-01T04:39:46.046Z"
+doc_updated_at: "2026-08-01T07:52:46.259Z"
 doc_updated_by: "CODER"
 description: "Fix the measured evaluator timeout by excluding the active task's generated control artifacts from actual_diff while preserving the task document, blueprint, observed checks, policy, and complete implementation delta as separately digest-verified evidence."
 sections:
@@ -134,6 +169,9 @@ sections:
       Impact: Evaluator receives 28.7% fewer diff lines and 29.9% fewer bytes without losing separately digest-verified task, blueprint, observed-check, or policy evidence.
       Resolution: Exclude only the active task artifact subtree from actual_diff; keep all other branch delta and frozen evidence contracts unchanged.
 extensions:
+  implementation_commit:
+    hash: "a6b5051e73fdbbcd59fce21ee4be58833775e0f5"
+    message: "♻️ WWQP4B task: bound evaluator implementation evidence"
   workflow_route_baseline:
     start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
     version: 1
