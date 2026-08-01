@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:25f0395ce0fdbbe715751432b214b85d6d11072961b374292b8fb2425f4ba0f6",
+  "implementation_sha": "9ef73324a40ab1a66bd831eb2c31d2402c4fdb11",
+  "kind": "task_verification_record",
+  "note": "Authority rework verified on 9ef73324a: catalog/registry/evaluator 40/40, command-session 5/5, critical CLI 12/12 (77 tests), TS7 typecheck, guards, architecture, lint, hotspot, docs freshness.",
+  "recorded_at": "2026-08-01T02:14:11.126Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

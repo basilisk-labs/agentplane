@@ -1,7 +1,9 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { generateAcr, validateAcrTarget, writeAcrFile } from "../acr/acr.command.js";
-import { runEvaluatorExecute } from "../evaluator/evaluator.command.js";
-import { loadCommandContext } from "../shared/task-backend.js";
+import { executeEvaluatorCommand } from "../evaluator/evaluator.command.js";
+import { createEvaluatorArtifactPreparationPort } from "../evaluator/evaluator-artifact-port.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { runContextAssimilationSupervisor } from "./assimilation-supervisor.js";
 import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
 import { cmdContextMigrate } from "./migrate.js";
@@ -44,6 +46,17 @@ export {
 } from "./context-groups.js";
 export { runContextInit } from "./context-init-runner.js";
 
+const output = createCliEmitter();
+
+export type ContextTaskCommandDeps = {
+  getCommandContext: (ctx: CommandCtx, command: string) => Promise<CommandContext>;
+};
+
+const DEFAULT_CONTEXT_TASK_COMMAND_DEPS: ContextTaskCommandDeps = {
+  getCommandContext: async (ctx) =>
+    await loadCommandContext({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null }),
+};
+
 export async function runContextIngest(_ctx: CommandCtx, p: ContextIngestParsed): Promise<number> {
   return await cmdContextIngest({
     cwd: _ctx.cwd,
@@ -63,75 +76,98 @@ export async function runContextMigrate(
   });
 }
 
-export async function runContextLearnFiles(
-  _ctx: CommandCtx,
-  p: { sources: string[]; dryRun: boolean },
-): Promise<number> {
-  return await cmdContextIngest({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: {
-      sources: p.sources,
-      mode: "sources",
-      dryRun: p.dryRun,
-      indexOnly: false,
-    },
-  });
+export function makeRunContextLearnFilesHandler(
+  deps: ContextTaskCommandDeps,
+): (ctx: CommandCtx, parsed: { sources: string[]; dryRun: boolean }) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context learn files");
+    return await cmdContextIngest({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed: {
+        sources: parsed.sources,
+        mode: "sources",
+        dryRun: parsed.dryRun,
+        indexOnly: false,
+      },
+    });
+  };
 }
 
-export async function runContextLearnChanges(
-  _ctx: CommandCtx,
-  p: { dryRun: boolean },
-): Promise<number> {
-  return await cmdContextIngest({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: {
-      sources: [],
-      mode: "changed",
-      dryRun: p.dryRun,
-      indexOnly: false,
-    },
-  });
+export const runContextLearnFiles = makeRunContextLearnFilesHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
+
+export function makeRunContextLearnChangesHandler(
+  deps: ContextTaskCommandDeps,
+): (ctx: CommandCtx, parsed: { dryRun: boolean }) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context learn changes");
+    return await cmdContextIngest({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed: {
+        sources: [],
+        mode: "changed",
+        dryRun: parsed.dryRun,
+        indexOnly: false,
+      },
+    });
+  };
 }
 
-export async function runContextLearnTasks(
-  _ctx: CommandCtx,
-  p: {
-    status: string[];
-    tag: string[];
-    task: string[];
-    since: string;
-    until: string;
-    afterTask: string;
-    limit: string;
-    batchSize: string;
-    batchBytes: string;
-    dryRun: boolean;
-    format: "text" | "json";
-  },
-): Promise<number> {
-  return await cmdContextHarvestTasks({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: {
-      status: p.status,
-      tag: p.tag,
-      task: p.task,
-      since: p.since,
-      until: p.until,
-      afterTask: p.afterTask,
-      limit: p.limit,
-      writeProposals: !p.dryRun,
-      createExtractionTasks: p.task.length === 1,
-      batchSize: p.batchSize,
-      batchBytes: p.batchBytes,
-      promote: false,
-      dryRun: p.dryRun,
-      format: p.format,
-    },
-  });
+export const runContextLearnChanges = makeRunContextLearnChangesHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
+
+type ContextLearnTasksParsed = {
+  status: string[];
+  tag: string[];
+  task: string[];
+  since: string;
+  until: string;
+  afterTask: string;
+  limit: string;
+  batchSize: string;
+  batchBytes: string;
+  dryRun: boolean;
+  format: "text" | "json";
+};
+
+export function makeRunContextLearnTasksHandler(
+  deps: ContextTaskCommandDeps,
+): (ctx: CommandCtx, parsed: ContextLearnTasksParsed) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context learn tasks");
+    return await cmdContextHarvestTasks({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed: {
+        status: parsed.status,
+        tag: parsed.tag,
+        task: parsed.task,
+        since: parsed.since,
+        until: parsed.until,
+        afterTask: parsed.afterTask,
+        limit: parsed.limit,
+        writeProposals: !parsed.dryRun,
+        createExtractionTasks: parsed.task.length === 1,
+        batchSize: parsed.batchSize,
+        batchBytes: parsed.batchBytes,
+        promote: false,
+        dryRun: parsed.dryRun,
+        format: parsed.format,
+      },
+    });
+  };
 }
+
+export const runContextLearnTasks = makeRunContextLearnTasksHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
 
 export async function runContextReindex(
   _ctx: CommandCtx,
@@ -190,64 +226,89 @@ export async function runContextDoctor(_ctx: CommandCtx, p: { fix: boolean }): P
   });
 }
 
-export async function runContextVerifyTask(
-  _ctx: CommandCtx,
-  p: { taskId: string },
-): Promise<number> {
-  return await cmdContextVerifyTask({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: p,
-  });
+export function makeRunContextVerifyTaskHandler(
+  deps: ContextTaskCommandDeps,
+  verifyTask: typeof cmdContextVerifyTask = cmdContextVerifyTask,
+): (ctx: CommandCtx, parsed: { taskId: string }) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context verify-task");
+    return await verifyTask({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed,
+    });
+  };
 }
 
-export async function runContextFinalizeTask(
-  _ctx: CommandCtx,
-  p: { taskId: string },
-): Promise<number> {
-  return await cmdContextFinalizeTask({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: p,
-  });
+export const runContextVerifyTask = makeRunContextVerifyTaskHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
+
+export function makeRunContextFinalizeTaskHandler(
+  deps: ContextTaskCommandDeps,
+  finalizeTask: typeof cmdContextFinalizeTask = cmdContextFinalizeTask,
+): (ctx: CommandCtx, parsed: { taskId: string }) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context finalize-task");
+    return await finalizeTask({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed,
+    });
+  };
 }
 
-export async function runContextSuperviseTask(
-  _ctx: CommandCtx,
-  p: {
-    taskId: string;
-    extractionFile: string;
-    smokeQuery: string;
-    evaluator: string;
-    json: boolean;
-  },
-): Promise<number> {
-  const command = await loadCommandContext({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride ?? null,
-  });
+export const runContextFinalizeTask = makeRunContextFinalizeTaskHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
+
+export type ContextSuperviseTaskParsed = {
+  taskId: string;
+  extractionFile: string;
+  smokeQuery: string;
+  evaluator: string;
+  json: boolean;
+};
+
+export async function superviseContextTask(
+  ctx: CommandCtx,
+  parsed: ContextSuperviseTaskParsed,
+  deps: ContextTaskCommandDeps,
+) {
+  const command = await deps.getCommandContext(ctx, "context supervise-task");
   const result = await runContextAssimilationSupervisor(
     {
       command,
-      ctx: _ctx,
-      extractionFile: p.extractionFile,
-      smokeQuery: p.smokeQuery,
-      taskId: p.taskId,
+      ctx,
+      extractionFile: parsed.extractionFile,
+      smokeQuery: parsed.smokeQuery,
+      taskId: parsed.taskId,
     },
     {
-      runEvaluator: async () =>
-        await runEvaluatorExecute(_ctx, {
-          taskId: p.taskId,
-          evaluator: p.evaluator,
-          replacement: false,
-          json: p.json,
-        }),
+      runEvaluator: async () => {
+        await executeEvaluatorCommand(
+          ctx,
+          {
+            taskId: parsed.taskId,
+            evaluator: parsed.evaluator,
+            replacement: false,
+            json: true,
+          },
+          {
+            getCommandContext: () => Promise.resolve(command),
+            getEvaluatorArtifactPort: () =>
+              Promise.resolve(createEvaluatorArtifactPreparationPort(command)),
+          },
+        );
+      },
       createAcr: async () => {
         const generated = await generateAcr({
           ctx: command,
-          cwd: _ctx.cwd,
-          rootOverride: _ctx.rootOverride,
-          taskId: p.taskId,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride,
+          taskId: parsed.taskId,
           workCommit: "HEAD",
           write: true,
           refresh: true,
@@ -263,7 +324,7 @@ export async function runContextSuperviseTask(
       checkAcr: async () =>
         await validateAcrTarget({
           ctx: command,
-          target: p.taskId,
+          target: parsed.taskId,
           mode: "local",
           strict: true,
           allowManualOverride: false,
@@ -274,17 +335,29 @@ export async function runContextSuperviseTask(
         }),
     },
   );
-  if (p.json) process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
-  else {
-    process.stdout.write(
-      `context supervise-task ${p.taskId}: ${result.status} phase=${result.phase} ` +
-        `episode=${result.episode_path}` +
-        (result.rework_work_order ? ` rework=${result.rework_work_order}` : "") +
-        "\n",
-    );
-  }
-  return 0;
+  return result;
 }
+
+export function makeRunContextSuperviseTaskHandler(
+  deps: ContextTaskCommandDeps,
+): (ctx: CommandCtx, parsed: ContextSuperviseTaskParsed) => Promise<number> {
+  return async (ctx, parsed) => {
+    const result = await superviseContextTask(ctx, parsed, deps);
+    if (parsed.json) output.json(result);
+    else {
+      output.line(
+        `context supervise-task ${parsed.taskId}: ${result.status} phase=${result.phase} ` +
+          `episode=${result.episode_path}` +
+          (result.rework_work_order ? ` rework=${result.rework_work_order}` : ""),
+      );
+    }
+    return 0;
+  };
+}
+
+export const runContextSuperviseTask = makeRunContextSuperviseTaskHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
 
 export async function runContextWikiNew(
   _ctx: CommandCtx,
@@ -332,16 +405,23 @@ export async function runContextWikiReport(
   return await cmdContextWikiReport({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
 }
 
-export async function runContextHarvestTasks(
-  _ctx: CommandCtx,
-  p: ContextHarvestTasksParsed,
-): Promise<number> {
-  return await cmdContextHarvestTasks({
-    cwd: _ctx.cwd,
-    rootOverride: _ctx.rootOverride,
-    parsed: p,
-  });
+export function makeRunContextHarvestTasksHandler(
+  deps: ContextTaskCommandDeps,
+): (ctx: CommandCtx, parsed: ContextHarvestTasksParsed) => Promise<number> {
+  return async (ctx, parsed) => {
+    const command = await deps.getCommandContext(ctx, "context harvest tasks");
+    return await cmdContextHarvestTasks({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: command.resolvedProject.gitRoot,
+      parsed,
+    });
+  };
 }
+
+export const runContextHarvestTasks = makeRunContextHarvestTasksHandler(
+  DEFAULT_CONTEXT_TASK_COMMAND_DEPS,
+);
 
 export async function runContextGraphSummary(
   _ctx: CommandCtx,

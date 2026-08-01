@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { createCliEmitter } from "../../cli/output.js";
 import { computeWikiReportSourceDigest, WIKI_REPORT_STATE_PATH } from "../../context/integrity.js";
 import { isRecord } from "../../shared/guards.js";
 import { fileExists, parseJsonlLines, readText } from "./context-utils.js";
@@ -15,6 +16,8 @@ import {
   type WikiReportRow,
 } from "./wiki-report-links.js";
 import { collectWikiFiles, normalizeExistingWikiTarget } from "./wiki-lint.js";
+
+const output = createCliEmitter();
 
 type WikiReportBuildResult = {
   changed: string[];
@@ -342,15 +345,30 @@ async function buildMaximumAssimilationWikiReports(
   return { changed, linkRows, orphanRows };
 }
 
-export async function cmdContextWikiReport(opts: {
+export type ContextWikiReportResult = Awaited<
+  ReturnType<typeof buildMaximumAssimilationWikiReports>
+>;
+
+export async function generateContextWikiReport(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { path: string };
-}): Promise<number> {
+}): Promise<ContextWikiReportResult> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const target = await normalizeExistingWikiTarget(root, opts.parsed.path, "wiki report");
-  const result = await buildMaximumAssimilationWikiReports(root, target);
-  process.stdout.write(`context wiki report: updated ${result.changed.length} artifact(s)\n`);
-  for (const rel of result.changed) process.stdout.write(`- ${rel}\n`);
+  return await buildMaximumAssimilationWikiReports(root, target);
+}
+
+function renderContextWikiReportResult(result: ContextWikiReportResult): void {
+  output.lines([
+    `context wiki report: updated ${result.changed.length} artifact(s)`,
+    ...result.changed.map((relative) => `- ${relative}`),
+  ]);
+}
+
+export async function cmdContextWikiReport(
+  opts: Parameters<typeof generateContextWikiReport>[0],
+): Promise<number> {
+  renderContextWikiReportResult(await generateContextWikiReport(opts));
   return 0;
 }

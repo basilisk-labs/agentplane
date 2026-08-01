@@ -1,0 +1,29 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run guards:check",
+    "bun run schemas:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-01T09:39:51.504Z",
+    "updated_by": "CODER",
+    "note": "Deterministic evaluator-boundary checks passed at c9f9423d36b7."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221908-YD5J89/verification/20260801093951504-893338dfb120657f.json",
+      "sha256": "sha256:3cdbc40f7278f1f1e59c6cde08c7f2b20e59bdb2ef6298bc81424821218249da"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221908-YD5J89-efba83ab1a27a13351ea59bd",
+  "task_id": "202607221908-YD5J89",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Attach deterministic check results produced at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 for the focused evaluator authority tests and all declared verification commands, then repeat semantic evaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen deterministic verification covers cef1b58cb88c, but the evaluated SHA is c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 and includes a later evaluator authority-profile change; no executed checks for that final change are present.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:ffaae8fcf3b4bee989ae383a6acdbc73f5950c6aca3e9250d50e263f0e84c445",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:37bee03a16afd11a88e6e1ed8e0bb099fd6f337e582f8a65b0f3afd9c6f5fb28",
+          "section": "packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator-capability-profiles.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-YD5J89/quality/20260801-093450428-recovery-context/evaluator-result.json"
+}

@@ -9,8 +9,10 @@ import { cmdContextVerifyTask } from "./verify-task.js";
 import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
 import { cmdContextWikiReport } from "./wiki-reports.js";
 import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
-type FinalizeInput = {
+export type FinalizeInput = {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   parsed: { taskId: string };
@@ -64,6 +66,7 @@ const DEFAULT_DEPENDENCIES: FinalizeDependencies = {
   },
   verifyTask: async (input) => {
     await cmdContextVerifyTask({
+      ctx: input.ctx,
       cwd: input.cwd,
       rootOverride: input.rootOverride,
       parsed: input.parsed,

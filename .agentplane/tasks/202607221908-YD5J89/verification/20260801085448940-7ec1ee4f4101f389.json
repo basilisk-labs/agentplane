@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli/command-catalog/kernel.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: 5 test files and 48 tests passed; concurrent registry coverage observes two invocation-local read sessions, two mutation sessions, four distinct CommandContext values, and two distinct evaluator artifact destinations.\nScope: migrated context/evaluator in-process results, capability denials, real no-record packet behavior, and concurrent session isolation.\n\nCommand: bun run guards:check\nResult: pass\nEvidence: shared guards OK; trust-boundary ratchet OK with the single reviewed baseline violation unchanged.\nScope: source trust boundaries and rendered-command orchestration guard.\n\nCommand: bun run schemas:check\nResult: pass\nEvidence: schemas OK.\nScope: generated schema fixtures and compatibility surfaces.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical-cli chunks passed, 77 tests total.\nScope: critical CLI behavior, exit codes, Git/path isolation, trust-boundary regressions, and agent-efficiency contracts.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript 7 build check exited 0.\nScope: workspace type and declaration compatibility.\n\nCommand: git diff --check HEAD^ HEAD -- packages/agentplane/src/cli/run-cli/registry.run.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts\nResult: pass\nEvidence: no whitespace errors in the semantic implementation diff.\nScope: invocation-local registry implementation and regression test.",
+  "digest": "sha256:7ec1ee4f4101f38937be99c219dadb6b49fbea409d34d13007b7095729a4f858",
+  "implementation_sha": "2a1eaadae735a42a28df85c62bcab114a97da3b2",
+  "kind": "task_verification_record",
+  "note": "Verified invocation-local command sessions on 2a1eaadae735: concurrent evaluator/context dispatch 48/48 focused tests, TypeScript 7 typecheck, guards, schemas, and all 12 critical CLI chunks passed.",
+  "recorded_at": "2026-08-01T08:54:48.940Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

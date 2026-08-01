@@ -11,10 +11,18 @@ import {
   PROJECT_CONFIG_REQUIREMENTS,
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
+import {
+  CONTEXT_PROJECT_REQUIREMENTS,
+  CONTEXT_TASK_READ_REQUIREMENTS,
+  EVALUATOR_PREPARE_REQUIREMENTS,
+  EVALUATOR_READ_REQUIREMENTS,
+  EVALUATOR_WRITE_REQUIREMENTS,
+} from "./context-evaluator-capability-profiles.js";
 
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
 const config = { marker: "config" };
+const evaluatorArtifactPort = { prepare: vi.fn() };
 const zeroHandler = () => Promise.resolve(0);
 
 function makeResolvers() {
@@ -22,6 +30,7 @@ function makeResolvers() {
     getCtx: vi.fn(() => Promise.resolve(commandContext)),
     getResolvedProject: vi.fn(() => Promise.resolve(project)),
     getLoadedConfig: vi.fn(() => Promise.resolve(config)),
+    getEvaluatorArtifactPort: vi.fn(() => Promise.resolve(evaluatorArtifactPort as never)),
     getHelpJsonForDocs: vi.fn(() => []),
   };
 }
@@ -56,8 +65,11 @@ describe("CommandSession", () => {
       resolvers,
     });
 
-    await expect(session.require("route.remote", "pr check")).resolves.toBe(commandContext);
-    await expect(session.require("provider", "pr check")).resolves.toBe(commandContext);
+    const routeContext = await session.require("route.remote", "pr check");
+    const providerContext = await session.require("provider", "pr check");
+    expect(routeContext).toBe(providerContext);
+    expect(routeContext).not.toBe(commandContext);
+    expect(Reflect.get(routeContext, "marker")).toBe("command-context");
 
     expect(resolvers.getResolvedProject).toHaveBeenCalledTimes(1);
     expect(resolvers.getLoadedConfig).toHaveBeenCalledTimes(1);
@@ -185,5 +197,213 @@ describe("CommandSession", () => {
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();
     }
+  });
+
+  it("denies context mutation and provider execution from read-only context/evaluator sessions", async () => {
+    const projectResolvers = makeResolvers();
+    const projectSession = createCommandSession({
+      command: "context search",
+      requirements: CONTEXT_PROJECT_REQUIREMENTS,
+      resolvers: projectResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(projectSession.require("task.write", "context search")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(projectResolvers.getCtx).not.toHaveBeenCalled();
+
+    const taskReadResolvers = makeResolvers();
+    const taskReadSession = createCommandSession({
+      command: "context verify-task",
+      requirements: CONTEXT_TASK_READ_REQUIREMENTS,
+      resolvers: taskReadResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(
+      taskReadSession.require("task.write", "context verify-task"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(taskReadResolvers.getCtx).not.toHaveBeenCalled();
+
+    for (const requirements of [EVALUATOR_READ_REQUIREMENTS, EVALUATOR_WRITE_REQUIREMENTS]) {
+      const resolvers = makeResolvers();
+      const session = createCommandSession({
+        command: "evaluator prepare",
+        requirements,
+        resolvers,
+      }) as CommandSession<CommandCapability>;
+      await expect(session.require("provider", "evaluator prepare")).rejects.toMatchObject({
+        code: "E_INTERNAL",
+      });
+      expect(resolvers.getCtx).not.toHaveBeenCalled();
+    }
+
+    const evaluatorReadResolvers = makeResolvers();
+    const evaluatorReadSession = createCommandSession({
+      command: "evaluator list",
+      requirements: EVALUATOR_READ_REQUIREMENTS,
+      resolvers: evaluatorReadResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(
+      evaluatorReadSession.require("evaluator.artifacts.write", "evaluator list"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(evaluatorReadResolvers.getCtx).not.toHaveBeenCalled();
+
+    const evaluatorPrepareSession = createCommandSession({
+      command: "evaluator prepare",
+      requirements: EVALUATOR_PREPARE_REQUIREMENTS,
+      resolvers: makeResolvers(),
+    });
+    expect(evaluatorPrepareSession.requirements).not.toContain("task.write");
+    expect(evaluatorPrepareSession.requirements).not.toContain("git.mutate");
+    const port = await evaluatorPrepareSession.require(
+      "evaluator.artifacts.write",
+      "evaluator prepare",
+    );
+    expect(port).toBe(evaluatorArtifactPort);
+    // @ts-expect-error the artifact port does not expose the underlying Git service
+    expect(port.git).toBeUndefined();
+    // @ts-expect-error the artifact port does not expose the task backend
+    expect(port.taskBackend).toBeUndefined();
+  });
+
+  it("denies backend and Git mutation through a context returned to a read-only evaluator", async () => {
+    const writeTask = vi.fn(() => Promise.resolve());
+    const stage = vi.fn(() => Promise.resolve());
+    const getTask = vi.fn(() => Promise.resolve(null));
+    const headCommit = vi.fn(() => Promise.resolve("abc123"));
+    const rawContext = {
+      resolvedProject: { gitRoot: "/repo" },
+      config: {},
+      taskBackend: {
+        id: "local",
+        capabilities: {},
+        getTask,
+        listTasks: vi.fn(() => Promise.resolve([])),
+        writeTask,
+      },
+      backendId: "local",
+      backendConfigPath: "/repo/.agentplane/config.json",
+      git: {
+        gitRoot: "/repo",
+        headCommit,
+        stage,
+      },
+      memo: {},
+    };
+    const resolvers = {
+      ...makeResolvers(),
+      getCtx: vi.fn(() => Promise.resolve(rawContext as never)),
+    };
+    const session = createCommandSession({
+      command: "evaluator inspect",
+      requirements: EVALUATOR_READ_REQUIREMENTS,
+      resolvers,
+    });
+    const context = await session.require("task.read", "evaluator inspect");
+
+    await expect(context.taskBackend.getTask("TASK-1")).resolves.toBeNull();
+    await expect(context.git.headCommit()).resolves.toBe("abc123");
+    await expect(
+      Promise.resolve().then(() => context.taskBackend.writeTask({ id: "TASK-1" } as never)),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      Promise.resolve().then(() => context.git.stage(["README.md"])),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(writeTask).not.toHaveBeenCalled();
+    expect(stage).not.toHaveBeenCalled();
+    expect(
+      session
+        .trace()
+        .filter((event) => event.status === "denied")
+        .map((event) => event.capability),
+    ).toEqual(["task.write", "git.mutate"]);
+  });
+
+  it("keeps backend, task, and Git authority asymmetric", async () => {
+    const writeTask = vi.fn(() => Promise.resolve());
+    const sync = vi.fn(() => Promise.resolve());
+    const headCommit = vi.fn(() => Promise.resolve("abc123"));
+    const stage = vi.fn(() => Promise.resolve());
+    const rawContext = {
+      resolvedProject: { gitRoot: "/repo" },
+      config: {},
+      taskBackend: {
+        id: "local",
+        capabilities: {},
+        getTask: vi.fn(() => Promise.resolve(null)),
+        listTasks: vi.fn(() => Promise.resolve([])),
+        writeTask,
+        sync,
+      },
+      backendId: "local",
+      backendConfigPath: "/repo/.agentplane/config.json",
+      git: { gitRoot: "/repo", headCommit, stage },
+      memo: {},
+    };
+    const makeScopedSession = (requirements: readonly CommandCapability[]) =>
+      createCommandSession({
+        command: "asymmetric capability test",
+        requirements,
+        resolvers: {
+          ...makeResolvers(),
+          getCtx: vi.fn(() => Promise.resolve(rawContext as never)),
+        },
+      }) as CommandSession<CommandCapability>;
+
+    const backendWriteSession = makeScopedSession(["project", "config", "backend.write"]);
+    const backendContext = await backendWriteSession.require(
+      "backend.write",
+      "asymmetric backend.write",
+    );
+    await expect(
+      Promise.resolve().then(() => backendContext.taskBackend.writeTask({ id: "TASK-1" } as never)),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const taskWriteSession = makeScopedSession(["project", "config", "task.write"]);
+    const taskContext = await taskWriteSession.require("task.write", "asymmetric task.write");
+    await expect(
+      Promise.resolve().then(() =>
+        taskContext.taskBackend.sync?.({
+          direction: "pull",
+          conflict: "fail",
+          quiet: true,
+          confirm: false,
+        }),
+      ),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const gitMutationSession = makeScopedSession(["project", "config", "git.mutate"]);
+    const gitMutationContext = await gitMutationSession.require(
+      "git.mutate",
+      "asymmetric git.mutate",
+    );
+    await expect(
+      Promise.resolve().then(() => gitMutationContext.git.headCommit()),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const gitHeadSession = makeScopedSession(["project", "config", "git.head"]);
+    const gitHeadContext = await gitHeadSession.require("git.head", "asymmetric git.head");
+    await expect(
+      Promise.resolve().then(() => gitHeadContext.git.stage(["README.md"])),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    expect(writeTask).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+    expect(headCommit).not.toHaveBeenCalled();
+    expect(stage).not.toHaveBeenCalled();
+    expect(backendWriteSession.trace().at(-1)).toMatchObject({
+      capability: "task.write",
+      status: "denied",
+    });
+    expect(taskWriteSession.trace().at(-1)).toMatchObject({
+      capability: "backend.write",
+      status: "denied",
+    });
+    expect(gitMutationSession.trace().at(-1)).toMatchObject({
+      capability: "git.head",
+      status: "denied",
+    });
+    expect(gitHeadSession.trace().at(-1)).toMatchObject({
+      capability: "git.mutate",
+      status: "denied",
+    });
   });
 });

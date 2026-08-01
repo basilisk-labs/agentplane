@@ -1,4 +1,15 @@
 import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import type {
+  ContextProjectSession,
+  ContextTaskReadSession,
+  ContextTaskWriteSession,
+  EvaluatorExecuteSession,
+  EvaluatorPrepareSession,
+  EvaluatorWriteSession,
+} from "../command-catalog/context-evaluator-capability-profiles.js";
+import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
+import type { CommandHandler } from "../../spec/spec.js";
+import type * as ContextCommandModule from "../../../commands/context/context.command.js";
 
 type PrCheckSession = CommandSession<
   | "project"
@@ -93,9 +104,54 @@ export const loadBlueprintValidateSpec = () =>
 export const loadBlueprintScaffoldSpec = () =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintScaffold);
 
-export const fromCommandsEvaluatorCommand = commandModule(
-  () => import("../../../commands/evaluator/evaluator.command.js"),
-);
+export const loadEvaluatorSpec = (_session: NoContextSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorGroup);
+export const loadEvaluatorListSpec = (_session: NoContextSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorList);
+export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorShow);
+export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+    m.makeRunEvaluatorPrepareHandler({
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
+    }),
+  );
+export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+    m.makeRunEvaluatorApplyHandler({
+      getCommandContext: async (_ctx, command) => {
+        await session.require("evaluator.artifacts.write", command);
+        return await session.require("task.write", command);
+      },
+    }),
+  );
+export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+    m.makeRunEvaluatorExecuteHandler({
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
+      getCommandContext: async (_ctx, command) => {
+        await session.require("task.write", command);
+        return await session.require("provider", command);
+      },
+    }),
+  );
+export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+    m.makeRunEvaluatorRunPrepareHandler({
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
+    }),
+  );
+export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
+  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
+    m.makeRunEvaluatorRunHandler({
+      getEvaluatorArtifactPort: (_ctx, command) =>
+        session.require("evaluator.artifacts.write", command),
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
 
 export const fromCommandsBlueprintsCommand = commandModule(
   () => import("../../../commands/blueprints/blueprints.command.js"),
@@ -177,9 +233,154 @@ export const loadBackendSpec = (deps: RunDeps) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendHandler(deps.getCtx),
   );
-export const fromCommandsContextCommand = commandModule(
-  () => import("../../../commands/context/context.command.js"),
+type ContextCommandExport = Extract<keyof typeof ContextCommandModule, `runContext${string}`>;
+
+async function loadContextNoContextHandler(
+  exportName: ContextCommandExport,
+): Promise<CommandHandler<unknown>> {
+  const module = await import("../../../commands/context/context.command.js");
+  return module[exportName] as CommandHandler<unknown>;
+}
+
+async function loadContextProjectHandler(
+  session: ContextProjectSession,
+  exportName: ContextCommandExport,
+  command: string,
+): Promise<CommandHandler<unknown>> {
+  const handler = await loadContextNoContextHandler(exportName);
+  return async (ctx, parsed) => {
+    const project = await session.require("project", command);
+    return await handler({ ...ctx, rootOverride: project.gitRoot }, parsed);
+  };
+}
+
+export const loadContextGroupSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextGroup");
+export const loadContextInitSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextInit");
+export const loadContextLearnGroupSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextLearnGroup");
+export const loadContextWikiGroupSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextWikiGroup");
+export const loadContextHarvestGroupSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextHarvestGroup");
+export const loadContextGraphGroupSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextGraphGroup");
+export const loadContextCapabilityGroupSpec = (_session: NoContextSession) =>
+  loadContextNoContextHandler("runContextCapabilityGroup");
+
+const projectContextLoader =
+  (exportName: ContextCommandExport, command: string) => (session: ContextProjectSession) =>
+    loadContextProjectHandler(session, exportName, command);
+export const loadContextMigrateSpec = projectContextLoader("runContextMigrate", "context migrate");
+export const loadContextCheckSpec = projectContextLoader("runContextCheck", "context check");
+export const loadContextReindexSpec = projectContextLoader("runContextReindex", "context reindex");
+export const loadContextSearchSpec = projectContextLoader("runContextSearch", "context search");
+export const loadContextDashboardSpec = projectContextLoader(
+  "runContextDashboard",
+  "context dashboard",
 );
+export const loadContextShowSpec = projectContextLoader("runContextShow", "context show");
+export const loadContextWikiNewSpec = projectContextLoader("runContextWikiNew", "context wiki new");
+export const loadContextWikiLintSpec = projectContextLoader(
+  "runContextWikiLint",
+  "context wiki lint",
+);
+export const loadContextWikiExplainSpec = projectContextLoader(
+  "runContextWikiExplain",
+  "context wiki explain",
+);
+export const loadContextWikiLinkSpec = projectContextLoader(
+  "runContextWikiLink",
+  "context wiki link",
+);
+export const loadContextWikiIndexSpec = projectContextLoader(
+  "runContextWikiIndex",
+  "context wiki index",
+);
+export const loadContextWikiReportSpec = projectContextLoader(
+  "runContextWikiReport",
+  "context wiki report",
+);
+export const loadContextDoctorSpec = projectContextLoader("runContextDoctor", "context doctor");
+export const loadContextFinalizeTaskSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextFinalizeTaskHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
+export const loadContextVerifyTaskSpec = (session: ContextTaskReadSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextVerifyTaskHandler({
+      getCommandContext: (_ctx, command) => session.require("task.read", command),
+    }),
+  );
+export const loadContextGraphSummarySpec = projectContextLoader(
+  "runContextGraphSummary",
+  "context graph summary",
+);
+export const loadContextGraphShowSpec = projectContextLoader(
+  "runContextGraphShow",
+  "context graph show",
+);
+export const loadContextGraphNeighborsSpec = projectContextLoader(
+  "runContextGraphNeighbors",
+  "context graph neighbors",
+);
+export const loadContextGraphValidateSpec = projectContextLoader(
+  "runContextGraphValidate",
+  "context graph validate",
+);
+export const loadContextGraphExportSpec = projectContextLoader(
+  "runContextGraphExport",
+  "context graph export",
+);
+export const loadContextExtractionApplySpec = projectContextLoader(
+  "runContextExtractionApply",
+  "context extraction apply",
+);
+export const loadContextCapabilityValidateSpec = projectContextLoader(
+  "runContextCapabilityValidate",
+  "context capability validate",
+);
+export const loadContextCapabilitySearchSpec = projectContextLoader(
+  "runContextCapabilitySearch",
+  "context capability search",
+);
+export const loadContextCapabilityDiscoverSpec = projectContextLoader(
+  "runContextCapabilityDiscover",
+  "context capability discover",
+);
+export const loadContextLearnFilesSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextLearnFilesHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
+export const loadContextLearnChangesSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextLearnChangesHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
+export const loadContextLearnTasksSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextLearnTasksHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
+export const loadContextHarvestTasksSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextHarvestTasksHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
+export const loadContextSuperviseTaskSpec = (session: ContextTaskWriteSession) =>
+  import("../../../commands/context/context.command.js").then((m) =>
+    m.makeRunContextSuperviseTaskHandler({
+      getCommandContext: (_ctx, command) => session.require("task.write", command),
+    }),
+  );
 export const loadBackendSyncSpec = (deps: RunDeps) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendSyncHandler(deps.getCtx),
@@ -198,9 +399,9 @@ export const loadBackendMigrateCanonicalStateSpec = (deps: RunDeps) =>
   );
 export const loadSyncSpec = (deps: RunDeps) =>
   import("../../../commands/sync.command.js").then((m) => m.makeRunSyncHandler(deps.getCtx));
-export const loadContextIngestSpec = (deps: RunDeps) =>
+export const loadContextIngestSpec = (session: ContextTaskWriteSession) =>
   import("../../../commands/context/ingest.command.js").then((m) =>
-    m.makeRunContextIngestHandler(deps.getCtx),
+    m.makeRunContextIngestHandler((command) => session.require("task.write", command)),
   );
 export const loadPrSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx));

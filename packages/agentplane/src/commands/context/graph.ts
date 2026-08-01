@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/restrict-template-expressions, @typescript-eslint/prefer-optional-chain */
 import path from "node:path";
 
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { parseJsonlLines, fileExists, readText } from "./context-utils.js";
 
@@ -40,6 +41,14 @@ const ALLOWED_EDGE_RELATIONS = new Set([
   "related_to",
 ]);
 
+const output = createCliEmitter();
+
+export type ContextGraphSummaryResult = {
+  entities: number;
+  edges: number;
+  provenance: number;
+};
+
 function asString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -52,11 +61,11 @@ function isAllowedStatus(
   );
 }
 
-export async function cmdContextGraphSummary(opts: {
+export async function summarizeContextGraph(opts: {
   cwd: string;
   parsed: Record<string, never>;
   rootOverride?: string;
-}): Promise<number> {
+}): Promise<ContextGraphSummaryResult> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const entities = await countRows(
     path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
@@ -65,17 +74,14 @@ export async function cmdContextGraphSummary(opts: {
   const provenance = await countRows(
     path.join(root, ".agentplane/context/derived/graph/provenance_edges.jsonl"),
   );
-  process.stdout.write(
-    `context graph summary: entities=${entities} edges=${edges} provenance=${provenance}\n`,
-  );
-  return 0;
+  return { entities, edges, provenance };
 }
 
-export async function cmdContextGraphShow(opts: {
+export async function showContextGraphEntity(opts: {
   cwd: string;
   parsed: { id: string };
   rootOverride?: string;
-}): Promise<number> {
+}): Promise<Record<string, unknown>> {
   const id = opts.parsed.id;
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const nodes = path.join(root, ".agentplane/context/derived/graph/entities.jsonl");
@@ -83,15 +89,14 @@ export async function cmdContextGraphShow(opts: {
   const found = rows.find((row) => String((row as { id?: unknown }).id || "") === id);
   if (!found)
     throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: `entity not found: ${id}` });
-  process.stdout.write(`${JSON.stringify(found, null, 2)}\n`);
-  return 0;
+  return found;
 }
 
-export async function cmdContextGraphNeighbors(opts: {
+export async function listContextGraphNeighbors(opts: {
   cwd: string;
   parsed: { id: string };
   rootOverride?: string;
-}): Promise<number> {
+}): Promise<Record<string, unknown>[]> {
   const id = opts.parsed.id;
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const edges = await loadJsonlRows(
@@ -102,15 +107,20 @@ export async function cmdContextGraphNeighbors(opts: {
       String((row as { from?: unknown }).from || "") === id ||
       String((row as { to?: unknown }).to || "") === id,
   );
-  process.stdout.write(`${JSON.stringify(adjacent, null, 2)}\n`);
-  return 0;
+  return adjacent;
 }
 
-export async function cmdContextGraphExport(opts: {
+export type ContextGraphExportResult = {
+  format: "json" | "jsonl" | "csv";
+  entities: Record<string, unknown>[];
+  edges: Record<string, unknown>[];
+};
+
+export async function exportContextGraph(opts: {
   cwd: string;
   parsed: { format: "json" | "jsonl" | "csv" };
   rootOverride?: string;
-}): Promise<number> {
+}): Promise<ContextGraphExportResult> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const entities = await loadJsonlRows(
     path.join(root, ".agentplane/context/derived/graph/entities.jsonl"),
@@ -118,36 +128,14 @@ export async function cmdContextGraphExport(opts: {
   const edges = await loadJsonlRows(
     path.join(root, ".agentplane/context/derived/graph/edges.jsonl"),
   );
-  const payload = { entities, edges };
-  if (opts.parsed.format === "jsonl") {
-    const out = [
-      ...entities.map((row) => JSON.stringify(row)),
-      ...edges.map((row) => JSON.stringify(row)),
-    ].join("\n");
-    process.stdout.write(`${out}\n`);
-    return 0;
-  }
-  if (opts.parsed.format === "csv") {
-    process.stdout.write("kind,id,from,to,relation\n");
-    for (const entity of entities) {
-      process.stdout.write(`entity,${entity.id ?? ""},,,\n`);
-    }
-    for (const edge of edges) {
-      process.stdout.write(
-        `edge,${edge.id ?? ""},${edge.from ?? ""},${edge.to ?? ""},${edge.relation ?? ""}\n`,
-      );
-    }
-    return 0;
-  }
-  process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
-  return 0;
+  return { format: opts.parsed.format, entities, edges };
 }
 
-export async function cmdContextGraphValidate(opts: {
+export async function validateContextGraph(opts: {
   cwd: string;
   parsed: Record<string, never>;
   rootOverride?: string;
-}): Promise<number> {
+}): Promise<{ valid: true }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const errors: string[] = [];
   const entities = await loadJsonlRows(
@@ -236,7 +224,64 @@ export async function cmdContextGraphValidate(opts: {
       ].join("\n"),
     });
   }
-  process.stdout.write("context graph valid\n");
+  return { valid: true };
+}
+
+export async function cmdContextGraphSummary(
+  opts: Parameters<typeof summarizeContextGraph>[0],
+): Promise<number> {
+  const result = await summarizeContextGraph(opts);
+  output.line(
+    `context graph summary: entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
+  );
+  return 0;
+}
+
+export async function cmdContextGraphShow(
+  opts: Parameters<typeof showContextGraphEntity>[0],
+): Promise<number> {
+  output.json(await showContextGraphEntity(opts));
+  return 0;
+}
+
+export async function cmdContextGraphNeighbors(
+  opts: Parameters<typeof listContextGraphNeighbors>[0],
+): Promise<number> {
+  output.json(await listContextGraphNeighbors(opts));
+  return 0;
+}
+
+export async function cmdContextGraphExport(
+  opts: Parameters<typeof exportContextGraph>[0],
+): Promise<number> {
+  const result = await exportContextGraph(opts);
+  if (result.format === "jsonl") {
+    const rows = [
+      ...result.entities.map((row) => JSON.stringify(row)),
+      ...result.edges.map((row) => JSON.stringify(row)),
+    ];
+    if (rows.length === 0) output.line("");
+    else output.lines(rows);
+  } else if (result.format === "csv") {
+    output.lines([
+      "kind,id,from,to,relation",
+      ...result.entities.map((entity) => `entity,${entity.id ?? ""},,,`),
+      ...result.edges.map(
+        (edge) =>
+          `edge,${edge.id ?? ""},${edge.from ?? ""},${edge.to ?? ""},${edge.relation ?? ""}`,
+      ),
+    ]);
+  } else {
+    output.json({ entities: result.entities, edges: result.edges });
+  }
+  return 0;
+}
+
+export async function cmdContextGraphValidate(
+  opts: Parameters<typeof validateContextGraph>[0],
+): Promise<number> {
+  await validateContextGraph(opts);
+  output.line("context graph valid");
   return 0;
 }
 

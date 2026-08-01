@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T09:40:47.826Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "No contract-breaking defect was identified; frozen verification covers typed in-process results, read-only mutation denial, artifact-only authority, and concurrent session isolation at the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/README.md",
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-YD5J89/verification/20260801093951504-893338dfb120657f.json",
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-094011203-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The recorded deterministic commands are assumed to have run against the clean evaluated SHA stated in the immutable verification record."
+  ],
+  "residual_risks": []
+}

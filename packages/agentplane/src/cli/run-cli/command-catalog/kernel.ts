@@ -16,6 +16,7 @@ export type {
   CommandCapability,
   CommandPreparationTrace,
   CommandSession,
+  CommandSessionResolvers,
 } from "./command-session.js";
 
 export type RunDeps = Pick<
@@ -35,6 +36,7 @@ export type CommandSurface = "user" | "advanced" | "framework" | "internal";
 export type CommandEntry = {
   spec: CommandSpec<unknown>;
   load: (session: CommandSession<CommandCapability>) => Promise<CommandHandler<unknown>>;
+  selectSession?: (parsed: unknown) => CommandSessionSelection;
   needs: CommandNeeds;
   requirements: readonly CommandCapability[];
   preparationNodes: readonly CommandPreparationNode[];
@@ -43,6 +45,11 @@ export type CommandEntry = {
   surface: CommandSurface;
   helpGroup?: string;
   invocation?: string;
+};
+
+type CommandSessionSelection = {
+  requirements: readonly CommandCapability[];
+  load: (session: CommandSession<CommandCapability>) => Promise<CommandHandler<unknown>>;
 };
 
 export type CommandMeta = {
@@ -197,6 +204,64 @@ export function declareSessionCommand<
     needs: coarseNeedsForDispatch(dispatch),
     requirements: [...declaration.requirements],
     preparationNodes: preparationNodesForRequirements(declaration.requirements),
+    compatibility: null,
+    dispatch,
+    surface: declaration.surface ?? "user",
+    helpGroup: declaration.helpGroup,
+    invocation: declaration.invocation,
+  };
+}
+
+export function declareConditionalSessionCommand<
+  TParsed,
+  const TDefaultRequirements extends readonly CommandCapability[],
+  const TSelectedRequirements extends readonly CommandCapability[],
+>(
+  spec: CommandSpec<TParsed>,
+  declaration: Omit<CommandMeta, "needs"> & {
+    default: {
+      requirements: TDefaultRequirements;
+      load: (
+        session: CommandSession<TDefaultRequirements[number]>,
+      ) => Promise<CommandHandler<TParsed>>;
+    };
+    selected: {
+      when: (parsed: TParsed) => boolean;
+      requirements: TSelectedRequirements;
+      load: (
+        session: CommandSession<TSelectedRequirements[number]>,
+      ) => Promise<CommandHandler<TParsed>>;
+    };
+  },
+): CommandEntry {
+  validateCommandRequirements(declaration.default.requirements);
+  validateCommandRequirements(declaration.selected.requirements);
+  const dispatchRequirements = [
+    ...new Set([...declaration.default.requirements, ...declaration.selected.requirements]),
+  ];
+  const dispatch = normalizeDispatchRequirements(dispatchRequirements);
+  const defaultSelection: CommandSessionSelection = {
+    requirements: [...declaration.default.requirements],
+    load: (session) =>
+      declaration.default.load(session as CommandSession<TDefaultRequirements[number]>) as Promise<
+        CommandHandler<unknown>
+      >,
+  };
+  const selectedSelection: CommandSessionSelection = {
+    requirements: [...declaration.selected.requirements],
+    load: (session) =>
+      declaration.selected.load(
+        session as CommandSession<TSelectedRequirements[number]>,
+      ) as Promise<CommandHandler<unknown>>,
+  };
+  return {
+    spec: spec as CommandSpec<unknown>,
+    load: defaultSelection.load,
+    selectSession: (parsed) =>
+      declaration.selected.when(parsed as TParsed) ? selectedSelection : defaultSelection,
+    needs: coarseNeedsForDispatch(dispatch),
+    requirements: [...declaration.default.requirements],
+    preparationNodes: preparationNodesForRequirements(declaration.default.requirements),
     compatibility: null,
     dispatch,
     surface: declaration.surface ?? "user",

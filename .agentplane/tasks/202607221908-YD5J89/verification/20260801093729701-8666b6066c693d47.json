@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test command-catalog.test.ts kernel.test.ts registry.run.test.ts evaluator-execute.command.test.ts evaluator-prepare.command.test.ts; bun run guards:check; bun run schemas:check; bun run test:critical; bun run typecheck. Result: focused 36/36 passed; shared guards and trust ratchet passed; schemas OK; all 12 critical CLI chunks passed; TypeScript build passed. Evidence: current implementation SHA c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557 and terminal results from 2026-08-01. Scope: evaluator read/write/execute capability composition, denied cross-capability mutations, concurrent CommandSession isolation, evaluator execution lifecycle, schemas, critical CLI, and type safety.",
+  "digest": "sha256:8666b6066c693d47ce23b090dbab9d828a19f4c87e820ebdba38385d52f672a1",
+  "implementation_sha": "c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557",
+  "kind": "task_verification_record",
+  "note": "Reverified evaluator capability boundaries at c9f9423d36b7 after hosted contract rework.",
+  "recorded_at": "2026-08-01T09:37:29.701Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by CODER",
+  "verifier": "CODER"
+}

@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { access, stat, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { infoMessage, warnMessage } from "../cli/output.js";
+import { createCliEmitter, infoMessage, warnMessage } from "../cli/output.js";
 import { ensureRuntimeSqliteGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import {
@@ -72,6 +72,15 @@ type ReindexReceipt = {
   unchanged: number;
   rows: number;
 };
+
+export type ContextReindexResult = {
+  sqlite_path: string;
+  receipt: ReindexReceipt;
+  metadata: ProjectionIndex["metadata"];
+  warnings: string[];
+};
+
+const output = createCliEmitter();
 
 function defaultWorkspaceHash(root: string): string {
   return `sha256:${createHash("sha256").update(root).digest("hex").slice(0, 16)}`;
@@ -184,34 +193,27 @@ async function removeProjectionFiles(sqlitePath: string): Promise<void> {
   );
 }
 
-function writeReceipt(
-  sqlitePath: string,
-  receipt: ReindexReceipt,
-  metadata: ProjectionIndex["metadata"],
-): void {
-  process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
-  process.stdout.write(
+export function renderContextReindexResult(result: ContextReindexResult): void {
+  for (const warning of result.warnings) output.line(warnMessage(warning));
+  output.lines([
+    infoMessage(`reindex prepared at ${result.sqlite_path}`),
     infoMessage(
-      `reindex_receipt strategy=${receipt.strategy} reason=${receipt.reason} added=${receipt.added} changed=${receipt.changed} removed=${receipt.removed} unchanged=${receipt.unchanged}`,
-    ) + "\n",
-  );
-  process.stdout.write(
-    infoMessage(
-      `rows=${receipt.rows} files=${receipt.added + receipt.changed + receipt.unchanged}\n`,
+      `reindex_receipt strategy=${result.receipt.strategy} reason=${result.receipt.reason} added=${result.receipt.added} changed=${result.receipt.changed} removed=${result.receipt.removed} unchanged=${result.receipt.unchanged}`,
     ),
-  );
-  process.stdout.write(
     infoMessage(
-      `projection_metrics source_bytes=${metadata.source_bytes} search_text_bytes=${metadata.search_text_bytes} preview_text_bytes=${metadata.preview_text_bytes} elapsed_ms=${metadata.projection_elapsed_ms}`,
-    ) + "\n",
-  );
+      `rows=${result.receipt.rows} files=${result.receipt.added + result.receipt.changed + result.receipt.unchanged}`,
+    ),
+    infoMessage(
+      `projection_metrics source_bytes=${result.metadata.source_bytes} search_text_bytes=${result.metadata.search_text_bytes} preview_text_bytes=${result.metadata.preview_text_bytes} elapsed_ms=${result.metadata.projection_elapsed_ms}`,
+    ),
+  ]);
 }
 
-export async function cmdContextReindex(opts: {
+export async function runContextReindex(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { includeTasks: boolean; includeRaw: boolean; reset: boolean };
-}): Promise<number> {
+}): Promise<ContextReindexResult> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const service = path.join(root, ".agentplane", "context", "service");
   const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
@@ -231,11 +233,8 @@ export async function cmdContextReindex(opts: {
   });
   const projectionStartedAt = performance.now();
   const snapshots = await captureSourceSnapshots(root, files);
-  if (snapshots.length === 0) {
-    process.stdout.write(
-      warnMessage(`no source files found for reindex under configured scopes\n`),
-    );
-  }
+  const warnings =
+    snapshots.length === 0 ? ["no source files found for reindex under configured scopes"] : [];
   const now = new Date().toISOString();
 
   let state = null;
@@ -293,9 +292,9 @@ export async function cmdContextReindex(opts: {
     if (!(await checkSqliteProjection(sqlitePath))) {
       throw new Error("Context projection rebuild did not pass SQLite integrity check.");
     }
-    writeReceipt(
-      sqlitePath,
-      {
+    return {
+      sqlite_path: sqlitePath,
+      receipt: {
         strategy: "full-rebuild",
         reason: rebuildReason,
         added: snapshots.length,
@@ -305,8 +304,8 @@ export async function cmdContextReindex(opts: {
         rows: rows.length,
       },
       metadata,
-    );
-    return 0;
+      warnings,
+    };
   }
 
   if (!state) {
@@ -325,9 +324,9 @@ export async function cmdContextReindex(opts: {
   const unchanged = snapshots.length - added.length - changed.length;
 
   if (added.length === 0 && changed.length === 0 && removed.length === 0) {
-    writeReceipt(
-      sqlitePath,
-      {
+    return {
+      sqlite_path: sqlitePath,
+      receipt: {
         strategy: "no-op",
         reason: "source-fingerprints-unchanged",
         added: 0,
@@ -336,9 +335,9 @@ export async function cmdContextReindex(opts: {
         unchanged,
         rows: state.rowCount,
       },
-      state.metadata,
-    );
-    return 0;
+      metadata: state.metadata,
+      warnings,
+    };
   }
 
   const replacementSnapshots = [...added, ...changed];
@@ -349,6 +348,7 @@ export async function cmdContextReindex(opts: {
     Math.round(performance.now() - projectionStartedAt),
   );
   await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
+  let result: ContextReindexResult;
   try {
     const nextMetadata = await applySqliteProjectionDelta(sqlitePath, {
       metadata,
@@ -364,9 +364,9 @@ export async function cmdContextReindex(opts: {
     if (!nextState || !(await checkSqliteProjection(sqlitePath))) {
       throw new Error("incremental projection did not produce a readable index");
     }
-    writeReceipt(
-      sqlitePath,
-      {
+    result = {
+      sqlite_path: sqlitePath,
+      receipt: {
         strategy: "incremental",
         reason: "source-fingerprints-changed",
         added: added.length,
@@ -375,8 +375,9 @@ export async function cmdContextReindex(opts: {
         unchanged,
         rows: nextState.rowCount,
       },
-      nextMetadata,
-    );
+      metadata: nextMetadata,
+      warnings,
+    };
   } catch {
     const rows = snapshots.flatMap((snapshot) => projectSnapshotRows(snapshot, now));
     const repairedMetadata = projectionMetadata(
@@ -409,9 +410,9 @@ export async function cmdContextReindex(opts: {
     if (!(await checkSqliteProjection(sqlitePath))) {
       throw new Error("Context projection repair did not pass SQLite integrity check.");
     }
-    writeReceipt(
-      sqlitePath,
-      {
+    result = {
+      sqlite_path: sqlitePath,
+      receipt: {
         strategy: "full-rebuild",
         reason: "incremental-write-repair",
         added: added.length,
@@ -420,9 +421,17 @@ export async function cmdContextReindex(opts: {
         unchanged,
         rows: rows.length,
       },
-      repairedMetadata,
-    );
+      metadata: repairedMetadata,
+      warnings,
+    };
   }
+  return result;
+}
+
+export async function cmdContextReindex(
+  opts: Parameters<typeof runContextReindex>[0],
+): Promise<number> {
+  renderContextReindexResult(await runContextReindex(opts));
   return 0;
 }
 

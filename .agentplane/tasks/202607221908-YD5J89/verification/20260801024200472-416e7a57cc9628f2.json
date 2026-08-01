@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:416e7a57cc9628f2c34f6675a05d6d431bb5a4eb54e713009c276e156081c35e",
+  "implementation_sha": "1eb11321fa08ffd660c64ca1e79f4a71c97100a7",
+  "kind": "task_verification_record",
+  "note": "Verified confined evaluator preparation at implementation 1eb11321fa08: five focused files passed 52 tests; real registry no-record execution created the canonical evidence packet with task README unchanged while the full CommandContext resolver was unavailable; the frozen port exposes only prepare and rejects traversal-shaped task IDs; TypeScript 7 typecheck, targeted lint, guards, architecture, hotspots, and all 12 critical CLI chunks passed.",
+  "recorded_at": "2026-08-01T02:42:00.472Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Invoke migrated context/evaluator use cases in-process. Expected: typed results and no stdout capture/subprocess.\n2. Run human/JSON snapshots and schema fixtures. Expected: approved compatibility plus explicit v0.7 versions.\n3. Attempt mutation from read-only evaluator or undeclared context capability. Expected: typed denial.\n4. Run context/evaluator tests, schemas, guards, and typecheck.",
+  "scope_digest": "sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17",
+  "task_id": "202607221908-YD5J89",
+  "verification_command": "agentplane verify 202607221908-YD5J89 --ok --by TESTER",
+  "verifier": "TESTER"
+}

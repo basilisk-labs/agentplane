@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-YD5J89",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T08:56:43.424Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "2a1eaadae735a42a28df85c62bcab114a97da3b2",
+  "blueprint_digest": "185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f",
+  "findings": [
+    "Declared read-only capabilities still resolve to the full mutable CommandContext, so capability isolation is not enforced at the returned port boundary."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-YD5J89/quality/20260801-085548551-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221908-YD5J89/README.md",
+    ".agentplane/tasks/202607221908-YD5J89/verification/20260801085448940-7ec1ee4f4101f389.json"
+  ],
+  "missing_tests": [
+    "A read-only evaluator or context handler should obtain its declared read port and then attempt taskBackend or Git mutation through the returned value; the operation must fail with a typed capability denial and leave repository and task state unchanged.",
+    "Capability tests should assert that each declared capability resolves to a capability-specific interface that does not expose undeclared task, backend, Git, approval, provider, or network operations."
+  ],
+  "hidden_assumptions": [
+    "Compile-time restriction of session.require is assumed to provide runtime least authority even though the resolved value is the full mutable CommandContext.",
+    "Command handlers are assumed not to use mutation methods exposed by a CommandContext obtained through a read-only capability."
+  ],
+  "residual_risks": [
+    "Replace the shared CommandContext result for granular capabilities with capability-specific runtime ports or guarded wrappers, then add negative tests that attempt mutation through the value returned to a read-only handler, not only through undeclared session.require calls."
+  ]
+}
