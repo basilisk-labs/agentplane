@@ -73,10 +73,18 @@ export const LIFECYCLE_COMMANDS = [
     surface: "framework",
     helpGroup: "Framework Dev",
   }),
-  fromCommandsHooksHooksCommand(hooksSpec, "runHooks", { needs: "none" }),
-  fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
-  fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),
-  fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {}),
+  fromCommandsHooksHooksCommand(hooksSpec, "runHooks", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   declareSessionCommand(cleanupSpec, {
     load: loadCleanupSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -85,8 +93,17 @@ export const LIFECYCLE_COMMANDS = [
     load: loadCleanupMergedSpec,
     requirements: PROVIDER_WRITE_REQUIREMENTS,
   }),
-  fromCommandsGuardGuardCommand(guardSpec, "runGuard", { needs: "none" }),
-  fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {}),
-  fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow"),
-  declareCommand(guardCommitSpec, { load: loadGuardCommitSpec }),
+  fromCommandsGuardGuardCommand(guardSpec, "runGuard", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareCommand(guardCommitSpec, {
+    load: loadGuardCommitSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+  }),
 ] as const satisfies readonly CommandEntry[];

@@ -1,10 +1,14 @@
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule } from "../command-catalog/kernel.js";
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import type {
   NoContextSession,
   ProjectConfigSession,
   ProjectSession,
 } from "../command-catalog/project-capability-profiles.js";
+import type {
+  TaskReadSession,
+  TaskWriteSession,
+} from "../command-catalog/task-capability-profiles.js";
 import type {
   ProviderWriteSession,
   ReleasePlanSession,
@@ -69,8 +73,10 @@ export const loadReleaseTasksReconcileSpec = (session: ProviderWriteSession) =>
 export const fromCommandsCoreQuickstart = commandModule(
   () => import("../commands/core/quickstart.js"),
 );
-export const loadDemoSpec = (deps: RunDeps) =>
-  import("../commands/core/demo.js").then((m) => m.makeRunDemoHandler(deps.getCtx));
+export const loadDemoSpec = (session: TaskWriteSession) =>
+  import("../commands/core/demo.js").then((m) =>
+    m.makeRunDemoHandler((command) => session.require("task.write", command)),
+  );
 export const fromCommandsCorePreflight = commandModule(
   () => import("../commands/core/preflight.js"),
 );
@@ -116,15 +122,21 @@ export const fromCommandsWorkflowMigrateCommand = commandModule(
 export const fromCommandsWorkflowPlaybookCommand = commandModule(
   () => import("../../../commands/workflow-playbook.command.js"),
 );
-export const loadCodexPluginInstallSpec = (deps: RunDeps) =>
-  import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(deps));
-export const loadIncidentsCollectSpec = (deps: RunDeps) =>
-  import("../../../commands/incidents/collect.command.js").then((m) =>
-    m.makeRunIncidentsCollectHandler(deps.getCtx),
+export const loadCodexPluginInstallUserSpec = (_session: NoContextSession) =>
+  import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(null));
+export const loadCodexPluginInstallRepoSpec = (session: ProjectSession) =>
+  import("../commands/codex.js").then((m) =>
+    m.makeRunCodexPluginInstallHandler({
+      getResolvedProject: (command) => session.require("project", command),
+    }),
   );
-export const loadIncidentsAdviseSpec = (deps: RunDeps) =>
+export const loadIncidentsCollectSpec = (session: TaskWriteSession) =>
+  import("../../../commands/incidents/collect.command.js").then((m) =>
+    m.makeRunIncidentsCollectHandler((command) => session.require("task.write", command)),
+  );
+export const loadIncidentsAdviseSpec = (session: TaskReadSession) =>
   import("../../../commands/incidents/advise.command.js").then((m) =>
-    m.makeRunIncidentsAdviseHandler(deps.getCtx),
+    m.makeRunIncidentsAdviseHandler((command) => session.require("task.read", command)),
   );
 export const loadAgentsSpec = (session: ProjectSession) =>
   import("../commands/core/agents.js").then((m) =>
@@ -168,9 +180,11 @@ export const loadInsightsTriageSpec = (session: InsightsReadSession) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
     m.makeRunInsightsTriageHandler(getProjectConfigDeps(session)),
   );
-export const loadInsightsIssueSpec = (deps: RunDeps) =>
+export const loadInsightsIssueSpec = (session: ProjectConfigSession) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
-    m.makeRunInsightsIssueHandler(deps),
+    m.makeRunInsightsIssueHandler(getProjectConfigDeps(session)),
   );
-export const loadIntakeSpec = (deps: RunDeps) =>
-  import("../../../commands/intake/intake.command.js").then((m) => m.makeRunIntakeHandler(deps));
+export const loadIntakeSpec = (session: ProjectConfigSession) =>
+  import("../../../commands/intake/intake.command.js").then((m) =>
+    m.makeRunIntakeHandler(getProjectConfigDeps(session)),
+  );

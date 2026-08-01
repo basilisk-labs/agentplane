@@ -51,7 +51,7 @@ async function runAcrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise
   });
 }
 
-export function makeRunAcrHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunAcrHandler() {
   return runAcrRootGroup;
 }
 

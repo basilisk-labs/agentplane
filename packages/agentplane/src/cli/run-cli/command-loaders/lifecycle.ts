@@ -1,5 +1,5 @@
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule } from "../command-catalog/kernel.js";
 import type {
   NoContextSession,
   OutputSession,
@@ -78,7 +78,7 @@ export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
 export const fromGuardSuggestAllowSpec = commandModule(
   () => import("../../../commands/guard/suggest-allow.command.js"),
 );
-export const loadGuardCommitSpec = (deps: RunDeps) =>
+export const loadGuardCommitSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/guard/commit.command.js").then((m) =>
-    m.makeRunGuardCommitHandler(deps.getCtx),
+    m.makeRunGuardCommitHandler(getLifecycleContext(session)),
   );

@@ -209,7 +209,7 @@ async function runBackendRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Pro
   });
 }
 
-export function makeRunBackendHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunBackendHandler() {
   return runBackendRootGroup;
 }
 

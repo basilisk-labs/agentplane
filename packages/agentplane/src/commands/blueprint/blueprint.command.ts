@@ -76,7 +76,7 @@ function syntheticInput(ctx: CommandContext, p: BlueprintExplainParsed): Bluepri
   };
 }
 
-export function makeRunBlueprintHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
+export function makeRunBlueprintHandler() {
   return runBlueprintRoot;
 }
 

@@ -1,5 +1,5 @@
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
-import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
+import { commandModule } from "../command-catalog/kernel.js";
 import type {
   IntegrationQueueExecutionSession,
   IntegrationQueueListSession,
@@ -20,12 +20,15 @@ import type {
   ProjectConfigSession,
 } from "../command-catalog/project-capability-profiles.js";
 import type {
+  TaskLifecycleSession,
+  TaskReadSession,
+  TaskRouteLocalSession,
+  TaskWriteSession,
+} from "../command-catalog/task-capability-profiles.js";
+import type {
   ContextProjectSession,
   ContextTaskReadSession,
   ContextTaskWriteSession,
-  EvaluatorExecuteSession,
-  EvaluatorPrepareSession,
-  EvaluatorWriteSession,
 } from "../command-catalog/context-evaluator-capability-profiles.js";
 import type { CommandHandler } from "../../spec/spec.js";
 import type * as ContextCommandModule from "../../../commands/context/context.command.js";
@@ -62,34 +65,52 @@ function getLocalOpsWriteContext(session: LocalOpsWriteSession) {
   return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
 }
 
-export const loadAcrSpec = (deps: RunDeps) =>
-  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
-export const loadAcrSchemaSpec = () =>
+function getTaskReadContext(session: TaskReadSession) {
+  return (command: string) => session.require("task.read", command) as Promise<CommandContext>;
+}
+
+function getTaskWriteContext(session: TaskWriteSession) {
+  return (command: string) => session.require("task.write", command) as Promise<CommandContext>;
+}
+
+function getTaskRouteLocalContext(session: TaskRouteLocalSession) {
+  return (command: string) => session.require("route.local", command) as Promise<CommandContext>;
+}
+
+function getTaskLifecycleContext(session: TaskLifecycleSession) {
+  return (command: string) => session.require("git.mutate", command) as Promise<CommandContext>;
+}
+
+export const loadAcrSpec = (_session: NoContextSession) =>
+  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler());
+export const loadAcrSchemaSpec = (_session: NoContextSession) =>
   import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrSchemaHandler());
-export const loadAcrGenerateSpec = (deps: RunDeps) =>
+export const loadAcrGenerateSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/acr/acr.command.js").then((m) =>
-    m.makeRunAcrGenerateHandler(deps.getCtx),
+    m.makeRunAcrGenerateHandler(getTaskRouteLocalContext(session)),
   );
-export const loadAcrValidateSpec = (deps: RunDeps) =>
+export const loadAcrValidateSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/acr/acr.command.js").then((m) =>
-    m.makeRunAcrValidateHandler(deps.getCtx),
+    m.makeRunAcrValidateHandler(getTaskRouteLocalContext(session)),
   );
-export const loadAcrCheckSpec = (deps: RunDeps) =>
-  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrCheckHandler(deps.getCtx));
-export const loadAcrExplainSpec = (deps: RunDeps) =>
+export const loadAcrCheckSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/acr/acr.command.js").then((m) =>
-    m.makeRunAcrExplainHandler(deps.getCtx),
+    m.makeRunAcrCheckHandler(getTaskRouteLocalContext(session)),
+  );
+export const loadAcrExplainSpec = (session: TaskRouteLocalSession) =>
+  import("../../../commands/acr/acr.command.js").then((m) =>
+    m.makeRunAcrExplainHandler(getTaskRouteLocalContext(session)),
   );
 export const fromCommandsEvidenceCommand = commandModule(
   () => import("../../../commands/evidence/evidence.command.js"),
 );
-export const loadEvidenceBundleSpec = (deps: RunDeps) =>
+export const loadEvidenceBundleSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
-    m.makeRunEvidenceBundleHandler(deps.getCtx),
+    m.makeRunEvidenceBundleHandler(getTaskRouteLocalContext(session)),
   );
-export const loadEvidenceVerifySpec = (deps: RunDeps) =>
+export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
-    m.makeRunEvidenceVerifyHandler(deps.getCtx),
+    m.makeRunEvidenceVerifyHandler(getTaskRouteLocalContext(session)),
   );
 export const loadHermesSpec = (_session: NoContextSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) => m.runHermesGroup);
@@ -154,81 +175,32 @@ export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
     }),
   );
 
-export const loadBlueprintSpec = (deps: RunDeps) =>
+export const loadBlueprintSpec = (_session: NoContextSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintHandler(deps.getCtx),
+    m.makeRunBlueprintHandler(),
   );
-export const loadBlueprintListSpec = () =>
+export const loadBlueprintListSpec = (_session: NoContextSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintList);
-export const loadBlueprintExamplesSpec = () =>
+export const loadBlueprintExamplesSpec = (_session: NoContextSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintExamples);
-export const loadBlueprintExplainSpec = (deps: RunDeps) =>
+export const loadBlueprintExplainSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintExplainHandler(deps.getCtx),
+    m.makeRunBlueprintExplainHandler(getTaskRouteLocalContext(session)),
   );
-export const loadBlueprintSnapshotSpec = (deps: RunDeps) =>
+export const loadBlueprintSnapshotSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintSnapshotHandler(deps.getCtx),
+    m.makeRunBlueprintSnapshotHandler(getTaskLifecycleContext(session)),
   );
-export const loadBlueprintDriftSpec = (deps: RunDeps) =>
+export const loadBlueprintDriftSpec = (session: TaskRouteLocalSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
-    m.makeRunBlueprintDriftHandler(deps.getCtx),
+    m.makeRunBlueprintDriftHandler(getTaskRouteLocalContext(session)),
   );
-export const loadBlueprintReportSpec = () =>
+export const loadBlueprintReportSpec = (_session: NoContextSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintReport);
-export const loadBlueprintValidateSpec = () =>
+export const loadBlueprintValidateSpec = (_session: NoContextSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintValidate);
-export const loadBlueprintScaffoldSpec = () =>
+export const loadBlueprintScaffoldSpec = (_session: NoContextSession) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintScaffold);
-
-export const loadEvaluatorSpec = (_session: NoContextSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorGroup);
-export const loadEvaluatorListSpec = (_session: NoContextSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorList);
-export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorShow);
-export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
-    m.makeRunEvaluatorPrepareHandler({
-      getEvaluatorArtifactPort: (_ctx, command) =>
-        session.require("evaluator.artifacts.write", command),
-    }),
-  );
-export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
-    m.makeRunEvaluatorApplyHandler({
-      getCommandContext: async (_ctx, command) => {
-        await session.require("evaluator.artifacts.write", command);
-        return await session.require("task.write", command);
-      },
-    }),
-  );
-export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
-    m.makeRunEvaluatorExecuteHandler({
-      getEvaluatorArtifactPort: (_ctx, command) =>
-        session.require("evaluator.artifacts.write", command),
-      getCommandContext: async (_ctx, command) => {
-        await session.require("task.write", command);
-        return await session.require("provider", command);
-      },
-    }),
-  );
-export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
-    m.makeRunEvaluatorRunPrepareHandler({
-      getEvaluatorArtifactPort: (_ctx, command) =>
-        session.require("evaluator.artifacts.write", command),
-    }),
-  );
-export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
-    m.makeRunEvaluatorRunHandler({
-      getEvaluatorArtifactPort: (_ctx, command) =>
-        session.require("evaluator.artifacts.write", command),
-      getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
 
 export const fromCommandsBlueprintsCommand = commandModule(
   () => import("../../../commands/blueprints/blueprints.command.js"),
@@ -306,10 +278,8 @@ export const fromBranchBaseExplainSpec = commandModule(
 export const fromBranchRemoveSpec = commandModule(
   () => import("../../../commands/branch/remove.command.js"),
 );
-export const loadBackendSpec = (deps: RunDeps) =>
-  import("../../../commands/backend/sync.command.js").then((m) =>
-    m.makeRunBackendHandler(deps.getCtx),
-  );
+export const loadBackendSpec = (_session: NoContextSession) =>
+  import("../../../commands/backend/sync.command.js").then((m) => m.makeRunBackendHandler());
 type ContextCommandExport = Extract<keyof typeof ContextCommandModule, `runContext${string}`>;
 
 async function loadContextNoContextHandler(
@@ -458,24 +428,26 @@ export const loadContextSuperviseTaskSpec = (session: ContextTaskWriteSession) =
       getCommandContext: (_ctx, command) => session.require("task.write", command),
     }),
   );
-export const loadBackendSyncSpec = (deps: RunDeps) =>
+export const loadBackendSyncSpec = (session: TaskWriteSession) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
-    m.makeRunBackendSyncHandler(deps.getCtx),
+    m.makeRunBackendSyncHandler(getTaskWriteContext(session)),
   );
-export const loadBackendInspectSpec = (deps: RunDeps) =>
+export const loadBackendInspectSpec = (session: TaskReadSession) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
-    m.makeRunBackendInspectHandler(deps.getCtx),
+    m.makeRunBackendInspectHandler(getTaskReadContext(session)),
   );
-export const loadBackendConnectSpec = (deps: RunDeps) =>
+export const loadBackendConnectSpec = (session: TaskWriteSession) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
-    m.makeRunBackendConnectHandler(deps.getCtx),
+    m.makeRunBackendConnectHandler(getTaskWriteContext(session)),
   );
-export const loadBackendMigrateCanonicalStateSpec = (deps: RunDeps) =>
+export const loadBackendMigrateCanonicalStateSpec = (session: TaskWriteSession) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
-    m.makeRunBackendMigrateCanonicalStateHandler(deps.getCtx),
+    m.makeRunBackendMigrateCanonicalStateHandler(getTaskWriteContext(session)),
   );
-export const loadSyncSpec = (deps: RunDeps) =>
-  import("../../../commands/sync.command.js").then((m) => m.makeRunSyncHandler(deps.getCtx));
+export const loadSyncSpec = (session: TaskWriteSession) =>
+  import("../../../commands/sync.command.js").then((m) =>
+    m.makeRunSyncHandler(getTaskWriteContext(session)),
+  );
 export const loadContextIngestSpec = (session: ContextTaskWriteSession) =>
   import("../../../commands/context/ingest.command.js").then((m) =>
     m.makeRunContextIngestHandler((command) => session.require("task.write", command)),

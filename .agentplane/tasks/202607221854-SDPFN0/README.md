@@ -1,10 +1,10 @@
 ---
 id: "202607221854-SDPFN0"
 title: "Complete CommandSession capability migration"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -31,9 +31,9 @@ verify:
   - "bun run guards:check"
   - "bun run test:critical"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T12:46:46.058Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -42,11 +42,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T12:47:37.404Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:12:11.396Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T12:47:37.404Z"
+doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
   Summary: |-
@@ -75,6 +85,10 @@ sections:
     - Restore only the explicit coarse compatibility adapter if cross-family integration fails; do not revert family results wholesale.
     - Re-run catalog snapshots, architecture checks, and each family verification before retry.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "395235931a6b78f8c0f1afb0060b136053e9c315"
+    version: 1
 id_source: "generated"
 ---
 ## Summary

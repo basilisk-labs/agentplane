@@ -76,7 +76,9 @@ import { requireCanonicalCommandInvocation } from "../../command-invocations.js"
 import {
   declareCommand,
   declareConditionalSessionCommand,
+  declareMultiSessionCommand,
   declareSessionCommand,
+  defineCommandSessionSelection,
   type CommandEntry,
 } from "./kernel.js";
 import {
@@ -94,7 +96,7 @@ import {
   RUNNER_READ_REQUIREMENTS,
   RUNNER_WRITE_REQUIREMENTS,
 } from "./runner-hermes-capability-profiles.js";
-import { PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
+import { NO_CONTEXT_REQUIREMENTS, PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
 import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
@@ -151,7 +153,9 @@ import {
   loadTaskDocSetSpec,
   loadTaskScrubSpec,
   loadTaskScaffoldSpec,
-  loadTaskNormalizeSpec,
+  loadTaskNormalizeLifecycleSpec,
+  loadTaskNormalizeProviderSpec,
+  loadTaskNormalizeWriteSpec,
   loadTaskObsidianCleanSpec,
   loadTaskObsidianSpec,
   loadTaskMigrateSpec,
@@ -167,17 +171,21 @@ import {
 } from "../command-loaders/task.js";
 
 export const TASK_COMMANDS = [
-  fromCommandsTaskTaskCommand(taskSpec, "runTask", { needs: "none" }),
+  fromCommandsTaskTaskCommand(taskSpec, "runTask", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   fromCommandsTaskHandoffCommand(taskHandoffSpec, "runTaskHandoff", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   fromCommandsTaskHandoffRecordCommand(taskHandoffRecordSpec, "runTaskHandoffRecord", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   fromTaskHandoffShowSpec(taskHandoffShowSpec, "runTaskHandoffShow", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -361,7 +369,7 @@ export const TASK_COMMANDS = [
     helpGroup: "Advanced",
   }),
   fromCommandsTaskFindingsCommand(taskFindingsSpec, "runTaskFindings", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -372,7 +380,7 @@ export const TASK_COMMANDS = [
     helpGroup: "Advanced",
   }),
   fromCommandsTaskObservationsCommand(taskObservationsSpec, "runTaskObservations", {
-    needs: "none",
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -406,7 +414,9 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", { needs: "none" }),
+  fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   declareSessionCommand(taskDocShowSpec, {
     load: loadTaskDocShowSpec,
     requirements: TASK_READ_REQUIREMENTS,
@@ -427,22 +437,44 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareCommand(taskNormalizeSpec, {
-    load: loadTaskNormalizeSpec,
+  declareMultiSessionCommand(taskNormalizeSpec, {
+    default: defineCommandSessionSelection({
+      load: loadTaskNormalizeWriteSpec,
+      requirements: TASK_WRITE_REQUIREMENTS,
+    }),
+    variants: [
+      {
+        when: (parsed) => parsed.syncHostedMerges,
+        selection: defineCommandSessionSelection({
+          load: loadTaskNormalizeProviderSpec,
+          requirements: PROVIDER_WRITE_REQUIREMENTS,
+        }),
+      },
+      {
+        when: (parsed) => parsed.syncBranchPrState,
+        selection: defineCommandSessionSelection({
+          load: loadTaskNormalizeLifecycleSpec,
+          requirements: TASK_LIFECYCLE_REQUIREMENTS,
+        }),
+      },
+    ],
     surface: "internal",
     helpGroup: "Maintenance",
   }),
   declareCommand(taskObsidianSpec, {
     load: loadTaskObsidianSpec,
+    requirements: TASK_READ_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   declareCommand(taskObsidianCleanSpec, {
     load: loadTaskObsidianCleanSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   fromCommandsTaskLintCommand(taskLintSpec, "runTaskLint", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
@@ -453,10 +485,13 @@ export const TASK_COMMANDS = [
     helpGroup: "Maintenance",
   }),
   fromCommandsTaskMigrateDocCommand(taskMigrateDocSpec, "runTaskMigrateDoc", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", { needs: "none" }),
+  fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   declareSessionCommand(taskPlanSetSpec, {
     load: loadTaskPlanSetSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
@@ -473,7 +508,9 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", { needs: "none" }),
+  fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
   declareSessionCommand(taskVerifyOkSpec, {
     load: loadTaskVerifyOkSpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
@@ -494,10 +531,12 @@ export const TASK_COMMANDS = [
     helpGroup: "Maintenance",
   }),
   fromCommandsTaskResumeContextCommand(taskResumeContextSpec, "runTaskResumeContext", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
   fromTaskReclaimSpec(taskReclaimSpec, "runTaskReclaim", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
   }),
