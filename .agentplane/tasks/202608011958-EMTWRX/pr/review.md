@@ -6,7 +6,7 @@ Created: 2026-08-01T20:00:08.016Z
 
 - Task: `202608011958-EMTWRX`
 - Title: Archive resolved RF-24/RF-25 help snapshot incident
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608011958-EMTWRX/archive-resolved-rf-24-rf-25-help-snapshot-incid`
 - Canonical task record: `.agentplane/tasks/202608011958-EMTWRX/README.md`
 
