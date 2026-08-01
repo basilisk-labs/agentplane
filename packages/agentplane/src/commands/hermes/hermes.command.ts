@@ -3,6 +3,8 @@ import {
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
+import type { LoadedConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
@@ -120,10 +122,16 @@ export function makeRunHermesEnqueueHandler(
 }
 
 export function makeRunHermesSuperviseHandler(
-  getCtx: (command: string) => Promise<CommandContext>,
+  getCtx: (
+    command: string,
+    options: { includeRemote: boolean; executeStep: boolean },
+  ) => Promise<CommandContext>,
 ): CommandHandler<HermesSuperviseParsed> {
   return async (ctx, parsed) => {
-    const commandCtx = await getCtx("hermes supervise");
+    const commandCtx = await getCtx("hermes supervise", {
+      includeRemote: parsed.remote,
+      executeStep: parsed.executeStep,
+    });
     const routeOpts = {
       ctx: commandCtx,
       cwd: ctx.cwd,
@@ -225,14 +233,17 @@ export function makeRunHermesSuperviseHandler(
   };
 }
 
-export function makeRunHermesReconcileHandler(
-  getCtx: (command: string) => Promise<CommandContext>,
-): CommandHandler<HermesReconcileParsed> {
+export function makeRunHermesReconcileHandler(deps: {
+  getProjectConfig: (
+    command: string,
+  ) => Promise<{ project: ResolvedProject; config: LoadedConfig }>;
+  getProjectionContext: (command: string) => Promise<CommandContext>;
+}): CommandHandler<HermesReconcileParsed> {
   return async (ctx, parsed) => {
-    const commandCtx = await getCtx("hermes reconcile");
+    const projectConfig = await deps.getProjectConfig("hermes reconcile");
     const localProjection = parsed.taskId
       ? await routePacket({
-          ctx: commandCtx,
+          ctx: await deps.getProjectionContext("hermes reconcile"),
           cwd: ctx.cwd,
           rootOverride: ctx.rootOverride ?? null,
           taskId: parsed.taskId,
@@ -243,7 +254,7 @@ export function makeRunHermesReconcileHandler(
       : null;
     const payload = {
       mode: "read_only",
-      repo: commandCtx.resolvedProject.gitRoot,
+      repo: projectConfig.project.gitRoot,
       task_id: parsed.taskId ?? null,
       hermes_run: hermesEnvSnapshot(),
       local_projection: localProjection,
@@ -338,11 +349,15 @@ export function makeRunHermesLifecycleHandler(): CommandHandler<HermesLifecycleP
   return runHermesLifecycleCommand;
 }
 
-export function makeRunHermesDoctorHandler(
-  getCtx: (command: string) => Promise<CommandContext>,
-): CommandHandler<HermesDoctorParsed> {
+export function makeRunHermesDoctorHandler(deps: {
+  getResolvedProject: (command: string) => Promise<ResolvedProject>;
+  getLoadedConfig: (command: string) => Promise<LoadedConfig>;
+}): CommandHandler<HermesDoctorParsed> {
   return async (_ctx, parsed) => {
-    const commandCtx = await getCtx("hermes doctor");
+    const [project, loadedConfig] = await Promise.all([
+      deps.getResolvedProject("hermes doctor"),
+      deps.getLoadedConfig("hermes doctor"),
+    ]);
     const env = hermesEnvSnapshot();
     const registry = await loadLaneRegistry();
     const rawAgentplaneBin = process.env.AGENTPLANE_BIN?.trim();
@@ -353,10 +368,10 @@ export function makeRunHermesDoctorHandler(
     const hermesBin = hermesCliCommand();
     const payload = {
       ok: registry.error === null,
-      repo: commandCtx.resolvedProject.gitRoot,
-      workflow_mode: commandCtx.config.workflow_mode,
+      repo: project.gitRoot,
+      workflow_mode: loadedConfig.config.workflow_mode,
       recommended_workflow_for_multi_agent: "branch_pr",
-      branch_pr_ready: commandCtx.config.workflow_mode === "branch_pr",
+      branch_pr_ready: loadedConfig.config.workflow_mode === "branch_pr",
       hermes_env: env,
       missing_hermes_env: Object.entries(env)
         .filter(([key, value]) => key !== "claim_lock_present" && value === null)

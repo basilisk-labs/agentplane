@@ -4,6 +4,7 @@ import type {
   ProjectConfigSession,
   ProjectSession,
 } from "../command-catalog/project-capability-profiles.js";
+import type { InsightsReadSession } from "../command-catalog/runner-hermes-capability-profiles.js";
 
 function getProjectDeps(session: ProjectSession) {
   return {
@@ -52,9 +53,8 @@ export const loadRuntimeExplainSpec = (session: ProjectConfigSession) =>
       getLoadedConfig: (command) => session.require("config", command),
     }),
   );
-export const fromCommandsInsightsCommand = commandModule(
-  () => import("../../../commands/insights/insights.command.js"),
-);
+export const loadInsightsSpec = (_session: NoContextSession) =>
+  import("../../../commands/insights/insights.command.js").then((m) => m.runInsights);
 export const fromCommandsIncidentsIncidentsCommand = commandModule(
   () => import("../../../commands/incidents/incidents.command.js"),
 );
@@ -130,13 +130,13 @@ export const loadPlatformSyncSpec = (session: ProjectSession) =>
   import("../commands/platform.js").then((m) =>
     m.makeRunPlatformSyncHandler(getProjectDeps(session)),
   );
-export const loadInsightsReportSpec = (deps: RunDeps) =>
+export const loadInsightsReportSpec = (session: InsightsReadSession) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
-    m.makeRunInsightsReportHandler(deps),
+    m.makeRunInsightsReportHandler(getProjectConfigDeps(session)),
   );
-export const loadInsightsTriageSpec = (deps: RunDeps) =>
+export const loadInsightsTriageSpec = (session: InsightsReadSession) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
-    m.makeRunInsightsTriageHandler(deps),
+    m.makeRunInsightsTriageHandler(getProjectConfigDeps(session)),
   );
 export const loadInsightsIssueSpec = (deps: RunDeps) =>
   import("../../../commands/insights/insights.command.js").then((m) =>

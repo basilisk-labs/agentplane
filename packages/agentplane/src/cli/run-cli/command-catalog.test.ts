@@ -239,6 +239,71 @@ describe("command catalog graph", () => {
     );
   });
 
+  it("publishes phase-scoped runner, Hermes, and insights capability profiles", () => {
+    const taskRead = ["project", "config", "backend.read", "task.read"];
+    const taskWrite = [...taskRead, "backend.write", "task.write", "policy", "approvals"];
+    const runnerExecution = [
+      ...taskWrite,
+      "git.head",
+      "git.diff",
+      "git.mutate",
+      "route.local",
+      "route.remote",
+      "provider",
+      "context.search",
+    ];
+
+    for (const id of [
+      ["task", "run", "status"],
+      ["task", "run", "inspect"],
+      ["task", "run", "logs"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskRead);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    for (const id of [
+      ["task", "run", "reconcile"],
+      ["task", "run", "resolve-effect"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(taskWrite);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+    for (const id of [
+      ["task", "run"],
+      ["task", "run", "resume-effect"],
+      ["hermes", "supervise"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(runnerExecution);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    const hermesProjection = [
+      ...taskRead,
+      "git.head",
+      "git.diff",
+      "route.local",
+      "policy",
+      "approvals",
+      "context.search",
+    ];
+    for (const id of [
+      ["hermes", "enqueue"],
+      ["hermes", "reconcile"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(hermesProjection);
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    expect(findCommandEntry(["task", "run", "tool"])?.requirements).toEqual(["project"]);
+    expect(findCommandEntry(["hermes"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["hermes", "lifecycle"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["hermes", "doctor"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["insights"])?.requirements).toEqual([]);
+    expect(findCommandEntry(["insights", "report"])?.requirements).toEqual(["project", "config"]);
+    expect(findCommandEntry(["insights", "triage"])?.requirements).toEqual(["project", "config"]);
+  });
+
   it("keeps framework and internal commands out of normal help without removing dispatch", () => {
     expect(findCommandEntry(["release"])?.surface).toBe("framework");
     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");

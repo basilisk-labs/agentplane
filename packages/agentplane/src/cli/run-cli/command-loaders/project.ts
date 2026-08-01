@@ -1,4 +1,12 @@
 import { commandModule, type CommandSession, type RunDeps } from "../command-catalog/kernel.js";
+import type {
+  HermesProjectionSession,
+  HermesSupervisionSession,
+} from "../command-catalog/runner-hermes-capability-profiles.js";
+import type {
+  NoContextSession,
+  ProjectConfigSession,
+} from "../command-catalog/project-capability-profiles.js";
 
 type PrCheckSession = CommandSession<
   | "project"
@@ -34,9 +42,6 @@ export const loadAcrExplainSpec = (deps: RunDeps) =>
 export const fromCommandsEvidenceCommand = commandModule(
   () => import("../../../commands/evidence/evidence.command.js"),
 );
-export const fromCommandsHermesCommand = commandModule(
-  () => import("../../../commands/hermes/hermes.command.js"),
-);
 export const loadEvidenceBundleSpec = (deps: RunDeps) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
     m.makeRunEvidenceBundleHandler(deps.getCtx),
@@ -45,25 +50,44 @@ export const loadEvidenceVerifySpec = (deps: RunDeps) =>
   import("../../../commands/evidence/evidence.command.js").then((m) =>
     m.makeRunEvidenceVerifyHandler(deps.getCtx),
   );
-export const loadHermesEnqueueSpec = (deps: RunDeps) =>
+export const loadHermesSpec = (_session: NoContextSession) =>
+  import("../../../commands/hermes/hermes.command.js").then((m) => m.runHermesGroup);
+export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
-    m.makeRunHermesEnqueueHandler(deps.getCtx),
+    m.makeRunHermesEnqueueHandler((command) => session.require("context.search", command)),
   );
-export const loadHermesSuperviseSpec = (deps: RunDeps) =>
+export const loadHermesSuperviseSpec = (session: HermesSupervisionSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
-    m.makeRunHermesSuperviseHandler(deps.getCtx),
+    m.makeRunHermesSuperviseHandler(async (command, options) => {
+      await session.require("route.local", command);
+      await session.require("context.search", command);
+      if (options.includeRemote) await session.require("route.remote", command);
+      if (options.includeRemote || options.executeStep) {
+        return await session.require("provider", command);
+      }
+      return await session.require("context.search", command);
+    }),
   );
-export const loadHermesReconcileSpec = (deps: RunDeps) =>
+export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
-    m.makeRunHermesReconcileHandler(deps.getCtx),
+    m.makeRunHermesReconcileHandler({
+      getProjectConfig: async (command) => ({
+        project: await session.require("project", command),
+        config: await session.require("config", command),
+      }),
+      getProjectionContext: (command) => session.require("context.search", command),
+    }),
   );
-export const loadHermesLifecycleSpec = () =>
+export const loadHermesLifecycleSpec = (_session: NoContextSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
     m.makeRunHermesLifecycleHandler(),
   );
-export const loadHermesDoctorSpec = (deps: RunDeps) =>
+export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
   import("../../../commands/hermes/hermes.command.js").then((m) =>
-    m.makeRunHermesDoctorHandler(deps.getCtx),
+    m.makeRunHermesDoctorHandler({
+      getResolvedProject: (command) => session.require("project", command),
+      getLoadedConfig: (command) => session.require("config", command),
+    }),
   );
 
 export const loadBlueprintSpec = (deps: RunDeps) =>

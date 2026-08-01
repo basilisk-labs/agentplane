@@ -5,7 +5,6 @@ import {
 } from "../../cli/group-command.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandHandler } from "../../cli/spec/spec.js";
-import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
 import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
@@ -24,7 +23,11 @@ import {
   normalizeIssueTransport,
   type FeedbackGithubIssuesSettings,
 } from "./insights-issue-publish.js";
-import { buildInsightsReport, renderInsightsReport } from "./insights-report.js";
+import {
+  buildInsightsReport,
+  renderInsightsReport,
+  type InsightsProjectDeps,
+} from "./insights-report.js";
 import {
   buildInsightsTriage,
   renderInsightsTriageMarkdown,
@@ -51,7 +54,9 @@ export const runInsights: CommandHandler<GroupCommandParsed> = async (_ctx, p) =
   });
 };
 
-export function makeRunInsightsReportHandler(deps: RunDeps): CommandHandler<InsightsReportParsed> {
+export function makeRunInsightsReportHandler(
+  deps: InsightsProjectDeps,
+): CommandHandler<InsightsReportParsed> {
   return async (ctx, parsed) =>
     wrapCommand({ command: "insights report", rootOverride: ctx.rootOverride }, async () => {
       const report = await buildInsightsReport({ deps, recentLimit: parsed.recentLimit });
@@ -66,7 +71,9 @@ export function makeRunInsightsReportHandler(deps: RunDeps): CommandHandler<Insi
     });
 }
 
-export function makeRunInsightsTriageHandler(deps: RunDeps): CommandHandler<InsightsTriageParsed> {
+export function makeRunInsightsTriageHandler(
+  deps: InsightsProjectDeps,
+): CommandHandler<InsightsTriageParsed> {
   return async (ctx, parsed) =>
     wrapCommand({ command: "insights triage", rootOverride: ctx.rootOverride }, async () => {
       const report = await buildInsightsReport({
@@ -93,7 +100,9 @@ export function makeRunInsightsTriageHandler(deps: RunDeps): CommandHandler<Insi
     });
 }
 
-export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<InsightsIssueParsed> {
+export function makeRunInsightsIssueHandler(
+  deps: InsightsProjectDeps,
+): CommandHandler<InsightsIssueParsed> {
   return async (ctx, parsed) =>
     wrapCommand({ command: "insights issue", rootOverride: ctx.rootOverride }, async () => {
       const [resolved, loaded] = await Promise.all([

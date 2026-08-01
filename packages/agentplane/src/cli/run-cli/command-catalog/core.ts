@@ -55,6 +55,7 @@ import {
   PROJECT_CONFIG_REQUIREMENTS,
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
+import { INSIGHTS_READ_REQUIREMENTS } from "./runner-hermes-capability-profiles.js";
 import {
   fromCommandsInit,
   fromCommandsUpgradeCommand,
@@ -66,7 +67,7 @@ import {
   fromCommandsCodex,
   loadRuntimeSpec,
   loadRuntimeExplainSpec,
-  fromCommandsInsightsCommand,
+  loadInsightsSpec,
   fromCommandsIncidentsIncidentsCommand,
   fromCommandsCoreRole,
   loadPlatformSpec,
@@ -168,14 +169,17 @@ export const CORE_COMMANDS = [
     load: loadRuntimeExplainSpec,
     requirements: PROJECT_CONFIG_REQUIREMENTS,
   }),
-  fromCommandsInsightsCommand(insightsSpec, "runInsights", { needs: "none" }),
-  declareCommand(insightsReportSpec, {
-    load: loadInsightsReportSpec,
-    needs: "project+config",
+  declareSessionCommand(insightsSpec, {
+    load: loadInsightsSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
   }),
-  declareCommand(insightsTriageSpec, {
+  declareSessionCommand(insightsReportSpec, {
+    load: loadInsightsReportSpec,
+    requirements: INSIGHTS_READ_REQUIREMENTS,
+  }),
+  declareSessionCommand(insightsTriageSpec, {
     load: loadInsightsTriageSpec,
-    needs: "project+config",
+    requirements: INSIGHTS_READ_REQUIREMENTS,
   }),
   declareCommand(insightsIssueSpec, {
     load: loadInsightsIssueSpec,

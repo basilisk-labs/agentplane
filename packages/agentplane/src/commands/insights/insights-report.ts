@@ -6,7 +6,8 @@ import { promisify } from "node:util";
 
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 
-import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
+import type { LoadedConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { listTasksForInsights, pathExists } from "./insights-task-loader.js";
 export { renderInsightsReport } from "./insights-report-render.js";
 import { getVersion } from "../../meta/version.js";
@@ -82,6 +83,11 @@ export type InsightsReport = {
     stdout_bytes_buckets: CountMap;
     stderr_bytes_buckets: CountMap;
   };
+};
+
+export type InsightsProjectDeps = {
+  getResolvedProject: (command: string) => Promise<ResolvedProject>;
+  getLoadedConfig: (command: string) => Promise<LoadedConfig>;
 };
 
 function bump(counts: CountMap, raw: unknown, fallback = "unknown"): void {
@@ -333,7 +339,7 @@ function summarizeRunner(tasks: TaskRecord[]): InsightsReport["runner"] {
 }
 
 export async function buildInsightsReport(opts: {
-  deps: RunDeps;
+  deps: InsightsProjectDeps;
   recentLimit: number;
   failure?: FailureContextInput;
 }): Promise<InsightsReport> {

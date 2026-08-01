@@ -11,6 +11,10 @@ import {
   PROJECT_CONFIG_REQUIREMENTS,
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
+import {
+  HERMES_PROJECTION_REQUIREMENTS,
+  RUNNER_READ_REQUIREMENTS,
+} from "./runner-hermes-capability-profiles.js";
 
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
@@ -185,5 +189,37 @@ describe("CommandSession", () => {
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();
     }
+  });
+
+  it("denies cross-phase runner and Hermes capabilities before context preparation", async () => {
+    const runnerResolvers = makeResolvers();
+    const runnerReadSession = createCommandSession({
+      command: "task run status",
+      requirements: RUNNER_READ_REQUIREMENTS,
+      resolvers: runnerResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(runnerReadSession.require("git.mutate", "task run status")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    await expect(runnerReadSession.require("provider", "task run status")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(runnerResolvers.getCtx).not.toHaveBeenCalled();
+
+    const hermesResolvers = makeResolvers();
+    const hermesProjectionSession = createCommandSession({
+      command: "hermes enqueue",
+      requirements: HERMES_PROJECTION_REQUIREMENTS,
+      resolvers: hermesResolvers,
+    }) as CommandSession<CommandCapability>;
+
+    await expect(
+      hermesProjectionSession.require("provider", "hermes enqueue"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    await expect(
+      hermesProjectionSession.require("git.mutate", "hermes enqueue"),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+    expect(hermesResolvers.getCtx).not.toHaveBeenCalled();
   });
 });

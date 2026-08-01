@@ -83,6 +83,12 @@ import {
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
 import {
+  RUNNER_EXECUTION_REQUIREMENTS,
+  RUNNER_READ_REQUIREMENTS,
+  RUNNER_WRITE_REQUIREMENTS,
+} from "./runner-hermes-capability-profiles.js";
+import { PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
+import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
   fromCommandsTaskHandoffRecordCommand,
@@ -234,44 +240,51 @@ export const TASK_COMMANDS = [
     load: loadTaskBriefSpec,
     requirements: TASK_ROUTE_REQUIREMENTS,
   }),
-  declareCommand(taskRunStatusSpec, {
+  declareSessionCommand(taskRunStatusSpec, {
     load: loadTaskRunStatusSpec,
+    requirements: RUNNER_READ_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunInspectSpec, {
+  declareSessionCommand(taskRunInspectSpec, {
     load: loadTaskRunInspectSpec,
+    requirements: RUNNER_READ_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunReconcileSpec, {
+  declareSessionCommand(taskRunReconcileSpec, {
     load: loadTaskRunReconcileSpec,
+    requirements: RUNNER_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunResolveEffectSpec, {
+  declareSessionCommand(taskRunResolveEffectSpec, {
     load: loadTaskRunResolveEffectSpec,
+    requirements: RUNNER_WRITE_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunResumeEffectSpec, {
+  declareSessionCommand(taskRunResumeEffectSpec, {
     load: loadTaskRunResumeEffectSpec,
+    requirements: RUNNER_EXECUTION_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunLogsSpec, {
+  declareSessionCommand(taskRunLogsSpec, {
     load: loadTaskRunLogsSpec,
+    requirements: RUNNER_READ_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunSpec, {
+  declareSessionCommand(taskRunSpec, {
     load: loadTaskRunSpec,
+    requirements: RUNNER_EXECUTION_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),
-  declareCommand(taskRunToolSpec, {
+  declareSessionCommand(taskRunToolSpec, {
     load: loadTaskRunToolSpec,
-    needs: "project",
+    requirements: PROJECT_REQUIREMENTS,
     surface: "internal",
     helpGroup: "Maintenance",
   }),

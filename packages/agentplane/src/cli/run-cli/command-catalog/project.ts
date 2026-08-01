@@ -150,6 +150,14 @@ import {
 
 import { declareCommand, declareSessionCommand, type CommandEntry } from "./kernel.js";
 import {
+  HERMES_PROJECTION_REQUIREMENTS,
+  HERMES_SUPERVISION_REQUIREMENTS,
+} from "./runner-hermes-capability-profiles.js";
+import {
+  NO_CONTEXT_REQUIREMENTS,
+  PROJECT_CONFIG_REQUIREMENTS,
+} from "./project-capability-profiles.js";
+import {
   fromCommandsRecipesRecipesCommand,
   fromCommandsRecipesCacheCommand,
   fromCommandsRecipesAddCommand,
@@ -208,7 +216,7 @@ import {
   fromCommandsEvidenceCommand,
   loadEvidenceBundleSpec,
   loadEvidenceVerifySpec,
-  fromCommandsHermesCommand,
+  loadHermesSpec,
   loadHermesDoctorSpec,
   loadHermesEnqueueSpec,
   loadHermesLifecycleSpec,
@@ -239,12 +247,30 @@ export const PROJECT_COMMANDS = [
   fromCommandsEvidenceCommand(evidenceSpec, "runEvidenceGroup", { needs: "none" }),
   declareCommand(evidenceBundleSpec, { load: loadEvidenceBundleSpec }),
   declareCommand(evidenceVerifySpec, { load: loadEvidenceVerifySpec }),
-  fromCommandsHermesCommand(hermesSpec, "runHermesGroup"),
-  declareCommand(hermesEnqueueSpec, { load: loadHermesEnqueueSpec }),
-  declareCommand(hermesSuperviseSpec, { load: loadHermesSuperviseSpec }),
-  declareCommand(hermesReconcileSpec, { load: loadHermesReconcileSpec }),
-  declareCommand(hermesLifecycleSpec, { load: loadHermesLifecycleSpec }),
-  declareCommand(hermesDoctorSpec, { load: loadHermesDoctorSpec }),
+  declareSessionCommand(hermesSpec, {
+    load: loadHermesSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(hermesEnqueueSpec, {
+    load: loadHermesEnqueueSpec,
+    requirements: HERMES_PROJECTION_REQUIREMENTS,
+  }),
+  declareSessionCommand(hermesSuperviseSpec, {
+    load: loadHermesSuperviseSpec,
+    requirements: HERMES_SUPERVISION_REQUIREMENTS,
+  }),
+  declareSessionCommand(hermesReconcileSpec, {
+    load: loadHermesReconcileSpec,
+    requirements: HERMES_PROJECTION_REQUIREMENTS,
+  }),
+  declareSessionCommand(hermesLifecycleSpec, {
+    load: loadHermesLifecycleSpec,
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(hermesDoctorSpec, {
+    load: loadHermesDoctorSpec,
+    requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
   declareCommand(blueprintExamplesSpec, { load: loadBlueprintExamplesSpec, needs: "none" }),
