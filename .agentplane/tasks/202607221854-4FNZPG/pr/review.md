@@ -29,10 +29,11 @@ Created: 2026-08-01T19:31:51.047Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  18 +
  .../installed-migration-matrix-script.test.ts      | 103 ++++
  scripts/lib/installed-migration-matrix.mjs         | 649 +++++++++++++++++++++
  .../release/check-local-tarball-install-smoke.mjs  |  10 +
- 3 files changed, 762 insertions(+)
+ 4 files changed, 780 insertions(+)
 ```
 
 </details>

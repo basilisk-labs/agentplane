@@ -26,6 +26,7 @@ import {
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
 import * as taskBackend from "../backends/task-backend.js";
+import { cloudProjectionIdentitySha256 } from "../backends/task-backend/cloud-projection-identity.js";
 import {
   captureStdIO,
   cleanGitEnv,
@@ -347,6 +348,23 @@ describe("runCli", () => {
           cache_dir: ".agentplane/tasks",
         },
       }),
+      "utf8",
+    );
+    await mkdir(path.join(root, ".agentplane", "backends", "cloud"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "backends", "cloud", "state.json"),
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-05-01T00:00:00.000Z",
+          projection_identity_sha256: cloudProjectionIdentitySha256({
+            endpoint: "https://cloud.example",
+            projectId: "proj_123",
+            provider: null,
+          }),
+        },
+        null,
+        2,
+      )}\n`,
       "utf8",
     );
     const fetchSpy = vi
