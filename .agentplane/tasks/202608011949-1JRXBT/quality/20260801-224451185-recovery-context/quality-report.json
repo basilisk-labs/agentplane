@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202608011949-1JRXBT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T22:45:49.318Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "e2acc9d90c46ace69c61fa45916570949a86cc8a",
+  "blueprint_digest": "f5aaf5ba0767d140f868ee28428c69f45a5670cb00023d487128f9a0e1bec461",
+  "findings": [
+    "The new verification executable allowlist rejects `bunx`, although the task’s first two mandatory Verify Steps invoke `bunx vitest`. Integration verification would therefore fail before starting those declared checks.",
+    "Frozen observed-check evidence contains a verification summary but no verification records, runner history, or runtime evidence, so the claimed successful checks cannot be deterministically inspected at the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608011949-1JRXBT/README.md",
+    ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-blueprint.json"
+  ],
+  "missing_tests": [
+    "Add a runShellCommand regression test proving a declared `bunx vitest ...` command reaches startProcess instead of being rejected by the executable allowlist.",
+    "Capture deterministic per-command results for both focused `bunx vitest` suites and the full typecheck, critical, and contract gates at the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes every approved verification executable is present in VERIFY_EXECUTABLES, but the task contract uses `bunx`.",
+    "The verification note assumes summarized pass counts are sufficient evidence even when structured verification records and runtime evidence are absent."
+  ],
+  "residual_risks": [
+    "Add support for the approved `bunx` verification route or normalize it safely to an allowed `bun` invocation, cover that route with a process-start regression test, then regenerate deterministic per-command evidence at the evaluated SHA and rerun the declared gates."
+  ]
+}

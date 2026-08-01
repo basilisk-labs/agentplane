@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The new verification executable allowlist rejects `bunx`, although the task’s first two mandatory Verify Steps invoke `bunx vitest`. Integration verification would therefore fail before starting those declared checks.",
+      "broken_invariant": "All declared Verify Steps must remain executable through the integration verification path; the implementation must not reject a required command introduced by the approved verification contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:c00a4d14190569c17904ccd4349a74f28821b68134d44a4a005e73136720fd2a",
+          "lines": "VERIFY_EXECUTABLES includes `bun` but not `bunx`; runShellCommand returns code 1 for every executable absent from that set.",
+          "section": "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608011949-1JRXBT/README.md",
+          "sha256": "sha256:3a6b45bd208d07bce0b4e6845e097320343b3c7cdd3ddcf2b021621e2724d229",
+          "lines": "Verify Steps 1 and 2 begin with `bunx vitest`.",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "severity": "medium",
+      "summary": "Frozen observed-check evidence contains a verification summary but no verification records, runner history, or runtime evidence, so the claimed successful checks cannot be deterministically inspected at the evaluated SHA.",
+      "broken_invariant": "Verification evidence must record executed checks and results, and a regression blueprint requires focused reproduction and full-gate evidence rather than an unstructured success assertion alone.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:5ea56d7511226da4cdef89344ffdb6fddb3414617b315d9178ec5df026a29e01",
+          "lines": "`verification_records`, `runner_history`, and `runtime_evidence` are empty arrays.",
+          "section": "verification evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608011949-1JRXBT/quality/20260801-224451185-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:f80dd27ce4ffed473b26ce37e5e04956f013277f001f25548ce0273b1224d854",
+          "lines": "The quality.regression blueprint requires original failure, reproduction, focused check, and full-gate evidence.",
+          "section": "plan.requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a runShellCommand regression test proving a declared `bunx vitest ...` command reaches startProcess instead of being rejected by the executable allowlist.",
+    "Capture deterministic per-command results for both focused `bunx vitest` suites and the full typecheck, critical, and contract gates at the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes every approved verification executable is present in VERIFY_EXECUTABLES, but the task contract uses `bunx`.",
+    "The verification note assumes summarized pass counts are sufficient evidence even when structured verification records and runtime evidence are absent."
+  ],
+  "recovery_context": "Add support for the approved `bunx` verification route or normalize it safely to an allowed `bun` invocation, cover that route with a process-start regression test, then regenerate deterministic per-command evidence at the evaluated SHA and rerun the declared gates."
+}

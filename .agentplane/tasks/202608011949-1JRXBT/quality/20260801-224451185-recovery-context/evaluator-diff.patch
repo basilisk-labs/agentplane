@@ -1,0 +1,795 @@
+diff --git a/.agentplane/tasks/202607221908-83Y4AF/README.md b/.agentplane/tasks/202607221908-83Y4AF/README.md
+index 37250dd80..edcda7ddc 100644
+--- a/.agentplane/tasks/202607221908-83Y4AF/README.md
++++ b/.agentplane/tasks/202607221908-83Y4AF/README.md
+@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-rc.2 milestone"
+ status: "TODO"
+ priority: "high"
+ owner: "TESTER"
+-revision: 5
++revision: 6
+ origin:
+   system: "manual"
+ depends_on:
+@@ -17,6 +17,8 @@ depends_on:
+   - "202607221854-YMYYQ8"
+   - "202607221908-AB2SFC"
+   - "202607221908-PWFH5K"
++  - "202608011949-1JRXBT"
++  - "202608012034-W6F4DM"
+ tags:
+   - "milestone-0-7-0-rc-2"
+   - "quality"
+diff --git a/docs/internal/v0.7-refactor-plan.md b/docs/internal/v0.7-refactor-plan.md
+index 786989327..840cc32be 100644
+--- a/docs/internal/v0.7-refactor-plan.md
++++ b/docs/internal/v0.7-refactor-plan.md
+@@ -107,7 +107,10 @@ last column refer to rows in this table; canonical task documents contain exact
+ | rc.2      | RF-27 gate   | `202607221908-PWFH5K` | Enforce mandatory release dependency closure                          | guards_close                                                                                                                          |
+ | rc.2      | release gate | `202607221854-4FNZPG` | Validate the 0.6.24-to-0.7 migration and installed-package matrix     | release_graph_guard                                                                                                                   |
+ | rc.2      | release gate | `202607221854-YMYYQ8` | Publish the AgentPlane 0.7 architecture and migration guide           | migration_matrix                                                                                                                      |
+-| rc.2      | gate         | `202607221908-83Y4AF` | Qualify the AgentPlane 0.7.0-rc.2 milestone                           | gate_rc1, internal leaves, migration matrix, docs                                                                                     |
++| rc.2      | maintenance  | `202608011958-EMTWRX` | Archive the resolved RF-24/RF-25 help snapshot incident               | command_family_migration                                                                                                              |
++| rc.2      | reliability  | `202608012034-W6F4DM` | Prevent artifact gate buffer overflow on large repositories           | incident_archive                                                                                                                      |
++| rc.2      | maintenance  | `202608011949-1JRXBT` | Assimilate v0.6.25-v0.6.26 maintenance fixes into 0.7                 | release_graph_guard, migration_matrix                                                                                                 |
++| rc.2      | gate         | `202607221908-83Y4AF` | Qualify the AgentPlane 0.7.0-rc.2 milestone                           | gate_rc1, internal leaves, migration matrix, docs, maintenance assimilation, artifact reliability                                     |
+ | 0.7.0     | release      | `202607221854-XV67TD` | Prepare and publish AgentPlane 0.7.0                                  | gate_rc2                                                                                                                              |
+ 
+ All root leaves depend on the completed planning task, directly or transitively. Every next-wave root depends on the prior milestone gate, and the final release depends on `202607221908-83Y4AF`. A dependency becomes executable only after the prerequisite is `DONE`, not merely locally verified.
+diff --git a/docs/internal/v0.7-release-task-closure.json b/docs/internal/v0.7-release-task-closure.json
+index 086996ac7..7869dc6a6 100644
+--- a/docs/internal/v0.7-release-task-closure.json
++++ b/docs/internal/v0.7-release-task-closure.json
+@@ -70,7 +70,10 @@
+     "202607310028-7KFTPH",
+     "202607311338-CT2725",
+     "202607311706-QB60J5",
+-    "202607311707-DRYTNK"
++    "202607311707-DRYTNK",
++    "202608011949-1JRXBT",
++    "202608011958-EMTWRX",
++    "202608012034-W6F4DM"
+   ],
+   "optional_tasks": [
+     {
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+index f3c119201..00a8e846a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+@@ -1,5 +1,6 @@
+ import { execFileAsync } from "@agentplaneorg/core/process";
+-import { writeFile } from "node:fs/promises";
++import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
++import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { describe } from "vitest";
+ 
+@@ -209,6 +210,134 @@ describe("runCli route decision direct closeout", () => {
+     }
+   });
+ 
++  it("stops for verification evidence after a successful runner instead of looping verify-show", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    await commitAll(root, "seed direct workflow config");
++
++    const taskId = await createBranchPrTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Exercise the direct terminal-runner verification gate.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: create a direct task whose runner reaches terminal success.",
++      "--root",
++      root,
++    ]);
++    await commitAll(root, "track direct task state before terminal runner simulation");
++    const policyDir = path.join(root, ".agentplane", "policy");
++    await mkdir(policyDir, { recursive: true });
++    for (const policy of ["security.must.md", "dod.core.md", "dod.code.md", "workflow.direct.md"]) {
++      await writeFile(path.join(policyDir, policy), `# ${policy}\n`, "utf8");
++    }
++    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
++
++    const statusIo = captureStdIO();
++    let statePath = "";
++    try {
++      expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
++      const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
++      statePath = payload.paths.state;
++    } finally {
++      statusIo.restore();
++    }
++    const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
++    const fingerprint = state.state_fingerprint as {
++      precondition_fingerprint: Parameters<
++        typeof evaluateStateFingerprintPrecondition
++      >[0]["expected"];
++      precondition_policy: Parameters<typeof evaluateStateFingerprintPrecondition>[0]["policy"];
++    };
++    const completedAt = new Date().toISOString();
++    const expected = fingerprint.precondition_fingerprint;
++    state.state_fingerprint = {
++      ...fingerprint,
++      outcome: "accepted",
++      state_before: expected,
++      state_after: expected,
++      precondition: evaluateStateFingerprintPrecondition({
++        expected,
++        current: expected,
++        policy: fingerprint.precondition_policy,
++      }),
++      effect_applied: true,
++      post_state_reason_code: null,
++    };
++    state.result = {
++      status: "success",
++      exit_code: 0,
++      started_at: state.created_at,
++      ended_at: completedAt,
++    };
++    state.updated_at = completedAt;
++    await writeFile(
++      statePath,
++      `${JSON.stringify({ ...state, status: "success" }, null, 2)}\n`,
++      "utf8",
++    );
++
++    const nextIo = captureStdIO();
++    try {
++      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
++      expect(code, nextIo.stderr).toBe(0);
++      const parsed = JSON.parse(nextIo.stdout) as {
++        workflow_step: {
++          kind: string;
++          id: string;
++          episode?: { purpose: string; role: string };
++        };
++        next_action: { code: string; command: string | null; summary: string };
++        execution_packet: {
++          actionKind: string;
++          safeToMutate: boolean;
++          exactArgv: string[] | null;
++        };
++        operator_guidance: { canExecuteNow: boolean; safeCommand: string | null };
++      };
++      expect(parsed.next_action).toMatchObject({
++        code: "review_direct_verification",
++        command: null,
++      });
++      expect(parsed.next_action.summary).toContain(`agentplane verify ${taskId}`);
++      expect(parsed.next_action.summary).not.toContain("verify-show");
++      expect(parsed.workflow_step).toMatchObject({
++        kind: "agent_episode",
++        id: "agent.direct_verification",
++        episode: { purpose: "verification", role: "TESTER" },
++      });
++      expect(parsed.execution_packet).toMatchObject({
++        actionKind: "stop",
++        safeToMutate: false,
++        exactArgv: null,
++      });
++      expect(parsed.operator_guidance).toMatchObject({
++        canExecuteNow: false,
++        safeCommand: null,
++      });
++    } finally {
++      nextIo.restore();
++    }
++  });
++
+   it("routes verified direct tasks to closeout instead of rerunning them and drops them from active work", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts b/packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts
+index c68f37819..fdb6c4a35 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts
+@@ -144,6 +144,7 @@ describe("pr/integrate/internal/finalize", () => {
+       "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
+       " src/app.ts | 1 +\n",
+     );
++    expect(mocks.gitDiffStat).toHaveBeenCalledWith("/repo", "cafebabe", "deadbeef");
+     expect(mocks.writeFinishedTasks).toHaveBeenCalledTimes(1);
+     expect(mocks.writeFinishedTasks).toHaveBeenCalledWith(
+       expect.objectContaining({
+diff --git a/packages/agentplane/src/commands/pr/integrate/internal/finalize.ts b/packages/agentplane/src/commands/pr/integrate/internal/finalize.ts
+index a286c3892..c0641aa49 100644
+--- a/packages/agentplane/src/commands/pr/integrate/internal/finalize.ts
++++ b/packages/agentplane/src/commands/pr/integrate/internal/finalize.ts
+@@ -92,7 +92,7 @@ export async function finalizeIntegrate(opts: {
+   });
+   await writeJsonStableIfChanged(opts.metaPath, nextMeta);
+ 
+-  const diffstat = await gitDiffStat(opts.gitRoot, opts.baseShaBeforeMerge, opts.branch);
++  const diffstat = await gitDiffStat(opts.gitRoot, opts.baseShaBeforeMerge, opts.branchHeadSha);
+   await writeTextIfChanged(opts.diffstatPath, diffstat ? `${diffstat}\n` : "");
+ 
+   const verifyDesc =
+diff --git a/packages/agentplane/src/commands/pr/integrate/verify.test.ts b/packages/agentplane/src/commands/pr/integrate/verify.test.ts
+new file mode 100644
+index 000000000..b920342f8
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/integrate/verify.test.ts
+@@ -0,0 +1,49 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  line: vi.fn<(message: string, channel?: "stdout" | "stderr") => void>(),
++  success: vi.fn(),
++  runShellCommand:
++    vi.fn<(command: string, cwd: string) => Promise<{ code: number; output: string }>>(),
++}));
++
++vi.mock("../../../cli/output.js", () => ({
++  createCliEmitter: () => ({ line: mocks.line, success: mocks.success }),
++}));
++vi.mock("../../shared/pr-meta.js", () => ({
++  extractLastVerifiedSha: vi.fn(),
++  runShellCommand: mocks.runShellCommand,
++}));
++
++import { runVerifyCommands } from "./verify.js";
++
++describe("pr/integrate verify", () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++  });
++
++  it("prints a bounded failure tail before returning the verify error", async () => {
++    const output = `discard-me${"x".repeat(32 * 1024)}tail`;
++    mocks.runShellCommand.mockResolvedValue({ code: 1, output });
++
++    await expect(
++      runVerifyCommands({
++        commands: ["bun test"],
++        worktreePath: "/repo",
++        branchHeadSha: "deadbeef",
++        quiet: true,
++        taskId: "T-1",
++      }),
++    ).rejects.toMatchObject({ code: "E_IO" });
++
++    expect(mocks.line).toHaveBeenCalledTimes(1);
++    const call = mocks.line.mock.calls[0];
++    expect(call).toBeDefined();
++    const visibleTail = call?.[0] ?? "";
++    const channel = call?.[1];
++    expect(channel).toBe("stderr");
++    expect(visibleTail).toContain("[verify output truncated; showing final 32768 characters]");
++    expect(visibleTail).not.toContain("discard-me");
++    expect(visibleTail.endsWith("tail")).toBe(true);
++  });
++});
+diff --git a/packages/agentplane/src/commands/pr/integrate/verify.ts b/packages/agentplane/src/commands/pr/integrate/verify.ts
+index c08d6af63..993ca39c9 100644
+--- a/packages/agentplane/src/commands/pr/integrate/verify.ts
++++ b/packages/agentplane/src/commands/pr/integrate/verify.ts
+@@ -61,6 +61,15 @@ export async function runVerifyCommands(opts: {
+       content: result.output,
+     });
+     if (result.code !== 0) {
++      const visibleTail =
++        result.output.length > 32 * 1024
++          ? `[verify output truncated; showing final 32768 characters]\n${result.output.slice(
++              -32 * 1024,
++            )}`
++          : result.output;
++      if (visibleTail.trim()) {
++        output.line(visibleTail.trimEnd(), "stderr");
++      }
+       throw new CliError({
+         exitCode: exitCodeForError("E_IO"),
+         code: "E_IO",
+diff --git a/packages/agentplane/src/commands/shared/pr-meta.test.ts b/packages/agentplane/src/commands/shared/pr-meta.test.ts
+index 85090a6cd..58e645149 100644
+--- a/packages/agentplane/src/commands/shared/pr-meta.test.ts
++++ b/packages/agentplane/src/commands/shared/pr-meta.test.ts
+@@ -1,4 +1,5 @@
+ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { PassThrough } from "node:stream";
+ 
+ import {
+   buildObservedGithubPrMeta,
+@@ -17,19 +18,48 @@ import {
+   withPrArtifactLifecycleState,
+ } from "./pr-meta.js";
+ 
++function restoreProcessEnv(name: string, value: string | undefined): void {
++  if (value === undefined) delete process.env[name];
++  else process.env[name] = value;
++}
++
+ describe("pr-meta shell invocations", () => {
+   let originalComspec: string | undefined;
+   let originalComSpec: string | undefined;
++  let originalCliAlias: string | undefined;
++  let originalAgentMode: string | undefined;
++  let originalRuntimeActiveBin: string | undefined;
++  let originalRuntimeMode: string | undefined;
++  let originalRuntimeHandoffFrom: string | undefined;
++  let originalRepoLocalHandoff: string | undefined;
++  let originalDevAutoBootstrapped: string | undefined;
++  let originalFrameworkBuildLockPath: string | undefined;
+ 
+   beforeEach(() => {
+     originalComspec = process.env.COMSPEC;
+     originalComSpec = process.env.ComSpec;
++    originalCliAlias = process.env.AGENTPLANE_CLI_ALIAS;
++    originalAgentMode = process.env.AGENTPLANE_AGENT_MODE;
++    originalRuntimeActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
++    originalRuntimeMode = process.env.AGENTPLANE_RUNTIME_MODE;
++    originalRuntimeHandoffFrom = process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
++    originalRepoLocalHandoff = process.env.AGENTPLANE_REPO_LOCAL_HANDOFF;
++    originalDevAutoBootstrapped = process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED;
++    originalFrameworkBuildLockPath = process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH;
+   });
+ 
+   afterEach(() => {
+     vi.restoreAllMocks();
+-    process.env.COMSPEC = originalComspec;
+-    process.env.ComSpec = originalComSpec;
++    restoreProcessEnv("COMSPEC", originalComspec);
++    restoreProcessEnv("ComSpec", originalComSpec);
++    restoreProcessEnv("AGENTPLANE_CLI_ALIAS", originalCliAlias);
++    restoreProcessEnv("AGENTPLANE_AGENT_MODE", originalAgentMode);
++    restoreProcessEnv("AGENTPLANE_RUNTIME_ACTIVE_BIN", originalRuntimeActiveBin);
++    restoreProcessEnv("AGENTPLANE_RUNTIME_MODE", originalRuntimeMode);
++    restoreProcessEnv("AGENTPLANE_RUNTIME_HANDOFF_FROM", originalRuntimeHandoffFrom);
++    restoreProcessEnv("AGENTPLANE_REPO_LOCAL_HANDOFF", originalRepoLocalHandoff);
++    restoreProcessEnv("AGENTPLANE_DEV_AUTO_BOOTSTRAPPED", originalDevAutoBootstrapped);
++    restoreProcessEnv("AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH", originalFrameworkBuildLockPath);
+   });
+ 
+   it("parses verify commands as argv without a shell", () => {
+@@ -54,25 +84,93 @@ describe("pr-meta shell invocations", () => {
+     });
+   });
+ 
+-  it("uses current shell invocation for command execution", async () => {
++  it("streams verify output without a fixed child-process buffer", async () => {
+     delete process.env.COMSPEC;
+     delete process.env.ComSpec;
++    process.env.AGENTPLANE_CLI_ALIAS = "ap";
++    process.env.AGENTPLANE_AGENT_MODE = "1";
++    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = "/maintenance/agentplane.js";
++    process.env.AGENTPLANE_RUNTIME_MODE = "repo-local";
++    process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM = "/global/agentplane.js";
++    process.env.AGENTPLANE_REPO_LOCAL_HANDOFF = "1";
++    process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED = "1";
++    process.env.AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH = "/tmp/agentplane-build.lock";
+     const gitProcess = await import("@agentplaneorg/core/process");
+-    const execFileAsync = vi.spyOn(gitProcess, "execFileAsync").mockResolvedValue({
+-      stdout: "ok",
+-      stderr: "",
+-    });
++    const stdout = new PassThrough();
++    const stderr = new PassThrough();
++    let resolveProcess: ((value: { exitCode: number }) => void) | undefined;
++    const child = Object.assign(
++      new Promise<{ exitCode: number }>((resolve) => {
++        resolveProcess = resolve;
++      }),
++      { stdout, stderr },
++    );
++    const startProcess = vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
+ 
+-    const result = await runShellCommand("echo hello", process.cwd());
++    const pending = runShellCommand("node --version", process.cwd());
++    stdout.end("ok");
++    stderr.end("");
++    resolveProcess?.({ exitCode: 0 });
++    const result = await pending;
+ 
+-    expect(execFileAsync).toHaveBeenCalledWith(
+-      "echo",
+-      ["hello"],
+-      expect.objectContaining({ cwd: process.cwd() }),
++    expect(startProcess).toHaveBeenCalledWith(
++      expect.objectContaining({
++        command: "node",
++        args: ["--version"],
++        cwd: process.cwd(),
++        buffer: false,
++        stdout: "pipe",
++        stderr: "pipe",
++      }),
+     );
++    const startOptions = startProcess.mock.calls[0]?.[0];
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_CLI_ALIAS");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_AGENT_MODE");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_ACTIVE_BIN");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_MODE");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_RUNTIME_HANDOFF_FROM");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_REPO_LOCAL_HANDOFF");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_DEV_AUTO_BOOTSTRAPPED");
++    expect(startOptions?.env).not.toHaveProperty("AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH");
+     expect(result).toEqual({ code: 0, output: "ok" });
+   });
+ 
++  it("keeps only a bounded tail for release-sized verify output", async () => {
++    const gitProcess = await import("@agentplaneorg/core/process");
++    const stdout = new PassThrough();
++    const stderr = new PassThrough();
++    let resolveProcess: ((value: { exitCode: number }) => void) | undefined;
++    const child = Object.assign(
++      new Promise<{ exitCode: number }>((resolve) => {
++        resolveProcess = resolve;
++      }),
++      { stdout, stderr },
++    );
++    vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
++
++    const pending = runShellCommand("bun test", process.cwd());
++    stdout.end(`discard-me${"x".repeat(1024 * 1024)}tail`);
++    stderr.end("");
++    resolveProcess?.({ exitCode: 0 });
++    const result = await pending;
++
++    expect(result.code).toBe(0);
++    expect(result.output).toContain("[output truncated; showing last 1048576 bytes]");
++    expect(result.output).not.toContain("discard-me");
++    expect(result.output.endsWith("tail")).toBe(true);
++  });
++
++  it("rejects non-allowlisted verify executables before process start", async () => {
++    const gitProcess = await import("@agentplaneorg/core/process");
++    const startProcess = vi.spyOn(gitProcess, "startProcess");
++
++    await expect(runShellCommand("custom-runner --version", process.cwd())).resolves.toEqual({
++      code: 1,
++      output: "verify command executable is not allowed: custom-runner",
++    });
++    expect(startProcess).not.toHaveBeenCalled();
++  });
++
+   it("rejects invalid pr/meta schema shapes", () => {
+     expect(() =>
+       parsePrMeta(
+diff --git a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+index e72def94f..bc7bf0864 100644
+--- a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
++++ b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+@@ -1,7 +1,25 @@
+ import { mkdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
++import type { Readable } from "node:stream";
+ 
+-import { execFileAsync } from "@agentplaneorg/core/process";
++import { startProcess } from "@agentplaneorg/core/process";
++
++const VERIFY_OUTPUT_TAIL_BYTES = 1024 * 1024;
++const VERIFY_EXECUTABLES = new Set([
++  "bash",
++  "bun",
++  "cat",
++  "chmod",
++  "gh",
++  "git",
++  "node",
++  "npm",
++  "ps",
++  "sh",
++  "tar",
++  "unzip",
++  "zip",
++]);
+ 
+ type ShellInvocation = {
+   command: string;
+@@ -101,23 +119,129 @@ export async function runShellCommand(
+   output: string;
+ }> {
+   const invocation = resolveShellInvocation(command);
++  if (!VERIFY_EXECUTABLES.has(invocation.command)) {
++    return {
++      code: 1,
++      output: `verify command executable is not allowed: ${invocation.command}`,
++    };
++  }
++  const env = { ...process.env };
++  for (const key of [
++    "AGENTPLANE_CLI_ALIAS",
++    "AGENTPLANE_AGENT_MODE",
++    "AGENTPLANE_RUNTIME_ACTIVE_BIN",
++    "AGENTPLANE_RUNTIME_MODE",
++    "AGENTPLANE_RUNTIME_HANDOFF_FROM",
++    "AGENTPLANE_REPO_LOCAL_HANDOFF",
++    "AGENTPLANE_DEV_AUTO_BOOTSTRAPPED",
++    "AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH",
++  ]) {
++    delete env[key];
++  }
+   try {
+-    const { stdout, stderr } = await execFileAsync(invocation.command, invocation.args, {
++    const child = startProcess({
++      command: invocation.command,
++      args: invocation.args,
+       cwd,
+-      env: process.env,
+-      maxBuffer: 10 * 1024 * 1024,
+-    });
+-    let output = "";
+-    if (stdout) output += stdout;
+-    if (stderr) output += (output && !output.endsWith("\n") ? "\n" : "") + stderr;
+-    return { code: 0, output };
++      env,
++      buffer: false,
++      stdout: "pipe",
++      stderr: "pipe",
++      reject: false,
++    }) as unknown as StreamingProcess;
++    const stdout = captureOutputTail(child.stdout);
++    const stderr = captureOutputTail(child.stderr);
++    const result = await child;
++    await Promise.all([stdout.done, stderr.done]);
++    return {
++      code: Number.isInteger(result.exitCode) ? result.exitCode : 1,
++      output: combineOutput(stdout.render(), stderr.render()),
++    };
+   } catch (err) {
+-    const error = err as { code?: number | string; stdout?: string; stderr?: string };
+-    let output = "";
+-    if (error.stdout) output += String(error.stdout);
+-    if (error.stderr)
+-      output += (output && !output.endsWith("\n") ? "\n" : "") + String(error.stderr);
++    const error = err as {
++      code?: number | string;
++      exitCode?: number;
++      stdout?: string;
++      stderr?: string;
++      message?: string;
++    };
++    const output = combineOutput(
++      error.stdout ? String(error.stdout) : "",
++      error.stderr ? String(error.stderr) : (error.message ?? ""),
++    );
+     const code = typeof error.code === "number" ? error.code : 1;
+-    return { code, output };
++    return { code: error.exitCode ?? code, output };
+   }
+ }
++
++type StreamingProcess = Promise<{ exitCode: number }> & {
++  stdout?: Readable | null;
++  stderr?: Readable | null;
++};
++
++function combineOutput(stdout: string, stderr: string): string {
++  if (!stdout) return stderr;
++  if (!stderr) return stdout;
++  return `${stdout}${stdout.endsWith("\n") ? "" : "\n"}${stderr}`;
++}
++
++function captureOutputTail(stream: Readable | null | undefined): {
++  done: Promise<void>;
++  render: () => string;
++} {
++  const chunks: Buffer[] = [];
++  let byteLength = 0;
++  let truncated = false;
++
++  const append = (value: string | Buffer): void => {
++    const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value);
++    if (chunk.byteLength >= VERIFY_OUTPUT_TAIL_BYTES) {
++      chunks.length = 0;
++      chunks.push(chunk.subarray(chunk.byteLength - VERIFY_OUTPUT_TAIL_BYTES));
++      byteLength = VERIFY_OUTPUT_TAIL_BYTES;
++      truncated = true;
++      return;
++    }
++
++    chunks.push(chunk);
++    byteLength += chunk.byteLength;
++    while (byteLength > VERIFY_OUTPUT_TAIL_BYTES && chunks.length > 0) {
++      const first = chunks[0];
++      if (!first) break;
++      const overflow = byteLength - VERIFY_OUTPUT_TAIL_BYTES;
++      if (first.byteLength <= overflow) {
++        chunks.shift();
++        byteLength -= first.byteLength;
++      } else {
++        chunks[0] = first.subarray(overflow);
++        byteLength -= overflow;
++      }
++      truncated = true;
++    }
++  };
++
++  const done = stream
++    ? new Promise<void>((resolve) => {
++        let settled = false;
++        const finish = (): void => {
++          if (settled) return;
++          settled = true;
++          resolve();
++        };
++        stream.on("data", append);
++        stream.once("end", finish);
++        stream.once("close", finish);
++        stream.once("error", finish);
++      })
++    : Promise.resolve();
++
++  return {
++    done,
++    render: () => {
++      const tail = Buffer.concat(chunks, byteLength).toString("utf8");
++      return truncated
++        ? `[output truncated; showing last ${VERIFY_OUTPUT_TAIL_BYTES} bytes]\n${tail}`
++        : tail;
++    },
++  };
++}
+diff --git a/packages/agentplane/src/commands/shared/task-handoff.test.ts b/packages/agentplane/src/commands/shared/task-handoff.test.ts
+index b19286f5d..a7492e7b9 100644
+--- a/packages/agentplane/src/commands/shared/task-handoff.test.ts
++++ b/packages/agentplane/src/commands/shared/task-handoff.test.ts
+@@ -27,6 +27,42 @@ describe("task handoff runner hints", () => {
+     });
+   });
+ 
++  it("does not present a read-only diagnostic as a terminal runner transition", () => {
++    expect(
++      buildRunnerHintCommands({
++        task_id: "202607311055-ST7XZY",
++        run_id: "run-succeeded",
++        status: "success",
++      }),
++    ).toEqual({
++      next_action: "none",
++      next_command: null,
++      resume_command: "agentplane task run status 202607311055-ST7XZY --run-id run-succeeded",
++      retry_command: "agentplane task run 202607311055-ST7XZY",
++    });
++  });
++
++  it("keeps every runner transition free of the state-neutral verify-show command", () => {
++    const states = [
++      { run_id: null, status: null },
++      { run_id: "run-prepared", status: "prepared" },
++      { run_id: "run-running", status: "running", pid_alive: true },
++      { run_id: "run-stale", status: "running", pid_alive: false },
++      { run_id: "run-failed", status: "failed" },
++      { run_id: "run-blocked", status: "blocked" },
++      { run_id: "run-cancelled", status: "cancelled" },
++      { run_id: "run-succeeded", status: "success" },
++    ] as const;
++
++    for (const state of states) {
++      const hints = buildRunnerHintCommands({
++        task_id: "202607311055-ST7XZY",
++        ...state,
++      });
++      expect(hints.next_command ?? "").not.toContain("verify-show");
++    }
++  });
++
+   it("persists stable runner references without clone-dependent paths", () => {
+     const taskId = "202606041738-A531FX";
+     const runId = "run-blocked";
+diff --git a/packages/agentplane/src/commands/shared/task-handoff.ts b/packages/agentplane/src/commands/shared/task-handoff.ts
+index 4948a65ae..85d14420a 100644
+--- a/packages/agentplane/src/commands/shared/task-handoff.ts
++++ b/packages/agentplane/src/commands/shared/task-handoff.ts
+@@ -300,7 +300,7 @@ export function buildRunnerHintCommands(opts: {
+   }
+   return {
+     next_action: "none",
+-    next_command: `agentplane task verify-show ${opts.task_id}`,
++    next_command: null,
+     resume_command: statusCommand,
+     retry_command: runCommand,
+   };
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index ac3c38835..6f7b84180 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -97,9 +97,6 @@ function operationArgv(operation: WorkflowOperation): string[] {
+           ...(params.runId ? ["--run-id", params.runId] : []),
+         ];
+       }
+-      if (params.mode === "verify") {
+-        return ["agentplane", "task", "verify-show", params.taskId];
+-      }
+       return ["agentplane", "task", "run", params.taskId];
+     }
+     case "task.artifacts.commit": {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-factory.ts b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+index ad299a1d2..753f58f31 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-factory.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+@@ -173,7 +173,6 @@ function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runne
+   if (action === "wait") {
+     return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
+   }
+-  if (action === "none") return { mode: "verify", taskId: id };
+   return { mode: "run", taskId: id };
+ }
+ 
+@@ -197,6 +196,32 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
+     });
+   }
+   if (state.resume.runner.run_id || state.resume.runner.status) {
++    if (state.resume.runner.next_action === "none") {
++      return agentEpisodeStep({
++        state,
++        id: "agent.direct_verification",
++        code: "review_direct_verification",
++        phase: "direct_verification_required",
++        checkout: "current_checkout",
++        role: "TESTER",
++        purpose: "verification",
++        summary:
++          `runner work is complete; execute the declared Verify Steps, then record ` +
++          `agentplane verify ${id} --ok|--rework with evidence`,
++        objective:
++          "Verify the completed direct-runner work against the declared contract and record an evidence-based verdict.",
++        mustNot: [
++          "do not rerun the completed runner episode unless verification identifies implementation rework",
++          "do not replace the verification verdict with task verify-show or another read-only diagnostic",
++          "do not close the task before TESTER records verification evidence",
++        ],
++        returnControlWhen:
++          "after TESTER records the evidence-based verification outcome; recompute task next-action before direct closeout",
++        verificationCandidate: `agentplane verify ${id} --ok|--rework --by TESTER --note "..."`,
++        evidenceMissing: ["verification_record"],
++        selectedBlocker: null,
++      });
++    }
+     const code = state.resume.runner.next_action ?? "continue_direct";
+     return cliOperationStep({
+       state,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 042e1c5cf..5c50778e6 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -96,7 +96,6 @@ export type WorkflowOperationParams = {
+   "runner.follow":
+     | { mode: "reclaim"; taskId: string; author: string; reason: string }
+     | { mode: "status"; taskId: string; runId: string | null }
+-    | { mode: "verify"; taskId: string }
+     | { mode: "run"; taskId: string };
+   "task.artifacts.commit": { taskId: string };
+   "task.branch.start": { taskId: string; author: string; body: string };
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts
+index 6df9519b6..9158fbf95 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts
+@@ -66,10 +66,17 @@ export type DirectTaskCloseoutOutcome =
+ 
+ function verificationEligibleRoute(decision: TaskRouteDecision): boolean {
+   const step = decision.workflowStep;
++  if (
++    step.kind === "agent_episode" &&
++    step.id === "agent.direct_verification" &&
++    step.episode.purpose === "verification"
++  ) {
++    return true;
++  }
+   return (
+     step.kind === "cli_operation" &&
+     step.operation.id === "runner.follow" &&
+-    (step.operation.params.mode === "run" || step.operation.params.mode === "verify")
++    step.operation.params.mode === "run"
+   );
+ }
+ 
