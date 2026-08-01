@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T09:39:51.504Z"
+  updated_at: "2026-08-01T10:23:54.423Z"
   updated_by: "CODER"
-  note: "Deterministic evaluator-boundary checks passed at c9f9423d36b7."
+  note: |-
+    Command: bun test <8 focused context/evaluator/lifecycle files>
+    Result: pass
+    Evidence: 53 tests passed with 508 assertions at 346e9681ba68631bd22d5e40c328654c30a8892e.
+    Scope: command-session capability isolation, evaluator prepare/execute, lifecycle finish, incident promotion, and multi-task exact-SHA review.
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: format, schemas, templates, policy, release parity, builds, cold-start, docs/inventory, hotspot, lint, 514 test files with 3595 tests, and all 12 critical CLI chunks passed at c00ecad0034a9bea01df07e0c0cffc34a6cf229c.
+    Scope: repository-wide merged-main regression surface; the following exact-SHA commit removes only one stale eslint-disable comment.
+
+    Command: bunx eslint <4 changed files>; bun run guards:check; bun run schemas:check; bun run typecheck; git diff --check c00ecad..346e9681
+    Result: pass
+    Evidence: no lint findings, shared guards and trust ratchet passed, schemas OK, TypeScript 7 build passed, and the final behavioral diff from the full-gate SHA is comment-only.
+    Scope: final SHA 346e9681ba68631bd22d5e40c328654c30a8892e and all changed fixture paths.
+
+    Command: hosted Core CI run 30694611692 and local reproduction before fix
+    Result: pass
+    Evidence: the hosted failure reproduced locally as 10 deterministic E_VALIDATION failures across 3 lifecycle files; after the fixture fix all 17 tests pass repeatedly.
+    Scope: regression reproduction and flake classification; deterministic integration defect, not a flake.
   attempts: 0
 quality_review:
   state: "pass"
@@ -261,8 +280,33 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-01T10:23:54.423Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: bun test <8 focused context/evaluator/lifecycle files>
+      Result: pass
+      Evidence: 53 tests passed with 508 assertions at 346e9681ba68631bd22d5e40c328654c30a8892e.
+      Scope: command-session capability isolation, evaluator prepare/execute, lifecycle finish, incident promotion, and multi-task exact-SHA review.
+
+      Command: bun run ci:local:fast
+      Result: pass
+      Evidence: format, schemas, templates, policy, release parity, builds, cold-start, docs/inventory, hotspot, lint, 514 test files with 3595 tests, and all 12 critical CLI chunks passed at c00ecad0034a9bea01df07e0c0cffc34a6cf229c.
+      Scope: repository-wide merged-main regression surface; the following exact-SHA commit removes only one stale eslint-disable comment.
+
+      Command: bunx eslint <4 changed files>; bun run guards:check; bun run schemas:check; bun run typecheck; git diff --check c00ecad..346e9681
+      Result: pass
+      Evidence: no lint findings, shared guards and trust ratchet passed, schemas OK, TypeScript 7 build passed, and the final behavioral diff from the full-gate SHA is comment-only.
+      Scope: final SHA 346e9681ba68631bd22d5e40c328654c30a8892e and all changed fixture paths.
+
+      Command: hosted Core CI run 30694611692 and local reproduction before fix
+      Result: pass
+      Evidence: the hosted failure reproduced locally as 10 deterministic E_VALIDATION failures across 3 lifecycle files; after the fixture fix all 17 tests pass repeatedly.
+      Scope: regression reproduction and flake classification; deterministic integration defect, not a flake.
 doc_version: 3
-doc_updated_at: "2026-08-01T09:41:43.603Z"
+doc_updated_at: "2026-08-01T10:23:55.374Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
@@ -748,6 +792,54 @@ sections:
     Result: pass
     Evidence: TypeScript build passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
     Scope: static type safety
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+    - old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T10:23:54.423Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun test <8 focused context/evaluator/lifecycle files>
+    Result: pass
+    Evidence: 53 tests passed with 508 assertions at 346e9681ba68631bd22d5e40c328654c30a8892e.
+    Scope: command-session capability isolation, evaluator prepare/execute, lifecycle finish, incident promotion, and multi-task exact-SHA review.
+
+    Command: bun run ci:local:fast
+    Result: pass
+    Evidence: format, schemas, templates, policy, release parity, builds, cold-start, docs/inventory, hotspot, lint, 514 test files with 3595 tests, and all 12 critical CLI chunks passed at c00ecad0034a9bea01df07e0c0cffc34a6cf229c.
+    Scope: repository-wide merged-main regression surface; the following exact-SHA commit removes only one stale eslint-disable comment.
+
+    Command: bunx eslint <4 changed files>; bun run guards:check; bun run schemas:check; bun run typecheck; git diff --check c00ecad..346e9681
+    Result: pass
+    Evidence: no lint findings, shared guards and trust ratchet passed, schemas OK, TypeScript 7 build passed, and the final behavioral diff from the full-gate SHA is comment-only.
+    Scope: final SHA 346e9681ba68631bd22d5e40c328654c30a8892e and all changed fixture paths.
+
+    Command: hosted Core CI run 30694611692 and local reproduction before fix
+    Result: pass
+    Evidence: the hosted failure reproduced locally as 10 deterministic E_VALIDATION failures across 3 lifecycle files; after the fixture fix all 17 tests pass repeatedly.
+    Scope: regression reproduction and flake classification; deterministic integration defect, not a flake.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:41:43.603Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -1313,6 +1405,54 @@ Command: bun run typecheck
 Result: pass
 Evidence: TypeScript build passed at c9f9423d36b7c5ec5c7e53fc38b4bb53e4c62557
 Scope: static type safety
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-YD5J89-migrate-context-and-evaluator-command-boundaries/.agentplane/tasks/202607221908-YD5J89/blueprint/resolved-snapshot.json
+- old_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- current_digest: 185b28bf3c4e43c7937292c7611019b39d962da5dde83f80d6da62973482cd2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-YD5J89
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T10:23:54.423Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test <8 focused context/evaluator/lifecycle files>
+Result: pass
+Evidence: 53 tests passed with 508 assertions at 346e9681ba68631bd22d5e40c328654c30a8892e.
+Scope: command-session capability isolation, evaluator prepare/execute, lifecycle finish, incident promotion, and multi-task exact-SHA review.
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: format, schemas, templates, policy, release parity, builds, cold-start, docs/inventory, hotspot, lint, 514 test files with 3595 tests, and all 12 critical CLI chunks passed at c00ecad0034a9bea01df07e0c0cffc34a6cf229c.
+Scope: repository-wide merged-main regression surface; the following exact-SHA commit removes only one stale eslint-disable comment.
+
+Command: bunx eslint <4 changed files>; bun run guards:check; bun run schemas:check; bun run typecheck; git diff --check c00ecad..346e9681
+Result: pass
+Evidence: no lint findings, shared guards and trust ratchet passed, schemas OK, TypeScript 7 build passed, and the final behavioral diff from the full-gate SHA is comment-only.
+Scope: final SHA 346e9681ba68631bd22d5e40c328654c30a8892e and all changed fixture paths.
+
+Command: hosted Core CI run 30694611692 and local reproduction before fix
+Result: pass
+Evidence: the hosted failure reproduced locally as 10 deterministic E_VALIDATION failures across 3 lifecycle files; after the fixture fix all 17 tests pass repeatedly.
+Scope: regression reproduction and flake classification; deterministic integration defect, not a flake.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T09:41:43.603Z, excerpt_hash=sha256:0730ba5f18a54b76746d35785581627ddbe3a57fe263e57424859cdee158ee17
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

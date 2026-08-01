@@ -13,7 +13,25 @@ Created: 2026-08-01T00:38:26.423Z
 ## Verification
 
 - State: ok
-- Note: Deterministic evaluator-boundary checks passed at c9f9423d36b7.
+- Note: Command: bun test <8 focused context/evaluator/lifecycle files>
+Result: pass
+Evidence: 53 tests passed with 508 assertions at 346e9681ba68631bd22d5e40c328654c30a8892e.
+Scope: command-session capability isolation, evaluator prepare/execute, lifecycle finish, incident promotion, and multi-task exact-SHA review.
+
+Command: bun run ci:local:fast
+Result: pass
+Evidence: format, schemas, templates, policy, release parity, builds, cold-start, docs/inventory, hotspot, lint, 514 test files with 3595 tests, and all 12 critical CLI chunks passed at c00ecad0034a9bea01df07e0c0cffc34a6cf229c.
+Scope: repository-wide merged-main regression surface; the following exact-SHA commit removes only one stale eslint-disable comment.
+
+Command: bunx eslint <4 changed files>; bun run guards:check; bun run schemas:check; bun run typecheck; git diff --check c00ecad..346e9681
+Result: pass
+Evidence: no lint findings, shared guards and trust ratchet passed, schemas OK, TypeScript 7 build passed, and the final behavioral diff from the full-gate SHA is comment-only.
+Scope: final SHA 346e9681ba68631bd22d5e40c328654c30a8892e and all changed fixture paths.
+
+Command: hosted Core CI run 30694611692 and local reproduction before fix
+Result: pass
+Evidence: the hosted failure reproduced locally as 10 deterministic E_VALIDATION failures across 3 lifecycle files; after the fixture fix all 17 tests pass repeatedly.
+Scope: regression reproduction and flake classification; deterministic integration defect, not a flake.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
