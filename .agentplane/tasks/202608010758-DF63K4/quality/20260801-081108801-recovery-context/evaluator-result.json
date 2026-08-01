@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen evidence reports successful verification only as a summary note; verification records, runner history, and runtime evidence are all empty, so the required checks cannot be deterministically validated.",
+      "broken_invariant": "Pass requires recorded evidence covering the generated-document check, TypeScript toolchain contract, final diff scope, and repository status; the docs verification contract also requires exact commands, results, evidence summaries, and covered paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608010758-DF63K4/quality/20260801-081108801-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:abac69b6ced147173ec1e5201f4f3ec38524618a1402788ba0b748a74f429a31",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.docs.md",
+          "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Provide deterministic recorded results for `bun run docs:scripts:check` and `bun run typescript:toolchain:check`.",
+    "Provide recorded `git diff --check` output and final `git status --short --untracked-files=all` evidence.",
+    "Provide a recorded diff-scope check proving that the generated `scripts/README.md` changes match the current `package.json` registry and contain no unrelated implementation changes."
+  ],
+  "hidden_assumptions": [
+    "The TESTER summary note accurately reflects commands that ran against evaluated SHA c074e8b126972091c6591ac028c39d407e0b7da2.",
+    "The lifecycle artifacts present in the frozen patch are expected branch_pr artifacts rather than unrelated workspace drift.",
+    "The generated table-width changes are deterministic consequences of the current script registry."
+  ],
+  "recovery_context": "Attach frozen deterministic command evidence for the evaluated SHA, including exact commands, exit results, relevant output summaries, covered paths, diff validation, and final tracked/untracked status; then rerun semantic evaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
