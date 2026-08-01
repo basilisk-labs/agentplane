@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "`evaluator run --no-record` still enters a command catalog boundary declared with write and Git-mutation capabilities, despite selecting a read dependency inside the handler. The implementation therefore does not provide the promised read-only evaluator authority boundary."
 commit:
-  hash: "f404121e09d0447deac5d8001481b63ced9269cd"
-  message: "🐛 YD5J89 task: repair hosted CI gates"
+  hash: "9ef73324a40ab1a66bd831eb2c31d2402c4fdb11"
+  message: "🔒 YD5J89 task: enforce evaluator run session authority"
 comments:
   -
     author: "CODER"
@@ -83,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework complete: repaired hosted CI gates, restored generated script inventory parity, and extracted evaluator catalog rendering below the runtime module size limit."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: evaluator run now selects read/write authority before CommandSession construction, with normal registry-dispatch denial coverage."
 events:
   -
     type: "status"
@@ -137,8 +140,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Post-rework verification passed on f404121e0: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39."
+  -
+    type: "status"
+    at: "2026-08-01T02:13:55.928Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: evaluator run now selects read/write authority before CommandSession construction, with normal registry-dispatch denial coverage."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:02:32.842Z"
+doc_updated_at: "2026-08-01T02:13:55.928Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
