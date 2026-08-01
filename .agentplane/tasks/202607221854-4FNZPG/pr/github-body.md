@@ -32,10 +32,11 @@ Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr
  ...cli.core.route-decision.direct-closeout.test.ts |  83 ++-
  .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
  .../src/cli/run-cli.core.task-guided.test.ts       |  39 +-
+ .../cli/run-cli.core.task-next-action-json.test.ts |  11 +-
  .../installed-migration-matrix-script.test.ts      | 103 ++++
  scripts/lib/installed-migration-matrix.mjs         | 649 +++++++++++++++++++++
  .../release/check-local-tarball-install-smoke.mjs  |  10 +
- 8 files changed, 930 insertions(+), 108 deletions(-)
+ 9 files changed, 936 insertions(+), 113 deletions(-)
 ```
 
 </details>
