@@ -51,14 +51,14 @@ Created: 2026-08-01T00:38:26.423Z
  .../commands/evaluator/evaluator-artifact-port.ts  |  67 +++
  .../evaluator/evaluator-catalog.command.ts         | 122 +++++
  .../evaluator/evaluator-execute-supervisor.ts      |  11 +-
- .../evaluator/evaluator-run.command.test.ts        |  82 ++-
+ .../evaluator/evaluator-prepare.command.test.ts    |  82 +++
  .../src/commands/evaluator/evaluator.command.ts    | 561 ++++++++++++---------
  .../task/direct-task-supervisor-evaluator.ts       |   2 +
  packages/agentplane/src/context/doctor.ts          |  60 ++-
  packages/agentplane/src/context/ingest.ts          | 121 +++--
  packages/agentplane/src/context/reindex.ts         | 101 ++--
  scripts/README.md                                  |  40 +-
- 29 files changed, 3004 insertions(+), 693 deletions(-)
+ 29 files changed, 3007 insertions(+), 690 deletions(-)
 ```
 
 </details>

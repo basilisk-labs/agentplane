@@ -1,8 +1,8 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { readTask } from "@agentplaneorg/core/tasks";
-import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
-import { describe, expect, it, vi } from "vitest";
+import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+import { describe, expect, it } from "vitest";
 
 import { parseCommandArgv } from "../../cli/spec/parse.js";
 import { loadCommandContext } from "../shared/task-backend.js";
@@ -10,12 +10,7 @@ import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
-import {
-  makeRunEvaluatorRunPrepareHandler,
-  runEvaluatorPrepareOnlyCommand,
-  runEvaluatorRun,
-} from "./evaluator.command.js";
-import { createEvaluatorArtifactPreparationPort } from "./evaluator-artifact-port.js";
+import { runEvaluatorRun } from "./evaluator.command.js";
 import {
   renderActualDiff,
   resolveEvaluatorDiffBase,
@@ -99,77 +94,6 @@ function typedEvaluatorResult(
 }
 
 describe("evaluator run command", () => {
-  it("returns a typed no-record result without using stdout as a data channel", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const taskId = "202605240900-EVNR";
-    await addTask(root, taskId);
-    await commitPath(root, "src/review-target.txt", "review target", "feat: review target");
-    const command = await loadCommandContext({ cwd: root, rootOverride: root });
-    const io = captureStdIO();
-
-    try {
-      const result = await runEvaluatorPrepareOnlyCommand(
-        { cwd: root, rootOverride: root },
-        {
-          taskId,
-          evaluator: "recovery-context",
-          provenance: "evaluator_supplied",
-          verdict: "pass",
-          summary: "Prepared review context without recording a semantic verdict.",
-          findings: ["The typed preparation result is available without recording a review."],
-          evidenceRefs: [],
-          missingTests: [],
-          hiddenAssumptions: [],
-          residualRisks: [],
-          json: true,
-          record: false,
-        },
-        {
-          getEvaluatorArtifactPort: () =>
-            Promise.resolve(createEvaluatorArtifactPreparationPort(command)),
-        },
-      );
-
-      expect(result).toMatchObject({
-        provenance: "evaluator_supplied",
-        verdict: "pass",
-        recorded: false,
-      });
-      expect(result.work_order).toMatch(/work-order\.json$/u);
-      expect(result.prompt).toMatch(/evaluator-prompt\.md$/u);
-      expect(io.stdout).toBe("");
-      expect(io.stderr).toBe("");
-
-      const getEvaluatorArtifactPort = vi.fn(() =>
-        Promise.resolve(createEvaluatorArtifactPreparationPort(command)),
-      );
-      const handler = makeRunEvaluatorRunPrepareHandler({
-        getEvaluatorArtifactPort,
-      });
-      await handler(
-        { cwd: root, rootOverride: root },
-        {
-          taskId,
-          evaluator: "recovery-context",
-          provenance: "evaluator_supplied",
-          verdict: "pass",
-          summary: "Prepared review context without recording a semantic verdict.",
-          findings: ["The typed preparation result is available without recording a review."],
-          evidenceRefs: [],
-          missingTests: [],
-          hiddenAssumptions: [],
-          residualRisks: [],
-          json: true,
-          record: false,
-        },
-      );
-      expect(getEvaluatorArtifactPort).toHaveBeenCalledOnce();
-    } finally {
-      io.restore();
-    }
-  });
-
   it("parses structured review evidence and findings as repeatable fields", () => {
     const { parsed } = parseCommandArgv(evaluatorRunSpec, [
       "T-1",
