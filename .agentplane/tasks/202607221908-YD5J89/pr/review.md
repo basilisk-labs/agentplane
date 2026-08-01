@@ -6,7 +6,7 @@ Created: 2026-08-01T00:38:26.423Z
 
 - Task: `202607221908-YD5J89`
 - Title: Migrate context and evaluator command boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221908-YD5J89/migrate-context-and-evaluator-command-boundaries`
 - Canonical task record: `.agentplane/tasks/202607221908-YD5J89/README.md`
 
