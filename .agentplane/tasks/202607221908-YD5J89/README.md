@@ -2,10 +2,10 @@
 id: "202607221908-YD5J89"
 title: "Migrate context and evaluator command boundaries"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "The recorded deterministic verification predates the implementation rework and therefore does not verify the evaluated SHA."
 commit:
-  hash: "a6d31caa2b555554c74e067ffd812028fc03c72d"
-  message: "🧪 YD5J89 task: record passing quality review"
+  hash: "f404121e09d0447deac5d8001481b63ced9269cd"
+  message: "🐛 YD5J89 task: repair hosted CI gates"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Implementation rework complete: repaired hosted CI gates, restored generated script inventory parity, and extracted evaluator catalog rendering below the runtime module size limit."
 events:
   -
     type: "status"
@@ -121,8 +124,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Post-rework verification passed: full ci:local:fast (512 files/3589 tests), critical CLI 12/12, TS7 typecheck, hotspot and generated-doc freshness; focused evaluator/catalog 39/39."
+  -
+    type: "status"
+    at: "2026-08-01T02:02:16.675Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation rework complete: repaired hosted CI gates, restored generated script inventory parity, and extracted evaluator catalog rendering below the runtime module size limit."
 doc_version: 3
-doc_updated_at: "2026-08-01T02:00:46.939Z"
+doc_updated_at: "2026-08-01T02:02:16.675Z"
 doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
