@@ -1,0 +1,15 @@
+{
+  "details": "Evidence: .agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json (sha256:7a279126460f054de891f39c6362dbfe4d12593c4177a6b910efbc24022513b7). Recorded checks: focused catalog/session 34/34; full agentplane 3206/3206; critical CLI 77/77; ci:contract; arch:check; guards:check; typecheck; hotspots:check; knip:check; zero CommandNeeds, legacy-command-needs, needs:, or loader RunDeps matches; no packages/scripts drift from implementation SHA.",
+  "digest": "sha256:f614c484d815a86e4769c2227a5fb735fd2d6cea201b3928be5afa373128bd1d",
+  "implementation_sha": "d89988611fbdd3efaba3c9054d122104e6717a2b",
+  "kind": "task_verification_record",
+  "note": "PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at d89988611fbd.",
+  "recorded_at": "2026-08-01T13:28:03.122Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Resolve this task's dependency closure. Expected: all five command-family vertical slices are DONE with independent verification.\n2. Inspect every command catalog entry and handler session type. Expected: granular requirements are explicit and no handler receives undeclared task/Git/provider capabilities.\n3. Search for active coarse CommandNeeds consumers and duplicate loader requirement metadata. Expected: none remain.\n4. Run command/help/JSON snapshots, preparation profiles, `bun run arch:check`, `bun run guards:check`, `bun run ci:contract`, and typecheck.",
+  "scope_digest": "sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326",
+  "task_id": "202607221854-SDPFN0",
+  "verification_command": "agentplane verify 202607221854-SDPFN0 --ok --by TESTER",
+  "verifier": "TESTER"
+}

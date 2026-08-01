@@ -4,7 +4,7 @@ title: "Complete CommandSession capability migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -37,10 +37,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-01T13:23:37.323Z"
+  updated_at: "2026-08-01T13:28:03.122Z"
   updated_by: "TESTER"
-  note: "PASS at implementation d89988611fbd: all five dependency slices are DONE; explicit capability catalog and typed loaders verified; coarse CommandNeeds metadata absent; ci:contract, arch:check, guards:check, typecheck, critical CLI (77 tests), full agentplane suite (3206 tests), and focused catalog/session tests (34 tests) passed."
+  note: "PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at d89988611fbd."
   attempts: 0
+quality_review:
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-01T13:24:57.815Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "d89988611fbdd3efaba3c9054d122104e6717a2b"
+  blueprint_digest: "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62"
+  evidence_refs:
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/README.md"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Замороженный пакет содержит только итоговую заметку TESTER о прохождении проверок, но не содержит детерминированных записей, истории запусков или runtime-доказательств, поэтому нельзя подтвердить положительные, отрицательные и чувствительные к ленивой подготовке пути."
+  recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "d89988611fbdd3efaba3c9054d122104e6717a2b"
   message: "♻️ SDPFN0 task: complete CommandSession capability migration"
@@ -72,8 +98,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at implementation d89988611fbd: all five dependency slices are DONE; explicit capability catalog and typed loaders verified; coarse CommandNeeds metadata absent; ci:contract, arch:check, guards:check, typecheck, critical CLI (77 tests), full agentplane suite (3206 tests), and focused catalog/session tests (34 tests) passed."
+  -
+    type: "verify"
+    at: "2026-08-01T13:28:03.122Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at d89988611fbd."
 doc_version: 3
-doc_updated_at: "2026-08-01T13:23:38.133Z"
+doc_updated_at: "2026-08-01T13:28:04.024Z"
 doc_updated_by: "CODER"
 description: "RF-24b fan-in: integrate the five independently verified command-family vertical slices, remove the coarse CommandNeeds compatibility layer, and prove every catalog entry has minimal typed capabilities."
 sections:
@@ -107,6 +139,38 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T13:22:41.038Z, excerpt_hash=sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-SDPFN0-complete-commandsession-capability-migration/.agentplane/tasks/202607221854-SDPFN0/blueprint/resolved-snapshot.json
+    - old_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+    - current_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-SDPFN0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221854-SDPFN0
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-01T13:28:03.122Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at d89988611fbd.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T13:23:38.133Z, excerpt_hash=sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326
+
+    Details:
+
+    Evidence: .agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json (sha256:7a279126460f054de891f39c6362dbfe4d12593c4177a6b910efbc24022513b7). Recorded checks: focused catalog/session 34/34; full agentplane 3206/3206; critical CLI 77/77; ci:contract; arch:check; guards:check; typecheck; hotspots:check; knip:check; zero CommandNeeds, legacy-command-needs, needs:, or loader RunDeps matches; no packages/scripts drift from implementation SHA.
 
     BlueprintSnapshotRef:
     - state: current
@@ -181,6 +245,38 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T13:22:41.038Z, excerpt_hash=sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-SDPFN0-complete-commandsession-capability-migration/.agentplane/tasks/202607221854-SDPFN0/blueprint/resolved-snapshot.json
+- old_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+- current_digest: 06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-SDPFN0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221854-SDPFN0
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-01T13:28:03.122Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: deterministic SHA-bound evidence refreshed after evaluator block; implementation unchanged at d89988611fbd.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T13:23:38.133Z, excerpt_hash=sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326
+
+Details:
+
+Evidence: .agentplane/cache/verification/202607221854-SDPFN0-d89988611fbd-checks.json (sha256:7a279126460f054de891f39c6362dbfe4d12593c4177a6b910efbc24022513b7). Recorded checks: focused catalog/session 34/34; full agentplane 3206/3206; critical CLI 77/77; ci:contract; arch:check; guards:check; typecheck; hotspots:check; knip:check; zero CommandNeeds, legacy-command-needs, needs:, or loader RunDeps matches; no packages/scripts drift from implementation SHA.
 
 BlueprintSnapshotRef:
 - state: current

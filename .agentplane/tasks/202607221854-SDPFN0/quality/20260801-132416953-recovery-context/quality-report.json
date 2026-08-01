@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-SDPFN0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T13:24:57.815Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "d89988611fbdd3efaba3c9054d122104e6717a2b",
+  "blueprint_digest": "06e4268a4cabba53cb9fddff0e6ada3a5298134a5f80219a92c0349d4fbc0c62",
+  "findings": [
+    "Замороженный пакет содержит только итоговую заметку TESTER о прохождении проверок, но не содержит детерминированных записей, истории запусков или runtime-доказательств, поэтому нельзя подтвердить положительные, отрицательные и чувствительные к ленивой подготовке пути."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Замороженные результаты catalog-wide capability и preparation-profile проверок для всех записей каталога, включая условные профили task normalize и codex plugin install.",
+    "Замороженные результаты command/help/JSON snapshot-проверок и обязательных arch:check, guards:check, ci:contract, test:critical и typecheck."
+  ],
+  "hidden_assumptions": [
+    "Заметка TESTER предполагается достаточным доказательством фактического выполнения и успешного завершения всех перечисленных команд.",
+    "Фокусные тесты 34 catalog/session cases предполагаются полным покрытием минимальности capabilities и lazy preparation для всего каталога, хотя их результаты и перечень случаев отсутствуют в замороженном пакете."
+  ],
+  "residual_risks": [
+    "Повторно подготовить замороженный пакет с детерминированными результатами обязательных и фокусных проверок на evaluated_sha d89988611fbdd3efaba3c9054d122104e6717a2b; текущий diff и контекст задачи присутствуют, но проверить заявленный успех по имеющимся evidence невозможно."
+  ]
+}

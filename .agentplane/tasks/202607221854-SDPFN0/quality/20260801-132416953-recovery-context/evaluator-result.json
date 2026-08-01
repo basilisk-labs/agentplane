@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Замороженный пакет содержит только итоговую заметку TESTER о прохождении проверок, но не содержит детерминированных записей, истории запусков или runtime-доказательств, поэтому нельзя подтвердить положительные, отрицательные и чувствительные к ленивой подготовке пути.",
+      "broken_invariant": "Pass допустим только при наличии замороженных доказательств, покрывающих релевантные положительные, отрицательные и concurrency-sensitive пути; обязательные Verify Steps должны быть выполнены и их результаты записаны.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-132416953-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:90f4f2bfed2a88e523e20b39ad9a7efee5f2566b1395a8f913d0da8e90686ae1",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Замороженные результаты catalog-wide capability и preparation-profile проверок для всех записей каталога, включая условные профили task normalize и codex plugin install.",
+    "Замороженные результаты command/help/JSON snapshot-проверок и обязательных arch:check, guards:check, ci:contract, test:critical и typecheck."
+  ],
+  "hidden_assumptions": [
+    "Заметка TESTER предполагается достаточным доказательством фактического выполнения и успешного завершения всех перечисленных команд.",
+    "Фокусные тесты 34 catalog/session cases предполагаются полным покрытием минимальности capabilities и lazy preparation для всего каталога, хотя их результаты и перечень случаев отсутствуют в замороженном пакете."
+  ],
+  "recovery_context": "Повторно подготовить замороженный пакет с детерминированными результатами обязательных и фокусных проверок на evaluated_sha d89988611fbdd3efaba3c9054d122104e6717a2b; текущий diff и контекст задачи присутствуют, но проверить заявленный успех по имеющимся evidence невозможно.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
