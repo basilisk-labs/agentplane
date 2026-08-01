@@ -1,10 +1,10 @@
 ---
 id: "202607221854-4FNZPG"
 title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -24,9 +24,9 @@ verify:
   - "bun run release:e2e:local"
   - "bun run release:prepublish:heavy"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T19:30:50.539Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -35,11 +35,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "TESTER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T19:31:50.730Z"
+    author: "TESTER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:34.618Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T19:31:50.730Z"
+doc_updated_by: "TESTER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
   Summary: |-
@@ -69,6 +79,10 @@ sections:
     - Restore fixtures from version-controlled snapshots and rerun the previous release smoke.
     - Any product migration defect remains a release blocker with a separate repair task.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "14185e94deadff666a1544413ba5ae728dcacdfb"
+    version: 1
 id_source: "generated"
 ---
 ## Summary

@@ -1,0 +1,1 @@
+🚧 4FNZPG task: Validate the 0.6.24-to-0.7 migration and installed-package matrix [202607221854-4FNZPG]
