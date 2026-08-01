@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:38fe298f475f0236bd23df474f5c2d0991dfec22dd723ee683061198a6ea3212",
+  "implementation_sha": "41212b7a1a8b7127e773a587b652701298477648",
+  "kind": "task_verification_record",
+  "note": "Verified commit 41212b7a1a8b: reproduced the pre-fix ap doctor --dev E_INTERNAL/ENOENT on missing src/usecases; post-fix doctor --dev passes. Focused layering regressions: 4/4 pass. Compatibility matrix (run-repository v1, evaluator legacy facade, integration queue legacy reader): 46/46 pass. Full gates: ci:contract pass; typecheck pass; guards/trust ratchet pass with 0 reviewed violations; arch check pass with 0 dependency violations; critical CLI 12/12 chunks pass. Flake classification: none; one expected stale-dist gate required framework bootstrap after source mutation and then passed.",
+  "recorded_at": "2026-08-01T18:25:54.518Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the trust-boundary checker and architecture guards. Expected: zero baseline violations and zero suppressions added for v0.7 paths.\n2. Search production for automatic verdicts, agent-writable observed fields, internal shell orchestration, unsafe durable casts, duplicate TaskData projections, and undeclared direct OS/Git/network imports. Expected: none remain.\n3. Exercise supported compatibility readers. Expected: they are versioned, tested adapters and cannot violate authority/provenance.\n4. Run guards, arch check, contract CI, lifecycle invariants, schemas, and typecheck.",
+  "scope_digest": "sha256:b77dc4d1c865ee15604ef604ab4ac950cd1d06c9fcf6b52a8b1314cac0710858",
+  "task_id": "202607221854-K7799B",
+  "verification_command": "agentplane verify 202607221854-K7799B --ok --by TESTER",
+  "verifier": "TESTER"
+}
