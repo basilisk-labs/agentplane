@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet contains no deterministic check results, runner history, or runtime evidence supporting the recorded verification claims.",
+      "broken_invariant": "DoD core requires verification steps to be executed and results recorded; the blueprint requires a check_result, while pass requires frozen evidence covering the relevant verification paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7b1eb49bdf59e2971f2196ab635f946407f68547f00ab8636a636dc1fb6befac",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:701c84ae6b2be4ef41f5b64e07aa41ab2e193e808a331fdd4a40a472bdd90f07",
+          "section": "plan.requiredEvidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "The recorded verification omits the mandatory documentation-policy checks `node .agentplane/policy/check-routing.mjs` and `agentplane doctor`.",
+      "broken_invariant": "The loaded docs DoD requires both minimum checks for docs-only changes; neither execution nor an approved skip is recorded.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.docs.md",
+          "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/README.md",
+          "sha256": "sha256:1a6409abcb569959ec4067676658a73ab7d2ab43ab98a6b62237731d0858945d",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Capture successful deterministic results for `bun run docs:site:generate:check` and `bun run docs:site:check` in the evaluator packet.",
+    "Run and record `node .agentplane/policy/check-routing.mjs`.",
+    "Run and record `agentplane doctor`.",
+    "Record `git status --short --untracked-files=all` evidence proving no unintended tracked or untracked artifacts remain."
+  ],
+  "hidden_assumptions": [
+    "The prose verification record is assumed to be sufficient despite the frozen observed-checks artifact containing no corresponding results.",
+    "Regenerating `website/static/llms-full.txt` is assumed to preserve canonical-link validity and avoid duplicate or conflicting documentation without recorded evidence for those checks.",
+    "The workspace is assumed to have no concurrent or unrelated drift, but the frozen evidence contains no final status evidence or drift classification."
+  ],
+  "recovery_context": "Re-run the mandatory documentation checks and freshness gates, capture their deterministic results plus final tracked/untracked status in the frozen evidence, and then repeat evaluation against the same one-file implementation scope."
+}
