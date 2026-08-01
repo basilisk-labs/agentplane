@@ -13,7 +13,7 @@ Created: 2026-08-01T02:58:47.934Z
 ## Verification
 
 - State: ok
-- Note: PASS after integration rework at d227dc0acf705edf48b5f165b92b8a368496b5d7: task run dry-run selects RUNNER_PREPARATION_REQUIREMENTS without provider or git.mutate; execute retains RUNNER_EXECUTION_REQUIREMENTS. Focused runner/Hermes/direct/branch matrix 71/71, critical 12/12 chunks, guards, lifecycle 8/8, TypeScript 7 typecheck, core lint, architecture, schemas, Knip 545/545, and changed-file formatting passed.
+- Note: PASS evidence refresh for implementation d227dc0acf705edf48b5f165b92b8a368496b5d7; deterministic SHA-bound records cover the runner and Hermes matrix plus all declared repository gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen evidence contains only a self-reported verification summary; deterministic check records and runtime evidence are absent.",
+      "broken_invariant": "A pass requires frozen verification evidence covering positive, negative, and concurrency-sensitive paths; the declared checks and phase-boundary claims cannot be independently validated from an empty verification_records, runner_history, runtime_evidence, and direct_supervision set.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-105442574-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:99b1e9b103e93d5ba9225892f1d0f5efd0b827f0cee3c02a20cd9656506961cd",
+          "line": 10,
+          "lines": "10-20",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen execution results for the direct and branch_pr runner/Hermes fixture matrix, including dry-run denial of provider and git.mutate capabilities.",
+    "Frozen results for bun run guards:check, bun run lifecycle:invariants, bun run test:critical, and bun run typecheck."
+  ],
+  "hidden_assumptions": [
+    "The CODER verification note accurately represents checks executed against evaluated SHA d227dc0acf705edf48b5f165b92b8a368496b5d7.",
+    "The added unit-level capability assertions cover the relevant runtime and concurrency-sensitive command-dispatch paths."
+  ],
+  "recovery_context": "Attach deterministic, SHA-bound check outputs or verification records for the declared repository checks and the direct/branch_pr runner-Hermes phase-boundary matrix, then rerun semantic evaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

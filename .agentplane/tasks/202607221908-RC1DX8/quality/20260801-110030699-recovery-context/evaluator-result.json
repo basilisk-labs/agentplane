@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RECOVERY-CONTEXT-001",
+      "severity": "high",
+      "summary": "Hermes inspect-only supervision receives execution authority even when neither remote access nor step execution is requested.",
+      "broken_invariant": "Runner and Hermes capabilities must be minimal and separated by preparation/execution phase; undeclared provider and lifecycle access must be denied. The static HERMES_SUPERVISION_REQUIREMENTS includes git.mutate and provider for every `hermes supervise` invocation, while the handler supports inspect-only operation through executeStep=false and conditionally accesses provider only for remote or execution requests.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/quality/20260801-110030699-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:17350e1e8a15ba94133d78e94c053c572ebf6172a618e844d894c939e0070739",
+          "section": "runner-hermes-capability-profiles.ts, command-catalog/project.ts, command-loaders/project.ts, hermes.command.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-RC1DX8/README.md",
+          "sha256": "sha256:95e0ec832201beb25bb5de809fa39eba5c5e8e74fe7507b4a419c95e9aa22de1",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add runtime session-selection tests for `hermes supervise` covering inspect-only, remote inspection, dry-run execution, and real execution; assert that inspect-only authority excludes `provider` and `git.mutate` and that cross-phase access produces typed denial."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that avoiding calls to `session.require(\"provider\")` and `session.require(\"git.mutate\")` is equivalent to withholding those capabilities, although the command session was already constructed with both capabilities."
+  ],
+  "recovery_context": "Split `hermes supervise` session selection by parsed execution/remote intent, analogous to `task run`, then refresh SHA-bound focused and repository verification evidence. The current deterministic evidence passes but asserts the overly broad static Hermes supervision profile rather than the required least-authority behavior."
+}
