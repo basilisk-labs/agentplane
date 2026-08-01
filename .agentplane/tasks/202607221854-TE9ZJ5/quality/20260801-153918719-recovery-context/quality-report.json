@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-TE9ZJ5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T15:39:18.841Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "9c4be64354a1b8e615e706813decb374ecc05598",
+  "blueprint_digest": "deb12ca385281047ce9539b468e69ff737e90b682d3c984c59866da6ebaaefc9",
+  "findings": [
+    "The trace contract is deterministic: sorted inputs, SHA-256 digests, explicit dependency edges, byte counts, status, cacheability, and named invalidation reasons are emitted without raw fingerprint values.",
+    "Route authority and evaluator artifact preparation remain non-cacheable; provider state is only a TTL candidate with mandatory live revalidation before side effects.",
+    "The benchmark compares paired trace-disabled/enabled runs with exact stdout equality and selects candidates from measured latency/size rather than enabling speculative caches."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221854-TE9ZJ5-aef2b10a2634480ed457ecb4",
+  "prepared_at": "2026-08-01T15:39:18.719Z",
+  "task": {
+    "id": "202607221854-TE9ZJ5",
+    "revision": 9,
+    "objective": "Instrument preparation graph nodes and invalidation inputs\n\nRF-26a: measure task/backend read, Git snapshot, provider state, blueprint, policy/authority, knowledge retrieval, prompt compilation, and rendering nodes with exact fingerprint and invalidation provenance.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: preparation DAG trace model, node inputs/outputs, latency, bytes, fingerprint components, dependency edges, invalidation reasons, cacheability classification, and representative cold/warm scenario reports.\n- Out of scope: enabling caches before evidence identifies worthwhile nodes.",
+      "1. Define a deterministic trace/result contract for preparation nodes.\n2. Instrument each expensive structured preparation boundary without timing semantic reasoning as cacheable work.\n3. Record fingerprint, dependency, bytes, latency, and invalidation inputs.\n4. Profile golden scenarios across cold/repeated/stale states.\n5. Select cache candidates only from measured cost and correctness constraints.",
+      "1. Run preparation traces for simple CLI, direct, branch_pr, and context scenarios. Expected: each node exposes latency, bytes, dependencies, fingerprint inputs, and invalidation reasons.\n2. Repeat unchanged and independently stale scenarios. Expected: trace identifies exactly which nodes could be reused or must invalidate.\n3. Inspect semantic decisions. Expected: they are marked non-cacheable unless provenance and invalidation are explicit.\n4. Compare trace overhead to baseline. Expected: bounded overhead and no changed functional outcome.\n5. Run focused trace tests and typecheck."
+    ]
+  },
+  "evaluated_sha": "9c4be64354a1b8e615e706813decb374ecc05598",
+  "diff_base_sha": "fa0eae41849fc8e339543f3c41dfc81b2d05c82d",
+  "blueprint_digest": "deb12ca385281047ce9539b468e69ff737e90b682d3c984c59866da6ebaaefc9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221854-TE9ZJ5/README.md",
+      "sha256": "sha256:a1015fdaea64bcbe5379009e6f48aca0d6611768a42870ac51bc3f25b8f6c2bd",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:265865bfc8bdd55213473eb3761f22ab078802b2ca52f8a65e2bbba20fff3fa0",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:4822ee994bd17f7758b5bd8c3206bdff59c605b06828bd779cb5a817b2a6810a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221854-TE9ZJ5/quality/20260801-153918719-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:4334db756f3c1bb271ddeaa4dd07da9de09015ff65aee2cf492bcefbf8a7bed5",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
