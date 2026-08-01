@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RECOVERY-CONTEXT-001",
+      "severity": "low",
+      "summary": "Frozen evidence shows the implementation satisfies the approved migration contract at the evaluated SHA.",
+      "broken_invariant": "No invariant is broken: the exact dependency closure is independently verified, coarse CommandNeeds and RunDeps surfaces are absent, conditional commands use capability-specific sessions, implementation drift is absent, and focused, full, critical, architecture, guard, typecheck, and contract checks pass.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/quality/20260801-135751726-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d1f35e9cb5b835f79b8e6a97ace1753e8e73b92851e98684bda597a86ff89f9d",
+          "section": "CommandSession capability migration diff"
+        },
+        {
+          "path": ".agentplane/cache/verification/202607221854-SDPFN0-4f808df120a6-checks.json",
+          "sha256": "sha256:39918e9fda7adf8ae502a2e0457257d3689b70f7d66060d96bc9c7d0d60d3ecf",
+          "section": "checks and negative_paths"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-SDPFN0/verification/20260801135705557-69fb8ef2b7aac7d0.json",
+          "sha256": "sha256:e281c6b8b69180e21e4293a9dad0311cd6a48bf4c87015f3547fc0c166c52ebf",
+          "section": "verification result"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI has not yet run; the verdict relies on the frozen SHA-bound local deterministic contract as the authoritative verification evidence."
+  ]
+}
