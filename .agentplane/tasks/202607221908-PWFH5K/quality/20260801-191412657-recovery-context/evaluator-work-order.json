@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-PWFH5K-be4828f5e1dc2d32ce618e74",
+  "prepared_at": "2026-08-01T19:14:12.657Z",
+  "task": {
+    "id": "202607221908-PWFH5K",
+    "revision": 9,
+    "objective": "Enforce mandatory release dependency closure\n\nRF-27 release guard: automatically prove that every required open v0.7 implementation, migration, documentation, and gate task is an ancestor of the final 0.7.0 release task.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run task-state:check",
+      "bun run test:critical",
+      "- In scope: a generic task-DAG closure checker, required/optional release-task classification, cycle/missing/non-ancestor diagnostics, tests including RF-02/RF-20 omissions, and release/contract CI integration.\n- Out of scope: inferring semantic completion from tags alone; the final release plan declares the required root and allowed optional tasks.",
+      "1. Define explicit metadata/config for final release root and optional prerelease/backport tasks.\n2. Traverse the canonical task dependency DAG and require every mandatory v0.7 leaf to reach the release root.\n3. Report missing, cyclic, unknown, and accidentally optional nodes with paths.\n4. Add positive/negative fixtures for the planning graph and known omission cases.\n5. Integrate the guard into task-state/release readiness checks.",
+      "1. Run the checker on the corrected v0.7 graph. Expected: every mandatory leaf has a dependency path to final 0.7.0.\n2. Remove RF-02 and RF-20 edges in fixtures. Expected: both are named as release-blocking non-ancestors.\n3. Add a cycle, unknown dependency, and optional prerelease task. Expected: precise errors for the first two and explicit acceptance only for declared optional nodes.\n4. Run guards, task-state, focused tests, and release readiness."
+    ]
+  },
+  "evaluated_sha": "24183b04ebd63e8c6bf8bcbcaafe85ba72328b51",
+  "diff_base_sha": "a7391f6733a069b0ad1e4e4c6aebf622983c3781",
+  "blueprint_digest": "cae53404e3ae8d03a273e2e42e39c2587fc164f6d4557386182d5eb5917897a6",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-PWFH5K/README.md",
+      "sha256": "sha256:53abb8e6a6e766b1885aa55640727e483304a5f6490084cfb00cc9e7c6133cfe",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-PWFH5K/quality/20260801-191412657-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:dda06fbe343a03ced502a15c283a8285ff423bff362a596a20f7d087471ce271",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-PWFH5K/quality/20260801-191412657-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:c2fcfc6b8212a2826669108e8bdf5eda08ae8557f91dad5f62c55cf4ecf4b27c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-PWFH5K/quality/20260801-191412657-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:e3a2586c5563ebe3f6f47ae6adbe910c6f34bf59242ca02b7e7d8e8ef43355be",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

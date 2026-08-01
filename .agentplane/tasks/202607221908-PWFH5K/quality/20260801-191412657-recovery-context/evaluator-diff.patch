@@ -1,0 +1,627 @@
+diff --git a/docs/internal/v0.7-refactor-plan.md b/docs/internal/v0.7-refactor-plan.md
+index a850880e8..786989327 100644
+--- a/docs/internal/v0.7-refactor-plan.md
++++ b/docs/internal/v0.7-refactor-plan.md
+@@ -32,6 +32,12 @@ A compatibility-safe correctness fix may be backported as `0.6.25+` only when it
+ 
+ ## Executable graph
+ 
++The machine-readable closure contract is
++[`v0.7-release-task-closure.json`](./v0.7-release-task-closure.json). It explicitly classifies the
++final release root, every mandatory ancestor, and the superseded prerelease gates that remain
++optional. `task-state:check` and release readiness both fail closed when this contract is missing or
++when the dependency graph drifts from it.
++
+ The release DAG has 60 implementation/release leaves. The roadmap table has 61 rows because it
+ also includes the post-RF-06 PLANNER safety amendment. The original program PLANNER record is
+ outside the table; both it and the safety amendment are in final-release ancestry. A third PLANNER
+diff --git a/docs/internal/v0.7-release-task-closure.json b/docs/internal/v0.7-release-task-closure.json
+new file mode 100644
+index 000000000..086996ac7
+--- /dev/null
++++ b/docs/internal/v0.7-release-task-closure.json
+@@ -0,0 +1,85 @@
++{
++  "schema_version": 1,
++  "release": "0.7.0",
++  "root_task_id": "202607221854-XV67TD",
++  "required_task_ids": [
++    "202607221838-SD1W93",
++    "202607221846-4CE7EG",
++    "202607221846-4VB97J",
++    "202607221846-9XC1H0",
++    "202607221846-C2XADX",
++    "202607221846-SXJ75T",
++    "202607221846-Y89CFB",
++    "202607221846-YGWMA2",
++    "202607221846-ZAENM6",
++    "202607221848-0ZAB1F",
++    "202607221848-1HWR0R",
++    "202607221848-ABG7SD",
++    "202607221848-ER5H6N",
++    "202607221848-T9B3PS",
++    "202607221848-VBV9B1",
++    "202607221848-VC4VVS",
++    "202607221849-8YYZ9X",
++    "202607221849-NWVCAG",
++    "202607221849-TBTX8X",
++    "202607221850-0SFMS7",
++    "202607221850-8HBF4J",
++    "202607221850-9C9WBP",
++    "202607221850-DRWR0V",
++    "202607221850-R7WS01",
++    "202607221850-WM9X1G",
++    "202607221852-01ACZ9",
++    "202607221852-1KWS8Y",
++    "202607221852-71SCSW",
++    "202607221852-9T0RT3",
++    "202607221852-ABP0EX",
++    "202607221852-ADC3A5",
++    "202607221852-ECBY56",
++    "202607221852-J910P6",
++    "202607221852-WF8A0X",
++    "202607221852-YP9QCH",
++    "202607221854-4FNZPG",
++    "202607221854-87892M",
++    "202607221854-K7799B",
++    "202607221854-PGPR3J",
++    "202607221854-RW8CJF",
++    "202607221854-SDPFN0",
++    "202607221854-TE9ZJ5",
++    "202607221854-YMYYQ8",
++    "202607221907-DK2CJF",
++    "202607221908-2NDXVB",
++    "202607221908-7WV0A7",
++    "202607221908-83Y4AF",
++    "202607221908-9M2FBQ",
++    "202607221908-AB2SFC",
++    "202607221908-PWFH5K",
++    "202607221908-RC1DX8",
++    "202607221908-TZTE5V",
++    "202607221908-YD5J89",
++    "202607222129-1ZQHJD",
++    "202607230554-YFYT83",
++    "202607242158-QV09NA",
++    "202607242201-6BN1GV",
++    "202607242204-SX8T09",
++    "202607242236-1BFWEY",
++    "202607252215-SNV847",
++    "202607260532-9M7RNH",
++    "202607291148-1F9GZD",
++    "202607300553-CR9VTJ",
++    "202607302331-3C8V0X",
++    "202607310028-7KFTPH",
++    "202607311338-CT2725",
++    "202607311706-QB60J5",
++    "202607311707-DRYTNK"
++  ],
++  "optional_tasks": [
++    {
++      "task_id": "202607221908-MR9EA9",
++      "reason": "The beta.1 prerelease was not published; current-main qualification task 202607300553-CR9VTJ supersedes this gate."
++    },
++    {
++      "task_id": "202607221908-0JP0ZZ",
++      "reason": "The original beta.2 gate was replaced by corrected-main qualification task 202607310028-7KFTPH."
++    }
++  ]
++}
+diff --git a/packages/agentplane/src/commands/release/task-registry-ready-script.test.ts b/packages/agentplane/src/commands/release/task-registry-ready-script.test.ts
+index 241b86d63..dfc25988b 100644
+--- a/packages/agentplane/src/commands/release/task-registry-ready-script.test.ts
++++ b/packages/agentplane/src/commands/release/task-registry-ready-script.test.ts
+@@ -11,7 +11,13 @@ const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release/check-task-regi
+ const temps: string[] = [];
+ 
+ async function makeRepo(
+-  tasks: { id: string; status: string; title?: string; mergedPr?: boolean }[],
++  tasks: {
++    id: string;
++    status: string;
++    title?: string;
++    mergedPr?: boolean;
++    dependsOn?: string[];
++  }[],
+ ) {
+   const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-registry-ready-"));
+   temps.push(root);
+@@ -25,7 +31,9 @@ async function makeRepo(
+         `id: ${task.id}`,
+         `title: ${task.title ?? "Test task"}`,
+         `status: ${task.status}`,
+-        "depends_on: []",
++        task.dependsOn?.length
++          ? ["depends_on:", ...task.dependsOn.map((dependency) => `  - "${dependency}"`)].join("\n")
++          : "depends_on: []",
+         "tags:",
+         task.title?.startsWith("Release AgentPlane") ? '  - "release"' : '  - "code"',
+         "---",
+@@ -62,6 +70,52 @@ async function makeRepo(
+   return root;
+ }
+ 
++async function writeReleasePlan(
++  root: string,
++  plan: {
++    rootTaskId: string;
++    requiredTaskIds: string[];
++    optionalTaskIds?: string[];
++  },
++) {
++  const planDir = path.join(root, "docs", "internal");
++  await mkdir(planDir, { recursive: true });
++  await writeFile(
++    path.join(planDir, "v0.7-release-task-closure.json"),
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        release: "0.7.0",
++        root_task_id: plan.rootTaskId,
++        required_task_ids: plan.requiredTaskIds,
++        optional_tasks: (plan.optionalTaskIds ?? []).map((taskId) => ({
++          task_id: taskId,
++          reason: "Optional prerelease qualification.",
++        })),
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++}
++
++async function runRegistryCheck(root: string) {
++  return execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
++    () => ({ ok: true as const, stderr: "" }),
++    (error: unknown) => {
++      const stderr =
++        typeof error === "object" &&
++        error !== null &&
++        "stderr" in error &&
++        typeof (error as { stderr?: unknown }).stderr === "string"
++          ? (error as { stderr: string }).stderr
++          : "";
++      return { ok: false as const, stderr };
++    },
++  );
++}
++
+ afterEach(async () => {
+   while (temps.length > 0) {
+     const dir = temps.pop();
+@@ -294,4 +348,104 @@ describe("check-task-registry-ready script", () => {
+ 
+     await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
+   });
++
++  it("accepts a fully classified release closure and a disconnected declared optional task", async () => {
++    const rootTaskId = "202605190001-ROOT01";
++    const gateTaskId = "202605190002-GATE01";
++    const rf02TaskId = "202605190003-RF0200";
++    const rf20TaskId = "202605190004-RF2000";
++    const optionalTaskId = "202605190005-OPT001";
++    const root = await makeRepo([
++      { id: rootTaskId, status: "TODO", dependsOn: [gateTaskId] },
++      { id: gateTaskId, status: "DONE", dependsOn: [rf02TaskId, rf20TaskId] },
++      { id: rf02TaskId, status: "DONE" },
++      { id: rf20TaskId, status: "DONE" },
++      { id: optionalTaskId, status: "DONE" },
++    ]);
++    await writeReleasePlan(root, {
++      rootTaskId,
++      requiredTaskIds: [gateTaskId, rf02TaskId, rf20TaskId],
++      optionalTaskIds: [optionalTaskId],
++    });
++
++    await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
++  });
++
++  it("fails closed when the v0.7 roadmap exists without its release closure contract", async () => {
++    const root = await makeRepo([{ id: "202605190001-ROOT01", status: "DONE" }]);
++    const planDir = path.join(root, "docs", "internal");
++    await mkdir(planDir, { recursive: true });
++    await writeFile(path.join(planDir, "v0.7-refactor-plan.md"), "# AgentPlane 0.7 plan\n", "utf8");
++
++    const result = await runRegistryCheck(root);
++
++    expect(result.ok).toBe(false);
++    expect(result.stderr).toContain("release plan is missing");
++  });
++
++  it("names RF-02 and RF-20 when their release dependency edges are removed", async () => {
++    const rootTaskId = "202605190001-ROOT01";
++    const gateTaskId = "202605190002-GATE01";
++    const rf02TaskId = "202605190003-RF0200";
++    const rf20TaskId = "202605190004-RF2000";
++    const root = await makeRepo([
++      { id: rootTaskId, status: "TODO", dependsOn: [gateTaskId] },
++      { id: gateTaskId, status: "DONE" },
++      { id: rf02TaskId, status: "DONE" },
++      { id: rf20TaskId, status: "DONE" },
++    ]);
++    await writeReleasePlan(root, {
++      rootTaskId,
++      requiredTaskIds: [gateTaskId, rf02TaskId, rf20TaskId],
++    });
++
++    const result = await runRegistryCheck(root);
++
++    expect(result.ok).toBe(false);
++    expect(result.stderr).toContain(`required task ${rf02TaskId} is not an ancestor`);
++    expect(result.stderr).toContain(`required task ${rf20TaskId} is not an ancestor`);
++  });
++
++  it("reports release cycles and unknown dependencies with exact task ids", async () => {
++    const rootTaskId = "202605190001-ROOT01";
++    const gateTaskId = "202605190002-GATE01";
++    const cycleTaskId = "202605190003-CYCLE1";
++    const unknownTaskId = "202605190099-MISS01";
++    const root = await makeRepo([
++      { id: rootTaskId, status: "TODO", dependsOn: [gateTaskId] },
++      { id: gateTaskId, status: "DONE", dependsOn: [cycleTaskId, unknownTaskId] },
++      { id: cycleTaskId, status: "DONE", dependsOn: [gateTaskId] },
++    ]);
++    await writeReleasePlan(root, {
++      rootTaskId,
++      requiredTaskIds: [gateTaskId, cycleTaskId],
++    });
++
++    const result = await runRegistryCheck(root);
++
++    expect(result.ok).toBe(false);
++    expect(result.stderr).toContain(
++      `release dependency cycle: ${gateTaskId} -> ${cycleTaskId} -> ${gateTaskId}`,
++    );
++    expect(result.stderr).toContain(`unknown dependency ${gateTaskId} -> ${unknownTaskId}`);
++  });
++
++  it("rejects an optional task that the release root requires in practice", async () => {
++    const rootTaskId = "202605190001-ROOT01";
++    const optionalTaskId = "202605190002-OPT001";
++    const root = await makeRepo([
++      { id: rootTaskId, status: "TODO", dependsOn: [optionalTaskId] },
++      { id: optionalTaskId, status: "DONE" },
++    ]);
++    await writeReleasePlan(root, {
++      rootTaskId,
++      requiredTaskIds: [],
++      optionalTaskIds: [optionalTaskId],
++    });
++
++    const result = await runRegistryCheck(root);
++
++    expect(result.ok).toBe(false);
++    expect(result.stderr).toContain(`optional task ${optionalTaskId} is required by release root`);
++  });
+ });
+diff --git a/scripts/checks/check-task-state.mjs b/scripts/checks/check-task-state.mjs
+index eface7c65..5d777aebe 100644
+--- a/scripts/checks/check-task-state.mjs
++++ b/scripts/checks/check-task-state.mjs
+@@ -3,6 +3,10 @@ import path from "node:path";
+ import { pathToFileURL } from "node:url";
+ 
+ import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
++import {
++  inspectReleaseTaskClosure,
++  readTaskFrontMatterList,
++} from "../lib/release-task-closure.mjs";
+ 
+ const SCRIPT_NAME = "check-task-state.mjs";
+ const ACTIVE_STATUSES = new Set(["TODO", "DOING", "BLOCKED"]);
+@@ -32,19 +36,6 @@ function parseFrontMatter(text) {
+   return out;
+ }
+ 
+-function readFrontMatterList(text, key) {
+-  const lines = text.replaceAll("\r\n", "\n").split("\n");
+-  const start = lines.findIndex((line) => line.trim() === `${key}:`);
+-  if (start === -1) return [];
+-  const values = [];
+-  for (const line of lines.slice(start + 1)) {
+-    if (/^[A-Za-z0-9_-]+:\s*/u.test(line)) break;
+-    const match = /^\s*-\s*["']?([^"']+)["']?\s*$/u.exec(line);
+-    if (match?.[1]) values.push(match[1].trim());
+-  }
+-  return values;
+-}
+-
+ function listTaskDirs(tasksRoot) {
+   if (!existsSync(tasksRoot)) return [];
+   return readdirSync(tasksRoot)
+@@ -154,7 +145,7 @@ export function checkTaskState(repoRoot, opts = {}) {
+     }
+     const status = String(frontMatter.status ?? "").trim();
+     const title = String(frontMatter.title ?? "").trim();
+-    const tags = new Set(readFrontMatterList(readmeText, "tags"));
++    const tags = new Set(readTaskFrontMatterList(readmeText, "tags"));
+     const mergedPendingClose =
+       status === "DONE" ? null : readMergedPendingCloseState(tasksRoot, taskId);
+ 
+@@ -225,11 +216,24 @@ export function checkTaskState(repoRoot, opts = {}) {
+     }
+   }
+ 
++  const releaseClosure = inspectReleaseTaskClosure(repoRoot, {
++    planPath: opts.releasePlanPath,
++    required:
++      Boolean(opts.releasePlanPath) ||
++      existsSync(path.join(repoRoot, "docs", "internal", "v0.7-refactor-plan.md")),
++  });
++  for (const failure of releaseClosure.failures) {
++    failures.push(`release task closure: ${failure}`);
++  }
++
+   if (failures.length > 0) {
+     throw new Error(["task state check failed.", ...failures].join("\n"));
+   }
+   if (opts.quiet !== true) {
+-    process.stdout.write(`task state OK (tasks=${taskIds.length})\n`);
++    const closureSummary = releaseClosure.checked
++      ? ` release_closure=${releaseClosure.reachableTaskIds.length}`
++      : "";
++    process.stdout.write(`task state OK (tasks=${taskIds.length}${closureSummary})\n`);
+   }
+ }
+ 
+@@ -238,7 +242,7 @@ const main = defineScript({
+   async run({ argv }) {
+     const { flags } = parseScriptArgs(argv, {
+       booleanFlags: ["release-ready", "allow-active-release-task"],
+-      valueFlags: ["ignore-release-task"],
++      valueFlags: ["ignore-release-task", "release-plan"],
+     });
+     const ignoreReleaseTaskIds = Array.isArray(flags["ignore-release-task"])
+       ? flags["ignore-release-task"]
+@@ -249,6 +253,8 @@ const main = defineScript({
+       releaseReady: flags["release-ready"] === true,
+       ignoreReleaseTaskIds,
+       allowActiveReleaseTask: flags["allow-active-release-task"] === true,
++      releasePlanPath:
++        typeof flags["release-plan"] === "string" ? flags["release-plan"] : undefined,
+     });
+   },
+ });
+diff --git a/scripts/lib/release-task-closure.mjs b/scripts/lib/release-task-closure.mjs
+new file mode 100644
+index 000000000..ac9556f8e
+--- /dev/null
++++ b/scripts/lib/release-task-closure.mjs
+@@ -0,0 +1,237 @@
++import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
++import path from "node:path";
++
++export const DEFAULT_RELEASE_TASK_PLAN_PATH = "docs/internal/v0.7-release-task-closure.json";
++
++export function readTaskFrontMatterList(text, key) {
++  const lines = text.replaceAll("\r\n", "\n").split("\n");
++  const start = lines.findIndex((line) => line.trim() === `${key}:`);
++  if (start === -1) return [];
++  const values = [];
++  for (const line of lines.slice(start + 1)) {
++    if (/^[A-Za-z0-9_-]+:\s*/u.test(line)) break;
++    const match = /^\s*-\s*["']?([^"']+)["']?\s*$/u.exec(line);
++    if (match?.[1]) values.push(match[1].trim());
++  }
++  return values;
++}
++
++function listTaskIds(tasksRoot) {
++  if (!existsSync(tasksRoot)) return [];
++  return readdirSync(tasksRoot)
++    .filter((entry) => statSync(path.join(tasksRoot, entry)).isDirectory())
++    .toSorted((a, b) => a.localeCompare(b));
++}
++
++function readTaskGraph(repoRoot) {
++  const tasksRoot = path.join(repoRoot, ".agentplane", "tasks");
++  const graph = new Map();
++  for (const taskId of listTaskIds(tasksRoot)) {
++    const readmePath = path.join(tasksRoot, taskId, "README.md");
++    if (!existsSync(readmePath)) continue;
++    const text = readFileSync(readmePath, "utf8");
++    graph.set(taskId, readTaskFrontMatterList(text, "depends_on"));
++  }
++  return graph;
++}
++
++function normalizeStringList(value, field, failures) {
++  if (!Array.isArray(value)) {
++    failures.push(`${field} must be an array`);
++    return [];
++  }
++  const values = value.map((entry) => String(entry ?? "").trim()).filter(Boolean);
++  const seen = new Set();
++  for (const taskId of values) {
++    if (seen.has(taskId)) failures.push(`${field} contains duplicate task ${taskId}`);
++    seen.add(taskId);
++  }
++  return values;
++}
++
++function normalizeOptionalTasks(value, failures) {
++  if (!Array.isArray(value)) {
++    failures.push("optional_tasks must be an array");
++    return [];
++  }
++  const taskIds = [];
++  for (const entry of value) {
++    if (!entry || typeof entry !== "object") {
++      failures.push("optional_tasks entries must be objects with task_id and reason");
++      continue;
++    }
++    const taskId = String(entry.task_id ?? "").trim();
++    const reason = String(entry.reason ?? "").trim();
++    if (!taskId) {
++      failures.push("optional_tasks entry is missing task_id");
++      continue;
++    }
++    if (!reason) failures.push(`optional task ${taskId} is missing a reason`);
++    taskIds.push(taskId);
++  }
++  const seen = new Set();
++  for (const taskId of taskIds) {
++    if (seen.has(taskId)) failures.push(`optional_tasks contains duplicate task ${taskId}`);
++    seen.add(taskId);
++  }
++  return taskIds;
++}
++
++function collectReachable(graph, rootTaskId) {
++  const reachable = new Set();
++  const pending = [rootTaskId];
++  while (pending.length > 0) {
++    const taskId = pending.pop();
++    if (!taskId || reachable.has(taskId) || !graph.has(taskId)) continue;
++    reachable.add(taskId);
++    pending.push(...(graph.get(taskId) ?? []));
++  }
++  return reachable;
++}
++
++function findDependencyPath(graph, rootTaskId, targetTaskId) {
++  const pending = [[rootTaskId]];
++  const visited = new Set();
++  while (pending.length > 0) {
++    const currentPath = pending.shift();
++    const taskId = currentPath?.at(-1);
++    if (!taskId || visited.has(taskId)) continue;
++    if (taskId === targetTaskId) return currentPath;
++    visited.add(taskId);
++    for (const dependency of graph.get(taskId) ?? []) {
++      pending.push([...currentPath, dependency]);
++    }
++  }
++  return null;
++}
++
++function inspectRelevantGraph(graph, seeds, failures) {
++  const visited = new Set();
++  const visiting = new Set();
++  const stack = [];
++  const reportedCycles = new Set();
++  const reportedUnknown = new Set();
++
++  function visit(taskId) {
++    if (!graph.has(taskId) || visited.has(taskId)) return;
++    if (visiting.has(taskId)) {
++      const start = stack.indexOf(taskId);
++      const cycle = [...stack.slice(Math.max(0, start)), taskId];
++      const signature = cycle.join(" -> ");
++      if (!reportedCycles.has(signature)) {
++        failures.push(`release dependency cycle: ${signature}`);
++        reportedCycles.add(signature);
++      }
++      return;
++    }
++    visiting.add(taskId);
++    stack.push(taskId);
++    for (const dependency of graph.get(taskId) ?? []) {
++      if (!graph.has(dependency)) {
++        const signature = `${taskId} -> ${dependency}`;
++        if (!reportedUnknown.has(signature)) {
++          failures.push(`unknown dependency ${signature}`);
++          reportedUnknown.add(signature);
++        }
++        continue;
++      }
++      visit(dependency);
++    }
++    stack.pop();
++    visiting.delete(taskId);
++    visited.add(taskId);
++  }
++
++  for (const seed of seeds) visit(seed);
++}
++
++export function inspectReleaseTaskClosure(repoRoot, opts = {}) {
++  const planPath = path.resolve(repoRoot, String(opts.planPath ?? DEFAULT_RELEASE_TASK_PLAN_PATH));
++  if (!existsSync(planPath)) {
++    return {
++      checked: opts.required === true,
++      failures:
++        opts.required === true
++          ? [`release plan is missing: ${path.relative(repoRoot, planPath)}`]
++          : [],
++      planPath,
++      rootTaskId: null,
++      reachableTaskIds: [],
++    };
++  }
++
++  const failures = [];
++  let plan;
++  try {
++    plan = JSON.parse(readFileSync(planPath, "utf8"));
++  } catch (error) {
++    return {
++      checked: true,
++      failures: [
++        `release plan is unreadable: ${error instanceof Error ? error.message : String(error)}`,
++      ],
++      planPath,
++      rootTaskId: null,
++      reachableTaskIds: [],
++    };
++  }
++
++  if (plan?.schema_version !== 1) failures.push("schema_version must equal 1");
++  const rootTaskId = String(plan?.root_task_id ?? "").trim();
++  if (!rootTaskId) failures.push("root_task_id is required");
++  const requiredTaskIds = normalizeStringList(
++    plan?.required_task_ids,
++    "required_task_ids",
++    failures,
++  );
++  const optionalTaskIds = normalizeOptionalTasks(plan?.optional_tasks, failures);
++  const required = new Set(requiredTaskIds);
++  const optional = new Set(optionalTaskIds);
++
++  if (required.has(rootTaskId) || optional.has(rootTaskId)) {
++    failures.push(`release root ${rootTaskId} must not be classified as a dependency task`);
++  }
++  for (const taskId of required) {
++    if (optional.has(taskId)) failures.push(`task ${taskId} is both required and optional`);
++  }
++
++  const graph = readTaskGraph(repoRoot);
++  for (const taskId of [rootTaskId, ...requiredTaskIds, ...optionalTaskIds]) {
++    if (taskId && !graph.has(taskId))
++      failures.push(`release plan references unknown task ${taskId}`);
++  }
++
++  inspectRelevantGraph(graph, [rootTaskId, ...requiredTaskIds, ...optionalTaskIds], failures);
++  const reachable = collectReachable(graph, rootTaskId);
++  for (const taskId of requiredTaskIds) {
++    if (!reachable.has(taskId)) {
++      failures.push(
++        `required task ${taskId} is not an ancestor of release root ${rootTaskId}; no dependency path exists from the root`,
++      );
++    }
++  }
++  for (const taskId of optionalTaskIds) {
++    if (reachable.has(taskId)) {
++      const dependencyPath = findDependencyPath(graph, rootTaskId, taskId);
++      failures.push(
++        `optional task ${taskId} is required by release root ${rootTaskId} in practice; path=${dependencyPath?.join(" -> ") ?? "unknown"}`,
++      );
++    }
++  }
++  for (const taskId of reachable) {
++    if (taskId !== rootTaskId && !required.has(taskId) && !optional.has(taskId)) {
++      const dependencyPath = findDependencyPath(graph, rootTaskId, taskId);
++      failures.push(
++        `release dependency ${taskId} is not classified as required or optional; path=${dependencyPath?.join(" -> ") ?? "unknown"}`,
++      );
++    }
++  }
++
++  return {
++    checked: true,
++    failures,
++    planPath,
++    rootTaskId,
++    reachableTaskIds: [...reachable].toSorted((a, b) => a.localeCompare(b)),
++  };
++}

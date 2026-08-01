@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:59488ea5b2d98cce4122f41c420b8377cfc7f4b974105ed5256e74e69703f939",
+  "implementation_sha": "24183b04ebd63e8c6bf8bcbcaafe85ba72328b51",
+  "kind": "task_verification_record",
+  "note": "PASS at 24183b04ebd6. Command: bunx vitest run task-registry-ready-script.test.ts release-ready-manifest-script.test.ts; Result: pass; Evidence: 2 files, 16/16 tests. Scope: corrected 69-task closure, RF-02/RF-20 omissions, cycle, unknown dependency, optional classification, missing contract, manifest integration. Command: bun run task-state:check; Result: pass; Evidence: tasks=3197 release_closure=69. Scope: canonical repository graph. Command: bun run release:tasks:check --ignore-release-task 202607221908-PWFH5K; Result: pass; Evidence: release_closure=69. Scope: release readiness excluding only the task under verification. Command: bun run guards:check; Result: pass; Evidence: shared guards OK and trust ratchet 0. Scope: trust boundaries. Command: bun run typecheck and bun run test:critical; Result: pass; Evidence: TypeScript 7 and 12/12 critical CLI chunks. Scope: typed build and critical CLI compatibility. Command: bun run ci:contract; Result: pass; Evidence: all contract, architecture, clone, Knip, and coverage ratchets passed. Scope: full static contract gate.",
+  "recorded_at": "2026-08-01T19:13:13.772Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the checker on the corrected v0.7 graph. Expected: every mandatory leaf has a dependency path to final 0.7.0.\n2. Remove RF-02 and RF-20 edges in fixtures. Expected: both are named as release-blocking non-ancestors.\n3. Add a cycle, unknown dependency, and optional prerelease task. Expected: precise errors for the first two and explicit acceptance only for declared optional nodes.\n4. Run guards, task-state, focused tests, and release readiness.",
+  "scope_digest": "sha256:5cd190056c52e310338253a9fbc48de2ab04cd52bdc9be0bf4e6cb4ff0995387",
+  "task_id": "202607221908-PWFH5K",
+  "verification_command": "agentplane verify 202607221908-PWFH5K --ok --by TESTER",
+  "verifier": "TESTER"
+}
