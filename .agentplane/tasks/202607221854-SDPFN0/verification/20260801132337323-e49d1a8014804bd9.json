@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:e49d1a8014804bd983a904402f3bea9d83efe17a0b7b50bdb8f0e926d847c306",
+  "implementation_sha": "d89988611fbdd3efaba3c9054d122104e6717a2b",
+  "kind": "task_verification_record",
+  "note": "PASS at implementation d89988611fbd: all five dependency slices are DONE; explicit capability catalog and typed loaders verified; coarse CommandNeeds metadata absent; ci:contract, arch:check, guards:check, typecheck, critical CLI (77 tests), full agentplane suite (3206 tests), and focused catalog/session tests (34 tests) passed.",
+  "recorded_at": "2026-08-01T13:23:37.323Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Resolve this task's dependency closure. Expected: all five command-family vertical slices are DONE with independent verification.\n2. Inspect every command catalog entry and handler session type. Expected: granular requirements are explicit and no handler receives undeclared task/Git/provider capabilities.\n3. Search for active coarse CommandNeeds consumers and duplicate loader requirement metadata. Expected: none remain.\n4. Run command/help/JSON snapshots, preparation profiles, `bun run arch:check`, `bun run guards:check`, `bun run ci:contract`, and typecheck.",
+  "scope_digest": "sha256:8950afda9b85681264c0d254928c271ef6b37c584a02cf54252d1d22b1895326",
+  "task_id": "202607221854-SDPFN0",
+  "verification_command": "agentplane verify 202607221854-SDPFN0 --ok --by TESTER",
+  "verifier": "TESTER"
+}
