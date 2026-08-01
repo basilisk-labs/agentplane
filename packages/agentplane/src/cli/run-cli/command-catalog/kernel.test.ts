@@ -11,6 +11,11 @@ import {
   PROJECT_CONFIG_REQUIREMENTS,
   PROJECT_REQUIREMENTS,
 } from "./project-capability-profiles.js";
+import {
+  CONTEXT_PROJECT_REQUIREMENTS,
+  EVALUATOR_READ_REQUIREMENTS,
+  EVALUATOR_WRITE_REQUIREMENTS,
+} from "./context-evaluator-capability-profiles.js";
 
 const commandContext = { marker: "command-context" };
 const project = { marker: "project" };
@@ -181,6 +186,32 @@ describe("CommandSession", () => {
         code: "E_INTERNAL",
       });
       await expect(session.require("provider", "config show")).rejects.toMatchObject({
+        code: "E_INTERNAL",
+      });
+      expect(resolvers.getCtx).not.toHaveBeenCalled();
+    }
+  });
+
+  it("denies context mutation and provider execution from read-only context/evaluator sessions", async () => {
+    const projectResolvers = makeResolvers();
+    const projectSession = createCommandSession({
+      command: "context search",
+      requirements: CONTEXT_PROJECT_REQUIREMENTS,
+      resolvers: projectResolvers,
+    }) as CommandSession<CommandCapability>;
+    await expect(projectSession.require("task.write", "context search")).rejects.toMatchObject({
+      code: "E_INTERNAL",
+    });
+    expect(projectResolvers.getCtx).not.toHaveBeenCalled();
+
+    for (const requirements of [EVALUATOR_READ_REQUIREMENTS, EVALUATOR_WRITE_REQUIREMENTS]) {
+      const resolvers = makeResolvers();
+      const session = createCommandSession({
+        command: "evaluator prepare",
+        requirements,
+        resolvers,
+      }) as CommandSession<CommandCapability>;
+      await expect(session.require("provider", "evaluator prepare")).rejects.toMatchObject({
         code: "E_INTERNAL",
       });
       expect(resolvers.getCtx).not.toHaveBeenCalled();

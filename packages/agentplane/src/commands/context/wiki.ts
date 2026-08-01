@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { buildWikiIndexUpdates } from "../../context/wiki-index-builder.js";
 import { fileExists } from "./context-utils.js";
@@ -20,7 +21,9 @@ import {
   titleFromPath,
 } from "./wiki-page.js";
 
-export async function cmdContextWikiNew(opts: {
+const output = createCliEmitter();
+
+export async function createContextWikiPage(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: {
@@ -32,7 +35,7 @@ export async function cmdContextWikiNew(opts: {
     source: string[];
     force: boolean;
   };
-}): Promise<number> {
+}): Promise<{ path: string }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const rel = normalizeWikiPath(root, opts.parsed.page);
   const abs = path.join(root, rel);
@@ -58,15 +61,14 @@ export async function cmdContextWikiNew(opts: {
     }),
     "utf8",
   );
-  process.stdout.write(`context wiki new: ${rel}\n`);
-  return 0;
+  return { path: rel };
 }
 
-export async function cmdContextWikiLint(opts: {
+export async function lintContextWiki(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { path: string };
-}): Promise<number> {
+}): Promise<{ pages: number }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const rel = await normalizeWikiLintTarget(root, opts.parsed.path);
   const files = await collectWikiFiles(root, rel);
@@ -82,29 +84,26 @@ export async function cmdContextWikiLint(opts: {
       message: `context wiki lint failed: ${errors.length} issue(s)\n- ${errors.join("\n- ")}`,
     });
   }
-  process.stdout.write(`context wiki lint: ok (${files.length} page(s))\n`);
-  return 0;
+  return { pages: files.length };
 }
 
-export async function cmdContextWikiExplain(opts: {
+export async function explainContextWikiPage(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { page: string };
-}): Promise<number> {
+}): Promise<{ path: string; frontmatter: string | null }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const rel = normalizeWikiPath(root, opts.parsed.page);
   const text = await readFile(path.join(root, rel), "utf8");
   const frontmatter = extractFrontmatter(text);
-  process.stdout.write(`context wiki explain: ${rel}\n`);
-  process.stdout.write(frontmatter ? `${frontmatter}\n` : "frontmatter: missing\n");
-  return 0;
+  return { path: rel, frontmatter };
 }
 
-export async function cmdContextWikiLink(opts: {
+export async function findContextWikiLinks(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { page: string };
-}): Promise<number> {
+}): Promise<{ path: string; matches: string[] }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const rel = normalizeWikiPath(root, opts.parsed.page);
   const text = await readFile(path.join(root, rel), "utf8");
@@ -123,20 +122,14 @@ export async function cmdContextWikiLink(opts: {
       .split(/[-_/]+/u)
       .some((word) => titleWords.has(word.toLowerCase())),
   );
-  process.stdout.write(`context wiki link: ${rel}\n`);
-  if (matches.length === 0) {
-    process.stdout.write("- no obvious wiki link candidates found\n");
-    return 0;
-  }
-  for (const match of matches.slice(0, 20)) process.stdout.write(`- ${match}\n`);
-  return 0;
+  return { path: rel, matches: matches.slice(0, 20) };
 }
 
-export async function cmdContextWikiIndex(opts: {
+export async function indexContextWiki(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: { path: string };
-}): Promise<number> {
+}): Promise<{ updated: string[] }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const target = await normalizeWikiLintTarget(root, opts.parsed.path);
   const updates = await buildWikiIndexUpdates({ root, target });
@@ -146,7 +139,56 @@ export async function cmdContextWikiIndex(opts: {
     await writeFile(abs, text, "utf8");
   }
 
-  process.stdout.write(`context wiki index: updated ${updates.size} index page(s)\n`);
-  for (const rel of updates.keys()) process.stdout.write(`- ${rel}\n`);
+  return { updated: [...updates.keys()] };
+}
+
+export async function cmdContextWikiNew(
+  opts: Parameters<typeof createContextWikiPage>[0],
+): Promise<number> {
+  const result = await createContextWikiPage(opts);
+  output.line(`context wiki new: ${result.path}`);
+  return 0;
+}
+
+export async function cmdContextWikiLint(
+  opts: Parameters<typeof lintContextWiki>[0],
+): Promise<number> {
+  const result = await lintContextWiki(opts);
+  output.line(`context wiki lint: ok (${result.pages} page(s))`);
+  return 0;
+}
+
+export async function cmdContextWikiExplain(
+  opts: Parameters<typeof explainContextWikiPage>[0],
+): Promise<number> {
+  const result = await explainContextWikiPage(opts);
+  output.lines([
+    `context wiki explain: ${result.path}`,
+    result.frontmatter ?? "frontmatter: missing",
+  ]);
+  return 0;
+}
+
+export async function cmdContextWikiLink(
+  opts: Parameters<typeof findContextWikiLinks>[0],
+): Promise<number> {
+  const result = await findContextWikiLinks(opts);
+  output.lines([
+    `context wiki link: ${result.path}`,
+    ...(result.matches.length === 0
+      ? ["- no obvious wiki link candidates found"]
+      : result.matches.map((match) => `- ${match}`)),
+  ]);
+  return 0;
+}
+
+export async function cmdContextWikiIndex(
+  opts: Parameters<typeof indexContextWiki>[0],
+): Promise<number> {
+  const result = await indexContextWiki(opts);
+  output.lines([
+    `context wiki index: updated ${result.updated.length} index page(s)`,
+    ...result.updated.map((path) => `- ${path}`),
+  ]);
   return 0;
 }

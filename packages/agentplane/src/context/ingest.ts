@@ -1,4 +1,5 @@
 import { mapBackendError } from "../cli/error-map.js";
+import { createCliEmitter } from "../cli/output.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { runTaskNewParsed, type TaskCreationResult } from "../commands/task/new.js";
 import { CliError } from "../shared/errors.js";
@@ -22,7 +23,11 @@ import {
   finalizeManifestRows,
   mergeCompleteSourceInventory,
 } from "./ingest-sources.js";
-import { cmdContextReindex } from "./reindex.js";
+import {
+  renderContextReindexResult,
+  runContextReindex,
+  type ContextReindexResult,
+} from "./reindex.js";
 import {
   claimContextIngestRunExecution,
   releaseContextIngestRunExecution,
@@ -39,7 +44,62 @@ import {
 
 export type { ContextIngestParsed, ManifestEntry } from "./ingest-manifest.js";
 
-export async function cmdContextIngest(opts: {
+const output = createCliEmitter();
+
+export type ContextIngestResult =
+  | {
+      kind: "dry_run";
+      mode: ContextIngestParsed["mode"];
+      source_hints: number;
+      total_rows: number;
+      status: ReturnType<typeof statusHistogram>;
+      selected: { path: string; status: string; sha256: string }[];
+    }
+  | { kind: "index_only"; reindex: ContextReindexResult }
+  | { kind: "no_changes" }
+  | { kind: "task_created"; task_id: string; hint: string; span_count: number };
+
+function renderContextIngestResult(result: ContextIngestResult): void {
+  switch (result.kind) {
+    case "dry_run": {
+      output.line(
+        [
+          `context ingest dry-run (${result.mode})`,
+          `- mode: ${result.mode}`,
+          `- source hints: ${result.source_hints}`,
+          `- total rows: ${result.total_rows}`,
+          `- status: ${JSON.stringify(result.status)}`,
+          "- allowed outputs: context task README + manifest.lock + reindex",
+          "- dry-run writes: none",
+          "- manifest update: skipped",
+          "- task: skipped (preview)",
+          ...(result.selected.length > 0
+            ? [
+                "- selected:",
+                ...result.selected.map((row) => `  - ${row.path} (${row.status}, ${row.sha256})`),
+              ]
+            : []),
+        ].join("\n"),
+      );
+      return;
+    }
+    case "index_only": {
+      renderContextReindexResult(result.reindex);
+      return;
+    }
+    case "no_changes": {
+      output.line("no new or changed sources detected for context assimilation");
+      return;
+    }
+    case "task_created": {
+      output.line(
+        `context ingestion task created: ${result.task_id} (${result.hint}; task pack spans=${result.span_count})`,
+      );
+    }
+  }
+}
+
+export async function runContextIngest(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
@@ -47,7 +107,7 @@ export async function cmdContextIngest(opts: {
   createTask?: typeof runTaskNewParsed;
   afterJournalPhase?: (phase: ContextIngestRunPhase) => Promise<void> | void;
   writeTaskPack?: typeof writeContextTaskPack;
-}): Promise<number> {
+}): Promise<ContextIngestResult> {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
@@ -61,24 +121,18 @@ export async function cmdContextIngest(opts: {
     const indexModeRows = buildIndexModeSourceRows(opts.parsed, rows);
     if (opts.parsed.dryRun) {
       const histogram = statusHistogram(rows);
-      process.stdout.write(
-        `context ingest dry-run (${opts.parsed.mode})\n` +
-          `- mode: ${opts.parsed.mode}\n` +
-          `- source hints: ${indexModeRows.length}\n` +
-          `- total rows: ${completeRows.length}\n` +
-          `- status: ${JSON.stringify(histogram)}\n` +
-          `- allowed outputs: context task README + manifest.lock + reindex\n` +
-          `- dry-run writes: none\n` +
-          `- manifest update: skipped\n` +
-          `- task: skipped (preview)\n`,
-      );
-      if (indexModeRows.length > 0) {
-        process.stdout.write(`- selected:\n`);
-        for (const row of indexModeRows) {
-          process.stdout.write(`  - ${row.path} (${toStatusLabel(row.status)}, ${row.sha256})\n`);
-        }
-      }
-      return 0;
+      return {
+        kind: "dry_run",
+        mode: opts.parsed.mode,
+        source_hints: indexModeRows.length,
+        total_rows: completeRows.length,
+        status: histogram,
+        selected: indexModeRows.map((row) => ({
+          path: row.path,
+          status: toStatusLabel(row.status),
+          sha256: row.sha256,
+        })),
+      };
     }
 
     const sourceLockedManifest: ManifestLock = {
@@ -90,7 +144,7 @@ export async function cmdContextIngest(opts: {
     };
     if (opts.parsed.indexOnly) {
       await writeManifest(root, sourceLockedManifest);
-      return cmdContextReindex({
+      const reindex = await runContextReindex({
         cwd: root,
         rootOverride: opts.rootOverride,
         parsed: {
@@ -99,6 +153,7 @@ export async function cmdContextIngest(opts: {
           reset: false,
         },
       });
+      return { kind: "index_only", reindex };
     }
 
     const run = await acquireContextIngestRun({
@@ -111,8 +166,7 @@ export async function cmdContextIngest(opts: {
     });
     if (run === null) {
       await writeManifest(root, sourceLockedManifest);
-      process.stdout.write("no new or changed sources detected for context assimilation\n");
-      return 0;
+      return { kind: "no_changes" };
     }
     const execution = await claimContextIngestRunExecution(root, run);
     try {
@@ -176,7 +230,7 @@ async function continueContextIngest(
   ctx: CommandContext,
   root: string,
   initialRun: Exclude<Awaited<ReturnType<typeof acquireContextIngestRun>>, null>,
-): Promise<number> {
+): Promise<ContextIngestResult> {
   let run = initialRun;
   if (run.phase === "source_set_locked") {
     run = await advanceContextIngestRun(root, run, { phase: "task_creating" });
@@ -246,10 +300,12 @@ async function continueContextIngest(
         message: `context ingest run ${run.run_id} is missing completed task-pack evidence.`,
       });
     }
-    process.stdout.write(
-      `context ingestion task created: ${run.task.task_id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${run.pack.span_count})\n`,
-    );
-    return 0;
+    return {
+      kind: "task_created",
+      task_id: run.task.task_id,
+      hint: buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources }),
+      span_count: run.pack.span_count,
+    };
   }
 
   throw new CliError({
@@ -257,4 +313,11 @@ async function continueContextIngest(
     code: "E_VALIDATION",
     message: `context ingest run ${run.run_id} is not resumable from phase ${run.phase}.`,
   });
+}
+
+export async function cmdContextIngest(
+  opts: Parameters<typeof runContextIngest>[0],
+): Promise<number> {
+  renderContextIngestResult(await runContextIngest(opts));
+  return 0;
 }

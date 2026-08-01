@@ -1,10 +1,10 @@
 ---
 id: "202607221908-YD5J89"
 title: "Migrate context and evaluator command boundaries"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,9 +28,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T00:37:39.217Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -39,11 +39,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-01T00:38:26.014Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T19:08:18.132Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-01T00:38:26.014Z"
+doc_updated_by: "CODER"
 description: "RF-24/RF-25 vertical slice: give context/evaluator operations granular knowledge/backend/Git/policy capabilities and typed in-process results/renderers."
 sections:
   Summary: |-
@@ -72,6 +82,10 @@ sections:
     - Preserve journals and schema versions.
     - Re-run context integrity and evaluator staleness tests.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "56bb919419e198f3ecfd1a074358e6ead81deaa7"
+    version: 1
 id_source: "generated"
 ---
 ## Summary

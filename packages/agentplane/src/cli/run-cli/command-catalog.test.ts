@@ -7,6 +7,13 @@ import {
   getHelpCommandEntries,
   matchCommandCatalog,
 } from "./command-catalog.js";
+import {
+  CONTEXT_PROJECT_REQUIREMENTS,
+  CONTEXT_TASK_WRITE_REQUIREMENTS,
+  EVALUATOR_EXECUTE_REQUIREMENTS,
+  EVALUATOR_READ_REQUIREMENTS,
+  EVALUATOR_WRITE_REQUIREMENTS,
+} from "./command-catalog/context-evaluator-capability-profiles.js";
 
 describe("command catalog graph", () => {
   it("uses one graph for longest-prefix match and exact lookup", () => {
@@ -141,6 +148,69 @@ describe("command catalog graph", () => {
     }
     expect(findCommandEntry(["docs", "cli"])?.requirements).toEqual(["output"]);
     expect(findCommandEntry(["docs", "cli"])?.compatibility).toBeNull();
+  });
+
+  it("publishes exact context and evaluator capability profiles", () => {
+    for (const id of [
+      ["context"],
+      ["context", "init"],
+      ["context", "learn"],
+      ["context", "wiki"],
+      ["context", "graph"],
+      ["context", "harvest"],
+      ["context", "capability"],
+      ["evaluator"],
+      ["evaluator", "list"],
+      ["evaluator", "show"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual([]);
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    for (const id of [
+      ["context", "search"],
+      ["context", "show"],
+      ["context", "reindex"],
+      ["context", "wiki", "lint"],
+      ["context", "graph", "summary"],
+      ["context", "doctor"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        CONTEXT_PROJECT_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    for (const id of [
+      ["context", "ingest"],
+      ["context", "learn", "files"],
+      ["context", "learn", "changes"],
+      ["context", "learn", "tasks"],
+      ["context", "harvest", "tasks"],
+      ["context", "supervise-task"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        CONTEXT_TASK_WRITE_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+      expect(findCommandEntry(id)?.compatibility, id.join(" ")).toBeNull();
+    }
+
+    expect(findCommandEntry(["evaluator", "prepare"])?.requirements).toEqual(
+      EVALUATOR_READ_REQUIREMENTS,
+    );
+    for (const id of [
+      ["evaluator", "apply"],
+      ["evaluator", "run"],
+    ]) {
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+        EVALUATOR_WRITE_REQUIREMENTS,
+      );
+      expect(findCommandEntry(id)?.requirements, id.join(" ")).not.toContain("provider");
+    }
+    expect(findCommandEntry(["evaluator", "execute"])?.requirements).toEqual(
+      EVALUATOR_EXECUTE_REQUIREMENTS,
+    );
   });
 
   it("publishes exact task, lifecycle, and route capability profiles", () => {

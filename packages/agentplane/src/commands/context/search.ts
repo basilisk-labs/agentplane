@@ -3,6 +3,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
   buildSnippet,
@@ -19,6 +20,7 @@ import { searchContextProjection } from "./reindex.js";
 const MAX_FALLBACK_FILES = 200;
 const DEFAULT_TOP_K = 20;
 const MAX_TOP_K = 100;
+const output = createCliEmitter();
 
 type SearchResult = {
   path: string;
@@ -34,7 +36,34 @@ type SearchResult = {
   };
 };
 
-export async function cmdContextSearch(opts: {
+export type ContextSearchResult = {
+  format: "text" | "json";
+  payload: {
+    query: string;
+    scope: string[];
+    adapter: "sqlite" | "local-stub";
+    strategy: string;
+    index_digest: string | null;
+    fallback: { used: boolean; reason: string | null; max_files: number };
+    pagination: { top_k: number; page: number };
+    explain: boolean;
+    count: number;
+    results: {
+      ref: string;
+      title: string | undefined;
+      kind: "jsonl" | "document";
+      score: number;
+      snippet: string;
+      highlight: string | null;
+      line: number | undefined;
+      source_refs: string[];
+      freshness: SearchResult["freshness"];
+    }[];
+  };
+  matches: SearchResult[];
+};
+
+export async function searchContext(opts: {
   cwd: string;
   parsed: {
     query: string;
@@ -46,7 +75,7 @@ export async function cmdContextSearch(opts: {
     projectRoot?: string;
   };
   rootOverride?: string;
-}): Promise<number> {
+}): Promise<ContextSearchResult> {
   const query = opts.parsed.query?.trim().toLowerCase();
   if (!query) {
     throw new CliError({ exitCode: 2, code: "E_USAGE", message: "query is required" });
@@ -97,63 +126,67 @@ export async function cmdContextSearch(opts: {
     pagination.offset + pagination.topK,
   );
 
-  if (opts.parsed.format === "json") {
-    process.stdout.write(
-      JSON.stringify(
-        {
-          query,
-          scope: scopes,
-          adapter: indexed ? "sqlite" : "local-stub",
-          strategy: indexed
-            ? fallbackReason
-              ? "fts5-bm25+bounded-live-fallback"
-              : "fts5-bm25"
-            : "bounded-live-fallback",
-          index_digest: indexed?.metadata.workspace_hash ?? null,
-          fallback: {
-            used: fallbackReason !== null,
-            reason: fallbackReason,
-            max_files: fallbackReason ? MAX_FALLBACK_FILES : 0,
-          },
-          pagination: { top_k: pagination.topK, page: pagination.page },
-          explain: opts.parsed.explain,
-          count: ordered.length,
-          results: ordered.map((item) => ({
-            ref: item.path,
-            title: item.path.split("/").at(-1),
-            kind: item.path.endsWith(".jsonl") ? "jsonl" : "document",
-            score: item.score,
-            snippet: item.snippet,
-            highlight: item.highlight ?? null,
-            line: item.line,
-            source_refs: item.refs ?? [],
-            freshness: item.freshness,
-          })),
-        },
-        null,
-        2,
-      ),
-    );
-    process.stdout.write("\n");
-    return 0;
-  }
+  return {
+    format: opts.parsed.format,
+    payload: {
+      query,
+      scope: scopes,
+      adapter: indexed ? "sqlite" : "local-stub",
+      strategy: indexed
+        ? fallbackReason
+          ? "fts5-bm25+bounded-live-fallback"
+          : "fts5-bm25"
+        : "bounded-live-fallback",
+      index_digest: indexed?.metadata.workspace_hash ?? null,
+      fallback: {
+        used: fallbackReason !== null,
+        reason: fallbackReason,
+        max_files: fallbackReason ? MAX_FALLBACK_FILES : 0,
+      },
+      pagination: { top_k: pagination.topK, page: pagination.page },
+      explain: opts.parsed.explain,
+      count: ordered.length,
+      results: ordered.map((item) => ({
+        ref: item.path,
+        title: item.path.split("/").at(-1),
+        kind: item.path.endsWith(".jsonl") ? ("jsonl" as const) : ("document" as const),
+        score: item.score,
+        snippet: item.snippet,
+        highlight: item.highlight ?? null,
+        line: item.line,
+        source_refs: item.refs ?? [],
+        freshness: item.freshness,
+      })),
+    },
+    matches: ordered,
+  };
+}
 
-  if (ordered.length === 0) {
-    process.stdout.write("No matches\n");
-    return 0;
+function renderContextSearchResult(result: ContextSearchResult): void {
+  if (result.format === "json") {
+    output.json(result.payload);
+    return;
   }
-
-  for (const result of ordered) {
-    const score = result.score.toFixed(2);
-    process.stdout.write(`${score} ${result.path}\n`);
-    if (result.line) process.stdout.write(`  line: ${result.line}\n`);
-    if (result.freshness.stale) {
-      process.stdout.write(
-        `  stale_projection=true (projection=${result.freshness.projection_sha256 ?? "n/a"})\n`,
+  if (result.matches.length === 0) {
+    output.line("No matches");
+    return;
+  }
+  const lines: string[] = [];
+  for (const match of result.matches) {
+    lines.push(`${match.score.toFixed(2)} ${match.path}`);
+    if (match.line) lines.push(`  line: ${match.line}`);
+    if (match.freshness.stale) {
+      lines.push(
+        `  stale_projection=true (projection=${match.freshness.projection_sha256 ?? "n/a"})`,
       );
     }
-    process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
+    lines.push(`  ${match.snippet.replaceAll("\n", String.raw`\n`)}`);
   }
+  output.lines(lines);
+}
+
+export async function cmdContextSearch(opts: Parameters<typeof searchContext>[0]): Promise<number> {
+  renderContextSearchResult(await searchContext(opts));
   return 0;
 }
 
