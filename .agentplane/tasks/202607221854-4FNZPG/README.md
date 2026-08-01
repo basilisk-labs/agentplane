@@ -4,7 +4,7 @@ title: "Validate the 0.6.24-to-0.7 migration and installed-package matrix"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -29,14 +29,12 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
-commit:
-  hash: "2f97bc12ef804fc734114b8d8544649d1442de65"
-  message: "🧹 4FNZPG release: satisfy migration matrix lint"
+  state: "needs_rework"
+  updated_at: "2026-08-01T20:52:46.199Z"
+  updated_by: "TESTER"
+  note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
+  attempts: 1
+commit: null
 comments:
   -
     author: "TESTER"
@@ -69,8 +67,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation refreshed after the full release gate found and focused checks cleared seven lint-only findings in the installed migration matrix."
+  -
+    type: "verify"
+    at: "2026-08-01T20:52:46.199Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Heavy prepublish gate is not yet reproducibly green on the recorded implementation head."
 doc_version: 3
-doc_updated_at: "2026-08-01T20:29:23.836Z"
+doc_updated_at: "2026-08-01T20:52:46.966Z"
 doc_updated_by: "CODER"
 description: "Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr repositories, WORKFLOW v1/v2, task docs v2/v3, active tasks, runner results, package exports, Node support, and installed tarballs."
 sections:
@@ -95,12 +99,45 @@ sections:
     5. Run local release E2E, install smoke, and heavy prepublish gates.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-01T20:52:46.199Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Heavy prepublish gate is not yet reproducibly green on the recorded implementation head.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T20:29:23.836Z, excerpt_hash=sha256:fd40926159d3fb06f3680eacdb96bce2bcacb99dcb43b1acbad15346ff97d4d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-4FNZPG-validate-the-0-6-24-to-0-7-migration-and-install/.agentplane/tasks/202607221854-4FNZPG/blueprint/resolved-snapshot.json
+    - old_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+    - current_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221854-4FNZPG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221854-4FNZPG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only migration test/harness changes; do not roll back user fixture data in place.
     - Restore fixtures from version-controlled snapshots and rerun the previous release smoke.
     - Any product migration defect remains a release blocker with a separate repair task.
-  Findings: ""
+  Findings: |-
+    - Observation: bun run release:prepublish reached artifacts:check and failed with spawnSync git ENOBUFS because the branch does not include the independently verified large-repository buffer fix from task 202608012034-W6F4DM.
+      Impact: RF-29 cannot claim full release verification until current main is assimilated and the complete gate is rerun.
+      Resolution: Merge current main into the RF-29 task branch, refresh the implementation record, and rerun the full migration/install/release verification matrix.
 extensions:
   workflow_route_baseline:
     start_head_sha: "14185e94deadff666a1544413ba5ae728dcacdfb"
@@ -137,6 +174,36 @@ Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-01T20:52:46.199Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Heavy prepublish gate is not yet reproducibly green on the recorded implementation head.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T20:29:23.836Z, excerpt_hash=sha256:fd40926159d3fb06f3680eacdb96bce2bcacb99dcb43b1acbad15346ff97d4d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221854-4FNZPG-validate-the-0-6-24-to-0-7-migration-and-install/.agentplane/tasks/202607221854-4FNZPG/blueprint/resolved-snapshot.json
+- old_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+- current_digest: fabd487d8ca435562d6cfde629217767447547ba76bd35113f55f42785af8224
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221854-4FNZPG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221854-4FNZPG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -146,3 +213,7 @@ Run the final compatibility matrix for new repositories, 0.6.24 direct/branch_pr
 - Any product migration defect remains a release blocker with a separate repair task.
 
 ## Findings
+
+- Observation: bun run release:prepublish reached artifacts:check and failed with spawnSync git ENOBUFS because the branch does not include the independently verified large-repository buffer fix from task 202608012034-W6F4DM.
+  Impact: RF-29 cannot claim full release verification until current main is assimilated and the complete gate is rerun.
+  Resolution: Merge current main into the RF-29 task branch, refresh the implementation record, and rerun the full migration/install/release verification matrix.

@@ -12,8 +12,8 @@ Created: 2026-08-01T19:31:51.047Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Heavy prepublish gate is not yet reproducibly green on the recorded implementation head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,15 @@ Created: 2026-08-01T19:31:51.047Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-01T19:31:51.047Z
+- Updated: 2026-08-01T19:32:48.683Z
 - Branch: task/202607221854-4FNZPG/validate-the-0-6-24-to-0-7-migration-and-install
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../installed-migration-matrix-script.test.ts      | 103 ++++
+ scripts/lib/installed-migration-matrix.mjs         | 649 +++++++++++++++++++++
+ .../release/check-local-tarball-install-smoke.mjs  |  10 +
+ 3 files changed, 762 insertions(+)
 ```
 
 </details>
