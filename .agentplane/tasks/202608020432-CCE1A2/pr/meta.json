@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:57a67d5c4a791e581df79e092f5039173618c0d60042f19c6843660f083ef38c",
   "pr_number": 4736,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4736",
+  "pre_merge_closure": {
+    "basis_commit": "1d4d04946ca9e467bea100fa2ffb89449c929861",
+    "branch": "task/202608020432-CCE1A2/allow-qualification-packets-to-ignore-root-lifec",
+    "pr_number": 4736,
+    "recorded_at": "2026-08-02T05:05:18.590Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608020432-CCE1A2",

@@ -1,10 +1,11 @@
 ---
 id: "202608020432-CCE1A2"
 title: "Allow qualification packets to ignore root lifecycle drift"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -51,8 +52,8 @@ quality_review:
   findings:
     - "Post-integration rc.2 qualification remains an explicit downstream gate and is not present in the frozen pre-integration evidence."
 commit:
-  hash: "a728b1134fe36ed3d9625654b85108ace23af33e"
-  message: "🐛 CCE1A2 qualification: pin reviewed root dependencies"
+  hash: "1d4d04946ca9e467bea100fa2ffb89449c929861"
+  message: "✅ CCE1A2 task: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -63,6 +64,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented rework: dependency IDs now come from the reviewed root document, and current root drift must match the shared lifecycle-only comparator. Added negative coverage for dependency declaration changes and arbitrary root body changes. Checks passed: 24 focused tests, typecheck, test:critical, and ci:contract."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -103,8 +107,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change."
+  -
+    type: "status"
+    at: "2026-08-02T05:05:18.541Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T05:02:53.926Z"
+doc_updated_at: "2026-08-02T05:05:18.542Z"
 doc_updated_by: "CODER"
 description: "Fix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior."
 sections:
@@ -257,6 +268,9 @@ sections:
       Impact: A valid qualification task could not record verification after start-ready even though all dependency artifacts matched the reviewed SHA.
       Resolution: Use the current root task only to resolve declared dependency IDs, while retaining exact reviewed-SHA reads for every dependency task and evidence artifact; cover the lifecycle drift path in the integration test.
 extensions:
+  implementation_commit:
+    hash: "a728b1134fe36ed3d9625654b85108ace23af33e"
+    message: "🐛 CCE1A2 qualification: pin reviewed root dependencies"
   workflow_route_baseline:
     start_head_sha: "a8c24ca31654bde6f54a6cf359f8b0499f06547b"
     version: 1
