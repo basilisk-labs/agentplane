@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
@@ -9,7 +11,6 @@ import { isTaskSetLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import { getHumanInputState } from "../task/human-input.js";
-import path from "node:path";
 import { parsePrMeta, type PrMeta } from "./pr-meta.js";
 import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
 import { hasAcceptedQualityReviewProvenance } from "../task/quality-review-gate.js";
@@ -19,7 +20,7 @@ import {
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
-import { hasAcceptedVerificationRecord } from "./task-verification-records.js";
+import { hasAcceptedVerificationForCurrentImplementation } from "./route-decision-verification.js";
 import {
   filterTaskWorktreeBlockingPaths,
   isTaskArtifactPath,
@@ -297,53 +298,6 @@ export function addVerificationRequiredBlocker(opts: {
       ? "the passing verification record does not cover the current implementation head"
       : "the recorded task implementation does not have a passing verification record",
   );
-}
-
-async function hasAcceptedVerificationForCurrentImplementation(opts: {
-  ctx: CommandContext;
-  task: TaskData;
-  resume: TaskResumeContext;
-  prFlow: PrFlowStatusReport | null;
-  batchOwnership: RouteBatchOwnership;
-}): Promise<boolean> {
-  const taskIds =
-    opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
-  const headSha =
-    (opts.prFlow?.branch.headSha ??
-      opts.resume.head_sha ??
-      (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash.trim() : "")) ||
-    null;
-  if (!headSha) return false;
-  const evaluatedSha = await resolveQualityReviewTargetSha({
-    gitRoot: opts.ctx.resolvedProject.gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskId: opts.task.id,
-    taskIds,
-    lifecycleTaskIds: taskIds,
-    headSha,
-    previousEvaluatedSha:
-      opts.task.quality_review?.evaluated_sha ??
-      (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash : null),
-    workflowMode: "branch_pr",
-  }).catch(() => null);
-  if (!evaluatedSha) return false;
-  const taskRoot = path.join(
-    opts.ctx.resolvedProject.gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.task.id,
-  );
-  return await hasAcceptedVerificationRecord({
-    taskRoot,
-    task: opts.task,
-    evaluatedSha,
-    targetContext: {
-      gitRoot: opts.ctx.resolvedProject.gitRoot,
-      workflowDir: opts.ctx.config.paths.workflow_dir,
-      taskIds,
-      workflowMode: "branch_pr",
-    },
-    snapshotRef: opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? null,
-  }).catch(() => false);
 }
 
 export async function deriveBlockers(opts: {
