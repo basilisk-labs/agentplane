@@ -70,7 +70,7 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
 
 async function runNode(args: string[]): Promise<ScriptResult> {
   try {
-    const result = await execFileAsync(process.execPath, args, {
+    const result = await execFileAsync("node", args, {
       cwd: REPO_ROOT,
       env: process.env,
       maxBuffer: 32 * 1024 * 1024,
@@ -157,10 +157,11 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         candidate_id: string;
         source_tasks: string[];
         candidate: { surface_sha256: string; section_digests: Record<string, string> };
+        release_version_delta: Record<string, unknown>;
         deltas: unknown[];
       }>(COMPATIBILITY_CANDIDATE);
       expect(compatibilityCandidate).toMatchObject({
-        schema_version: 2,
+        schema_version: 3,
         candidate_id: "agentplane.compatibility.v0.7.cumulative",
         source_tasks: [
           "202607221846-4VB97J",
@@ -198,6 +199,26 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
             tarball_policy: "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
           },
+        },
+        release_version_delta: {
+          source_task: "202607221854-XV67TD",
+          classification: "planned_version_parity",
+          from_version: "0.6.24",
+          to_version: "0.7.0",
+          section: "package_manifests",
+          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+          to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+          surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
+          allowed_json_paths: [
+            "$.package_manifests[0].dependencies.@agentplaneorg/core",
+            "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+            "$.package_manifests[0].normalized_sha256",
+            "$.package_manifests[0].version",
+            "$.package_manifests[1].normalized_sha256",
+            "$.package_manifests[1].version",
+            "$.package_manifests[2].normalized_sha256",
+            "$.package_manifests[2].version",
+          ],
         },
         contract_artifacts: {
           execution_receipt_schema: {
@@ -428,6 +449,116 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           ]);
         }
       }
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it("accepts only the reviewed pre-version surface or its exact planned release delta", async () => {
+    const source = `
+      import { resolveReviewedCompatibilitySurfaceMode } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
+      const reviewedSectionDigests = { cli_topology: "cli-reviewed", package_manifests: "manifest-reviewed" };
+      const releaseVersionDelta = {
+        section: "package_manifests",
+        to_sha256: "manifest-release",
+        surface_sha256: "surface-release",
+      };
+      const resolve = (currentSurfaceSha256, currentSectionDigests) =>
+        resolveReviewedCompatibilitySurfaceMode({
+          reviewedSurfaceSha256: "surface-reviewed",
+          reviewedSectionDigests,
+          releaseVersionDelta,
+          currentSurfaceSha256,
+          currentSectionDigests,
+        });
+      const errors = [];
+      for (const attempt of [
+        () => resolve("surface-release", { ...reviewedSectionDigests, package_manifests: "manifest-tampered" }),
+        () => resolve("surface-release", { cli_topology: "cli-tampered", package_manifests: "manifest-release" }),
+      ]) {
+        try {
+          attempt();
+        } catch (error) {
+          errors.push(error instanceof Error ? error.message : String(error));
+        }
+      }
+      process.stdout.write(JSON.stringify({
+        preVersion: resolve("surface-reviewed", reviewedSectionDigests),
+        releaseVersion: resolve("surface-release", {
+          ...reviewedSectionDigests,
+          package_manifests: "manifest-release",
+        }),
+        errors,
+      }));
+    `;
+    const result = await runNode(["--input-type=module", "--eval", source]);
+    expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+    expect(JSON.parse(result.stdout)).toEqual({
+      preVersion: "pre_version",
+      releaseVersion: "release_version",
+      errors: [
+        expect.stringContaining("package_manifests"),
+        expect.stringContaining("cli_topology"),
+      ],
+    });
+  });
+
+  it(
+    "reconstructs the exact planned v0.7.0 manifest surface from the reviewed candidate",
+    async () => {
+      const source = `
+        import {
+          collectCompatibilitySurface,
+          compatibilitySurfaceDigest,
+          createWorktreeSource,
+          diffJsonPaths,
+          surfaceSectionDigests,
+        } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
+        const baseSource = createWorktreeSource(process.cwd());
+        const publishedManifestPaths = new Set([
+          "packages/agentplane/package.json",
+          "packages/core/package.json",
+          "packages/recipes/package.json",
+        ]);
+        const releaseSource = {
+          ...baseSource,
+          label: "planned_release_v0.7.0",
+          readText(relativePath) {
+            const text = baseSource.readText(relativePath);
+            if (!publishedManifestPaths.has(relativePath)) return text;
+            const manifest = JSON.parse(text);
+            manifest.version = "0.7.0";
+            if (relativePath === "packages/agentplane/package.json") {
+              manifest.dependencies["@agentplaneorg/core"] = "0.7.0";
+              manifest.dependencies["@agentplaneorg/recipes"] = "0.7.0";
+            }
+            return JSON.stringify(manifest);
+          },
+        };
+        const before = collectCompatibilitySurface(baseSource);
+        const after = collectCompatibilitySurface(releaseSource);
+        const sectionDigests = surfaceSectionDigests(after);
+        process.stdout.write(JSON.stringify({
+          packageManifestDigest: sectionDigests.package_manifests,
+          surfaceDigest: compatibilitySurfaceDigest(sectionDigests),
+          changedPaths: diffJsonPaths(before, after),
+        }));
+      `;
+      const result = await runNode(["--input-type=module", "--eval", source]);
+      expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+      expect(JSON.parse(result.stdout)).toEqual({
+        packageManifestDigest: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+        surfaceDigest: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
+        changedPaths: [
+          "$.package_manifests[0].dependencies.@agentplaneorg/core",
+          "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+          "$.package_manifests[0].normalized_sha256",
+          "$.package_manifests[0].version",
+          "$.package_manifests[1].normalized_sha256",
+          "$.package_manifests[1].version",
+          "$.package_manifests[2].normalized_sha256",
+          "$.package_manifests[2].version",
+        ],
+      });
     },
     TEST_TIMEOUT_MS,
   );

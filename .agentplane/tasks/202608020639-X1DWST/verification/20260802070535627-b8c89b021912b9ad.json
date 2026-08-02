@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nResult: pass\nEvidence: Bun reported 9 tests passed, 0 failed, and 101 expectations; coverage includes exact pre-version mode, exact release-version mode, tampered manifest rejection, additional-section rejection, and reconstructed v0.7.0 manifest and surface digests.\nScope: declared focused compatibility regression suite at implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: compatibility contract baseline OK at reviewed pre-version surface 827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064.\nScope: immutable v0.6.24 baseline and reviewed cumulative candidate ratchet\n\nCommand: bun run typecheck\nResult: pass\nEvidence: scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: complete contract pipeline exited 0, including formatting, schemas, ACR and release parity, policy routing, docs, compatibility, RF-04 replay, lifecycle, toolchain, guards, lint, architecture, clone, knip, and coverage checks.\nScope: full repository contract gate",
+  "digest": "sha256:b8c89b021912b9ad85c289e44521059bdf9fd642f843dc472a3f800f70063ba5",
+  "implementation_sha": "6394fb907dfa472246522fb26dd55c4a30ff75df",
+  "kind": "task_verification_record",
+  "note": "Verified: Fresh deterministic evidence is bound to rework implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df; all four declared commands pass, including the exact bun test route and end-to-end v0.7.0 manifest reconstruction.",
+  "recorded_at": "2026-08-02T07:05:35.627Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow the v0.7 release version delta in compatibility evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow the v0.7 release version delta in compatibility evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:5b396e725a85e19ba63bc2b6efa28a59583b3a2a0976c62d05204a8afd3dee72",
+  "task_id": "202608020639-X1DWST",
+  "verification_command": "agentplane verify 202608020639-X1DWST --ok --by TESTER",
+  "verifier": "TESTER"
+}

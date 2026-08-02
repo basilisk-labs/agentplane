@@ -7,6 +7,7 @@ import path from "node:path";
 import { isAllowedTarballPath, packageTarballPolicyContract } from "./package-tarball-policy.mjs";
 
 export const COMPATIBILITY_CONTRACT_SCHEMA_VERSION = 2;
+export const COMPATIBILITY_CANDIDATE_SCHEMA_VERSION = 3;
 export const COMPATIBILITY_BASELINE_ID = "agentplane.compatibility.v0.6.24";
 export const PUBLISHED_TAG = "v0.6.24";
 export const PUBLISHED_TAG_SHA = "30f62b82dff28909dcb3ccc2ace2bf3e356203bb";
@@ -109,6 +110,42 @@ export function sha256Text(value) {
 
 export function hashJson(value) {
   return sha256Text(canonicalJson(value));
+}
+
+export function resolveReviewedCompatibilitySurfaceMode({
+  reviewedSurfaceSha256,
+  reviewedSectionDigests,
+  releaseVersionDelta,
+  currentSurfaceSha256,
+  currentSectionDigests,
+}) {
+  if (
+    currentSurfaceSha256 === reviewedSurfaceSha256 &&
+    hashJson(currentSectionDigests) === hashJson(reviewedSectionDigests)
+  ) {
+    return "pre_version";
+  }
+
+  const expectedReleaseSectionDigests = {
+    ...reviewedSectionDigests,
+    [releaseVersionDelta.section]: releaseVersionDelta.to_sha256,
+  };
+  if (
+    currentSurfaceSha256 === releaseVersionDelta.surface_sha256 &&
+    hashJson(currentSectionDigests) === hashJson(expectedReleaseSectionDigests)
+  ) {
+    return "release_version";
+  }
+
+  const changedSections = Object.keys({
+    ...reviewedSectionDigests,
+    ...currentSectionDigests,
+  })
+    .filter((section) => reviewedSectionDigests[section] !== currentSectionDigests[section])
+    .toSorted(compareStrings);
+  throw new Error(
+    `reviewed compatibility surface drift: current=${currentSurfaceSha256} changed_sections=${changedSections.join(", ") || "none"}`,
+  );
 }
 
 function cliCommandIdentity(command) {

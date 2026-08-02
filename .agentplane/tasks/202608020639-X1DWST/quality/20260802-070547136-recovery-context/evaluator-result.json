@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The implementation isolates the exact planned v0.7.0 manifest delta, preserves the reviewed pre-version surface, rejects section and manifest digest drift, and is covered by fresh deterministic verification bound to the evaluated SHA.",
+      "broken_invariant": "No invariant is broken; the task contract and relevant positive, negative, and drift-sensitive paths are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8db1c36cda7a91fee4cd4e76f44566cc1716550a78584de987dabe0417df945a"
+        },
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/verification/20260802070535627-b8c89b021912b9ad.json",
+          "sha256": "sha256:23a44365d6287e518c3a3a71a0f8f0dfdea50a3f59796cf067c618a0a6ff71e3"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen source-task provenance identifier 202607221854-XV67TD is the authoritative source for the planned 0.7.0 version-parity delta."
+  ]
+}

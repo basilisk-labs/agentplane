@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   COMPATIBILITY_BASELINE_ID,
+  COMPATIBILITY_CANDIDATE_SCHEMA_VERSION,
   COMPATIBILITY_CONTRACT_SCHEMA_VERSION,
   PUBLISHED_TAG,
   PUBLISHED_TAG_SHA,
@@ -20,6 +21,7 @@ import {
   gitReferenceAvailable,
   hashJson,
   reconstructCompatibilitySurface,
+  resolveReviewedCompatibilitySurfaceMode,
   surfaceSectionDigests,
 } from "../lib/compatibility-contract.mjs";
 
@@ -297,6 +299,7 @@ function validateReviewedCandidate({
       "source_tasks",
       "base",
       "candidate",
+      "release_version_delta",
       "contract_artifacts",
       "review",
       "deltas",
@@ -304,7 +307,10 @@ function validateReviewedCandidate({
     [],
     "compatibility candidate",
   );
-  assert(candidate.schema_version === 2, "compatibility candidate schema_version drift");
+  assert(
+    candidate.schema_version === COMPATIBILITY_CANDIDATE_SCHEMA_VERSION,
+    "compatibility candidate schema_version drift",
+  );
   assert(
     candidate.candidate_id === "agentplane.compatibility.v0.7.cumulative",
     "compatibility candidate id drift",
@@ -381,11 +387,59 @@ function validateReviewedCandidate({
     [],
     "compatibility candidate surface",
   );
-  assert(candidate.candidate.surface_sha256 === currentDigest, "candidate surface digest drift");
-  assert(
-    hashJson(candidate.candidate.section_digests) === hashJson(currentSectionDigests),
-    "candidate section digest inventory drift",
+  const releaseVersionDelta = candidate.release_version_delta;
+  assertOnlyKeys(
+    releaseVersionDelta,
+    [
+      "source_task",
+      "classification",
+      "from_version",
+      "to_version",
+      "section",
+      "from_sha256",
+      "to_sha256",
+      "surface_sha256",
+      "allowed_json_paths",
+    ],
+    [],
+    "compatibility release version delta",
   );
+  assert(
+    hashJson(releaseVersionDelta) ===
+      hashJson({
+        source_task: "202607221854-XV67TD",
+        classification: "planned_version_parity",
+        from_version: "0.6.24",
+        to_version: "0.7.0",
+        section: "package_manifests",
+        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+        to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+        surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
+        allowed_json_paths: [
+          "$.package_manifests[0].dependencies.@agentplaneorg/core",
+          "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+          "$.package_manifests[0].normalized_sha256",
+          "$.package_manifests[0].version",
+          "$.package_manifests[1].normalized_sha256",
+          "$.package_manifests[1].version",
+          "$.package_manifests[2].normalized_sha256",
+          "$.package_manifests[2].version",
+        ],
+      }),
+    "compatibility release version delta drift",
+  );
+  assert(
+    releaseVersionDelta.from_sha256 ===
+      candidate.candidate.section_digests[releaseVersionDelta.section],
+    "release version delta source digest drift",
+  );
+  const reviewedSurfaceMode = resolveReviewedCompatibilitySurfaceMode({
+    reviewedSurfaceSha256: candidate.candidate.surface_sha256,
+    reviewedSectionDigests: candidate.candidate.section_digests,
+    releaseVersionDelta,
+    currentSurfaceSha256: currentDigest,
+    currentSectionDigests,
+  });
 
   assertOnlyKeys(
     candidate.contract_artifacts,
@@ -635,7 +689,12 @@ function validateReviewedCandidate({
   );
 
   assert(Array.isArray(candidate.deltas), "compatibility candidate deltas are missing");
-  const changedSections = changedSurfaceSections(exactMainSurface, currentSurface).toSorted();
+  const changedSections = changedSurfaceSections(exactMainSurface, currentSurface)
+    .filter(
+      (section) =>
+        reviewedSurfaceMode !== "release_version" || section !== releaseVersionDelta.section,
+    )
+    .toSorted();
   const deltaSections = candidate.deltas.map((delta) => delta.section).toSorted();
   assert(
     hashJson(deltaSections) === hashJson(changedSections),
@@ -663,7 +722,7 @@ function validateReviewedCandidate({
       `${delta.section}: candidate from digest drift`,
     );
     assert(
-      delta.to_sha256 === currentSectionDigests[delta.section],
+      delta.to_sha256 === candidate.candidate.section_digests[delta.section],
       `${delta.section}: candidate to digest drift`,
     );
     assert(
@@ -1943,6 +2002,7 @@ function validateReviewedCandidate({
     "unexpected core tarball source-file addition",
   );
   assert(removedSourceFiles.length === 0, "candidate removes a core tarball source file");
+  return reviewedSurfaceMode;
 }
 
 function verifyLocalReferenceIfAvailable(ref, expectedDigest, expectedCommitSha = null) {
@@ -1966,7 +2026,7 @@ try {
   if (currentDigest !== expectedDigest) {
     try {
       const candidate = readCandidate();
-      validateReviewedCandidate({
+      const reviewedSurfaceMode = validateReviewedCandidate({
         baseline,
         candidate,
         exactMainSurface,
@@ -1974,7 +2034,7 @@ try {
         currentDigest,
         currentSectionDigests,
       });
-      candidateStatus = `approved:${candidate.candidate_id}`;
+      candidateStatus = `approved:${candidate.candidate_id}:${reviewedSurfaceMode}`;
     } catch (error) {
       const sections = changedSurfaceSections(exactMainSurface, currentSurface);
       const paths = diffJsonPaths(exactMainSurface, currentSurface).slice(0, 20);

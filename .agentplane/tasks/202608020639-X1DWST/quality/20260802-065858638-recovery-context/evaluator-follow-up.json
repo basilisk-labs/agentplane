@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608020639-X1DWST-7a20cf985c1574e59c3fc9ce",
+  "task_id": "202608020639-X1DWST",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Resolve the verification-contract drift: run the exact declared bun test command, or obtain and record approval for the Vitest substitution with the required skip reason and risk. Then freeze verification evidence for the unchanged implementation SHA and include an end-to-end exact-release manifest fixture if the target digests cannot otherwise be independently established.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen verification substituted bunx vitest for the explicitly required bun test command without recording an approved skip or verification-contract change.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/README.md",
+          "sha256": "sha256:7c2da24861ff937919fef0b97e34743cc35c979cc5938ba29ad6b27ada7fdcab",
+          "section": "verify"
+        },
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/verification/20260802065846351-88d9a262f7fc74f8.json",
+          "sha256": "sha256:502f4ac9ec40769ba37b608199d748e69e19ba552fc97c9f48688c99c7194082",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-result.json"
+}

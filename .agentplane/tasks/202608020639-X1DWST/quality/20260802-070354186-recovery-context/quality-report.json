@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020639-X1DWST",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T07:04:32.614Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "6394fb907dfa472246522fb26dd55c4a30ff75df",
+  "blueprint_digest": "0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c",
+  "findings": [
+    "The evaluated SHA has no frozen deterministic verification records. The task README records verification before the subsequent rework, while the observed-checks artifact contains no verification records, runner history, or runtime evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020639-X1DWST/README.md",
+    ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070354186-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "Current-SHA deterministic result for `bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts`.",
+    "Current-SHA deterministic result for `bun run bench:compatibility:check`.",
+    "Current-SHA deterministic result for `bun run typecheck`.",
+    "Current-SHA deterministic result for `bun run ci:contract`."
+  ],
+  "hidden_assumptions": [
+    "The unrecorded claim that the exact declared checks pass after the rework is assumed to apply to evaluated SHA 6394fb907dfa472246522fb26dd55c4a30ff75df."
+  ],
+  "residual_risks": [
+    "Freeze deterministic results for all four declared checks against evaluated SHA 6394fb907dfa472246522fb26dd55c4a30ff75df, then repeat semantic evaluation with those records included in the authoritative evidence packet."
+  ]
+}
