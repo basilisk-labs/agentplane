@@ -1,0 +1,8 @@
+ .agentplane/tasks/202608021232-6BTB6D/README.md    |   7 +-
+ .agentplane/tasks/202608021534-J5G235/README.md    | 100 ++++++++++++++++++++
+ .agentplane/tasks/202608021534-YN84E1/README.md    | 101 +++++++++++++++++++++
+ .agentplane/tasks/202608021535-9EWFAB/README.md    | 101 +++++++++++++++++++++
+ .agentplane/tasks/202608021535-CNQKXP/README.md    | 101 +++++++++++++++++++++
+ .../src/cli/run-cli.core.init.interactive.test.ts  |  12 ++-
+ .../run-cli.core.pr-flow.worktree-runtime.test.ts  |  11 ++-
+ 7 files changed, 423 insertions(+), 10 deletions(-)
