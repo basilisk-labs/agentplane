@@ -31,6 +31,13 @@ with frozen command/result/evidence/scope records; the audit correctly keeps v0.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/tasks/202608021231-BPMM04/README.md    |  99 +++++
+ .agentplane/tasks/202608021231-PZGG3V/README.md    | 100 +++++
+ .agentplane/tasks/202608021231-SHYJGK/README.md    |  99 +++++
+ .agentplane/tasks/202608021232-53WJMN/README.md    | 102 ++++++
+ .agentplane/tasks/202608021232-6BTB6D/README.md    | 104 ++++++
+ .agentplane/tasks/202608021232-MT4FK2/README.md    | 102 ++++++
+ .agentplane/tasks/202608021232-YCNM1S/README.md    | 107 ++++++
  .gitignore                                         |   1 +
  package.json                                       |   4 +
  scripts/README.md                                  |   8 +
@@ -38,11 +45,11 @@ with frozen command/result/evidence/scope records; the audit correctly keeps v0.
  .../check-v0.7.1-efficiency-evidence.mjs           | 221 +++++++++++
  .../check-v0.7.1-product-contract.mjs              | 185 ++++++++++
  .../measure-v0.7.1-matched-cli-latency.mjs         | 302 +++++++++++++++
- scripts/qualification/release-qualification.mjs    | 388 ++++++++++++++++++++
- .../qualification/release-qualification.test.mjs   | 201 ++++++++++
+ scripts/qualification/release-qualification.mjs    | 402 ++++++++++++++++++++
+ .../qualification/release-qualification.test.mjs   | 246 +++++++++++++
  .../run-v0.7.1-release-qualification.mjs           | 244 +++++++++++++
  .../v0.7.1-release-qualification.json              | 406 +++++++++++++++++++++
- 11 files changed, 2059 insertions(+)
+ 18 files changed, 2831 insertions(+)
 ```
 
 </details>

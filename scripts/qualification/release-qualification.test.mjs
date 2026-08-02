@@ -57,8 +57,25 @@ function reportFor(manifest, results, mode = "audit") {
 describe("v0.7.1 release qualification contract", () => {
   it("maps every required dimension to an executable scenario", () => {
     const manifest = readQualificationManifest(manifestPath);
-    assert.equal(validateQualificationManifest(manifest), manifest);
+    assert.equal(validateQualificationManifest(manifest, { repoRoot }), manifest);
     assert.ok(manifest.scenarios.every((scenario) => scenario.command.length > 0));
+  });
+
+  it("requires every defect owner to be an existing executable task", () => {
+    const manifest = readQualificationManifest(manifestPath);
+    const pending = structuredClone(manifest);
+    pending.scenarios[0].failure.owner_task = "PENDING-v0.7.1-owner";
+    assert.throws(
+      () => validateQualificationManifest(pending, { repoRoot }),
+      /must be an executable AgentPlane task id/u,
+    );
+
+    const missing = structuredClone(manifest);
+    missing.scenarios[0].failure.owner_task = "209901010000-AAAAAA";
+    assert.throws(
+      () => validateQualificationManifest(missing, { repoRoot }),
+      /owner_task does not exist/u,
+    );
   });
 
   it("rejects an uncovered requirement", () => {
@@ -110,9 +127,37 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(report.verdict, "blocked");
     assert.equal(report.release_ready, false);
     assert.equal(report.defects.length, 1);
-    assert.equal(report.defects[0].owner_task, "PENDING-v0.7.1-supervisor-unification");
+    assert.equal(report.defects[0].owner_task, "202608021231-PZGG3V");
     assert.equal(qualificationExitCode(report), 0);
     assert.equal(validateQualificationReport(report), report);
+  });
+
+  it("assigns distinct executable tasks to the confirmed release blockers", () => {
+    const manifest = readQualificationManifest(manifestPath);
+    const confirmed = new Set([
+      "supervisor-frontends",
+      "efficiency-evidence",
+      "matched-cli-latency",
+    ]);
+    const results = manifest.scenarios
+      .filter((scenario) => scenario.tier !== "provider")
+      .map((scenario) => resultFor(scenario, confirmed.has(scenario.id) ? "failed" : "passed"));
+    const report = reportFor(manifest, results, "audit");
+    const blockingOwners = report.defects
+      .filter((defect) => defect.release_disposition === "block")
+      .map((defect) => defect.owner_task);
+
+    assert.equal(blockingOwners.length, 3);
+    assert.equal(new Set(blockingOwners).size, blockingOwners.length);
+    for (const ownerTask of blockingOwners) {
+      assert.equal(
+        readFileSync(
+          path.join(repoRoot, ".agentplane", "tasks", ownerTask, "README.md"),
+          "utf8",
+        ).includes(`id: "${ownerTask}"`),
+        true,
+      );
+    }
   });
 
   it("does not claim readiness from a partial successful selection", () => {
