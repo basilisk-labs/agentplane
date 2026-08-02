@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608012339-30YX9C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T00:13:55.995Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": null,
+  "blueprint_digest": "c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e",
+  "findings": [
+    "Semantic evaluation cannot proceed because the frozen diff contains no committed task work unit, while the observed-checks artifact contains no verification records, runner history, or runtime evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Provide frozen deterministic results for the focused task-bound mutation policy tests, including allowed canonical navigation/social-card paths and blocked implementation or executable paths.",
+    "Provide the full documentation site gate result and policy-routing check result tied to the committed task work unit."
+  ],
+  "hidden_assumptions": [
+    "The verification narrative in the task README is assumed to correspond to the implementation intended for evaluation, but the frozen packet provides neither that implementation diff nor supporting runtime records.",
+    "The committed task work unit is assumed to exist even though the authoritative frozen diff explicitly states that none is available."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet from a committed task work unit so it includes the actual patch and deterministic check records tied to that commit; then rerun semantic evaluation."
+  ]
+}
