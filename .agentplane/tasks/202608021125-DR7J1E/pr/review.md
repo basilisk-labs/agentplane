@@ -13,7 +13,7 @@ Created: 2026-08-02T11:27:47.149Z
 ## Verification
 
 - State: ok
-- Note: Qualification harness verified against implementation SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112 with frozen command/result/evidence/scope records; the audit correctly keeps v0.7.1 release-blocked.
+- Note: Qualification harness verified against implementation SHA 9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96; every observed blocker now has a distinct executable owner task and the audit correctly remains release-blocked.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

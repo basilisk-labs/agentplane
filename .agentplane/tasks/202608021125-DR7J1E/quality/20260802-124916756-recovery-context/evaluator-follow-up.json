@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021125-DR7J1E-189e07d18e6c8b52bf9ea08d",
+  "task_id": "202608021125-DR7J1E",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Regenerate the frozen verification and runtime evidence from exact SHA 9bd2a5fe2465a8dd4ad6d4384cf765546c941141 after binding subject identity to the checked-out and packaged candidate; then rerun evaluator review.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The qualification evidence was generated for subject 9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96, not the frozen evaluated SHA 9bd2a5fe2465a8dd4ad6d4384cf765546c941141.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/report.json",
+          "sha256": "sha256:00340cb7ab198cfe1200283b43ab8c3c421fc49495aea5db7f143bfa97ede4de",
+          "section": "subject"
+        },
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/verification/20260802124531028-1210e0ba5832ecb9.json",
+          "sha256": "sha256:ccb91c13d02c36aedb044c3d06931566686ced4ee9689136bb072f17cfd6228c",
+          "section": "implementation_sha"
+        },
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:24cc21c57d2d0aa003ac7457767a079e3915677f87a0bf600a4bf14414c1a6a9",
+          "section": "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-result.json"
+}
