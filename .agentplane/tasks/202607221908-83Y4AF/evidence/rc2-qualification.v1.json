@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.rc_qualification.v1",
+  "task_id": "202607221908-83Y4AF",
+  "candidate": "0.7.0-rc.2",
+  "reviewed_sha": "2a0daea8493ff9c1f6ba372f4732dd1d9d535e56",
+  "base_sha": "a8c24ca31654bde6f54a6cf359f8b0499f06547b",
+  "scope": {
+    "classification": "fan_in_qualification",
+    "original_failure": null,
+    "non_reproduction": "No candidate regression was present: the dependency closure and every declared local qualification gate passed on the reviewed SHA.",
+    "product_mutation": false,
+    "evidence_only": true
+  },
+  "dependency_closure": {
+    "transitive_dependencies": 70,
+    "leaf_dependencies": 5,
+    "done": 70,
+    "verification_ok": 70,
+    "quality_pass": 70,
+    "main_lineage_matches": 70,
+    "failures": [],
+    "leaves": [
+      {
+        "task_id": "202607221838-SD1W93",
+        "main_commit": "03b09de97aed3c4d77d70a914c57a0c7ab80c6d7"
+      },
+      {
+        "task_id": "202607260532-9M7RNH",
+        "main_commit": "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
+      },
+      {
+        "task_id": "202607291148-1F9GZD",
+        "main_commit": "c37ce3acad59a863d2ca7593cb59574258af6257"
+      },
+      {
+        "task_id": "202607302331-3C8V0X",
+        "main_commit": "1307339a2b6e354488dd085212817775c77beb87"
+      },
+      {
+        "task_id": "202607311706-QB60J5",
+        "main_commit": "e49039f3d196a1441dc656986f16f5dba92f5f6a"
+      }
+    ],
+    "direct_dependency_pull_requests": [
+      {
+        "task_id": "202607221854-4FNZPG",
+        "pull_request": 4727,
+        "state": "MERGED",
+        "merge_commit": "f9997263341ca21006d9df679d646c7477db8747"
+      },
+      {
+        "task_id": "202607221854-87892M",
+        "pull_request": 4724,
+        "state": "MERGED",
+        "merge_commit": "365bd520baed0eac843fe41eb5df7bd2a505c4ca"
+      },
+      {
+        "task_id": "202607221854-K7799B",
+        "pull_request": 4725,
+        "state": "MERGED",
+        "merge_commit": "a7391f6733a069b0ad1e4e4c6aebf622983c3781"
+      },
+      {
+        "task_id": "202607221854-PGPR3J",
+        "pull_request": 4722,
+        "state": "MERGED",
+        "merge_commit": "fa0eae41849fc8e339543f3c41dfc81b2d05c82d"
+      },
+      {
+        "task_id": "202607221854-SDPFN0",
+        "pull_request": 4721,
+        "state": "MERGED",
+        "merge_commit": "89409146383825b0e6df835d2fa414eb0c60e0d1"
+      },
+      {
+        "task_id": "202607221854-TE9ZJ5",
+        "pull_request": 4723,
+        "state": "MERGED",
+        "merge_commit": "451a8a6e980f9f2724bce718e807a8675fd89eeb"
+      },
+      {
+        "task_id": "202607221854-YMYYQ8",
+        "pull_request": 4731,
+        "state": "MERGED",
+        "merge_commit": "a8c24ca31654bde6f54a6cf359f8b0499f06547b"
+      },
+      {
+        "task_id": "202607221908-AB2SFC",
+        "pull_request": 4711,
+        "state": "MERGED",
+        "merge_commit": "1adc9896b158719e908acc894b3651bfec2348c1"
+      },
+      {
+        "task_id": "202607221908-PWFH5K",
+        "pull_request": 4726,
+        "state": "MERGED",
+        "merge_commit": "14185e94deadff666a1544413ba5ae728dcacdfb"
+      },
+      {
+        "task_id": "202608011949-1JRXBT",
+        "pull_request": 4730,
+        "state": "MERGED",
+        "merge_commit": "5319bbdeecb05adc2c436e4039f5046a5bfeb89a"
+      },
+      {
+        "task_id": "202608012034-W6F4DM",
+        "pull_request": 4729,
+        "state": "MERGED",
+        "merge_commit": "5b0bd96dc06afe1d76cff2e0998b769e51e5eef8"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "command": "bun run task-state:check",
+      "status": "pass",
+      "evidence": "tasks=3204 release_closure=72"
+    },
+    {
+      "command": "bun run guards:check",
+      "status": "pass",
+      "evidence": "shared guards OK; trust-boundary reviewed violations=0"
+    },
+    {
+      "command": "bun run arch:check",
+      "status": "pass",
+      "evidence": "known violations=0; dependency-cruiser found no violations"
+    },
+    {
+      "command": "bun run bench:agent-efficiency:check",
+      "status": "pass",
+      "evidence": "10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false"
+    },
+    {
+      "command": "bun run bench:agent-efficiency:replay:check",
+      "status": "pass",
+      "evidence": "50 runs; outcomes=70/70; provider token cells=27/27; scalar cells=170/170; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4"
+    },
+    {
+      "command": "bun run release:prepublish",
+      "status": "pass",
+      "evidence": "release-ci-base=99/99 chunks; installed migration matrix=8 scenarios; workflow coverage=13 files/50 tests; significant coverage=19 files/204 tests; release-critical=4 files/16 tests"
+    }
+  ],
+  "quality_controls": {
+    "verified_success_regression": false,
+    "safety_regression": false,
+    "compatibility_regression": false,
+    "architecture_regression": false,
+    "metric_claim": "Structural and token-accounting baselines pass. No latency improvement is claimed because the committed efficiency baseline reports timing_compared=false."
+  },
+  "version_posture": {
+    "repository_package_version": "0.6.24",
+    "latest_assimilated_maintenance_release": "0.6.26",
+    "typescript_typecheck": "7.0.2",
+    "typescript_compiler_api": "6.0.3"
+  },
+  "publication_decision": {
+    "decision": "do_not_publish",
+    "candidate": "0.7.0-rc.2",
+    "reason": "The qualification task is evidence-only, no external integration consumer requires an rc.2 package, and publishing would expand scope into version and registry mutation while remaining 0.7 waves are still open.",
+    "effect": "Record rc.2 as qualified but unpublished, then continue the remaining waves toward the stable 0.7.0 release from main."
+  },
+  "residual_risks": [
+    "Latency is not compared by the frozen RF-04 baseline; no latency improvement claim is made.",
+    "The hotspot guard reports 82 runtime modules above its warning threshold and 10 tests above its warning threshold, all below enforced error thresholds.",
+    "Stable 0.7.0 remains blocked on the remaining planned waves and final release task; this rc.2 qualification does not substitute for them."
+  ]
+}
