@@ -1,0 +1,2971 @@
+diff --git a/.agentplane/tasks/202608021231-BPMM04/README.md b/.agentplane/tasks/202608021231-BPMM04/README.md
+new file mode 100644
+index 000000000..9e8413495
+--- /dev/null
++++ b/.agentplane/tasks/202608021231-BPMM04/README.md
+@@ -0,0 +1,99 @@
++---
++id: "202608021231-BPMM04"
++title: "Record token usage on every completed task"
++status: "TODO"
++priority: "high"
++owner: "CODER"
++revision: 1
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "tokens"
++  - "v0.7.1"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run test:critical"
++  - "bun run typecheck"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:31:32.269Z"
++doc_updated_by: "CODER"
++description: "Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage."
++sections:
++  Summary: |-
++    Record token usage on every completed task
++
++    Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.
++  Scope: |-
++    - In scope: Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.
++    - Out of scope: unrelated refactors not required for "Record token usage on every completed task".
++  Plan: |-
++    1. Implement the change for "Record token usage on every completed task".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Record token usage on every completed task". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Record token usage on every completed task". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Record token usage on every completed task
++
++Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.
++
++## Scope
++
++- In scope: Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.
++- Out of scope: unrelated refactors not required for "Record token usage on every completed task".
++
++## Plan
++
++1. Implement the change for "Record token usage on every completed task".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Record token usage on every completed task". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Record token usage on every completed task". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202608021231-PZGG3V/README.md b/.agentplane/tasks/202608021231-PZGG3V/README.md
+new file mode 100644
+index 000000000..74118123b
+--- /dev/null
++++ b/.agentplane/tasks/202608021231-PZGG3V/README.md
+@@ -0,0 +1,100 @@
++---
++id: "202608021231-PZGG3V"
++title: "Unify the v0.7.1 task supervisor and external advance protocol"
++status: "TODO"
++priority: "high"
++owner: "CODER"
++revision: 1
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "supervisor"
++  - "v0.7.1"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run test:critical"
++  - "bun run typecheck"
++  - "node scripts/qualification/check-v0.7.1-product-contract.mjs"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:31:27.804Z"
++doc_updated_by: "CODER"
++description: "Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding."
++sections:
++  Summary: |-
++    Unify the v0.7.1 task supervisor and external advance protocol
++
++    Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding.
++  Scope: |-
++    - In scope: Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding.
++    - Out of scope: unrelated refactors not required for "Unify the v0.7.1 task supervisor and external advance protocol".
++  Plan: |-
++    1. Implement the change for "Unify the v0.7.1 task supervisor and external advance protocol".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Unify the v0.7.1 task supervisor and external advance protocol". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Unify the v0.7.1 task supervisor and external advance protocol". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Unify the v0.7.1 task supervisor and external advance protocol
++
++Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding.
++
++## Scope
++
++- In scope: Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding.
++- Out of scope: unrelated refactors not required for "Unify the v0.7.1 task supervisor and external advance protocol".
++
++## Plan
++
++1. Implement the change for "Unify the v0.7.1 task supervisor and external advance protocol".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Unify the v0.7.1 task supervisor and external advance protocol". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Unify the v0.7.1 task supervisor and external advance protocol". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202608021231-SHYJGK/README.md b/.agentplane/tasks/202608021231-SHYJGK/README.md
+new file mode 100644
+index 000000000..12d749976
+--- /dev/null
++++ b/.agentplane/tasks/202608021231-SHYJGK/README.md
+@@ -0,0 +1,99 @@
++---
++id: "202608021231-SHYJGK"
++title: "Remove the v0.7.1 matched CLI latency regression"
++status: "TODO"
++priority: "high"
++owner: "CODER"
++revision: 1
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "performance"
++  - "v0.7.1"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "performance.benchmark"
++verify:
++  - "bun run typecheck"
++  - "node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject HEAD --out .agentplane/cache/v0.7.1-matched-cli-latency.json"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:31:30.008Z"
++doc_updated_by: "CODER"
++description: "Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness."
++sections:
++  Summary: |-
++    Remove the v0.7.1 matched CLI latency regression
++
++    Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.
++  Scope: |-
++    - In scope: Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.
++    - Out of scope: unrelated refactors not required for "Remove the v0.7.1 matched CLI latency regression".
++  Plan: |-
++    1. Implement the change for "Remove the v0.7.1 matched CLI latency regression".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Remove the v0.7.1 matched CLI latency regression". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Remove the v0.7.1 matched CLI latency regression". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Remove the v0.7.1 matched CLI latency regression
++
++Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.
++
++## Scope
++
++- In scope: Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.
++- Out of scope: unrelated refactors not required for "Remove the v0.7.1 matched CLI latency regression".
++
++## Plan
++
++1. Implement the change for "Remove the v0.7.1 matched CLI latency regression".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Remove the v0.7.1 matched CLI latency regression". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Remove the v0.7.1 matched CLI latency regression". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202608021232-53WJMN/README.md b/.agentplane/tasks/202608021232-53WJMN/README.md
+new file mode 100644
+index 000000000..df009b6d0
+--- /dev/null
++++ b/.agentplane/tasks/202608021232-53WJMN/README.md
+@@ -0,0 +1,102 @@
++---
++id: "202608021232-53WJMN"
++title: "Audit GitHub issues and pull requests for v0.7.1"
++status: "TODO"
++priority: "high"
++owner: "REVIEWER"
++revision: 1
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "github-audit"
++  - "v0.7.1"
++task_kind: "release"
++mutation_scope: "release"
++risk_flags:
++  - "external_system"
++  - "network"
++blueprint_request: "release.strict"
++verify:
++  - "gh issue list --state open --limit 200"
++  - "gh pr list --state open --limit 200"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:32:24.049Z"
++doc_updated_by: "REVIEWER"
++description: "Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision."
++sections:
++  Summary: |-
++    Audit GitHub issues and pull requests for v0.7.1
++
++    Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision.
++  Scope: |-
++    - In scope: Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision.
++    - Out of scope: unrelated refactors not required for "Audit GitHub issues and pull requests for v0.7.1".
++  Plan: |-
++    1. Implement the change for "Audit GitHub issues and pull requests for v0.7.1".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Audit GitHub issues and pull requests for v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Audit GitHub issues and pull requests for v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Audit GitHub issues and pull requests for v0.7.1
++
++Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision.
++
++## Scope
++
++- In scope: Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision.
++- Out of scope: unrelated refactors not required for "Audit GitHub issues and pull requests for v0.7.1".
++
++## Plan
++
++1. Implement the change for "Audit GitHub issues and pull requests for v0.7.1".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Audit GitHub issues and pull requests for v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Audit GitHub issues and pull requests for v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202608021232-6BTB6D/README.md b/.agentplane/tasks/202608021232-6BTB6D/README.md
+new file mode 100644
+index 000000000..606705e48
+--- /dev/null
++++ b/.agentplane/tasks/202608021232-6BTB6D/README.md
+@@ -0,0 +1,104 @@
++---
++id: "202608021232-6BTB6D"
++title: "Capture exact v0.7.1 semantic efficiency evidence"
++status: "TODO"
++priority: "high"
++owner: "TESTER"
++revision: 1
++origin:
++  system: "manual"
++depends_on:
++  - "202608021231-BPMM04"
++  - "202608021231-PZGG3V"
++  - "202608021231-SHYJGK"
++  - "202608021232-53WJMN"
++tags:
++  - "provider-qualification"
++  - "v0.7.1"
++task_kind: "release"
++mutation_scope: "release"
++risk_flags:
++  - "network"
++blueprint_request: "quality.regression"
++verify:
++  - "bun run e2e:v0.7.1:gate"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:32:28.510Z"
++doc_updated_by: "TESTER"
++description: "After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation."
++sections:
++  Summary: |-
++    Capture exact v0.7.1 semantic efficiency evidence
++
++    After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation.
++  Scope: |-
++    - In scope: After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation.
++    - Out of scope: unrelated refactors not required for "Capture exact v0.7.1 semantic efficiency evidence".
++  Plan: |-
++    1. Implement the change for "Capture exact v0.7.1 semantic efficiency evidence".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Capture exact v0.7.1 semantic efficiency evidence". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Capture exact v0.7.1 semantic efficiency evidence". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Capture exact v0.7.1 semantic efficiency evidence
++
++After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation.
++
++## Scope
++
++- In scope: After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation.
++- Out of scope: unrelated refactors not required for "Capture exact v0.7.1 semantic efficiency evidence".
++
++## Plan
++
++1. Implement the change for "Capture exact v0.7.1 semantic efficiency evidence".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Capture exact v0.7.1 semantic efficiency evidence". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Capture exact v0.7.1 semantic efficiency evidence". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202608021232-MT4FK2/README.md b/.agentplane/tasks/202608021232-MT4FK2/README.md
+new file mode 100644
+index 000000000..9bdef6240
+--- /dev/null
++++ b/.agentplane/tasks/202608021232-MT4FK2/README.md
+@@ -0,0 +1,102 @@
++---
++id: "202608021232-MT4FK2"
++title: "Audit and remove obsolete AgentPlane branches before v0.7.1"
++status: "TODO"
++priority: "med"
++owner: "INTEGRATOR"
++revision: 1
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "branch-cleanup"
++  - "v0.7.1"
++task_kind: "ops"
++mutation_scope: "ops"
++risk_flags:
++  - "external_system"
++  - "network"
++blueprint_request: "ops.approval"
++verify:
++  - "git branch --merged main"
++  - "git branch -r --merged origin/main"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:32:26.257Z"
++doc_updated_by: "INTEGRATOR"
++description: "Classify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work."
++sections:
++  Summary: |-
++    Audit and remove obsolete AgentPlane branches before v0.7.1
++
++    Classify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work.
++  Scope: |-
++    - In scope: Classify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work.
++    - Out of scope: unrelated refactors not required for "Audit and remove obsolete AgentPlane branches before v0.7.1".
++  Plan: |-
++    1. Implement the change for "Audit and remove obsolete AgentPlane branches before v0.7.1".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Audit and remove obsolete AgentPlane branches before v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Audit and remove obsolete AgentPlane branches before v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Audit and remove obsolete AgentPlane branches before v0.7.1
++
++Classify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work.
++
++## Scope
++
++- In scope: Classify local and remote branches by merged state, unique commits, active worktrees, open pull requests, and release relevance; preserve recoverable evidence; then remove branches confirmed unnecessary, including agentplane-loops, without deleting active or unmerged work.
++- Out of scope: unrelated refactors not required for "Audit and remove obsolete AgentPlane branches before v0.7.1".
++
++## Plan
++
++1. Implement the change for "Audit and remove obsolete AgentPlane branches before v0.7.1".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Audit and remove obsolete AgentPlane branches before v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Audit and remove obsolete AgentPlane branches before v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202608021232-YCNM1S/README.md b/.agentplane/tasks/202608021232-YCNM1S/README.md
+new file mode 100644
+index 000000000..84bd50fe2
+--- /dev/null
++++ b/.agentplane/tasks/202608021232-YCNM1S/README.md
+@@ -0,0 +1,107 @@
++---
++id: "202608021232-YCNM1S"
++title: "Qualify and publish AgentPlane v0.7.1"
++status: "TODO"
++priority: "high"
++owner: "INTEGRATOR"
++revision: 1
++origin:
++  system: "manual"
++depends_on:
++  - "202608021232-6BTB6D"
++  - "202608021232-MT4FK2"
++tags:
++  - "release"
++  - "v0.7.1"
++task_kind: "release"
++mutation_scope: "release"
++risk_flags:
++  - "external_system"
++  - "merge"
++  - "network"
++  - "publish"
++blueprint_request: "release.strict"
++verify:
++  - "bun run ci:contract"
++  - "bun run e2e:v0.7.1:gate"
++  - "npm view agentplane@0.7.1 version"
++plan_approval:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++comments: []
++events: []
++doc_version: 3
++doc_updated_at: "2026-08-02T12:32:30.794Z"
++doc_updated_by: "INTEGRATOR"
++description: "Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth."
++sections:
++  Summary: |-
++    Qualify and publish AgentPlane v0.7.1
++
++    Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth.
++  Scope: |-
++    - In scope: Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth.
++    - Out of scope: unrelated refactors not required for "Qualify and publish AgentPlane v0.7.1".
++  Plan: |-
++    1. Implement the change for "Qualify and publish AgentPlane v0.7.1".
++    2. Run required checks and capture verification evidence.
++    3. Finalize task findings and finish with traceable commit metadata.
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Qualify and publish AgentPlane v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Qualify and publish AgentPlane v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++id_source: "generated"
++---
++## Summary
++
++Qualify and publish AgentPlane v0.7.1
++
++Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth.
++
++## Scope
++
++- In scope: Integrate all approved v0.7.1 fixes, run the complete deterministic and provider release gate on the exact candidate, resolve every blocking defect, verify GitHub Actions and package metadata, publish npm and GitHub Release, and prove the installed release from remote truth.
++- Out of scope: unrelated refactors not required for "Qualify and publish AgentPlane v0.7.1".
++
++## Plan
++
++1. Implement the change for "Qualify and publish AgentPlane v0.7.1".
++2. Run required checks and capture verification evidence.
++3. Finalize task findings and finish with traceable commit metadata.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Qualify and publish AgentPlane v0.7.1". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Qualify and publish AgentPlane v0.7.1". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.gitignore b/.gitignore
+index 564f4ae11..74e1fffdb 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -35,4 +35,5 @@ coverage
+ .agentplane/by-owner
+ .agentplane/tasks/*/handoff
+ .agentplane/.npm-cache
++.agentplane/reports
+ # Keep the external recipes repo out of the main repo index.
+diff --git a/package.json b/package.json
+index 000fb4f86..ad462f6ef 100644
+--- a/package.json
++++ b/package.json
+@@ -70,6 +70,10 @@
+     "release:next-action": "node scripts/release/next-action.mjs",
+     "release:recover": "node scripts/release/check-release-recovery-state.mjs",
+     "release:e2e:local": "node scripts/release/run-local-release-e2e.mjs",
++    "e2e:v0.7.1:check": "node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run",
++    "e2e:v0.7.1:core-audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core",
++    "e2e:v0.7.1:audit": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full",
++    "e2e:v0.7.1:gate": "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider",
+     "release:smoke:published": "node scripts/release/check-published-packages.mjs",
+     "release:postpublish:audit": "node scripts/release/audit-platform-publication.mjs",
+     "release:distribution:generate": "node scripts/generate/generate-release-distribution.mjs",
+diff --git a/scripts/README.md b/scripts/README.md
+index dc7f84838..b8e9c1a16 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -181,6 +181,10 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | `dev:turbo:docs`                   | `TURBO_TELEMETRY_DISABLED=1 turbo run typecheck build --filter='./website' --summarize`                                                                                                                                          | Run dev workflow: turbo docs.                             |
+ | `dev:turbo:graph`                  | `mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid`                                                             | Run dev workflow: turbo graph.                            |
+ | `dev:turbo:ls`                     | `TURBO_TELEMETRY_DISABLED=1 turbo ls --output=json`                                                                                                                                                                              | Run dev workflow: turbo ls.                               |
++| `e2e:v0.7.1:audit`                 | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
++| `e2e:v0.7.1:check`                 | `node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run`                                                      | Run e2e workflow: v0.7.1 check.                           |
++| `e2e:v0.7.1:core-audit`            | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core`                                                                                                                                    | Run e2e workflow: v0.7.1 core-audit.                      |
++| `e2e:v0.7.1:gate`                  | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider`                                                                                                                          | Run e2e workflow: v0.7.1 gate.                            |
+ | `format`                           | `prettier . --write`                                                                                                                                                                                                             | Format repository files with Prettier.                    |
+ | `format:changed`                   | `node scripts/checks/check-changed-format.mjs`                                                                                                                                                                                   | Run format workflow: changed.                             |
+ | `format:check`                     | `prettier . --check`                                                                                                                                                                                                             | Check formatting drift with Prettier.                     |
+@@ -234,6 +238,10 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ - `dev:turbo:docs` is currently grouped as `misc` (review namespace intent).
+ - `dev:turbo:graph` is currently grouped as `misc` (review namespace intent).
+ - `dev:turbo:ls` is currently grouped as `misc` (review namespace intent).
++- `e2e:v0.7.1:audit` is currently grouped as `misc` (review namespace intent).
++- `e2e:v0.7.1:check` is currently grouped as `misc` (review namespace intent).
++- `e2e:v0.7.1:core-audit` is currently grouped as `misc` (review namespace intent).
++- `e2e:v0.7.1:gate` is currently grouped as `misc` (review namespace intent).
+ - `format:changed` is currently grouped as `misc` (review namespace intent).
+ - `format:check` is currently grouped as `misc` (review namespace intent).
+ - `framework:dev:bootstrap` is currently grouped as `misc` (review namespace intent).
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index ae8b399da..dce94eb57 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -347,6 +347,75 @@ const CRITICAL_CLI_SUITE = {
+   hookTimeout: "120000",
+ };
+ 
++const V07_LIFECYCLE_FILES = [
++  "packages/agentplane/src/commands/task/plan.unit.test.ts",
++  "packages/agentplane/src/commands/task/shared.verify-steps.test.ts",
++  "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
++  "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
++  "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
++  "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts",
++  "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
++  "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
++];
++
++const V07_CONTEXT_FILES = [
++  "packages/agentplane/src/context/ingest-task.test.ts",
++  "packages/agentplane/src/context/ingest-task-pack.test.ts",
++  "packages/agentplane/src/context/search-freshness.unit.test.ts",
++  "packages/agentplane/src/context/reindex-projection.test.ts",
++  "packages/agentplane/src/context/knowledge-ref.test.ts",
++  "packages/agentplane/src/context/source-spans.test.ts",
++  "packages/agentplane/src/context/coverage-validation.test.ts",
++  "packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts",
++  "packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts",
++  "packages/agentplane/src/commands/context/search.fts5.unit.test.ts",
++  "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
++  "packages/agentplane/src/runner/context/task-context.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
++];
++
++const V07_SUPERVISOR_FILES = [
++  "packages/core/src/runner/supervisor-execution-episode.test.ts",
++  "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
++  "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
++  "packages/agentplane/src/commands/shared/workflow-step.test.ts",
++  "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
++  "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
++  "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
++  "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
++];
++
++const V07_RECOVERY_FILES = [
++  "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-active-claim-reconciliation.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts",
++  "packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts",
++  "packages/agentplane/src/commands/integrate-queue-recovery.test.ts",
++  "packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts",
++];
++
++const V07_HOSTED_FILES = [
++  "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
++  "packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts",
++  "packages/agentplane/src/commands/task/hosted-merge-sync.test.ts",
++  "packages/agentplane/src/commands/pr/integrate/cmd.protected-base.test.ts",
++  "packages/agentplane/src/commands/release/apply.push-recovery.test.ts",
++  "packages/agentplane/src/commands/release/apply.apply-flow.test.ts",
++];
++
+ export const VITEST_SUITES = {
+   "backend-critical": {
+     files: BACKEND_CRITICAL_FILES,
+@@ -398,6 +467,36 @@ export const VITEST_SUITES = {
+     maxWorkers: "4",
+     pool: "threads",
+   },
++  "v0.7-context": {
++    chunkSize: 8,
++    files: V07_CONTEXT_FILES,
++    maxWorkers: "2",
++    pool: "forks",
++  },
++  "v0.7-hosted": {
++    chunkSize: 4,
++    files: V07_HOSTED_FILES,
++    maxWorkers: "2",
++    pool: "forks",
++  },
++  "v0.7-lifecycle": {
++    chunkSize: 6,
++    files: V07_LIFECYCLE_FILES,
++    maxWorkers: "2",
++    pool: "forks",
++  },
++  "v0.7-recovery": {
++    chunkSize: 6,
++    files: V07_RECOVERY_FILES,
++    maxWorkers: "2",
++    pool: "forks",
++  },
++  "v0.7-supervisor": {
++    chunkSize: 6,
++    files: V07_SUPERVISOR_FILES,
++    maxWorkers: "2",
++    pool: "forks",
++  },
+ };
+ 
+ export const AGGREGATE_TEST_ROUTES = Object.keys(VITEST_SUITES).toSorted((a, b) =>
+diff --git a/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs b/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
+new file mode 100644
+index 000000000..ca03e616e
+--- /dev/null
++++ b/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
+@@ -0,0 +1,221 @@
++import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
++import path from "node:path";
++
++import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
++
++const TOKEN_FIELDS = ["input_tokens", "output_tokens", "reasoning_tokens", "total_tokens"];
++const LATENCY_FIELDS = [
++  "harness_setup_latency_ms",
++  "time_to_first_scoped_mutation_ms",
++  "time_to_verified_result_ms",
++];
++const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
++
++function parseArgs(argv) {
++  const { flags, positionals } = parseScriptArgs(argv, {
++    valueFlags: ["evidence", "subject", "out"],
++  });
++  if (positionals.length > 0) {
++    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
++  }
++  if (!flags.evidence || !flags.subject || !flags.out) {
++    throw new Error("--evidence, --subject, and --out are required");
++  }
++  if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
++    throw new Error("--subject must be a full 40-character Git commit SHA");
++  }
++  return {
++    evidencePath: path.resolve(flags.evidence),
++    outputPath: path.resolve(flags.out),
++    subject: flags.subject,
++  };
++}
++
++function readMeasurement(filePath) {
++  const value = JSON.parse(readFileSync(filePath, "utf8"));
++  const measurement = value.measurement ?? value;
++  if (
++    !measurement ||
++    measurement.schema_version !== 1 ||
++    measurement.kind !== "agent_efficiency_candidate_measurement_v1"
++  ) {
++    throw new Error("efficiency evidence must contain agent_efficiency_candidate_measurement_v1");
++  }
++  return measurement;
++}
++
++function finite(value) {
++  return typeof value === "number" && Number.isFinite(value);
++}
++
++function failure(failures, metric, expected, actual) {
++  failures.push({ metric, expected, actual });
++}
++
++function assertExact(failures, metric, actual, expected) {
++  if (actual !== expected) failure(failures, metric, expected, actual);
++}
++
++function assertAtMost(failures, metric, actual, maximum) {
++  if (!finite(actual) || actual > maximum) failure(failures, metric, `<= ${maximum}`, actual);
++}
++
++function assertAtLeast(failures, metric, actual, minimum) {
++  if (!finite(actual) || actual < minimum) failure(failures, metric, `>= ${minimum}`, actual);
++}
++
++export function evaluateEfficiencyMeasurement(measurement, subject) {
++  const failures = [];
++  const baseline = measurement.baseline?.actual_values;
++  const candidate = measurement.candidate?.actual_values;
++  if (!baseline || !candidate)
++    throw new Error("efficiency evidence omits actual baseline/candidate values");
++
++  assertExact(failures, "candidate.subject_sha", measurement.candidate?.subject_sha, subject);
++  assertAtLeast(
++    failures,
++    "candidate.coverage.replay_runs",
++    measurement.candidate?.coverage?.replay_runs,
++    50,
++  );
++  assertExact(
++    failures,
++    "candidate.coverage.scenarios",
++    measurement.candidate?.coverage?.scenarios,
++    10,
++  );
++  assertExact(failures, "baseline.provider_episodes", baseline.provider_episodes, 55);
++  assertExact(failures, "candidate.provider_episodes", candidate.provider_episodes, 55);
++
++  for (const field of TOKEN_FIELDS) {
++    const before = baseline.provider_tokens?.[field];
++    const after = candidate.provider_tokens?.[field];
++    assertAtLeast(failures, `baseline.provider_tokens.${field}`, before, 1);
++    assertAtLeast(failures, `candidate.provider_tokens.${field}`, after, 1);
++    if (finite(before)) assertAtMost(failures, `provider_tokens.${field}`, after, before);
++  }
++  const baselineTotal = baseline.provider_tokens?.total_tokens;
++  const candidateTotal = candidate.provider_tokens?.total_tokens;
++  const tokenReduction =
++    finite(baselineTotal) && baselineTotal > 0 && finite(candidateTotal)
++      ? (baselineTotal - candidateTotal) / baselineTotal
++      : null;
++  assertAtLeast(failures, "provider_tokens.total_reduction_ratio", tokenReduction, 0.2);
++
++  assertAtLeast(
++    failures,
++    "outcomes.verified_success",
++    candidate.outcomes?.verified_success,
++    baseline.outcomes?.verified_success,
++  );
++  for (const field of ["rework_required", "scope_violation"]) {
++    assertAtMost(
++      failures,
++      `outcomes.${field}`,
++      candidate.outcomes?.[field],
++      baseline.outcomes?.[field],
++    );
++  }
++  assertAtMost(
++    failures,
++    "golden_mismatch_count",
++    candidate.golden_mismatch_count,
++    baseline.golden_mismatch_count,
++  );
++
++  for (const field of LATENCY_FIELDS) {
++    const before = baseline.latency_ms?.[field];
++    const after = candidate.latency_ms?.[field];
++    assertAtLeast(
++      failures,
++      `latency.${field}.sample_count`,
++      after?.sample_count,
++      before?.sample_count,
++    );
++    assertAtMost(failures, `latency.${field}.mean`, after?.mean, before?.mean);
++  }
++
++  for (const [metric, value] of [
++    ["baseline.replay_baseline_sha256", measurement.baseline?.replay_baseline_sha256],
++    ["candidate.driver.sha256", measurement.candidate?.driver?.sha256],
++    ["candidate.fixture_registry_sha256", measurement.candidate?.fixture_registry_sha256],
++    ["candidate.harness_sha256", measurement.candidate?.harness_sha256],
++  ]) {
++    if (!SHA256_PATTERN.test(value ?? "")) failure(failures, metric, "sha256:<64 hex>", value);
++  }
++
++  const requiredComparisonIds = [
++    ...TOKEN_FIELDS.map((field) => `provider_tokens.${field}`),
++    ...LATENCY_FIELDS.flatMap((field) => [
++      `latency.${field}.sample_count`,
++      `latency.${field}.mean_ms`,
++    ]),
++    "outcomes.verified_success",
++    "outcomes.rework_required",
++    "outcomes.golden_mismatch_count",
++    "provider_episodes",
++    "runtime.profile",
++  ];
++  const comparisonIds = new Set((measurement.comparisons ?? []).map((comparison) => comparison.id));
++  for (const id of requiredComparisonIds) {
++    if (!comparisonIds.has(id)) failure(failures, `comparisons.${id}`, "present", "missing");
++  }
++
++  return {
++    schema_version: 1,
++    kind: "agentplane.v0.7.1_efficiency_qualification",
++    subject,
++    source_subject: measurement.candidate?.subject_sha ?? null,
++    coverage: measurement.candidate?.coverage ?? null,
++    provider_episodes: candidate.provider_episodes ?? null,
++    provider_tokens: {
++      baseline: baseline.provider_tokens,
++      candidate: candidate.provider_tokens,
++      total_reduction_ratio: tokenReduction,
++    },
++    outcomes: {
++      baseline: baseline.outcomes,
++      candidate: candidate.outcomes,
++      baseline_golden_mismatch_count: baseline.golden_mismatch_count,
++      candidate_golden_mismatch_count: candidate.golden_mismatch_count,
++    },
++    latency_ms: {
++      baseline: baseline.latency_ms,
++      candidate: candidate.latency_ms,
++    },
++    failures,
++    verdict: failures.length === 0 ? "pass" : "fail",
++  };
++}
++
++function main(argv = process.argv.slice(2)) {
++  const options = parseArgs(argv);
++  const measurement = readMeasurement(options.evidencePath);
++  const result = evaluateEfficiencyMeasurement(measurement, options.subject);
++  mkdirSync(path.dirname(options.outputPath), { recursive: true });
++  writeFileSync(options.outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
++  process.stdout.write(
++    `v0.7.1 efficiency evidence: ${result.verdict}; token_reduction=${
++      result.provider_tokens.total_reduction_ratio === null
++        ? "n/a"
++        : `${(result.provider_tokens.total_reduction_ratio * 100).toFixed(2)}%`
++    }; failures=${result.failures.length}; out=${options.outputPath}\n`,
++  );
++  if (result.failures.length > 0) {
++    for (const item of result.failures) {
++      process.stderr.write(
++        `- ${item.metric}: expected ${String(item.expected)}, got ${String(item.actual)}\n`,
++      );
++    }
++    process.exitCode = 1;
++  }
++}
++
++if (isDirectRun(import.meta.url)) {
++  try {
++    main();
++  } catch (error) {
++    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
++    process.exitCode = 1;
++  }
++}
+diff --git a/scripts/qualification/check-v0.7.1-product-contract.mjs b/scripts/qualification/check-v0.7.1-product-contract.mjs
+new file mode 100644
+index 000000000..9c7e1c893
+--- /dev/null
++++ b/scripts/qualification/check-v0.7.1-product-contract.mjs
+@@ -0,0 +1,185 @@
++import assert from "node:assert/strict";
++import { execFileSync, spawnSync } from "node:child_process";
++import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const cliPath = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
++const MAX_AGENT_PACKET_BYTES = 2048;
++
++function run(command, args, cwd) {
++  return execFileSync(command, args, {
++    cwd,
++    encoding: "utf8",
++    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
++    stdio: ["ignore", "pipe", "pipe"],
++  });
++}
++
++function probeCli(args, cwd = repoRoot) {
++  const result = spawnSync(process.execPath, [cliPath, ...args], {
++    cwd,
++    encoding: "utf8",
++    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
++  });
++  return {
++    status: result.status,
++    stdout: result.stdout ?? "",
++    stderr: result.stderr ?? "",
++  };
++}
++
++function read(relativePath) {
++  return readFileSync(path.join(repoRoot, relativePath), "utf8");
++}
++
++function checkOnboarding(failures) {
++  const readme = read("README.md");
++  const taskCommand = read("packages/agentplane/src/commands/task/task.command.ts");
++  const commandGuide = read("packages/agentplane/src/cli/command-guide.ts");
++  if (/agentplane task begin/u.test(readme) || /agentplane task complete/u.test(readme)) {
++    failures.push("README still presents task begin/task complete as the normal first-task route");
++  }
++  if (/Default guided path: task begin -> task verify-show -> task complete/u.test(taskCommand)) {
++    failures.push("task help still declares begin/verify-show/complete as the default guided path");
++  }
++  if (/normal first task, prefer `agentplane task begin/u.test(commandGuide)) {
++    failures.push("quickstart still recommends the semantic task begin shortcut");
++  }
++}
++
++function checkManagedFrontend(failures) {
++  const result = probeCli(["task", "run", "--help"]);
++  if (result.status !== 0) failures.push("managed task run frontend is not publicly executable");
++}
++
++function assertCompactPacket(packetText) {
++  const bytes = Buffer.byteLength(packetText, "utf8");
++  assert.ok(bytes <= MAX_AGENT_PACKET_BYTES, `agent packet is ${bytes} bytes; maximum is 2048`);
++  const packet = JSON.parse(packetText);
++  assert.equal(packet.schema_version, 1, "agent packet schema_version must be 1");
++  assert.equal(typeof packet.task_id, "string", "agent packet task_id is required");
++  assert.equal(
++    typeof packet.state_fingerprint,
++    "string",
++    "agent packet state_fingerprint is required",
++  );
++  assert.ok(packet.action && typeof packet.action === "object", "agent packet action is required");
++  assert.equal(typeof packet.action.kind, "string", "agent packet action.kind is required");
++  assert.equal(
++    typeof packet.action.instruction,
++    "string",
++    "agent packet action.instruction is required",
++  );
++  for (const aliases of [
++    ["action", "next", "next_action"],
++    ["state_fingerprint", "fingerprint", "state_digest"],
++    ["task_id", "taskId", "id"],
++  ]) {
++    const present = aliases.filter((field) => Object.hasOwn(packet, field));
++    assert.ok(present.length <= 1, `agent packet duplicates one field as ${present.join(", ")}`);
++  }
++  const serialized = JSON.stringify(packet);
++  assert.doesNotMatch(
++    serialized,
++    /(?:\bgit\s|\bgh\s|worktree|pr open|\bverify\b|\bfinish\b|\bintegrate\b|\bcleanup\b)/iu,
++    "normal external-agent packet leaks formal lifecycle choreography",
++  );
++}
++
++function checkExternalFrontend(failures) {
++  const help = probeCli(["task", "advance", "--help"]);
++  if (help.status !== 0) {
++    failures.push("task advance is not registered as the external-agent supervisor frontend");
++    return;
++  }
++  if (!help.stdout.includes("--agent-json")) {
++    failures.push("task advance help omits the compact --agent-json contract");
++    return;
++  }
++
++  const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-v071-product-contract-"));
++  try {
++    run("git", ["init", "-q", "-b", "main"], tempRoot);
++    run("git", ["config", "user.name", "AgentPlane Qualification"], tempRoot);
++    run("git", ["config", "user.email", "qualification@example.com"], tempRoot);
++    writeFileSync(path.join(tempRoot, "README.md"), "# Qualification fixture\n", "utf8");
++    run("git", ["add", "README.md"], tempRoot);
++    run("git", ["commit", "-m", "seed"], tempRoot);
++    run(
++      process.execPath,
++      [
++        cliPath,
++        "init",
++        "--yes",
++        "--setup-profile",
++        "light",
++        "--workflow",
++        "branch_pr",
++        "--backend",
++        "local",
++        "--hooks",
++        "false",
++        "--require-plan-approval",
++        "true",
++      ],
++      tempRoot,
++    );
++    const taskId = run(
++      process.execPath,
++      [
++        cliPath,
++        "task",
++        "new",
++        "--title",
++        "Compact protocol fixture",
++        "--description",
++        "Prepare the smallest sufficient context for an executor",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "qualification",
++      ],
++      tempRoot,
++    ).trim();
++    const packet = run(
++      process.execPath,
++      [cliPath, "task", "advance", taskId, "--agent-json"],
++      tempRoot,
++    ).trim();
++    assertCompactPacket(packet);
++  } catch (error) {
++    failures.push(error instanceof Error ? error.message : String(error));
++  } finally {
++    rmSync(tempRoot, { recursive: true, force: true });
++  }
++}
++
++function main() {
++  const failures = [];
++  checkOnboarding(failures);
++  checkManagedFrontend(failures);
++  checkExternalFrontend(failures);
++  if (failures.length > 0) {
++    throw new Error(
++      ["v0.7.1 product contract is release-blocking:", ...failures.map((item) => `- ${item}`)].join(
++        "\n",
++      ),
++    );
++  }
++  process.stdout.write(
++    "v0.7.1 product contract OK (managed run + compact external advance; normal packet <=2048 bytes)\n",
++  );
++}
++
++try {
++  main();
++} catch (error) {
++  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
++  process.exitCode = 1;
++}
+diff --git a/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs b/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
+new file mode 100644
+index 000000000..fdf563edb
+--- /dev/null
++++ b/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
+@@ -0,0 +1,302 @@
++import { execFileSync, spawnSync } from "node:child_process";
++import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import { performance } from "node:perf_hooks";
++import { fileURLToPath } from "node:url";
++
++import {
++  cliRepoRootFromPath,
++  interpolateArgs,
++  readSuiteConfigMap,
++  roundMs,
++  summarizeDurations,
++} from "../lib/cli-benchmark-shared.mjs";
++import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
++
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const suiteConfigPath = path.join(repoRoot, "scripts", "cli-walltime-suites.json");
++const BASELINE_VERSION = "0.6.26";
++const PACKAGES = ["core", "recipes", "agentplane"];
++const RUNS = 7;
++const WARMUPS = 1;
++
++function parseArgs(argv) {
++  const { flags, positionals } = parseScriptArgs(argv, {
++    valueFlags: ["subject", "out"],
++  });
++  if (positionals.length > 0) {
++    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
++  }
++  if (!flags.subject || !flags.out) throw new Error("--subject and --out are required");
++  if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
++    throw new Error("--subject must be a full 40-character Git commit SHA");
++  }
++  return { outputPath: path.resolve(flags.out), subject: flags.subject };
++}
++
++function run(command, args, options = {}) {
++  return execFileSync(command, args, {
++    cwd: options.cwd ?? repoRoot,
++    encoding: "utf8",
++    env: {
++      ...process.env,
++      AGENTPLANE_NO_UPDATE_CHECK: "1",
++      ...(options.env ?? {}),
++    },
++    maxBuffer: 128 * 1024 * 1024,
++    stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
++  });
++}
++
++function npmPack(packageDirectory, packDirectory, cacheDirectory) {
++  const output = run("npm", ["pack", "--json", "--pack-destination", packDirectory], {
++    cwd: packageDirectory,
++    env: { NPM_CONFIG_CACHE: cacheDirectory },
++  });
++  const match = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(output);
++  if (!match) throw new Error(`npm pack did not return JSON for ${packageDirectory}`);
++  const entry = JSON.parse(match[2])[0];
++  return path.join(packDirectory, entry.filename);
++}
++
++function installedCli(prefix) {
++  return path.join(prefix, "node_modules", "agentplane", "bin", "agentplane.js");
++}
++
++function installBaseline(prefix, cacheDirectory) {
++  run(
++    "npm",
++    ["install", "--ignore-scripts", "--no-audit", "--no-fund", `agentplane@${BASELINE_VERSION}`],
++    { cwd: prefix, env: { NPM_CONFIG_CACHE: cacheDirectory } },
++  );
++  return installedCli(prefix);
++}
++
++function installCandidate(prefix, packDirectory, cacheDirectory) {
++  const tarballs = PACKAGES.map((name) =>
++    npmPack(path.join(repoRoot, "packages", name), packDirectory, cacheDirectory),
++  );
++  run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", ...tarballs], {
++    cwd: prefix,
++    env: { NPM_CONFIG_CACHE: cacheDirectory },
++  });
++  return installedCli(prefix);
++}
++
++function initializeFixture(root, baselineCli) {
++  run("git", ["init", "-q", "-b", "main"], { cwd: root });
++  run("git", ["config", "user.name", "AgentPlane Latency Qualification"], { cwd: root });
++  run("git", ["config", "user.email", "latency@example.com"], { cwd: root });
++  writeFileSync(path.join(root, "README.md"), "# Matched latency fixture\n", "utf8");
++  run("git", ["add", "README.md"], { cwd: root });
++  run("git", ["commit", "-m", "seed"], { cwd: root });
++  run(
++    process.execPath,
++    [
++      baselineCli,
++      "init",
++      "--yes",
++      "--setup-profile",
++      "light",
++      "--workflow",
++      "direct",
++      "--backend",
++      "local",
++      "--hooks",
++      "false",
++      "--require-plan-approval",
++      "true",
++    ],
++    { cwd: root },
++  );
++  run(
++    process.execPath,
++    [
++      baselineCli,
++      "task",
++      "new",
++      "--title",
++      "Matched latency fixture",
++      "--description",
++      "Provide stable task list and search data",
++      "--priority",
++      "med",
++      "--owner",
++      "CODER",
++      "--tag",
++      "benchmark",
++    ],
++    { cwd: root },
++  );
++}
++
++function measuredInvocation(cliPath, argv) {
++  const startedAt = performance.now();
++  const result = spawnSync(process.execPath, [cliPath, ...argv], {
++    cwd: cliRepoRootFromPath(cliPath),
++    encoding: "utf8",
++    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
++    maxBuffer: 10 * 1024 * 1024,
++  });
++  return {
++    duration_ms: roundMs(performance.now() - startedAt),
++    exit_code: result.status,
++    signal: result.signal,
++    stderr: result.stderr ?? "",
++  };
++}
++
++export function compareMatchedLatencySamples({
++  id,
++  baselineDurations,
++  candidateDurations,
++  baselineExitCode,
++  candidateExitCode,
++  baselineStderr = "",
++  candidateStderr = "",
++}) {
++  const baseline = summarizeDurations(baselineDurations);
++  const candidate = summarizeDurations(candidateDurations);
++  const deltaMs = roundMs(candidate.median_ms - baseline.median_ms);
++  const deltaRatio = baseline.median_ms === 0 ? null : deltaMs / baseline.median_ms;
++  const passed =
++    baselineExitCode === 0 && candidateExitCode === 0 && candidate.median_ms <= baseline.median_ms;
++  return {
++    id,
++    baseline: { ...baseline, exit_code: baselineExitCode, stderr: baselineStderr.slice(-500) },
++    candidate: {
++      ...candidate,
++      exit_code: candidateExitCode,
++      stderr: candidateStderr.slice(-500),
++    },
++    delta_ms: deltaMs,
++    delta_ratio: deltaRatio,
++    verdict: passed ? "pass" : "fail",
++  };
++}
++
++function measureMatched({ baselineCli, candidateCli, fixtureRoot }) {
++  const config = readSuiteConfigMap(suiteConfigPath);
++  const suite = config.suites.get("cli_walltime_baseline");
++  if (!suite) throw new Error("cli_walltime_baseline suite is missing");
++  const commands = [];
++
++  for (const spec of suite.commands) {
++    const baselineArgv = interpolateArgs(spec.argv, {
++      root: fixtureRoot,
++      repoRoot: cliRepoRootFromPath(baselineCli),
++    });
++    const candidateArgv = interpolateArgs(spec.argv, {
++      root: fixtureRoot,
++      repoRoot: cliRepoRootFromPath(candidateCli),
++    });
++    for (let index = 0; index < WARMUPS; index += 1) {
++      measuredInvocation(baselineCli, baselineArgv);
++      measuredInvocation(candidateCli, candidateArgv);
++    }
++    const baselineDurations = [];
++    const candidateDurations = [];
++    let baselineExitCode = null;
++    let candidateExitCode = null;
++    let baselineStderr = "";
++    let candidateStderr = "";
++    for (let index = 0; index < RUNS; index += 1) {
++      const order =
++        index % 2 === 0
++          ? [
++              ["baseline", baselineCli, baselineArgv],
++              ["candidate", candidateCli, candidateArgv],
++            ]
++          : [
++              ["candidate", candidateCli, candidateArgv],
++              ["baseline", baselineCli, baselineArgv],
++            ];
++      for (const [kind, cliPath, argv] of order) {
++        const result = measuredInvocation(cliPath, argv);
++        if (kind === "baseline") {
++          baselineDurations.push(result.duration_ms);
++          baselineExitCode = result.exit_code;
++          baselineStderr = result.stderr;
++        } else {
++          candidateDurations.push(result.duration_ms);
++          candidateExitCode = result.exit_code;
++          candidateStderr = result.stderr;
++        }
++      }
++    }
++    commands.push(
++      compareMatchedLatencySamples({
++        id: spec.id,
++        baselineDurations,
++        candidateDurations,
++        baselineExitCode,
++        candidateExitCode,
++        baselineStderr,
++        candidateStderr,
++      }),
++    );
++  }
++  return commands;
++}
++
++function main(argv = process.argv.slice(2)) {
++  const options = parseArgs(argv);
++  const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-matched-cli-latency-"));
++  const baselinePrefix = path.join(tempRoot, "baseline");
++  const candidatePrefix = path.join(tempRoot, "candidate");
++  const packDirectory = path.join(tempRoot, "packs");
++  const fixtureRoot = path.join(tempRoot, "fixture");
++  const cacheDirectory = path.join(repoRoot, ".agentplane", ".npm-cache");
++  try {
++    for (const directory of [baselinePrefix, candidatePrefix, packDirectory, fixtureRoot]) {
++      mkdirSync(directory, { recursive: true });
++    }
++    const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
++    const candidateCli = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
++    initializeFixture(fixtureRoot, baselineCli);
++    const baselineVersion = run(process.execPath, [baselineCli, "--version"], {
++      cwd: fixtureRoot,
++    }).trim();
++    const candidateVersion = run(process.execPath, [candidateCli, "--version"], {
++      cwd: fixtureRoot,
++    }).trim();
++    if (baselineVersion !== BASELINE_VERSION) {
++      throw new Error(`expected baseline ${BASELINE_VERSION}, got ${baselineVersion}`);
++    }
++    const commands = measureMatched({ baselineCli, candidateCli, fixtureRoot });
++    const failures = commands.filter((command) => command.verdict !== "pass");
++    const result = {
++      schema_version: 1,
++      kind: "agentplane.v0.7.1_matched_cli_latency",
++      subject: options.subject,
++      environment: { node: process.version, platform: process.platform, arch: process.arch },
++      baseline_version: baselineVersion,
++      candidate_version: candidateVersion,
++      runs: RUNS,
++      warmups: WARMUPS,
++      comparison: "candidate_median_ms <= baseline_median_ms",
++      commands,
++      failure_ids: failures.map((command) => command.id),
++      verdict: failures.length === 0 ? "pass" : "fail",
++    };
++    mkdirSync(path.dirname(options.outputPath), { recursive: true });
++    writeFileSync(options.outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
++    process.stdout.write(
++      `matched CLI latency: ${result.verdict}; baseline=${baselineVersion}; candidate=${candidateVersion}; failures=${result.failure_ids.join(",") || "none"}; out=${options.outputPath}\n`,
++    );
++    if (failures.length > 0) process.exitCode = 1;
++  } finally {
++    rmSync(tempRoot, { recursive: true, force: true });
++  }
++}
++
++if (isDirectRun(import.meta.url)) {
++  try {
++    main();
++  } catch (error) {
++    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
++    process.exitCode = 1;
++  }
++}
+diff --git a/scripts/qualification/release-qualification.mjs b/scripts/qualification/release-qualification.mjs
+new file mode 100644
+index 000000000..5a75c966e
+--- /dev/null
++++ b/scripts/qualification/release-qualification.mjs
+@@ -0,0 +1,402 @@
++import { createHash } from "node:crypto";
++import { existsSync, readFileSync } from "node:fs";
++import path from "node:path";
++
++const COVERAGE_DIMENSIONS = [
++  "workflow_modes",
++  "supervisor_frontends",
++  "lifecycle_states",
++  "context_conditions",
++  "semantic_stops",
++  "recovery_states",
++  "hosted_boundaries",
++];
++
++const TIERS = new Set(["core", "full", "provider"]);
++const RELEASE_DISPOSITIONS = new Set(["block", "advisory"]);
++const TASK_ID_PATTERN = /^\d{12}-[A-Z0-9]{6}$/u;
++
++function assertNonEmptyString(value, label) {
++  if (typeof value !== "string" || value.trim().length === 0) {
++    throw new TypeError(`${label} must be a non-empty string`);
++  }
++}
++
++function assertStringArray(value, label, options = {}) {
++  if (!Array.isArray(value) || value.length === 0) {
++    throw new TypeError(`${label} must be a non-empty string array`);
++  }
++  for (const [index, item] of value.entries()) {
++    assertNonEmptyString(item, `${label}[${index}]`);
++  }
++  if (options.unique !== false && new Set(value).size !== value.length) {
++    throw new Error(`${label} must not contain duplicates`);
++  }
++}
++
++function assertFailureContract(failure, label, options = {}) {
++  if (!failure || typeof failure !== "object" || Array.isArray(failure)) {
++    throw new TypeError(`${label} must be an object`);
++  }
++  for (const field of ["classification", "impact", "proposed_fix", "owner_task"]) {
++    assertNonEmptyString(failure[field], `${label}.${field}`);
++  }
++  if (!TASK_ID_PATTERN.test(failure.owner_task)) {
++    throw new Error(`${label}.owner_task must be an executable AgentPlane task id`);
++  }
++  if (
++    options.repoRoot &&
++    !existsSync(
++      path.join(options.repoRoot, ".agentplane", "tasks", failure.owner_task, "README.md"),
++    )
++  ) {
++    throw new Error(`${label}.owner_task does not exist: ${failure.owner_task}`);
++  }
++  if (!RELEASE_DISPOSITIONS.has(failure.release_disposition)) {
++    throw new Error(`${label}.release_disposition must be block or advisory`);
++  }
++}
++
++export function stableJson(value) {
++  if (Array.isArray(value)) return `[${value.map((item) => stableJson(item)).join(",")}]`;
++  if (value && typeof value === "object") {
++    return `{${Object.keys(value)
++      .toSorted()
++      .map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`)
++      .join(",")}}`;
++  }
++  return JSON.stringify(value);
++}
++
++export function sha256(value) {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++export function readQualificationManifest(filePath) {
++  let manifest;
++  try {
++    manifest = JSON.parse(readFileSync(filePath, "utf8"));
++  } catch (error) {
++    throw new Error(
++      `failed to read qualification manifest ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
++    );
++  }
++  validateQualificationManifest(manifest, {
++    repoRoot: path.resolve(path.dirname(filePath), "../.."),
++  });
++  return manifest;
++}
++
++export function validateQualificationManifest(manifest, options = {}) {
++  if (!manifest || manifest.schema_version !== 1) {
++    throw new Error("qualification manifest must use schema_version=1");
++  }
++  assertNonEmptyString(manifest.release, "manifest.release");
++  assertNonEmptyString(manifest.kind, "manifest.kind");
++  if (!manifest.required_coverage || typeof manifest.required_coverage !== "object") {
++    throw new TypeError("manifest.required_coverage must be an object");
++  }
++  for (const dimension of COVERAGE_DIMENSIONS) {
++    assertStringArray(manifest.required_coverage[dimension], `required_coverage.${dimension}`);
++  }
++  if (!Array.isArray(manifest.scenarios) || manifest.scenarios.length === 0) {
++    throw new TypeError("manifest.scenarios must be a non-empty array");
++  }
++
++  const scenarioIds = new Set();
++  const observedCoverage = Object.fromEntries(
++    COVERAGE_DIMENSIONS.map((dimension) => [dimension, new Set()]),
++  );
++  for (const [index, scenario] of manifest.scenarios.entries()) {
++    const label = `scenarios[${index}]`;
++    assertNonEmptyString(scenario.id, `${label}.id`);
++    if (scenarioIds.has(scenario.id)) throw new Error(`duplicate scenario id: ${scenario.id}`);
++    scenarioIds.add(scenario.id);
++    assertNonEmptyString(scenario.title, `${label}.title`);
++    if (!TIERS.has(scenario.tier)) {
++      throw new Error(`${label}.tier must be core, full, or provider`);
++    }
++    assertStringArray(scenario.command, `${label}.command`, { unique: false });
++    if (!Number.isSafeInteger(scenario.timeout_ms) || scenario.timeout_ms < 1000) {
++      throw new Error(`${label}.timeout_ms must be an integer >= 1000`);
++    }
++    assertFailureContract(scenario.failure, `${label}.failure`, options);
++    if (scenario.depends_on !== undefined) {
++      assertStringArray(scenario.depends_on, `${label}.depends_on`);
++    }
++    if (!scenario.coverage || typeof scenario.coverage !== "object") {
++      throw new TypeError(`${label}.coverage must be an object`);
++    }
++    for (const dimension of COVERAGE_DIMENSIONS) {
++      const values = scenario.coverage[dimension] ?? [];
++      if (!Array.isArray(values))
++        throw new TypeError(`${label}.coverage.${dimension} must be an array`);
++      for (const value of values) {
++        assertNonEmptyString(value, `${label}.coverage.${dimension}`);
++        if (!manifest.required_coverage[dimension].includes(value)) {
++          throw new Error(`${scenario.id} declares unknown ${dimension} value: ${value}`);
++        }
++        observedCoverage[dimension].add(value);
++      }
++    }
++  }
++
++  for (const scenario of manifest.scenarios) {
++    for (const dependency of scenario.depends_on ?? []) {
++      if (!scenarioIds.has(dependency)) {
++        throw new Error(`${scenario.id} depends on unknown scenario: ${dependency}`);
++      }
++      if (dependency === scenario.id) {
++        throw new Error(`${scenario.id} cannot depend on itself`);
++      }
++    }
++  }
++
++  const missing = [];
++  for (const dimension of COVERAGE_DIMENSIONS) {
++    for (const value of manifest.required_coverage[dimension]) {
++      if (!observedCoverage[dimension].has(value)) missing.push(`${dimension}.${value}`);
++    }
++  }
++  if (missing.length > 0) {
++    throw new Error(`qualification manifest has uncovered requirements: ${missing.join(", ")}`);
++  }
++  if (!manifest.scenarios.some((scenario) => scenario.tier === "provider")) {
++    throw new Error("qualification manifest must declare at least one provider scenario");
++  }
++  return manifest;
++}
++
++export function selectQualificationScenarios(manifest, options) {
++  const profile = options.profile ?? "full";
++  if (!new Set(["core", "full"]).has(profile)) {
++    throw new Error("qualification profile must be core or full");
++  }
++  const requested = new Set(options.scenarioIds);
++  const unknown = [...requested].filter(
++    (id) => !manifest.scenarios.some((scenario) => scenario.id === id),
++  );
++  if (unknown.length > 0) throw new Error(`unknown qualification scenarios: ${unknown.join(", ")}`);
++
++  const selected = manifest.scenarios.filter((scenario) => {
++    if (requested.size > 0) return requested.has(scenario.id);
++    if (scenario.tier === "provider") return options.provider === true;
++    if (scenario.tier === "full") return profile === "full";
++    return true;
++  });
++  const selectedIds = new Set(selected.map((scenario) => scenario.id));
++  const pending = [...selected];
++  const ordered = [];
++  while (pending.length > 0) {
++    const nextIndex = pending.findIndex((scenario) =>
++      (scenario.depends_on ?? []).every(
++        (dependency) =>
++          !selectedIds.has(dependency) || ordered.some((item) => item.id === dependency),
++      ),
++    );
++    if (nextIndex === -1) throw new Error("qualification scenario dependencies contain a cycle");
++    ordered.push(pending.splice(nextIndex, 1)[0]);
++  }
++  return ordered;
++}
++
++export function substituteQualificationCommand(command, variables) {
++  return command.map((token) =>
++    token.replaceAll(/\{([a-zA-Z][a-zA-Z0-9_]*)\}/gu, (match, name) => {
++      const value = variables[name];
++      if (typeof value !== "string" || value.length === 0) {
++        throw new Error(`qualification command requires variable ${name}`);
++      }
++      return value;
++    }),
++  );
++}
++
++function posixRelative(root, target) {
++  return path.relative(root, target).split(path.sep).join("/");
++}
++
++export function buildQualificationDefect({ repoRoot, result, scenario }) {
++  const command = result.command.map((token) => JSON.stringify(token)).join(" ");
++  return {
++    id: `QR-${scenario.id}`,
++    scenario_id: scenario.id,
++    classification: scenario.failure.classification,
++    reproduction: command,
++    evidence: posixRelative(repoRoot, result.log_path),
++    impact: scenario.failure.impact,
++    proposed_fix: scenario.failure.proposed_fix,
++    owner_task: scenario.failure.owner_task,
++    release_disposition: scenario.failure.release_disposition,
++    exit_code: result.exit_code,
++    signal: result.signal,
++    timed_out: result.timed_out,
++  };
++}
++
++export function buildQualificationReport({
++  manifest,
++  manifestPath,
++  repoRoot,
++  mode,
++  profile,
++  provider,
++  subject,
++  startedAt,
++  finishedAt,
++  results,
++}) {
++  const defects = results
++    .filter((result) => result.status === "failed")
++    .map((result) => buildQualificationDefect({ repoRoot, result, scenario: result.scenario }));
++  const blockingDefects = defects.filter((defect) => defect.release_disposition === "block");
++  const providerResults = results.filter((result) => result.scenario.tier === "provider");
++  const selectedIds = new Set(results.map((result) => result.scenario.id));
++  const requiredLocalIds = manifest.scenarios
++    .filter((scenario) => scenario.tier !== "provider")
++    .map((scenario) => scenario.id);
++  const requiredProviderIds = manifest.scenarios
++    .filter((scenario) => scenario.tier === "provider")
++    .map((scenario) => scenario.id);
++  const localSelectionComplete = requiredLocalIds.every((id) => selectedIds.has(id));
++  const providerSelectionComplete = requiredProviderIds.every((id) => selectedIds.has(id));
++  const providerStatus =
++    providerResults.length === 0
++      ? "not_run"
++      : providerResults.every((result) => result.status === "passed")
++        ? "passed"
++        : "failed";
++  const localReady = blockingDefects.length === 0 && localSelectionComplete;
++  const releaseReady = localReady && providerSelectionComplete && providerStatus === "passed";
++
++  const report = {
++    schema_version: 1,
++    kind: "agentplane.release_qualification_report",
++    release: manifest.release,
++    mode,
++    profile,
++    subject,
++    manifest: {
++      path: posixRelative(repoRoot, manifestPath),
++      sha256: sha256(`${stableJson(manifest)}\n`),
++    },
++    started_at: startedAt,
++    finished_at: finishedAt,
++    duration_ms: Math.max(0, Date.parse(finishedAt) - Date.parse(startedAt)),
++    verdict: releaseReady
++      ? "ready"
++      : localReady
++        ? "ready_local_provider_not_run"
++        : blockingDefects.length > 0
++          ? "blocked"
++          : "incomplete",
++    release_ready: releaseReady,
++    local_ready: localReady,
++    provider: {
++      requested: provider,
++      status: providerStatus,
++    },
++    coverage: manifest.required_coverage,
++    summary: {
++      selected: results.length,
++      declared: manifest.scenarios.length,
++      passed: results.filter((result) => result.status === "passed").length,
++      failed: defects.length,
++      blocking: blockingDefects.length,
++      local_selection_complete: localSelectionComplete,
++      provider_selection_complete: providerSelectionComplete,
++    },
++    scenarios: results.map((result) => ({
++      id: result.scenario.id,
++      title: result.scenario.title,
++      tier: result.scenario.tier,
++      status: result.status,
++      duration_ms: result.duration_ms,
++      exit_code: result.exit_code,
++      signal: result.signal,
++      timed_out: result.timed_out,
++      command: result.command,
++      log: posixRelative(repoRoot, result.log_path),
++      output_tail: result.output_tail,
++    })),
++    defects,
++  };
++  validateQualificationReport(report);
++  return report;
++}
++
++export function validateQualificationReport(report) {
++  if (
++    !report ||
++    report.schema_version !== 1 ||
++    report.kind !== "agentplane.release_qualification_report"
++  ) {
++    throw new Error("qualification report must use the v1 report contract");
++  }
++  if (!Array.isArray(report.scenarios) || !Array.isArray(report.defects)) {
++    throw new TypeError("qualification report must include scenarios and defects arrays");
++  }
++  for (const defect of report.defects) {
++    for (const field of [
++      "id",
++      "scenario_id",
++      "classification",
++      "reproduction",
++      "evidence",
++      "impact",
++      "proposed_fix",
++      "owner_task",
++      "release_disposition",
++    ]) {
++      assertNonEmptyString(defect[field], `defect.${field}`);
++    }
++  }
++  const expectedBlocking = report.defects.filter(
++    (defect) => defect.release_disposition === "block",
++  ).length;
++  if (report.summary.blocking !== expectedBlocking) {
++    throw new Error("qualification report blocking summary differs from its defect ledger");
++  }
++  if (report.release_ready && report.provider.status !== "passed") {
++    throw new Error("release_ready requires passed provider evidence");
++  }
++  return report;
++}
++
++export function renderDefectLedger(report) {
++  const lines = [
++    `# AgentPlane ${report.release} qualification defect ledger`,
++    "",
++    `- Verdict: \`${report.verdict}\``,
++    `- Subject: \`${report.subject}\``,
++    `- Scenarios: ${report.summary.passed}/${report.summary.selected} passed`,
++    `- Blocking defects: ${report.summary.blocking}`,
++    `- Provider evidence: \`${report.provider.status}\``,
++  ];
++  if (report.defects.length === 0) {
++    lines.push("", "No defects were recorded.");
++    return `${lines.join("\n")}\n`;
++  }
++  for (const defect of report.defects) {
++    lines.push(
++      "",
++      `## ${defect.id}: ${defect.classification}`,
++      "",
++      `- Scenario: \`${defect.scenario_id}\``,
++      `- Disposition: \`${defect.release_disposition}\``,
++      `- Owner task: \`${defect.owner_task}\``,
++      `- Impact: ${defect.impact}`,
++      `- Proposed fix: ${defect.proposed_fix}`,
++      `- Reproduction: \`${defect.reproduction.replaceAll("`", "\\`")}\``,
++      `- Evidence: \`${defect.evidence}\``,
++    );
++  }
++  return `${lines.join("\n")}\n`;
++}
++
++export function qualificationExitCode(report) {
++  if (report.mode === "audit") return 0;
++  return report.release_ready ? 0 : 1;
++}
++
++export const qualificationCoverageDimensions = [...COVERAGE_DIMENSIONS];
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+new file mode 100644
+index 000000000..87ed4dda1
+--- /dev/null
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -0,0 +1,246 @@
++import assert from "node:assert/strict";
++import { readFileSync } from "node:fs";
++import { describe, it } from "node:test";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++import {
++  buildQualificationReport,
++  qualificationExitCode,
++  readQualificationManifest,
++  selectQualificationScenarios,
++  substituteQualificationCommand,
++  validateQualificationManifest,
++  validateQualificationReport,
++} from "./release-qualification.mjs";
++import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
++import { compareMatchedLatencySamples } from "./measure-v0.7.1-matched-cli-latency.mjs";
++
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const manifestPath = path.join(
++  repoRoot,
++  "scripts",
++  "qualification",
++  "v0.7.1-release-qualification.json",
++);
++
++function resultFor(scenario, status = "passed") {
++  return {
++    scenario,
++    command: [...scenario.command],
++    duration_ms: 1,
++    exit_code: status === "passed" ? 0 : 1,
++    signal: null,
++    timed_out: false,
++    status,
++    log_path: path.join(repoRoot, ".agentplane", "reports", `${scenario.id}.log`),
++    output_tail: "",
++  };
++}
++
++function reportFor(manifest, results, mode = "audit") {
++  return buildQualificationReport({
++    manifest,
++    manifestPath,
++    repoRoot,
++    mode,
++    profile: "full",
++    provider: results.some((result) => result.scenario.tier === "provider"),
++    subject: "a".repeat(40),
++    startedAt: "2026-08-02T00:00:00.000Z",
++    finishedAt: "2026-08-02T00:00:01.000Z",
++    results,
++  });
++}
++
++describe("v0.7.1 release qualification contract", () => {
++  it("maps every required dimension to an executable scenario", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    assert.equal(validateQualificationManifest(manifest, { repoRoot }), manifest);
++    assert.ok(manifest.scenarios.every((scenario) => scenario.command.length > 0));
++  });
++
++  it("requires every defect owner to be an existing executable task", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const pending = structuredClone(manifest);
++    pending.scenarios[0].failure.owner_task = "PENDING-v0.7.1-owner";
++    assert.throws(
++      () => validateQualificationManifest(pending, { repoRoot }),
++      /must be an executable AgentPlane task id/u,
++    );
++
++    const missing = structuredClone(manifest);
++    missing.scenarios[0].failure.owner_task = "209901010000-AAAAAA";
++    assert.throws(
++      () => validateQualificationManifest(missing, { repoRoot }),
++      /owner_task does not exist/u,
++    );
++  });
++
++  it("rejects an uncovered requirement", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const invalid = structuredClone(manifest);
++    invalid.required_coverage.context_conditions.push("unknown_future_condition");
++    assert.throws(
++      () => validateQualificationManifest(invalid),
++      /uncovered requirements: context_conditions\.unknown_future_condition/u,
++    );
++  });
++
++  it("selects provider work only when explicitly requested", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const local = selectQualificationScenarios(manifest, {
++      profile: "full",
++      provider: false,
++    });
++    const provider = selectQualificationScenarios(manifest, {
++      profile: "full",
++      provider: true,
++    });
++    assert.equal(
++      local.some((scenario) => scenario.tier === "provider"),
++      false,
++    );
++    assert.equal(provider.filter((scenario) => scenario.tier === "provider").length, 1);
++  });
++
++  it("fails closed when a command variable is absent", () => {
++    assert.throws(
++      () => substituteQualificationCommand(["tool", "{subject}"], {}),
++      /requires variable subject/u,
++    );
++    assert.deepEqual(substituteQualificationCommand(["tool", "{subject}"], { subject: "abc" }), [
++      "tool",
++      "abc",
++    ]);
++  });
++
++  it("keeps audit execution successful while emitting a blocking defect", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const results = manifest.scenarios
++      .filter((scenario) => scenario.tier !== "provider")
++      .map((scenario) =>
++        resultFor(scenario, scenario.id === "supervisor-frontends" ? "failed" : "passed"),
++      );
++    const report = reportFor(manifest, results, "audit");
++    assert.equal(report.verdict, "blocked");
++    assert.equal(report.release_ready, false);
++    assert.equal(report.defects.length, 1);
++    assert.equal(report.defects[0].owner_task, "202608021231-PZGG3V");
++    assert.equal(qualificationExitCode(report), 0);
++    assert.equal(validateQualificationReport(report), report);
++  });
++
++  it("assigns distinct executable tasks to the confirmed release blockers", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const confirmed = new Set([
++      "supervisor-frontends",
++      "efficiency-evidence",
++      "matched-cli-latency",
++    ]);
++    const results = manifest.scenarios
++      .filter((scenario) => scenario.tier !== "provider")
++      .map((scenario) => resultFor(scenario, confirmed.has(scenario.id) ? "failed" : "passed"));
++    const report = reportFor(manifest, results, "audit");
++    const blockingOwners = report.defects
++      .filter((defect) => defect.release_disposition === "block")
++      .map((defect) => defect.owner_task);
++
++    assert.equal(blockingOwners.length, 3);
++    assert.equal(new Set(blockingOwners).size, blockingOwners.length);
++    for (const ownerTask of blockingOwners) {
++      assert.equal(
++        readFileSync(
++          path.join(repoRoot, ".agentplane", "tasks", ownerTask, "README.md"),
++          "utf8",
++        ).includes(`id: "${ownerTask}"`),
++        true,
++      );
++    }
++  });
++
++  it("does not claim readiness from a partial successful selection", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const report = reportFor(manifest, [resultFor(manifest.scenarios[0])], "audit");
++    assert.equal(report.verdict, "incomplete");
++    assert.equal(report.local_ready, false);
++    assert.equal(report.summary.local_selection_complete, false);
++  });
++
++  it("allows a gate pass only after all local and provider scenarios pass", () => {
++    const manifest = readQualificationManifest(manifestPath);
++    const report = reportFor(
++      manifest,
++      manifest.scenarios.map((scenario) => resultFor(scenario)),
++      "gate",
++    );
++    assert.equal(report.verdict, "ready");
++    assert.equal(report.release_ready, true);
++    assert.equal(report.provider.status, "passed");
++    assert.equal(qualificationExitCode(report), 0);
++  });
++
++  it("requires exact-subject evidence and baseline-or-better lifecycle latency", () => {
++    const evidence = JSON.parse(
++      readFileSync(
++        path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
++        "utf8",
++      ),
++    );
++    const measurement = evidence.measurement;
++    const result = evaluateEfficiencyMeasurement(measurement, measurement.candidate.subject_sha);
++    assert.equal(result.provider_tokens.total_reduction_ratio > 0.2, true);
++    assert.deepEqual(
++      result.failures.map((item) => item.metric),
++      ["latency.harness_setup_latency_ms.mean", "latency.time_to_verified_result_ms.mean"],
++    );
++
++    const passing = structuredClone(measurement);
++    for (const [field, baseline] of Object.entries(passing.baseline.actual_values.latency_ms)) {
++      passing.candidate.actual_values.latency_ms[field].mean = baseline.mean;
++    }
++    assert.equal(
++      evaluateEfficiencyMeasurement(passing, passing.candidate.subject_sha).verdict,
++      "pass",
++    );
++  });
++
++  it("rejects a token regression even when aggregate evidence is complete", () => {
++    const evidence = JSON.parse(
++      readFileSync(
++        path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
++        "utf8",
++      ),
++    );
++    const measurement = evidence.measurement;
++    const regressed = structuredClone(measurement);
++    regressed.candidate.actual_values.provider_tokens.input_tokens =
++      regressed.baseline.actual_values.provider_tokens.input_tokens + 1;
++    const result = evaluateEfficiencyMeasurement(regressed, regressed.candidate.subject_sha);
++    assert.equal(
++      result.failures.some((item) => item.metric === "provider_tokens.input_tokens"),
++      true,
++    );
++  });
++
++  it("gates matched CLI latency on an interleaved median with no regression allowance", () => {
++    const passing = compareMatchedLatencySamples({
++      id: "quickstart",
++      baselineDurations: [100, 101, 102, 103, 104, 105, 106],
++      candidateDurations: [90, 91, 92, 93, 94, 95, 96],
++      baselineExitCode: 0,
++      candidateExitCode: 0,
++    });
++    const failing = compareMatchedLatencySamples({
++      id: "quickstart",
++      baselineDurations: [100, 101, 102, 103, 104, 105, 106],
++      candidateDurations: [104, 105, 106, 107, 108, 109, 110],
++      baselineExitCode: 0,
++      candidateExitCode: 0,
++    });
++    assert.equal(passing.verdict, "pass");
++    assert.equal(failing.verdict, "fail");
++    assert.equal(failing.delta_ms, 4);
++  });
++});
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+new file mode 100644
+index 000000000..208301c31
+--- /dev/null
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -0,0 +1,244 @@
++import { spawnSync } from "node:child_process";
++import { mkdirSync, writeFileSync } from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++import {
++  buildQualificationReport,
++  qualificationExitCode,
++  readQualificationManifest,
++  renderDefectLedger,
++  selectQualificationScenarios,
++  substituteQualificationCommand,
++} from "./release-qualification.mjs";
++import { parseScriptArgs } from "../lib/script-runtime.mjs";
++
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const defaultManifestPath = path.join(
++  repoRoot,
++  "scripts",
++  "qualification",
++  "v0.7.1-release-qualification.json",
++);
++
++function helpText() {
++  return [
++    "Usage: node scripts/qualification/run-v0.7.1-release-qualification.mjs [options]",
++    "",
++    "Run the versioned AgentPlane 0.7.1 release qualification matrix.",
++    "Audit mode executes every selected scenario and exits successfully after writing a complete",
++    "classified defect ledger. Gate mode exits successfully only for a provider-qualified release.",
++    "",
++    "Options:",
++    "  --mode <audit|gate>       Default: audit.",
++    "  --profile <core|full>     Default: full. Gate requires full.",
++    "  --provider                Run the bounded 50-run/55-episode provider scenario.",
++    "  --subject <sha>           Exact candidate commit. Defaults to current HEAD in audit mode.",
++    "  --codex-version <version> Exact Codex CLI version; required with --provider.",
++    "  --scenario <id>           Select one scenario; repeatable through comma-separated ids.",
++    "  --manifest <path>         Override the versioned manifest.",
++    "  --out-dir <path>          Evidence directory under the repository.",
++    "  --dry-run                 Validate and print the selected commands without executing them.",
++    "  --help                    Show this help text.",
++  ].join("\n");
++}
++
++function gitHead() {
++  const result = spawnSync("git", ["rev-parse", "HEAD"], {
++    cwd: repoRoot,
++    encoding: "utf8",
++  });
++  if (result.status !== 0) throw new Error("could not resolve the qualification subject from Git");
++  return result.stdout.trim();
++}
++
++function parseArgs(argv) {
++  const scenarioIds = [];
++  const normalized = [];
++  for (let index = 0; index < argv.length; index += 1) {
++    const arg = argv[index];
++    if (arg === "--scenario") {
++      const value = argv[index + 1];
++      if (!value) throw new Error("--scenario requires a value");
++      scenarioIds.push(...value.split(",").filter(Boolean));
++      index += 1;
++      continue;
++    }
++    if (arg.startsWith("--scenario=")) {
++      scenarioIds.push(...arg.slice("--scenario=".length).split(",").filter(Boolean));
++      continue;
++    }
++    normalized.push(arg);
++  }
++  const { flags, positionals } = parseScriptArgs(normalized, {
++    valueFlags: ["mode", "profile", "subject", "codex-version", "manifest", "out-dir"],
++    booleanFlags: ["provider", "dry-run", "help"],
++    aliases: { h: "help" },
++  });
++  if (positionals.length > 0) {
++    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
++  }
++  const mode = flags.mode ?? "audit";
++  const profile = flags.profile ?? "full";
++  if (!new Set(["audit", "gate"]).has(mode)) throw new Error("--mode must be audit or gate");
++  if (!new Set(["core", "full"]).has(profile)) throw new Error("--profile must be core or full");
++  if (mode === "gate" && profile !== "full") throw new Error("gate mode requires --profile full");
++  if (mode === "gate" && flags.provider !== true) {
++    throw new Error(
++      "gate mode requires --provider so release readiness cannot omit semantic evidence",
++    );
++  }
++  if (mode === "gate" && scenarioIds.length > 0) {
++    throw new Error("gate mode does not allow partial --scenario selection");
++  }
++  if (flags.provider === true && !flags["codex-version"]) {
++    throw new Error("--provider requires --codex-version");
++  }
++  return {
++    codexVersion: flags["codex-version"] ?? "",
++    dryRun: flags["dry-run"] === true,
++    help: flags.help === true,
++    manifestPath: path.resolve(flags.manifest ?? defaultManifestPath),
++    mode,
++    outputDirectory: flags["out-dir"] ? path.resolve(flags["out-dir"]) : null,
++    profile,
++    provider: flags.provider === true,
++    scenarioIds,
++    subject: flags.subject ?? gitHead(),
++  };
++}
++
++function assertOutputInsideRepository(outputDirectory) {
++  const relative = path.relative(repoRoot, outputDirectory);
++  if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`)) {
++    throw new Error("qualification --out-dir must be nested inside the repository");
++  }
++}
++
++function defaultOutputDirectory() {
++  const stamp = new Date().toISOString().replaceAll(":", "-").replace(".", "-");
++  return path.join(repoRoot, ".agentplane", "reports", "v0.7.1-qualification", stamp);
++}
++
++function outputTail(value, maximum = 4000) {
++  return value.length <= maximum ? value : value.slice(-maximum);
++}
++
++function runScenario(scenario, variables, outputDirectory) {
++  const command = substituteQualificationCommand(scenario.command, variables);
++  const logPath = path.join(outputDirectory, "logs", `${scenario.id}.log`);
++  mkdirSync(path.dirname(logPath), { recursive: true });
++  const started = performance.now();
++  process.stdout.write(`qualification: ${scenario.id} (${scenario.tier})\n`);
++  const result = spawnSync(command[0], command.slice(1), {
++    cwd: repoRoot,
++    encoding: "utf8",
++    env: {
++      ...process.env,
++      AGENTPLANE_NO_UPDATE_CHECK: "1",
++      AGENTPLANE_QUALIFICATION_EVIDENCE_DIR: outputDirectory,
++    },
++    maxBuffer: 128 * 1024 * 1024,
++    timeout: scenario.timeout_ms,
++  });
++  const durationMs = Math.round(performance.now() - started);
++  const stdout = result.stdout ?? "";
++  const stderr = result.stderr ?? "";
++  const combined = [stdout, stderr].filter(Boolean).join(stdout && stderr ? "\n" : "");
++  writeFileSync(
++    logPath,
++    [
++      `$ ${command.map((token) => JSON.stringify(token)).join(" ")}`,
++      `exit_code=${result.status ?? "null"} signal=${result.signal ?? "none"} duration_ms=${durationMs}`,
++      "",
++      combined,
++    ].join("\n"),
++    "utf8",
++  );
++  const timedOut = result.error?.code === "ETIMEDOUT";
++  const passed = !result.error && result.status === 0 && !result.signal;
++  process.stdout.write(
++    `qualification: ${scenario.id} ${passed ? "passed" : "failed"} in ${durationMs}ms\n`,
++  );
++  return {
++    scenario,
++    command,
++    duration_ms: durationMs,
++    exit_code: result.status,
++    signal: result.signal,
++    timed_out: timedOut,
++    status: passed ? "passed" : "failed",
++    log_path: logPath,
++    output_tail: outputTail(combined),
++  };
++}
++
++function printDryRun(scenarios, variables) {
++  for (const scenario of scenarios) {
++    const command = substituteQualificationCommand(scenario.command, variables);
++    process.stdout.write(`${scenario.id} [${scenario.tier}]: ${command.join(" ")}\n`);
++  }
++}
++
++async function main(argv = process.argv.slice(2)) {
++  const options = parseArgs(argv);
++  if (options.help) {
++    process.stdout.write(`${helpText()}\n`);
++    return;
++  }
++  const manifest = readQualificationManifest(options.manifestPath);
++  const scenarios = selectQualificationScenarios(manifest, {
++    profile: options.profile,
++    provider: options.provider,
++    scenarioIds: options.scenarioIds,
++  });
++  const outputDirectory = options.outputDirectory ?? defaultOutputDirectory();
++  assertOutputInsideRepository(outputDirectory);
++  const relativeOutputDirectory = path.relative(repoRoot, outputDirectory);
++  const variables = {
++    candidateEvidence: options.provider
++      ? path.join(".agentplane", "cache", "rf04-candidate", options.subject, "measurement.json")
++      : path.join("scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
++    codexVersion: options.codexVersion,
++    evidenceDir: relativeOutputDirectory,
++    repoRoot: ".",
++    subject: options.subject,
++  };
++  if (options.dryRun) {
++    printDryRun(scenarios, variables);
++    return;
++  }
++
++  mkdirSync(outputDirectory, { recursive: true });
++  const startedAt = new Date().toISOString();
++  const results = scenarios.map((scenario) => runScenario(scenario, variables, outputDirectory));
++  const finishedAt = new Date().toISOString();
++  const report = buildQualificationReport({
++    manifest,
++    manifestPath: options.manifestPath,
++    repoRoot,
++    mode: options.mode,
++    profile: options.profile,
++    provider: options.provider,
++    subject: options.subject,
++    startedAt,
++    finishedAt,
++    results,
++  });
++  const reportPath = path.join(outputDirectory, "report.json");
++  const ledgerPath = path.join(outputDirectory, "defects.md");
++  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
++  writeFileSync(ledgerPath, renderDefectLedger(report), "utf8");
++  process.stdout.write(
++    `qualification report: ${path.relative(repoRoot, reportPath)}\n` +
++      `qualification defects: ${path.relative(repoRoot, ledgerPath)}\n` +
++      `qualification verdict: ${report.verdict} (${report.summary.passed}/${report.summary.selected} passed; ${report.summary.blocking} blocking)\n`,
++  );
++  process.exitCode = qualificationExitCode(report);
++}
++
++main().catch((error) => {
++  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
++  process.exitCode = 1;
++});
+diff --git a/scripts/qualification/v0.7.1-release-qualification.json b/scripts/qualification/v0.7.1-release-qualification.json
+new file mode 100644
+index 000000000..81f89db0c
+--- /dev/null
++++ b/scripts/qualification/v0.7.1-release-qualification.json
+@@ -0,0 +1,406 @@
++{
++  "schema_version": 1,
++  "kind": "agentplane.release_qualification_manifest",
++  "release": "0.7.1",
++  "required_coverage": {
++    "workflow_modes": ["direct", "branch_pr"],
++    "supervisor_frontends": ["managed_run", "external_advance"],
++    "lifecycle_states": [
++      "planned",
++      "ready",
++      "doing",
++      "verify_rework",
++      "verified",
++      "integrated",
++      "done",
++      "blocked"
++    ],
++    "context_conditions": [
++      "fresh",
++      "warm",
++      "stale",
++      "missing",
++      "conflicting",
++      "provenance_restricted",
++      "token_budgeted"
++    ],
++    "semantic_stops": ["approval_required", "human_review", "scope_drift", "missing_knowledge"],
++    "recovery_states": [
++      "interruption",
++      "process_loss",
++      "provider_ambiguity",
++      "effect_in_doubt",
++      "replay",
++      "duplicate_side_effect",
++      "stale_fingerprint",
++      "evaluator_rework",
++      "approval_expiry",
++      "hosted_wait",
++      "cleanup_race"
++    ],
++    "hosted_boundaries": ["pr_publish", "checks", "merge", "hosted_close", "release_publish"]
++  },
++  "scenarios": [
++    {
++      "id": "qualification-contract",
++      "title": "Qualification manifest, report, threshold, and audit/gate contracts",
++      "tier": "core",
++      "command": ["node", "--test", "scripts/qualification/release-qualification.test.mjs"],
++      "timeout_ms": 60000,
++      "coverage": {},
++      "failure": {
++        "classification": "qualification_harness_contract_failure",
++        "impact": "The release verdict or defect ledger cannot be trusted.",
++        "proposed_fix": "Repair the versioned manifest/report contract and add a regression case before using the gate.",
++        "owner_task": "202608021125-DR7J1E",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "packaged-candidate-flow",
++      "title": "Packed candidate install, initialization, context, lifecycle, and migration flow",
++      "tier": "full",
++      "command": ["node", "scripts/release/check-local-tarball-install-smoke.mjs"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "workflow_modes": ["branch_pr"],
++        "lifecycle_states": ["planned", "ready", "doing", "blocked"],
++        "context_conditions": ["fresh", "missing", "stale"],
++        "semantic_stops": ["approval_required"],
++        "recovery_states": ["stale_fingerprint"]
++      },
++      "failure": {
++        "classification": "packaged_candidate_e2e_failure",
++        "impact": "The installable release does not preserve the repository-tested lifecycle or context contract.",
++        "proposed_fix": "Reproduce from the packed tarballs, attribute the failing phase, and repair the published package boundary.",
++        "owner_task": "202608021125-DR7J1E",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "lifecycle-matrix",
++      "title": "Direct and branch_pr lifecycle state matrix",
++      "tier": "core",
++      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-lifecycle"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "workflow_modes": ["direct", "branch_pr"],
++        "lifecycle_states": [
++          "planned",
++          "ready",
++          "doing",
++          "verify_rework",
++          "verified",
++          "integrated",
++          "done",
++          "blocked"
++        ],
++        "semantic_stops": ["human_review", "scope_drift"]
++      },
++      "failure": {
++        "classification": "task_lifecycle_regression",
++        "impact": "At least one supported task-management state or workflow route is unsafe or inconsistent.",
++        "proposed_fix": "Use the failing focused test as the reproducer and repair the shared state-machine projection before release.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "context-matrix",
++      "title": "Automatic context-layer freshness, provenance, conflict, and budget matrix",
++      "tier": "core",
++      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-context"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "context_conditions": [
++          "fresh",
++          "warm",
++          "stale",
++          "missing",
++          "conflicting",
++          "provenance_restricted",
++          "token_budgeted"
++        ],
++        "semantic_stops": ["missing_knowledge"]
++      },
++      "failure": {
++        "classification": "context_layer_regression",
++        "impact": "The executor may receive stale, excessive, unattributed, conflicting, or insufficient context.",
++        "proposed_fix": "Repair the failing context resolver/projection path and preserve deterministic source attribution.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "supervisor-frontends",
++      "title": "Managed runner and compact external-agent supervisor protocol",
++      "tier": "core",
++      "command": ["node", "scripts/qualification/check-v0.7.1-product-contract.mjs"],
++      "timeout_ms": 120000,
++      "coverage": {
++        "workflow_modes": ["direct", "branch_pr"],
++        "supervisor_frontends": ["managed_run", "external_advance"],
++        "semantic_stops": ["approval_required", "human_review", "scope_drift"]
++      },
++      "failure": {
++        "classification": "supervisor_product_contract_missing",
++        "impact": "External agents still reconstruct or execute lifecycle shell choreography and the default UX bypasses the canonical supervisor.",
++        "proposed_fix": "Add task advance --agent-json over the task-run state machine, compact its packet to 2048 bytes, and route onboarding away from semantic begin/complete shortcuts.",
++        "owner_task": "202608021231-PZGG3V",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "supervisor-parity",
++      "title": "Shared supervisor state-machine parity and evidence outcomes",
++      "tier": "core",
++      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-supervisor"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "supervisor_frontends": ["managed_run", "external_advance"],
++        "lifecycle_states": ["doing", "verify_rework", "verified", "done", "blocked"]
++      },
++      "failure": {
++        "classification": "supervisor_state_machine_divergence",
++        "impact": "Managed and external execution can produce different lifecycle or evidence truth for the same task.",
++        "proposed_fix": "Move both frontends onto one typed transition engine and add a matched trace assertion for the failing state.",
++        "owner_task": "202608021231-PZGG3V",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "recovery-matrix",
++      "title": "Interruption, ambiguity, replay, stale authority, hosted wait, and cleanup recovery",
++      "tier": "core",
++      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-recovery"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "recovery_states": [
++          "interruption",
++          "process_loss",
++          "provider_ambiguity",
++          "effect_in_doubt",
++          "replay",
++          "duplicate_side_effect",
++          "stale_fingerprint",
++          "evaluator_rework",
++          "approval_expiry",
++          "hosted_wait",
++          "cleanup_race"
++        ]
++      },
++      "failure": {
++        "classification": "recovery_safety_regression",
++        "impact": "A failed or ambiguous task episode can repeat side effects, accept stale authority, or become unrecoverable.",
++        "proposed_fix": "Repair the failing recovery transition and retain the exact state fingerprint/effect evidence in its regression test.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "hosted-boundary-matrix",
++      "title": "PR publication, checks, merge, hosted close, and release boundary matrix",
++      "tier": "full",
++      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-hosted"],
++      "timeout_ms": 900000,
++      "coverage": {
++        "hosted_boundaries": ["pr_publish", "checks", "merge", "hosted_close", "release_publish"],
++        "recovery_states": ["hosted_wait", "cleanup_race"]
++      },
++      "failure": {
++        "classification": "hosted_boundary_regression",
++        "impact": "Local task truth can diverge from GitHub or publication truth.",
++        "proposed_fix": "Repair the failing hosted boundary adapter and preserve remote readback evidence before closeout.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "efficiency-evidence",
++      "title": "Matched token, quality, structural-hash, and lifecycle-latency evidence",
++      "tier": "core",
++      "depends_on": ["provider-matrix"],
++      "command": [
++        "node",
++        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
++        "--evidence",
++        "{candidateEvidence}",
++        "--subject",
++        "{subject}",
++        "--out",
++        "{evidenceDir}/efficiency-evidence.json"
++      ],
++      "timeout_ms": 60000,
++      "coverage": {},
++      "failure": {
++        "classification": "efficiency_or_latency_gate_failure",
++        "impact": "The release cannot substantiate its token-saving or acceleration claims on the exact candidate revision.",
++        "proposed_fix": "Capture matched exact-revision evidence, then remove attributed setup/time-to-verified regressions without reducing verified-success quality.",
++        "owner_task": "202608021232-6BTB6D",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "cli-latency",
++      "title": "Deterministic CLI cold and wall-time latency guards",
++      "tier": "full",
++      "command": [
++        "node",
++        "scripts/checks/check-cli-walltime-baseline.mjs",
++        "--warmups",
++        "1",
++        "--attempts",
++        "1"
++      ],
++      "timeout_ms": 300000,
++      "coverage": {},
++      "failure": {
++        "classification": "absolute_cli_latency_diagnostic",
++        "impact": "Formal CLI preparation exceeds the historical absolute threshold in the current environment; a matched baseline decides release impact.",
++        "proposed_fix": "Correlate the absolute result with the matched v0.6.26 comparison before attributing a product regression.",
++        "owner_task": "202608021231-SHYJGK",
++        "release_disposition": "advisory"
++      }
++    },
++    {
++      "id": "matched-cli-latency",
++      "title": "Interleaved v0.6.26 versus packed-candidate CLI latency",
++      "tier": "full",
++      "command": [
++        "node",
++        "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs",
++        "--subject",
++        "{subject}",
++        "--out",
++        "{evidenceDir}/matched-cli-latency.json"
++      ],
++      "timeout_ms": 900000,
++      "coverage": {},
++      "failure": {
++        "classification": "matched_cli_latency_regression",
++        "impact": "The packed candidate is slower than published 0.6.26 on the same fixture, Node runtime, host, and interleaved sample sequence.",
++        "proposed_fix": "Use the per-command matched deltas to remove duplicated startup, Git, task-index, or context work from the candidate hot path.",
++        "owner_task": "202608021231-SHYJGK",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "full-contract",
++      "title": "Repository contract, type/tooling, architecture, and baseline guards",
++      "tier": "full",
++      "command": ["bun", "run", "ci:contract"],
++      "timeout_ms": 1800000,
++      "coverage": {},
++      "failure": {
++        "classification": "repository_contract_failure",
++        "impact": "The candidate violates a required source, policy, architecture, formatting, or maintained-baseline contract.",
++        "proposed_fix": "Attribute the first failing contract and repair it without weakening the maintained guard.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "critical-cli",
++      "title": "Critical CLI behavior suite",
++      "tier": "full",
++      "command": ["bun", "run", "test:critical"],
++      "timeout_ms": 1800000,
++      "coverage": {},
++      "failure": {
++        "classification": "critical_cli_failure",
++        "impact": "A release-critical CLI contract is broken.",
++        "proposed_fix": "Repair the first failing critical CLI behavior and preserve its focused regression test.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "typecheck",
++      "title": "TypeScript candidate build and type contract",
++      "tier": "full",
++      "command": ["bun", "run", "typecheck"],
++      "timeout_ms": 1800000,
++      "coverage": {},
++      "failure": {
++        "classification": "type_contract_failure",
++        "impact": "The candidate does not compile under the pinned TypeScript toolchain.",
++        "proposed_fix": "Repair the reported type boundary without weakening strictness or changing the pinned toolchain during release qualification.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "workflow-coverage",
++      "title": "Workflow runtime coverage and harness matrix",
++      "tier": "full",
++      "command": ["bun", "run", "coverage:workflow-suite"],
++      "timeout_ms": 1800000,
++      "coverage": {},
++      "failure": {
++        "classification": "workflow_coverage_failure",
++        "impact": "A formal workflow transition lacks executable coverage or violates its coverage threshold.",
++        "proposed_fix": "Add or repair the smallest deterministic workflow scenario and keep the matrix synchronized.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "doctor",
++      "title": "Candidate repository diagnostics",
++      "tier": "full",
++      "command": ["node", "packages/agentplane/bin/agentplane.js", "doctor"],
++      "timeout_ms": 300000,
++      "coverage": {},
++      "failure": {
++        "classification": "doctor_failure",
++        "impact": "The release candidate diagnoses its own repository state as invalid.",
++        "proposed_fix": "Resolve the reported repository/configuration invariant and rerun doctor on the exact candidate revision.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "release-task-state",
++      "title": "Release task registry and closeout state",
++      "tier": "full",
++      "command": ["bun", "run", "task-state:check"],
++      "timeout_ms": 300000,
++      "coverage": {},
++      "failure": {
++        "classification": "release_task_state_not_ready",
++        "impact": "The release candidate still contains unfinished or invalid task truth.",
++        "proposed_fix": "Finish or explicitly disposition release-scoped tasks and rerun the task-state contract on the exact release revision.",
++        "owner_task": "202608021232-YCNM1S",
++        "release_disposition": "block"
++      }
++    },
++    {
++      "id": "provider-matrix",
++      "title": "Bounded Codex semantic qualification: 50 runs and 55 provider episodes",
++      "tier": "provider",
++      "command": [
++        "node",
++        "scripts/bench/capture-agent-efficiency-candidate.mjs",
++        "--subject",
++        "{subject}",
++        "--codex-version",
++        "{codexVersion}",
++        "--runs",
++        "5"
++      ],
++      "timeout_ms": 7200000,
++      "coverage": {
++        "workflow_modes": ["direct", "branch_pr"],
++        "supervisor_frontends": ["managed_run", "external_advance"],
++        "semantic_stops": ["approval_required", "human_review", "scope_drift", "missing_knowledge"]
++      },
++      "failure": {
++        "classification": "semantic_provider_qualification_failure",
++        "impact": "The exact candidate lacks complete no-retry semantic quality and token telemetry.",
++        "proposed_fix": "Classify the failed episode without retrying it, repair the attributable product defect, and run a new explicitly versioned candidate generation.",
++        "owner_task": "202608021232-6BTB6D",
++        "release_disposition": "block"
++      }
++    }
++  ]
++}
