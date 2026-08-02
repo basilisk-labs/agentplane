@@ -1,0 +1,15 @@
+{
+  "details": "Original failure: rc.2 verification rejected the current qualification root README because the reviewed implementation SHA preceded start-ready lifecycle state. Reproduction and focused check: evaluator-qualification-packet.test.ts now commits lifecycle-only root drift after the reviewed SHA; complete file passed 6/6, including dependency artifact tamper rejection. Matrix: dependency README, PR metadata, quality report, missing/incomplete leaf, cycle, and unverified implementation drift remain fail-closed. Tooling: typecheck, policy routing, and doctor passed after framework bootstrap. Full gates: test:critical passed 12/12 chunks; ci:contract passed formatting, schemas, compatibility, RF-04 baselines, architecture, clone, knip, and coverage thresholds. Flake classification: the first parallel typecheck started before doctor completed dependency bootstrap and failed on missing workspace modules; the immediate post-bootstrap rerun passed, so this is environment-ordering noise rather than product regression. Commit: bdfe5b8e384079bd8f70de6bd65c1eeaca3c018f. Downstream acceptance: the real rc.2 verify will be rerun after this PR is integrated; it remains the next qualification-task gate, not a pre-merge correctness claim.",
+  "digest": "sha256:34199c7da7cc47b7133c891ae11d25f7fd3547c2030772215b4a6274b93418bc",
+  "implementation_sha": "2bb1cb8b8d5c6af0ffa46f35345266558c0bbea3",
+  "kind": "task_verification_record",
+  "note": "Verified the qualification root lifecycle fix on implementation bdfe5b8e3840; focused and full repository gates pass.",
+  "recorded_at": "2026-08-02T04:48:24.175Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused qualification packet test that introduces lifecycle-only root-task drift after the reviewed implementation SHA. Expected: verification creates a SHA-bound packet and does not treat the root task README as a dependency artifact.\n2. Run the complete evaluator qualification packet test file. Expected: dependency README, PR metadata, quality report, missing leaf, incomplete leaf, cycle, and post-review tamper checks continue to fail closed as designed.\n3. Run package typecheck, `node .agentplane/policy/check-routing.mjs`, and `ap doctor`. Expected: all pass without routing or type regressions.\n4. Run `bun run test:critical` and `bun run ci:contract`. Expected: both complete successfully.\n5. Re-run rc.2 `ap verify` after integration. Expected: qualification packet creation succeeds against the lifecycle-excluded reviewed SHA and preserves strict SHA binding for all dependency evidence.",
+  "scope_digest": "sha256:8df2fb2790522e59ea2abcf3cfb4a53d0b96cd65634636512bac1675a35005df",
+  "task_id": "202608020432-CCE1A2",
+  "verification_command": "agentplane verify 202608020432-CCE1A2 --ok --by TESTER",
+  "verifier": "TESTER"
+}

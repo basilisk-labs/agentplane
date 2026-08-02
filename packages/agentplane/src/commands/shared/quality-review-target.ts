@@ -9,6 +9,7 @@ import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
+const WORKFLOW_ROUTE_BASELINE_EXTENSION_KEY = "workflow_route_baseline";
 const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 const MANAGED_TASK_ARTIFACT_DIRECTORIES = [
@@ -112,6 +113,16 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
     ]) {
       Reflect.deleteProperty(frontmatter, key);
     }
+    if (isRecord(frontmatter.extensions)) {
+      const extensions = { ...frontmatter.extensions };
+      Reflect.deleteProperty(extensions, SIDE_EFFECT_AUTHORITY_EXTENSION_KEY);
+      Reflect.deleteProperty(extensions, WORKFLOW_ROUTE_BASELINE_EXTENSION_KEY);
+      if (Object.keys(extensions).length === 0) {
+        Reflect.deleteProperty(frontmatter, "extensions");
+      } else {
+        frontmatter.extensions = extensions;
+      }
+    }
     if (isRecord(frontmatter.sections)) {
       frontmatter.sections = Object.fromEntries(
         Object.entries(frontmatter.sections).map(([key, value]) => [
@@ -129,6 +140,12 @@ function lifecycleComparableTaskReadme(markdown: string): string | null {
   } catch {
     return null;
   }
+}
+
+export function taskReadmesHaveOnlyLifecycleDrift(before: string, after: string): boolean {
+  const beforeComparable = lifecycleComparableTaskReadme(before);
+  const afterComparable = lifecycleComparableTaskReadme(after);
+  return beforeComparable !== null && beforeComparable === afterComparable;
 }
 
 type TaskReadmeAdvanceOptions = {
@@ -226,9 +243,7 @@ async function isLifecycleOnlyTaskReadmeAdvance(opts: TaskReadmeAdvanceOptions):
   const readmes = await changedTaskReadmes(opts);
   if (!readmes) return false;
   for (const [before, after] of readmes) {
-    const beforeComparable = lifecycleComparableTaskReadme(before);
-    const afterComparable = lifecycleComparableTaskReadme(after);
-    if (!beforeComparable || beforeComparable !== afterComparable) return false;
+    if (!taskReadmesHaveOnlyLifecycleDrift(before, after)) return false;
   }
   return true;
 }

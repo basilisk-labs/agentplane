@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "Post-integration rc.2 qualification remains an explicit downstream gate and is not present in the frozen pre-integration evidence.",
+      "broken_invariant": "The task's fifth Verify Step requires rc.2 verification after integration; this cannot be completed within the current pre-integration evaluator episode.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/README.md",
+          "sha256": "sha256:e2fd5264262ee61cee0229fdf66de500dd2a9e6a8920ae458788fc0ac4d47632",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/verification/20260802050252866-82b1ee360d6d2bd0.json",
+          "sha256": "sha256:268fe750969fd3105f45018ea17fe0acd73f63bc73b0f1f2409620da8ae5dffa",
+          "section": "scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "After integration, re-run rc.2 verification against the integrated SHA to confirm real qualification packet creation succeeds while dependency evidence remains strictly SHA-bound."
+  ],
+  "hidden_assumptions": [
+    "The shared lifecycle comparator's excluded fields remain limited to lifecycle-managed state; future additions to that exclusion set require equivalent negative drift coverage.",
+    "No concurrent writer changes the qualification root README between lifecycle comparison and packet persistence."
+  ]
+}

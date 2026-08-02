@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608020432-CCE1A2-2a599c26764c6c1a2abd5581",
+  "task_id": "202608020432-CCE1A2",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic command results bound to a728b1134fe36ed3d9625654b85108ace23af33e; the supplied diff addresses reviewed-root dependency pinning and rejects dependency/body drift, but a pass cannot be issued from the current empty observed-check evidence.",
+  "findings": [
+    {
+      "id": "RCI-002",
+      "summary": "Frozen evidence contains no deterministic check records for the evaluated SHA, so the claimed positive, negative, and concurrency-sensitive coverage cannot be independently validated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:85246783164ec7f85ac275ad3268c82c890b52d5d7729d93cd3d38a5dbabfcf9",
+          "section": "observed checks"
+        },
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/README.md",
+          "sha256": "sha256:cc019d89b85c3f985f24574e4ab1e92417c913561d2c90085afdf53d79f5575d",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-result.json"
+}

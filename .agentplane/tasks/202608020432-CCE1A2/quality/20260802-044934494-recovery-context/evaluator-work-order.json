@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020432-CCE1A2-15f2b6c4151ee09dad997705",
+  "prepared_at": "2026-08-02T04:49:34.494Z",
+  "task": {
+    "id": "202608020432-CCE1A2",
+    "revision": 7,
+    "objective": "Allow qualification packets to ignore root lifecycle drift\n\nFix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior.",
+    "acceptance_criteria": [
+      "- In scope: Fix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior.\n- Out of scope: unrelated refactors not required for \"Allow qualification packets to ignore root lifecycle drift\".",
+      "1. Reproduce the false qualification failure where resolveQualityReviewTargetSha selects the pre-start implementation SHA but the current qualification root README contains only lifecycle changes. 2. Change dependency-closure construction to use the already-loaded current qualification root for its declared dependency IDs while continuing to load every dependency task and evidence artifact from the reviewed implementation SHA with exact-blob checks. 3. Add a focused regression test that performs start-ready-equivalent lifecycle drift before verification and proves packet creation succeeds, while existing dependency README, PR metadata, quality report, cycle, and incomplete-leaf rejection tests remain green. 4. Run the focused qualification suite, package typecheck, policy routing check, doctor, and the repository critical contract. 5. Record verification/evaluator evidence, open and merge the PR through the branch_pr queue, then resync and resume rc.2 qualification.",
+      "1. Run the focused qualification packet test that introduces lifecycle-only root-task drift after the reviewed implementation SHA. Expected: verification creates a SHA-bound packet and does not treat the root task README as a dependency artifact.\n2. Run the complete evaluator qualification packet test file. Expected: dependency README, PR metadata, quality report, missing leaf, incomplete leaf, cycle, and post-review tamper checks continue to fail closed as designed.\n3. Run package typecheck, `node .agentplane/policy/check-routing.mjs`, and `ap doctor`. Expected: all pass without routing or type regressions.\n4. Run `bun run test:critical` and `bun run ci:contract`. Expected: both complete successfully.\n5. Re-run rc.2 `ap verify` after integration. Expected: qualification packet creation succeeds against the lifecycle-excluded reviewed SHA and preserves strict SHA binding for all dependency evidence."
+    ]
+  },
+  "evaluated_sha": "2bb1cb8b8d5c6af0ffa46f35345266558c0bbea3",
+  "diff_base_sha": "a8c24ca31654bde6f54a6cf359f8b0499f06547b",
+  "blueprint_digest": "a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020432-CCE1A2/README.md",
+      "sha256": "sha256:2e34e7311f6d8b3a686a21c522b13050a2eddebf0d44f8dff0f84416a99f8fc3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:cf20ce38835b2f7f52bbc9caefce8f2b4bf19504612c6c08d9d9397f98a68a39",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:b9c0f185a7d753a4493812ec050797b9a4e7acd9269f28cf3e131edc1baa782a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:a5b18d4368a28966e370ee5d2f7ee2779539f04d91de1d3d53a6919c65045dda",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

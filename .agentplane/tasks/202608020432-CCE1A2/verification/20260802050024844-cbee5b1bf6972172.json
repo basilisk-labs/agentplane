@@ -1,0 +1,15 @@
+{
+  "details": "Rework target: a728b1134fe36ed3d9625654b85108ace23af33e. Focused regression: evaluator qualification packet plus quality review target suites passed 24/24. Positive coverage: status and workflow_route_baseline lifecycle drift remain accepted. Negative coverage: changed root dependency declarations and arbitrary root body changes are rejected before packet creation; dependency README, PR metadata, quality report, missing/incomplete leaf, cycle, and post-review tamper checks remain fail-closed. Typecheck passed with TypeScript 7.0.2. Doctor passed with only pre-existing repository-history warnings. test:critical passed all 12 chunks. ci:contract passed formatting, schemas, policy routing, compatibility, RF-04 baselines, lifecycle, TypeScript toolchain, architecture, clone, knip, and coverage thresholds. The earlier EVALUATOR RCI-001 finding is addressed by sourcing root dependency IDs from the reviewed root document and independently comparing current root content through the shared lifecycle-only comparator. Downstream acceptance remains the real rc.2 verify after integration.",
+  "digest": "sha256:cbee5b1bf697217281333184ffb4d0764096314fc7882692226fa3f7e2aa2a78",
+  "implementation_sha": "a728b1134fe36ed3d9625654b85108ace23af33e",
+  "kind": "task_verification_record",
+  "note": "Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates.",
+  "recorded_at": "2026-08-02T05:00:24.844Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused qualification packet test that introduces lifecycle-only root-task drift after the reviewed implementation SHA. Expected: verification creates a SHA-bound packet and does not treat the root task README as a dependency artifact.\n2. Run the complete evaluator qualification packet test file. Expected: dependency README, PR metadata, quality report, missing leaf, incomplete leaf, cycle, and post-review tamper checks continue to fail closed as designed.\n3. Run package typecheck, `node .agentplane/policy/check-routing.mjs`, and `ap doctor`. Expected: all pass without routing or type regressions.\n4. Run `bun run test:critical` and `bun run ci:contract`. Expected: both complete successfully.\n5. Re-run rc.2 `ap verify` after integration. Expected: qualification packet creation succeeds against the lifecycle-excluded reviewed SHA and preserves strict SHA binding for all dependency evidence.",
+  "scope_digest": "sha256:8df2fb2790522e59ea2abcf3cfb4a53d0b96cd65634636512bac1675a35005df",
+  "task_id": "202608020432-CCE1A2",
+  "verification_command": "agentplane verify 202608020432-CCE1A2 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,5 @@
+ .../evaluator-qualification-packet.test.ts         | 60 ++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   | 21 +++++-
+ .../task/qualification-packet-pinned-task.ts       | 80 ++++++++++++++++++----
+ .../src/commands/task/qualification-packet.ts      | 10 ++-
+ 4 files changed, 153 insertions(+), 18 deletions(-)
