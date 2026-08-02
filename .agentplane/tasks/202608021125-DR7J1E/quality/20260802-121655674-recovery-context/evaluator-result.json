@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen packet contains no deterministic verification records or runtime evidence for the evaluated SHA; its verification note instead names a different revision.",
+      "broken_invariant": "Independent evaluation requires deterministic evidence tying all declared checks to the exact evaluated implementation revision before a pass verdict is possible.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121655674-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:117ce646e90352f76216b6a3c8e7a80eb4e61f683b3510de7bd4ea24219bb1c5",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/README.md",
+          "sha256": "sha256:f5e24dbd214eb9151c2c898ab207aaf634aadc282dc7438e95049414011f8821",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen, machine-readable results for every declared verification command, including command, exit status, timestamp, and exact tested SHA.",
+    "A consistency check rejecting verification evidence whose recorded implementation SHA differs from the evaluator work order's evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The narrative TESTER verification note is assumed to represent deterministic execution despite empty verification_records, runner_history, and runtime_evidence arrays.",
+    "Results attributed to revision dc914a1600847b56bbdcd06f90a3eb6f33a03d61 are assumed to apply unchanged to evaluated SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112."
+  ],
+  "recovery_context": "Regenerate the frozen evaluator packet after recording deterministic results for all declared checks against exact evaluated SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112; the current packet contains only a narrative verification state tied to a different revision.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608021125-DR7J1E-8ce93b7d4b07468506736429",
+  "task_id": "202608021125-DR7J1E",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Attach deterministic check records and runtime evidence produced from evaluated SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112, including the declared positive, negative, and concurrency-sensitive suites, then rerun semantic evaluation against a newly frozen packet.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains no deterministic verification records for the evaluated revision.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121353057-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7b2144b53530fbc256a74da8f60ee2f652c213132b265bd8e90f3cdc836de96e",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121353057-recovery-context/evaluator-result.json"
+}

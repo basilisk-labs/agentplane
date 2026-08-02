@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021125-DR7J1E-e845e67c9031a764d9e95b00",
+  "task_id": "202608021125-DR7J1E",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Create separate executable tasks for the confirmed release-blocking defects, emit their real task IDs in the report and ledger, and replace the test that currently accepts PENDING owner labels with task-ID and task-existence validation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The defect ledger uses PENDING labels instead of executable task IDs, and multiple confirmed release-blocking defects share the same placeholder owner.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/README.md",
+          "sha256": "sha256:4a03b828ec29c848e28efcfda588c110f5ccda845fdbc7bd4d58478eb86449ae",
+          "section": "Scope and Verify Steps"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/defects.md",
+          "sha256": "sha256:78287d7a84ba9694d072694d7396eafb567ac3ac73be0edebc84fa0220b93b44",
+          "lines": "9-47"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json",
+          "sha256": "sha256:833f3148942ed3096b6d9501fa6ed1a7d7df168ae176443a48d7c2b7eabbb56d",
+          "lines": "384-439",
+          "section": "defects"
+        },
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:aeb25d1d62fc612535fde1a204c41a1c1587d8c01b156c8ecd602217c5e39025",
+          "lines": "1399-1408",
+          "section": "release-qualification.test.mjs"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-result.json"
+}

@@ -4,7 +4,7 @@ title: "Build the v0.7.1 end-to-end release qualification suite"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 16
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -15,18 +15,56 @@ tags:
   - "e2e"
   - "release-gate"
   - "v0.7.1"
-verify: []
+verify:
+  - "bun run e2e:v0.7.1:check"
+  - "bun run e2e:v0.7.1:audit"
+  - "bun run ci:contract"
+  - "bun run test:critical"
+  - "bun run typecheck"
+  - "bun run coverage:workflow-suite"
+  - "bun run task-state:check"
+  - "node packages/agentplane/bin/agentplane.js doctor"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-02T12:05:48.899Z"
+  updated_at: "2026-08-02T12:16:12.983Z"
   updated_by: "ORCHESTRATOR"
-  note: "Reapproved after separating harness acceptance from final release acceptance."
+  note: "Reapproved with executable verification commands frozen into task metadata."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-02T12:04:56.261Z"
+  state: "ok"
+  updated_at: "2026-08-02T12:26:57.702Z"
   updated_by: "TESTER"
-  note: "Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated."
-  attempts: 1
+  note: "Qualification harness verified against implementation SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112 with frozen command/result/evidence/scope records; the audit correctly keeps v0.7.1 release-blocked."
+  attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-02T12:29:33.894Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112"
+  blueprint_digest: "ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a"
+  evidence_refs:
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/README.md"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/verification/20260802122657702-168f175e2a08c521.json"
+    - ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/defects.md"
+    - ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/efficiency-evidence.json"
+    - ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/matched-cli-latency.json"
+    - ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The defect ledger uses PENDING labels instead of executable task IDs, and multiple confirmed release-blocking defects share the same placeholder owner."
 commit:
   hash: "5881186a69c595777e39496e1e4899ef45011d8c"
   message: "🧪 DR7J1E task: refine qualification verification"
@@ -68,8 +106,20 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework completed: separated harness acceptance from final release acceptance, preserved fail-closed product and performance gates, and added the interleaved published-0.6.26 matched latency scenario to the full profile."
+  -
+    type: "verify"
+    at: "2026-08-02T12:16:42.098Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Qualification harness verified on dc914a1600847b56bbdcd06f90a3eb6f33a03d61; audit correctness passes while v0.7.1 remains release-blocked by classified product and performance defects."
+  -
+    type: "verify"
+    at: "2026-08-02T12:26:57.702Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Qualification harness verified against implementation SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112 with frozen command/result/evidence/scope records; the audit correctly keeps v0.7.1 release-blocked."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:06:19.128Z"
+doc_updated_at: "2026-08-02T12:26:59.047Z"
 doc_updated_by: "CODER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
@@ -132,6 +182,108 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T12:16:42.098Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Qualification harness verified on dc914a1600847b56bbdcd06f90a3eb6f33a03d61; audit correctness passes while v0.7.1 remains release-blocked by classified product and performance defects.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:06:19.128Z, excerpt_hash=sha256:b1b7a52b8c59983caa2ba223d4d0d21e717948a7aaef13e059b9a39b331406f5
+
+    Details:
+
+    PASS bun run e2e:v0.7.1:check: 10/10 contract tests and complete manifest dry-run. PASS bun run e2e:v0.7.1:audit: 17 local scenarios executed, 13 passed, four classified defects written, audit exited zero, three defects blocking and one advisory; report=.agentplane/reports/v0.7.1-qualification/2026-08-02T12-06-33-697Z/report.json. PASS packed candidate, lifecycle, context, supervisor parity, recovery, hosted boundaries, full ci:contract, critical CLI, typecheck, workflow coverage, doctor, and task-state phases. EXPECTED BLOCK supervisor product probe: hidden task run, missing task advance --agent-json, legacy onboarding. EXPECTED BLOCK exact-SHA efficiency evidence: historical evidence reports 38.50 percent token reduction but correctly refuses current SHA and two latency regressions. EXPECTED BLOCK interleaved published-0.6.26 benchmark: all seven candidate medians are 20.5 to 29.0 percent slower. PASS provider gating: gate without --provider is rejected; provider dry-run selects exactly one bounded 50-run/55-episode capture before exact-subject evidence validation, with no provider call spent on the known-blocked SHA.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+    - old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T12:26:57.702Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Qualification harness verified against implementation SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112 with frozen command/result/evidence/scope records; the audit correctly keeps v0.7.1 release-blocked.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:16:43.443Z, excerpt_hash=sha256:b1b7a52b8c59983caa2ba223d4d0d21e717948a7aaef13e059b9a39b331406f5
+
+    Details:
+
+    Command: bun run e2e:v0.7.1:check
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: manifest coverage, audit/gate semantics, efficiency and matched-latency threshold unit contracts
+
+    Command: bun run e2e:v0.7.1:audit
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json | .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/defects.md | .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/efficiency-evidence.json | .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/matched-cli-latency.json
+    Scope: full local qualification profile, classified blockers, exact-subject claim refusal, and v0.6.26 matched latency
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: formatting, schemas, policy, architecture, compatibility, efficiency, lifecycle, lint, clone, knip, and coverage contracts
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: critical CLI behavior
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: pinned TypeScript build contract
+
+    Command: bun run coverage:workflow-suite
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: workflow runtime coverage and harness matrix
+
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: release task registry consistency
+
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+    Scope: candidate repository diagnostics
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+    - old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021125-DR7J1E
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task implementation commit and remove only newly added E2E/qualification registrations and generated candidate artifacts. Preserve prior v0.7 compatibility and RF-04 baselines. Never overwrite published baseline evidence; new baselines require a separately reviewed approval record."
   Findings: |-
@@ -148,6 +300,10 @@ sections:
     - Observation: The versioned audit runner and self-tests pass, while expected product and performance scenarios fail with classified defects. Verify Steps 4 through 7 and 11 currently conflate harness acceptance with final v0.7.1 release acceptance.
       Impact: Recording OK now would be false; keeping the conflated contract would prevent merging the tool needed to drive the follow-up fixes.
       Resolution: Split audit-harness acceptance from final gate acceptance: this task must prove complete execution, classification, fail-closed gate behavior, and evidence integrity; the release task later requires every blocking scenario plus provider evidence to pass.
+
+    - Observation: The first evaluator packet was blocked because task verify commands and passing verification records were absent even though local checks had run.
+      Impact: Without frozen declared checks, semantic review cannot associate results with the evaluated implementation revision.
+      Resolution: Recorded eight executable verification commands in task metadata and this exact-revision verification record before rerunning EVALUATOR.
 extensions:
   workflow_route_baseline:
     start_head_sha: "6e8723251676578cedc8ef8d53b76e3da06833f6"
@@ -223,6 +379,108 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T12:16:42.098Z — VERIFY — ok
+
+By: TESTER
+
+Note: Qualification harness verified on dc914a1600847b56bbdcd06f90a3eb6f33a03d61; audit correctness passes while v0.7.1 remains release-blocked by classified product and performance defects.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:06:19.128Z, excerpt_hash=sha256:b1b7a52b8c59983caa2ba223d4d0d21e717948a7aaef13e059b9a39b331406f5
+
+Details:
+
+PASS bun run e2e:v0.7.1:check: 10/10 contract tests and complete manifest dry-run. PASS bun run e2e:v0.7.1:audit: 17 local scenarios executed, 13 passed, four classified defects written, audit exited zero, three defects blocking and one advisory; report=.agentplane/reports/v0.7.1-qualification/2026-08-02T12-06-33-697Z/report.json. PASS packed candidate, lifecycle, context, supervisor parity, recovery, hosted boundaries, full ci:contract, critical CLI, typecheck, workflow coverage, doctor, and task-state phases. EXPECTED BLOCK supervisor product probe: hidden task run, missing task advance --agent-json, legacy onboarding. EXPECTED BLOCK exact-SHA efficiency evidence: historical evidence reports 38.50 percent token reduction but correctly refuses current SHA and two latency regressions. EXPECTED BLOCK interleaved published-0.6.26 benchmark: all seven candidate medians are 20.5 to 29.0 percent slower. PASS provider gating: gate without --provider is rejected; provider dry-run selects exactly one bounded 50-run/55-episode capture before exact-subject evidence validation, with no provider call spent on the known-blocked SHA.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+- old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T12:26:57.702Z — VERIFY — ok
+
+By: TESTER
+
+Note: Qualification harness verified against implementation SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112 with frozen command/result/evidence/scope records; the audit correctly keeps v0.7.1 release-blocked.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:16:43.443Z, excerpt_hash=sha256:b1b7a52b8c59983caa2ba223d4d0d21e717948a7aaef13e059b9a39b331406f5
+
+Details:
+
+Command: bun run e2e:v0.7.1:check
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: manifest coverage, audit/gate semantics, efficiency and matched-latency threshold unit contracts
+
+Command: bun run e2e:v0.7.1:audit
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json | .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/defects.md | .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/efficiency-evidence.json | .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/matched-cli-latency.json
+Scope: full local qualification profile, classified blockers, exact-subject claim refusal, and v0.6.26 matched latency
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: formatting, schemas, policy, architecture, compatibility, efficiency, lifecycle, lint, clone, knip, and coverage contracts
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: critical CLI behavior
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: pinned TypeScript build contract
+
+Command: bun run coverage:workflow-suite
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: workflow runtime coverage and harness matrix
+
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: release task registry consistency
+
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json
+Scope: candidate repository diagnostics
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+- old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021125-DR7J1E
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -244,3 +502,7 @@ Initial audit risks to test, not assume: the supervised core is stronger than th
 - Observation: The versioned audit runner and self-tests pass, while expected product and performance scenarios fail with classified defects. Verify Steps 4 through 7 and 11 currently conflate harness acceptance with final v0.7.1 release acceptance.
   Impact: Recording OK now would be false; keeping the conflated contract would prevent merging the tool needed to drive the follow-up fixes.
   Resolution: Split audit-harness acceptance from final gate acceptance: this task must prove complete execution, classification, fail-closed gate behavior, and evidence integrity; the release task later requires every blocking scenario plus provider evidence to pass.
+
+- Observation: The first evaluator packet was blocked because task verify commands and passing verification records were absent even though local checks had run.
+  Impact: Without frozen declared checks, semantic review cannot associate results with the evaluated implementation revision.
+  Resolution: Recorded eight executable verification commands in task metadata and this exact-revision verification record before rerunning EVALUATOR.

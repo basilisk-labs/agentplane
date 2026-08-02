@@ -14,13 +14,12 @@ In scope: the complete public task lifecycle in direct and branch_pr modes; mana
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Rework the task verification contract: the harness correctly emits release-blocking defects, but
-current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate
-before the harness can be integrated.
+Qualification harness verified against implementation SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112
+with frozen command/result/evidence/scope records; the audit correctly keeps v0.7.1 release-blocked.
 ```
 - Canonical workflow state lives in the task README.
 
