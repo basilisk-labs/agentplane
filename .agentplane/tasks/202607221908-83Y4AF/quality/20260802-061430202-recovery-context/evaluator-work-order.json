@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221908-83Y4AF-d1f6bdf352a47d38ab0fe9d4",
+  "prepared_at": "2026-08-02T06:14:30.202Z",
+  "task": {
+    "id": "202607221908-83Y4AF",
+    "revision": 14,
+    "objective": "Qualify the AgentPlane 0.7.0-rc.2 milestone\n\nRun the executable fan-in gate for 0.7.0-rc.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bun run guards:check",
+      "bun run release:prepublish",
+      "bun run task-state:check",
+      "- In scope: enforce complete dependency fan-in for the 0.7.0-rc.2 slice, rerun its contract/lifecycle/schema/type/test/benchmark gates, compare frozen success/rework/safety controls, record residual risks, and issue an evidence-backed publish-or-do-not-publish decision.\n- Out of scope: adding architecture or implementation behavior; any defect becomes a bounded rework/follow-up task.",
+      "1. Confirm every declared 0.7.0-rc.2 dependency is DONE at the reviewed main SHA.\n2. Run the milestone-specific deterministic and semantic quality gates.\n3. Compare safety, compatibility, success/rework, and orchestration metrics to the frozen baseline.\n4. Record blockers and require rework before qualification.\n5. Decide whether an optional 0.7.0-rc.2 prerelease materially helps external integration testing; qualification may complete without publication.",
+      "1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-rc.2 is an ancestor and has merged verification/evaluator/hosted-close evidence.\n2. Run `bun run release:prepublish`, `bun run task-state:check`, `bun run guards:check`, `bun run arch:check`. Expected: all milestone checks pass on one reviewed SHA.\n3. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements.\n4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies."
+    ]
+  },
+  "evaluated_sha": "c59bb6e5e222f376cd7508e773fdc666350276de",
+  "diff_base_sha": "2566fbbe61d6959c0a2bff13952e62b5fab6bd7f",
+  "blueprint_digest": "e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221908-83Y4AF/README.md",
+      "sha256": "sha256:cb9d3a99046042f09777fb8aabced6e2dd97bdd34d6ef04a13ecdbc76eacd106",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-061430202-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-061430202-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:4c24b1a55165a4e630cce9c452427e2e0faaafd371485919a6accda2e4267160",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221908-83Y4AF/verification/20260802061342955-3c53e8981e8fd5f2.json",
+      "sha256": "sha256:1ff85fae40767876236b364ba852b9567c8ff3902d3205678e9b0d07f0b8dc08",
+      "required": true
+    },
+    {
+      "id": "qualification-packet",
+      "kind": "qualification_packet",
+      "path": ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+      "sha256": "sha256:b1fb861d9751fcb59a8d998e18f6eb60a61ac157c916677307d81ea19b567ea7",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-061430202-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:628f61fae29e015999ec0733757006e291488571f72a7637f3f31c0df28296b5",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

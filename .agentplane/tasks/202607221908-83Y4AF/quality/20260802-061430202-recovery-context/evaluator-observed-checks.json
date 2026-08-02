@@ -1,0 +1,31 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run arch:check",
+    "bun run guards:check",
+    "bun run release:prepublish",
+    "bun run task-state:check"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T06:13:42.955Z",
+    "updated_by": "TESTER",
+    "note": "RC.2 evidence is reverified on implementation SHA 5e0db39a3. Dependency, structural, token-accounting, outcome, safety, architecture, and release gates pass. Two raw latency thresholds remain failed but are frozen as diagnostic-only with zero blocking failures; no latency improvement is claimed and publication remains do_not_publish."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221908-83Y4AF/verification/20260802061342955-3c53e8981e8fd5f2.json",
+      "sha256": "sha256:1ff85fae40767876236b364ba852b9567c8ff3902d3205678e9b0d07f0b8dc08"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "path": ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+    "digest": "sha256:27addc51e6ae89cfc9ba69c5501b4f611982335c35e493a4a575d4473c570571",
+    "implementation_sha": "5e0db39a380a949befad756a18e7f1926a14bbd3",
+    "evidence_commit": "c59bb6e5e222f376cd7508e773fdc666350276de"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Two latency metrics exceed their frozen thresholds, but the qualification policy explicitly classifies timing as diagnostic-only, records zero blocking failures, makes no latency-improvement claim, and selects do_not_publish.",
+      "broken_invariant": "Residual diagnostic regressions must remain explicit and must not be presented as release improvements or silently override the frozen qualification policy.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+          "sha256": "sha256:b1fb861d9751fcb59a8d998e18f6eb60a61ac157c916677307d81ea19b567ea7",
+          "section": "rf04.qualification_gate"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-83Y4AF/verification/20260802061342955-3c53e8981e8fd5f2.json",
+          "sha256": "sha256:1ff85fae40767876236b364ba852b9567c8ff3902d3205678e9b0d07f0b8dc08",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen timing policy intentionally treats latency thresholds as diagnostic-only and therefore does not make either raw latency failure qualification-blocking.",
+    "The absence of an external integration consumer is sufficient justification for the explicit do_not_publish decision.",
+    "The packet's evidence commit may differ from implementation_sha because it records task-local qualification evidence without changing the reviewed implementation."
+  ]
+}
