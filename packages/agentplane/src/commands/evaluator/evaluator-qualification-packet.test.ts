@@ -682,7 +682,15 @@ describe("evaluator qualification packet", () => {
     await applyTaskMutation({
       ctx,
       taskId,
-      build: () => ({ intents: setTaskFieldsIntent({ status: "DOING" }) }),
+      build: (current) => ({
+        intents: setTaskFieldsIntent({
+          status: "DOING",
+          extensions: {
+            ...current.extensions,
+            workflow_route_baseline: { version: 1, start_head_sha: reviewedSha },
+          },
+        }),
+      }),
     });
     await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}/README.md`], {
       cwd: root,
@@ -690,6 +698,47 @@ describe("evaluator qualification packet", () => {
     await execFileAsync("git", ["commit", "-m", "test: start qualification lifecycle"], {
       cwd: root,
     });
+    const rootReadmePath = path.join(root, `.agentplane/tasks/${taskId}/README.md`);
+    const rootReadme = await readFile(rootReadmePath, "utf8");
+    await applyTaskMutation({
+      ctx,
+      taskId,
+      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId] }) }),
+    });
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        taskId,
+        state: "ok",
+        by: "TESTER",
+        note: "Qualification checks passed on the reviewed SHA.",
+        details:
+          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
+        quiet: true,
+      }),
+    ).rejects.toThrow(
+      "may differ from the reviewed implementation SHA only in lifecycle-managed fields",
+    );
+    await writeFile(rootReadmePath, `${rootReadme}\n<!-- semantic root drift -->\n`, "utf8");
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        taskId,
+        state: "ok",
+        by: "TESTER",
+        note: "Qualification checks passed on the reviewed SHA.",
+        details:
+          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
+        quiet: true,
+      }),
+    ).rejects.toThrow(
+      "may differ from the reviewed implementation SHA only in lifecycle-managed fields",
+    );
+    await writeFile(rootReadmePath, rootReadme, "utf8");
     const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
     for (const artifactPath of [
       leafReadmePath,
