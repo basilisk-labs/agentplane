@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run route-decision suites --maxWorkers=1 --fileParallelism=false\nResult: pass\nEvidence: 14 test files and 61 tests passed, including merged-with-live-head and deleted-branch fallback fixtures\nScope: route oracle verification freshness\n\nCommand: ap task next-action 202608022128-39YSZ1 --remote --explain\nResult: pass\nEvidence: real merged PR 4748 routes to hosted_close_recorded_upstream with evidence_missing none\nScope: live post-rebase-merge regression\n\nCommand: bun run typecheck; bun run lint:core; bun run knip:check; bun run hotspots:check; node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: typecheck and lint passed, Knip baseline 539/539, hotspot and oversized-test baselines passed, policy routing OK\nScope: static, dependency, size, and policy gates\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 chunks and 79 critical CLI tests passed\nScope: critical CLI trust-boundary and efficiency regression suite",
+  "digest": "sha256:b5c73632012ff2fb4d6c17bb14ee8333aaa891bb0cb1823ca2b0c9f87cecbc17",
+  "implementation_sha": "8f4c861ad24d8a23181674b0cf54e15cf57bb71a",
+  "kind": "task_verification_record",
+  "note": "Verified surviving task-branch authority and hosted-close fallback after PR review rework.",
+  "recorded_at": "2026-08-02T23:07:28.863Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused route-verification suites, including a post-rebase-merge/hosted-close fixture. Expected: the merged DONE task has no verification_required blocker, while a later semantic task-branch commit still produces verification_required.\n2. Run typecheck, lint:core, knip:check, hotspots:check, and the policy routing check. Expected: all gates pass without baseline growth.\n3. Run test:critical. Expected: all critical CLI chunks pass.",
+  "scope_digest": "sha256:5f91686f85e6a3b71536705721e1d7e2275f33198b7a050c2b0d0cf12244b668",
+  "task_id": "202608022236-AWTDJ9",
+  "verification_command": "agentplane verify 202608022236-AWTDJ9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

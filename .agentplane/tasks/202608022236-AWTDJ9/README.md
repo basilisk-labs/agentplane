@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -22,7 +22,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T23:05:33.736Z"
+  updated_at: "2026-08-02T23:07:28.863Z"
   updated_by: "TESTER"
   note: "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
   attempts: 0
@@ -100,8 +100,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
+  -
+    type: "verify"
+    at: "2026-08-02T23:07:28.863Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
 doc_version: 3
-doc_updated_at: "2026-08-02T23:05:35.039Z"
+doc_updated_at: "2026-08-02T23:07:30.052Z"
 doc_updated_by: "CODER"
 description: "Fix the branch_pr route oracle so a DONE task remains terminal after GitHub rebase-merge and hosted close, while still invalidating verification for new semantic commits on an active task branch."
 sections:
@@ -199,6 +205,56 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T23:07:28.863Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified surviving task-branch authority and hosted-close fallback after PR review rework.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T23:05:35.039Z, excerpt_hash=sha256:5f91686f85e6a3b71536705721e1d7e2275f33198b7a050c2b0d0cf12244b668
+
+    Details:
+
+    Command: bunx vitest run route-decision suites --maxWorkers=1 --fileParallelism=false
+    Result: pass
+    Evidence: 14 test files and 61 tests passed, including merged-with-live-head and deleted-branch fallback fixtures
+    Scope: route oracle verification freshness
+
+    Command: ap task next-action 202608022128-39YSZ1 --remote --explain
+    Result: pass
+    Evidence: real merged PR 4748 routes to hosted_close_recorded_upstream with evidence_missing none
+    Scope: live post-rebase-merge regression
+
+    Command: bun run typecheck; bun run lint:core; bun run knip:check; bun run hotspots:check; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: typecheck and lint passed, Knip baseline 539/539, hotspot and oversized-test baselines passed, policy routing OK
+    Scope: static, dependency, size, and policy gates
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 chunks and 79 critical CLI tests passed
+    Scope: critical CLI trust-boundary and efficiency regression suite
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022236-AWTDJ9-preserve-verification-freshness-after-rebase-mer/.agentplane/tasks/202608022236-AWTDJ9/blueprint/resolved-snapshot.json
+    - old_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+    - current_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022236-AWTDJ9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -211,6 +267,10 @@ sections:
     - Observation: Route suite passed 14 files/61 tests; critical CLI passed 12 chunks/79 tests; typecheck, lint:core, Knip 539/539, hotspot, oversized-test baseline, and policy routing passed; live merged task 39YSZ1 still routes to hosted_close_recorded_upstream with evidence_missing none.
       Impact: A merged task cannot reuse stale verification when a surviving task branch contains newer semantic work, while deleted/rebased branches retain their reviewed pre-merge evidence.
       Resolution: Prefer the live branch head and semantic resolver whenever the task branch survives; use finalized evaluated_sha only when no live task-branch head exists.
+
+    - Observation: The first rework verification omitted machine-readable check details and was correctly rejected by the route oracle.
+      Impact: Verification evidence cannot become current without concrete command, result, evidence, and scope blocks.
+      Resolution: Recorded a second verification with complete structured check details.
 extensions:
   implementation_commit:
     hash: "bfb6abc89187231c2497ef737c67e98a45e997b2"
@@ -324,6 +384,56 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T23:07:28.863Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified surviving task-branch authority and hosted-close fallback after PR review rework.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T23:05:35.039Z, excerpt_hash=sha256:5f91686f85e6a3b71536705721e1d7e2275f33198b7a050c2b0d0cf12244b668
+
+Details:
+
+Command: bunx vitest run route-decision suites --maxWorkers=1 --fileParallelism=false
+Result: pass
+Evidence: 14 test files and 61 tests passed, including merged-with-live-head and deleted-branch fallback fixtures
+Scope: route oracle verification freshness
+
+Command: ap task next-action 202608022128-39YSZ1 --remote --explain
+Result: pass
+Evidence: real merged PR 4748 routes to hosted_close_recorded_upstream with evidence_missing none
+Scope: live post-rebase-merge regression
+
+Command: bun run typecheck; bun run lint:core; bun run knip:check; bun run hotspots:check; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: typecheck and lint passed, Knip baseline 539/539, hotspot and oversized-test baselines passed, policy routing OK
+Scope: static, dependency, size, and policy gates
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 chunks and 79 critical CLI tests passed
+Scope: critical CLI trust-boundary and efficiency regression suite
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022236-AWTDJ9-preserve-verification-freshness-after-rebase-mer/.agentplane/tasks/202608022236-AWTDJ9/blueprint/resolved-snapshot.json
+- old_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+- current_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022236-AWTDJ9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -340,3 +450,7 @@ DecisionContextRef:
 - Observation: Route suite passed 14 files/61 tests; critical CLI passed 12 chunks/79 tests; typecheck, lint:core, Knip 539/539, hotspot, oversized-test baseline, and policy routing passed; live merged task 39YSZ1 still routes to hosted_close_recorded_upstream with evidence_missing none.
   Impact: A merged task cannot reuse stale verification when a surviving task branch contains newer semantic work, while deleted/rebased branches retain their reviewed pre-merge evidence.
   Resolution: Prefer the live branch head and semantic resolver whenever the task branch survives; use finalized evaluated_sha only when no live task-branch head exists.
+
+- Observation: The first rework verification omitted machine-readable check details and was correctly rejected by the route oracle.
+  Impact: Verification evidence cannot become current without concrete command, result, evidence, and scope blocks.
+  Resolution: Recorded a second verification with complete structured check details.
