@@ -29,12 +29,15 @@ async function resolveTarget(opts: {
   root: string;
   taskId: string;
   previousEvaluatedSha?: string | null;
+  baseRef?: string | null;
 }): Promise<string | null> {
   return resolveQualityReviewTargetSha({
     gitRoot: opts.root,
     workflowDir: ".agentplane/tasks",
     taskId: opts.taskId,
     previousEvaluatedSha: opts.previousEvaluatedSha,
+    workflowMode: "branch_pr",
+    baseRef: opts.baseRef,
   });
 }
 
@@ -370,7 +373,9 @@ describe("quality review target resolver", () => {
       cwd: root,
     });
 
-    await expect(resolveTarget({ root, taskId })).resolves.toBe(mergeShaOutput.trim());
+    await expect(resolveTarget({ root, taskId, baseRef: baseBranch })).resolves.toBe(
+      mergeShaOutput.trim(),
+    );
   });
 
   it("ignores a base-sync merge whose task-side delta contains only managed artifacts", async () => {
@@ -405,7 +410,7 @@ describe("quality review target resolver", () => {
       cwd: root,
     });
 
-    await expect(resolveTarget({ root, taskId })).resolves.toBeNull();
+    await expect(resolveTarget({ root, taskId, baseRef: baseBranch })).resolves.toBeNull();
   });
 
   it("ignores a base-sync merge whose task-side delta is lifecycle-only", async () => {
@@ -440,7 +445,48 @@ describe("quality review target resolver", () => {
       cwd: root,
     });
 
-    await expect(resolveTarget({ root, taskId })).resolves.toBeNull();
+    await expect(resolveTarget({ root, taskId, baseRef: baseBranch })).resolves.toBeNull();
+  });
+
+  it("does not treat a non-base merge as a base-sync work unit", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-NON-BASE-MERGE";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/non-base-merge"], { cwd: root });
+    const reviewedSha = await commitPath(
+      root,
+      "src/reviewed.ts",
+      "export const reviewed = true;\n",
+      "feat: implement reviewed task",
+    );
+    await execFileAsync("git", ["checkout", "-b", "support/lifecycle-artifacts", baseBranch], {
+      cwd: root,
+    });
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/README.md",
+      "unrelated lifecycle state\n",
+      "docs: advance unrelated lifecycle state",
+    );
+    await execFileAsync("git", ["checkout", "task/non-base-merge"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", "support/lifecycle-artifacts", "-m", "merge: lifecycle artifacts"],
+      { cwd: root },
+    );
+
+    await expect(
+      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef: baseBranch }),
+    ).resolves.toBe(reviewedSha);
   });
 
   it("selects a new independently reviewable task metadata work unit", async () => {

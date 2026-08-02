@@ -188,6 +188,7 @@ async function qualityReviewIsFreshForHead(opts: {
     taskIds,
     headSha: opts.headSha,
     previousEvaluatedSha: review.evaluated_sha,
+    workflowMode: opts.ctx.config.workflow_mode,
   }).catch(() => null);
   return expectedSha === review.evaluated_sha;
 }
