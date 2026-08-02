@@ -1,0 +1,3 @@
+ .../shared/route-decision-verification.test.ts     | 136 +++++++++++++++++++++
+ .../commands/shared/route-decision-verification.ts |  50 +++++---
+ 2 files changed, 172 insertions(+), 14 deletions(-)
