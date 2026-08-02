@@ -4,7 +4,7 @@ title: "Build the v0.7.1 end-to-end release qualification suite"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -18,18 +18,16 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-02T11:26:57.210Z"
+  updated_at: "2026-08-02T12:05:48.899Z"
   updated_by: "ORCHESTRATOR"
-  note: null
+  note: "Reapproved after separating harness acceptance from final release acceptance."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
-commit:
-  hash: "03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112"
-  message: "🧪 DR7J1E task: add v0.7.1 qualification gate"
+  state: "needs_rework"
+  updated_at: "2026-08-02T12:04:56.261Z"
+  updated_by: "TESTER"
+  note: "Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated."
+  attempts: 1
+commit: null
 comments:
   -
     author: "TESTER"
@@ -52,8 +50,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation recorded: added the versioned v0.7.1 qualification manifest, audit/gate runner, classified defect ledger, focused lifecycle/context/supervisor/recovery/hosted suites, exact-subject efficiency checks, packed install coverage, and an interleaved 0.6.26 matched CLI benchmark. Verified: e2e:v0.7.1:check and ci:contract pass; full local audit completed with classified release blockers."
+  -
+    type: "verify"
+    at: "2026-08-02T12:04:56.261Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:04:14.764Z"
+doc_updated_at: "2026-08-02T12:05:48.595Z"
 doc_updated_by: "CODER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
@@ -70,19 +74,53 @@ sections:
     5. Execute the full local matrix and bounded provider replay against the candidate, classify every failure as product, contract, infrastructure, or diagnostic, and produce a release-blocking defect ledger with reproduction commands and proposed fixes.
     6. Integrate the suite into CI/release qualification, document local and hosted execution, run all declared checks, obtain independent evaluator review, and merge through the guarded branch_pr lane.
   Verify Steps: |-
-    1. Run the E2E manifest schema and scenario coverage checker; every declared lifecycle state, supported workflow mode, supervisor frontend, context condition, semantic stop, recovery state, and hosted boundary must map to at least one executable scenario.
-    2. Run all hermetic E2E scenarios against the packed candidate binary in isolated temporary repositories; require zero unexpected exits, invariant violations, leaked writes, stale-state acceptance, or unclassified failures.
-    3. Run context-layer E2E scenarios for fresh, warm, stale, missing, conflicting, provenance-restricted, and token-budgeted inputs; validate deterministic manifests, minimal sufficient context, source attribution, and fail-closed behavior.
-    4. Run matched baseline-versus-candidate efficiency qualification with repeated deterministic samples; require complete token cells, complete scalar cells, stable structural hashes, candidate total tokens no worse than baseline in any mandatory cell, and at least 20 percent aggregate token reduction without lower verified-success quality.
-    5. Run external-agent protocol acceptance; require task creation plus one canonical advance loop, no manual Git/worktree/PR/verify/finish/integrate/cleanup operations in the normal branch_pr path, one representation per compact field, and a normal agent packet no larger than 2048 bytes.
-    6. Run managed-runner parity acceptance; require managed and external frontends to traverse the same supervisor state machine and yield equivalent lifecycle/evidence outcomes for matched scenarios.
-    7. Run latency qualification; require setup overhead and time-to-verified at or below the declared v0.6 baseline, or fail the release gate with attributed phase-level timings and a release-blocking defect.
+    1. Run e2e:v0.7.1:check; require the versioned manifest to cover every declared workflow mode, supervisor frontend, lifecycle state, context condition, semantic stop, recovery state, and hosted boundary, and require unit coverage for manifest validation, audit-versus-gate exit behavior, exact-subject efficiency thresholds, and matched latency thresholds.
+    2. Run the core and full audit profiles; require every selected scenario to execute, every non-zero result to become a classified defect with reproduction and evidence, audit mode to exit zero after writing a valid report even when the candidate is blocked, and partial selections never to claim readiness.
+    3. Run the packed-candidate install scenario in an isolated temporary repository; require install, init, context ingest/search, lifecycle policy failures, migration coverage, and cleanup to complete without unexpected exits, invariant violations, leaked writes, or stale-state acceptance.
+    4. Run the lifecycle, context, supervisor-parity, recovery, and hosted focused suites; require them to pass and preserve deterministic context freshness, provenance, budget, state fingerprint, authority, replay, effect-in-doubt, hosted wait, and cleanup behavior.
+    5. Run the external product-contract probe; require it to encode the final release acceptance contract of task creation plus task advance --agent-json, no manual Git/worktree/PR/verify/finish/integrate/cleanup choreography, one compact representation per field, and a packet no larger than 2048 bytes. For this harness task, a missing product capability must be reported as a release-blocking defect rather than treated as a harness failure.
+    6. Run the managed-runner parity suite; require shared supervisor state and evidence projections to pass. The final release gate, not this harness integration task, requires the external product-contract probe itself to pass.
+    7. Run the historical efficiency evidence checker and the matched v0.6.26 CLI benchmark; require complete metrics and stable hashes, require unsupported exact-SHA or latency claims to fail closed, and require the report to preserve measured token reduction separately from release-blocking latency or provenance failures.
     8. Run failure/recovery scenarios for interruption, process loss, provider ambiguity, effect-in-doubt, replay, duplicate side effects, stale fingerprints, evaluator rework, approval expiry, hosted wait, and cleanup races; require deterministic safe stops and recoverable next actions.
-    9. Run focused tests, critical CLI, typecheck, workflow/lifecycle guards, full ci:contract, task-state check, doctor, and policy routing.
-    10. Validate the generated qualification report and defect ledger: every failure has classification, reproduction, evidence, impact, proposed fix, owner task, and release disposition; no claim of speed or token saving is emitted without matched evidence.
-    11. Run the bounded semantic provider matrix with the approved Codex authentication and no hidden retry of failed semantic episodes; record provider episode counts and token usage.
-    12. Run independent EVALUATOR review on the exact implementation revision and require pass before PR publication.
-  Verification: "Pending execution. Evidence will include a versioned scenario manifest, machine-readable per-run receipts, matched baseline comparison, context-quality report, latency attribution, provider usage summary, and a release-blocking defect ledger."
+    9. Run focused tests, critical CLI, typecheck, workflow coverage, full ci:contract, task-state check, doctor, and policy routing; require all harness and unchanged product contracts to pass.
+    10. Validate the qualification report and defect ledger: every failure has classification, reproduction, evidence, impact, proposed fix, owner task, and release disposition; no speed or token-saving claim is emitted without matched evidence.
+    11. Dry-run the provider selection and require the final gate to reject execution unless --provider, exact subject, and exact Codex version are supplied. The final release task must run the bounded 50-run and 55-provider-episode matrix once with no hidden retry; this harness task must not spend provider episodes on a known-blocked, non-final SHA.
+    12. Run independent EVALUATOR review on the exact harness implementation revision and require pass before integration.
+  Verification: |-
+    Pending execution. Evidence will include a versioned scenario manifest, machine-readable per-run receipts, matched baseline comparison, context-quality report, latency attribution, provider usage summary, and a release-blocking defect ledger.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-02T12:04:56.261Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:04:14.764Z, excerpt_hash=sha256:a075e5fdf1c30131bd3e8d8a69fc7bac30b159a48b09cca80f9f40f6d9c02730
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+    - old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021125-DR7J1E
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task implementation commit and remove only newly added E2E/qualification registrations and generated candidate artifacts. Preserve prior v0.7 compatibility and RF-04 baselines. Never overwrite published baseline evidence; new baselines require a separately reviewed approval record."
   Findings: |-
     Initial audit risks to test, not assume: the supervised core is stronger than the default UX; README and quickstart still recommend task begin/task complete; task run is hidden; the external-agent path exposes manual lifecycle mechanics; tokens improve while setup and time-to-verified regress; CodeQL JavaScript/TypeScript took about twenty minutes on PR #4742; historical evidence may inflate repository and analysis cost.
@@ -94,6 +132,10 @@ sections:
     - Observation: An interleaved matched benchmark on the same host and Node runtime compared published 0.6.26 with the packed 0.7.0 candidate over seven samples per command. All seven measured CLI commands were slower: median regressions ranged from 19.6 percent to 31.1 percent.
       Impact: The startup and formal preparation latency regression is product-attributable rather than only drift in the May absolute threshold; release acceleration criteria are not met.
       Resolution: Use the per-command matched artifact to optimize shared startup and task-read paths, then rerun the exact same matched benchmark with zero median-regression allowance.
+
+    - Observation: The versioned audit runner and self-tests pass, while expected product and performance scenarios fail with classified defects. Verify Steps 4 through 7 and 11 currently conflate harness acceptance with final v0.7.1 release acceptance.
+      Impact: Recording OK now would be false; keeping the conflated contract would prevent merging the tool needed to drive the follow-up fixes.
+      Resolution: Split audit-harness acceptance from final gate acceptance: this task must prove complete execution, classification, fail-closed gate behavior, and evidence integrity; the release task later requires every blocking scenario plus provider evidence to pass.
 extensions:
   workflow_route_baseline:
     start_head_sha: "6e8723251676578cedc8ef8d53b76e3da06833f6"
@@ -121,22 +163,55 @@ In scope: the complete public task lifecycle in direct and branch_pr modes; mana
 
 ## Verify Steps
 
-1. Run the E2E manifest schema and scenario coverage checker; every declared lifecycle state, supported workflow mode, supervisor frontend, context condition, semantic stop, recovery state, and hosted boundary must map to at least one executable scenario.
-2. Run all hermetic E2E scenarios against the packed candidate binary in isolated temporary repositories; require zero unexpected exits, invariant violations, leaked writes, stale-state acceptance, or unclassified failures.
-3. Run context-layer E2E scenarios for fresh, warm, stale, missing, conflicting, provenance-restricted, and token-budgeted inputs; validate deterministic manifests, minimal sufficient context, source attribution, and fail-closed behavior.
-4. Run matched baseline-versus-candidate efficiency qualification with repeated deterministic samples; require complete token cells, complete scalar cells, stable structural hashes, candidate total tokens no worse than baseline in any mandatory cell, and at least 20 percent aggregate token reduction without lower verified-success quality.
-5. Run external-agent protocol acceptance; require task creation plus one canonical advance loop, no manual Git/worktree/PR/verify/finish/integrate/cleanup operations in the normal branch_pr path, one representation per compact field, and a normal agent packet no larger than 2048 bytes.
-6. Run managed-runner parity acceptance; require managed and external frontends to traverse the same supervisor state machine and yield equivalent lifecycle/evidence outcomes for matched scenarios.
-7. Run latency qualification; require setup overhead and time-to-verified at or below the declared v0.6 baseline, or fail the release gate with attributed phase-level timings and a release-blocking defect.
+1. Run e2e:v0.7.1:check; require the versioned manifest to cover every declared workflow mode, supervisor frontend, lifecycle state, context condition, semantic stop, recovery state, and hosted boundary, and require unit coverage for manifest validation, audit-versus-gate exit behavior, exact-subject efficiency thresholds, and matched latency thresholds.
+2. Run the core and full audit profiles; require every selected scenario to execute, every non-zero result to become a classified defect with reproduction and evidence, audit mode to exit zero after writing a valid report even when the candidate is blocked, and partial selections never to claim readiness.
+3. Run the packed-candidate install scenario in an isolated temporary repository; require install, init, context ingest/search, lifecycle policy failures, migration coverage, and cleanup to complete without unexpected exits, invariant violations, leaked writes, or stale-state acceptance.
+4. Run the lifecycle, context, supervisor-parity, recovery, and hosted focused suites; require them to pass and preserve deterministic context freshness, provenance, budget, state fingerprint, authority, replay, effect-in-doubt, hosted wait, and cleanup behavior.
+5. Run the external product-contract probe; require it to encode the final release acceptance contract of task creation plus task advance --agent-json, no manual Git/worktree/PR/verify/finish/integrate/cleanup choreography, one compact representation per field, and a packet no larger than 2048 bytes. For this harness task, a missing product capability must be reported as a release-blocking defect rather than treated as a harness failure.
+6. Run the managed-runner parity suite; require shared supervisor state and evidence projections to pass. The final release gate, not this harness integration task, requires the external product-contract probe itself to pass.
+7. Run the historical efficiency evidence checker and the matched v0.6.26 CLI benchmark; require complete metrics and stable hashes, require unsupported exact-SHA or latency claims to fail closed, and require the report to preserve measured token reduction separately from release-blocking latency or provenance failures.
 8. Run failure/recovery scenarios for interruption, process loss, provider ambiguity, effect-in-doubt, replay, duplicate side effects, stale fingerprints, evaluator rework, approval expiry, hosted wait, and cleanup races; require deterministic safe stops and recoverable next actions.
-9. Run focused tests, critical CLI, typecheck, workflow/lifecycle guards, full ci:contract, task-state check, doctor, and policy routing.
-10. Validate the generated qualification report and defect ledger: every failure has classification, reproduction, evidence, impact, proposed fix, owner task, and release disposition; no claim of speed or token saving is emitted without matched evidence.
-11. Run the bounded semantic provider matrix with the approved Codex authentication and no hidden retry of failed semantic episodes; record provider episode counts and token usage.
-12. Run independent EVALUATOR review on the exact implementation revision and require pass before PR publication.
+9. Run focused tests, critical CLI, typecheck, workflow coverage, full ci:contract, task-state check, doctor, and policy routing; require all harness and unchanged product contracts to pass.
+10. Validate the qualification report and defect ledger: every failure has classification, reproduction, evidence, impact, proposed fix, owner task, and release disposition; no speed or token-saving claim is emitted without matched evidence.
+11. Dry-run the provider selection and require the final gate to reject execution unless --provider, exact subject, and exact Codex version are supplied. The final release task must run the bounded 50-run and 55-provider-episode matrix once with no hidden retry; this harness task must not spend provider episodes on a known-blocked, non-final SHA.
+12. Run independent EVALUATOR review on the exact harness implementation revision and require pass before integration.
 
 ## Verification
 
 Pending execution. Evidence will include a versioned scenario manifest, machine-readable per-run receipts, matched baseline comparison, context-quality report, latency attribution, provider usage summary, and a release-blocking defect ledger.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-02T12:04:56.261Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:04:14.764Z, excerpt_hash=sha256:a075e5fdf1c30131bd3e8d8a69fc7bac30b159a48b09cca80f9f40f6d9c02730
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+- old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021125-DR7J1E
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
@@ -153,3 +228,7 @@ Initial audit risks to test, not assume: the supervised core is stronger than th
 - Observation: An interleaved matched benchmark on the same host and Node runtime compared published 0.6.26 with the packed 0.7.0 candidate over seven samples per command. All seven measured CLI commands were slower: median regressions ranged from 19.6 percent to 31.1 percent.
   Impact: The startup and formal preparation latency regression is product-attributable rather than only drift in the May absolute threshold; release acceleration criteria are not met.
   Resolution: Use the per-command matched artifact to optimize shared startup and task-read paths, then rerun the exact same matched benchmark with zero median-regression allowance.
+
+- Observation: The versioned audit runner and self-tests pass, while expected product and performance scenarios fail with classified defects. Verify Steps 4 through 7 and 11 currently conflate harness acceptance with final v0.7.1 release acceptance.
+  Impact: Recording OK now would be false; keeping the conflated contract would prevent merging the tool needed to drive the follow-up fixes.
+  Resolution: Split audit-harness acceptance from final gate acceptance: this task must prove complete execution, classification, fail-closed gate behavior, and evidence integrity; the release task later requires every blocking scenario plus provider evidence to pass.
