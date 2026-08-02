@@ -12,8 +12,8 @@ Created: 2026-08-02T15:36:39.848Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Exact implementation SHA bae5543faa00a8425ed46a5cf5c99c7b74338453 verified: ci:test 4687/4687, ci:contract, critical/lifecycle/supervisor/recovery/workflow/doctor/task-state gates, isolated replay-security 10/10, npm and Bun packed smokes, and interleaved 20-run matched latency all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,62 +30,63 @@ Created: 2026-08-02T15:36:39.848Z
 
 ```text
  .agentplane/tasks/202608021232-6BTB6D/README.md    |   7 +-
- .agentplane/tasks/202608021534-J5G235/README.md    | 100 +++++++++
- .agentplane/tasks/202608021534-YN84E1/README.md    | 101 +++++++++
- .agentplane/tasks/202608021535-9EWFAB/README.md    | 101 +++++++++
- .agentplane/tasks/202608021535-CNQKXP/README.md    | 101 +++++++++
+ .agentplane/tasks/202608021534-J5G235/README.md    | 100 +++++++
+ .agentplane/tasks/202608021534-YN84E1/README.md    | 101 +++++++
+ .agentplane/tasks/202608021535-9EWFAB/README.md    | 101 +++++++
+ .agentplane/tasks/202608021535-CNQKXP/README.md    | 101 +++++++
  packages/agentplane/package.json                   |   7 +-
  packages/agentplane/src/cli-bun.ts                 |  31 +++
  .../src/cli/run-cli.core.init.interactive.test.ts  |  12 +-
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |  11 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |  33 ++-
- packages/agentplane/src/cli/run-cli.ts             |  53 +++--
- .../src/cli/run-cli/command-catalog-helpers.ts     |  55 +++++
- .../src/cli/run-cli/command-catalog-loader.ts      | 194 +++++++++++++++++
- .../src/cli/run-cli/command-catalog.test.ts        |  25 +++
- .../agentplane/src/cli/run-cli/command-catalog.ts  |  49 ++---
+ packages/agentplane/src/cli/run-cli.ts             |  53 +++-
+ .../src/cli/run-cli/command-catalog-helpers.ts     |  55 ++++
+ .../src/cli/run-cli/command-catalog-loader.ts      | 194 ++++++++++++++
+ .../src/cli/run-cli/command-catalog.test.ts        |  25 ++
+ .../agentplane/src/cli/run-cli/command-catalog.ts  |  49 +---
  .../run-cli/command-catalog/context-evaluator.ts   |   2 +-
  .../src/cli/run-cli/command-catalog/core-fast.ts   |  20 ++
  .../src/cli/run-cli/command-catalog/core.ts        |  10 +-
  .../src/cli/run-cli/command-catalog/hermes.ts      |   2 +-
- .../src/cli/run-cli/command-catalog/task-read.ts   |  36 ++++
+ .../src/cli/run-cli/command-catalog/task-read.ts   |  36 +++
  .../src/cli/run-cli/command-catalog/task.ts        |  10 +-
  .../src/cli/run-cli/command-loaders/core.ts        |   9 +-
  .../src/cli/run-cli/command-loaders/evaluator.ts   |  17 +-
- .../src/cli/run-cli/command-loaders/project.ts     |  87 ++++----
+ .../src/cli/run-cli/command-loaders/project.ts     |  87 +++---
  .../src/cli/run-cli/command-loaders/task.ts        |  19 +-
- .../src/cli/run-cli/commands/init/run.ts           |  13 ++
+ .../src/cli/run-cli/commands/init/run.ts           |  13 +
  .../src/cli/run-cli/commands/init/spec.ts          |  12 +-
  .../src/cli/run-cli/deferred-runtime-loader.ts     |  11 +
  .../agentplane/src/cli/run-cli/deferred-runtime.ts |  31 +++
  .../src/cli/run-cli/registry.run.test.ts           |   2 +-
  .../agentplane/src/cli/run-cli/registry.run.ts     |  14 +-
  .../evaluator/evaluator-catalog.command.ts         |   8 +-
- .../src/commands/evaluator/evaluator.command.ts    |  36 +---
- .../src/commands/hermes/hermes.command.ts          |  13 --
+ .../src/commands/evaluator/evaluator.command.ts    |  36 +--
+ .../src/commands/hermes/hermes.command.ts          |  13 -
  .../release/bun-compiled-cli-smoke-script.test.ts  |   9 +-
  .../src/commands/task/advance.command.ts           |  46 +---
  .../agentplane/src/commands/task/advance.spec.ts   |  44 ++++
- packages/agentplane/src/commands/task/list.ts      |  28 ++-
- .../agentplane/src/commands/task/run.command.ts    | 236 +--------------------
- packages/agentplane/src/commands/task/run.spec.ts  | 226 ++++++++++++++++++++
- packages/agentplane/src/meta/version.ts            |  24 ++-
+ packages/agentplane/src/commands/task/list.ts      |  28 +-
+ .../agentplane/src/commands/task/run.command.ts    | 236 +----------------
+ packages/agentplane/src/commands/task/run.spec.ts  | 226 ++++++++++++++++
+ packages/agentplane/src/meta/version.ts            |  24 +-
  packages/agentplane/src/shared/errors.test.ts      |  20 ++
- packages/agentplane/src/shared/errors.ts           |  29 +++
+ packages/agentplane/src/shared/errors.ts           |  29 ++
  .../agentplane/src/shared/package-paths.test.ts    |  15 ++
- packages/agentplane/src/shared/package-paths.ts    |  38 ++--
+ packages/agentplane/src/shared/package-paths.ts    |  38 +--
  packages/agentplane/tsup.config.ts                 |   5 +
  scripts/baselines/knip-baseline.json               |  14 +-
- .../baselines/v0.7-compatibility-candidate.json    |  83 ++++++--
- .../check-compatibility-contract-baseline.mjs      | 147 +++++++++++--
+ .../baselines/v0.7-compatibility-candidate.json    |  83 ++++--
+ .../check-compatibility-contract-baseline.mjs      | 147 +++++++++--
  scripts/generate/generate-bun-cli-assets.mjs       |   2 +-
  scripts/lib/package-tarball-policy.mjs             |  15 ++
- .../measure-v0.7.1-matched-cli-latency.mjs         |  42 ++--
- .../qualification/release-qualification.test.mjs   |  10 +-
+ .../check-v0.7.1-product-contract.mjs              |  18 +-
+ .../measure-v0.7.1-matched-cli-latency.mjs         | 293 ++++++++++++++++-----
+ .../qualification/release-qualification.test.mjs   | 140 +++++++++-
  scripts/release/check-package-tarball.mjs          |   7 +-
- scripts/release/generate-cli-help-catalog.mjs      |  24 +++
- scripts/release/smoke-bun-compiled-cli.mjs         |  58 ++++-
- 56 files changed, 1779 insertions(+), 575 deletions(-)
+ scripts/release/generate-cli-help-catalog.mjs      |  24 ++
+ scripts/release/smoke-bun-compiled-cli.mjs         |  58 +++-
+ 57 files changed, 2101 insertions(+), 652 deletions(-)
 ```
 
 </details>

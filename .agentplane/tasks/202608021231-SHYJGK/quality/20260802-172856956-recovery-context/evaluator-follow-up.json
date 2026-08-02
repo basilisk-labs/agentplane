@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021231-SHYJGK-5724211517d18ab185d656f5",
+  "task_id": "202608021231-SHYJGK",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add distinct cold and warm benchmark phases with at least 20 interleaved samples each, enforce every approved release threshold, and freeze the raw exact-SHA benchmark and check records so the evaluator can verify the claimed results.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The latency gate measures only warmed invocations; it does not produce the required 20 cold repetitions per candidate and baseline.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:3bc1468a9776e10d00d8074fe0f02e2b8791b0c8f724c54e8c1e6c08c5fb0d5d",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-172856956-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2015e7d4b97a7d6be40e94dfba5701d37ed856cbbbf1062d89558de36b83d5df",
+          "section": "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "summary": "The frozen verification evidence does not substantiate the benchmark baseline, raw runs, warm/cold method, per-command results, or time-to-verified comparison claimed by the verification note.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-172856956-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:3dc5cdd01f7d4ce703a2a8e909e1098f6cb150163848bd4aa2bed0cd227737ae",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-172856956-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:03b3e226e750f78e08d9fb469b25925faba72e7ad15dd7caa1368528f86cc091",
+          "section": "requiredEvidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RCI-003",
+      "summary": "The added release regression test covers median and p95 only, leaving the approved verified-success, scope-violation, token-usage, packet-size, and provider-independent time-to-verified thresholds unproven.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:3bc1468a9776e10d00d8074fe0f02e2b8791b0c8f724c54e8c1e6c08c5fb0d5d",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-172856956-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2015e7d4b97a7d6be40e94dfba5701d37ed856cbbbf1062d89558de36b83d5df",
+          "section": "scripts/qualification/release-qualification.test.mjs"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-172856956-recovery-context/evaluator-result.json"
+}

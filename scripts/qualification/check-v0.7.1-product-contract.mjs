@@ -5,6 +5,8 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { isDirectRun } from "../lib/script-runtime.mjs";
+
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const cliPath = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
@@ -56,7 +58,7 @@ function checkManagedFrontend(failures) {
   if (result.status !== 0) failures.push("managed task run frontend is not publicly executable");
 }
 
-function assertCompactPacket(packetText) {
+export function assertCompactAgentPacket(packetText) {
   const bytes = Buffer.byteLength(packetText, "utf8");
   assert.ok(bytes <= MAX_AGENT_PACKET_BYTES, `agent packet is ${bytes} bytes; maximum is 2048`);
   const packet = JSON.parse(packetText);
@@ -152,7 +154,7 @@ function checkExternalFrontend(failures) {
       [cliPath, "task", "advance", taskId, "--agent-json"],
       tempRoot,
     ).trim();
-    assertCompactPacket(packet);
+    assertCompactAgentPacket(packet);
   } catch (error) {
     failures.push(error instanceof Error ? error.message : String(error));
   } finally {
@@ -177,9 +179,11 @@ function main() {
   );
 }
 
-try {
-  main();
-} catch (error) {
-  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
+if (isDirectRun(import.meta.url)) {
+  try {
+    main();
+  } catch (error) {
+    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  }
 }

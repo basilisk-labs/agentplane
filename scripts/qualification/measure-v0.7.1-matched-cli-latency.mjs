@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
@@ -158,10 +158,10 @@ function initializeFixture(root, baselineCli) {
   );
 }
 
-function measuredInvocation(cliPath, argv) {
+function measuredInvocation(cliPath, argv, cwd) {
   const startedAt = performance.now();
   const result = spawnSync(process.execPath, [cliPath, ...argv], {
-    cwd: cliRepoRootFromPath(cliPath),
+    cwd,
     encoding: "utf8",
     env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
     maxBuffer: 10 * 1024 * 1024,
@@ -172,6 +172,11 @@ function measuredInvocation(cliPath, argv) {
     signal: result.signal,
     stderr: result.stderr ?? "",
   };
+}
+
+function fixtureCopy(source, destination) {
+  rmSync(destination, { recursive: true, force: true });
+  cpSync(source, destination, { recursive: true });
 }
 
 export function compareMatchedLatencySamples({
@@ -194,9 +199,17 @@ export function compareMatchedLatencySamples({
     candidate.p95_ms <= baseline.p95_ms * 1.1;
   return {
     id,
-    baseline: { ...baseline, exit_code: baselineExitCode, stderr: baselineStderr.slice(-500) },
+    baseline: {
+      ...baseline,
+      sample_count: baselineDurations.length,
+      samples_ms: baselineDurations,
+      exit_code: baselineExitCode,
+      stderr: baselineStderr.slice(-500),
+    },
     candidate: {
       ...candidate,
+      sample_count: candidateDurations.length,
+      samples_ms: candidateDurations,
       exit_code: candidateExitCode,
       stderr: candidateStderr.slice(-500),
     },
@@ -206,68 +219,140 @@ export function compareMatchedLatencySamples({
   };
 }
 
-function measureMatched({ baselineCli, candidateCli, fixtureRoot, runs, warmups }) {
-  const config = readSuiteConfigMap(suiteConfigPath);
-  const suite = config.suites.get("cli_walltime_baseline");
-  if (!suite) throw new Error("cli_walltime_baseline suite is missing");
+function invocationOrder(index, baseline, candidate) {
+  return index % 2 === 0 ? [baseline, candidate] : [candidate, baseline];
+}
+
+function aggregateSamples(commands, side) {
+  const sampleCount = commands[0]?.[side]?.samples_ms.length ?? 0;
+  return Array.from({ length: sampleCount }, (_unused, sampleIndex) =>
+    roundMs(
+      commands.reduce((total, command) => total + (command[side].samples_ms[sampleIndex] ?? 0), 0),
+    ),
+  );
+}
+
+function providerExcludedTimeToVerified(commands) {
+  return {
+    definition:
+      "sum of the matched deterministic CLI command wall times at each sample index; fixture cloning, package installation, harness setup, and provider execution are excluded",
+    ...compareMatchedLatencySamples({
+      id: "provider_excluded_time_to_verified",
+      baselineDurations: aggregateSamples(commands, "baseline"),
+      candidateDurations: aggregateSamples(commands, "candidate"),
+      baselineExitCode: commands.every((command) => command.baseline.exit_code === 0) ? 0 : 1,
+      candidateExitCode: commands.every((command) => command.candidate.exit_code === 0) ? 0 : 1,
+    }),
+  };
+}
+
+function measurementCapture(id) {
+  const state = {
+    baseline: { durations: [], exitCode: null, stderr: "" },
+    candidate: { durations: [], exitCode: null, stderr: "" },
+  };
+  return {
+    record(kind, result) {
+      state[kind].durations.push(result.duration_ms);
+      state[kind].exitCode = result.exit_code;
+      state[kind].stderr = result.stderr;
+    },
+    comparison() {
+      return compareMatchedLatencySamples({
+        id,
+        baselineDurations: state.baseline.durations,
+        candidateDurations: state.candidate.durations,
+        baselineExitCode: state.baseline.exitCode,
+        candidateExitCode: state.candidate.exitCode,
+        baselineStderr: state.baseline.stderr,
+        candidateStderr: state.candidate.stderr,
+      });
+    },
+  };
+}
+
+function measureWarmPhase({
+  baselineCli,
+  candidateCli,
+  baselineFixtureRoot,
+  candidateFixtureRoot,
+  runs,
+  warmups,
+  suite,
+}) {
   const commands = [];
 
   for (const spec of suite.commands) {
     const baselineArgv = interpolateArgs(spec.argv, {
-      root: fixtureRoot,
+      root: baselineFixtureRoot,
       repoRoot: cliRepoRootFromPath(baselineCli),
     });
     const candidateArgv = interpolateArgs(spec.argv, {
-      root: fixtureRoot,
+      root: candidateFixtureRoot,
       repoRoot: cliRepoRootFromPath(candidateCli),
     });
     for (let index = 0; index < warmups; index += 1) {
-      measuredInvocation(baselineCli, baselineArgv);
-      measuredInvocation(candidateCli, candidateArgv);
+      measuredInvocation(baselineCli, baselineArgv, baselineFixtureRoot);
+      measuredInvocation(candidateCli, candidateArgv, candidateFixtureRoot);
     }
-    const baselineDurations = [];
-    const candidateDurations = [];
-    let baselineExitCode = null;
-    let candidateExitCode = null;
-    let baselineStderr = "";
-    let candidateStderr = "";
+    const capture = measurementCapture(spec.id);
     for (let index = 0; index < runs; index += 1) {
-      const order =
-        index % 2 === 0
-          ? [
-              ["baseline", baselineCli, baselineArgv],
-              ["candidate", candidateCli, candidateArgv],
-            ]
-          : [
-              ["candidate", candidateCli, candidateArgv],
-              ["baseline", baselineCli, baselineArgv],
-            ];
-      for (const [kind, cliPath, argv] of order) {
-        const result = measuredInvocation(cliPath, argv);
-        if (kind === "baseline") {
-          baselineDurations.push(result.duration_ms);
-          baselineExitCode = result.exit_code;
-          baselineStderr = result.stderr;
-        } else {
-          candidateDurations.push(result.duration_ms);
-          candidateExitCode = result.exit_code;
-          candidateStderr = result.stderr;
+      const order = invocationOrder(
+        index,
+        ["baseline", baselineCli, baselineArgv, baselineFixtureRoot],
+        ["candidate", candidateCli, candidateArgv, candidateFixtureRoot],
+      );
+      for (const [kind, cliPath, argv, cwd] of order) {
+        const result = measuredInvocation(cliPath, argv, cwd);
+        capture.record(kind, result);
+      }
+    }
+    commands.push(capture.comparison());
+  }
+  return { commands, provider_excluded_time_to_verified: providerExcludedTimeToVerified(commands) };
+}
+
+function measureColdPhase({ baselineCli, candidateCli, fixtureSeed, coldRoot, runs, suite }) {
+  const commands = [];
+  for (const spec of suite.commands) {
+    const capture = measurementCapture(spec.id);
+    for (let index = 0; index < runs; index += 1) {
+      const order = invocationOrder(index, ["baseline", baselineCli], ["candidate", candidateCli]);
+      for (const [kind, cliPath] of order) {
+        const fixtureRoot = path.join(coldRoot, `${spec.id}-${String(index)}-${kind}`);
+        fixtureCopy(fixtureSeed, fixtureRoot);
+        const argv = interpolateArgs(spec.argv, {
+          root: fixtureRoot,
+          repoRoot: cliRepoRootFromPath(cliPath),
+        });
+        const result = measuredInvocation(cliPath, argv, fixtureRoot);
+        rmSync(fixtureRoot, { recursive: true, force: true });
+        capture.record(kind, result);
+      }
+    }
+    commands.push(capture.comparison());
+  }
+  return { commands, provider_excluded_time_to_verified: providerExcludedTimeToVerified(commands) };
+}
+
+export function validateMatchedLatencyReport(report) {
+  if (report.schema_version !== 2 || report.kind !== "agentplane.v0.7.1_matched_cli_latency") {
+    throw new Error("matched CLI latency report must use schema_version=2");
+  }
+  for (const phaseName of ["cold", "warm"]) {
+    const phase = report.phases?.[phaseName];
+    if (!phase || !Array.isArray(phase.commands) || phase.commands.length === 0) {
+      throw new Error(`matched CLI latency report omits ${phaseName} commands`);
+    }
+    for (const command of [phase.provider_excluded_time_to_verified, ...phase.commands]) {
+      for (const side of ["baseline", "candidate"]) {
+        if (command?.[side]?.sample_count < 20 || command[side].samples_ms.length < 20) {
+          throw new Error(`${phaseName}.${command?.id ?? "unknown"}.${side} requires 20 samples`);
         }
       }
     }
-    commands.push(
-      compareMatchedLatencySamples({
-        id: spec.id,
-        baselineDurations,
-        candidateDurations,
-        baselineExitCode,
-        candidateExitCode,
-        baselineStderr,
-        candidateStderr,
-      }),
-    );
   }
-  return commands;
+  return report;
 }
 
 function main(argv = process.argv.slice(2)) {
@@ -277,35 +362,65 @@ function main(argv = process.argv.slice(2)) {
   const baselinePrefix = path.join(tempRoot, "baseline");
   const candidatePrefix = path.join(tempRoot, "candidate");
   const packDirectory = path.join(tempRoot, "packs");
-  const fixtureRoot = path.join(tempRoot, "fixture");
+  const fixtureSeed = path.join(tempRoot, "fixture-seed");
+  const baselineWarmFixture = path.join(tempRoot, "fixture-warm-baseline");
+  const candidateWarmFixture = path.join(tempRoot, "fixture-warm-candidate");
+  const coldRoot = path.join(tempRoot, "fixture-cold");
   const cacheDirectory = path.join(repoRoot, ".agentplane", ".npm-cache");
   try {
-    for (const directory of [baselinePrefix, candidatePrefix, packDirectory, fixtureRoot]) {
+    for (const directory of [
+      baselinePrefix,
+      candidatePrefix,
+      packDirectory,
+      fixtureSeed,
+      coldRoot,
+    ]) {
       mkdirSync(directory, { recursive: true });
     }
     const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
     const candidate = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
     const candidateCli = candidate.cli;
-    initializeFixture(fixtureRoot, baselineCli);
+    initializeFixture(fixtureSeed, baselineCli);
+    fixtureCopy(fixtureSeed, baselineWarmFixture);
+    fixtureCopy(fixtureSeed, candidateWarmFixture);
     const baselineVersion = run(process.execPath, [baselineCli, "--version"], {
-      cwd: fixtureRoot,
+      cwd: fixtureSeed,
     }).trim();
     const candidateVersion = run(process.execPath, [candidateCli, "--version"], {
-      cwd: fixtureRoot,
+      cwd: fixtureSeed,
     }).trim();
     if (baselineVersion !== BASELINE_VERSION) {
       throw new Error(`expected baseline ${BASELINE_VERSION}, got ${baselineVersion}`);
     }
-    const commands = measureMatched({
-      baselineCli,
-      candidateCli,
-      fixtureRoot,
-      runs: options.runs,
-      warmups: options.warmups,
-    });
-    const failures = commands.filter((command) => command.verdict !== "pass");
-    const result = {
-      schema_version: 1,
+    const config = readSuiteConfigMap(suiteConfigPath);
+    const suite = config.suites.get("cli_walltime_baseline");
+    if (!suite) throw new Error("cli_walltime_baseline suite is missing");
+    const phases = {
+      cold: measureColdPhase({
+        baselineCli,
+        candidateCli,
+        fixtureSeed,
+        coldRoot,
+        runs: options.runs,
+        suite,
+      }),
+      warm: measureWarmPhase({
+        baselineCli,
+        candidateCli,
+        baselineFixtureRoot: baselineWarmFixture,
+        candidateFixtureRoot: candidateWarmFixture,
+        runs: options.runs,
+        warmups: options.warmups,
+        suite,
+      }),
+    };
+    const failures = Object.entries(phases).flatMap(([phase, result]) =>
+      [result.provider_excluded_time_to_verified, ...result.commands]
+        .filter((command) => command.verdict !== "pass")
+        .map((command) => `${phase}.${command.id}`),
+    );
+    const result = validateMatchedLatencyReport({
+      schema_version: 2,
       kind: "agentplane.v0.7.1_matched_cli_latency",
       subject: options.subject,
       source_identity: sourceIdentity,
@@ -314,17 +429,31 @@ function main(argv = process.argv.slice(2)) {
         sha256,
         version,
       })),
-      environment: { node: process.version, platform: process.platform, arch: process.arch },
+      environment: {
+        node: process.version,
+        platform: process.platform,
+        release: os.release(),
+        arch: process.arch,
+        cpu_count: os.cpus().length,
+      },
       baseline_version: baselineVersion,
       candidate_version: candidateVersion,
-      runs: options.runs,
-      warmups: options.warmups,
+      sample_contract: {
+        runs_per_phase: options.runs,
+        warmups_before_warm_phase_per_command: options.warmups,
+        cold: "one invocation in a fresh copy of the identical initialized fixture; fixture-copy time is excluded",
+        warm: "one invocation in a persistent per-subject fixture after explicit unmeasured warmups",
+        process:
+          "every sample launches a new Node.js process; baseline/candidate order alternates by sample index",
+        os_cache: "not reset; alternating order controls shared host-cache drift",
+        provider: "not invoked",
+      },
       comparison:
-        "candidate_median_ms <= baseline_median_ms and candidate_p95_ms <= baseline_p95_ms * 1.10",
-      commands,
-      failure_ids: failures.map((command) => command.id),
+        "for every command and provider-excluded aggregate in both phases: candidate_median_ms <= baseline_median_ms and candidate_p95_ms <= baseline_p95_ms * 1.10",
+      phases,
+      failure_ids: failures,
       verdict: failures.length === 0 ? "pass" : "fail",
-    };
+    });
     mkdirSync(path.dirname(options.outputPath), { recursive: true });
     writeFileSync(options.outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
     process.stdout.write(
