@@ -4,7 +4,7 @@ title: "Allow qualification packets to ignore root lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,31 @@ verification:
   updated_by: "TESTER"
   note: "Verified the qualification root lifecycle fix on implementation bdfe5b8e3840; focused and full repository gates pass."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-02T04:50:13.825Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "2bb1cb8b8d5c6af0ffa46f35345266558c0bbea3"
+  blueprint_digest: "a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1"
+  evidence_refs:
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/README.md"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Dependency closure trusts the entire current root task, so post-review removal of a declared dependency can silently remove that dependency from SHA-bound qualification."
 commit:
   hash: "bdfe5b8e384079bd8f70de6bd65c1eeaca3c018f"
   message: "🐛 CCE1A2 qualification: permit root lifecycle drift"

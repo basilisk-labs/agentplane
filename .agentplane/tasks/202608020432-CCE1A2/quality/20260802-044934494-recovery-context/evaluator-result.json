@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Dependency closure trusts the entire current root task, so post-review removal of a declared dependency can silently remove that dependency from SHA-bound qualification.",
+      "broken_invariant": "Only lifecycle drift of the qualification root may be ignored; dependency documents and evidence must remain strictly bound to the reviewed implementation SHA. The implementation returns the current root object without proving that its dependency declarations match the reviewed root, while the regression test changes only status.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:cf20ce38835b2f7f52bbc9caefce8f2b4bf19504612c6c08d9d9397f98a68a39",
+          "line": 33,
+          "lines": "33-34"
+        },
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:cf20ce38835b2f7f52bbc9caefce8f2b4bf19504612c6c08d9d9397f98a68a39",
+          "line": 9,
+          "lines": "9-19"
+        },
+        {
+          "path": ".agentplane/tasks/202608020432-CCE1A2/README.md",
+          "sha256": "sha256:2e34e7311f6d8b3a686a21c522b13050a2eddebf0d44f8dff0f84416a99f8fc3",
+          "line": 62,
+          "lines": "62-77",
+          "section": "Scope and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a negative regression test that removes an existing root dependency after the reviewed implementation SHA and confirms packet creation fails closed or still validates the reviewed dependency closure.",
+    "Add a negative regression test for other non-lifecycle root changes after the reviewed SHA to prove the exemption is limited to lifecycle fields."
+  ],
+  "hidden_assumptions": [
+    "The current root task differs from its reviewed-SHA version only in lifecycle fields.",
+    "Root dependency declarations cannot be removed or otherwise altered between the reviewed SHA and packet creation."
+  ],
+  "recovery_context": "Constrain the root exemption to verified lifecycle-only drift, or derive and validate dependency IDs against the reviewed root so post-review dependency removal cannot shrink the SHA-bound closure. Extend regression coverage beyond the status-only positive case."
+}

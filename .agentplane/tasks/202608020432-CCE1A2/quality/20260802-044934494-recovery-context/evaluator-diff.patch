@@ -1,0 +1,37 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+index 873e22304..c6c8b3778 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+@@ -679,6 +679,17 @@ describe("evaluator qualification packet", () => {
+       "export const qualified = true;\n",
+       "feat: reviewed qualification target",
+     );
++    await applyTaskMutation({
++      ctx,
++      taskId,
++      build: () => ({ intents: setTaskFieldsIntent({ status: "DOING" }) }),
++    });
++    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}/README.md`], {
++      cwd: root,
++    });
++    await execFileAsync("git", ["commit", "-m", "test: start qualification lifecycle"], {
++      cwd: root,
++    });
+     const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
+     for (const artifactPath of [
+       leafReadmePath,
+diff --git a/packages/agentplane/src/commands/task/qualification-packet.ts b/packages/agentplane/src/commands/task/qualification-packet.ts
+index 11e451253..f44fe6370 100644
+--- a/packages/agentplane/src/commands/task/qualification-packet.ts
++++ b/packages/agentplane/src/commands/task/qualification-packet.ts
+@@ -190,7 +190,9 @@ async function buildDependencyClosure(opts: {
+   };
+   const dependencies = await resolveQualificationDependencyLeaves({
+     taskId: opts.task.id,
+-    loadTask: pinnedTask,
++    // The root owns the current lifecycle transition; only its dependencies are reviewed evidence.
++    loadTask: (taskId) =>
++      taskId === opts.task.id ? Promise.resolve(opts.task) : pinnedTask(taskId),
+   });
+   const leaves = await Promise.all(
+     dependencies.terminalLeaves.map(async (leaf) => {
