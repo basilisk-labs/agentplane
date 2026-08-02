@@ -27,7 +27,7 @@ remains fail-closed.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T22:37:28.488Z
+- Updated: 2026-08-02T22:46:38.048Z
 - Branch: task/202608022236-AWTDJ9/preserve-verification-freshness-after-rebase-mer
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

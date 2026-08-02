@@ -6,7 +6,7 @@ Created: 2026-08-02T22:37:28.488Z
 
 - Task: `202608022236-AWTDJ9`
 - Title: Preserve verification freshness after rebase merge
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608022236-AWTDJ9/preserve-verification-freshness-after-rebase-mer`
 - Canonical task record: `.agentplane/tasks/202608022236-AWTDJ9/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-02T22:37:28.488Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T22:37:28.488Z
+- Updated: 2026-08-02T22:46:38.048Z
 - Branch: task/202608022236-AWTDJ9/preserve-verification-freshness-after-rebase-mer
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
