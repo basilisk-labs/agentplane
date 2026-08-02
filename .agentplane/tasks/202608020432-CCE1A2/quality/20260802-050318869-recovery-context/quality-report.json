@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020432-CCE1A2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T05:04:08.217Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "a728b1134fe36ed3d9625654b85108ace23af33e",
+  "blueprint_digest": "a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1",
+  "findings": [
+    "Post-integration rc.2 qualification remains an explicit downstream gate and is not present in the frozen pre-integration evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020432-CCE1A2/README.md",
+    ".agentplane/tasks/202608020432-CCE1A2/verification/20260802050252866-82b1ee360d6d2bd0.json"
+  ],
+  "missing_tests": [
+    "After integration, re-run rc.2 verification against the integrated SHA to confirm real qualification packet creation succeeds while dependency evidence remains strictly SHA-bound."
+  ],
+  "hidden_assumptions": [
+    "The shared lifecycle comparator's excluded fields remain limited to lifecycle-managed state; future additions to that exclusion set require equivalent negative drift coverage.",
+    "No concurrent writer changes the qualification root README between lifecycle comparison and packet persistence."
+  ],
+  "residual_risks": []
+}
