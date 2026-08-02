@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The frozen diff adds the test:cli:critical package script and its documentation after the recorded verification commit, while every verification record remains bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 and the task asserts that the implementation SHA did not change.",
+      "broken_invariant": "All implementation and contract changes in the evaluated revision must be covered by commit-bound verification; DoD requires every Verify Step to run against the reviewed state, and material verification drift must be re-approved and reverified.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8430f20b7ad7d428b01232f0a8923745cad894df1d28a6a15a2ac148f27e0bb9",
+          "section": "package.json and scripts/README.md additions"
+        },
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+          "sha256": "sha256:da6532f2144f77ac5bcc32cb747a5f07dc78d98e4bf1b19ddde11351a4f44b75",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run `bun run test:cli:critical` and the applicable contract checks against the evaluated revision containing the restored alias, then record commit-bound verification for that exact revision."
+  ],
+  "hidden_assumptions": [
+    "Adding a package-script compatibility alias and documenting it does not change the implementation state requiring fresh verification.",
+    "Verification bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 remains sufficient for a later evaluated revision containing tracked package and documentation changes."
+  ],
+  "recovery_context": "The earlier verification-contract correction was substantively addressed, but the subsequent test:cli:critical alias commit is outside the recorded commit-bound evidence. Reverify the final evaluated revision and update the task verification record before requesting another evaluation."
+}
