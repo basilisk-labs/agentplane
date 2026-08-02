@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020147-VMBX4H",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T02:14:43.496Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "97ccd56e30db87970246b331fee2a48ec074aaf3",
+  "blueprint_digest": "7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c",
+  "findings": [
+    "Configured-base detection depends on the mutable current base tip, so a concurrent base advance after merge start makes the hook fall back to the full staged-path set and misattributes incoming base changes to the active task."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020147-VMBX4H/README.md"
+  ],
+  "missing_tests": [
+    "Start a configured-base merge, advance the configured base ref before running pre-commit and commit-msg, and verify that incoming base implementation/task artifacts remain excluded while task-side mutations remain enforced."
+  ],
+  "hidden_assumptions": [
+    "The configured base ref cannot advance between creation of MERGE_HEAD and hook execution."
+  ],
+  "residual_risks": [
+    "Replace or supplement mutable-tip equality with evidence that identifies the actual configured-base merge at merge start, while preserving rejection of merges from other topic commits that are reachable from the configured base."
+  ]
+}

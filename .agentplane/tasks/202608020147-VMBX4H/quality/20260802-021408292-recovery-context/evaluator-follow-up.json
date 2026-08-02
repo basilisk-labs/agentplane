@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608020147-VMBX4H-09e91cd58c23c9f850c44d7e",
+  "task_id": "202608020147-VMBX4H",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace or supplement mutable-tip equality with evidence that identifies the actual configured-base merge at merge start, while preserving rejection of merges from other topic commits that are reachable from the configured base.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Configured-base detection depends on the mutable current base tip, so a concurrent base advance after merge start makes the hook fall back to the full staged-path set and misattributes incoming base changes to the active task.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0e85c9feb060ffdc1e9fb150da4f8dbf05ae498ba0775276ef23cc121d599075",
+          "section": "resolveHookPolicyStagedPaths"
+        },
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/README.md",
+          "sha256": "sha256:ec4aacdb5a0593403cdf3b432f33d24e9b7cb80187f586da17a49a0b0fe0aa65",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-result.json"
+}

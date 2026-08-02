@@ -48,6 +48,25 @@ async function writeDocsTask(root: string, taskId: string): Promise<void> {
   );
 }
 
+async function advanceBranchWithEmptyCommit(root: string, branch: string): Promise<void> {
+  const execFileAsync = promisify(execFile);
+  const parentResult = await execFileAsync("git", ["rev-parse", branch], { cwd: root });
+  const parentSha = parentResult.stdout.trim();
+  const treeResult = await execFileAsync("git", ["rev-parse", `${parentSha}^{tree}`], {
+    cwd: root,
+  });
+  const commitResult = await execFileAsync(
+    "git",
+    ["commit-tree", treeResult.stdout.trim(), "-p", parentSha, "-m", "advance base"],
+    { cwd: root },
+  );
+  await execFileAsync(
+    "git",
+    ["update-ref", `refs/heads/${branch}`, commitResult.stdout.trim(), parentSha],
+    { cwd: root },
+  );
+}
+
 describe("runCli hooks pre-commit guards", () => {
   it("hooks run pre-commit allows tasks.json with env override", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -526,6 +545,7 @@ describe("runCli hooks pre-commit guards", () => {
 
     await execFileAsync("git", ["checkout", `task/${taskId}/docs-sync`], { cwd: root });
     await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "main"], { cwd: root });
+    await advanceBranchWithEmptyCommit(root, "main");
 
     const messagePath = `${root}/COMMIT_EDITMSG`;
     await writeFile(
@@ -569,14 +589,32 @@ describe("runCli hooks pre-commit guards", () => {
     await execFileAsync("git", ["commit", "-m", "docs: advance base"], { cwd: root });
     await execFileAsync("git", ["checkout", `task/${taskId}/docs-sync`], { cwd: root });
     await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "main"], { cwd: root });
+    await advanceBranchWithEmptyCommit(root, "main");
 
-    const io = captureStdIO();
+    const preCommitIo = captureStdIO();
     try {
       await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(5);
-      expect(io.stderr).toContain("src/task-change.ts");
-      expect(io.stderr).not.toContain("README.md");
+      expect(preCommitIo.stderr).toContain("src/task-change.ts");
+      expect(preCommitIo.stderr).not.toContain("README.md");
     } finally {
-      io.restore();
+      preCommitIo.restore();
+    }
+
+    const messagePath = `${root}/COMMIT_EDITMSG`;
+    await writeFile(
+      messagePath,
+      "🔀 ABCDEF task: sync configured base\n\nSigned-off-by: Test User <test@example.com>\n",
+      "utf8",
+    );
+    const commitMsgIo = captureStdIO();
+    try {
+      await expect(
+        runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]),
+      ).resolves.toBe(5);
+      expect(commitMsgIo.stderr).toContain("src/task-change.ts");
+      expect(commitMsgIo.stderr).not.toContain("README.md");
+    } finally {
+      commitMsgIo.restore();
     }
   });
 
