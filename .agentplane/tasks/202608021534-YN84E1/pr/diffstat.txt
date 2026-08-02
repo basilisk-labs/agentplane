@@ -17,6 +17,8 @@
  .../src/cli/run-cli/command-catalog/kernel.ts      |   5 +
  .../src/cli/run-cli/command-catalog/task.ts        |   6 +
  packages/agentplane/src/cli/spec/help.ts           |   6 +-
+ .../evaluator-episode.calibration.test.ts          |   8 +-
+ .../src/commands/hermes/hermes.command.test.ts     |   2 +-
  .../src/commands/shared/route-execution-packet.ts  |   9 +-
  .../src/commands/shared/workflow-step-reducer.ts   |  29 +++
  .../src/commands/shared/workflow-step.ts           |   1 +
@@ -36,4 +38,4 @@
  .../check-compatibility-contract-baseline.mjs      |  17 +-
  .../check-v0.7.1-product-contract.mjs              |  71 ++++++
  scripts/release/generate-cli-help-catalog.mjs      |   1 +
- 38 files changed, 654 insertions(+), 361 deletions(-)
+ 40 files changed, 662 insertions(+), 363 deletions(-)

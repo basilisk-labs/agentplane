@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T20:50:53.204Z"
+  updated_at: "2026-08-02T21:17:12.460Z"
   updated_by: "CODER"
-  note: "Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged."
+  note: "Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior critical/docs/product gates pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -151,8 +151,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-02T21:17:12.460Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior critical/docs/product gates pass."
 doc_version: 3
-doc_updated_at: "2026-08-02T20:52:41.323Z"
+doc_updated_at: "2026-08-02T21:17:16.753Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -295,6 +301,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T21:17:12.460Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior critical/docs/product gates pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:52:41.323Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+    - old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -315,6 +351,10 @@ sections:
     - Observation: Hosted verify-static detected PLANNER_SEMANTIC_PLAN_PLACEHOLDER as a newly unused public export.
       Impact: The static gate blocked integration despite correct runtime behavior.
       Resolution: Kept the constant module-private; no call site or control flow changed, and Knip returned to the accepted baseline.
+
+    - Observation: Full hosted unit CI exposed two fixtures that still assumed the pre-PLANNER route contract; a parallel local full-suite probe also hit eight non-reproducible 30s resource-contention timeouts plus one race fixture.
+      Impact: The stale fixtures blocked PR verification; the local parallel noise could otherwise be misclassified as product regressions.
+      Resolution: Updated only the two obsolete expectations, then passed their focused set and all six locally affected files sequentially without increasing timeouts or weakening assertions.
 extensions:
   implementation_commit:
     hash: "375dd720e5b88f4d28805af3756b04f7a8d49053"
@@ -472,6 +512,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T21:17:12.460Z — VERIFY — ok
+
+By: CODER
+
+Note: Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior critical/docs/product gates pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:52:41.323Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+- old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -496,3 +566,7 @@ DecisionContextRef:
 - Observation: Hosted verify-static detected PLANNER_SEMANTIC_PLAN_PLACEHOLDER as a newly unused public export.
   Impact: The static gate blocked integration despite correct runtime behavior.
   Resolution: Kept the constant module-private; no call site or control flow changed, and Knip returned to the accepted baseline.
+
+- Observation: Full hosted unit CI exposed two fixtures that still assumed the pre-PLANNER route contract; a parallel local full-suite probe also hit eight non-reproducible 30s resource-contention timeouts plus one race fixture.
+  Impact: The stale fixtures blocked PR verification; the local parallel noise could otherwise be misclassified as product regressions.
+  Resolution: Updated only the two obsolete expectations, then passed their focused set and all six locally affected files sequentially without increasing timeouts or weakening assertions.
