@@ -1,10 +1,11 @@
 ---
 id: "202607221854-YMYYQ8"
 title: "Publish the AgentPlane 0.7 architecture and migration guide"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -59,8 +60,8 @@ quality_review:
   findings:
     - "The prior evidence gaps are closed: the frozen verification now records the standalone generated-site freshness check and a successful repository doctor run, while preserving the broader contract, migration, negative-path, and supervised-flow verification."
 commit:
-  hash: "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7"
-  message: "📚 YMYYQ8 docs: publish 0.7 architecture and migration guide"
+  hash: "c4f24001550940b62f85d0eb375b892d01dc8925"
+  message: "✅ YMYYQ8 task: record evaluator pass"
 comments:
   -
     author: "DOCS"
@@ -68,6 +69,9 @@ comments:
   -
     author: "DOCS"
     body: "Implementation: publish the 0.7 architecture, responsibility boundary, migration and rollback guide, generated site surfaces, navigation, social artifact, and roadmap updates; real base-sync merge completed without hook bypass."
+  -
+    author: "DOCS"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -95,8 +99,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified documentation and migration package after evaluator rework: standalone bun run docs:site:generate:check passed with generated reference and llms-full both fresh; agentplane doctor completed OK with 0 errors. Previously recorded gates remain green: docs:cli:check, schemas:check, docs:ia:check, policy routing, typescript:toolchain:check, 90 focused contract/supervisor/work-order/receipt tests, docs:site:check including production build/design, docs:social:check 221/221, package:install-smoke migration matrix 8 scenarios plus local tarball smoke, format:check and git diff checks."
+  -
+    type: "status"
+    at: "2026-08-02T02:42:32.474Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:36:44.889Z"
+doc_updated_at: "2026-08-02T02:42:32.474Z"
 doc_updated_by: "DOCS"
 description: "Document the final CLI-versus-agent responsibility boundary, WorkOrder/SemanticResult/Receipt contracts, supervisor flows, knowledge lifecycle, authority model, compatibility window, migration, metrics, and operator recovery."
 sections:
@@ -190,6 +201,9 @@ sections:
       Impact: The 0.7 architecture and migration guide meets its declared documentation and repository-health gates.
       Resolution: Recorded the exact standalone generation check and successful doctor result before rerunning the evaluator.
 extensions:
+  implementation_commit:
+    hash: "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7"
+    message: "📚 YMYYQ8 docs: publish 0.7 architecture and migration guide"
   workflow_route_baseline:
     start_head_sha: "5319bbdeecb05adc2c436e4039f5046a5bfeb89a"
     version: 1
