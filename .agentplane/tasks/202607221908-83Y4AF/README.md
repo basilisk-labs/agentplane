@@ -1,10 +1,11 @@
 ---
 id: "202607221908-83Y4AF"
 title: "Qualify the AgentPlane 0.7.0-rc.2 milestone"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -69,7 +70,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Two latency metrics exceed their frozen thresholds, but the qualification policy explicitly classifies timing as diagnostic-only, records zero blocking failures, makes no latency-improvement claim, and selects do_not_publish."
-commit: null
+commit:
+  hash: "43e90ea46073d8d463e9cfffb639e40a9434efbc"
+  message: "🔍 83Y4AF quality: record evaluator pass"
 comments:
   -
     author: "TESTER"
@@ -80,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: synchronized the merged qualification gate classification and packet-selected verification evidence fix; rc.2 remains evidence-only and ready for TESTER re-verification."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -120,9 +126,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "RC.2 evidence is reverified on implementation SHA 5e0db39a3. Dependency, structural, token-accounting, outcome, safety, architecture, and release gates pass. Two raw latency thresholds remain failed but are frozen as diagnostic-only with zero blocking failures; no latency improvement is claimed and publication remains do_not_publish."
+  -
+    type: "status"
+    at: "2026-08-02T06:16:12.358Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T06:13:44.735Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-02T06:16:12.358Z"
+doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-rc.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
   Summary: |-
@@ -331,6 +344,9 @@ sections:
       Impact: An evaluator could not bind the old packet to the current implementation head, and the raw latency verdict lacked an explicit blocking-versus-diagnostic classification.
       Resolution: Regenerated verification on 5e0db39a3 after 14 focused tests, TypeScript typecheck, and 16 release-critical tests; the packet now preserves raw latency failures as diagnostic-only and selects the current verification record.
 extensions:
+  implementation_commit:
+    hash: "c59bb6e5e222f376cd7508e773fdc666350276de"
+    message: "✅ 83Y4AF quality: record corrected rc.2 verification"
   workflow_route_baseline:
     start_head_sha: "443f1c6ee9e1b520ee19b33a276e4eec99237f4b"
     version: 1
