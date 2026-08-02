@@ -19,11 +19,9 @@ Expose one compact task advance --agent-json command over the canonical supervis
 - Note:
 
 ```text
-PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor
-134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract,
-task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA
-efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this
-supervisor change.
+Fresh SHA-bound deterministic evidence recorded for implementation
+06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates
+passed.
 ```
 - Canonical workflow state lives in the task README.
 

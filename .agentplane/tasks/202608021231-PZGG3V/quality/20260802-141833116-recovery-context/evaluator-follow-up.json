@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608021231-PZGG3V-5222b72e3e56f9de92e254b1",
+  "task_id": "202608021231-PZGG3V",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the evaluator work order with deterministic, machine-readable verification records bound to evaluated SHA 06582bde1138360f789c18399c86df20279bafee, including the required scenario matrix and maintained gates, then repeat the semantic evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen evidence contains only a narrative verification note; it contains no deterministic check records, runner history, or runtime evidence for the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:243905b4bd6982ded281f3f018d76ff7852bce31d34921d351234c1114f22b27",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-result.json"
+}
