@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The qualification harness satisfies the approved recovery-context contract at the exact evaluated revision: deterministic local matrices pass, expected product and performance failures remain fail-closed and classified, and each blocker has a distinct executable owner task.",
+      "broken_invariant": "No invariant is broken; exact-subject binding, negative-case reporting, concurrency-sensitive recovery coverage, and actionable defect ownership are preserved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021125-DR7J1E/verification/20260802130647117-80007dcb4b578246.json",
+          "sha256": "sha256:71cdeb878f9cd846bd62d523fda929d3bbaf735a880d08fd7024747d0de33136"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json",
+          "sha256": "sha256:c1667120140eeb6c116ca17a9e4ed8a709c068a05e9de5fabaab0dceefecc3e6"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/defects.md",
+          "sha256": "sha256:13c92469f7b99185e1ced031fc53e1ea065e95c11ee76297aca4b40d43f3fdb0"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/efficiency-evidence.json",
+          "sha256": "sha256:5fa0fb924e2a760f0d277c15fd4b6c31faccbd90ea772ee4026237e3386f2847"
+        },
+        {
+          "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/matched-cli-latency.json",
+          "sha256": "sha256:dd5f540ce6d68fc69d903cfeacb9e7c366c8b59e8ebafe9c390aee129f46d92b"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The packaged candidate retaining version 0.7.0 is intentional for qualification of the pre-release v0.7.1 revision; release versioning remains a later release-boundary concern.",
+    "Provider episodes are intentionally deferred because the exact candidate is already locally release-blocked; historical provider evidence is not accepted as exact-subject evidence."
+  ]
+}

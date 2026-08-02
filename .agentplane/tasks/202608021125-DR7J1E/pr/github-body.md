@@ -18,9 +18,9 @@ In scope: the complete public task lifecycle in direct and branch_pr modes; mana
 - Note:
 
 ```text
-Qualification harness verified against implementation SHA 9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96;
-every observed blocker now has a distinct executable owner task and the audit correctly remains
-release-blocked.
+Qualification harness verified against exact clean implementation SHA
+81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and
+each observed blocker has an executable owner.
 ```
 - Canonical workflow state lives in the task README.
 
