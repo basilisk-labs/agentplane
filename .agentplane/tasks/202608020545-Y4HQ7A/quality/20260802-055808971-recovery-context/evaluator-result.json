@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The implementation preserves raw RF-04 failures, deterministically separates policy-authorized diagnostic latency failures from blocking failures, rejects unclassified failures, and selects qualification verification records using the packet implementation SHA while retaining the evaluated evidence SHA as the reviewed head.",
+      "broken_invariant": "No invariant is broken; the approved qualification classification and verification-freezing contract is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020545-Y4HQ7A/quality/20260802-055808971-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:c88e183129cd2bfb33040ed874198aad9889ce2c5a7cd564ddf7506c91949ed7"
+        },
+        {
+          "path": ".agentplane/tasks/202608020545-Y4HQ7A/README.md",
+          "sha256": "sha256:4cdf96895937d4661f9b174e2e65e981ccfaaeff116a7569d9961ad4516b3936",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "RF-04 timing failures intended to be diagnostic are canonically identified by the latency. failure-ID prefix when comparison_policy.timing is diagnostic_only_never_gated."
+  ]
+}
