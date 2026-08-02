@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021231-SHYJGK-689d42be4079e9351050191d",
+  "prepared_at": "2026-08-02T18:45:14.385Z",
+  "task": {
+    "id": "202608021231-SHYJGK",
+    "revision": 19,
+    "objective": "Remove the v0.7.1 matched CLI latency regression\n\nProfile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject HEAD --out .agentplane/cache/v0.7.1-matched-cli-latency.json",
+      "- In scope: Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.\n- Out of scope: unrelated refactors not required for \"Remove the v0.7.1 matched CLI latency regression\".",
+      "1. Freeze the v0.6.24 and current v0.7.1 matched CLI setup and time-to-verified baselines with warm and cold repetitions, separating harness cost from provider cost.\n2. Repair the five reproducible full-suite defects discovered during supervisor qualification: update stale interactive-init answer fixtures and resolve the sibling-task worktree expectation against the minimal-context product contract.\n3. Profile the deterministic task advance/task run hot path and remove redundant filesystem, route, schema, and process work until matched setup overhead returns to the accepted baseline without weakening fingerprints, authority, evidence, recovery, or evaluator separation.\n4. Add a release E2E/full-suite gate and regression thresholds for median, p95, verified success, scope violations, token usage, and packet size.\n5. Run exact-SHA deterministic verification, independent EVALUATOR review, hosted checks, and branch_pr integration.",
+      "1. Run the focused interactive-init and branch worktree runtime tests with no retry. Expected: all previously reproduced failures pass and assertions match the current evaluator-skepticism and minimal-context contracts.\n2. Run bun run ci:test with the normal release configuration. Expected: every maintained test file and test passes; the replay-security test also passes in isolation without relying on a retry.\n3. Run the matched CLI latency harness with at least 20 warm and 20 cold repetitions per candidate and baseline. Expected: deterministic setup median is no slower than the published v0.6.26 baseline, p95 is within 10%, and time-to-verified does not regress after excluding provider variance.\n4. Run v0.7 supervisor, lifecycle, recovery, product-contract, efficiency-evidence, test:critical, typecheck, workflow coverage, ci:contract, task-state, doctor, and policy routing gates. Expected: all pass while verified success, scope, token, packet-size, and lifecycle-ownership invariants remain at least as strong as the current candidate.\n5. Run an independent EVALUATOR review against the exact implementation SHA, then require all hosted checks before integration."
+    ]
+  },
+  "evaluated_sha": "9ee3a9f001e98203acd80f5ac8826599ea940678",
+  "diff_base_sha": "ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+      "sha256": "sha256:d6c3275dbc78e3f78f59ed1eaae33fd9e7ff56c37d760fc4ffdf1b0aa820be24",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:798392be0e5873c3f0e1f39dcda00aea8cd6f190565bbc460469769ed56dda17",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:15f4789eca2b302d37fb8d5b11045a7f9cd10b2f0b29c62d6ef4f8ba2fbf3d0a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:03b3e226e750f78e08d9fb469b25925faba72e7ad15dd7caa1368528f86cc091",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

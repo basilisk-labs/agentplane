@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-SHYJGK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T18:45:58.136Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "9ee3a9f001e98203acd80f5ac8826599ea940678",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "findings": [
+    "The frozen implementation diff is scoped to the latency regression and its correctness, packaging, release-gate, and evaluator-diff support; the previously reported unrelated-task drift is absent from the current evaluator patch."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-SHYJGK/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

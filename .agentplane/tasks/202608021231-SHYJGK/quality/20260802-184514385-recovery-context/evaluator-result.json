@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RECOVERY-CONTEXT-001",
+      "severity": "low",
+      "summary": "The frozen implementation diff is scoped to the latency regression and its correctness, packaging, release-gate, and evaluator-diff support; the previously reported unrelated-task drift is absent from the current evaluator patch.",
+      "broken_invariant": "No invariant is broken; current evidence resolves the prior material-drift finding and covers positive, negative, performance, and stale-tracking-base recovery paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:798392be0e5873c3f0e1f39dcda00aea8cd6f190565bbc460469769ed56dda17"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:d6c3275dbc78e3f78f59ed1eaae33fd9e7ff56c37d760fc4ffdf1b0aa820be24",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

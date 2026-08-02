@@ -6,14 +6,14 @@ Created: 2026-08-02T15:36:39.848Z
 
 - Task: `202608021231-SHYJGK`
 - Title: Remove the v0.7.1 matched CLI latency regression
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021231-SHYJGK/remove-the-v0-7-1-matched-cli-latency-regression`
 - Canonical task record: `.agentplane/tasks/202608021231-SHYJGK/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Implementation rework verified without source changes: local main now matches merged origin/main ac112cc28, evaluator merge-base scope is clean, and exact ab8787b3 performance/contract evidence remains current.
+- Note: Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

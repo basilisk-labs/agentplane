@@ -1,1 +1,1 @@
-🚧 SHYJGK task: Remove the v0.7.1 matched CLI latency regression [202608021231-SHYJGK]
+✅ SHYJGK task: Remove the v0.7.1 matched CLI latency regression [202608021231-SHYJGK]

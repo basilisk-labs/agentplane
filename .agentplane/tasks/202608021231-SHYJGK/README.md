@@ -1,10 +1,11 @@
 ---
 id: "202608021231-SHYJGK"
 title: "Remove the v0.7.1 matched CLI latency regression"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -24,38 +25,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T18:36:04.055Z"
+  updated_at: "2026-08-02T18:44:45.640Z"
   updated_by: "TESTER"
-  note: "Implementation rework verified without source changes: local main now matches merged origin/main ac112cc28, evaluator merge-base scope is clean, and exact ab8787b3 performance/contract evidence remains current."
+  note: "Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T18:32:52.560Z"
+  updated_at: "2026-08-02T18:45:58.136Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "ab8787b3996a281d5c3246da85296f3014ee502b"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "9ee3a9f001e98203acd80f5ac8826599ea940678"
   blueprint_digest: "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23"
   evidence_refs:
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608021231-SHYJGK/README.md"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-184514385-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated patch still creates four unrelated task definitions and modifies a fifth task's dependency graph without drift classification or re-approval."
+    - "The frozen implementation diff is scoped to the latency regression and its correctness, packaging, release-gate, and evaluator-diff support; the previously reported unrelated-task drift is absent from the current evaluator patch."
 commit:
-  hash: "bae5543faa00a8425ed46a5cf5c99c7b74338453"
-  message: "🧹 SHYJGK code: remove split-bundle dead exports"
+  hash: "9ee3a9f001e98203acd80f5ac8826599ea940678"
+  message: "🛡️ SHYJGK code: prefer current tracked base"
 comments:
   -
     author: "CODER"
@@ -66,6 +66,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -118,8 +121,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Implementation rework verified without source changes: local main now matches merged origin/main ac112cc28, evaluator merge-base scope is clean, and exact ab8787b3 performance/contract evidence remains current."
+  -
+    type: "verify"
+    at: "2026-08-02T18:44:45.640Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable."
+  -
+    type: "status"
+    at: "2026-08-02T18:47:09.625Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T18:36:04.998Z"
+doc_updated_at: "2026-08-02T18:47:09.626Z"
 doc_updated_by: "CODER"
 description: "Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness."
 sections:
@@ -340,6 +356,75 @@ sections:
     Scope correction: the authoritative published baseline is 0.6.26. The earlier immutable verification record mentions 0.6.24 only because it predates the task-document correction; the current task Verify Steps and the fresh benchmark both use 0.6.26.
 
     Scope-base correction: local refs/heads/main now matches origin/main at ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3. The evaluator merge base with ab8787b3996a281d5c3246da85296f3014ee502b is therefore ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3, and the changed-path set contains no audit follow-up task definitions or cross-task dependency edits.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-SHYJGK-remove-the-v0-7-1-matched-cli-latency-regression/.agentplane/tasks/202608021231-SHYJGK/blueprint/resolved-snapshot.json
+    - old_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+    - current_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-SHYJGK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T18:44:45.640Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T18:36:04.998Z, excerpt_hash=sha256:71261ec2a4d8525ccbaaee274d825f94224af95b33b44e4ba3facfd3f7f89120
+
+    Details:
+
+    Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject ab8787b3996a281d5c3246da85296f3014ee502b
+    Result: pass
+    Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-rebased.json
+    Scope: exact implementation SHA; 20 cold and 20 warm alternating baseline/candidate samples for 7 commands plus the provider-excluded aggregate; no median or p95 failures
+    Observed: cold aggregate baseline median 1078.425 ms versus candidate 968.248 ms; warm aggregate baseline median 1042.727 ms versus candidate 933.204 ms
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs; node scripts/qualification/check-v0.7.1-product-contract.mjs; focused Vitest init/worktree/replay suite
+    Result: pass
+    Scope: exact implementation SHA; 16 release-contract tests, product contract, and 3 focused files with 26 tests; no retry
+
+    Command: bun run ci:contract
+    Result: pass
+    Scope: exact implementation SHA; formatting, schemas, policy routing, compatibility, efficiency replay, lifecycle invariants, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+    Command: bun run ci:test
+    Result: pass
+    Evidence: .agentplane/cache/v071-shyjgk/ci-test.log
+    Scope: 660 files and 4687 tests at cf1dfbb106f0c46ec549aecceef60b4f5fe203eb
+    Applicability: git diff between cf1dfbb106f0c46ec549aecceef60b4f5fe203eb and ab8787b3996a281d5c3246da85296f3014ee502b contains only .agentplane/tasks/202608021231-SHYJGK/README.md and the task PR title artifact; implementation, tests, scripts, package manifests, and lockfile are byte-identical
+
+    Scope correction: the authoritative published baseline is 0.6.26. The earlier immutable verification record mentions 0.6.24 only because it predates the task-document correction; the current task Verify Steps and the fresh benchmark both use 0.6.26.
+
+    Scope-base correction: local refs/heads/main now matches origin/main at ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3. The evaluator merge base with ab8787b3996a281d5c3246da85296f3014ee502b is therefore ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3, and the changed-path set contains no audit follow-up task definitions or cross-task dependency edits.
+
+    Final implementation SHA: 9ee3a9f001e98203acd80f5ac8826599ea940678
+
+    Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject 9ee3a9f001e98203acd80f5ac8826599ea940678
+    Result: pass
+    Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-final.json
+    Observed: cold aggregate baseline median 1072.883 ms versus candidate 961.203 ms; warm aggregate baseline median 1083.682 ms versus candidate 978.106 ms; all command median and p95 gates pass
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Observed: 1 file and 21 tests, including stale-local-base versus current-tracking-base regression coverage
+
+    Command: bun run ci:contract
+    Result: pass
+    Scope: final implementation SHA; complete deterministic release contract including format, schemas, policy, compatibility, replay, lifecycle, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
 
     BlueprintSnapshotRef:
     - state: current
@@ -604,6 +689,75 @@ Applicability: git diff between cf1dfbb106f0c46ec549aecceef60b4f5fe203eb and ab8
 Scope correction: the authoritative published baseline is 0.6.26. The earlier immutable verification record mentions 0.6.24 only because it predates the task-document correction; the current task Verify Steps and the fresh benchmark both use 0.6.26.
 
 Scope-base correction: local refs/heads/main now matches origin/main at ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3. The evaluator merge base with ab8787b3996a281d5c3246da85296f3014ee502b is therefore ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3, and the changed-path set contains no audit follow-up task definitions or cross-task dependency edits.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-SHYJGK-remove-the-v0-7-1-matched-cli-latency-regression/.agentplane/tasks/202608021231-SHYJGK/blueprint/resolved-snapshot.json
+- old_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+- current_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-SHYJGK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T18:44:45.640Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T18:36:04.998Z, excerpt_hash=sha256:71261ec2a4d8525ccbaaee274d825f94224af95b33b44e4ba3facfd3f7f89120
+
+Details:
+
+Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject ab8787b3996a281d5c3246da85296f3014ee502b
+Result: pass
+Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-rebased.json
+Scope: exact implementation SHA; 20 cold and 20 warm alternating baseline/candidate samples for 7 commands plus the provider-excluded aggregate; no median or p95 failures
+Observed: cold aggregate baseline median 1078.425 ms versus candidate 968.248 ms; warm aggregate baseline median 1042.727 ms versus candidate 933.204 ms
+
+Command: node --test scripts/qualification/release-qualification.test.mjs; node scripts/qualification/check-v0.7.1-product-contract.mjs; focused Vitest init/worktree/replay suite
+Result: pass
+Scope: exact implementation SHA; 16 release-contract tests, product contract, and 3 focused files with 26 tests; no retry
+
+Command: bun run ci:contract
+Result: pass
+Scope: exact implementation SHA; formatting, schemas, policy routing, compatibility, efficiency replay, lifecycle invariants, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+Command: bun run ci:test
+Result: pass
+Evidence: .agentplane/cache/v071-shyjgk/ci-test.log
+Scope: 660 files and 4687 tests at cf1dfbb106f0c46ec549aecceef60b4f5fe203eb
+Applicability: git diff between cf1dfbb106f0c46ec549aecceef60b4f5fe203eb and ab8787b3996a281d5c3246da85296f3014ee502b contains only .agentplane/tasks/202608021231-SHYJGK/README.md and the task PR title artifact; implementation, tests, scripts, package manifests, and lockfile are byte-identical
+
+Scope correction: the authoritative published baseline is 0.6.26. The earlier immutable verification record mentions 0.6.24 only because it predates the task-document correction; the current task Verify Steps and the fresh benchmark both use 0.6.26.
+
+Scope-base correction: local refs/heads/main now matches origin/main at ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3. The evaluator merge base with ab8787b3996a281d5c3246da85296f3014ee502b is therefore ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3, and the changed-path set contains no audit follow-up task definitions or cross-task dependency edits.
+
+Final implementation SHA: 9ee3a9f001e98203acd80f5ac8826599ea940678
+
+Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject 9ee3a9f001e98203acd80f5ac8826599ea940678
+Result: pass
+Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-final.json
+Observed: cold aggregate baseline median 1072.883 ms versus candidate 961.203 ms; warm aggregate baseline median 1083.682 ms versus candidate 978.106 ms; all command median and p95 gates pass
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Observed: 1 file and 21 tests, including stale-local-base versus current-tracking-base regression coverage
+
+Command: bun run ci:contract
+Result: pass
+Scope: final implementation SHA; complete deterministic release contract including format, schemas, policy, compatibility, replay, lifecycle, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
 
 BlueprintSnapshotRef:
 - state: current
