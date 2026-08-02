@@ -3,7 +3,7 @@
   "branch": "task/202608022236-AWTDJ9/preserve-verification-freshness-after-rebase-mer",
   "created_at": "2026-08-02T22:37:28.488Z",
   "diffstat_sha256": "sha256:af239d5107dc20b11b595f880dec5abd5903b34cb017881e91b397aa42d319d7",
-  "last_verified_at": "2026-08-02T23:05:33.736Z",
+  "last_verified_at": "2026-08-02T23:07:28.863Z",
   "last_verified_diffstat_sha256": "sha256:af239d5107dc20b11b595f880dec5abd5903b34cb017881e91b397aa42d319d7",
   "pr_number": 4749,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4749",
