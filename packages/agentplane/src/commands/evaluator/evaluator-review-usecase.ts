@@ -232,7 +232,8 @@ export async function prepareEvaluatorReview(opts: {
     allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
   });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
-  const recordPaths = await verificationRecordPaths(taskRoot, opts.task, evaluatedSha, {
+  const verificationTargetSha = qualificationPacket?.packet.implementation_sha ?? evaluatedSha;
+  const recordPaths = await verificationRecordPaths(taskRoot, opts.task, verificationTargetSha, {
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),

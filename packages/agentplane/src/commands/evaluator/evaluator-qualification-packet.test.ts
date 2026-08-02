@@ -16,7 +16,10 @@ import {
   isQualificationTask,
 } from "../task/qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "../task/qualification-packet-dependencies.js";
-import { readQualificationRf04CandidateMeasurement } from "../task/qualification-packet-rf04.js";
+import {
+  readQualificationRf04CandidateMeasurement,
+  requireQualificationRf04Gate,
+} from "../task/qualification-packet-rf04.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
 import {
@@ -200,6 +203,43 @@ describe("evaluator qualification packet", () => {
     await expect(
       readQualificationRf04CandidateMeasurement({ gitRoot: root, reviewedSha: validSha }),
     ).rejects.toThrow("no such file or directory");
+  });
+
+  it("classifies frozen timing failures as diagnostic and rejects blocking RF-04 failures", () => {
+    const diagnosticCandidate = {
+      failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+      qualification_decision: "do_not_publish" as const,
+      verdict: "fail" as const,
+    };
+    expect(
+      requireQualificationRf04Gate({
+        comparisonPolicy: { timing: "diagnostic_only_never_gated" },
+        candidateMeasurement: diagnosticCandidate,
+      }),
+    ).toEqual({
+      verdict: "pass",
+      raw_candidate_verdict: "fail",
+      raw_failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+      diagnostic_failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+      blocking_failure_ids: [],
+      policy: { timing: "diagnostic_only_never_gated" },
+      qualification_decision: "do_not_publish",
+    });
+    expect(() =>
+      requireQualificationRf04Gate({
+        comparisonPolicy: { timing: "diagnostic_only_never_gated" },
+        candidateMeasurement: {
+          ...diagnosticCandidate,
+          failure_ids: ["outcomes.verified_success"],
+        },
+      }),
+    ).toThrow("rejects blocking candidate failures: outcomes.verified_success");
+    expect(() =>
+      requireQualificationRf04Gate({
+        comparisonPolicy: {},
+        candidateMeasurement: diagnosticCandidate,
+      }),
+    ).toThrow("rejects blocking candidate failures: latency.harness_setup_latency_ms.mean_ms");
   });
 
   it("makes non-qualification explicit in frozen evaluator checks", async () => {
@@ -458,7 +498,10 @@ describe("evaluator qualification packet", () => {
       `${JSON.stringify(
         {
           scenario_count: 10,
-          comparison_policy: { structural_cost_max_growth_ratio: 0.1 },
+          comparison_policy: {
+            structural_cost_max_growth_ratio: 0.1,
+            timing: "diagnostic_only_never_gated",
+          },
           structural_projection_sha256: "sha256:main",
           structural_projection: { scenarios: [{ metrics: { measured: { value: 1 } } }] },
         },
@@ -824,6 +867,20 @@ describe("evaluator qualification packet", () => {
         ],
       },
       rf04: {
+        candidate_measurement: {
+          verdict: "fail",
+          failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+          qualification_decision: "do_not_publish",
+        },
+        qualification_gate: {
+          verdict: "pass",
+          raw_candidate_verdict: "fail",
+          raw_failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+          diagnostic_failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+          blocking_failure_ids: [],
+          policy: { timing: "diagnostic_only_never_gated" },
+          qualification_decision: "do_not_publish",
+        },
         replay_comparison: {
           status: "exact_frozen_rebuild",
           baseline: { coverage: { replay_runs: { actual: 50, required: 50 } } },
@@ -847,6 +904,20 @@ describe("evaluator qualification packet", () => {
     expect(packetEvidence?.path).toContain(
       `/tasks/${taskId}/evidence/qualification-packet.v1.json`,
     );
+    const observedEvidence = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    );
+    if (!observedEvidence) throw new Error("Missing qualification observed checks.");
+    const observed = JSON.parse(await readFile(path.join(root, observedEvidence.path), "utf8")) as {
+      verification_records?: { path?: string }[];
+    };
+    expect(observed.verification_records).toHaveLength(1);
+    const verificationRecordPath = observed.verification_records?.[0]?.path;
+    if (!verificationRecordPath) throw new Error("Missing qualification verification record.");
+    const frozenVerification = JSON.parse(
+      await readFile(path.join(root, verificationRecordPath), "utf8"),
+    ) as { implementation_sha?: string };
+    expect(frozenVerification.implementation_sha).toBe(reviewedSha);
     const { stdout: divergentCommitOutput } = await execFileAsync(
       "git",
       ["commit-tree", `${evidenceCommit}^{tree}`, "-m", "test: divergent qualification evidence"],
