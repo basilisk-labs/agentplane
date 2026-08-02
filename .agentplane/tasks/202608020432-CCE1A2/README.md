@@ -4,7 +4,7 @@ title: "Allow qualification packets to ignore root lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "bdfe5b8e384079bd8f70de6bd65c1eeaca3c018f"
+  message: "🐛 CCE1A2 qualification: permit root lifecycle drift"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: qualification packet dependency traversal now uses the current root lifecycle task while preserving exact reviewed-SHA loading for every dependency and evidence artifact. Regression coverage reproduces post-review lifecycle drift. Checks passed: focused qualification suite 6/6, typecheck, policy routing, doctor, test:critical, and ci:contract."
 events:
   -
     type: "status"
@@ -38,8 +43,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-02T04:47:18.255Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: qualification packet dependency traversal now uses the current root lifecycle task while preserving exact reviewed-SHA loading for every dependency and evidence artifact. Regression coverage reproduces post-review lifecycle drift. Checks passed: focused qualification suite 6/6, typecheck, policy routing, doctor, test:critical, and ci:contract."
 doc_version: 3
-doc_updated_at: "2026-08-02T04:39:09.864Z"
+doc_updated_at: "2026-08-02T04:47:18.255Z"
 doc_updated_by: "CODER"
 description: "Fix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior."
 sections:
