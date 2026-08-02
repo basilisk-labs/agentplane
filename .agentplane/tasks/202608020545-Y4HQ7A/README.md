@@ -4,7 +4,7 @@ title: "Freeze qualification metric policy and verification evidence"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,21 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-02T05:57:21.351Z"
+  updated_by: "TESTER"
+  note: "Verified qualification gate classification and frozen verification provenance on implementation SHA 98f9f6edd. Raw RF-04 latency failures remain visible and non-publishing, blocking failures stop packet construction, and evaluator evidence now includes the packet-selected verification record."
   attempts: 0
-commit: null
+commit:
+  hash: "98f9f6eddf07875fcc41893cb4d48586739a42ee"
+  message: "🛡️ Y4HQ7A quality: freeze qualification gate evidence"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: preserved raw RF-04 candidate failures, classified diagnostic timing separately from blocking failures, rejected unclassified blockers, and bound frozen verification records to the qualification implementation SHA."
 events:
   -
     type: "status"
@@ -44,8 +49,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-02T05:56:31.887Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: preserved raw RF-04 candidate failures, classified diagnostic timing separately from blocking failures, rejected unclassified blockers, and bound frozen verification records to the qualification implementation SHA."
+  -
+    type: "verify"
+    at: "2026-08-02T05:57:21.351Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified qualification gate classification and frozen verification provenance on implementation SHA 98f9f6edd. Raw RF-04 latency failures remain visible and non-publishing, blocking failures stop packet construction, and evaluator evidence now includes the packet-selected verification record."
 doc_version: 3
-doc_updated_at: "2026-08-02T05:46:59.630Z"
+doc_updated_at: "2026-08-02T05:57:22.113Z"
 doc_updated_by: "CODER"
 description: "Make milestone qualification packets distinguish diagnostic-only RF-04 timing failures from blocking metric failures, and make evaluator preparation freeze the packet-selected verification record against the qualified implementation SHA. Preserve raw failures, reject unclassified blocking regressions, and keep qualification tasks evidence-only."
 sections:
@@ -64,11 +82,84 @@ sections:
     4. Inspect the resulting evaluator observed-checks fixture. Expected: `verification_records` is non-empty for a valid qualification packet, raw latency failures remain visible, and no publication eligibility is inferred from diagnostic metrics.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-02T05:57:21.351Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified qualification gate classification and frozen verification provenance on implementation SHA 98f9f6edd. Raw RF-04 latency failures remain visible and non-publishing, blocking failures stop packet construction, and evaluator evidence now includes the packet-selected verification record.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T05:56:31.887Z, excerpt_hash=sha256:5679ad53a4b7ec1a1c1d67ba63c69a4b7755d5163471cae7559d834a60f82831
+
+    Details:
+
+    Command: inspect .agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-result.json
+    Result: pass
+    Evidence: reproduced RF04-LATENCY-REGRESSIONS and DETERMINISTIC-EVIDENCE-NOT-FROZEN against the pre-fix qualification packet
+    Scope: original failure and deterministic reproduction
+
+    Command: bun test packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+    Result: pass
+    Evidence: 7/7 tests and 45 assertions passed, including diagnostic latency classification, blocking-failure rejection, and non-empty qualification verification_records
+    Scope: focused qualification producer and frozen evaluator consumer regression
+
+    Command: bun test packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: 7/7 tests and 33 assertions passed across lifecycle, branch_pr, base-sync, batch, and provenance cases
+    Scope: evaluator verification-record and runtime-evidence matrix
+
+    Command: bun run typecheck and bun run test:release:critical
+    Result: pass
+    Evidence: native TypeScript build passed; release-critical 4 files, 16/16 tests
+    Scope: compiler and milestone lifecycle contract
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli 12/12 chunks passed
+    Scope: RF-04, trust-boundary, protected-path, and CLI critical regression matrix
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, policy routing, RF-04 50-run replay, TypeScript toolchain 7.0.2/6.0.3, guards, lint, architecture, clone, knip, and coverage thresholds passed
+    Scope: full non-heavy repository contract on implementation SHA 98f9f6edd
+
+    Command: first bun run ci:contract attempt
+    Result: fail_then_pass
+    Evidence: first attempt stopped only on Prettier for the new test; one-file deterministic formatting repair made the complete rerun pass
+    Scope: flake classification as deterministic authoring defect, not runtime or test flakiness
+
+    Command: git diff --check and implementation commit review
+    Result: pass
+    Evidence: no whitespace errors; implementation commit 98f9f6edd changes only the task artifacts and three approved qualification/evaluator files
+    Scope: task scope, commit, and residual-risk review
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020545-Y4HQ7A-freeze-qualification-metric-policy-and-verificat/.agentplane/tasks/202608020545-Y4HQ7A/blueprint/resolved-snapshot.json
+    - old_digest: d4c657b73e3cd568e9448c86101dcd64dec629ad8a74c48d3445646109c610b4
+    - current_digest: d4c657b73e3cd568e9448c86101dcd64dec629ad8a74c48d3445646109c610b4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020545-Y4HQ7A
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608020545-Y4HQ7A
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Qualification packets exposed raw candidate failures but did not materialize the frozen timing policy, while evaluator preparation matched verification records against the evidence commit rather than the packet implementation SHA.
+      Impact: Evaluators could interpret diagnostic latency as a hidden release blocker and could not independently freeze the successful verification record, forcing rework despite valid implementation evidence.
+      Resolution: Added a policy-derived qualification_gate with raw, diagnostic, and blocking failure IDs; reject any blocking IDs; and resolve qualification verification records against packet.implementation_sha while retaining the evidence commit as the reviewed artifact head.
 extensions:
   workflow_route_baseline:
     start_head_sha: "82905f817ef1ca58f17e3fb31ba55564435fb277"
@@ -100,6 +191,76 @@ Make milestone qualification packets distinguish diagnostic-only RF-04 timing fa
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-02T05:57:21.351Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified qualification gate classification and frozen verification provenance on implementation SHA 98f9f6edd. Raw RF-04 latency failures remain visible and non-publishing, blocking failures stop packet construction, and evaluator evidence now includes the packet-selected verification record.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T05:56:31.887Z, excerpt_hash=sha256:5679ad53a4b7ec1a1c1d67ba63c69a4b7755d5163471cae7559d834a60f82831
+
+Details:
+
+Command: inspect .agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-result.json
+Result: pass
+Evidence: reproduced RF04-LATENCY-REGRESSIONS and DETERMINISTIC-EVIDENCE-NOT-FROZEN against the pre-fix qualification packet
+Scope: original failure and deterministic reproduction
+
+Command: bun test packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+Result: pass
+Evidence: 7/7 tests and 45 assertions passed, including diagnostic latency classification, blocking-failure rejection, and non-empty qualification verification_records
+Scope: focused qualification producer and frozen evaluator consumer regression
+
+Command: bun test packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: 7/7 tests and 33 assertions passed across lifecycle, branch_pr, base-sync, batch, and provenance cases
+Scope: evaluator verification-record and runtime-evidence matrix
+
+Command: bun run typecheck and bun run test:release:critical
+Result: pass
+Evidence: native TypeScript build passed; release-critical 4 files, 16/16 tests
+Scope: compiler and milestone lifecycle contract
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli 12/12 chunks passed
+Scope: RF-04, trust-boundary, protected-path, and CLI critical regression matrix
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, policy routing, RF-04 50-run replay, TypeScript toolchain 7.0.2/6.0.3, guards, lint, architecture, clone, knip, and coverage thresholds passed
+Scope: full non-heavy repository contract on implementation SHA 98f9f6edd
+
+Command: first bun run ci:contract attempt
+Result: fail_then_pass
+Evidence: first attempt stopped only on Prettier for the new test; one-file deterministic formatting repair made the complete rerun pass
+Scope: flake classification as deterministic authoring defect, not runtime or test flakiness
+
+Command: git diff --check and implementation commit review
+Result: pass
+Evidence: no whitespace errors; implementation commit 98f9f6edd changes only the task artifacts and three approved qualification/evaluator files
+Scope: task scope, commit, and residual-risk review
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020545-Y4HQ7A-freeze-qualification-metric-policy-and-verificat/.agentplane/tasks/202608020545-Y4HQ7A/blueprint/resolved-snapshot.json
+- old_digest: d4c657b73e3cd568e9448c86101dcd64dec629ad8a74c48d3445646109c610b4
+- current_digest: d4c657b73e3cd568e9448c86101dcd64dec629ad8a74c48d3445646109c610b4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020545-Y4HQ7A
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608020545-Y4HQ7A
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -108,3 +269,7 @@ Make milestone qualification packets distinguish diagnostic-only RF-04 timing fa
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Qualification packets exposed raw candidate failures but did not materialize the frozen timing policy, while evaluator preparation matched verification records against the evidence commit rather than the packet implementation SHA.
+  Impact: Evaluators could interpret diagnostic latency as a hidden release blocker and could not independently freeze the successful verification record, forcing rework despite valid implementation evidence.
+  Resolution: Added a policy-derived qualification_gate with raw, diagnostic, and blocking failure IDs; reject any blocking IDs; and resolve qualification verification records against packet.implementation_sha while retaining the evidence commit as the reviewed artifact head.
