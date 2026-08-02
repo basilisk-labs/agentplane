@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021534-YN84E1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T21:18:00.403Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "5d684b345cf63fd83f9cfa171af88c8cdf5eee8a",
+  "blueprint_digest": "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545",
+  "findings": [
+    "The evaluator calibration fixture now records a real PLANNER-authored task-specific plan before approving it, so the test reaches the deterministic-evidence-gap branch it claims to test instead of being intercepted by semantic planning.",
+    "The Hermes assertion now verifies the more precise bounded return condition emitted for an unplanned task; raw shell execution remains disabled and control still returns after one typed semantic boundary.",
+    "Both changed suites pass 24/24, and all six files affected by parallel local contention pass serially 67/67 without timeout changes or assertion weakening."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021534-YN84E1/quality/20260802-211758789-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
