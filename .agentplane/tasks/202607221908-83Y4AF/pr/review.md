@@ -13,7 +13,7 @@ Created: 2026-08-02T02:50:12.346Z
 ## Verification
 
 - State: ok
-- Note: 0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json.
+- Note: RC.2 evidence is reverified on implementation SHA 5e0db39a3. Dependency, structural, token-accounting, outcome, safety, architecture, and release gates pass. Two raw latency thresholds remain failed but are frozen as diagnostic-only with zero blocking failures; no latency improvement is claimed and publication remains do_not_publish.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
