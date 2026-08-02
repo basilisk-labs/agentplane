@@ -1,0 +1,8 @@
+ .../cli/run-cli.core.route-decision.batch.test.ts  |   6 +-
+ .../run-cli.core.route-decision.pre-merge.test.ts  |  28 ++-
+ .../src/cli/run-cli.core.route-decision.test.ts    | 137 ++++++++++++++-
+ .../evaluator/evaluator-verification-records.ts    | 122 +------------
+ .../src/commands/shared/route-decision-blockers.ts |  67 ++++++-
+ .../route-decision-blockers.worktree.test.ts       |  36 ++++
+ .../commands/shared/task-verification-records.ts   | 194 +++++++++++++++++++++
+ 7 files changed, 457 insertions(+), 133 deletions(-)

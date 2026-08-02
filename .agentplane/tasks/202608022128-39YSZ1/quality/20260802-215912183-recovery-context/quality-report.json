@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022128-39YSZ1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T21:59:12.381Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "f5f62509d93177b14c6b9f0bb363eb5fcfce71eb",
+  "blueprint_digest": "a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565",
+  "findings": [
+    "matchesCurrentVerification resolves semantic Git targets before rejecting records whose timestamp, verifier, note, scope, or digest cannot match the current verification state; long verification histories therefore add unnecessary route latency."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "No focused assertion yet proves stale metadata records are rejected before semantic SHA resolution."
+  ],
+  "hidden_assumptions": [
+    "Verification directories remain small enough that eager Git traversal is negligible."
+  ],
+  "residual_risks": []
+}

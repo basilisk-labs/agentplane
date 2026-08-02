@@ -50,9 +50,23 @@ async function matchesCurrentVerification(
     return false;
   }
   const record = raw as Record<string, unknown>;
+  if (
+    record.schema_version !== 1 ||
+    record.kind !== "task_verification_record" ||
+    record.task_id !== task.id ||
+    record.recorded_at !== verification.updated_at ||
+    record.result !== verification.state ||
+    record.verifier !== verification.updated_by ||
+    record.note !== verification.note ||
+    record.scope_digest !== scopeDigest ||
+    !hasValidRecordDigest(record) ||
+    !hasConcreteCheckDetails(record.details)
+  ) {
+    return false;
+  }
   const implementationSha =
     typeof record.implementation_sha === "string" ? record.implementation_sha : null;
-  const matchesEvaluatedTarget =
+  return (
     implementationSha === evaluatedSha ||
     (implementationSha !== null &&
       targetContext !== undefined &&
@@ -64,19 +78,7 @@ async function matchesCurrentVerification(
         headSha: implementationSha,
         previousEvaluatedSha: evaluatedSha,
         workflowMode: targetContext.workflowMode,
-      })) === evaluatedSha);
-  return (
-    record.schema_version === 1 &&
-    record.kind === "task_verification_record" &&
-    record.task_id === task.id &&
-    record.recorded_at === verification.updated_at &&
-    record.result === verification.state &&
-    record.verifier === verification.updated_by &&
-    record.note === verification.note &&
-    matchesEvaluatedTarget &&
-    record.scope_digest === scopeDigest &&
-    hasValidRecordDigest(record) &&
-    hasConcreteCheckDetails(record.details)
+      })) === evaluatedSha)
   );
 }
 

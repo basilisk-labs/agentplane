@@ -12,8 +12,8 @@ Created: 2026-08-02T21:29:21.436Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: route freshness, branch-snapshot evidence, static gates, and critical trust-boundary behavior all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,19 @@ Created: 2026-08-02T21:29:21.436Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T21:29:21.436Z
+- Updated: 2026-08-02T21:30:08.514Z
 - Branch: task/202608022128-39YSZ1/require-fresh-verification-evidence-in-the-route
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../cli/run-cli.core.route-decision.batch.test.ts  |   6 +-
+ .../run-cli.core.route-decision.pre-merge.test.ts  |  28 ++-
+ .../src/cli/run-cli.core.route-decision.test.ts    | 137 ++++++++++++++-
+ .../evaluator/evaluator-verification-records.ts    | 122 +------------
+ .../src/commands/shared/route-decision-blockers.ts |  67 ++++++-
+ .../route-decision-blockers.worktree.test.ts       |  36 ++++
+ .../commands/shared/task-verification-records.ts   | 194 +++++++++++++++++++++
+ 7 files changed, 457 insertions(+), 133 deletions(-)
 ```
 
 </details>
