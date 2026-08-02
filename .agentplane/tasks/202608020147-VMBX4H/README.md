@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -55,7 +55,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "A non-base merge is misclassified as a configured-base merge whenever its MERGE_HEAD is any ancestor of the current configured base tip."
-commit: null
+commit:
+  hash: "a8d26f7da58a3bd9d52b5cb43ce4703521cb7a6e"
+  message: "🐛 VMBX4H workflow: require exact base tip for sync"
 comments:
   -
     author: "CODER"
@@ -63,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: base-sync hooks now evaluate task-side paths against the merged configured-base parent; focused regression tests cover incoming base artifacts and task-side implementation rejection."
+  -
+    author: "CODER"
+    body: "Rework: require MERGE_HEAD to equal the configured base tip and cover a reachable non-base topic merge in both hooks."
 events:
   -
     type: "status"
@@ -90,8 +95,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 18 tests passed, including configured-base positive and task-side negative cases. Scope: hook path attribution and commit-message policy. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint for repository code. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations and Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance: reproduce the original YMYYQ8 configured-base merge before closing this blocker."
+  -
+    type: "status"
+    at: "2026-08-02T02:09:48.351Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: require MERGE_HEAD to equal the configured base tip and cover a reachable non-base topic merge in both hooks."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:05:43.417Z"
+doc_updated_at: "2026-08-02T02:09:48.351Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
