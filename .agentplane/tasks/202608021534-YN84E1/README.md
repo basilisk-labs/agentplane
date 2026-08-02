@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T20:38:34.056Z"
+  updated_at: "2026-08-02T20:50:53.204Z"
   updated_by: "CODER"
-  note: "Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass."
+  note: "Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged."
   attempts: 0
 quality_review:
   state: "pass"
@@ -135,8 +135,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-02T20:50:53.204Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged."
 doc_version: 3
-doc_updated_at: "2026-08-02T20:41:49.624Z"
+doc_updated_at: "2026-08-02T20:50:54.417Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -249,6 +255,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T20:50:53.204Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:41:49.624Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+    - old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -265,6 +301,10 @@ sections:
     - Observation: Hosted verify-contract failed only because two changed files were not Prettier-formatted.
       Impact: PR integration was blocked; no functional regression was observed.
       Resolution: Formatted the two files, rebuilt the repo-local runtime, and reran all declared gates successfully.
+
+    - Observation: Hosted verify-static detected PLANNER_SEMANTIC_PLAN_PLACEHOLDER as a newly unused public export.
+      Impact: The static gate blocked integration despite correct runtime behavior.
+      Resolution: Kept the constant module-private; no call site or control flow changed, and Knip returned to the accepted baseline.
 extensions:
   implementation_commit:
     hash: "15c1edc58761832097756ba8bc56cc78181fd2f8"
@@ -392,6 +432,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T20:50:53.204Z — VERIFY — ok
+
+By: CODER
+
+Note: Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:41:49.624Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+- old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -412,3 +482,7 @@ DecisionContextRef:
 - Observation: Hosted verify-contract failed only because two changed files were not Prettier-formatted.
   Impact: PR integration was blocked; no functional regression was observed.
   Resolution: Formatted the two files, rebuilt the repo-local runtime, and reran all declared gates successfully.
+
+- Observation: Hosted verify-static detected PLANNER_SEMANTIC_PLAN_PLACEHOLDER as a newly unused public export.
+  Impact: The static gate blocked integration despite correct runtime behavior.
+  Resolution: Kept the constant module-private; no call site or control flow changed, and Knip returned to the accepted baseline.

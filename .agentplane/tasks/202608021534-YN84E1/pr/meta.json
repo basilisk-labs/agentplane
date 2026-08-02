@@ -3,7 +3,7 @@
   "branch": "task/202608021534-YN84E1/harden-the-v0-7-1-guided-lifecycle-and-canonical",
   "created_at": "2026-08-02T19:28:52.617Z",
   "diffstat_sha256": "sha256:7cf20b924ef882b0b7b5cddf43d5289ef4b69a7dc5ad3e198cf2223c328834e4",
-  "last_verified_at": "2026-08-02T20:38:34.056Z",
+  "last_verified_at": "2026-08-02T20:50:53.204Z",
   "last_verified_diffstat_sha256": "sha256:7cf20b924ef882b0b7b5cddf43d5289ef4b69a7dc5ad3e198cf2223c328834e4",
   "pr_number": 4747,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4747",
