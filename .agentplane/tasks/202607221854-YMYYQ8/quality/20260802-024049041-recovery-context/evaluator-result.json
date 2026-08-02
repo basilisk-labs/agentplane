@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The prior evidence gaps are closed: the frozen verification now records the standalone generated-site freshness check and a successful repository doctor run, while preserving the broader contract, migration, negative-path, and supervised-flow verification.",
+      "broken_invariant": "No invariant remains broken; the required documentation generation and repository-health evidence is now present alongside positive, negative, migration, and concurrency-sensitive coverage.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-YMYYQ8/README.md",
+          "sha256": "sha256:e079d26415783d1a9d7f4cce3485ba4aaefe162dd5099409443cae2be2ae4a3b",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:bfeed0d816f415be0a61b95ce32f409943c91265ae9ff17c25a34ddcaa55ef01",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:bb85aeaf5f36a218dfeef4aa6a75dec2cd991a9ec600496491e0fecc92c086d3"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

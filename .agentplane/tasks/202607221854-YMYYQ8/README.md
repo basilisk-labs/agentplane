@@ -4,7 +4,7 @@ title: "Publish the AgentPlane 0.7 architecture and migration guide"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -36,30 +36,28 @@ verification:
   note: "Verified documentation and migration package after evaluator rework: standalone bun run docs:site:generate:check passed with generated reference and llms-full both fresh; agentplane doctor completed OK with 0 errors. Previously recorded gates remain green: docs:cli:check, schemas:check, docs:ia:check, policy routing, typescript:toolchain:check, 90 focused contract/supervisor/work-order/receipt tests, docs:site:check including production build/design, docs:social:check 221/221, package:install-smoke migration matrix 8 scenarios plus local tarball smoke, format:check and git diff checks."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T02:34:23.770Z"
+  updated_at: "2026-08-02T02:41:24.377Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7"
   blueprint_digest: "3220ad81f8d25482b359ffb23b97448d1ec41bb3027d02d51b005f3485dabe86"
   evidence_refs:
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221854-YMYYQ8/README.md"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-024049041-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The recorded verification does not show execution of the mandatory docs:site:generate:check acceptance check."
-    - "The docs/policy minimum check agentplane doctor is not present in the recorded verification evidence."
+    - "The prior evidence gaps are closed: the frozen verification now records the standalone generated-site freshness check and a successful repository doctor run, while preserving the broader contract, migration, negative-path, and supervised-flow verification."
 commit:
   hash: "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7"
   message: "📚 YMYYQ8 docs: publish 0.7 architecture and migration guide"

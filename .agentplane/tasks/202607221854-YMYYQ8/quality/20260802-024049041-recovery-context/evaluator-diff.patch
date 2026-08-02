@@ -1,0 +1,1816 @@
+diff --git a/ROADMAP.md b/ROADMAP.md
+index de539557f..5fa6e491b 100644
+--- a/ROADMAP.md
++++ b/ROADMAP.md
+@@ -1,7 +1,7 @@
+ ---
+ title: AgentPlane Roadmap
+ description: Public product roadmap for AgentPlane CLI and the local-first agentic development workspace.
+-lastUpdated: 2026-05-11
++lastUpdated: 2026-08-01
+ ---
+ 
+ # AgentPlane Roadmap
+@@ -22,6 +22,7 @@ A user should be able to understand what the agent was asked to do, which plan c
+ - **Local-first core.** The main workflow should work locally without depending on an external platform.
+ - **Evidence over transcript trust.** Reviewers should inspect structured artifacts instead of relying on chat history.
+ - **Policy gates before mutations.** Agentic work should pass through explicit intent, plan approval, scope constraints, and expected checks.
++- **Deterministic CLI, semantic agents.** The CLI should prepare, constrain, apply, and observe formal work; agents should interpret, design, implement, synthesize, and evaluate.
+ - **Extensible, not template-bound.** Recipes, blueprints, and context profiles extend the core without reducing AgentPlane to a template catalog.
+ - **Human-readable and machine-precise.** Important artifacts should be understandable by humans and formal enough for automation.
+ 
+@@ -35,16 +36,16 @@ A user should be able to understand what the agent was asked to do, which plan c
+ 
+ ## Roadmap at a Glance
+ 
+-| Epic                  | Horizon | Theme       | User outcome                 |
+-| --------------------- | ------- | ----------- | ---------------------------- |
+-| **0.1 Workflow**      | Now     | Foundation  | baseline task lifecycle      |
+-| **0.2 Configuration** | Now     | Contracts   | consistent project setup     |
+-| **0.3 Tasks**         | Now     | Control     | git-native task governance   |
+-| **0.4 Recipes**       | Next    | Extension   | reusable workflow kits       |
+-| **0.5 Blueprints**    | Next    | Routing     | typed execution paths        |
+-| **0.6 Context**       | Next    | Memory      | local knowledge layer        |
+-| **0.7 Runner**        | Later   | Execution   | controlled autonomous runs   |
+-| **0.8 Evaluations**   | Later   | Improvement | evidence-based quality loops |
++| Epic                  | Horizon | Theme       | User outcome               |
++| --------------------- | ------- | ----------- | -------------------------- |
++| **0.1 Workflow**      | Now     | Foundation  | baseline task lifecycle    |
++| **0.2 Configuration** | Now     | Contracts   | consistent project setup   |
++| **0.3 Tasks**         | Now     | Control     | git-native task governance |
++| **0.4 Recipes**       | Next    | Extension   | reusable workflow kits     |
++| **0.5 Blueprints**    | Next    | Routing     | typed execution paths      |
++| **0.6 Context**       | Next    | Memory      | local knowledge layer      |
++| **0.7 Supervisor**    | Now     | Execution   | governed semantic episodes |
++| **0.8 Evaluations**   | Next    | Improvement | comparative quality loops  |
+ 
+ ## Epics
+ 
+@@ -84,17 +85,19 @@ This epic introduces the local context layer as a core part of AgentPlane rather
+ 
+ By the end of this epic, users will be able to maintain a git-native knowledge layer inside their project. Human-readable context will be versioned in the repository, while machine-derived indexes, embeddings, caches, and local databases remain reproducible implementation details. This gives agents durable memory without making the project dependent on opaque external state.
+ 
+-### 0.7 **Runner:** controlled autonomous runs.
++### 0.7 **Supervisor:** governed semantic episodes.
+ 
+-This epic builds the AgentPlane Runner on top of tasks, policies, context, recipes, and blueprints. The runner is not a separate orchestration model; it is the execution layer that performs agentic work through already-resolved task routes, explicit stop rules, evidence requirements, and repository-local policy gates.
++This epic makes the CLI the authority for formal preparation and lifecycle mechanics without moving semantic judgment into code. A shared typed supervisor resolves the current task route, prepares a bounded `AgentWorkOrder`, retrieves digest-addressed knowledge, enforces state and authority preconditions, invokes one specialized semantic role, and records an independent `ExecutionReceipt`.
+ 
+-By the end of this epic, users will be able to run more autonomous workflows while preserving control over what the agent is allowed to do. The runner will coordinate execution, collect evidence, respect task boundaries, and stop when policy, uncertainty, or verification requirements demand human review.
++The same supervisor model covers direct tasks, `branch_pr`, context assimilation, Hermes, and read-only evaluation. It persists effect intent before side effects, stops on approval, input, or hosted waits, resumes mechanical context phases without replaying semantic work, and separates agent-claimed checks from observed evidence. Granular command capabilities and typed rendering let the supervisor call use cases without capturing and reparsing CLI text.
++
++By the end of this epic, users can delegate formal orchestration to Agentplane while retaining explicit control over plan approval, external side effects, merge, release, deployment, ambiguity, and semantic acceptance. The existing repo-owned context layer remains the durable knowledge plane rather than being replaced by a per-run prompt store.
+ 
+ ### 0.8 **Evaluations:** evidence-based quality loops.
+ 
+ This epic introduces evaluations as the feedback layer for AgentPlane. Evaluations measure whether agents, recipes, prompts, blueprints, runner behavior, and lifecycle flows are improving or regressing. The goal is to make quality changes testable rather than subjective.
+ 
+-The initial evaluator catalog starts earlier as a public inspection surface: projects can store prompt modules under `.agentplane/evaluators`, and users can inspect them with `agentplane evaluator list` and `agentplane evaluator show <id>`. CLI execution of evaluators remains a 0.8 deliverable.
++Agentplane 0.7 already provides the bounded model-backed evaluation primitive: projects store prompt modules under `.agentplane/evaluators`, inspect them with `agentplane evaluator list` and `agentplane evaluator show <id>`, and run one read-only episode with `agentplane evaluator execute <task-id>`. The 0.8 horizon expands from a single-task quality gate into comparative evaluation, calibration, and recursive improvement across agents, prompts, recipes, blueprints, and supervisor policies.
+ 
+ By the end of this epic, users will be able to compare baseline and candidate behavior using repeatable scenarios, structured evidence, and quality gates. Teams will be able to improve recipes, prompts, and execution policies through controlled evaluation loops instead of relying on anecdotal agent performance.
+ 
+diff --git a/docs/README.md b/docs/README.md
+index f4cb4fc9a..3d524a82d 100644
+--- a/docs/README.md
++++ b/docs/README.md
+@@ -31,6 +31,9 @@ Docs are organized into an agent-first public navigation model on top of `docs/u
+ - `Reference`
+ - `Release notes`
+ 
++The versioned upgrade entrypoint is `docs/user/v0-7-migration.mdx`; keep its supported-source
++matrix aligned with the installed migration matrix in `scripts/lib/installed-migration-matrix.mjs`.
++
+ Framework maintainer documentation for developing Agentplane itself lives under `docs/developer/`.
+ It is direct-link only and intentionally omitted from the public sidebar and public docs index.
+ Use `docs/developer/harness-dev.mdx` as the maintainer entrypoint.
+diff --git a/docs/developer/architecture.mdx b/docs/developer/architecture.mdx
+index 374956c31..fb1e7c13f 100644
+--- a/docs/developer/architecture.mdx
++++ b/docs/developer/architecture.mdx
+@@ -19,11 +19,175 @@ For the architectural decision and practical boundary guidance, see [ADR: Zod Co
+ 
+ ## Current priority
+ 
+-This page describes the current `0.4` implementation surfaces. It is not an endorsement of expanding
+-recipe, runner, or prompt-assembly scope outside an approved task plan.
+-
+-The former `0.3` stabilization backlog is historical. Current work should treat release notes, ADRs,
+-tests, and the runtime contracts below as the active evidence source.
++This page describes the Agentplane 0.7 architecture. The release goal is a mechanically
++authoritative, semantically blind CLI: deterministic facts and lifecycle mechanics move out of
++agent reasoning, while interpretation, design, implementation, synthesis, and quality judgment stay
++with specialized semantic roles.
++
++The rule is narrower than "automate everything." A step belongs in the CLI control plane only when
++its inputs and outputs are typed, its preconditions are mechanically decidable, its outcome can be
++independently observed, and its side effects are bounded by policy and current authority. Otherwise
++the route emits an agent episode, approval, human-input request, wait, or terminal result.
++
++## Agentplane 0.7 plane model
++
++| Plane     | Owns                                                                                                                                                | Must not own                                                                     |
++| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
++| Knowledge | Repo-owned sources, wiki, facts, graph, glossary, provenance, and rebuildable retrieval projections.                                                | Per-run semantic decisions or a second hidden knowledge base.                    |
++| Control   | Task/project/Git/provider truth, typed route steps, state fingerprints, authority, process supervision, deterministic operations, and transactions. | Architecture choices, prose interpretation, implementation, or quality verdicts. |
++| Semantic  | One bounded PLANNER, CURATOR, EXECUTOR, or EVALUATOR responsibility per episode.                                                                    | Direct lifecycle mutation or claims of observed process/Git/check truth.         |
++| Evidence  | Supervisor-observed process, Git, filesystem, artifact, check, effect, and provider receipts.                                                       | Promotion of agent-reported claims without observation.                          |
++
++The stable loop is:
++
++```text
++CLI prepares facts and candidates
++  -> one semantic role interprets or creates
++  -> CLI validates schema, provenance, state, and authority
++  -> CLI applies an allowed result and independently observes the outcome
++```
++
++This extends the existing context extraction pattern to task execution and evaluation instead of
++creating a second context system.
++
++## Versioned semantic boundary
++
++| Contract              | Version | Responsibility                                                                                                                 |
++| --------------------- | ------: | ------------------------------------------------------------------------------------------------------------------------------ |
++| `StateFingerprint`    |       1 | Binds a prepared step to current task, Git, checkout, provider, policy, and related state.                                     |
++| `KnowledgeRef`        |       1 | Digest-addressed reference into the existing context plane plus retrieval provenance.                                          |
++| `AgentWorkOrder`      |       2 | One role, objective, task revision, authority, bounded evidence, required inputs/outputs, verification intent, and stop rules. |
++| `AgentSemanticResult` |       2 | Semantic status, summary, findings, uncertainty, blocker, bounded knowledge request, and claimed checks.                       |
++| `ExecutionReceipt`    |       2 | Agentplane-observed process, Git, artifact, filesystem scope, checks, cleanup, and success-policy evidence.                    |
++| `WorkflowStep`        |       1 | One `cli_operation`, `agent_episode`, `approval`, `human_input`, `wait`, or `terminal` decision.                               |
++
++The generated schemas under `schemas/` are the public contract truth. New agent invocation requires
++`AgentWorkOrder` v2. Historical WorkOrder v1 has deterministic compatibility conversion;
++historical `ExecutionReceipt` v1 remains readable, while new receipts use v2.
++
++`claimed_checks` in `AgentSemanticResult` are deliberately not `checks` in `ExecutionReceipt`. The
++former records what an agent says; the latter records what the supervisor observed.
++
++## Supervised flows
++
++### Direct task
++
++```mermaid
++sequenceDiagram
++  participant U as User or orchestrator
++  participant C as Agentplane control plane
++  participant X as EXECUTOR
++  participant E as EVALUATOR
++  participant G as Git and checks
++  U->>C: task run task-id
++  C->>C: Resolve route, fingerprint, authority, knowledge, and WorkOrder
++  C->>X: One implementation episode
++  X-->>C: AgentSemanticResult v2
++  C->>G: Observe process, diff, artifacts, and declared checks
++  G-->>C: ExecutionReceipt v2
++  C->>E: Read-only review WorkOrder
++  E-->>C: Typed quality result
++  C->>C: Verify and finish, or stop for rework, input, approval, or wait
++```
++
++The EXECUTOR lifecycle event delta must remain zero: the agent edits the approved workspace and
++returns semantic output; the supervisor owns start, observed checks, verification recording, and
++eligible finish operations.
++
++### Context assimilation
++
++```mermaid
++sequenceDiagram
++  participant C as Agentplane control plane
++  participant K as CURATOR
++  participant W as Context transaction
++  participant E as EVALUATOR
++  C->>C: Scan, hash, lock sources, retrieve canonical candidates
++  C->>K: Assimilation WorkOrder and bounded evidence
++  K-->>C: Context extraction SGR
++  C->>C: Validate schema, provenance, and managed paths
++  C->>W: Apply, lint, index, graph, coverage, doctor, and smoke checks
++  W-->>C: Durable phase receipts
++  C->>E: Read-only context quality review
++  E-->>C: Typed quality result
++  C->>C: Finalize or emit a bounded rework/input stop
++```
++
++Completed mechanical phases are journaled. After a crash or deterministic failure, resume repeats
++only the failed phase and does not replay the CURATOR result or already completed effects.
++
++### branch_pr task
++
++```mermaid
++sequenceDiagram
++  participant U as User or orchestrator
++  participant C as Agentplane control plane
++  participant X as EXECUTOR
++  participant T as TESTER
++  participant E as EVALUATOR
++  participant P as Git provider
++  U->>C: task run task-id with remote truth when required
++  C->>X: Implementation or bounded rework episode
++  X-->>C: Semantic result plus implementation commit
++  C->>T: Verification episode
++  T-->>C: Semantic verification result
++  C->>E: Read-only quality-review episode
++  E-->>C: Typed verdict
++  C->>P: Open or update PR under matching authority
++  C->>P: Enqueue the exact reviewed head
++  P-->>C: Hosted checks, merge, or wait state
++  C->>C: Finalize only from explicit provider and cleanup truth
++```
++
++The supervisor does not imitate plan approval, provider merge, or another external side effect. A
++missing authority becomes a typed approval step. A pending check or integration queue becomes a
++typed wait. Merge-conflict or stale-head repair becomes a separate semantic rework episode.
++
++## Authority and effect safety
++
++Every protected side effect is bound to an operation digest, a current `StateFingerprint`, a state
++scope digest, an actor, a policy rule, and an expiry. A matching record authorizes only that
++operation under that state. A changed task revision, Git head, provider state, or policy scope makes
++the prepared operation stale.
++
++The supervisor persists effect intent before execution. An interrupted effect is not blindly
++retried: it remains `effect_in_doubt` until reconciled from external evidence. This applies to PR,
++integration, release, and other side-effecting routes as well as process ownership.
++
++Phase-scoped run tools use a signed run/work-order capability. Global command visibility is an
++operator UX surface, not the security boundary.
++
++## Knowledge and retrieval boundary
++
++The context plane remains the durable LLM-wiki under `context/**`. Work orders carry `KnowledgeRef`
++records and bounded prepared excerpts, with an included, omitted, missing, or stale receipt for each
++declared reference. FTS5/BM25 search, aliases, graph expansion, freshness checks, and deterministic
++candidate construction happen before the episode. Low-confidence gaps can produce one bounded
++`KnowledgeRequest`; they do not grant the agent unrestricted discovery or create another wiki.
++
++Post-task learning produces source-backed proposals. CURATOR review remains the promotion boundary,
++so a successful task does not automatically contaminate canonical project knowledge.
++
++## Application and rendering boundary
++
++Commands declare granular `CommandSession` capabilities. A command that asks only for project or
++task-read state cannot silently resolve provider, network, task-write, Git-write, or artifact-write
++capabilities. Use cases return typed results; human, plain, JSON, and error renderers own stdout and
++stderr compatibility. Supervisor code calls use cases rather than parsing CLI output.
++
++Architecture checks enforce these boundaries with zero active dependency violations. Command-family
++migration was delivered in vertical slices rather than a big-bang rewrite.
++
++## Performance policy
++
++Preparation traces record node inputs, dependencies, bytes, invalidation causes, and cacheability.
++Semantic, authority, provider, and mutable repository truth remain non-cacheable. Persistent and
++command-local preparation-cache candidates were removed after safe variants failed the required
++five-percent end-to-end threshold; the architecture retains measurements instead of unjustified
++state.
++
++Cost is evaluated per verified result. A token or latency reduction never offsets a safety,
++observed-success, or evidence-provenance regression.
+ 
+ ## Framework control plane
+ 
+@@ -192,6 +356,7 @@ Release is split into planning and apply:
+ 
+ ## Related docs
+ 
++- [Migrate to Agentplane 0.7](../user/v0-7-migration)
+ - [Project layout](project-layout)
+ - [Module topology](module-topology)
+ - [CLI contract](cli-contract)
+diff --git a/docs/developer/local-context.mdx b/docs/developer/local-context.mdx
+index 73884689b..14c974a8e 100644
+--- a/docs/developer/local-context.mdx
++++ b/docs/developer/local-context.mdx
+@@ -101,12 +101,13 @@ outputs when provenance is missing or structurally inconsistent:
+ For in-progress tasks, missing ACR is allowed because the normal close path runs context validation
+ before `acr generate`.
+ 
+-Persisted execution receipts are deliberately fail-closed during the v0.7 supervisor migration.
+-A path plus SHA-256 stored in the same repository cannot authenticate an observation against a
+-detached same-UID process that can rewrite both values. `context verify-task` and the verify step
+-inside `context finalize-task` therefore return `compatibility_unverified` until the beta shared
+-supervisor passes an authenticated observation directly. The artifact validator remains independently
+-testable, but it is not a substitute for the missing trust channel.
++Persisted execution receipts are deliberately fail-closed as standalone authentication. A path plus
++SHA-256 stored in the same repository cannot authenticate an observation against a detached
++same-UID process that can rewrite both values. `context verify-task` and the verify step inside
++`context finalize-task` therefore return `compatibility_unverified` when no authenticated
++observation is supplied. The shared context supervisor passes that observation directly while the
++process is under its authority; the artifact validator remains independently testable but is not a
++substitute for that live trust channel.
+ 
+ ## Release checks
+ 
+diff --git a/docs/developer/testing-and-quality.mdx b/docs/developer/testing-and-quality.mdx
+index 9ea0e2666..1a2851add 100644
+--- a/docs/developer/testing-and-quality.mdx
++++ b/docs/developer/testing-and-quality.mdx
+@@ -17,6 +17,22 @@ bun run typecheck
+ bun run test:fast
+ ```
+ 
++## TypeScript 7 typecheck boundary
++
++`bun run typecheck` uses the pinned native TypeScript 7.0.2 compiler through
++`scripts/checks/run-typescript-build.mjs`. The `typescript` package remains pinned to 6.0.3 for
++typescript-eslint, dependency-cruiser, and repository scripts that consume the compiler API.
++
++Check the split contract explicitly:
++
++```bash
++bun run typescript:toolchain:check
++AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck
++```
++
++The second command is the immediate compatibility diagnostic, not the default build lane. Published
++runtime packages do not depend on `@typescript/native`.
++
+ ## Local Turborepo graph
+ 
+ Turborepo is used only as a framework-checkout developer overlay. It is not part of the installed
+diff --git a/docs/index.mdx b/docs/index.mdx
+index fe6b1aa99..66d83eb79 100644
+--- a/docs/index.mdx
++++ b/docs/index.mdx
+@@ -14,6 +14,7 @@ the harness.
+ | Goal                                     | Start with                                    |
+ | ---------------------------------------- | --------------------------------------------- |
+ | Try Agentplane locally                   | [Quickstart](start/quickstart)                |
++| Upgrade a 0.6 repository to 0.7          | [0.7 migration guide](user/v0-7-migration)    |
+ | Understand what gets written to the repo | [What Agentplane writes](start/files-written) |
+ | Give an agent durable project knowledge  | [Context](context)                            |
+ | Choose the context mode for a project    | [Context modes](context/modes)                |
+@@ -34,6 +35,7 @@ the harness.
+ 
+ - [Overview](user/overview)
+ - [Setup](user/setup)
++- [Migrate to Agentplane 0.7](user/v0-7-migration)
+ - [Context quickstart](context/quickstart)
+ - [Agent guide to project context](context/agent-guide)
+ - [CLI reference](reference/cli)
+diff --git a/docs/releases/index.mdx b/docs/releases/index.mdx
+index 989a94e44..0dea91e6c 100644
+--- a/docs/releases/index.mdx
++++ b/docs/releases/index.mdx
+@@ -5,4 +5,8 @@ description: "Chronological release notes for Agentplane."
+ 
+ Release notes are listed in the sidebar in descending version order (latest first).
+ 
++For repositories moving from 0.6.24 or 0.6.26, use the
++[Agentplane 0.7 migration guide](../user/v0-7-migration) before applying a stable or prerelease
++candidate.
++
+ For release process details, see [Developer Guide: Release and Publishing](../developer/release-and-publishing).
+diff --git a/docs/user/breaking-changes.mdx b/docs/user/breaking-changes.mdx
+index d8fff03b4..e3131a85c 100644
+--- a/docs/user/breaking-changes.mdx
++++ b/docs/user/breaking-changes.mdx
+@@ -10,6 +10,9 @@ Current Agentplane repositories are driven by the Node CLI `agentplane` with rep
+ 
+ ## Current compatibility boundaries
+ 
++For the complete 0.6.24/0.6.26 migration and rollback procedure, see
++[Migrate to Agentplane 0.7](v0-7-migration).
++
+ 1. Repository state lives under `.agentplane/`; root-level legacy workflow files are not read as
+    fallbacks.
+ 2. Initialization and framework upgrades run through `agentplane init` and `agentplane upgrade`.
+@@ -20,13 +23,23 @@ Current Agentplane repositories are driven by the Node CLI `agentplane` with rep
+ 5. `direct` remains supported, but protected-base repositories should use hosted PR merge and
+    hosted close automation for `branch_pr` work.
+ 6. Redmine backend configuration is env-first for credentials and field IDs.
++7. New semantic episodes require `AgentWorkOrder` v2 and return `AgentSemanticResult` v2. The CLI
++   writes observed facts into a separate `ExecutionReceipt` v2.
++8. Workflow v1 remains readable during the compatibility window, but supported writers persist v2.
++9. Historical 0.6.24 task-local run artifacts are read-only compatibility input. New runs use
++   supervisor-owned storage and do not reuse the legacy write location.
++10. `evaluator execute` is the model-backed review path. `evaluator run` remains an explicit
++    compatibility recorder and requires supplied provenance.
+ 
+ ## Upgrade checklist
+ 
+-1. Install or update the CLI and run `agentplane upgrade`.
+-2. Run `agentplane doctor`.
+-3. If doctor reports active task README migration drift, run `agentplane task migrate-doc --all`.
+-4. Regenerate generated docs only when command specs changed.
++1. Install the exact intended CLI version and confirm it with `agentplane runtime explain`.
++2. Run `agentplane upgrade --dry-run`, then `agentplane upgrade --yes --migrate-task-docs`.
++3. Re-run the dry run and require `0 add, 0 update, 0 remove`.
++4. Run `agentplane doctor`.
++5. Resume active branch work with `agentplane work resume <task-id>` instead of creating a new
++   worktree.
++6. Regenerate generated docs only when command specs changed.
+ 
+ ## Notes
+ 
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index fe91971be..f66f8ea53 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -127,12 +127,23 @@ agentplane task doc set <task-id> --section Summary --text "..."
+ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
+ ```
+ 
+-Execution is usually owned by agents working in the repository through Codex, an IDE, or another
+-human-assisted workflow. Runner execution remains outside the normal command path for ordinary
+-agents; the route oracle should point agents at the current checkout unless an explicit integration
+-such as `parallel-codex` or a configured custom runner owns the run.
++There are two supported execution paths. An external agent can work in the authoritative checkout
++and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
++supervise the same typed route:
+ 
+-Runner maintenance commands are intentionally kept on the hidden help surface:
++```bash
++agentplane task next-action <task-id> --explain
++agentplane task run <task-id> --dry-run
++agentplane task run <task-id>
++```
++
++`--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
++formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
++and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
++runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
++reconstruct lifecycle state from prose.
++
++Runner maintenance commands remain on the advanced help surface:
+ 
+ ```bash
+ agentplane task run status <task-id> --json
+@@ -228,12 +239,13 @@ materialization, indexing, evaluation, and the apply receipt. Write modes mark s
+ with `extensions.context_harvest` and `extensions.context_task_extraction` so unchanged sources do
+ not create duplicate work. Write modes require `agentplane context init` first.
+ 
+-During the v0.7 supervisor migration, a persisted execution receipt is diagnostic evidence, not an
+-authentication channel. `context verify-task` and `context finalize-task` therefore fail closed with
+-`compatibility_unverified` when only a repository-local receipt is available. Run the component
+-checks (`context wiki lint`, `context graph validate`, `context doctor`) and record independent
+-verification with `ap verify`; the beta supervisor restores the authenticated end-to-end gate. See
+-[Local context](local-context).
++A persisted execution receipt is diagnostic evidence, not an authentication channel.
++`context verify-task` and `context finalize-task` therefore fail closed with
++`compatibility_unverified` when only a repository-local receipt is available. The supported
++end-to-end path is `context supervise-task <task-id> --extraction <sgr-json>`, which supplies the
++live supervisor observation directly. Manual recovery can still run `context wiki lint`,
++`context graph validate`, and `context doctor`, then record independent verification with
++`ap verify`. See [Local context](local-context).
+ 
+ `context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
+ page with Agentplane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
+diff --git a/docs/user/local-context.mdx b/docs/user/local-context.mdx
+index 30b28600c..1807420c8 100644
+--- a/docs/user/local-context.mdx
++++ b/docs/user/local-context.mdx
+@@ -44,9 +44,9 @@ versioned files, then builds a local projection for fast search and retrieval.
+ Use it when an agent needs facts, wiki pages, graph edges, capability notes, or task-specific
+ source sets that should survive outside one chat session.
+ 
+-## Context management in v0.6
++## Context management in v0.7
+ 
+-Agentplane v0.6 turns local context from a search helper into a context-management workflow:
++Agentplane v0.7 keeps the v0.6 repo-owned context model and adds supervised semantic publication:
+ 
+ - raw sources remain in the repository and are treated as evidence
+ - wiki pages accumulate synthesis instead of forcing agents to re-derive it from scratch
+@@ -317,12 +317,13 @@ The verifier does not require every known term to be linked. Agents should still
+ Markdown cross-links when an existing page or glossary anchor helps a future reader navigate related
+ concepts, decisions, modules, risks, or entities.
+ 
+-During the v0.7 supervisor migration, repository-local receipt bytes and their task reference are
+-not treated as authenticated evidence. The standalone command and `context finalize-task` fail
+-closed with `compatibility_unverified` instead of accepting a matching path and SHA-256 from the
+-same writable repository. Until the beta supervisor supplies the observation through a trusted
+-channel, run `context wiki lint`, `context graph validate`, and `context doctor` separately and
+-record independent task verification with `ap verify`.
++Repository-local receipt bytes and their task reference are not an authentication channel. The
++standalone verifier and `context finalize-task` therefore remain fail-closed with
++`compatibility_unverified` when only a matching path and SHA-256 from the same writable repository
++are available. Use `context supervise-task <task-id> --extraction <sgr-json>` for the authenticated
++supervisor path: it supplies the in-memory observation, owns the mechanical checks, and records the
++durable phase receipts. For a manual recovery, run `context wiki lint`, `context graph validate`,
++and `context doctor` separately and record independent task verification with `ap verify`.
+ 
+ ## How this differs from RAG
+ 
+diff --git a/docs/user/setup.mdx b/docs/user/setup.mdx
+index a12c0e85d..d0430f596 100644
+--- a/docs/user/setup.mdx
++++ b/docs/user/setup.mdx
+@@ -145,9 +145,10 @@ agentplane context ingest --changed
+ agentplane context verify-task <task-id>
+ ```
+ 
+-During the v0.7 supervisor migration, the standalone verifier fails closed when the only execution
+-evidence is a repository-local receipt. Use the component context checks and `ap verify` described
+-in [Local context](local-context) until the beta supervisor restores authenticated handoff.
++The standalone verifier fails closed when the only execution evidence is a repository-local
++receipt. Use `context supervise-task <task-id> --extraction <sgr-json>` for authenticated supervised
++handoff, or use the component context checks and `ap verify` recovery described in
++[Local context](local-context).
+ 
+ See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
+ 
+diff --git a/docs/user/task-lifecycle.mdx b/docs/user/task-lifecycle.mdx
+index d81c092b9..d85e03a83 100644
+--- a/docs/user/task-lifecycle.mdx
++++ b/docs/user/task-lifecycle.mdx
+@@ -5,6 +5,33 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
+ 
+ ## Overview
+ 
++Agentplane 0.7 exposes one route model through two execution styles:
++
++- an external agent runs the exact command from `task next-action --explain` and recomputes after
++  each mutation;
++- a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
++  bounded semantic episodes.
++
++The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
++automatic success. It returns a typed stop at those boundaries. See
++[Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
++
++## Supervised lifecycle
++
++After plan approval and, for `branch_pr`, worktree creation:
++
++```bash
++agentplane task brief <task-id>
++agentplane task next-action <task-id> --explain
++agentplane task run <task-id> --dry-run
++agentplane task run <task-id>
++```
++
++The prepared WorkOrder contains one semantic objective, bounded authority, required inputs and
++outputs, prepared knowledge evidence, verification intent, and stop rules. The agent returns a
++semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
++An agent-reported check is not accepted as an observed check without supervisor evidence.
++
+ ## Minimal branch_pr lifecycle
+ 
+ This repository is configured for `branch_pr`, so the normal guarded route is:
+diff --git a/docs/user/v0-7-migration.mdx b/docs/user/v0-7-migration.mdx
+new file mode 100644
+index 000000000..21065746c
+--- /dev/null
++++ b/docs/user/v0-7-migration.mdx
+@@ -0,0 +1,200 @@
++---
++title: "Migrate to Agentplane 0.7"
++description: "Upgrade fresh, 0.6.24, and 0.6.26 repositories without losing task, workflow, worktree, or rollback state."
++---
++
++# Migrate to Agentplane 0.7
++
++Agentplane 0.7 changes who owns orchestration, not who owns semantic decisions. The CLI now prepares
++bounded work, checks current state, supervises configured runner episodes, observes results, and
++applies allowed lifecycle operations. PLANNER, CURATOR, EXECUTOR, and EVALUATOR roles still own
++interpretation, design, implementation, synthesis, and quality judgment.
++
++This guide covers the migration surface exercised by the installed-package matrix:
++
++| Starting state    | Covered workflows       | Preserved state                                                                     |
++| ----------------- | ----------------------- | ----------------------------------------------------------------------------------- |
++| Fresh repository  | `direct`, `branch_pr`   | Workflow v2 and task README v3 are created directly.                                |
++| Agentplane 0.6.24 | `direct`, `branch_pr`   | Active task status, owner, route, task branch, and existing worktree are preserved. |
++| Agentplane 0.6.26 | `direct`, `branch_pr`   | The latest 0.6 maintenance fixes and active lifecycle state are preserved.          |
++| Workflow v1       | `direct`, `branch_pr`   | Migration is idempotent and the receipt can restore exact source bytes.             |
++| Task README v2    | `direct` matrix fixture | `upgrade --migrate-task-docs` produces README v3 without losing the legacy body.    |
++
++The matrix deliberately upgrades active tasks. You do not need to finish or abandon current work
++before upgrading.
++
++## Before upgrading
++
++1. Commit or otherwise preserve every tracked change you intend to keep.
++2. Record the current branch and all linked worktrees.
++3. Install the exact 0.7 version you intend to test. Do not use an unpinned prerelease in CI.
++4. Confirm which binary the repository will execute.
++
++```bash
++git status --short --untracked-files=all
++git worktree list
++npm install --global agentplane@0.7.0
++agentplane runtime explain
++```
++
++For a prerelease, replace `0.7.0` with its exact published identifier.
++
++## Upgrade the repository
++
++Run the upgrade from the repository's base checkout, not from a linked task worktree:
++
++```bash
++agentplane upgrade --dry-run
++agentplane upgrade --yes --migrate-task-docs
++agentplane upgrade --dry-run
++agentplane doctor
++```
++
++Expected result:
++
++- the first dry run reports the managed changes without writing them;
++- apply updates managed framework assets and migrates eligible task documents;
++- the second dry run reports `0 add, 0 update, 0 remove`;
++- `doctor` reports no blocking error.
++
++Review and commit the managed upgrade as one repository change. If the second dry run is not a
++no-op, stop and inspect the reported paths instead of repeatedly applying the upgrade.
++
++## Resume an active direct task
++
++After the base upgrade, ask the route oracle for one current action:
++
++```bash
++agentplane task brief <task-id>
++agentplane task next-action <task-id> --explain
++```
++
++If a configured runner owns execution, `agentplane task run <task-id>` supervises the typed route.
++If an external coding agent owns execution, give it the brief and run the exact command emitted by
++`next-action`; recompute the route after every completed mutation. Both paths use the same task,
++fingerprint, authority, and evidence contracts.
++
++For a migrated README v2 task, confirm that the task is still `DOING`, its owner is unchanged, and
++the document now reports `doc_version: 3`.
++
++## Resume an active branch_pr task
++
++Do not create a second branch or worktree. Resolve the existing authoritative checkout first:
++
++```bash
++agentplane work resume <task-id>
++agentplane task brief <task-id>
++agentplane task next-action <task-id> --explain --remote
++```
++
++Run owner-scoped work from the path printed by `work resume` or `task brief`. The migration matrix
++asserts that resume keeps the original task worktree count unchanged. PR metadata, hosted checks,
++and provider truth are loaded only when the route requests remote state.
++
++## Migrate Workflow v1
++
++The 0.7 runtime can read Workflow v1 during the compatibility window, but supported writers emit
++Workflow v2. Migrate explicitly so recovery remains auditable:
++
++```bash
++agentplane workflow migrate --dry-run
++agentplane workflow migrate
++agentplane doctor
++```
++
++Re-running `agentplane workflow migrate` on the result is a no-op. The apply command writes a
++receipt under `.agentplane/workflows/migrations/`. To restore the exact original bytes:
++
++```bash
++agentplane workflow migrate \
++  --rollback .agentplane/workflows/migrations/workflow-v1-to-v2-<digest>.json
++```
++
++Rollback refuses to overwrite a workflow whose current hash no longer matches the receipt target.
++See [Workflow migration and recovery](workflow-migration) for the full transaction boundary.
++
++## Contract versions in 0.7
++
++These versions are generated from runtime schemas; they are not independent documentation types:
++
++| Contract              | Current write/invocation version | Compatibility boundary                                                                                 |
++| --------------------- | -------------------------------: | ------------------------------------------------------------------------------------------------------ |
++| Workflow document     |                                2 | Version 1 remains readable and has exact-byte receipt migration.                                       |
++| Task README           |                                3 | Version 2 is migrated only through the explicit task-doc migration path.                               |
++| `StateFingerprint`    |                                1 | A stale or unavailable required component blocks invocation.                                           |
++| `KnowledgeRef`        |                                1 | References existing repo-owned context; it does not copy a second knowledge base into the run.         |
++| `AgentWorkOrder`      |                                2 | New agent episodes require v2; the v1 surface is retained for deterministic compatibility conversion.  |
++| `AgentSemanticResult` |                                2 | The agent reports semantic status, findings, uncertainty, blockers, requests, and claimed checks only. |
++| `ExecutionReceipt`    |                                2 | New supervisor observations use v2; the validator can read historical v1 receipts.                     |
++| Typed `WorkflowStep`  |                                1 | CLI argv is a compatibility projection, not the internal orchestration protocol.                       |
++
++Canonical JSON Schemas live under `schemas/`. `AgentWorkOrder` binds one role and objective to a
++task revision, state fingerprint, authority, prepared evidence, required inputs and outputs,
++verification intent, semantic-result schema, and stop rules. `ExecutionReceipt` is separately
++written by Agentplane from process, Git, filesystem, artifact, and check observations. An agent's
++`claimed_checks` never become observed checks merely because the schema accepted them.
++
++## Behavior changes and compatibility surfaces
++
++- `task brief` and `task next-action --explain` are the route authority. Agents should not rebuild
++  lifecycle state from policy prose or combine several guessed commands.
++- `task run` can supervise both `direct` and `branch_pr` tasks. It stops on typed approval, human
++  input, wait, rework, or blocked results instead of fabricating progress.
++- External side effects require an authority record bound to the operation digest and current state
++  scope. Plan approval, PR publication, merge, release, and deployment are not inferred from model
++  output.
++- `evaluator execute` runs one read-only EVALUATOR episode and applies a validated result.
++  `evaluator run` remains a compatibility recorder for an independently supplied human or evaluator
++  verdict; it does not execute a model.
++- New runner artifacts use supervisor-owned Git administration storage. Historical 0.6.24
++  task-local run artifacts remain readable when no safe supervisor artifact shadows them, but new
++  runs are never created in the legacy location.
++- Context ingestion keeps the existing repo-owned LLM-wiki. A CURATOR produces the semantic
++  extraction result; `context supervise-task` owns transactional apply, lint, indexing, checks,
++  evaluation, and resumable mechanical completion.
++- Preparation-cache prototypes were rejected because safe candidates did not meet the measured
++  five-percent end-to-end threshold. Mutable task, Git, provider, authority, policy, and semantic
++  truth remain live instead of being served from a speculative cache.
++
++## Recovery and rollback
++
++Use the smallest recovery surface that still preserves truth:
++
++1. `agentplane runtime explain` proves which CLI is active.
++2. `agentplane doctor` reports project, workflow, task-document, and runtime drift.
++3. `agentplane task next-action <task-id> --explain --remote` resolves task and hosted route state.
++4. `agentplane work resume <task-id>` recovers an existing branch_pr checkout without duplicating it.
++5. `agentplane task run status|inspect <task-id>` distinguishes active, terminal, legacy, and
++   reconcile-required supervisor state.
++6. `agentplane task run reconcile <task-id>` is allowed only for a stale, provably reconcilable
++   owner; it never signals a persisted PID.
++7. Revert the committed managed-upgrade change if repository assets must return to 0.6. Do not mix
++   a partial file restore with a 0.7 runtime.
++
++Never overwrite a published prerelease tag or package. Route a release defect through a new version.
++
++## Maintainer compiler change
++
++The framework checkout uses pinned native TypeScript 7.0.2 for `bun run typecheck`. ESLint,
++dependency analysis, and scripts that consume the compiler API remain pinned to TypeScript 6.0.3.
++Neither compiler is a runtime dependency of the published packages. The immediate diagnostic
++rollback is:
++
++```bash
++AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck
++```
++
++This split is intentional: the measured typecheck improvement is retained without forcing compiler
++API consumers onto an incompatible implementation.
++
++## Final acceptance
++
++After migration, all of these must hold:
++
++- the second upgrade dry run is a no-op;
++- `agentplane doctor` passes;
++- every active task retains identity, status, owner, and route;
++- `task brief --json` and `task next-action --json` emit a typed task/action;
++- `branch_pr` resume finds exactly one existing worktree;
++- Workflow v1 rollback restores exact source bytes when exercised;
++- installed-package smoke and the repository's own checks pass before release or merge.
+diff --git a/website/docusaurus.config.ts b/website/docusaurus.config.ts
+index 40801bfca..bbbd4f1b7 100644
+--- a/website/docusaurus.config.ts
++++ b/website/docusaurus.config.ts
+@@ -205,6 +205,10 @@ const config = {
+               label: "Quickstart",
+               to: "/docs/start/quickstart",
+             },
++            {
++              label: "Upgrade to 0.7",
++              to: "/docs/user/v0-7-migration",
++            },
+             {
+               label: "Examples",
+               to: "/examples",
+diff --git a/website/sidebars.ts b/website/sidebars.ts
+index 5056f2062..098b248f9 100644
+--- a/website/sidebars.ts
++++ b/website/sidebars.ts
+@@ -49,6 +49,7 @@ const sidebars: SidebarsConfig = {
+         "start/first-local-run",
+         "start/what-agentplane-writes",
+         "user/setup",
++        "user/v0-7-migration",
+         "user/prerequisites",
+       ],
+     },
+diff --git a/website/static/img/social/docs/user/v0-7-migration.png b/website/static/img/social/docs/user/v0-7-migration.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..111fa382781d4ef9820dd4ee5482c963b800c1a6
+GIT binary patch
+literal 61654
+zcmeFZcT|&G(>8vGs&qw)AjOJ;fCU8UMUf&+q&E?j-lTT~0TBTe5u_N3v_R+(AT&Wm
+zK{}yBDAG&lEtKDmp7VU~V>$2l@9$g3wOl4D$=>^(J#)>>bxnwx$_;7?777T0s1@X|
+z-GU%e@RG>y02%nBZUvJB{y1nauj>dwl=Ot(Feo;j8G<+=g=^Bc-QwpGNPCW9dV~6_
+zi2@nzlpZnKg~~ddUAX>~(KY>JlKk^g#(}{~Df_bvkM2m{{Xi;D^df}*^H#3eR9YNA
+zy701D{rVujD#vkm_Y11<a*LSfgNZjA@himS;A?;UdaxzkCi?dq2<nxF4*dP@4l|L|
+z->;!MI*91+H_Sm0-QTZkE|B>B{Td274w3x*<^mOr^Y7PwCI=wc-*2d7|NV-fbDEH_
+zO`m{}#j=p?&SM4JW7O1(5PJ==8$>${6Z0eguQz(1i5rSu*_<2WrcXTxoo<ajc>|q$
+zBf`<NUfBuuzx*KhKU9Uh_YE4#8)VKA)wG$`qjTj*ZD&wehDx5l9|@$K^h`-N`cm#C
+zH8&_j;I{v(>`RCL{>K{D`-Tk_4QdB<%%O~>R-Et7o7tsa&h9MSaGrO&r=ND5usg*+
+zt%71h%K3C+5HXWD*PSHTFjpmcxi)so&0|yB31Yq(!(5WA+|EZ`*@iZ!9mS10Crh3)
+z65Ylv3*|&l85WT*xh{#c!H?v!?YeHUb}Oy&>1R#Mwmpgy8)xk<feqJJZlfbS)?M!>
+zbtw?7mJsd9*)<N^t(H*z_Y2%TbCc)E!7wHkh<oQGWNkckp|$_gCTk^cKy}-Hzi7O9
+z!RKzz)5lOAg~&56>0dwV$KT*C(bGY<U_H&P(kZC>i$WgyWWGPWh<@V-J%{oVk^+9e
+zD7#g@%P<%x?2f1`dDzhF_t+_$qdPynFnmBnBt=x?5=6uDo3#>FkN!$R;z!~)PsJwi
+zn>7$t<@)B}0q7vqe^kW$mxK8qn>h@XTy|>x%^JS1>i!u{=oDmaHkJ6(dHv@E8*fTM
+z^3eY?2U6q->5#z?Np(`cwW#k0XIr@w3haa`o`346=k}i`NqB%Yqx7wof3`Sqf|1gM
+zqw8ulN&KTNC6a70$@*m_)_rDL{U>|6vvkm0(24m^&k>l}m+w!~>dy;mys75D6MDQx
+zv(@AqrN>WJ{U19gn0MYLNfC<()gR0X931W*9Rv*P9~N}~%vtHZk95P_Qx}#=EC0#3
+zbi9c4sM*N=VCCT8TrYjM^FJ>LT-sNh`*#o6GdMAC`49c+j0m=VUIK;;q9Ojnr2{TQ
+z^eExl+5CAy;MyrZ_q|9``oH@TM!27rZ1AH$_yAx_2~-3xQ1a&m0WWa+b2T%O0V$hY
+zRpRfw(SJNasH#-fKU%d48Nn&(|9L@%5Bv{*Gp2&&_|u#;ZvCAT{f}e%$d!osvsHsN
+zaRm^3B=XM-;=3$;aG5^{(v}W>@&EEQi`K@y756NkeCwHG%PQt(KY{O``AsDI5j6gD
+z$={sX+gpL}&-p9{aCF-6S8XO+U6<Hh)o^W<CdXJOh`Oq*p{G=Td$IoGb6#oSI1db{
+z`YcD5k6^6}n<mbvzMa#1VFvduS#UsB?`>!LFzq$}&g&5TA8-?QhP|Y54`+5a$0BZM
+z?c0>}KFHBL4i!=E9{lC560WGyb3d(sM{S~Z3zZv2uDfg9Le`OIlpC6`H`ttS--Fyn
+z0-4IS0-;vE)!#%!WVEk3Oox;VtjEPR<n-$&RQ=pGAD$d4o38wNsqxxEBRPlHupR@E
+z6uK4ut1|`GmPZ2oBQtYlzc{or8p=OF>$_Q3j=zZYS}DU-;hT%ON&H-r_J8%TguPPK
+za9^;mN_5>Ksu5i%J^4`5rT0ElcLN>N7r00Ai>n}bh|}^?S?_D61{Yw%L!LOcG7h03
+zw-l@U2cUVG{a-`IpvM*ygWr$yTqgCS<SkPB=Cg{!Vv8>kRwXI@ODF<&_0GY=t(F%q
+zc%U4i&FOTw+(O+;CBA7rHo_773`xL+LmBN|C%wbKENtA0Hh>L}M;o)3(FU`7WLP;9
+zR^{veix&dUr{?gfL<MRwk5%)H0mqgyO8$!0`LfBkwxPTw_Ex!-CHl5y;{y#mxpP<g
+z%uk}~Xhcf`XeD|KJ?D!Tzzchgbd@HjYR~n#>70t?27BKwV_$DnEd@_$l$PGP9V|J!
+zTOxWSh;@ccK9Wn-B}FdGvZrcmA}(#C(74)Xp`_o|v7X&C8{cTWH`=9VWrG@6ZbUO^
+z8?+${n?-DAkti3gw{FSkjUms$Xk(w=)eTbV*2U7Q-Sz%hIGco*n=p2;3coO0GVrib
+zO|{s$+pwF>z6Q2XKAS_S{WYxdLkPW<&wg?!9}5pO*O9JTXWCX~{R!J|U8wv`Vh4}i
+zchS9M(SB-Udo~x%lT%uo@UY?B!c<BG&A#1abHbo$ggE2dNUeiVx^mov#Lkqd>#Pk5
+z9m-$Tli)Fv*%2`b9>+mnaznIBQ-$4=yA7|-Eo@D~X)C?9r_<4<;aATLsP69DRqwhC
+zV&!6|L_JogM!?eeT=%vn(ex_9@7bI?)kl2fQD$%5&$w(hQOp10-+x3Jbr^F>omyV9
+znxb?o;WFzyQg)8>Uhf@TK;ssSz@xaWI&?BZY_v<qG)xD-IL5KxGoN42ZaZA_=(4r!
+zdz1JU$<<a_BfPNffUs-Zb*8}M#)q4HR#Q02*1Gih4Whb)o@@eFGqC7c?mT;?&g_Vk
+zO~uluh5bF;K8uf*Z{bR_Xz+-^$s>EG)|A`RhQDt3XK-3JU!8m=#$oKc>uf#GFvU%W
+z>p61C`CDO&1SRoG1}?Wqa(7zQL`u+S$4$EgQcHpp2_j#KbsIQ-6fu+B-)b40h_hR;
+ztz7H60IiLnaaCEF#j)GS@UsIQjs9}@%~|7p5vp&i?I&%9+{UO0KCjGuGC}CIN>)y}
+zC3AfE(aUKISIR~jfAL)e;7#zMDKxV0yYGhbzSfg3?0pay7-ipd!ENyl3K*k@_ddVR
+z5~b^8g6jizh`UH*Tx)=QN6xWDe0wV84T)bau;kT6IZUvFe|0#)=UJ7C*!B`jkzNWT
+ziaGV!thglQY41$y(zi%e7s4*-Ic94q`RCqx%$(DH4K1cd8$DFwExxTWi9=QI+BDVh
+zsX#h*afsVF7hL9gE^I258&~g)^AC<iNG`M|dTuP33{PjZiLHDc<0~EZk7f8WusHq;
+zHj92kK#2@~&LUKrIf5*Qr~7ZOr5q2F$f(WeRhti%+%aKpzRv(5PVm{@zx%Ree-Dp7
+zNPp%X3j{(&#|YLk!>JITe*77d1=<5g`*fhhzg&PwinLoM$^fxwy&j_~GX3sC1ur*r
+zn=V!H%5GY_NCbW!Wt@C`Lmf7(YnH&U7Z%iM6-$KmZePmGUA&IZzy_=K=<`2c7({PS
+zVc%05|IT&~Kmd|hIWxn3_uPd$FEr-K$v%wK!dNW4hwsjrWqMV!PjR>nKk6i|aUF8!
+z%4Tj*6bkfEuY)4V{AeY2^3dBeSsEQhMyYqf=~MTH^{oT<G~9jwa#j)8h_@rPLY4r}
+zP)`Hvpn?Q*Qzi<&jvCma23_)lt8S3`#X72KFrU4kREL#Vk(v?q;-+OS2A)mySabY6
+z8f|&n)t>_&0nxs`038#xt<bkZ7GI*Z>U@ykthF%`%<-uYWmM@A7!_dQQ#}ER&KGsu
+zqJ$XsEUN0Voi&_IQb_qn$^7)p?}T5Skhj75tYsMohDH?Kf-<&Nler7OX#^TtkoZv~
+zk9zPaXtYMTLK)Bb8duzRmg<GrAWPN+5obj~C#8bTF#p~Jm%ekC!-^#Ju3fVye)$V5
+z`Wv7vw3-}q?^J&y(dlZPm0h5?32_8+rxg|0F=9Df^Zn&uiHI{ydge(3P91rT;7K>3
+zU$0jsID9(F%K%9%eV~8QKj_q<Y<O#i)Q>{m?9Khx<@+V`CH>`fw31>52VJ@iU7Z`x
+z7v7wkDPl7Ax`=|*c)aR+b5ma%^|3wte0-$Bxf?k8QqJ&-M9!kNJd>syx`rbY^pNF?
+z*l^9dZKE|&76~M&=Iw)C7)|ZKEPbo+O1b)XEA-Lel7UOy$cN6x*GujlnsI6p>@EfM
+ztIGz$3Y0GdwzI{O>Ec+ce#y?iC*=e%y|R=pUW-u~BjZCnyLBfiSW{fy*kd|%L^hl8
+zto-4DDVP`q(&vo;mEPTu)3w9WCa>1*ax2%Lu3eaCg=`DHoCzsOH>vH%<ptpDee2#<
+z@6OwqK(FqxhB2ObLJvJ?^I3_*eiaDTe?u%a%~3o!6L>0?8nP1PecP6*6kRTBBnhsQ
+zj^;hR^J(h$%~@cHTC%pc!?OJ5qq>bkkG(|9VC7agE!o>25Y>cdz0NJ0h<%ZijL>Fn
+z3eJ?e*xXP9aENW)-tCcsy&QJEvlE2)M|nO^>YGcr__~hm=EERX>;KNUe&jXDM0rn%
+zX~fRDnCFj$i<TccDc5;Kb0p#nHUfRYPsY!~d|ZXvF%)eadcNTEY9O!We6-97xI0M-
+zQ4R2{qU$aba9<zSdN$X`N!ROX^!Ane+p!;dyKuhy_&kwIO_2R`YBWt2S|EEdE4S()
+zhxe*_sVYxy#lz%z^QuplLtZOQc|_T!p{yR3ZLjs<xwdex<&c#!PQ*6%3>xdZ?;WiP
+zm9|LWOBEu|eC$i}Pn3Jq-Xw&LcZV|6#4R~Wus-<KXa`%V)wtW6hIaZhvJ!inrZ_0C
+z92lJKi|T00B07c6l2ulVYboxh*Y2KJ7zkr=IVKp9giw^6?+v{QIX-5c``IG?f=3jw
+zW9MxzlmLSgI99@Qgy>W6+n{ZWsAj!Wx`{H6bSl*fVo^gLJWB@NYeZ6-HoWCi$@x5$
+zK~zVVC7WhRPHo41WHJ`(x?%_7T_=$g?-})6|C{f>kg;0RdFpe;+xv$Ga0`xE^EbQO
+zT;r`AM`tAJ@u<`<m8(J-h^lw}U5l-9Fx%I##C0LW%k>D~ow3y@#F!CX@o1?({*-Kk
+z=z_*cq_)0IanFcxJogPv3H(g9%V-E!`8z5O39*85kLq1oPU!0)+s&VGJbG=JpBvh5
+zTxpTy;CZ5+chRylLuZuxSSahgL07D|AnK5-;9cI))<UzE9<IID`nC$Eq0Yr|VR*L;
+zt2cf<Y|tcQCUb1@qn@(k$+SaIPUU*vh<)AJBehLe`mOUzPymCWu0d`f1j_m3PCQ>p
+zQin3=co%RPC)=-B_79eW+Yj9qyf=VVcuAR@Mw@|Z3cJ#mkqKQ;VKCtp=r*pjK|B<s
+zAbq?hfo@miaSv>e$#UuL&mn5$zwvCfkMC6QuXp(GC+48tFyOntOK*c}vwxrQG+z#*
+z%Qjh~=pQu1TfMWaOzszFQ=*&QlEre#A~+vhm`{B!l~<cylKA03QgME;=z?_o{J9>h
+zKuAq9qKe^l6N#T5RbBK@rDw2ap+wf?6;{adN&ZAimL_kuTDAv!-6^II(g9?cLH@vI
+z^%18O$bKwL$VEbIy~p%LKay!U{Mgm@-OYN*9DG^&TaSjVWFH<&lbBiYU5YOwLHs`_
+z!TS9B$wZ6Q<~>8tP3mgh-w9l;4*FurjsjN+YZCQpLPvCeXT_BKI>TG{i8ng12*&BD
+z&y^cPth0p_2PN@yg&(*i5i@61po}P?Vmif?7H%rFv(Jm_p6@xVBZug|l)@6ZUyinC
+z+|6k(inZh+@e9+kUBFiR&Vauc75q?i^vZyJU3tH;!$*e8#-uvtrKJ;T8so_A&~V4o
+zXDT`6n#gtSp85&HhVMrkPI$HEU$;RSeauI^ne~<%$+TND4%AS&n!2#=+Uwk%Rzkh>
+zn+<~8QOBP|z>3)FP>3+B1z6VA4l@Ee(1C|hh$XiYd&SRpQ$m_wI=-IZ3R~5xIjpI0
+z+X943Ee%+rQ+Q}l^rzl5#?xm#p^QKku#uZAkmY#y1NGBJmGf3fbi8jPouL>P-@}?O
+zvZ9`Q6H5g~>c-cD=$}4eMkBE~Tn=yJo^D!hSK_};!yD{1{D&uSftc8;)M#U2a1e<a
+zV)102WwFY>*x^zXYaZXi4l;lteEG0Hr3bkm;>oj>-jr~W27O$H!ak33-9;-+hL6;c
+zro~YvB-JsqIK)F9uvCVml&Y2IvNT^#30oFrTxS_so6W5rx&#{@ejhNH5+O0esBfKL
+zj$fb2$^{=P8%)#m&bPIpt5}WG7<U<wXv4^++PO3%MA2LKD-ilCGc6?3>e=|h1uyNl
+zs~%)?_;6_C?qLU}rx~`0z3C@1?}g#>17(F97wdP!^<Z~Ww#K+^zMPJxnmj(+Bk)WE
+z*;TEn7mvAzA)`4q#RgR^H}K@I-O@~sg6zR<3E5Gh_T4x=Q(<vD_(7Y2r#g==)}fv)
+zl?n=`W@T(fx)SmcWJw?Q!|Nk6X}jyxP;o;Zzxv8Nh7y{Lv#a`Ssjr;gdJ_$jlM|DE
+zUf_OIL@<s1W-C83Oc`RUvqQz*Myy(c7J){{D%MHZ5Eo<sGG<fn^|UzK<tsH^`gZed
+z-{WoOF;5odEMYvEpTeZ`vqBLE0+8-@Y`$vt?Lyy!iRn-ZC~{_=UL^tKGl67&AXyLd
+z9BV=i2zDFI(umGoKuyG2$&tO*CG+cJGEUYyp34BK#0%#yR&gp^=imIz8vi=(lf+r=
+z@|5m#0P($uTs1oceWDItD4S%*nRYpBk@-1fk*}B+BQOBA#in08=)f)3$POVCxo7ZN
+zhR&F@Djsg=*o8ZOO2mPd3R;+E5oivR6)n2*^>Q6T3(kFq5|-$t=VUyLekgb<;8$1o
+zqoN=})}_`0;%LDLcP3cBI)jRZ_#y$H4#9>WHu7q3*7>AbRDBGmgSs|Q6C+AiCa>NB
+zL=mkV0HUYZ(p`EBa=(r=Wk*_x%|w0gHO%ET*DQb{T|*Zri^{LwqZRV{xzhPpK3`0=
+z(`S`icAZi8RCjO}FsA{v5s(BgOH5E->8TNgo>7o5+iDwouieDofOPt?cN3huLONFh
+znT+gpN&Si^tX8ERuXW+WK~8yT1zH4&ipsoDVkQYd!(Fdwq2fe^Ht$D_T>f*v@gLtE
+zWM04{e)P`64UmZnN0GN-cNbh=Xex#g)s(KR%!3qhi0ldafHV@aA9U{K-7%?d&ncfl
+zyjhQc@?6NpeReiKm+>%Mv*1Hz6V+^BeX*&Jg3fj0!y{ECu696b)#TW#yFQ>c7R)n_
+zP+S6eB+XjPrTdDTyGV8@oJElPq47kFDUA@QXPC85Y}=&}UEnDFB~$zk_Bmn5iLQQI
+zSIM0b+Di7B;zWP$mm<zH-`KrZ+otP|Y0iIRh1fmk^7AFKl4>PRWp-sUK(^@ll6(m?
+zC_!`^G_4@Aa%uDnv-}YjrzZ#xav>4!HX8DIrFc3muKYm=1!TqBGb-D;6S9W5+i?IY
+zwp=}5`1NqEag0??p0V)W=2%^s2&kSMC37jxql0G9$y!tMeZ^Ug6t+@7Lju;yAJuz`
+zn*C%3)wMi!Av%0-iw~pL)H$!2wv-!#!P_7RdIFzE^As&vOq3_*v@lSX336{a;1nId
+zUJP_<CGjg>lK@%n$(C+XCWGe|P|PQ8Btq>Oq7zws_9noy+-r=6PHpnL6A7+Ei`Q%V
+zaZZk7Tq;k!Zz3qH*C4fw<*U=~3dFzS6~f}AAVM8~q*FsRj4dd0+2-@}<M}0cP>BOB
+zb9Z|!v{DsR@a&VvG@mbl(n}Rs8KvEatvTcU?e17S_~EbIHDQc)?jX!xqK0OvTa;@>
+zaTWCLR2*K5(q~|ai~}LtMwLgHFF$w|U7g|+fjk1qH8sV^l^W3gem#U%2jQ?FJ{7vc
+zep~eE!<!(SEzv+9!J61-S0uOFA`DQrgLiS=z)P@-?qo4R>oXXhF0;v4E540+6t;QQ
+zov3CLHoQ1eXILnYdlV3SjmA-XO|R0js|cV)srK`e@s28k^H#Q19!c7Tuwn4|x*IDz
+z*?BUh9;Ff0TsLFr_JVjx`~Z}c8Ei3E>CFBS(cTw78ULFL@ZZ(N?@d2YTaOBv9c$k0
+zPFICr>mLH8k2ngbMR@F4&+$QjO1`P>_4$5#c)8Q`OShy*aKT^t-CAirJ)h`&o`Swv
+z6es3NNUI3ge;{1TVh>cb1`?$M(zNw;Ifw?TeSN#nw{K67X~r#Ev0MWQU^%zrz3pX?
+zkL53{7Z*5-$9}JPG4c(o<5mz))+%A{n<K#|Ta<W6{Xpf$_e5PU=K+JuH)91dC$9W@
+zvj}x;LSdg9N}!xv45hFAK<&&;#e9MDVKD|Elh!0zQ@fN~@16T?P-U4K>CHvReAD`J
+zdR4JDtEe##*f5A(OtULlAYR?XcV+}gEY=X4+Mtaz)d3uG;8BHxG7DJ0M~nEz)19}h
+zwx#dyvq1=pa53YzUdvxT+ZcN-eFR0E?cHnMb^st$+DTpMy+?l;mN;SdOk_XW;9-bW
+zkYaTrr|xcokxVuy_1M-?3pw35=6+A3KWNiFAmQhn8#L9<OA~Q}I#gJXw9dc`LsLEq
+z6ejA2awhf>HwG|%S#j*oT>C7zTszfolz|+8<9qQG6fmtu=LIMrhKF+0hS|0^*xm2x
+zTxUqHbDMZ$c0!vTX$w$~StFU>Y!2Es+k3zyn9ZP2em0O%@9c_VoiMnH(_U3dvesb5
+zU&{M6Pv>f(nomHlx>LfZL6W{&&Ur;IstiLUm2_2M*4q}86gSx0a}dKBK6CGmOhi9+
+zv#*Q(c_-g1>{Idh)ecotauYq0#6x4B!W@0^AOhHFC?~y~fMo>+m0h8*EwBaIQa(tk
+zJ`6Rl_uEN|CuU+y&VE&6h}F^!FRUa~Q999@#5HWL0~bqNJQvE+JvRnj>nM0QB&PP%
+zzpZO3L@|aDNePmE8>^3qs8n`01qFq$fi(Yxv&lp?f?YZ%mkUAo(M;wPX(m;t+})Yc
+zuC~mGB3e3Y*uV&JQ-#H9Ni#%XR!)DCuIj#uKq*%~*?f0H6=xcF?>F1}>jB9{u(OFi
+zRv&K%cumjMmYejxf>t-uR`1R**n%rCmw}u8U3Dcgr{VKmRvuE_6_1)g&F0Wmm0=AF
+zmiCH4mwr(Fo|#)f??1{TngIdSxt_z<>z=bV5+Ivs%wVq80jNcC-z(Qq2;BOh5i@5i
+z0k4fwCBCqMiQ~b?M%z#1aDW;%?*^y=3k|%LSp<n%<;c1b=z4sfuK*VFB37>HT;>c$
+z_raUgg-LCIGmbK%Eu5rp%dexcyL_)zTnC-Cl}P>WMu@MQyDbQQls;Cqv)pLE6q7MO
+zkH+qWXc-1g{2mc=8<O7nc+DLpi3C|YBzGL^(r<^OksLjM0_FAcFrnTLO&2HQjZ9SP
+zOGXuWFa!1aww1i=_Wi;(aPJLAeY-;C?CQ#mD*VYc^k@T*Mt^RpO=fDei)npWE?O0U
+zdzb8aC(n(_Yepfg(5K$675=K2Sayod<SMI1WXaQ=oxzQPxIWxD1<q`>-6_*>2fONy
+zrZBj$MbNxgS8g?WxHj}IDJIUQ%Drya0~bJh5|!V8$SP;GE&n3E)Y)O;xjb$5V6%de
+zIb?eW>oU~qebwvQChGm;5R=(bT3N~cfrNofje9XY`N*;fJ<wZ{w1@jHrLu}&i81kP
+zKR;8bUj0H&*;~DGzG}6B=LH;7X4T0xgL3)??xWC<msOf$ZdZ!7UH9}Wjlp=wCWbP$
+zT~92G*lI?(Q7*t^FD(g0N(&lte0>3%Xt#tZ)u-Lzd+438+54tpEaS%Rvd|`$KIQpw
+zBxjmdYC>)817fLS(S-`0^~Iiyw1X=Qr{00WE1UhW^c#zw{HDt-6*>5N__YO9;IHV<
+zD2E%gT>(gE0Bj~uzp}-$>f`acpz*_y9Is`{1+|g#+QG7kx1#I$vyS4P8x~$KSR{|D
+z3uo4dTeKo~wFLX3w2j9Wd>63`FZd$L_3hAu2_AjZwvoz0NYUUy8qo!2E5T)}9CXfU
+zBB^3>_8r$bhOX59_Qvz{&7oz>+*zfB=$hZsRu|zkLiU(dq9Y7cn10#lX^&{6rYs@x
+zEApR6*{<W*d#*^=k#BJ*95gOJ?Riq8Lq`D$46pRCu1^bI0$rf<2Jfy}10<wO3(HAN
+z3ew9yK}nqzM|6yLp#6y!Gtqg0IZ<lEoYK*!<=CW=SarDJ{U}X?*lU5-p!ev4@KJN?
+z1@*KZ{Ofx|*8`Q@SLs2!Nk@3cEs#OWd=n)!=%k?pn$Y$j@TKNxBQ*o94DTHmZ591Z
+zHcqho7ZrP-;;4gTPuqZGW^0vv(dMpJzaRy~L%Zub;1H}2vSm|p-#FXyOwcRoe$dlw
+zytf>!1NUA2!ewfaakcfxg$HYSxifj};vOIRqCvmsBWS8bSwI9&E$6fTfnL?goz(B-
+zjc_LbNF2F+)TFx27wW>Da6{q+6!~N8qRGQn>%C^GO&u&l187&AeZNC(n-(P$C{tdV
+z<xy`VxwjNy*6Ppt{O2N;+>i3!323g>#K{}ahN>Z=e7EdZ4k~6%dF`oMhr%?(k8nYA
+zrBCx~;h>DrPw3g2oXwz+CcV=a42pGq)W?MLCd`TtTg97(XgFv$fzWWw%DJOd`BAL@
+zN07+sU4`OBoDrfUkLmByMiY{8o%@|;gnE3m8I&<5zWn)Q-16g~-3BuW(Ebz8m#G10
+z;{L@$ycO-)xy6Wi02?0Y$eRNPD98j+@V36}vYb#lpa0l%=_8X_kHoJjNZ8Qd91D!e
+zGd9sH1}{p63=G3!YhQajdaCsmv*T$&=2w-W$8Tv=I@1NPNG>L-<?3X7kE1)rG8U(n
+z6{5xc?q#bY>`ow|Cm?17rzixVU~_5gBvbtJ7A}?e7%NC;<i!nk2SSr&`KlnQznPj{
+ztTfZRle+?B>DTYw*Q<o`3N9g=qg3zrgS=<P7PK5M96(}joc)YqgecaK2)P8%bF0`U
+zuDmTgn_XC&SakBAnl6XfK4qw<41kn(7F5qJ3*jnO<bp^5LeUd`cF8t%0A%#@D&lLm
+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
+Lj&iBugV6s0C6aAa
+
+literal 0
+HcmV?d00001
+
+diff --git a/website/static/img/social/manifest.json b/website/static/img/social/manifest.json
+index 060e350af..c1c3a382b 100644
+--- a/website/static/img/social/manifest.json
++++ b/website/static/img/social/manifest.json
+@@ -1676,6 +1676,14 @@
+       "title": "Tasks and backends",
+       "svgSha256": "e6f696bd8617bda3d1686eb1e03d0ac09d6086f53f2bb04d9a133b18a0757dd6"
+     },
++    {
++      "route": "/docs/user/v0-7-migration",
++      "output": "static/img/social/docs/user/v0-7-migration.png",
++      "section": "User",
++      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
++      "title": "Migrate to Agentplane 0.7",
++      "svgSha256": "71669289bf1ecfe0161a2322c713bc0cb877a6bfad9e90f9da4817c70f8e9ad4"
++    },
+     {
+       "route": "/docs/user/website-ia",
+       "output": "static/img/social/docs/user/website-ia.png",
+diff --git a/website/static/llms-full.txt b/website/static/llms-full.txt
+index 6a5222e25..1c863a04d 100644
+--- a/website/static/llms-full.txt
++++ b/website/static/llms-full.txt
+@@ -452,9 +452,10 @@ agentplane context ingest --changed
+ agentplane context verify-task <task-id>
+ ```
+ 
+-During the v0.7 supervisor migration, the standalone verifier fails closed when the only execution
+-evidence is a repository-local receipt. Use the component context checks and `ap verify` described
+-in [Local context](local-context) until the beta supervisor restores authenticated handoff.
++The standalone verifier fails closed when the only execution evidence is a repository-local
++receipt. Use `context supervise-task <task-id> --extraction <sgr-json>` for authenticated supervised
++handoff, or use the component context checks and `ap verify` recovery described in
++[Local context](local-context).
+ 
+ See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
+ 
+@@ -735,6 +736,33 @@ Use tag `spike` for research tasks. A spike should end with:
+ 
+ ## Overview
+ 
++Agentplane 0.7 exposes one route model through two execution styles:
++
++- an external agent runs the exact command from `task next-action --explain` and recomputes after
++  each mutation;
++- a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
++  bounded semantic episodes.
++
++The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
++automatic success. It returns a typed stop at those boundaries. See
++[Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
++
++## Supervised lifecycle
++
++After plan approval and, for `branch_pr`, worktree creation:
++
++```bash
++agentplane task brief <task-id>
++agentplane task next-action <task-id> --explain
++agentplane task run <task-id> --dry-run
++agentplane task run <task-id>
++```
++
++The prepared WorkOrder contains one semantic objective, bounded authority, required inputs and
++outputs, prepared knowledge evidence, verification intent, and stop rules. The agent returns a
++semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
++An agent-reported check is not accepted as an observed check without supervisor evidence.
++
+ ## Minimal branch_pr lifecycle
+ 
+ This repository is configured for `branch_pr`, so the normal guarded route is:
+@@ -1168,12 +1196,23 @@ agentplane task doc set <task-id> --section Summary --text "..."
+ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
+ ```
+ 
+-Execution is usually owned by agents working in the repository through Codex, an IDE, or another
+-human-assisted workflow. Runner execution remains outside the normal command path for ordinary
+-agents; the route oracle should point agents at the current checkout unless an explicit integration
+-such as `parallel-codex` or a configured custom runner owns the run.
++There are two supported execution paths. An external agent can work in the authoritative checkout
++and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
++supervise the same typed route:
+ 
+-Runner maintenance commands are intentionally kept on the hidden help surface:
++```bash
++agentplane task next-action <task-id> --explain
++agentplane task run <task-id> --dry-run
++agentplane task run <task-id>
++```
++
++`--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
++formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
++and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
++runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
++reconstruct lifecycle state from prose.
++
++Runner maintenance commands remain on the advanced help surface:
+ 
+ ```bash
+ agentplane task run status <task-id> --json
+@@ -1269,12 +1308,13 @@ materialization, indexing, evaluation, and the apply receipt. Write modes mark s
+ with `extensions.context_harvest` and `extensions.context_task_extraction` so unchanged sources do
+ not create duplicate work. Write modes require `agentplane context init` first.
+ 
+-During the v0.7 supervisor migration, a persisted execution receipt is diagnostic evidence, not an
+-authentication channel. `context verify-task` and `context finalize-task` therefore fail closed with
+-`compatibility_unverified` when only a repository-local receipt is available. Run the component
+-checks (`context wiki lint`, `context graph validate`, `context doctor`) and record independent
+-verification with `ap verify`; the beta supervisor restores the authenticated end-to-end gate. See
+-[Local context](local-context).
++A persisted execution receipt is diagnostic evidence, not an authentication channel.
++`context verify-task` and `context finalize-task` therefore fail closed with
++`compatibility_unverified` when only a repository-local receipt is available. The supported
++end-to-end path is `context supervise-task <task-id> --extraction <sgr-json>`, which supplies the
++live supervisor observation directly. Manual recovery can still run `context wiki lint`,
++`context graph validate`, and `context doctor`, then record independent verification with
++`ap verify`. See [Local context](local-context).
+ 
+ `context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
+ page with Agentplane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
