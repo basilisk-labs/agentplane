@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021534-YN84E1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T20:51:35.025Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "375dd720e5b88f4d28805af3756b04f7a8d49053",
+  "blueprint_digest": "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545",
+  "findings": [
+    "PLANNER_SEMANTIC_PLAN_PLACEHOLDER is referenced only inside doc-template.ts, so module-private visibility matches its actual ownership and eliminates the new Knip debt without suppressing the baseline.",
+    "The semantic planning placeholder generation and legacy-placeholder detection still use the same constant; focused lifecycle tests 41/41 and typecheck pass on 375dd720e."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021534-YN84E1/quality/20260802-205134550-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,0 +1,29 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-guided.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+    "bun run typecheck",
+    "bun run lint:core",
+    "bun run docs:cli:check",
+    "bun run docs:bootstrap:check",
+    "bun run docs:ia:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "bun run test:critical",
+    "node scripts/qualification/check-v0.7.1-product-contract.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T20:50:53.204Z",
+    "updated_by": "CODER",
+    "note": "Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
