@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T02:05:42.500Z"
+  updated_at: "2026-08-02T02:13:48.716Z"
   updated_by: "TESTER"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 18 tests passed, including configured-base positive and task-side negative cases. Scope: hook path attribution and commit-message policy. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint for repository code. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations and Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance: reproduce the original YMYYQ8 configured-base merge before closing this blocker."
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 19 tests passed; exact-base positive, task-side implementation negative, and reachable non-base topic negative cover both hooks. Scope: merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0 after the evaluator rework. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge."
   attempts: 0
 quality_review:
   state: "rework"
@@ -112,8 +112,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework complete: exact-base identity enforced; reachable-topic regression now passes for pre-commit and commit-msg and satisfies lint."
+  -
+    type: "verify"
+    at: "2026-08-02T02:13:48.716Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 19 tests passed; exact-base positive, task-side implementation negative, and reachable non-base topic negative cover both hooks. Scope: merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0 after the evaluator rework. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:12:19.045Z"
+doc_updated_at: "2026-08-02T02:13:49.712Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
@@ -177,6 +183,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T02:03:11.710Z, excerpt_hash=sha256:12511fc9893777d78f8e5cb37a870d687666190068890a87eceac1a7bd9fef65
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020147-VMBX4H-base-sync-policy/.agentplane/tasks/202608020147-VMBX4H/blueprint/resolved-snapshot.json
+    - old_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+    - current_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020147-VMBX4H
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T02:13:48.716Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 19 tests passed; exact-base positive, task-side implementation negative, and reachable non-base topic negative cover both hooks. Scope: merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0 after the evaluator rework. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T02:12:19.045Z, excerpt_hash=sha256:12511fc9893777d78f8e5cb37a870d687666190068890a87eceac1a7bd9fef65
 
     Details:
 
@@ -282,6 +318,36 @@ Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pr
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T02:03:11.710Z, excerpt_hash=sha256:12511fc9893777d78f8e5cb37a870d687666190068890a87eceac1a7bd9fef65
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020147-VMBX4H-base-sync-policy/.agentplane/tasks/202608020147-VMBX4H/blueprint/resolved-snapshot.json
+- old_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+- current_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020147-VMBX4H
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T02:13:48.716Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 19 tests passed; exact-base positive, task-side implementation negative, and reachable non-base topic negative cover both hooks. Scope: merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0 after the evaluator rework. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T02:12:19.045Z, excerpt_hash=sha256:12511fc9893777d78f8e5cb37a870d687666190068890a87eceac1a7bd9fef65
 
 Details:
 
