@@ -6,6 +6,7 @@ import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import type { HooksRunOptions } from "./run.js";
+import { resolveHookPolicyStagedPaths } from "./base-sync-policy-paths.js";
 import {
   currentBranchOrUndefined,
   envFlag,
@@ -106,6 +107,12 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
       })
     : null;
   const currentBranch = await currentBranchOrUndefined(resolved.gitRoot);
+  const policyStaged = await resolveHookPolicyStagedPaths({
+    gitRoot: resolved.gitRoot,
+    workflowMode: loaded.config.workflow_mode,
+    baseBranch,
+    stagedPaths: staged,
+  });
   const [unstagedTracked, untracked] = await Promise.all([
     git.statusUnstagedTrackedPaths(),
     git.statusUntrackedPaths(),
@@ -135,7 +142,7 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
     config: loaded.config,
     taskId,
     git: {
-      stagedPaths: staged,
+      stagedPaths: policyStaged,
       currentBranch,
       baseBranch,
     },

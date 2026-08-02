@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run lint:core\nResult: pass\nEvidence: repository ESLint completed without errors on evaluated commit eeca863bd45a0c627a13dd1f7709dcbde578a836.\nScope: hosted verify-static lint phase.\n\nCommand: bun run arch:check\nResult: pass\nEvidence: dependency-cruiser known violations remained zero and all architecture boundaries passed.\nScope: hosted verify-static architecture phase.\n\nCommand: bun run knip:check\nResult: pass\nEvidence: unused-code baseline passed at 543 of 543 expected findings.\nScope: hosted verify-static dead-code phase.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: native TypeScript build completed without diagnostics.\nScope: repository type surface.\n\nCommand: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: 2 test files and 23 tests passed, including semantic base-sync selection and managed-artifact-only rejection.\nScope: merge-aware evaluator target and frozen evidence behavior.\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors were reported.\nScope: evaluated implementation diff.",
+  "digest": "sha256:75a19cd55dcd95b54308b5404a8173eb73ed6842650b701003bd795f16c6ccf2",
+  "implementation_sha": "eeca863bd45a0c627a13dd1f7709dcbde578a836",
+  "kind": "task_verification_record",
+  "note": "Merge-aware evaluator target rework passes the complete local static gate and positive/negative regression suite.",
+  "recorded_at": "2026-08-02T00:48:56.843Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused quality-target and evaluator evidence tests. Expected: a task branch that merges updated base history freezes the merge commit as evaluated_sha, the actual task patch, and the matching SHA-bound verification record.\n2. Run evaluator command tests and repository typecheck. Expected: existing metadata-only, lifecycle-only, batch, and direct-mode target semantics remain green.\n3. Inspect the final diff against main. Expected: only merge-aware target selection and focused tests plus task-local evidence are changed.",
+  "scope_digest": "sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e",
+  "task_id": "202608020016-TDXFVT",
+  "verification_command": "agentplane verify 202608020016-TDXFVT --ok --by TESTER",
+  "verifier": "TESTER"
+}

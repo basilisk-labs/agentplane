@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020147-VMBX4H-7a0a6b873141fa90ad8f82e1",
+  "prepared_at": "2026-08-02T02:06:17.666Z",
+  "task": {
+    "id": "202608020147-VMBX4H",
+    "revision": 10,
+    "objective": "Scope pre-commit mutation policy to task-side base-sync diff\n\nWhen a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage.",
+    "acceptance_criteria": [
+      "bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts",
+      "bun run typecheck",
+      "bun run lint:core",
+      "- In scope: When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage.\n- Out of scope: unrelated refactors not required for \"Scope pre-commit mutation policy to task-side base-sync diff\".",
+      "1. Reproduce a docs-task pre-commit during a configured-base merge where incoming main history contains another task's implementation and generated artifacts.\n2. Detect an in-progress configured-base merge in the pre-commit hook and derive policy staged paths from the index relative to the merged base parent, while keeping the original staged path set for ordinary commits and non-base merges.\n3. Add positive coverage for incoming base artifacts plus task-side docs changes, and negative coverage proving task-side implementation mutations still fail.\n4. Run focused hook/policy tests, typecheck, lint, architecture, formatting, and semantic evaluator review.\n5. Publish and integrate through hosted checks, then retry the blocked YMYYQ8 base sync without bypassing hooks.",
+      "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts`. Expected: all hook guard cases pass, including configured-base positive and task-side negative cases.\n2. Run `bun run typecheck`. Expected: TypeScript validation exits 0.\n3. Run `bun run lint:core`. Expected: core lint exits 0.\n4. Run `bun run arch:check && bun run knip:check`. Expected: architecture boundaries and the accepted unused-code baseline pass.\n5. Run `bun run format:check && git diff --check`. Expected: formatting and whitespace checks pass.\n6. Reproduce the blocked YMYYQ8 merge from current main after integration. Expected: both pre-commit and commit-msg hooks accept incoming main implementation/task artifacts while continuing to enforce the docs task-side diff."
+    ]
+  },
+  "evaluated_sha": "e0696c7e61bdabf496f895a5a7a9cfc6931525f2",
+  "diff_base_sha": "4e6cf3e54a11ac56c07cabc0b9d8b01d89ac274f",
+  "blueprint_digest": "7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020147-VMBX4H/README.md",
+      "sha256": "sha256:c2b2966a434cef33d8700e30ab40559b3bfdd7c9bd573a9bec40c4c7d7258613",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:6c93008f0e6a0cd451121b5d5ed23ad806269c4191583356dd7fbdbb8bc148f3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:c26bb50617a7c8fa0e562c301480bbe7c827a7f3a35e2ee35ceff785af1b6db9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:2932a2db9bd91cfe21f6f4fbabffb071e704acd1c5228eed3c42f507f2ce3f55",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

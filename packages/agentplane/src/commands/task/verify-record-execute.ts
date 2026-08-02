@@ -218,6 +218,7 @@ async function recordVerificationResult(opts: {
         taskIds: qualityReviewTaskIds,
         lifecycleTaskIds: batchTaskIds,
         previousEvaluatedSha: current.quality_review?.evaluated_sha ?? null,
+        workflowMode: config.workflow_mode,
       });
       if (
         opts.state === "ok" &&

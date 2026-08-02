@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608012339-30YX9C-443ccd5ce49bc637745be981",
+  "task_id": "202608012339-30YX9C",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Narrow the social-card exception to the canonical generated artifact paths or permitted artifact extensions, then add an adversarial negative test for implementation or executable content inside website/static/img/social and rerun the focused policy test and full documentation-site gate.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The documentation-path exception permits every file beneath website/static/img/social, including implementation or executable files that are not generated social-card artifacts.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:14a6b5e5c5733fc325032fdbd916593b2fa4b1b9ac523dadde79a54418b7b54f",
+          "line": 71
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/README.md",
+          "sha256": "sha256:6133ad898011f299ad9d170fb2a3f00b4dee252171030b9333746c154043e4bf",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-result.json"
+}

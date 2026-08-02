@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020016-TDXFVT-ce11ee5983a9156b2114d7b6",
+  "prepared_at": "2026-08-02T00:49:10.748Z",
+  "task": {
+    "id": "202608020016-TDXFVT",
+    "revision": 17,
+    "objective": "Preserve evaluator work units across base-sync merges\n\nFix branch_pr evaluator packet preparation so a merge of current main into a task branch preserves the committed task work unit, actual diff, and matching verification records instead of freezing an empty packet. Add focused regression coverage for merge-aware target selection.",
+    "acceptance_criteria": [
+      "- In scope: make branch_pr semantic review target selection merge-aware for base-sync merges; preserve the actual task diff and current verification records; add focused regression tests.\n- Out of scope: evaluator prompt/rubric changes, provider behavior changes, unrelated lifecycle refactors.",
+      "1. Reproduce the empty evaluator packet with a branch_pr base-sync merge fixture.\n2. Make quality-review target resolution recognize a merge whose non-first-parent comparison contains the current task work unit.\n3. Prove both boundaries: semantic task work becomes the merge review target, while lifecycle-only or managed-artifact-only task deltas do not.\n4. Run focused tests, the complete local verify-static surface, typecheck, and semantic evaluator review.\n5. After evaluator pass, publish the reviewed head and require hosted integration through the guarded queue.",
+      "1. Run focused quality-target and evaluator evidence tests. Expected: a task branch that merges updated base history freezes the merge commit as evaluated_sha, the actual task patch, and the matching SHA-bound verification record.\n2. Run evaluator command tests and repository typecheck. Expected: existing metadata-only, lifecycle-only, batch, and direct-mode target semantics remain green.\n3. Inspect the final diff against main. Expected: only merge-aware target selection and focused tests plus task-local evidence are changed."
+    ]
+  },
+  "evaluated_sha": "eeca863bd45a0c627a13dd1f7709dcbde578a836",
+  "diff_base_sha": "5d4a8de1a96bc29e13012ce01bfc65661ff5fa19",
+  "blueprint_digest": "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/README.md",
+      "sha256": "sha256:fab3fba0d4637be3e05eed9ccd97e55e4ad1843fb88dd7f399ea87facec41f09",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:516e768678f450ca2f2b0acdffbf1c0f47747913c8d240f1535a39d43881fee6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:d8ef8770c22750c634119fcec4bf840fffb2267740199381e5527bf9d5cd80b0",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004856843-75a19cd55dcd95b5.json",
+      "sha256": "sha256:0a177ba50ce2df790bb91a6824bb541ee7fd820cc1a839648afe48c68ee1f07e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:9d2bcabfb7098a6f53f6ebce5575bd9689fa6ef7ba8cf0ddbcd589fb87b99ce5",
+      "required": true
+    }
+  ]
+}

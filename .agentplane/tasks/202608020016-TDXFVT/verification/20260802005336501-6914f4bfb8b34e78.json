@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run lint:core\nResult: pass\nEvidence: repository ESLint completed without errors on the current implementation head.\nScope: hosted verify-static lint phase.\n\nCommand: bun run arch:check\nResult: pass\nEvidence: dependency-cruiser known violations remained zero and all architecture boundaries passed.\nScope: hosted verify-static architecture phase.\n\nCommand: bun run knip:check\nResult: pass\nEvidence: unused-code baseline passed at 543 of 543 expected findings.\nScope: hosted verify-static dead-code phase.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: native TypeScript build completed without diagnostics.\nScope: repository type surface.\n\nCommand: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: 2 test files and 24 tests passed, covering semantic task work selection plus managed-artifact-only and lifecycle-only merge rejection.\nScope: merge-aware evaluator target and frozen evidence behavior.\n\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: 1 test file and 20 evaluator command tests passed.\nScope: existing evaluator command compatibility.\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors were reported.\nScope: evaluated implementation diff.",
+  "digest": "sha256:6914f4bfb8b34e7884f9d5be1568f4b057024aebffb7fbb971783662951283dc",
+  "implementation_sha": "18f931a3bb4bdf599bf6e5ab589460f10510f4e1",
+  "kind": "task_verification_record",
+  "note": "Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate.",
+  "recorded_at": "2026-08-02T00:53:36.501Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused quality-target and evaluator evidence tests. Expected: a task branch that merges updated base history freezes the merge commit as evaluated_sha, the actual task patch, and the matching SHA-bound verification record.\n2. Run evaluator command tests and repository typecheck. Expected: existing metadata-only, lifecycle-only, batch, and direct-mode target semantics remain green.\n3. Inspect the final diff against main. Expected: only merge-aware target selection and focused tests plus task-local evidence are changed.",
+  "scope_digest": "sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e",
+  "task_id": "202608020016-TDXFVT",
+  "verification_command": "agentplane verify 202608020016-TDXFVT --ok --by TESTER",
+  "verifier": "TESTER"
+}

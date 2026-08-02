@@ -14,6 +14,7 @@ type VerificationRecordTargetContext = {
   gitRoot: string;
   workflowDir: string;
   taskIds?: readonly string[];
+  workflowMode?: "direct" | "branch_pr";
 };
 
 function sha256(value: string): `sha256:${string}` {
@@ -105,6 +106,7 @@ async function matchesCurrentVerification(
         taskIds: targetContext.taskIds,
         headSha: implementationSha,
         previousEvaluatedSha: evaluatedSha,
+        workflowMode: targetContext.workflowMode,
       })) === evaluatedSha);
   return (
     record.schema_version === 1 &&

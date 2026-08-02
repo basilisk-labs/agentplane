@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608020016-TDXFVT-0948aa3ef46fe7c80db96974",
+  "task_id": "202608020016-TDXFVT",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Run and record the required hosted integration for the evaluated SHA. Add or provide merge-specific negative coverage for lifecycle-only and managed-artifact-only second-parent comparisons, then freeze a new evaluator packet.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The approved plan requires hosted integration, but the frozen verification record contains only local checks and does not demonstrate a successful hosted integration run.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/README.md",
+          "sha256": "sha256:0c4a2e625538e60c5562aff12e4305b25394d6f9aaeec908a693a1ee2efc0243",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004126077-38d6187f16df3303.json",
+          "sha256": "sha256:8aec7e3eabf68e48bdec1cdf8705e8e5ba4566df41761032256fd5b837b6eaac",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004140374-recovery-context/evaluator-result.json"
+}

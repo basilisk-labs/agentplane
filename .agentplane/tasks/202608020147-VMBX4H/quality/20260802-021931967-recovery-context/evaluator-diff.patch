@@ -1,0 +1,396 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts b/packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts
+index b2c3941c0..74be5bb4c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts
+@@ -19,6 +19,54 @@ function restoreEnv(name: string, previous: string | undefined): void {
+   else process.env[name] = previous;
+ }
+ 
++async function writeDocsTask(root: string, taskId: string): Promise<void> {
++  await mkdir(`${root}/.agentplane/tasks/${taskId}`, { recursive: true });
++  await writeFile(
++    `${root}/.agentplane/tasks/${taskId}/README.md`,
++    [
++      "---",
++      `id: "${taskId}"`,
++      'title: "Documentation task"',
++      'status: "DOING"',
++      'priority: "med"',
++      'owner: "CODER"',
++      "depends_on: []",
++      'tags: ["docs"]',
++      'task_kind: "docs"',
++      'mutation_scope: "docs"',
++      'blueprint_request: "docs.change"',
++      "verify: []",
++      "comments: []",
++      "doc_version: 3",
++      'doc_updated_at: "2026-01-01T00:00:00.000Z"',
++      'doc_updated_by: "CODER"',
++      'description: "Documentation task."',
++      "---",
++      "",
++    ].join("\n"),
++    "utf8",
++  );
++}
++
++async function advanceBranchWithEmptyCommit(root: string, branch: string): Promise<void> {
++  const execFileAsync = promisify(execFile);
++  const parentResult = await execFileAsync("git", ["rev-parse", branch], { cwd: root });
++  const parentSha = parentResult.stdout.trim();
++  const treeResult = await execFileAsync("git", ["rev-parse", `${parentSha}^{tree}`], {
++    cwd: root,
++  });
++  const commitResult = await execFileAsync(
++    "git",
++    ["commit-tree", treeResult.stdout.trim(), "-p", parentSha, "-m", "advance base"],
++    { cwd: root },
++  );
++  await execFileAsync(
++    "git",
++    ["update-ref", `refs/heads/${branch}`, commitResult.stdout.trim(), parentSha],
++    { cwd: root },
++  );
++}
++
+ describe("runCli hooks pre-commit guards", () => {
+   it("hooks run pre-commit allows tasks.json with env override", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+@@ -462,4 +510,173 @@ describe("runCli hooks pre-commit guards", () => {
+       restoreEnv("AGENTPLANE_ALLOW_TASKS", prev);
+     }
+   });
++
++  it("attributes a configured-base merge to the task-side docs diff", async () => {
++    const taskId = "202601010101-ABCDEF";
++    const otherTaskId = "202601010102-OTHER1";
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++    await writeDocsTask(root, taskId);
++    await writeFile(`${root}/README.md`, "base\n", "utf8");
++    const execFileAsync = promisify(execFile);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
++
++    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/docs-sync`], { cwd: root });
++    await mkdir(`${root}/docs`, { recursive: true });
++    await writeFile(`${root}/docs/guide.mdx`, "# Guide\n", "utf8");
++    await execFileAsync("git", ["add", "docs/guide.mdx"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "docs: add guide"], { cwd: root });
++
++    await execFileAsync("git", ["checkout", "main"], { cwd: root });
++    await mkdir(`${root}/.agentplane/tasks/${otherTaskId}/quality/run`, { recursive: true });
++    await mkdir(`${root}/src`, { recursive: true });
++    await writeFile(
++      `${root}/.agentplane/tasks/${otherTaskId}/quality/run/evaluator-result.json`,
++      "{}\n",
++      "utf8",
++    );
++    await writeFile(`${root}/src/base-fix.ts`, "export const baseFix = true;\n", "utf8");
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "fix: advance base"], { cwd: root });
++
++    await execFileAsync("git", ["checkout", `task/${taskId}/docs-sync`], { cwd: root });
++    await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "main"], { cwd: root });
++    await advanceBranchWithEmptyCommit(root, "main");
++
++    const messagePath = `${root}/COMMIT_EDITMSG`;
++    await writeFile(
++      messagePath,
++      "🔀 ABCDEF task: sync configured base\n\nSigned-off-by: Test User <test@example.com>\n",
++      "utf8",
++    );
++    const io = captureStdIO();
++    try {
++      await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(0);
++      await expect(
++        runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]),
++      ).resolves.toBe(0);
++    } finally {
++      io.restore();
++    }
++  });
++
++  it("still rejects a task-side implementation diff during a configured-base merge", async () => {
++    const taskId = "202601010101-ABCDEF";
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++    await writeDocsTask(root, taskId);
++    await writeFile(`${root}/README.md`, "base\n", "utf8");
++    const execFileAsync = promisify(execFile);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
++
++    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/docs-sync`], { cwd: root });
++    await mkdir(`${root}/src`, { recursive: true });
++    await writeFile(`${root}/src/task-change.ts`, "export const taskChange = true;\n", "utf8");
++    await execFileAsync("git", ["add", "src/task-change.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seed invalid task change"], { cwd: root });
++
++    await execFileAsync("git", ["checkout", "main"], { cwd: root });
++    await writeFile(`${root}/README.md`, "advanced base\n", "utf8");
++    await execFileAsync("git", ["add", "README.md"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "docs: advance base"], { cwd: root });
++    await execFileAsync("git", ["checkout", `task/${taskId}/docs-sync`], { cwd: root });
++    await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "main"], { cwd: root });
++    await advanceBranchWithEmptyCommit(root, "main");
++
++    const preCommitIo = captureStdIO();
++    try {
++      await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(5);
++      expect(preCommitIo.stderr).toContain("src/task-change.ts");
++      expect(preCommitIo.stderr).not.toContain("README.md");
++    } finally {
++      preCommitIo.restore();
++    }
++
++    const messagePath = `${root}/COMMIT_EDITMSG`;
++    await writeFile(
++      messagePath,
++      "🔀 ABCDEF task: sync configured base\n\nSigned-off-by: Test User <test@example.com>\n",
++      "utf8",
++    );
++    const commitMsgIo = captureStdIO();
++    try {
++      await expect(
++        runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]),
++      ).resolves.toBe(5);
++      expect(commitMsgIo.stderr).toContain("src/task-change.ts");
++      expect(commitMsgIo.stderr).not.toContain("README.md");
++    } finally {
++      commitMsgIo.restore();
++    }
++  });
++
++  it("does not treat a reachable topic merge as a configured-base merge", async () => {
++    const taskId = "202601010101-ABCDEF";
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++    await writeDocsTask(root, taskId);
++    await writeFile(`${root}/README.md`, "base\n", "utf8");
++    const execFileAsync = promisify(execFile);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
++    const revParseResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++    const baseSha = revParseResult.stdout.trim();
++
++    await execFileAsync("git", ["checkout", "-b", "topic/already-merged"], { cwd: root });
++    await mkdir(`${root}/src`, { recursive: true });
++    await writeFile(`${root}/src/topic-change.ts`, "export const topicChange = true;\n", "utf8");
++    await execFileAsync("git", ["add", "src/topic-change.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "feat: add topic change"], { cwd: root });
++
++    await execFileAsync("git", ["checkout", "main"], { cwd: root });
++    await execFileAsync("git", ["merge", "--no-ff", "topic/already-merged", "-m", "merge topic"], {
++      cwd: root,
++    });
++
++    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/docs-sync`, baseSha], {
++      cwd: root,
++    });
++    await mkdir(`${root}/docs`, { recursive: true });
++    await writeFile(`${root}/docs/guide.mdx`, "# Guide\n", "utf8");
++    await execFileAsync("git", ["add", "docs/guide.mdx"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "docs: add guide"], { cwd: root });
++    await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "topic/already-merged"], {
++      cwd: root,
++    });
++
++    const messagePath = `${root}/COMMIT_EDITMSG`;
++    await writeFile(
++      messagePath,
++      "🔀 ABCDEF task: merge topic branch\n\nSigned-off-by: Test User <test@example.com>\n",
++      "utf8",
++    );
++    const preCommitIo = captureStdIO();
++    try {
++      await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(5);
++      expect(preCommitIo.stderr).toContain("src/topic-change.ts");
++    } finally {
++      preCommitIo.restore();
++    }
++
++    const commitMsgIo = captureStdIO();
++    try {
++      await expect(
++        runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]),
++      ).resolves.toBe(5);
++      expect(commitMsgIo.stderr).toContain("src/topic-change.ts");
++    } finally {
++      commitMsgIo.restore();
++    }
++  });
+ });
+diff --git a/packages/agentplane/src/commands/hooks/base-sync-policy-paths.ts b/packages/agentplane/src/commands/hooks/base-sync-policy-paths.ts
+new file mode 100644
+index 000000000..8e85f7790
+--- /dev/null
++++ b/packages/agentplane/src/commands/hooks/base-sync-policy-paths.ts
+@@ -0,0 +1,70 @@
++import { gitRevParse } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++function nullSeparatedPaths(value: string | Buffer): string[] {
++  return [
++    ...new Set(
++      value
++        .toString()
++        .split("\0")
++        .filter((entry) => entry.length > 0),
++    ),
++  ].toSorted();
++}
++
++async function isOnFirstParentHistory(opts: {
++  gitRoot: string;
++  commit: string;
++  head: string;
++}): Promise<boolean> {
++  const { stdout } = await execFileAsync("git", ["rev-list", "--first-parent", opts.head, "--"], {
++    cwd: opts.gitRoot,
++    encoding: "buffer",
++    maxBuffer: 10 * 1024 * 1024,
++  });
++  return stdout.toString().split(/\s+/u).includes(opts.commit);
++}
++
++/**
++ * During a configured-base merge, the index-to-HEAD diff includes every path
++ * arriving from the base branch. Policy must attribute only the task-side
++ * delta to the active task, while ordinary commits and non-base merges retain
++ * the original staged-path enforcement surface.
++ */
++export async function resolveHookPolicyStagedPaths(opts: {
++  gitRoot: string;
++  workflowMode: "direct" | "branch_pr";
++  baseBranch: string | null;
++  stagedPaths: readonly string[];
++}): Promise<string[]> {
++  const fallback = [...opts.stagedPaths];
++  if (opts.workflowMode !== "branch_pr" || !opts.baseBranch) return fallback;
++
++  try {
++    const mergeHeadOutput = await gitRevParse(opts.gitRoot, ["--verify", "MERGE_HEAD"]);
++    const mergeHeads = mergeHeadOutput.split(/\s+/u).filter(Boolean);
++    if (mergeHeads.length !== 1) return fallback;
++    const mergeHead = mergeHeads[0];
++    if (!mergeHead) return fallback;
++
++    const baseHead = await gitRevParse(opts.gitRoot, [`${opts.baseBranch}^{commit}`]);
++    if (
++      !(await isOnFirstParentHistory({ gitRoot: opts.gitRoot, commit: mergeHead, head: baseHead }))
++    ) {
++      return fallback;
++    }
++
++    const { stdout } = await execFileAsync(
++      "git",
++      ["diff", "--cached", "--name-only", "-z", mergeHead, "--"],
++      {
++        cwd: opts.gitRoot,
++        encoding: "buffer",
++        maxBuffer: 10 * 1024 * 1024,
++      },
++    );
++    return nullSeparatedPaths(stdout);
++  } catch {
++    return fallback;
++  }
++}
+diff --git a/packages/agentplane/src/commands/hooks/run.commit-msg.ts b/packages/agentplane/src/commands/hooks/run.commit-msg.ts
+index e21ead30a..ea4e27b0a 100644
+--- a/packages/agentplane/src/commands/hooks/run.commit-msg.ts
++++ b/packages/agentplane/src/commands/hooks/run.commit-msg.ts
+@@ -2,13 +2,14 @@ import { resolveProject } from "@agentplaneorg/core/project";
+ import { readFile } from "node:fs/promises";
+ 
+ import { loadConfig } from "@agentplaneorg/core/config";
+-import { GitContext } from "@agentplaneorg/core/git";
++import { GitContext, resolveBaseBranch } from "@agentplaneorg/core/git";
+ 
+ import { evaluatePolicy } from "../../policy/evaluate.js";
+ import { CliError } from "../../shared/errors.js";
+ import { throwIfPolicyDenied } from "../shared/policy-deny.js";
+ import { assertDcoSignoff } from "../guard/impl/dco.js";
+ import type { HooksRunOptions } from "./run.js";
++import { resolveHookPolicyStagedPaths } from "./base-sync-policy-paths.js";
+ import {
+   envFlag,
+   inferTaskIdFromCurrentBranch,
+@@ -42,6 +43,23 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
+     rootOverride: opts.rootOverride ?? null,
+   });
+   const loaded = await loadConfig(resolved.agentplaneDir);
++  const git = new GitContext({ gitRoot: resolved.gitRoot });
++  const stagedPaths = await git.statusStagedPaths();
++  const baseBranch =
++    loaded.config.workflow_mode === "branch_pr"
++      ? await resolveBaseBranch({
++          cwd: opts.cwd,
++          rootOverride: opts.rootOverride ?? null,
++          cliBaseOpt: null,
++          mode: loaded.config.workflow_mode,
++        })
++      : null;
++  const policyStagedPaths = await resolveHookPolicyStagedPaths({
++    gitRoot: resolved.gitRoot,
++    workflowMode: loaded.config.workflow_mode,
++    baseBranch,
++    stagedPaths,
++  });
+ 
+   const taskId =
+     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
+@@ -80,7 +98,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
+     action: "hook_commit_msg",
+     config: loaded.config,
+     taskId,
+-    git: { stagedPaths: await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths() },
++    git: { stagedPaths: policyStagedPaths },
+     commit: {
+       subject,
+       body: raw,
+diff --git a/packages/agentplane/src/commands/hooks/run.pre-commit.ts b/packages/agentplane/src/commands/hooks/run.pre-commit.ts
+index 574973191..7ddada10f 100644
+--- a/packages/agentplane/src/commands/hooks/run.pre-commit.ts
++++ b/packages/agentplane/src/commands/hooks/run.pre-commit.ts
+@@ -6,6 +6,7 @@ import { evaluatePolicy } from "../../policy/evaluate.js";
+ import { CliError } from "../../shared/errors.js";
+ import { throwIfPolicyDenied } from "../shared/policy-deny.js";
+ import type { HooksRunOptions } from "./run.js";
++import { resolveHookPolicyStagedPaths } from "./base-sync-policy-paths.js";
+ import {
+   currentBranchOrUndefined,
+   envFlag,
+@@ -106,6 +107,12 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
+       })
+     : null;
+   const currentBranch = await currentBranchOrUndefined(resolved.gitRoot);
++  const policyStaged = await resolveHookPolicyStagedPaths({
++    gitRoot: resolved.gitRoot,
++    workflowMode: loaded.config.workflow_mode,
++    baseBranch,
++    stagedPaths: staged,
++  });
+   const [unstagedTracked, untracked] = await Promise.all([
+     git.statusUnstagedTrackedPaths(),
+     git.statusUntrackedPaths(),
+@@ -135,7 +142,7 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
+     config: loaded.config,
+     taskId,
+     git: {
+-      stagedPaths: staged,
++      stagedPaths: policyStaged,
+       currentBranch,
+       baseBranch,
+     },

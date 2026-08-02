@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608020147-VMBX4H/base-sync-policy",
+  "created_at": "2026-08-02T01:48:08.791Z",
+  "diffstat_sha256": "sha256:e149c6c01cdae49c03bee8d7adecb7beee14f631df94b5172c55295d09926a47",
+  "last_verified_at": "2026-08-02T02:19:16.722Z",
+  "last_verified_diffstat_sha256": "sha256:e149c6c01cdae49c03bee8d7adecb7beee14f631df94b5172c55295d09926a47",
+  "pr_number": 4735,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4735",
+  "pre_merge_closure": {
+    "basis_commit": "46cc69a2043387e63a7207a20bea4fbfdd78e097",
+    "branch": "task/202608020147-VMBX4H/base-sync-policy",
+    "pr_number": 4735,
+    "recorded_at": "2026-08-02T02:21:07.091Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608020147-VMBX4H",
+  "updated_at": "2026-08-02T01:59:08.696Z",
+  "verify": {
+    "status": "pass"
+  }
+}

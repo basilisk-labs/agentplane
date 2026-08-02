@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "202608012350-3KR5T7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-01T23:53:56.069Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "4178a3da55dbf8b0f52eee5740f6c262d8d39ef2",
+  "blueprint_digest": "ed7f4b7078ff747fb2fe40494601be83337d1a277e10fbfcc47bf7a9d5087d07",
+  "findings": [
+    "The frozen packet contains no deterministic check results, runner history, or runtime evidence supporting the recorded verification claims.",
+    "The recorded verification omits the mandatory documentation-policy checks `node .agentplane/policy/check-routing.mjs` and `agentplane doctor`."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-blueprint.json",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/dod.docs.md",
+    ".agentplane/tasks/202608012350-3KR5T7/README.md"
+  ],
+  "missing_tests": [
+    "Capture successful deterministic results for `bun run docs:site:generate:check` and `bun run docs:site:check` in the evaluator packet.",
+    "Run and record `node .agentplane/policy/check-routing.mjs`.",
+    "Run and record `agentplane doctor`.",
+    "Record `git status --short --untracked-files=all` evidence proving no unintended tracked or untracked artifacts remain."
+  ],
+  "hidden_assumptions": [
+    "The prose verification record is assumed to be sufficient despite the frozen observed-checks artifact containing no corresponding results.",
+    "Regenerating `website/static/llms-full.txt` is assumed to preserve canonical-link validity and avoid duplicate or conflicting documentation without recorded evidence for those checks.",
+    "The workspace is assumed to have no concurrent or unrelated drift, but the frozen evidence contains no final status evidence or drift classification."
+  ],
+  "residual_risks": [
+    "Re-run the mandatory documentation checks and freshness gates, capture their deterministic results plus final tracked/untracked status in the frozen evidence, and then repeat evaluation against the same one-file implementation scope."
+  ]
+}

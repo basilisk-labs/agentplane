@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: 2 test files and 25 tests passed, including configured base-sync selection and non-base lifecycle merge preservation.\nScope: merge-aware evaluator target and frozen evidence behavior.\n\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: 1 test file and 20 evaluator command tests passed.\nScope: evaluator command compatibility.\n\nCommand: bun run typecheck && bun run lint:core && bun run arch:check && bun run knip:check\nResult: pass\nEvidence: native typecheck, ESLint, architecture boundaries, and knip baseline all passed.\nScope: repository static gates.\n\nCommand: bun run format:check && git diff --check\nResult: pass\nEvidence: formatting and whitespace validation passed.\nScope: current implementation diff.",
+  "digest": "sha256:1089fd5c4c9a8c975294b27517ada56762b6c443f3b51159bece16f7cbce2116",
+  "implementation_sha": "8f0f28419421fa9de757752da254ad18ec30b705",
+  "kind": "task_verification_record",
+  "note": "Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate.",
+  "recorded_at": "2026-08-02T01:14:10.132Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused quality-target and evaluator evidence tests. Expected: a task branch that merges updated base history freezes the merge commit as evaluated_sha, the actual task patch, and the matching SHA-bound verification record.\n2. Run evaluator command tests and repository typecheck. Expected: existing metadata-only, lifecycle-only, batch, and direct-mode target semantics remain green.\n3. Inspect the final diff against main. Expected: only merge-aware target selection and focused tests plus task-local evidence are changed.",
+  "scope_digest": "sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e",
+  "task_id": "202608020016-TDXFVT",
+  "verification_command": "agentplane verify 202608020016-TDXFVT --ok --by TESTER",
+  "verifier": "TESTER"
+}

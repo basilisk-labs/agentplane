@@ -1,4 +1,10 @@
-import { gitDiffNames, gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
+import {
+  gitDiffNames,
+  gitIsAncestor,
+  gitRevParse,
+  gitShowFile,
+  resolveBaseBranch,
+} from "@agentplaneorg/core/git";
 import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
@@ -269,6 +275,49 @@ export async function isAuthorityOnlyTaskReadmeAdvance(opts: {
   return true;
 }
 
+async function hasReviewableChangesAgainstMergeParent(opts: {
+  gitRoot: string;
+  parent: string;
+  current: string;
+  changed: readonly string[];
+  workflowArtifactPrefix: string;
+  lifecycleTaskIdSet: ReadonlySet<string>;
+  taskIdForPath: (name: string) => string | null;
+  taskRelativePath: (name: string) => string | null;
+}): Promise<boolean> {
+  if (opts.changed.some((name) => !name.startsWith(opts.workflowArtifactPrefix))) return true;
+
+  const currentTaskChanges = opts.changed.filter((name) => opts.taskRelativePath(name) !== null);
+  if (currentTaskChanges.length === 0) return false;
+  const taskReadmeAdvance = {
+    gitRoot: opts.gitRoot,
+    parent: opts.parent,
+    current: opts.current,
+    changed: currentTaskChanges,
+    taskRelativePath: opts.taskRelativePath,
+  };
+  if (
+    (await isAuthorityOnlyTaskReadmeAdvance(taskReadmeAdvance)) ||
+    (await isImplementationReceiptTaskReadmeAdvance(taskReadmeAdvance)) ||
+    (currentTaskChanges.every((name) => {
+      const taskId = opts.taskIdForPath(name);
+      return taskId !== null && opts.lifecycleTaskIdSet.has(taskId);
+    }) &&
+      (await isLifecycleOnlyTaskReadmeAdvance(taskReadmeAdvance)))
+  ) {
+    return false;
+  }
+
+  const relativePaths = currentTaskChanges.flatMap((name) => {
+    const relativePath = opts.taskRelativePath(name);
+    return relativePath === null ? [] : [relativePath];
+  });
+  return !(
+    relativePaths.some((name) => isDerivedTaskArtifact(name)) &&
+    relativePaths.every((name) => isManagedTaskArtifact(name))
+  );
+}
+
 /**
  * Resolve the commit that must be covered by a semantic quality review.
  *
@@ -285,6 +334,8 @@ export async function resolveQualityReviewTargetSha(opts: {
   lifecycleTaskIds?: readonly string[];
   headSha?: string | null;
   previousEvaluatedSha?: string | null;
+  workflowMode?: "direct" | "branch_pr";
+  baseRef?: string | null;
 }): Promise<string | null> {
   const requestedHead = opts.headSha?.trim();
   const head =
@@ -314,6 +365,18 @@ export async function resolveQualityReviewTargetSha(opts: {
     if (!resolved) return null;
     return (await gitIsAncestor(opts.gitRoot, resolved, head)) ? resolved : null;
   })();
+  const baseHeadSha = await (async (): Promise<string | null> => {
+    if (opts.workflowMode !== "branch_pr") return null;
+    const baseRef = await resolveBaseBranch({
+      cwd: opts.gitRoot,
+      rootOverride: opts.gitRoot,
+      cliBaseOpt: opts.baseRef ?? null,
+      mode: "branch_pr",
+    }).catch(() => null);
+    return baseRef
+      ? await gitRevParse(opts.gitRoot, [`${baseRef}^{commit}`]).catch(() => null)
+      : null;
+  })();
 
   let current = head;
   let currentTaskArtifactHead: string | null = null;
@@ -321,6 +384,28 @@ export async function resolveQualityReviewTargetSha(opts: {
   for (;;) {
     if (current === previousEvaluatedSha) {
       return currentTaskArtifactHead ?? current;
+    }
+
+    const mergeParent = await gitRevParse(opts.gitRoot, [`${current}^2`]).catch(() => null);
+    const isBaseSyncMerge = Boolean(
+      mergeParent && baseHeadSha && (await gitIsAncestor(opts.gitRoot, mergeParent, baseHeadSha)),
+    );
+    if (mergeParent && isBaseSyncMerge) {
+      const changedAgainstMergeParent = await gitDiffNames(opts.gitRoot, mergeParent, current);
+      if (
+        await hasReviewableChangesAgainstMergeParent({
+          gitRoot: opts.gitRoot,
+          parent: mergeParent,
+          current,
+          changed: changedAgainstMergeParent,
+          workflowArtifactPrefix,
+          lifecycleTaskIdSet,
+          taskIdForPath,
+          taskRelativePath,
+        })
+      ) {
+        return currentTaskArtifactHead ?? current;
+      }
     }
 
     let parent: string;
@@ -340,6 +425,10 @@ export async function resolveQualityReviewTargetSha(opts: {
     const touchesOnlyWorkflowArtifacts = changed.every((name) =>
       name.startsWith(workflowArtifactPrefix),
     );
+    if (mergeParent && !isBaseSyncMerge && touchesOnlyWorkflowArtifacts && !touchesCurrentTaskSet) {
+      current = parent;
+      continue;
+    }
     if (!touchesOnlyCurrentTaskSet && !touchesOnlyWorkflowArtifacts) {
       return currentTaskArtifactHead ?? current;
     }

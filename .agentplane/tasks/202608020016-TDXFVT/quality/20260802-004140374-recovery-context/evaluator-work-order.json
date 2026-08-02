@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020016-TDXFVT-0948aa3ef46fe7c80db96974",
+  "prepared_at": "2026-08-02T00:41:40.374Z",
+  "task": {
+    "id": "202608020016-TDXFVT",
+    "revision": 12,
+    "objective": "Preserve evaluator work units across base-sync merges\n\nFix branch_pr evaluator packet preparation so a merge of current main into a task branch preserves the committed task work unit, actual diff, and matching verification records instead of freezing an empty packet. Add focused regression coverage for merge-aware target selection.",
+    "acceptance_criteria": [
+      "- In scope: make branch_pr semantic review target selection merge-aware for base-sync merges; preserve the actual task diff and current verification records; add focused regression tests.\n- Out of scope: evaluator prompt/rubric changes, provider behavior changes, unrelated lifecycle refactors.",
+      "1. Reproduce the empty evaluator packet with a branch_pr base-sync merge fixture.\n2. Make quality-review target resolution recognize a merge whose non-first-parent comparison contains the current task work unit.\n3. Prove the actual diff and verification record remain bound to the merge head while unrelated/lifecycle-only behavior remains unchanged.\n4. Run focused tests, typecheck, evaluator quality review, and hosted integration.",
+      "1. Run focused quality-target and evaluator evidence tests. Expected: a task branch that merges updated base history freezes the merge commit as evaluated_sha, the actual task patch, and the matching SHA-bound verification record.\n2. Run evaluator command tests and repository typecheck. Expected: existing metadata-only, lifecycle-only, batch, and direct-mode target semantics remain green.\n3. Inspect the final diff against main. Expected: only merge-aware target selection and focused tests plus task-local evidence are changed."
+    ]
+  },
+  "evaluated_sha": "6d9968b6730e14c7bbbb7c106565e8dea25d3a24",
+  "diff_base_sha": "5d4a8de1a96bc29e13012ce01bfc65661ff5fa19",
+  "blueprint_digest": "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/README.md",
+      "sha256": "sha256:0c4a2e625538e60c5562aff12e4305b25394d6f9aaeec908a693a1ee2efc0243",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004140374-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d67a98141b5e81cea6dd09335d475a254387703150775ea81d9c2c7b7e8f0806",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004140374-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:40130b0c6a780cd5e5cfbdb5c426ecc4bd221bb5e1099dd6a367b105e7f3e5e5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004126077-38d6187f16df3303.json",
+      "sha256": "sha256:8aec7e3eabf68e48bdec1cdf8705e8e5ba4566df41761032256fd5b837b6eaac",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004140374-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:9d2bcabfb7098a6f53f6ebce5575bd9689fa6ef7ba8cf0ddbcd589fb87b99ce5",
+      "required": true
+    }
+  ]
+}

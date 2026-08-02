@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation correctly limits configured-base merge policy evaluation to the index diff against the merged base parent, preserves fallback enforcement for ordinary and unrecognized merges, and covers concurrent linear base advancement plus task-side and side-parent negative cases.",
+      "broken_invariant": "No invariant is broken; the approved attribution, fallback, negative-case, and concurrency-sensitive contracts are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:705121541fec122165d9cf90df2721917cf6a51cda9e850d30a9c0c753e84959"
+        },
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:49d5ce27db5b2a55552759da1bb668ab38d971780cbb0d77cd0675948c7d1f56"
+        },
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/README.md",
+          "sha256": "sha256:13c143fcbcb1b8a413b3d8a8f3c5b958d5092804d4d97c2e7d3e442707d62137",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The required post-integration reproduction of the real YMYYQ8 configured-base merge remains deferred until this change is integrated."
+  ],
+  "hidden_assumptions": [
+    "The configured base reference retains first-parent reachability to the MERGE_HEAD while hooks run; rewritten base history intentionally causes conservative fallback to the full staged-path set.",
+    "A single MERGE_HEAD is the only supported configured-base synchronization shape; octopus merges intentionally retain ordinary full staged-path enforcement."
+  ]
+}
