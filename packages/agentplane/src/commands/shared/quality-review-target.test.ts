@@ -67,6 +67,23 @@ function taskReadme(opts: {
     .join("\n");
 }
 
+function lifecycleTaskReadme(opts: {
+  taskId: string;
+  revision: number;
+  status: "TODO" | "DOING";
+}): string {
+  return [
+    "---",
+    `id: ${opts.taskId}`,
+    'title: "Lifecycle-only merge target"',
+    `status: ${opts.status}`,
+    `revision: ${opts.revision}`,
+    "---",
+    "# Lifecycle-only merge target",
+    "",
+  ].join("\n");
+}
+
 function implementationReceiptReadme(opts: {
   taskId: string;
   revision: number;
@@ -384,6 +401,41 @@ describe("quality review target resolver", () => {
       "docs: advance unrelated base task",
     );
     await execFileAsync("git", ["checkout", "task/managed-base-sync"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
+      cwd: root,
+    });
+
+    await expect(resolveTarget({ root, taskId })).resolves.toBeNull();
+  });
+
+  it("ignores a base-sync merge whose task-side delta is lifecycle-only", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-LIFECYCLE-MERGE";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      lifecycleTaskReadme({ taskId, revision: 1, status: "TODO" }),
+      "docs: establish task state",
+    );
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/lifecycle-base-sync"], { cwd: root });
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      lifecycleTaskReadme({ taskId, revision: 2, status: "DOING" }),
+      "chore: advance task lifecycle",
+    );
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/README.md",
+      "unrelated base task state\n",
+      "docs: advance unrelated base task",
+    );
+    await execFileAsync("git", ["checkout", "task/lifecycle-base-sync"], { cwd: root });
     await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
       cwd: root,
     });

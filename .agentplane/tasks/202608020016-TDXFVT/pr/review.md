@@ -13,7 +13,7 @@ Created: 2026-08-02T00:17:10.319Z
 ## Verification
 
 - State: ok
-- Note: Hosted static-analysis rework is resolved and the full local verify-static surface passes.
+- Note: Merge-aware evaluator target rework passes the complete local static gate and positive/negative regression suite.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,9 +30,9 @@ Created: 2026-08-02T00:17:10.319Z
 
 ```text
  .../evaluator/evaluator-runtime-evidence.test.ts   | 93 ++++++++++++++++++++++
- .../commands/shared/quality-review-target.test.ts  | 38 +++++++++
+ .../commands/shared/quality-review-target.test.ts  | 73 +++++++++++++++++
  .../src/commands/shared/quality-review-target.ts   | 62 +++++++++++++++
- 3 files changed, 193 insertions(+)
+ 3 files changed, 228 insertions(+)
 ```
 
 </details>
