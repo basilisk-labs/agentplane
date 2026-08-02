@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-83Y4AF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T06:15:19.422Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "c59bb6e5e222f376cd7508e773fdc666350276de",
+  "blueprint_digest": "e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d",
+  "findings": [
+    "Two latency metrics exceed their frozen thresholds, but the qualification policy explicitly classifies timing as diagnostic-only, records zero blocking failures, makes no latency-improvement claim, and selects do_not_publish."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+    ".agentplane/tasks/202607221908-83Y4AF/verification/20260802061342955-3c53e8981e8fd5f2.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen timing policy intentionally treats latency thresholds as diagnostic-only and therefore does not make either raw latency failure qualification-blocking.",
+    "The absence of an external integration consumer is sufficient justification for the explicit do_not_publish decision.",
+    "The packet's evidence commit may differ from implementation_sha because it records task-local qualification evidence without changing the reviewed implementation."
+  ],
+  "residual_risks": []
+}
