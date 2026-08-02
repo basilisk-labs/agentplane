@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020639-X1DWST-7a20cf985c1574e59c3fc9ce",
+  "prepared_at": "2026-08-02T06:58:58.638Z",
+  "task": {
+    "id": "202608020639-X1DWST",
+    "revision": 9,
+    "objective": "Allow the v0.7 release version delta in compatibility evidence\n\nFreeze the exact 0.7.0 package-manifest version and internal dependency parity delta in the reviewed compatibility candidate without modifying the immutable 0.6.24 baseline, and add regression coverage that rejects every non-version manifest drift.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "bun run bench:compatibility:check",
+      "bun run typecheck",
+      "bun run ci:contract",
+      "- In scope: Freeze the exact 0.7.0 package-manifest version and internal dependency parity delta in the reviewed compatibility candidate without modifying the immutable 0.6.24 baseline, and add regression coverage that rejects every non-version manifest drift.\n- Out of scope: unrelated refactors not required for \"Allow the v0.7 release version delta in compatibility evidence\".",
+      "1. Model the planned release-version delta separately from the cumulative 0.7 compatibility surface, leaving the immutable 0.6.24 baseline and pre-version candidate digest unchanged.\n2. Accept only the exact 0.7.0 publishable package versions and internal dependency parity digest; reject any additional manifest, CLI, workflow, context, machine-output, or tarball drift.\n3. Freeze explicit source-task provenance and expected section/surface digests in the reviewed candidate artifact.\n4. Add focused positive and negative regression coverage for pre-version main, the exact planned release delta, and tampered manifest changes.\n5. Run the focused baseline suite, compatibility check, TypeScript typecheck, and full CI contract before independent review.",
+      "PLANNER fallback scaffold for \"Allow the v0.7 release version delta in compatibility evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow the v0.7 release version delta in compatibility evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "300858b691a250240b9d8d1769c85a89aa65c56b",
+  "diff_base_sha": "1c4f6b2e3d5103e1f62c71c104c5c615061eb4b4",
+  "blueprint_digest": "0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020639-X1DWST/README.md",
+      "sha256": "sha256:7c2da24861ff937919fef0b97e34743cc35c979cc5938ba29ad6b27ada7fdcab",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:9f804e4a6b842b32338a1bed87c787f12d92edc450eed46c19217d2c858184b2",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:a18b2c4f61b61e933b5e20eb1029f27fe6b1437f8fb5baedb30691dfacd2d244",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608020639-X1DWST/verification/20260802065846351-88d9a262f7fc74f8.json",
+      "sha256": "sha256:502f4ac9ec40769ba37b608199d748e69e19ba552fc97c9f48688c99c7194082",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:9308ec59377d45bfd7d7fd7b60b1d79b963e4baa5622abdafd21d4d1099609b9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

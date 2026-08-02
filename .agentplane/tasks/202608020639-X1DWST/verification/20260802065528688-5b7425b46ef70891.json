@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:5b7425b46ef70891c171461221a9a44c5981220f14fc729fc528c148f581b0fe",
+  "implementation_sha": "300858b691a250240b9d8d1769c85a89aa65c56b",
+  "kind": "task_verification_record",
+  "note": "Verified: The compatibility ratchet accepts the unchanged reviewed pre-version surface and only the exact frozen v0.7.0 package-manifest parity surface. Eight focused tests, the compatibility check, TypeScript build, and the full ci:contract gate pass.",
+  "recorded_at": "2026-08-02T06:55:28.688Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow the v0.7 release version delta in compatibility evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow the v0.7 release version delta in compatibility evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:5b396e725a85e19ba63bc2b6efa28a59583b3a2a0976c62d05204a8afd3dee72",
+  "task_id": "202608020639-X1DWST",
+  "verification_command": "agentplane verify 202608020639-X1DWST --ok --by TESTER",
+  "verifier": "TESTER"
+}

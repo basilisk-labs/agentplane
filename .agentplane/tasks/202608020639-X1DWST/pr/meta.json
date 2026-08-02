@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202608020639-X1DWST/allow-the-v0-7-release-version-delta-in-compatib",
   "created_at": "2026-08-02T06:41:46.595Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:f33536b7ab7b1dccbe252d2b8ac3331df4ee15ba4e49f39fab2a4c220d9b6188",
+  "last_verified_at": "2026-08-02T06:58:46.351Z",
+  "last_verified_diffstat_sha256": "sha256:f33536b7ab7b1dccbe252d2b8ac3331df4ee15ba4e49f39fab2a4c220d9b6188",
   "pr_number": 4740,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4740",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202608020639-X1DWST",
   "updated_at": "2026-08-02T06:48:07.923Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

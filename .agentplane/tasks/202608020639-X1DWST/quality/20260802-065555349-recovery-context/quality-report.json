@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020639-X1DWST",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T06:56:41.414Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "300858b691a250240b9d8d1769c85a89aa65c56b",
+  "blueprint_digest": "0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c",
+  "findings": [
+    "The frozen evidence contains a TESTER summary but no deterministic execution records, runner history, or runtime evidence for any of the four required checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065555349-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608020639-X1DWST/README.md"
+  ],
+  "missing_tests": [
+    "Frozen command-level results for the focused compatibility baseline suite, compatibility check, TypeScript typecheck, and full CI contract at evaluated SHA 300858b691a250240b9d8d1769c85a89aa65c56b."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification summary accurately reflects successful execution of all declared checks at the evaluated SHA despite the absence of frozen command-level evidence."
+  ],
+  "residual_risks": [
+    "Provide deterministic frozen results for all four declared checks at evaluated SHA 300858b691a250240b9d8d1769c85a89aa65c56b, including exit status and enough output to identify the executed command and covered test cases, then repeat semantic evaluation."
+  ]
+}

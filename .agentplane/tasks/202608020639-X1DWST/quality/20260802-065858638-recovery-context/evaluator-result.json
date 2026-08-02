@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen verification substituted bunx vitest for the explicitly required bun test command without recording an approved skip or verification-contract change.",
+      "broken_invariant": "All declared acceptance checks must be executed as specified, or any skipped/replaced mandatory check must have a recorded reason, risk, and approval; changing the verification contract is material drift requiring re-approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/README.md",
+          "sha256": "sha256:7c2da24861ff937919fef0b97e34743cc35c979cc5938ba29ad6b27ada7fdcab",
+          "section": "verify"
+        },
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/verification/20260802065846351-88d9a262f7fc74f8.json",
+          "sha256": "sha256:502f4ac9ec40769ba37b608199d748e69e19ba552fc97c9f48688c99c7194082",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Execute the declared bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts check successfully, or record an approved skip/replacement with reason and residual risk.",
+    "Add an end-to-end fixture that reconstructs the exact planned 0.7.0 package manifests and proves their section and surface digests equal the frozen release_version_delta values."
+  ],
+  "hidden_assumptions": [
+    "bunx vitest is treated as semantically interchangeable with the declared bun test command despite the task finding that the runners differ in process.execPath behavior.",
+    "The frozen target manifest and surface digests are assumed to represent only the listed version and internal-dependency paths; the focused test uses synthetic digests and does not independently reconstruct that exact release manifest state."
+  ],
+  "recovery_context": "Resolve the verification-contract drift: run the exact declared bun test command, or obtain and record approval for the Vitest substitution with the required skip reason and risk. Then freeze verification evidence for the unchanged implementation SHA and include an end-to-end exact-release manifest fixture if the target digests cannot otherwise be independently established."
+}
