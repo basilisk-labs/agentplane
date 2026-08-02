@@ -259,7 +259,7 @@ describe("v0.7.1 release qualification contract", () => {
     );
   });
 
-  it("gates matched CLI latency on an interleaved median with no regression allowance", () => {
+  it("gates matched CLI latency on median and p95", () => {
     const passing = compareMatchedLatencySamples({
       id: "quickstart",
       baselineDurations: [100, 101, 102, 103, 104, 105, 106],
@@ -274,8 +274,16 @@ describe("v0.7.1 release qualification contract", () => {
       baselineExitCode: 0,
       candidateExitCode: 0,
     });
+    const failingP95 = compareMatchedLatencySamples({
+      id: "quickstart",
+      baselineDurations: [100, 101, 102, 103, 104, 105, 106],
+      candidateDurations: [90, 91, 92, 93, 94, 95, 130],
+      baselineExitCode: 0,
+      candidateExitCode: 0,
+    });
     assert.equal(passing.verdict, "pass");
     assert.equal(failing.verdict, "fail");
+    assert.equal(failingP95.verdict, "fail");
     assert.equal(failing.delta_ms, 4);
   });
 });

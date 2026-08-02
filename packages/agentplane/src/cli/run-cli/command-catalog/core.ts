@@ -68,8 +68,8 @@ import {
 } from "./provider-ops-capability-profiles.js";
 import { TASK_READ_REQUIREMENTS, TASK_WRITE_REQUIREMENTS } from "./task-capability-profiles.js";
 import {
-  fromCommandsInit,
-  fromCommandsUpgradeCommand,
+  loadInitSpec,
+  loadUpgradeSpec,
   loadReleaseSpec,
   loadReleasePlanSpec,
   loadReleaseApplySpec,
@@ -114,11 +114,13 @@ import {
 } from "../command-loaders/core.js";
 
 export const CORE_COMMANDS = [
-  fromCommandsInit(initSpec, "runInit", {
+  declareSessionCommand(initSpec, {
+    load: loadInitSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["init"]),
   }),
-  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", {
+  declareSessionCommand(upgradeSpec, {
+    load: loadUpgradeSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
   }),
   declareSessionCommand(releaseSpec, {

@@ -1,7 +1,6 @@
-import type { CommandHandler, CommandSpec } from "../../../spec/spec.js";
+import type { CommandSpec } from "../../../spec/spec.js";
 import { usageError } from "../../../spec/errors.js";
 
-import { cmdInit } from "./orchestrate.js";
 import { normalizeSetupProfile } from "./presets.js";
 import {
   parseBlueprintsSelectionForInit,
@@ -361,12 +360,3 @@ export const initSpec: CommandSpec<InitParsed> = {
     }
   },
 };
-
-export const runInit: CommandHandler<InitParsed> = (ctx, flags) =>
-  cmdInit({
-    cwd: ctx.cwd,
-    rootOverride: ctx.rootOverride,
-    outputMode: ctx.outputMode ?? "text",
-    flags,
-    spec: initSpec,
-  });

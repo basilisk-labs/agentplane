@@ -3,7 +3,7 @@ import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/projec
 import { mapCoreError, writeError } from "./error-map.js";
 import { exitCodeForError } from "./exit-codes.js";
 import { loadDotEnv } from "../shared/env.js";
-import { CliError } from "../shared/errors.js";
+import { asCliError, CliError } from "../shared/errors.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
 import type { EvaluatorArtifactPreparationPort } from "../commands/evaluator/evaluator-artifact-port.js";
 import { resolveCommandContext } from "../runtime/execution-context.js";
@@ -11,17 +11,22 @@ import { getVersion } from "../meta/version.js";
 import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
 import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec, makeHelpHandler } from "./spec/help.js";
+import type { HelpJson } from "./spec/help-render.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
 import { findFrameworkCheckout } from "../../bin/runtime-context.js";
 import {
-  COMMANDS,
-  getHelpCommandEntries,
+  getHelpCommandEntriesFrom,
   makeHelpSpecForEntry,
-  matchCommandCatalog,
+  matchCommandEntries,
   isCommandVisibleInHelp,
+  type CatalogMatch,
   type HelpSurfaceMode,
-} from "./run-cli/command-catalog.js";
+} from "./run-cli/command-catalog-helpers.js";
+import {
+  loadAllCommandEntries,
+  loadCommandEntriesForTokens,
+} from "./run-cli/command-catalog-loader.js";
 import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 import { resolveAgentModeArgv } from "./run-cli/agent-mode.js";
@@ -86,7 +91,7 @@ export async function runCli(argv: string[]): Promise<number> {
       : findFrameworkCheckout(helpCwd)
         ? "framework"
         : "user";
-    let matched: ReturnType<typeof matchCommandCatalog> | null = null;
+    let matched: CatalogMatch | null = null;
     let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
     const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
       maybeResolvedProjectPromise ??=
@@ -107,13 +112,19 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
+    const helpRequested = globals.help || rest.length === 0 || rest[0] === "help";
+    let commandEntries = helpRequested
+      ? await loadAllCommandEntries()
+      : await loadCommandEntriesForTokens(rest);
     const makeHelpRegistryEntries = (mode: HelpSurfaceMode) => [
       { spec: helpSpec },
-      ...getHelpCommandEntries(mode).map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
+      ...getHelpCommandEntriesFrom(commandEntries, mode).map((entry) => ({
+        spec: makeHelpSpecForEntry(entry),
+      })),
     ];
     const allHelpRegistryEntries = [
       { spec: helpSpec },
-      ...COMMANDS.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
+      ...commandEntries.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
     ];
     const frameworkCheckout = findFrameworkCheckout(cwd);
     const frameworkCommandDeniedMessage =
@@ -125,7 +136,7 @@ export async function runCli(argv: string[]): Promise<number> {
         if (tokens[0] === "help") {
           return { spec: helpSpec, consumed: 1 };
         }
-        const match = matchCommandCatalog(tokens);
+        const match = matchCommandEntries(commandEntries, tokens);
         if (!match) return null;
         if (
           !opts?.all &&
@@ -233,11 +244,24 @@ export async function runCli(argv: string[]): Promise<number> {
 
     const buildRuntimeRegistry = async () => {
       const { buildRegistry } = await import("./run-cli/registry.run.js");
+      let helpJsonForDocs: readonly HelpJson[] = [];
+      if (matched?.entry.spec.id.join(" ") === "docs cli") {
+        commandEntries = await loadAllCommandEntries();
+        const { makeHelpJsonFromSpecs } = await import("../commands/docs/cli.command.js");
+        helpJsonForDocs = makeHelpJsonFromSpecs([
+          helpSpec,
+          ...getHelpCommandEntriesFrom(commandEntries, "user").map((entry) =>
+            makeHelpSpecForEntry(entry),
+          ),
+        ]);
+      }
       return buildRegistry({
         getCtx: getCtxOrThrow,
         getResolvedProject,
         getLoadedConfig,
         getEvaluatorArtifactPort,
+        getHelpJsonForDocs: () => helpJsonForDocs,
+        entries: matched ? [matched.entry] : [],
         onPreparationTrace: (event) =>
           emitTraceEvent({
             component: "command-session",
@@ -314,7 +338,7 @@ export async function runCli(argv: string[]): Promise<number> {
       return await runFastHelp(rest);
     }
 
-    matched = matchCommandCatalog(rest);
+    matched = matchCommandEntries(commandEntries, rest);
     if (matched?.entry.surface === "framework" && !frameworkCheckout) {
       throw usageError({
         spec: matched.entry.spec,
@@ -350,9 +374,8 @@ export async function runCli(argv: string[]): Promise<number> {
       jsonErrors,
     });
 
-    const registry = await getRuntimeRegistry();
-
     if (matched) {
+      const registry = await getRuntimeRegistry();
       const runtimeEntry = registry.lookup(matched.entry.spec.id);
       if (!runtimeEntry) {
         throw new CliError({
@@ -371,6 +394,7 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
+    commandEntries = await loadAllCommandEntries();
     const input = rest.join(" ");
     const fullCandidates = makeHelpRegistryEntries(defaultHelpSurface).map((e) =>
       e.spec.id.join(" "),
@@ -383,8 +407,9 @@ export async function runCli(argv: string[]): Promise<number> {
       message: `Unknown command: ${input}.${suffix}`,
     });
   } catch (err) {
-    if (err instanceof CliError) {
-      const enriched = await withFeedbackIssuePromptContext(err);
+    const cliError = asCliError(err);
+    if (cliError) {
+      const enriched = await withFeedbackIssuePromptContext(cliError);
       writeError(enriched, jsonErrors);
       return enriched.exitCode;
     }

@@ -47,7 +47,7 @@ import {
   evaluatorRunSpec,
   evaluatorShowSpec,
   evaluatorSpec,
-} from "../../../commands/evaluator/evaluator.command.js";
+} from "../../../commands/evaluator/evaluator.spec.js";
 import {
   loadContextCapabilityDiscoverSpec,
   loadContextCapabilityGroupSpec,

@@ -17,11 +17,11 @@ function usage() {
   return [
     "Usage: node scripts/smoke-bun-compiled-cli.mjs [options]",
     "",
-    "Compile packages/agentplane/dist/cli.js with Bun or smoke-test a Bun executable release archive.",
+    "Compile packages/agentplane/dist/cli-bun.js with Bun or smoke-test a Bun executable release archive.",
     "",
     "Options:",
     "  --artifact <path>              Bun executable archive to smoke-test",
-    "  --entry <path>                Built CLI entrypoint (default: packages/agentplane/dist/cli.js)",
+    "  --entry <path>                Built CLI entrypoint (default: packages/agentplane/dist/cli-bun.js)",
     "  --expected-version <semver>   Expected AgentPlane version (default: packages/agentplane/package.json)",
     "  --skip-cli-commands           Validate archive layout only; do not execute the CLI",
     "  --keep                        Keep the compiled temp directory for inspection",
@@ -51,7 +51,7 @@ function parseArgs(argv, repoRoot) {
     entry:
       typeof flags.entry === "string"
         ? path.resolve(repoRoot, flags.entry)
-        : path.resolve(repoRoot, "packages/agentplane/dist/cli.js"),
+        : path.resolve(repoRoot, "packages/agentplane/dist/cli-bun.js"),
     expectedVersion:
       typeof flags["expected-version"] === "string" ? flags["expected-version"].trim() : null,
     skipCliCommands: Boolean(flags["skip-cli-commands"]),
@@ -83,6 +83,52 @@ function assertFile(filePath, label) {
 
 function initSmokeGitRepo(cwd) {
   run("git", ["init"], { cwd });
+  run("git", ["config", "user.name", "AgentPlane Bun Smoke"], { cwd });
+  run("git", ["config", "user.email", "agentplane-bun-smoke@example.com"], { cwd });
+}
+
+function runDeferredRuntimeSmoke(executable, cwd) {
+  run(
+    executable,
+    [
+      "init",
+      "--yes",
+      "--setup-profile",
+      "light",
+      "--workflow",
+      "direct",
+      "--backend",
+      "local",
+      "--hooks",
+      "false",
+      "--require-plan-approval",
+      "true",
+      "--evaluator-skepticism",
+      "standard",
+    ],
+    { cwd },
+  );
+  run(executable, ["evaluator", "list"], { cwd });
+  const taskId = run(
+    executable,
+    [
+      "task",
+      "new",
+      "--title",
+      "Bun runtime smoke",
+      "--description",
+      "Exercise deferred command runtime and compact task catalog",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "smoke",
+    ],
+    { cwd },
+  ).trim();
+  const taskList = run(executable, ["task", "list"], { cwd });
+  assertIncludes(taskList, taskId, "task list");
 }
 
 function inferTarget(artifactPath) {
@@ -132,11 +178,12 @@ function smokeBunArchive(args) {
     initSmokeGitRepo(extractDir);
     const quickstartOutput = run(executable, ["quickstart"], { cwd: extractDir });
     assertIncludes(quickstartOutput, "agentplane quickstart", "quickstart");
+    runDeferredRuntimeSmoke(executable, extractDir);
     return {
       artifact: args.artifact,
       target: `${target.platform}-${target.arch}`,
       version,
-      checks: ["archive layout", "--version", "quickstart"],
+      checks: ["archive layout", "--version", "quickstart", "init", "evaluator list", "task list"],
       executed: true,
     };
   } finally {
@@ -177,6 +224,7 @@ function smokeBunCompiledCli(args, repoRoot) {
     initSmokeGitRepo(tempDir);
     const quickstartOutput = run(executable, ["quickstart"], { cwd: tempDir });
     assertIncludes(quickstartOutput, "agentplane quickstart", "quickstart");
+    runDeferredRuntimeSmoke(executable, tempDir);
 
     const roleOutput = run(executable, ["role", "CODER"], { cwd: tempDir });
     assertIncludes(roleOutput, "### CODER", "role CODER");
@@ -185,7 +233,7 @@ function smokeBunCompiledCli(args, repoRoot) {
       executable,
       kept: args.keep,
       version,
-      checks: ["--version", "quickstart", "role CODER"],
+      checks: ["--version", "quickstart", "init", "evaluator list", "task list", "role CODER"],
     };
   } finally {
     if (!args.keep) rmSync(tempDir, { recursive: true, force: true });

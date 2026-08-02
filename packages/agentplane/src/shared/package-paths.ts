@@ -4,11 +4,6 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import {
-  BUILTIN_AGENTPLANE_ASSETS,
-  BUILTIN_AGENTPLANE_ASSETS_HASH,
-} from "./builtin-assets.generated.js";
-
 const PACKAGE_NAME = "agentplane";
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
 const FORCE_BUILTIN_ASSETS_ENV = "AGENTPLANE_FORCE_BUILTIN_ASSETS";
@@ -18,6 +13,23 @@ const MODULE_IS_BUN_COMPILED = isBunCompiledPath(fileURLToPath(import.meta.url))
 type PackageJsonLike = {
   name?: unknown;
 };
+
+type BuiltinAssetsRuntime = {
+  assets: { path: string; base64: string }[];
+  hash: string;
+};
+
+function getBuiltinAssetsRuntime(): BuiltinAssetsRuntime {
+  const runtime = (globalThis as Record<string, unknown>).__AGENTPLANE_BUILTIN_ASSETS__ as
+    | BuiltinAssetsRuntime
+    | undefined;
+  if (!runtime || !Array.isArray(runtime.assets) || typeof runtime.hash !== "string") {
+    throw new Error(
+      "Built-in AgentPlane assets are unavailable in this compiled runtime. Use the Bun CLI entrypoint.",
+    );
+  }
+  return runtime;
+}
 
 function pathExists(absPath: string): boolean {
   try {
@@ -82,22 +94,18 @@ function resolveFromCompiledBinary(entryPath: string): string | null {
 }
 
 function materializeBuiltinAssets(): string {
-  const root = path.join(
-    os.tmpdir(),
-    "agentplane-builtin-assets",
-    BUILTIN_AGENTPLANE_ASSETS_HASH,
-    "assets",
-  );
+  const builtin = getBuiltinAssetsRuntime();
+  const root = path.join(os.tmpdir(), "agentplane-builtin-assets", builtin.hash, "assets");
   const marker = path.join(root, ".agentplane-builtin-assets-ready");
   if (pathExists(marker)) return root;
 
   fs.mkdirSync(root, { recursive: true });
-  for (const asset of BUILTIN_AGENTPLANE_ASSETS) {
+  for (const asset of builtin.assets) {
     const assetPath = path.join(root, asset.path);
     fs.mkdirSync(path.dirname(assetPath), { recursive: true });
     fs.writeFileSync(assetPath, Buffer.from(asset.base64, "base64"));
   }
-  fs.writeFileSync(marker, `${BUILTIN_AGENTPLANE_ASSETS_HASH}\n`, "utf8");
+  fs.writeFileSync(marker, `${builtin.hash}\n`, "utf8");
   return root;
 }
 

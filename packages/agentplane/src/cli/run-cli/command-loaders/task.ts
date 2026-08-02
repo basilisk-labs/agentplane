@@ -20,6 +20,7 @@ import type {
   RunnerWriteSession,
 } from "../command-catalog/runner-hermes-capability-profiles.js";
 import type { ProjectSession } from "../command-catalog/project-capability-profiles.js";
+import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
 
 function getSessionContext<
   TCapabilities extends CommandCapability,
@@ -143,7 +144,7 @@ export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
     }),
   );
 export const loadTaskAdvanceSpec = (session: RunnerExecutionSession) =>
-  import("../../../commands/task/advance.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskAdvanceHandler({
       getContext: async (command, options) => {
         await session.require("git.mutate", command);
@@ -167,7 +168,7 @@ export const loadTaskBriefSpec = (session: TaskRouteSession) =>
     m.makeRunTaskBriefHandler(getTaskRouteContexts(session)),
   );
 export const loadTaskRunPreparationSpec = (session: RunnerPreparationSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunHandler({
       getPreparationContext: async (command, options) => {
         await session.require("context.search", command);
@@ -178,7 +179,7 @@ export const loadTaskRunPreparationSpec = (session: RunnerPreparationSession) =>
     }),
   );
 export const loadTaskRunSpec = (session: RunnerExecutionSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunHandler({
       getExecutionContext: async (command, options) => {
         await session.require("git.mutate", command);
@@ -193,23 +194,23 @@ export const loadTaskRunToolSpec = (session: ProjectSession) =>
     m.makeRunTaskRunToolHandler((command) => session.require("project", command)),
   );
 export const loadTaskRunStatusSpec = (session: RunnerReadSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunStatusHandler(getSessionContext(session, "task.read")),
   );
 export const loadTaskRunInspectSpec = (session: RunnerReadSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunInspectHandler(getSessionContext(session, "task.read")),
   );
 export const loadTaskRunReconcileSpec = (session: RunnerWriteSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunReconcileHandler(getSessionContext(session, "task.write")),
   );
 export const loadTaskRunResolveEffectSpec = (session: RunnerWriteSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunResolveEffectHandler(getSessionContext(session, "task.write")),
   );
 export const loadTaskRunResumeEffectSpec = (session: RunnerExecutionSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunResumeEffectHandler(async (command) => {
       await session.require("git.mutate", command);
       await session.require("context.search", command);
@@ -217,7 +218,7 @@ export const loadTaskRunResumeEffectSpec = (session: RunnerExecutionSession) =>
     }),
   );
 export const loadTaskRunLogsSpec = (session: RunnerReadSession) =>
-  import("../../../commands/task/run.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunTaskRunLogsHandler(getSessionContext(session, "task.read")),
   );
 export const loadTaskCompleteSpec = (session: TaskLifecycleSession) =>

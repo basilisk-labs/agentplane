@@ -1,8 +1,6 @@
 import { CommandRegistry } from "../spec/registry.js";
 import { helpSpec, makeHelpHandler } from "../spec/help.js";
 
-import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
-import { COMMANDS, getHelpCommandEntries, makeHelpSpecForEntry } from "./command-catalog.js";
 import {
   createCommandSession,
   type CommandEntry,
@@ -15,24 +13,20 @@ export function buildRegistry(opts: {
   getResolvedProject: CommandSessionResolvers["getResolvedProject"];
   getLoadedConfig: CommandSessionResolvers["getLoadedConfig"];
   getEvaluatorArtifactPort: CommandSessionResolvers["getEvaluatorArtifactPort"];
+  getHelpJsonForDocs: CommandSessionResolvers["getHelpJsonForDocs"];
   onPreparationTrace?: (event: CommandPreparationTrace) => void;
-  entries?: readonly CommandEntry[];
+  entries: readonly CommandEntry[];
 }): CommandRegistry {
   const registry = new CommandRegistry();
-  const getHelpJsonForDocs = () =>
-    makeHelpJsonFromSpecs([
-      helpSpec,
-      ...getHelpCommandEntries("user").map((entry) => makeHelpSpecForEntry(entry)),
-    ]);
   const resolvers: CommandSessionResolvers = {
     getCtx: opts.getCtx,
     getResolvedProject: opts.getResolvedProject,
     getLoadedConfig: opts.getLoadedConfig,
-    getHelpJsonForDocs,
+    getHelpJsonForDocs: opts.getHelpJsonForDocs,
     getEvaluatorArtifactPort: opts.getEvaluatorArtifactPort,
     onPreparationTrace: opts.onPreparationTrace,
   };
-  for (const entry of opts.entries ?? COMMANDS) {
+  for (const entry of opts.entries) {
     if (entry.selectSession) {
       registry.register(entry.spec, async (ctx, parsed) => {
         const selected = entry.selectSession?.(parsed);

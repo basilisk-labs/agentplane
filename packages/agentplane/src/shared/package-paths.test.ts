@@ -4,6 +4,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  BUILTIN_AGENTPLANE_ASSETS,
+  BUILTIN_AGENTPLANE_ASSETS_HASH,
+} from "./builtin-assets.generated.js";
+import {
   resolveAgentplaneAssetPath,
   resolveAgentplaneBinPath,
   resolveAgentplanePackageRoot,
@@ -62,12 +66,18 @@ describe("package path resolution", () => {
   it("materializes builtin assets when compiled runtime has no adjacent asset tree", async () => {
     const previousActiveBin = process.env[ACTIVE_BIN_ENV];
     const previousForceAssets = process.env[FORCE_BUILTIN_ASSETS_ENV];
+    const runtimeGlobals = globalThis as Record<string, unknown>;
+    const previousBuiltinAssets = runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__;
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-compiled-assets-"));
     await mkdir(path.join(root, "bin"), { recursive: true });
     await writeFile(path.join(root, "package.json"), '{"name":"agentplane"}\n', "utf8");
 
     process.env[ACTIVE_BIN_ENV] = path.join(root, "bin", "agentplane.js");
     process.env[FORCE_BUILTIN_ASSETS_ENV] = "1";
+    runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__ = {
+      assets: BUILTIN_AGENTPLANE_ASSETS,
+      hash: BUILTIN_AGENTPLANE_ASSETS_HASH,
+    };
 
     try {
       const agentsPath = resolveAgentplaneAssetPath("AGENTS.md");
@@ -83,6 +93,11 @@ describe("package path resolution", () => {
         delete process.env[FORCE_BUILTIN_ASSETS_ENV];
       } else {
         process.env[FORCE_BUILTIN_ASSETS_ENV] = previousForceAssets;
+      }
+      if (previousBuiltinAssets === undefined) {
+        delete runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__;
+      } else {
+        runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__ = previousBuiltinAssets;
       }
     }
   });

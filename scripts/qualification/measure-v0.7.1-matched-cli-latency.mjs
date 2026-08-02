@@ -21,12 +21,12 @@ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const suiteConfigPath = path.join(repoRoot, "scripts", "cli-walltime-suites.json");
 const BASELINE_VERSION = "0.6.26";
 const PACKAGES = ["core", "recipes", "agentplane"];
-const RUNS = 7;
-const WARMUPS = 1;
+const DEFAULT_RUNS = 20;
+const DEFAULT_WARMUPS = 2;
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["subject", "out"],
+    valueFlags: ["subject", "out", "runs", "warmups"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -35,7 +35,15 @@ function parseArgs(argv) {
   if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
     throw new Error("--subject must be a full 40-character Git commit SHA");
   }
-  return { outputPath: path.resolve(flags.out), subject: flags.subject };
+  const runs = Number.parseInt(flags.runs ?? String(DEFAULT_RUNS), 10);
+  const warmups = Number.parseInt(flags.warmups ?? String(DEFAULT_WARMUPS), 10);
+  if (!Number.isInteger(runs) || runs < 20) {
+    throw new Error("--runs must be an integer >= 20");
+  }
+  if (!Number.isInteger(warmups) || warmups < 1) {
+    throw new Error("--warmups must be an integer >= 1");
+  }
+  return { outputPath: path.resolve(flags.out), runs, subject: flags.subject, warmups };
 }
 
 function run(command, args, options = {}) {
@@ -180,7 +188,10 @@ export function compareMatchedLatencySamples({
   const deltaMs = roundMs(candidate.median_ms - baseline.median_ms);
   const deltaRatio = baseline.median_ms === 0 ? null : deltaMs / baseline.median_ms;
   const passed =
-    baselineExitCode === 0 && candidateExitCode === 0 && candidate.median_ms <= baseline.median_ms;
+    baselineExitCode === 0 &&
+    candidateExitCode === 0 &&
+    candidate.median_ms <= baseline.median_ms &&
+    candidate.p95_ms <= baseline.p95_ms * 1.1;
   return {
     id,
     baseline: { ...baseline, exit_code: baselineExitCode, stderr: baselineStderr.slice(-500) },
@@ -195,7 +206,7 @@ export function compareMatchedLatencySamples({
   };
 }
 
-function measureMatched({ baselineCli, candidateCli, fixtureRoot }) {
+function measureMatched({ baselineCli, candidateCli, fixtureRoot, runs, warmups }) {
   const config = readSuiteConfigMap(suiteConfigPath);
   const suite = config.suites.get("cli_walltime_baseline");
   if (!suite) throw new Error("cli_walltime_baseline suite is missing");
@@ -210,7 +221,7 @@ function measureMatched({ baselineCli, candidateCli, fixtureRoot }) {
       root: fixtureRoot,
       repoRoot: cliRepoRootFromPath(candidateCli),
     });
-    for (let index = 0; index < WARMUPS; index += 1) {
+    for (let index = 0; index < warmups; index += 1) {
       measuredInvocation(baselineCli, baselineArgv);
       measuredInvocation(candidateCli, candidateArgv);
     }
@@ -220,7 +231,7 @@ function measureMatched({ baselineCli, candidateCli, fixtureRoot }) {
     let candidateExitCode = null;
     let baselineStderr = "";
     let candidateStderr = "";
-    for (let index = 0; index < RUNS; index += 1) {
+    for (let index = 0; index < runs; index += 1) {
       const order =
         index % 2 === 0
           ? [
@@ -285,7 +296,13 @@ function main(argv = process.argv.slice(2)) {
     if (baselineVersion !== BASELINE_VERSION) {
       throw new Error(`expected baseline ${BASELINE_VERSION}, got ${baselineVersion}`);
     }
-    const commands = measureMatched({ baselineCli, candidateCli, fixtureRoot });
+    const commands = measureMatched({
+      baselineCli,
+      candidateCli,
+      fixtureRoot,
+      runs: options.runs,
+      warmups: options.warmups,
+    });
     const failures = commands.filter((command) => command.verdict !== "pass");
     const result = {
       schema_version: 1,
@@ -300,9 +317,10 @@ function main(argv = process.argv.slice(2)) {
       environment: { node: process.version, platform: process.platform, arch: process.arch },
       baseline_version: baselineVersion,
       candidate_version: candidateVersion,
-      runs: RUNS,
-      warmups: WARMUPS,
-      comparison: "candidate_median_ms <= baseline_median_ms",
+      runs: options.runs,
+      warmups: options.warmups,
+      comparison:
+        "candidate_median_ms <= baseline_median_ms and candidate_p95_ms <= baseline_p95_ms * 1.10",
       commands,
       failure_ids: failures.map((command) => command.id),
       verdict: failures.length === 0 ? "pass" : "fail",

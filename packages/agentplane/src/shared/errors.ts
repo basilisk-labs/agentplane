@@ -135,6 +135,35 @@ export class CliError extends AgentplaneError {
   }
 }
 
+export function asCliError(value: unknown): CliError | null {
+  if (value instanceof CliError) return value;
+  if (!(value instanceof Error)) return null;
+  const candidate = value as Error & {
+    code?: unknown;
+    context?: unknown;
+    exitCode?: unknown;
+  };
+  if (
+    typeof candidate.code !== "string" ||
+    !Object.hasOwn(DEFAULT_ERROR_EXIT_CODES, candidate.code) ||
+    !Number.isInteger(candidate.exitCode) ||
+    Number(candidate.exitCode) < 1 ||
+    Number(candidate.exitCode) > 255
+  ) {
+    return null;
+  }
+  const context =
+    candidate.context && typeof candidate.context === "object" && !Array.isArray(candidate.context)
+      ? (candidate.context as Record<string, unknown>)
+      : undefined;
+  return new CliError({
+    code: candidate.code as ErrorCode,
+    exitCode: Number(candidate.exitCode),
+    message: candidate.message,
+    ...(context ? { context } : {}),
+  });
+}
+
 export class UsageError extends CliError {
   constructor(opts: AgentplaneErrorOptions) {
     super({ ...opts, code: "E_USAGE" });

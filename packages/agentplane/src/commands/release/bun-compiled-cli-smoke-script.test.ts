@@ -21,6 +21,13 @@ describe("smoke-bun-compiled-cli script", () => {
 
     expect(result.version).toMatch(/^\d+\.\d+\.\d+/u);
     expect(result.kept).toBe(false);
-    expect(result.checks).toEqual(["--version", "quickstart", "role CODER"]);
+    expect(result.checks).toEqual([
+      "--version",
+      "quickstart",
+      "init",
+      "evaluator list",
+      "task list",
+      "role CODER",
+    ]);
   }, 120_000);
 });

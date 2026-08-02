@@ -1,10 +1,26 @@
 import { readFileSync } from "node:fs";
-
-import { resolveAgentplanePackageJsonPath } from "../shared/package-paths.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 declare const __AGENTPLANE_PACKAGE_VERSION__: string | undefined;
 
 let cachedVersion: string | null = null;
+
+function resolveLocalPackageJsonPath(): string | null {
+  let directory = path.dirname(fileURLToPath(import.meta.url));
+  for (;;) {
+    const candidate = path.join(directory, "package.json");
+    try {
+      const parsed = JSON.parse(readFileSync(candidate, "utf8")) as { name?: unknown };
+      if (parsed.name === "agentplane") return candidate;
+    } catch {
+      // Keep walking toward the package root.
+    }
+    const parent = path.dirname(directory);
+    if (parent === directory) return null;
+    directory = parent;
+  }
+}
 
 function getEmbeddedVersion(): string | null {
   try {
@@ -26,7 +42,9 @@ export function getVersion(): string {
     return cachedVersion;
   }
   try {
-    const raw = readFileSync(resolveAgentplanePackageJsonPath(), "utf8");
+    const packageJsonPath = resolveLocalPackageJsonPath();
+    if (!packageJsonPath) return "0.0.0";
+    const raw = readFileSync(packageJsonPath, "utf8");
     const parsed = JSON.parse(raw) as { version?: string };
     if (parsed.version) {
       cachedVersion = String(parsed.version).trim();

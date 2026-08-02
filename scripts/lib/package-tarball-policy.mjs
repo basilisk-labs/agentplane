@@ -10,6 +10,14 @@ export const REQUIRED_TARBALL_FILES = Object.freeze([
   "LICENSE",
   "dist/.build-manifest.json",
 ]);
+export const REQUIRED_AGENTPLANE_TARBALL_FILES = Object.freeze([
+  "dist/cli.js",
+  "dist/command-catalog.js",
+  "dist/command-catalog/core-fast.js",
+  "dist/command-catalog/task-read.js",
+  "dist/command-help.json",
+  "dist/deferred-runtime.js",
+]);
 
 const DENIED_PREFIXES = Object.freeze([".agentplane/", "src/", "docs/", "scripts/", "website/"]);
 const DENIED_SEGMENTS = Object.freeze(["/__snapshots__/"]);
@@ -31,6 +39,11 @@ const AGENTPLANE_EXACT_FILES = Object.freeze([
   "dist/.build-manifest.json",
   "dist/cli.d.ts",
   "dist/cli.js",
+  "dist/command-catalog.js",
+  "dist/command-catalog/core-fast.js",
+  "dist/command-catalog/task-read.js",
+  "dist/command-help.json",
+  "dist/deferred-runtime.js",
 ]);
 const LIBRARY_EXACT_FILES = Object.freeze([
   "package.json",
@@ -41,6 +54,7 @@ const LIBRARY_EXACT_FILES = Object.freeze([
 const LIBRARY_DIST_PATTERN = /^dist\/.+\.(?:js|d\.ts)$/u;
 
 export function isDeniedTarballPath(pathInPackage) {
+  if (pathInPackage === "dist/command-help.json") return false;
   if (DENIED_PREFIXES.some((prefix) => pathInPackage.startsWith(prefix))) return true;
   if (DENIED_SEGMENTS.some((segment) => pathInPackage.includes(segment))) return true;
   return DENIED_FILE_PATTERNS.some((pattern) => pattern.test(pathInPackage));
@@ -62,6 +76,7 @@ export function packageTarballPolicyContract() {
       (left, right) => left.name.localeCompare(right.name) || left.dir.localeCompare(right.dir),
     ),
     required_files: REQUIRED_TARBALL_FILES.toSorted(),
+    required_agentplane_files: REQUIRED_AGENTPLANE_TARBALL_FILES.toSorted(),
     denied: {
       prefixes: DENIED_PREFIXES.toSorted(),
       segments: DENIED_SEGMENTS.toSorted(),

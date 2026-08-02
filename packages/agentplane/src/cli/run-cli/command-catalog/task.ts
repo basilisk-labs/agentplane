@@ -51,11 +51,13 @@ import {
   taskRunInspectSpec,
   taskRunLogsSpec,
   taskRunReconcileSpec,
-  taskRunResolveEffectSpec,
-  taskRunResumeEffectSpec,
   taskRunSpec,
   taskRunStatusSpec,
-} from "../../../commands/task/run.command.js";
+} from "../../../commands/task/run.spec.js";
+import {
+  taskRunResolveEffectSpec,
+  taskRunResumeEffectSpec,
+} from "../../../commands/task/task-run-effect-resolution.command.js";
 import { taskRunToolSpec } from "../../../commands/task/run-tool.command.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
@@ -65,7 +67,7 @@ import { taskShowSpec } from "../../../commands/task/show.spec.js";
 import { taskSpec } from "../../../commands/task/task.command.js";
 import { taskStartReadySpec } from "../../../commands/task/start-ready.command.js";
 import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
-import { taskAdvanceSpec } from "../../../commands/task/advance.command.js";
+import { taskAdvanceSpec } from "../../../commands/task/advance.spec.js";
 import { taskStatusSpec } from "../../../commands/task/status.command.js";
 import { taskUpdateSpec } from "../../../commands/task/update.command.js";
 import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";

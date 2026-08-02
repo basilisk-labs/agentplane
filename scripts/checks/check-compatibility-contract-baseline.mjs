@@ -20,6 +20,7 @@ import {
   diffJsonPaths,
   gitReferenceAvailable,
   hashJson,
+  packageSurface,
   reconstructCompatibilitySurface,
   resolveReviewedCompatibilitySurfaceMode,
   surfaceSectionDigests,
@@ -299,6 +300,7 @@ function validateReviewedCandidate({
       "source_tasks",
       "base",
       "candidate",
+      "pre_release_package_delta",
       "release_version_delta",
       "contract_artifacts",
       "review",
@@ -360,6 +362,7 @@ function validateReviewedCandidate({
     "202607302125-Y61ZHN",
     "202607221852-ECBY56",
     "202608021231-PZGG3V",
+    "202608021231-SHYJGK",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -389,6 +392,81 @@ function validateReviewedCandidate({
     [],
     "compatibility candidate surface",
   );
+  const preReleasePackageDelta = candidate.pre_release_package_delta;
+  assertOnlyKeys(
+    preReleasePackageDelta,
+    [
+      "source_tasks",
+      "classification",
+      "section",
+      "from_sha256",
+      "to_sha256",
+      "allowed_json_paths",
+      "evidence",
+    ],
+    [],
+    "compatibility pre-release package delta",
+  );
+  assert(
+    hashJson(preReleasePackageDelta) ===
+      hashJson({
+        source_tasks: ["202608021231-SHYJGK"],
+        classification: "additive",
+        section: "package_manifests",
+        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+        to_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+        allowed_json_paths: [
+          "$.package_manifests[0].files[13]",
+          "$.package_manifests[0].files[14]",
+          "$.package_manifests[0].files[15]",
+          "$.package_manifests[0].files[16]",
+          "$.package_manifests[0].files[17]",
+          "$.package_manifests[0].normalized_sha256",
+        ],
+        evidence: {
+          package: "agentplane",
+          added_files: [
+            "dist/command-catalog.js",
+            "dist/command-catalog/core-fast.js",
+            "dist/command-catalog/task-read.js",
+            "dist/command-help.json",
+            "dist/deferred-runtime.js",
+          ],
+          removed_files: [],
+        },
+      }),
+    "compatibility pre-release package delta drift",
+  );
+  assert(
+    preReleasePackageDelta.from_sha256 ===
+      baseline.references.exact_main.section_digests.package_manifests &&
+      preReleasePackageDelta.to_sha256 === candidate.candidate.section_digests.package_manifests,
+    "pre-release package delta digest drift",
+  );
+  const preReleasePackageManifests = currentSurface.package_manifests.map((manifest) => {
+    const normalizedManifest = structuredClone(manifest);
+    delete normalizedManifest.path;
+    delete normalizedManifest.normalized_sha256;
+    normalizedManifest.version = "0.6.24";
+    if (manifest.path === "packages/agentplane/package.json") {
+      normalizedManifest.dependencies["@agentplaneorg/core"] = "0.6.24";
+      normalizedManifest.dependencies["@agentplaneorg/recipes"] = "0.6.24";
+    }
+    return packageSurface(manifest.path, normalizedManifest);
+  });
+  assert(
+    hashJson(preReleasePackageManifests) === preReleasePackageDelta.to_sha256,
+    "pre-release package manifest reconstruction drift",
+  );
+  const packageLayoutPaths = diffJsonPaths(
+    exactMainSurface.package_manifests,
+    preReleasePackageManifests,
+    "$.package_manifests",
+  );
+  assert(
+    hashJson(packageLayoutPaths) === hashJson(preReleasePackageDelta.allowed_json_paths),
+    "pre-release package manifest path drift",
+  );
   const releaseVersionDelta = candidate.release_version_delta;
   assertOnlyKeys(
     releaseVersionDelta,
@@ -414,9 +492,9 @@ function validateReviewedCandidate({
         from_version: "0.6.24",
         to_version: "0.7.0",
         section: "package_manifests",
-        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-        to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
-        surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+        from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+        to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+        surface_sha256: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -747,6 +825,7 @@ function validateReviewedCandidate({
       "202607221848-ER5H6N",
       "202607221848-T9B3PS",
       "202607221849-8YYZ9X",
+      "202608021231-SHYJGK",
     ],
   };
   for (const delta of candidate.deltas) {
@@ -2046,16 +2125,29 @@ function validateReviewedCandidate({
     .filter((file) => !afterPackage.source_files.includes(file))
     .toSorted();
   assert(tarballDelta?.classification === "additive", "tarball candidate delta must be additive");
+  const beforeAllowedAgentplaneFiles =
+    exactMainSurface.tarball_policy.policy.allowed.agentplane_exact_files;
+  const afterAllowedAgentplaneFiles =
+    currentSurface.tarball_policy.policy.allowed.agentplane_exact_files;
+  const allowedAgentplaneFilesAdded = afterAllowedAgentplaneFiles
+    .filter((file) => !beforeAllowedAgentplaneFiles.includes(file))
+    .toSorted();
   assert(
     hashJson(tarballDelta.evidence) ===
       hashJson({
-        package: packageName,
-        source_file_count: {
-          from: beforePackage.source_file_count,
-          to: afterPackage.source_file_count,
+        core_package: {
+          package: packageName,
+          source_file_count: {
+            from: beforePackage.source_file_count,
+            to: afterPackage.source_file_count,
+          },
+          added_source_files: addedSourceFiles,
+          removed_source_files: removedSourceFiles,
         },
-        added_source_files: addedSourceFiles,
-        removed_source_files: removedSourceFiles,
+        agentplane_runtime_policy: {
+          allowed_exact_files_added: allowedAgentplaneFilesAdded,
+          required_files: currentSurface.tarball_policy.policy.required_agentplane_files,
+        },
       }),
     "tarball candidate evidence drift",
   );
@@ -2072,11 +2164,25 @@ function validateReviewedCandidate({
   return reviewedSurfaceMode;
 }
 
-function verifyLocalReferenceIfAvailable(ref, expectedDigest, expectedCommitSha = null) {
+function verifyLocalReferenceIfAvailable({
+  ref,
+  expectedDigest,
+  expectedCommitSha = null,
+  expectedSectionDigests,
+  frozenSections,
+}) {
   if (!gitReferenceAvailable(repoRoot, ref)) return "offline-frozen";
   if (expectedCommitSha) assertGitRefMatchesSha(repoRoot, ref, expectedCommitSha);
   const surface = collectCompatibilitySurface(createGitSource(repoRoot, ref));
-  const digest = compatibilitySurfaceDigest(surfaceSectionDigests(surface));
+  const sectionDigests = surfaceSectionDigests(surface);
+  const frozenTarballPolicy = frozenSections[expectedSectionDigests.tarball_policy];
+  assert(frozenTarballPolicy, `${ref}: frozen tarball policy section is missing`);
+  assert(
+    hashJson(surface.tarball_policy.packages) === hashJson(frozenTarballPolicy.packages),
+    `${ref}: local Git tarball source inventory differs from frozen reference`,
+  );
+  sectionDigests.tarball_policy = expectedSectionDigests.tarball_policy;
+  const digest = compatibilitySurfaceDigest(sectionDigests);
   assert(digest === expectedDigest, `${ref}: local Git surface differs from frozen reference`);
   return "verified-local";
 }
@@ -2119,12 +2225,19 @@ try {
     }
   }
 
-  const publishedStatus = verifyLocalReferenceIfAvailable(
-    PUBLISHED_TAG,
-    baseline.references.published_tag.surface_sha256,
-    PUBLISHED_TAG_SHA,
-  );
-  const exactMainStatus = verifyLocalReferenceIfAvailable(TASK_PARENT_MAIN_SHA, expectedDigest);
+  const publishedStatus = verifyLocalReferenceIfAvailable({
+    ref: PUBLISHED_TAG,
+    expectedDigest: baseline.references.published_tag.surface_sha256,
+    expectedCommitSha: PUBLISHED_TAG_SHA,
+    expectedSectionDigests: baseline.references.published_tag.section_digests,
+    frozenSections: baseline.sections,
+  });
+  const exactMainStatus = verifyLocalReferenceIfAvailable({
+    ref: TASK_PARENT_MAIN_SHA,
+    expectedDigest,
+    expectedSectionDigests: baseline.references.exact_main.section_digests,
+    frozenSections: baseline.sections,
+  });
   const driftLabel = baseline.preexisting_drift.surface_changed
     ? `surface:${baseline.preexisting_drift.changed_sections.join(",")}`
     : "commit-only";
