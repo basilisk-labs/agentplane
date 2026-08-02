@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-SHYJGK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T18:32:52.560Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "ab8787b3996a281d5c3246da85296f3014ee502b",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "findings": [
+    "The evaluated patch still creates four unrelated task definitions and modifies a fifth task's dependency graph without drift classification or re-approval."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-183205346-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-SHYJGK/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Add a deterministic changed-path scope check that rejects unrelated task artifacts or requires an explicit drift classification and re-approval record."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes newly created task definitions and another task's dependency changes may ride on the latency task branch merely because they are task artifacts."
+  ],
+  "residual_risks": [
+    "Remove the four unrelated task definitions and the dependency-graph mutation from this patch, or explicitly classify them as a related-task batch and obtain the required scope re-approval before reevaluation."
+  ]
+}
