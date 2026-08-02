@@ -1,10 +1,11 @@
 ---
 id: "202608022128-39YSZ1"
 title: "Require fresh verification evidence in the route oracle"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -20,35 +21,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T21:58:21.634Z"
+  updated_at: "2026-08-02T22:07:36.285Z"
   updated_by: "TESTER"
-  note: "Verified: route freshness, branch-snapshot evidence, static gates, and critical trust-boundary behavior all pass."
+  note: "Verified: stale-record short-circuit, route freshness, static gates, and critical behavior pass at 090b377f5."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T21:59:12.381Z"
+  updated_at: "2026-08-02T22:08:42.393Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "f5f62509d93177b14c6b9f0bb363eb5fcfce71eb"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "090b377f541f68647993e9b3c54ac92162cca7e7"
   blueprint_digest: "a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565"
   evidence_refs:
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608022128-39YSZ1/README.md"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608022128-39YSZ1/verification/20260802215821634-c9b7b27a05a65af3.json"
-    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608022128-39YSZ1/verification/20260802220736285-1d07cb398f1a1049.json"
+    - ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-blueprint.json"
   findings:
-    - "matchesCurrentVerification resolves semantic Git targets before rejecting records whose timestamp, verifier, note, scope, or digest cannot match the current verification state; long verification histories therefore add unnecessary route latency."
+    - "PASS: route progression is blocked when the recorded verification does not cover the current semantic implementation head, while a fresh signed record unlocks quality review."
+    - "PASS: record schema, task identity, timestamp, result, verifier, note, scope digest, canonical digest, and structured check details are validated before any semantic Git resolution."
+    - "PASS: committed branch snapshot fallback accepts only canonical full hexadecimal refs, constrains task paths to the repository, and fails closed on malformed or unreadable evidence."
 commit:
-  hash: "f5f62509d93177b14c6b9f0bb363eb5fcfce71eb"
-  message: "🐛 39YSZ1 routing: require fresh verification evidence"
+  hash: "090b377f541f68647993e9b3c54ac92162cca7e7"
+  message: "⚡ 39YSZ1 routing: short-circuit stale verification records"
 comments:
   -
     author: "CODER"
@@ -56,6 +58,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: route oracle now requires a signed verification record for the current semantic target in both task-worktree and branch-snapshot contexts."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -77,8 +82,27 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: route freshness, branch-snapshot evidence, static gates, and critical trust-boundary behavior all pass."
+  -
+    type: "verify"
+    at: "2026-08-02T22:06:37.005Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Fresh verification at 090b377f5: 12 route files / 58 tests and 12 critical chunks / 79 tests passed; typecheck, lint:core, knip baseline 539/539, and policy routing passed."
+  -
+    type: "verify"
+    at: "2026-08-02T22:07:36.285Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: stale-record short-circuit, route freshness, static gates, and critical behavior pass at 090b377f5."
+  -
+    type: "status"
+    at: "2026-08-02T22:09:30.823Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T21:58:22.497Z"
+doc_updated_at: "2026-08-02T22:09:30.823Z"
 doc_updated_by: "CODER"
 description: "Prevent task next-action from accepting verification evidence that predates the current implementation HEAD. Route changed commits back through verification before evaluator review or integration."
 sections:
@@ -146,11 +170,93 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T22:06:37.005Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh verification at 090b377f5: 12 route files / 58 tests and 12 critical chunks / 79 tests passed; typecheck, lint:core, knip baseline 539/539, and policy routing passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T21:58:22.497Z, excerpt_hash=sha256:42df10439030619fac720406369f65f3379d60cd19ee691903516856de8ceb77
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022128-39YSZ1-require-fresh-verification-evidence-in-the-route/.agentplane/tasks/202608022128-39YSZ1/blueprint/resolved-snapshot.json
+    - old_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+    - current_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022128-39YSZ1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608022128-39YSZ1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T22:07:36.285Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: stale-record short-circuit, route freshness, static gates, and critical behavior pass at 090b377f5.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T22:06:38.241Z, excerpt_hash=sha256:42df10439030619fac720406369f65f3379d60cd19ee691903516856de8ceb77
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision*.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/cli/run-cli.core.route-decision*.test.ts --maxWorkers=1 --fileParallelism=false
+    Result: pass
+    Evidence: 12 test files and 58 tests passed, including stale metadata short-circuit, semantic commit invalidation, fresh record acceptance, and branch snapshot recovery
+    Scope: route oracle and verification freshness
+
+    Command: bun run typecheck; bun run lint:core; bun run knip:check; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: typecheck and lint passed, Knip baseline 539/539, policy routing OK
+    Scope: static, dependency, and policy gates
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 chunks and 79 critical CLI tests passed
+    Scope: critical CLI trust-boundary and efficiency regression suite
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022128-39YSZ1-require-fresh-verification-evidence-in-the-route/.agentplane/tasks/202608022128-39YSZ1/blueprint/resolved-snapshot.json
+    - old_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+    - current_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022128-39YSZ1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608022128-39YSZ1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Stale verification metadata is rejected before semantic Git resolution, a fresh record is accepted, branch-snapshot verification remains supported, and a later semantic commit returns verification_required.
+      Impact: The route oracle no longer accepts stale verification evidence and avoids unnecessary Git-history work for stale record candidates.
+      Resolution: Accepted with automated regression coverage and no observed failures in the required verification surface.
+
+    - Observation: Stale verification metadata is rejected before semantic Git resolution; fresh and SHA-bounded branch-snapshot records retain their intended behavior.
+      Impact: The route oracle rejects obsolete evidence without unnecessary Git-history resolution and preserves fail-closed verification freshness.
+      Resolution: Accepted with deterministic unit, route, static, policy, and critical regression evidence.
 extensions:
   workflow_route_baseline:
     start_head_sha: "be9304ea05e50ec3824ef085f0f70402474e318a"
@@ -231,6 +337,81 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T22:06:37.005Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh verification at 090b377f5: 12 route files / 58 tests and 12 critical chunks / 79 tests passed; typecheck, lint:core, knip baseline 539/539, and policy routing passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T21:58:22.497Z, excerpt_hash=sha256:42df10439030619fac720406369f65f3379d60cd19ee691903516856de8ceb77
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022128-39YSZ1-require-fresh-verification-evidence-in-the-route/.agentplane/tasks/202608022128-39YSZ1/blueprint/resolved-snapshot.json
+- old_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+- current_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022128-39YSZ1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608022128-39YSZ1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T22:07:36.285Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: stale-record short-circuit, route freshness, static gates, and critical behavior pass at 090b377f5.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T22:06:38.241Z, excerpt_hash=sha256:42df10439030619fac720406369f65f3379d60cd19ee691903516856de8ceb77
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision*.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/cli/run-cli.core.route-decision*.test.ts --maxWorkers=1 --fileParallelism=false
+Result: pass
+Evidence: 12 test files and 58 tests passed, including stale metadata short-circuit, semantic commit invalidation, fresh record acceptance, and branch snapshot recovery
+Scope: route oracle and verification freshness
+
+Command: bun run typecheck; bun run lint:core; bun run knip:check; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: typecheck and lint passed, Knip baseline 539/539, policy routing OK
+Scope: static, dependency, and policy gates
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 chunks and 79 critical CLI tests passed
+Scope: critical CLI trust-boundary and efficiency regression suite
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022128-39YSZ1-require-fresh-verification-evidence-in-the-route/.agentplane/tasks/202608022128-39YSZ1/blueprint/resolved-snapshot.json
+- old_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+- current_digest: a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022128-39YSZ1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608022128-39YSZ1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -239,3 +420,11 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Stale verification metadata is rejected before semantic Git resolution, a fresh record is accepted, branch-snapshot verification remains supported, and a later semantic commit returns verification_required.
+  Impact: The route oracle no longer accepts stale verification evidence and avoids unnecessary Git-history work for stale record candidates.
+  Resolution: Accepted with automated regression coverage and no observed failures in the required verification surface.
+
+- Observation: Stale verification metadata is rejected before semantic Git resolution; fresh and SHA-bounded branch-snapshot records retain their intended behavior.
+  Impact: The route oracle rejects obsolete evidence without unnecessary Git-history resolution and preserves fail-closed verification freshness.
+  Resolution: Accepted with deterministic unit, route, static, policy, and critical regression evidence.
