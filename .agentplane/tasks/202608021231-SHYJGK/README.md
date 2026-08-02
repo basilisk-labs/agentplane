@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T18:44:45.640Z"
+  updated_at: "2026-08-02T18:58:30.659Z"
   updated_by: "TESTER"
-  note: "Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable."
+  note: "Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract."
   attempts: 0
 quality_review:
   state: "pass"
@@ -134,8 +134,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-02T18:58:30.659Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract."
 doc_version: 3
-doc_updated_at: "2026-08-02T18:47:09.626Z"
+doc_updated_at: "2026-08-02T18:58:31.626Z"
 doc_updated_by: "CODER"
 description: "Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness."
 sections:
@@ -425,6 +431,87 @@ sections:
     Command: bun run ci:contract
     Result: pass
     Scope: final implementation SHA; complete deterministic release contract including format, schemas, policy, compatibility, replay, lifecycle, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-SHYJGK-remove-the-v0-7-1-matched-cli-latency-regression/.agentplane/tasks/202608021231-SHYJGK/blueprint/resolved-snapshot.json
+    - old_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+    - current_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-SHYJGK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T18:58:30.659Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T18:47:09.626Z, excerpt_hash=sha256:71261ec2a4d8525ccbaaee274d825f94224af95b33b44e4ba3facfd3f7f89120
+
+    Details:
+
+    Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject ab8787b3996a281d5c3246da85296f3014ee502b
+    Result: pass
+    Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-rebased.json
+    Scope: exact implementation SHA; 20 cold and 20 warm alternating baseline/candidate samples for 7 commands plus the provider-excluded aggregate; no median or p95 failures
+    Observed: cold aggregate baseline median 1078.425 ms versus candidate 968.248 ms; warm aggregate baseline median 1042.727 ms versus candidate 933.204 ms
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs; node scripts/qualification/check-v0.7.1-product-contract.mjs; focused Vitest init/worktree/replay suite
+    Result: pass
+    Scope: exact implementation SHA; 16 release-contract tests, product contract, and 3 focused files with 26 tests; no retry
+
+    Command: bun run ci:contract
+    Result: pass
+    Scope: exact implementation SHA; formatting, schemas, policy routing, compatibility, efficiency replay, lifecycle invariants, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+    Command: bun run ci:test
+    Result: pass
+    Evidence: .agentplane/cache/v071-shyjgk/ci-test.log
+    Scope: 660 files and 4687 tests at cf1dfbb106f0c46ec549aecceef60b4f5fe203eb
+    Applicability: git diff between cf1dfbb106f0c46ec549aecceef60b4f5fe203eb and ab8787b3996a281d5c3246da85296f3014ee502b contains only .agentplane/tasks/202608021231-SHYJGK/README.md and the task PR title artifact; implementation, tests, scripts, package manifests, and lockfile are byte-identical
+
+    Scope correction: the authoritative published baseline is 0.6.26. The earlier immutable verification record mentions 0.6.24 only because it predates the task-document correction; the current task Verify Steps and the fresh benchmark both use 0.6.26.
+
+    Scope-base correction: local refs/heads/main now matches origin/main at ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3. The evaluator merge base with ab8787b3996a281d5c3246da85296f3014ee502b is therefore ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3, and the changed-path set contains no audit follow-up task definitions or cross-task dependency edits.
+
+    Final implementation SHA: 9ee3a9f001e98203acd80f5ac8826599ea940678
+
+    Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject 9ee3a9f001e98203acd80f5ac8826599ea940678
+    Result: pass
+    Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-final.json
+    Observed: cold aggregate baseline median 1072.883 ms versus candidate 961.203 ms; warm aggregate baseline median 1083.682 ms versus candidate 978.106 ms; all command median and p95 gates pass
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Observed: 1 file and 21 tests, including stale-local-base versus current-tracking-base regression coverage
+
+    Command: bun run ci:contract
+    Result: pass
+    Scope: final implementation SHA; complete deterministic release contract including format, schemas, policy, compatibility, replay, lifecycle, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+    Hosted rework SHA: 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c
+
+    Observed hosted failure: GitHub `verify-unit` failed only in `uses a newer tracking-base merge point after a squash-merged base update` because the fixture hard-coded `main` while the clean runner initialized a different default branch.
+
+    Resolution: the fixture now obtains its actual initial branch with `git branch --show-current`; production code is unchanged from 9ee3a9f001e98203acd80f5ac8826599ea940678.
+
+    Command: GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Observed: 1 file and 21 tests in a clean Git configuration that reproduces the hosted default-branch condition
+
+    Applicability: git diff 9ee3a9f001e98203acd80f5ac8826599ea940678..8947e7cb10cd5c2e84433c66b3a08a80adf8f35c changes only the cross-platform test fixture. The exact 9ee3 runtime benchmark and deterministic contract remain applicable to production code at 8947.
 
     BlueprintSnapshotRef:
     - state: current
@@ -758,6 +845,87 @@ Observed: 1 file and 21 tests, including stale-local-base versus current-trackin
 Command: bun run ci:contract
 Result: pass
 Scope: final implementation SHA; complete deterministic release contract including format, schemas, policy, compatibility, replay, lifecycle, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-SHYJGK-remove-the-v0-7-1-matched-cli-latency-regression/.agentplane/tasks/202608021231-SHYJGK/blueprint/resolved-snapshot.json
+- old_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+- current_digest: adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-SHYJGK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T18:58:30.659Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T18:47:09.626Z, excerpt_hash=sha256:71261ec2a4d8525ccbaaee274d825f94224af95b33b44e4ba3facfd3f7f89120
+
+Details:
+
+Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject ab8787b3996a281d5c3246da85296f3014ee502b
+Result: pass
+Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-rebased.json
+Scope: exact implementation SHA; 20 cold and 20 warm alternating baseline/candidate samples for 7 commands plus the provider-excluded aggregate; no median or p95 failures
+Observed: cold aggregate baseline median 1078.425 ms versus candidate 968.248 ms; warm aggregate baseline median 1042.727 ms versus candidate 933.204 ms
+
+Command: node --test scripts/qualification/release-qualification.test.mjs; node scripts/qualification/check-v0.7.1-product-contract.mjs; focused Vitest init/worktree/replay suite
+Result: pass
+Scope: exact implementation SHA; 16 release-contract tests, product contract, and 3 focused files with 26 tests; no retry
+
+Command: bun run ci:contract
+Result: pass
+Scope: exact implementation SHA; formatting, schemas, policy routing, compatibility, efficiency replay, lifecycle invariants, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+Command: bun run ci:test
+Result: pass
+Evidence: .agentplane/cache/v071-shyjgk/ci-test.log
+Scope: 660 files and 4687 tests at cf1dfbb106f0c46ec549aecceef60b4f5fe203eb
+Applicability: git diff between cf1dfbb106f0c46ec549aecceef60b4f5fe203eb and ab8787b3996a281d5c3246da85296f3014ee502b contains only .agentplane/tasks/202608021231-SHYJGK/README.md and the task PR title artifact; implementation, tests, scripts, package manifests, and lockfile are byte-identical
+
+Scope correction: the authoritative published baseline is 0.6.26. The earlier immutable verification record mentions 0.6.24 only because it predates the task-document correction; the current task Verify Steps and the fresh benchmark both use 0.6.26.
+
+Scope-base correction: local refs/heads/main now matches origin/main at ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3. The evaluator merge base with ab8787b3996a281d5c3246da85296f3014ee502b is therefore ac112cc28a67b4eeb1399d4a2b5042db5f0bfdf3, and the changed-path set contains no audit follow-up task definitions or cross-task dependency edits.
+
+Final implementation SHA: 9ee3a9f001e98203acd80f5ac8826599ea940678
+
+Command: node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject 9ee3a9f001e98203acd80f5ac8826599ea940678
+Result: pass
+Evidence: .agentplane/cache/v071-shyjgk/matched-cli-latency-final.json
+Observed: cold aggregate baseline median 1072.883 ms versus candidate 961.203 ms; warm aggregate baseline median 1083.682 ms versus candidate 978.106 ms; all command median and p95 gates pass
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Observed: 1 file and 21 tests, including stale-local-base versus current-tracking-base regression coverage
+
+Command: bun run ci:contract
+Result: pass
+Scope: final implementation SHA; complete deterministic release contract including format, schemas, policy, compatibility, replay, lifecycle, TypeScript 7.0.2, lint, architecture, clone, Knip, and coverage thresholds
+
+Hosted rework SHA: 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c
+
+Observed hosted failure: GitHub `verify-unit` failed only in `uses a newer tracking-base merge point after a squash-merged base update` because the fixture hard-coded `main` while the clean runner initialized a different default branch.
+
+Resolution: the fixture now obtains its actual initial branch with `git branch --show-current`; production code is unchanged from 9ee3a9f001e98203acd80f5ac8826599ea940678.
+
+Command: GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Observed: 1 file and 21 tests in a clean Git configuration that reproduces the hosted default-branch condition
+
+Applicability: git diff 9ee3a9f001e98203acd80f5ac8826599ea940678..8947e7cb10cd5c2e84433c66b3a08a80adf8f35c changes only the cross-platform test fixture. The exact 9ee3 runtime benchmark and deterministic contract remain applicable to production code at 8947.
 
 BlueprintSnapshotRef:
 - state: current
