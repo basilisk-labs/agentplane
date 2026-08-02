@@ -4,7 +4,7 @@ title: "Capture exact v0.7.1 semantic efficiency evidence"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on:
@@ -12,6 +12,10 @@ depends_on:
   - "202608021231-PZGG3V"
   - "202608021231-SHYJGK"
   - "202608021232-53WJMN"
+  - "202608021534-YN84E1"
+  - "202608021534-J5G235"
+  - "202608021535-CNQKXP"
+  - "202608021535-9EWFAB"
 tags:
   - "provider-qualification"
   - "v0.7.1"
@@ -33,6 +37,7 @@ verification:
   updated_by: null
   note: null
   attempts: 0
+commit: null
 comments: []
 events: []
 doc_version: 3
