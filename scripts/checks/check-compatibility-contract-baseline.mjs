@@ -333,6 +333,7 @@ function validateReviewedCandidate({
     "202607300150-MGCHE6",
     "202607302125-Y61ZHN",
     "202607221852-ECBY56",
+    "202608021231-PZGG3V",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -358,6 +359,7 @@ function validateReviewedCandidate({
     "202607221852-YP9QCH",
     "202607302125-Y61ZHN",
     "202607221852-ECBY56",
+    "202608021231-PZGG3V",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -414,7 +416,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
         to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
-        surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
+        surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -1226,6 +1228,16 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["task", "advance"],
+      visibility: "user",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "agent-json", kind: "boolean", valueHint: null, default: false },
+        { name: "remote", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
       id: ["task", "authority", "grant"],
       visibility: "advanced",
       group: "Task",
@@ -1451,6 +1463,20 @@ function validateReviewedCandidate({
       default: false,
     },
     {
+      command: "task advance",
+      name: "agent-json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task advance",
+      name: "remote",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "task authority grant",
       name: "by",
       kind: "string",
@@ -1555,6 +1581,11 @@ function validateReviewedCandidate({
       kind: "command",
       command: "pr conflict-rework",
       source_task: "202607260007-DQM6AW",
+    },
+    {
+      kind: "command",
+      command: "task advance",
+      source_task: "202608021231-PZGG3V",
     },
     {
       kind: "command",
@@ -1731,6 +1762,18 @@ function validateReviewedCandidate({
     },
     {
       kind: "option",
+      command: "task advance",
+      name: "agent-json",
+      source_task: "202608021231-PZGG3V",
+    },
+    {
+      kind: "option",
+      command: "task advance",
+      name: "remote",
+      source_task: "202608021231-PZGG3V",
+    },
+    {
+      kind: "option",
       command: "task authority grant",
       name: "by",
       source_task: "202607221849-NWVCAG",
@@ -1809,7 +1852,30 @@ function validateReviewedCandidate({
       source_task: "202607221846-4VB97J",
     },
   ];
-  assert(cliDelta?.classification === "additive", "CLI candidate delta must be additive");
+  const expectedVisibilityMutations = [
+    ["task begin", "user", "advanced", "title", "<title>"],
+    ["task complete", "user", "advanced", "task-id", "<task-id>"],
+    ["task next-action", "user", "advanced", "task-id", "<task-id>"],
+    ["task run", "internal", "user", "task-id", "<task-id>"],
+  ].map(([identity, beforeVisibility, afterVisibility, argName, valueHint]) => ({
+    identity,
+    before: {
+      id: identity.split(" "),
+      visibility: beforeVisibility,
+      group: "Task",
+      args: [{ name: argName, required: true, variadic: false, valueHint }],
+    },
+    after: {
+      id: identity.split(" "),
+      visibility: afterVisibility,
+      group: "Task",
+      args: [{ name: argName, required: true, variadic: false, valueHint }],
+    },
+  }));
+  assert(
+    cliDelta?.classification === "additive_with_visibility_simplification",
+    "CLI candidate delta must preserve compatibility while simplifying visibility",
+  );
   assert(
     hashJson(cliDelta.evidence) ===
       hashJson({
@@ -1846,6 +1912,7 @@ function validateReviewedCandidate({
         "evaluator prepare",
         "integrate queue adopt-legacy-protected-conflict",
         "pr conflict-rework",
+        "task advance",
         "task authority grant",
         "task run reconcile",
         "task run resolve-effect",
@@ -1874,8 +1941,8 @@ function validateReviewedCandidate({
     "candidate removes an existing CLI command descriptor",
   );
   assert(
-    cliTopologyDelta.mutated_command_shells.length === 0,
-    "candidate mutates an existing CLI command shell",
+    hashJson(cliTopologyDelta.mutated_command_shells) === hashJson(expectedVisibilityMutations),
+    "candidate command-shell mutation is not the approved visibility simplification",
   );
   assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
   const supersededQueueReleaseStatusMutation = {

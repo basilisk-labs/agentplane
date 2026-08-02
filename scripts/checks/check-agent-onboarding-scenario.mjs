@@ -63,10 +63,12 @@ const onboardingScenarios = [
     checks: [
       ["bootstrap", "## 2. Agent context"],
       ["bootstrap", "agentplane task brief <task-id>"],
+      ["bootstrap", "agentplane task advance <task-id> --agent-json"],
       ["bootstrap", "## 3. Direct happy path"],
+      ["bootstrap", "agentplane task run <task-id>"],
       [
         "bootstrap",
-        "Treat `task verify-show` as the verification contract before `verify` and `finish`",
+        "Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.",
       ],
       ["bootstrap", "## 4. Verification and incident reuse"],
       ["bootstrap", "agentplane incidents advise <task-id>"],

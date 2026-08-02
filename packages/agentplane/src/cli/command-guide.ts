@@ -21,10 +21,10 @@ export type RoleProfileGuide = {
   workflow?: readonly string[];
 };
 
-const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`${COMMAND_SNIPPETS.core.taskBrief}\` to load task context, \`agentplane task next-action <task-id> --explain\` as the route oracle, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before role-scoped planning or execution.`;
+const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`agentplane task advance <task-id> --agent-json\` for the compact external-agent protocol, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before semantic work.`;
 
 const ROUTE_ORACLE_NOTE =
-  "- Route oracle contract: follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`; do not manually reconstruct branch/worktree/PR state.";
+  "- Route oracle diagnostic: use `agentplane task next-action <task-id> --explain` only when the compact packet requires forensic detail; inspect `authoritative_checkout`, `primary_blocker`, and `phase`, and do not manually reconstruct branch/worktree/PR state.";
 
 function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
   return ["```bash", ...commands, "```"];
@@ -47,8 +47,8 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       SHARED_STARTUP_NOTE,
       ROUTE_ORACLE_NOTE,
-      '- For a normal first task, prefer `agentplane task begin "..." --tag <tag> --verify "<check>"`; it creates the task, writes a minimal plan, approves it, and either starts direct mode or prints the branch_pr worktree command.',
       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
+      "- After task creation, call `agentplane task advance <task-id> --agent-json`; supply the semantic plan only when the returned packet requests it.",
       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
       '- Append task-local Findings via `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..."`; add `--promote --external` or `--repo-fixable` only for real reusable incidents.',
       "- Approve plan only after required sections and Verify Steps are ready.",
@@ -60,9 +60,8 @@ const ROLE_GUIDES: RoleGuide[] = [
       SHARED_STARTUP_NOTE,
       ROUTE_ORACLE_NOTE,
       "- direct: stay in the current checkout; branch_pr: implement in the task worktree, keep PR artifacts current, and wait for hosted checks before INTEGRATOR handoff.",
-      "- Start owner-scoped work from `agentplane task brief <task-id>` so Verify Steps, policy modules, blueprint evidence, route state, and source confidence are loaded together.",
-      "- If branch_pr state is ambiguous, use `task next-action --explain`, `task status --route`, or `work resume` before choosing a checkout or PR action.",
-      `- For the common path, use \`${COMMAND_SNIPPETS.core.taskBegin}\` to create/approve/start-or-route and \`${COMMAND_SNIPPETS.core.taskComplete}\` after checks pass.`,
+      "- Start from `agentplane task advance <task-id> --agent-json`; it returns one bounded action and prepared context references without lifecycle choreography.",
+      "- Use `agentplane task run <task-id>` when the configured managed runner should resolve the semantic boundary.",
       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
       `- Treat \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` as the verification contract, then record \`${COMMAND_SNIPPETS.core.verifyTask}\`.`,
       `- Preferred direct close path: \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`; add \`--no-close-commit\` only for explicit manual close handling.`,
@@ -272,12 +271,11 @@ export function renderQuickstartForMode(mode: QuickstartWorkflowMode = null): st
       "agentplane acr validate <task-id> --mode local",
     ]),
     "",
-    "For a real first task, use the guided task path:",
+    "For a real first task, create it without synthetic planning, then request one compact action:",
     "",
     ...renderQuickstartCommandBlock([
-      'agentplane task begin "Inspect AgentPlane artifacts" --tag docs --verify "agentplane task verify-show <task-id>"',
-      "agentplane task verify-show <task-id>",
-      'agentplane task complete <task-id> --result "Inspected generated artifacts" --commit <git-rev>',
+      'agentplane task new --title "Inspect AgentPlane artifacts" --description "Review the generated task record" --owner DOCS --tag docs',
+      "agentplane task advance <task-id> --agent-json",
     ]),
     "",
     "The payoff is a repo-visible task record:",
@@ -289,12 +287,13 @@ export function renderQuickstartForMode(mode: QuickstartWorkflowMode = null): st
     "`-- pr/             branch_pr review artifacts when that mode is active",
     "```",
     "",
-    "Use that local first-success artifact to confirm the workflow shape, then let Claude Code, Codex, Cursor, Aider, or another coding agent implement the approved task.",
+    "The compact packet lets Claude Code, Codex, Cursor, Aider, or another coding agent focus on the requested semantic step while Agentplane retains formal lifecycle state.",
     "",
     "## Go deeper",
     "",
     `- \`${COMMAND_SNIPPETS.core.role}\` to activate ORCHESTRATOR for planning and the task owner role before owner-scoped execution.`,
-    `- \`${COMMAND_SNIPPETS.core.taskBrief}\` to load the task-specific context surface before manually stitching task docs, route status, Verify Steps, PR metadata, and policy modules.`,
+    "- `agentplane task run <task-id>` to let the configured managed runner consume the same supervisor state.",
+    `- \`${COMMAND_SNIPPETS.core.taskBrief}\` for a human-readable diagnostic brief.`,
     "- `agentplane blueprint examples` to inspect how analysis, content, docs, code, and release tasks resolve to different routes.",
     "- `agentplane help <command>` for flags, examples, and exceptional/manual flows.",
     "- Keep installed runtime guidance self-contained; do not depend on repo-only docs files.",

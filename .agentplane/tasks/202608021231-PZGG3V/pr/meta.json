@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202608021231-PZGG3V/unify-the-v0-7-1-task-supervisor-and-external-ad",
   "created_at": "2026-08-02T13:20:44.174Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:380173c531942a79c0d3be8f523f1c985a09922e655969eabe832d995ef7377c",
   "last_verified_at": null,
+  "pr_number": 4744,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4744",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608021231-PZGG3V",
-  "updated_at": "2026-08-02T13:20:44.174Z",
+  "updated_at": "2026-08-02T13:21:11.365Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,0 +1,27 @@
+ README.md                                          |   7 +-
+ docs/user/agent-bootstrap.generated.mdx            |  30 ++-
+ docs/user/cli-reference.generated.mdx              | 155 ++++++--------
+ docs/user/commands.mdx                             |  11 +-
+ docs/user/task-lifecycle.mdx                       |  31 ++-
+ docs/user/workflow.mdx                             |  15 +-
+ .../run-cli.core.help-snap.test.ts.snap            |   5 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |  30 ++-
+ packages/agentplane/src/cli/command-guide.test.ts  |  20 +-
+ packages/agentplane/src/cli/command-guide.ts       |  23 +--
+ packages/agentplane/src/cli/command-invocations.ts |   2 +
+ .../src/cli/run-cli.core.docs-cli.test.ts          |   5 +-
+ .../src/cli/run-cli.core.task-advance.test.ts      | 229 +++++++++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
+ .../src/cli/run-cli/command-catalog.test.ts        |  14 +-
+ .../src/cli/run-cli/command-catalog/task.ts        |  14 +-
+ .../src/cli/run-cli/command-loaders/task.ts        |  12 ++
+ .../src/commands/intake/intake.command.ts          |   2 +-
+ .../src/commands/task/advance.command.ts           | 164 +++++++++++++++
+ .../src/commands/task/agent-action-packet.test.ts  | 206 ++++++++++++++++++
+ .../src/commands/task/agent-action-packet.ts       | 220 ++++++++++++++++++++
+ .../agentplane/src/commands/task/task.command.ts   |  19 +-
+ .../baselines/v0.7-compatibility-candidate.json    | 228 ++++++++++++++++----
+ scripts/checks/check-agent-onboarding-scenario.mjs |   4 +-
+ .../check-compatibility-contract-baseline.mjs      |  75 ++++++-
+ scripts/lib/test-route-registry.mjs                |   2 +
+ 26 files changed, 1311 insertions(+), 223 deletions(-)

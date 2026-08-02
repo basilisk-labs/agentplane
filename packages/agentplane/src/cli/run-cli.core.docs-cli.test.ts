@@ -55,7 +55,10 @@ describe("runCli docs cli", () => {
       expect(text).toContain("`E_HANDOFF` → exit `9`");
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
-      expect(text).toContain("### task begin");
+      expect(text).toContain("### task advance");
+      expect(text).toContain("### task run");
+      expect(text).not.toContain("### task begin");
+      expect(text).not.toContain("### task complete");
       expect(text).toContain("### cleanup merged");
       expect(text).not.toContain("### cleanup\n");
       expect(text).not.toContain("### task\n");

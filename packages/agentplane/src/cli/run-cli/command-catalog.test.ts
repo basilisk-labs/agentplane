@@ -583,7 +583,11 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["release"])?.surface).toBe("framework");
     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
     expect(findCommandEntry(["task", "normalize"])?.surface).toBe("internal");
-    expect(findCommandEntry(["task", "run"])?.surface).toBe("internal");
+    expect(findCommandEntry(["task", "run"])?.surface).toBe("user");
+    expect(findCommandEntry(["task", "advance"])?.surface).toBe("user");
+    expect(findCommandEntry(["task", "next-action"])?.surface).toBe("advanced");
+    expect(findCommandEntry(["task", "begin"])?.surface).toBe("advanced");
+    expect(findCommandEntry(["task", "complete"])?.surface).toBe("advanced");
     expect(findCommandEntry(["task", "run", "tool"])?.surface).toBe("internal");
     expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
     expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
@@ -591,7 +595,11 @@ describe("command catalog graph", () => {
     const normalHelpIds = getHelpCommandEntries("user").map((entry) => entry.spec.id.join(" "));
     expect(normalHelpIds).not.toContain("release");
     expect(normalHelpIds).not.toContain("task normalize");
-    expect(normalHelpIds).not.toContain("task run");
+    expect(normalHelpIds).toContain("task run");
+    expect(normalHelpIds).toContain("task advance");
+    expect(normalHelpIds).not.toContain("task next-action");
+    expect(normalHelpIds).not.toContain("task begin");
+    expect(normalHelpIds).not.toContain("task complete");
     expect(normalHelpIds).not.toContain("task run status");
     expect(normalHelpIds).not.toContain("task run tool");
     expect(normalHelpIds).not.toContain("context harvest tasks");
@@ -605,7 +613,7 @@ describe("command catalog graph", () => {
     );
     expect(frameworkHelpIds).toContain("release");
     expect(frameworkHelpIds).not.toContain("task normalize");
-    expect(frameworkHelpIds).not.toContain("task run");
+    expect(frameworkHelpIds).toContain("task run");
     expect(frameworkHelpIds).not.toContain("task run tool");
 
     const allHelpIds = getHelpCommandEntries("all").map((entry) => entry.spec.id.join(" "));

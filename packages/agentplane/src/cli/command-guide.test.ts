@@ -38,7 +38,7 @@ describe("command-guide", () => {
 
   it("documents merge-preserving branch_pr integration by default", () => {
     const text = renderRoleTyped("integrator");
-    expect(text).toContain("Route oracle contract:");
+    expect(text).toContain("Route oracle diagnostic:");
     expect(text).toContain("`authoritative_checkout`");
     expect(text).toContain("do not manually reconstruct branch/worktree/PR state");
     expect(text).toContain(
@@ -88,8 +88,9 @@ describe("command-guide", () => {
     expect(text).toContain("## First visible payoff");
     expect(text).toContain("agentplane demo");
     expect(text).toContain("agentplane acr validate <task-id> --mode local");
-    expect(text).toContain('agentplane task begin "Inspect AgentPlane artifacts"');
-    expect(text).toContain("agentplane task complete <task-id>");
+    expect(text).toContain('agentplane task new --title "Inspect AgentPlane artifacts"');
+    expect(text).toContain("agentplane task advance <task-id> --agent-json");
+    expect(text).toContain("agentplane task run <task-id>");
     expect(text).toContain(".agentplane/tasks/<task-id>/");
     expect(text).toContain("acr.json");
     expect(text).toContain("## Go deeper");
@@ -145,8 +146,10 @@ describe("command-guide", () => {
     expect(text).toContain("agentplane task active");
     expect(text).toContain("agentplane task brief <task-id>");
     expect(text).toContain("task next-action <task-id> --explain");
-    expect(text).toContain("next_command");
-    expect(text).toContain("authoritative_checkout");
+    expect(text).toContain("agentplane task advance <task-id> --agent-json");
+    expect(text).toContain("agentplane task run <task-id>");
+    expect(text).toContain("state fingerprint");
+    expect(text).toContain("authority boundary");
     expect(text).toContain("tracked-only cleanliness");
     expect(text).toContain("git status --short --untracked-files=no");
     expect(text).toContain("\n- `git status --short --untracked-files=all`\n");
@@ -156,11 +159,8 @@ describe("command-guide", () => {
     expect(text).toContain("agentplane incidents collect <task-id> --check");
     expect(text).toContain("promote only real reusable incidents");
     expect(text).toContain("plain prose stays task-local");
-    expect(text).toContain("configured CI/provider gate");
-    expect(text).toContain("workflow:wait-remote-checks");
-    expect(text).not.toContain(
-      "wait for hosted required checks with `bun run workflow:wait-remote-checks`",
-    );
+    expect(text).toContain("expanded diagnostic evidence");
+    expect(text).not.toContain("keep PR artifacts current");
   });
 
   it("updates the planner role guidance to the explicit findings promotion flow", () => {

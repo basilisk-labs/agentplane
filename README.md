@@ -111,9 +111,10 @@ Read [Local context](docs/user/local-context.mdx).
 ## First local workflow
 
 ```bash
-agentplane task begin "Inspect Agentplane artifacts" --tag docs --verify "agentplane task verify-show <task-id>"
-agentplane task verify-show <task-id>
-agentplane task complete <task-id> --result "Inspected generated artifacts" --commit <git-rev>
+agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record" --owner DOCS --tag docs
+agentplane task advance <task-id> --agent-json
+# Or, after semantic plan approval, let the configured runner supervise the task:
+agentplane task run <task-id>
 ```
 
 ## Agentplane is not

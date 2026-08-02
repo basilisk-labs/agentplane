@@ -127,12 +127,11 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-There are two supported execution paths. An external agent can work in the authoritative checkout
-and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
-supervise the same typed route:
+There are two canonical frontends over the same typed route. An external agent requests one compact
+packet; a configured runner resolves the semantic boundary itself:
 
 ```bash
-agentplane task next-action <task-id> --explain
+agentplane task advance <task-id> --agent-json
 agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 ```
@@ -140,8 +139,8 @@ agentplane task run <task-id>
 `--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
 formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
 and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
-runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
-reconstruct lifecycle state from prose.
+runner paths share task, fingerprint, authority, route, and evidence contracts. `task next-action
+--explain` remains the expanded forensic projection, not the normal machine protocol.
 
 Runner maintenance commands remain on the advanced help surface:
 

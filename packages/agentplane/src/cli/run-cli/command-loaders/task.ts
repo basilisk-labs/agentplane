@@ -142,6 +142,18 @@ export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
       ...getTaskRouteContexts(session),
     }),
   );
+export const loadTaskAdvanceSpec = (session: RunnerExecutionSession) =>
+  import("../../../commands/task/advance.command.js").then((m) =>
+    m.makeRunTaskAdvanceHandler({
+      getContext: async (command, options) => {
+        await session.require("git.mutate", command);
+        await session.require("context.search", command);
+        return options.includeRemote
+          ? await session.require("route.remote", command)
+          : await session.require("route.local", command);
+      },
+    }),
+  );
 export const loadTaskNewSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/new.command.js").then((m) =>
     m.makeRunTaskNewHandler(getSessionContext(session, "task.write")),
