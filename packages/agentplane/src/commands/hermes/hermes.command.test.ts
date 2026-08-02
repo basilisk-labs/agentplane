@@ -277,7 +277,7 @@ describe("hermes adapter commands", () => {
         `agentplane task next-action ${taskId} --explain`,
       );
       expect(payload.hermes_comment_projection.execution_packet.returnControlWhen).toContain(
-        "after the provider or human action completes",
+        "after PLANNER records a task-specific Plan",
       );
       expect(payload.hermes_comment_projection.evidence_refs).not.toHaveProperty("runner_status");
       expect(payload.terminal.hermes_root_complete_allowed).toBe(false);
