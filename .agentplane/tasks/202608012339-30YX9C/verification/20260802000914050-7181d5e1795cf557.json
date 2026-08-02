@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:7181d5e1795cf5579d8ff1c11d7e019a79abe12d5d41fef6009a82398c13b279",
+  "implementation_sha": "ac15e3b88a6b88cadc07a51f00748b6271a15e6c",
+  "kind": "task_verification_record",
+  "note": "Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review.",
+  "recorded_at": "2026-08-02T00:09:14.050Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow documentation tasks to commit canonical site artifacts\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow documentation tasks to commit canonical site artifacts\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c",
+  "task_id": "202608012339-30YX9C",
+  "verification_command": "agentplane verify 202608012339-30YX9C --rework --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}
