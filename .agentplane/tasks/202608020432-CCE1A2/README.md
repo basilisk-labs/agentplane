@@ -4,7 +4,7 @@ title: "Allow qualification packets to ignore root lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -26,31 +26,30 @@ verification:
   note: "Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T05:01:42.958Z"
+  updated_at: "2026-08-02T05:04:08.217Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "a728b1134fe36ed3d9625654b85108ace23af33e"
   blueprint_digest: "a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1"
   evidence_refs:
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608020432-CCE1A2/README.md"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050056510-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/verification/20260802050252866-82b1ee360d6d2bd0.json"
+    - ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-050318869-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Frozen evidence contains no deterministic check records for the evaluated SHA, so the claimed positive, negative, and concurrency-sensitive coverage cannot be independently validated."
-  recovery_reason: "deterministic_evidence_gap"
+    - "Post-integration rc.2 qualification remains an explicit downstream gate and is not present in the frozen pre-integration evidence."
 commit:
   hash: "a728b1134fe36ed3d9625654b85108ace23af33e"
   message: "🐛 CCE1A2 qualification: pin reviewed root dependencies"
