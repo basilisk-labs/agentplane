@@ -25,6 +25,7 @@ export type QualificationRf04Comparison = {
     structural_projection_sha256: string | null;
     comparison_policy: JsonRecord;
   };
+  qualification_gate: QualificationRf04Gate;
   replay_comparison: {
     baseline: ReplayMetricSnapshot;
     current_rebuild: ReplayMetricSnapshot;
@@ -33,6 +34,18 @@ export type QualificationRf04Comparison = {
     live_provider_measurement: "not_run_by_packet_builder";
   };
   candidate_measurement: QualificationRf04CandidateMeasurement;
+};
+
+export type QualificationRf04Gate = {
+  verdict: "pass";
+  raw_candidate_verdict: "pass" | "fail";
+  raw_failure_ids: string[];
+  diagnostic_failure_ids: string[];
+  blocking_failure_ids: string[];
+  policy: {
+    timing: string | null;
+  };
+  qualification_decision: "eligible" | "do_not_publish";
 };
 
 export type QualificationRf04CandidateMeasurement = {
@@ -193,6 +206,39 @@ function sameJson(left: unknown, right: unknown): boolean {
 
 function sameStrings(left: readonly string[], right: readonly string[]): boolean {
   return left.length === right.length && left.every((entry, index) => entry === right[index]);
+}
+
+export function requireQualificationRf04Gate(opts: {
+  comparisonPolicy: JsonRecord;
+  candidateMeasurement: Pick<
+    QualificationRf04CandidateMeasurement,
+    "failure_ids" | "qualification_decision" | "verdict"
+  >;
+}): QualificationRf04Gate {
+  const timingPolicy = asString(opts.comparisonPolicy.timing);
+  const diagnosticFailureIds = opts.candidateMeasurement.failure_ids.filter(
+    (failureId) =>
+      timingPolicy === "diagnostic_only_never_gated" && failureId.startsWith("latency."),
+  );
+  const diagnosticSet = new Set(diagnosticFailureIds);
+  const blockingFailureIds = opts.candidateMeasurement.failure_ids.filter(
+    (failureId) => !diagnosticSet.has(failureId),
+  );
+  if (blockingFailureIds.length > 0) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `RF-04 qualification packet rejects blocking candidate failures: ${blockingFailureIds.join(", ")}.`,
+    });
+  }
+  return {
+    verdict: "pass",
+    raw_candidate_verdict: opts.candidateMeasurement.verdict,
+    raw_failure_ids: [...opts.candidateMeasurement.failure_ids],
+    diagnostic_failure_ids: diagnosticFailureIds,
+    blocking_failure_ids: blockingFailureIds,
+    policy: { timing: timingPolicy },
+    qualification_decision: opts.candidateMeasurement.qualification_decision,
+  };
 }
 
 function parseCandidateEvidence(raw: string): JsonRecord {
@@ -481,6 +527,11 @@ export async function buildQualificationRf04Comparison(opts: {
       reviewedSha: opts.reviewedSha,
     }),
   ]);
+  const comparisonPolicy = recordValue(main.value.comparison_policy);
+  const qualificationGate = requireQualificationRf04Gate({
+    comparisonPolicy,
+    candidateMeasurement,
+  });
   const replaySnapshot = buildReplayMetricSnapshot({
     path: relative(opts.gitRoot, replayPath),
     raw: replay.raw,
@@ -518,8 +569,9 @@ export async function buildQualificationRf04Comparison(opts: {
       scenario_count: asNumber(main.value.scenario_count) ?? 0,
       observed_scalar_cells: countObservedScalarCells(main.value),
       structural_projection_sha256: asString(main.value.structural_projection_sha256),
-      comparison_policy: recordValue(main.value.comparison_policy),
+      comparison_policy: comparisonPolicy,
     },
+    qualification_gate: qualificationGate,
     replay_comparison: {
       baseline: replaySnapshot,
       current_rebuild: currentRebuild,
