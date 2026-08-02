@@ -13,7 +13,7 @@ Created: 2026-08-02T15:36:39.848Z
 ## Verification
 
 - State: ok
-- Note: Exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb verified with frozen runtime evidence: 4687/4687 full tests, full contract, focused negative/replay checks, and 20-pair cold/warm matched latency all pass.
+- Note: Implementation rework verified without source changes: local main now matches merged origin/main ac112cc28, evaluator merge-base scope is clean, and exact ab8787b3 performance/contract evidence remains current.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,6 @@ Created: 2026-08-02T15:36:39.848Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202608021232-6BTB6D/README.md    |   7 +-
- .agentplane/tasks/202608021534-J5G235/README.md    | 100 +++++++
- .agentplane/tasks/202608021534-YN84E1/README.md    | 101 +++++++
- .agentplane/tasks/202608021535-9EWFAB/README.md    | 101 +++++++
- .agentplane/tasks/202608021535-CNQKXP/README.md    | 101 +++++++
  packages/agentplane/package.json                   |   7 +-
  packages/agentplane/src/cli-bun.ts                 |  31 +++
  .../src/cli/run-cli.core.init.interactive.test.ts  |  12 +-
@@ -61,6 +56,8 @@ Created: 2026-08-02T15:36:39.848Z
  .../src/cli/run-cli/registry.run.test.ts           |   2 +-
  .../agentplane/src/cli/run-cli/registry.run.ts     |  14 +-
  .../evaluator/evaluator-catalog.command.ts         |   8 +-
+ .../commands/evaluator/evaluator-diff-evidence.ts  |  31 ++-
+ .../evaluator/evaluator-run.command.test.ts        |  40 +++
  .../src/commands/evaluator/evaluator.command.ts    |  36 +--
  .../src/commands/hermes/hermes.command.ts          |  13 -
  .../release/bun-compiled-cli-smoke-script.test.ts  |   9 +-
@@ -86,7 +83,7 @@ Created: 2026-08-02T15:36:39.848Z
  scripts/release/check-package-tarball.mjs          |   7 +-
  scripts/release/generate-cli-help-catalog.mjs      |  24 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |  58 +++-
- 57 files changed, 2101 insertions(+), 652 deletions(-)
+ 54 files changed, 1761 insertions(+), 653 deletions(-)
 ```
 
 </details>

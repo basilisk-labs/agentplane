@@ -733,6 +733,46 @@ describe("evaluator run command", () => {
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
+  it("uses a newer tracking-base merge point after a squash-merged base update", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const commonBase = await commitPath(root, "README.md", "base\n", "chore: establish base");
+    await commitPath(
+      root,
+      "planning-local.md",
+      "local planning commit\n",
+      "chore: local planning commit",
+    );
+
+    await execFileAsync("git", ["branch", "published-main", commonBase], { cwd: root });
+    await execFileAsync("git", ["switch", "published-main"], { cwd: root });
+    const publishedBase = await commitPath(
+      root,
+      "planning-published.md",
+      "published planning commit\n",
+      "chore: published planning commit",
+    );
+    await execFileAsync("git", ["switch", "-c", "task/evaluator-base"], { cwd: root });
+    const evaluatedSha = await commitPath(
+      root,
+      "src/evaluated.ts",
+      "export const evaluated = true;\n",
+      "feat: evaluated",
+    );
+    await execFileAsync("git", ["config", "branch.main.remote", "."], { cwd: root });
+    await execFileAsync("git", ["config", "branch.main.merge", "refs/heads/published-main"], {
+      cwd: root,
+    });
+
+    await expect(
+      resolveEvaluatorDiffBase({
+        gitRoot: root,
+        evaluatedSha,
+        baseRef: "main",
+      }),
+    ).resolves.toBe(publishedBase);
+  });
+
   it("rejects an unresolved branch_pr base even when the evaluated commit is the repository root", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

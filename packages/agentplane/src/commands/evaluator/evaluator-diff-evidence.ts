@@ -1,6 +1,11 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { gitMergeBase, gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
+import {
+  gitIsAncestor,
+  gitMergeBase,
+  gitRevParse,
+  resolveBaseBranch,
+} from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
@@ -26,7 +31,29 @@ export async function resolveEvaluatorDiffBase(opts: {
     });
   }
   try {
-    return await gitMergeBase(opts.gitRoot, baseRef, opts.evaluatedSha);
+    const localMergeBase = await gitMergeBase(opts.gitRoot, baseRef, opts.evaluatedSha);
+    const upstreamCommit = await gitRevParse(opts.gitRoot, [
+      `${baseRef}@{upstream}^{commit}`,
+    ]).catch(() => null);
+    if (!upstreamCommit) return localMergeBase;
+
+    const upstreamMergeBase = await gitMergeBase(
+      opts.gitRoot,
+      upstreamCommit,
+      opts.evaluatedSha,
+    ).catch(() => null);
+    if (
+      !upstreamMergeBase ||
+      upstreamMergeBase === localMergeBase ||
+      !(await gitIsAncestor(opts.gitRoot, localMergeBase, upstreamMergeBase))
+    ) {
+      return localMergeBase;
+    }
+
+    // A squash-merged base update can leave the checked-out local base on a
+    // content-equivalent sibling commit. Prefer its newer tracking ref so the
+    // evaluator does not attribute already-merged base changes to the task.
+    return upstreamMergeBase;
   } catch (error) {
     throw new CliError({
       code: "E_VALIDATION",
