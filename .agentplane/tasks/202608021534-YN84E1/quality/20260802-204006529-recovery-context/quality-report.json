@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021534-YN84E1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T20:40:07.002Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "15c1edc58761832097756ba8bc56cc78181fd2f8",
+  "blueprint_digest": "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545",
+  "findings": [
+    "The only implementation delta since the accepted semantic review is Prettier line wrapping in the guided lifecycle test and task complete option description; no control flow, provenance, gate, or assertion meaning changed.",
+    "Fresh verification record binds the complete declared suite to 15c1edc58761832097756ba8bc56cc78181fd2f8, closing the stale-evidence condition exposed by the rework."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021534-YN84E1/quality/20260802-204006529-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
