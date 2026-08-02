@@ -4,7 +4,7 @@ title: "Unify the v0.7.1 task supervisor and external advance protocol"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T14:17:44.239Z"
+  updated_at: "2026-08-02T14:22:45.910Z"
   updated_by: "TESTER"
-  note: "PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change."
+  note: "Fresh SHA-bound deterministic evidence recorded for implementation 06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates passed."
   attempts: 0
+quality_review:
+  state: "blocked"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-02T14:19:15.425Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "06582bde1138360f789c18399c86df20279bafee"
+  blueprint_digest: "1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9"
+  evidence_refs:
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021231-PZGG3V/README.md"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-141833116-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen evidence contains only a narrative verification note; it contains no deterministic check records, runner history, or runtime evidence for the evaluated SHA."
+  recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "06582bde1138360f789c18399c86df20279bafee"
   message: "✨ PZGG3V task: unify supervisor frontends"
@@ -60,8 +86,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change."
+  -
+    type: "verify"
+    at: "2026-08-02T14:22:45.910Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Fresh SHA-bound deterministic evidence recorded for implementation 06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates passed."
 doc_version: 3
-doc_updated_at: "2026-08-02T14:17:45.319Z"
+doc_updated_at: "2026-08-02T14:22:47.029Z"
 doc_updated_by: "CODER"
 description: "Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding."
 sections:
@@ -96,6 +128,91 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T14:11:49.069Z, excerpt_hash=sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-PZGG3V-unify-the-v0-7-1-task-supervisor-and-external-ad/.agentplane/tasks/202608021231-PZGG3V/blueprint/resolved-snapshot.json
+    - old_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+    - current_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-PZGG3V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-PZGG3V
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T14:22:45.910Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh SHA-bound deterministic evidence recorded for implementation 06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T14:17:45.319Z, excerpt_hash=sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3
+
+    Details:
+
+    Command: node scripts/qualification/check-v0.7.1-product-contract.mjs
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: compact external packet, managed runner frontend, packet size, no lifecycle choreography, and canonical onboarding
+
+    Command: node scripts/checks/run-vitest-suite.mjs v0.7-supervisor
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: shared supervisor transitions, fingerprints, parity, packet projection, and safe semantic stops
+
+    Command: node scripts/checks/run-vitest-suite.mjs v0.7-lifecycle
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: direct and branch_pr lifecycle states, approval gates, evaluator rework, hosted wait, and closure routing
+
+    Command: node scripts/checks/run-vitest-suite.mjs v0.7-recovery
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: stale fingerprints, replay, concurrency, cancellation, effect in doubt, and recovery behavior
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: release-critical CLI, compatibility, replay, trust boundary, and protected path regressions
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: workspace compile-time contract on TypeScript 7 typecheck
+
+    Command: bun run coverage:workflow-suite
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: workflow runtime transitions, restore behavior, and harness coverage contract
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: full maintained repository contract gate
+
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: task projection and release-closure state
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: policy gateway routing
+
+    Command: ap doctor
+    Result: pass
+    Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+    Scope: workflow contract, workspace, branch_pr drift, runtime source, blueprints, prompt graph, and historical task metadata
 
     BlueprintSnapshotRef:
     - state: current
@@ -167,6 +284,91 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T14:11:49.069Z, excerpt_hash=sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-PZGG3V-unify-the-v0-7-1-task-supervisor-and-external-ad/.agentplane/tasks/202608021231-PZGG3V/blueprint/resolved-snapshot.json
+- old_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+- current_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-PZGG3V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-PZGG3V
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T14:22:45.910Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh SHA-bound deterministic evidence recorded for implementation 06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T14:17:45.319Z, excerpt_hash=sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3
+
+Details:
+
+Command: node scripts/qualification/check-v0.7.1-product-contract.mjs
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: compact external packet, managed runner frontend, packet size, no lifecycle choreography, and canonical onboarding
+
+Command: node scripts/checks/run-vitest-suite.mjs v0.7-supervisor
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: shared supervisor transitions, fingerprints, parity, packet projection, and safe semantic stops
+
+Command: node scripts/checks/run-vitest-suite.mjs v0.7-lifecycle
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: direct and branch_pr lifecycle states, approval gates, evaluator rework, hosted wait, and closure routing
+
+Command: node scripts/checks/run-vitest-suite.mjs v0.7-recovery
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: stale fingerprints, replay, concurrency, cancellation, effect in doubt, and recovery behavior
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: release-critical CLI, compatibility, replay, trust boundary, and protected path regressions
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: workspace compile-time contract on TypeScript 7 typecheck
+
+Command: bun run coverage:workflow-suite
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: workflow runtime transitions, restore behavior, and harness coverage contract
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: full maintained repository contract gate
+
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: task projection and release-closure state
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: policy gateway routing
+
+Command: ap doctor
+Result: pass
+Evidence: .agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json
+Scope: workflow contract, workspace, branch_pr drift, runtime source, blueprints, prompt graph, and historical task metadata
 
 BlueprintSnapshotRef:
 - state: current
