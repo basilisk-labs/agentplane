@@ -4,8 +4,7 @@ import { createCliEmitter } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
-import { cmdTaskPlanApprove, setTaskPlan } from "./plan.js";
-import { cmdTaskStartReady } from "./start-ready.js";
+import { setTaskPlan } from "./plan.js";
 
 const output = createCliEmitter();
 
@@ -26,7 +25,7 @@ export type TaskBeginParsed = {
 export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
   id: ["task", "begin"],
   group: "Task",
-  summary: "Create, plan, approve, and start or route a task through the normal lifecycle.",
+  summary: "Compatibility shortcut: create a task and stop at semantic planning or approval.",
   args: [{ name: "title", required: true, valueHint: "<title>" }],
   options: [
     {
@@ -61,7 +60,7 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
       kind: "string",
       name: "plan",
       valueHint: "<text>",
-      description: String.raw`Plan text. Defaults to a minimal generated plan; escaped newlines (\n) are supported by task plan set.`,
+      description: String.raw`Explicit human-supplied plan text. Without it, stop at the PLANNER semantic boundary; escaped newlines (\n) are supported.`,
     },
     {
       kind: "string",
@@ -109,7 +108,7 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
   examples: [
     {
       cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:fast"',
-      why: "Create the task, seed a minimal plan, approve it, then start or print the branch_pr worktree route.",
+      why: "Compatibility-only creation that stops before approval or execution.",
     },
   ],
   validateRaw: (raw) => {
@@ -137,14 +136,6 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
     json: raw.opts.json === true,
   }),
 };
-
-function defaultPlan(title: string): string {
-  return [
-    `1. Clarify the smallest safe implementation scope for: ${title}.`,
-    "2. Make the scoped change using existing project conventions.",
-    "3. Run the task Verify Steps and record the result before finishing.",
-  ].join("\n");
-}
 
 export function makeRunTaskBeginHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,
@@ -180,44 +171,25 @@ export function makeRunTaskBeginHandler(
       },
     });
     const taskId = created.task_id;
-    await setTaskPlan({
-      ctx: command,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride,
-      taskId,
-      text: p.plan ?? defaultPlan(p.title),
-      updatedBy: "ORCHESTRATOR",
-    });
-    await cmdTaskPlanApprove({
-      ctx: command,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride,
-      taskId,
-      by: "ORCHESTRATOR",
-    });
-
-    let status: "started" | "routed" = "routed";
-    let nextCommand = `agentplane work start ${taskId} --agent ${p.owner} --slug <slug> --worktree`;
-    if (workflowMode === "direct") {
-      await cmdTaskStartReady({
+    if (p.plan?.trim()) {
+      await setTaskPlan({
         ctx: command,
         cwd: ctx.cwd,
         rootOverride: ctx.rootOverride,
         taskId,
-        author: p.owner,
-        body: `Start: ${p.title}. Guided shortcut created the task, approved the plan, and entered execution.`,
-        force: false,
-        yes: false,
-        quiet: true,
+        text: p.plan,
+        updatedBy: "HUMAN",
       });
-      status = "started";
-      nextCommand = `agentplane task verify-show ${taskId}`;
     }
 
+    const status = p.plan?.trim() ? "approval_required" : "semantic_input_required";
+    const requiredRole = p.plan?.trim() ? "ORCHESTRATOR" : "PLANNER";
+    const nextCommand = `agentplane task advance ${taskId} --agent-json`;
     const payload = {
       task_id: taskId,
       status,
       workflow_mode: workflowMode,
+      required_role: requiredRole,
       next_command: nextCommand,
     };
     if (p.json) {
@@ -228,6 +200,7 @@ export function makeRunTaskBeginHandler(
           { label: "task", value: taskId },
           { label: "status", value: status },
           { label: "workflow_mode", value: workflowMode },
+          { label: "required_role", value: requiredRole },
           { label: "next", value: nextCommand },
         ],
         { header: "task begin" },

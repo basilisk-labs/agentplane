@@ -184,6 +184,7 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
         });
       }
       return supervised.stop?.code === "approval_required" ||
+        supervised.stop?.code === "semantic_input_required" ||
         supervised.stop?.code === "wait_required" ||
         supervised.stop?.code === "human_input_required" ||
         supervised.stop?.code === "terminal_attention"

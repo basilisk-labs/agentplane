@@ -14,6 +14,7 @@ export const DIRECT_TASK_SUPERVISION_SCHEMA = "agentplane.direct_task_supervisio
 
 export type DirectTaskSupervisorStopCode =
   | "approval_required"
+  | "semantic_input_required"
   | "human_input_required"
   | "wait_required"
   | "terminal_route"
@@ -97,15 +98,17 @@ export function routeStop(decision: TaskRouteDecision): DirectTaskSupervisorStop
   const step = decision.workflowStep;
   const operationId = step.kind === "cli_operation" ? step.operation.id : null;
   const code: DirectTaskSupervisorStopCode =
-    step.kind === "approval"
-      ? "approval_required"
-      : step.kind === "human_input"
-        ? "human_input_required"
-        : step.kind === "wait"
-          ? "wait_required"
-          : step.kind === "terminal"
-            ? "terminal_route"
-            : "unsupported_route_operation";
+    step.kind === "agent_episode" && step.episode.purpose === "planning"
+      ? "semantic_input_required"
+      : step.kind === "approval"
+        ? "approval_required"
+        : step.kind === "human_input"
+          ? "human_input_required"
+          : step.kind === "wait"
+            ? "wait_required"
+            : step.kind === "terminal"
+              ? "terminal_route"
+              : "unsupported_route_operation";
   return { code, reason: step.summary, route_step_id: step.id, operation_id: operationId };
 }
 

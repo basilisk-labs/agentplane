@@ -126,21 +126,20 @@ describe("cli help contract", () => {
       // Unique command ids.
       const unique = new Set(ids);
       expect(unique.size).toBe(ids.length);
-      expect(ids).toEqual(
-        expect.arrayContaining([
-          "codex",
-          "codex plugin",
-          "codex plugin install",
-          "help",
-          "task",
-          "task list",
-          "task search",
-          "task next",
-          "task plan",
-          "task doc",
-          "work start",
-        ]),
-      );
+      expect(ids).toEqual([
+        "help",
+        "init",
+        "quickstart",
+        "doctor",
+        "task",
+        "task active",
+        "task advance",
+        "task new",
+        "task brief",
+        "task run",
+        "context search",
+      ]);
+      expect(ids.length).toBeLessThanOrEqual(12);
 
       // Unique option names/shorts within a command.
       for (const spec of list) {
@@ -184,7 +183,8 @@ describe("cli help contract", () => {
       expect(io.stdout).not.toContain("release  Prepare a release");
       expect(io.stdout).not.toContain("Framework Dev:");
       expect(io.stdout).toContain("task  Task lifecycle and task-store commands.");
-      expect(io.stdout).toContain("work start  Prepare the workspace for a task");
+      expect(io.stdout).toContain("task advance  Return one compact external-agent action");
+      expect(io.stdout).toContain("task run  Supervise a direct or branch_pr task");
     } finally {
       io.restore();
     }
@@ -256,16 +256,25 @@ describe("cli help contract", () => {
     }
   });
 
-  it("framework checkout help exposes framework-dev commands in a dedicated group", async () => {
+  it("framework checkout keeps framework-dev commands behind --all", async () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["help"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("Framework Dev:");
-      expect(io.stdout).toContain("release  Prepare a release");
-      expect(io.stdout).toContain("docs cli  Generate an MDX CLI reference");
+      expect(io.stdout).not.toContain("Framework Dev:");
+      expect(io.stdout).not.toContain("release  Prepare a release");
     } finally {
       io.restore();
+    }
+    const allIo = captureStdIO();
+    try {
+      const code = await runCli(["help", "--all"]);
+      expect(code).toBe(0);
+      expect(allIo.stdout).toContain("Framework Dev:");
+      expect(allIo.stdout).toContain("release  Prepare a release");
+      expect(allIo.stdout).toContain("docs cli  Generate an MDX CLI reference");
+    } finally {
+      allIo.restore();
     }
   });
 

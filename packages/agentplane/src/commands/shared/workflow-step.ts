@@ -464,6 +464,7 @@ export type WorkflowStep =
       kind: "agent_episode";
       episode: {
         purpose:
+          | "planning"
           | "implementation"
           | "implementation_rework"
           | "quality_review"

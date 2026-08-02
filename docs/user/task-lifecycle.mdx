@@ -8,12 +8,17 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
 Agentplane 0.7 exposes one route model through two execution styles:
 
 - an external agent requests one compact packet with `task advance --agent-json`;
-- a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
-  bounded semantic episodes.
+- after semantic plan approval, a configured runner uses `task run <task-id>` to let the CLI
+  supervise eligible formal steps and bounded semantic episodes.
 
 The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
 automatic success. It returns a typed stop at those boundaries. See
 [Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
+
+Immediately after task creation, `task advance --agent-json` returns a read-only `PLANNER` packet.
+The generated Plan text is a non-approvable placeholder. A task-specific plan must be recorded
+before the route can request explicit approval; `task run` reports the same typed planning stop
+without starting an implementation provider.
 
 ## Supervised lifecycle
 
@@ -161,17 +166,18 @@ Everything else in this document is either mode-specific detail or a fallback pa
 A task moves through the same core stages in both modes:
 
 1. **Intake**: a need is identified and recorded.
-2. **Plan**: ORCHESTRATOR drafts a plan and requests approval.
-3. **Create**: PLANNER creates the task, assigns ownership, and sets dependencies.
-4. **Start**: the executor marks the task DOING with a structured comment.
-5. **Implement**: code, docs, and artifacts are produced.
-6. **Verify**: checks are run (if configured) and a verification outcome is recorded.
-7. **Commit**: changes are committed with the task ID suffix.
-8. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
+2. **Create**: the CLI creates the task record, assigns ownership, and sets dependencies.
+3. **Plan**: PLANNER turns intent and prepared context into a task-specific plan.
+4. **Approve**: ORCHESTRATOR or the human explicitly approves that semantic plan.
+5. **Start**: the executor marks the task DOING with a structured comment.
+6. **Implement**: code, docs, and artifacts are produced.
+7. **Verify**: observed checks and an independent semantic review are recorded separately.
+8. **Commit**: changes are committed with the task ID suffix.
+9. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
    refresh when `acr.write_on_finish=true`.
-9. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
-   verification, finish, and Git evidence.
-10. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
+10. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
+    verification, finish, and Git evidence.
+11. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
     regenerate derived task projections from the current backend state.
 
 Task creation targets executable work only.

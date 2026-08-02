@@ -90,6 +90,7 @@ function loadSerializedHelpEntries(): readonly CommandEntry[] | null {
     const parsed = JSON.parse(readFileSync(helpCatalogPath, "utf8")) as {
       schema_version?: unknown;
       entries?: {
+        canonicalHelp?: boolean;
         helpGroup?: string;
         invocation?: string;
         spec?: CommandEntry["spec"];
@@ -109,6 +110,7 @@ function loadSerializedHelpEntries(): readonly CommandEntry[] | null {
         preparationNodes: [],
         dispatch: { project: false, loadedConfig: false, taskContext: false },
         surface: entry.surface,
+        canonicalHelp: entry.canonicalHelp === true,
         helpGroup: entry.helpGroup,
         invocation: entry.invocation,
       } satisfies CommandEntry;

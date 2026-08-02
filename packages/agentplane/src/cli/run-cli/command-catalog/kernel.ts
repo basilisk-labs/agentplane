@@ -32,6 +32,7 @@ export type CommandEntry = {
   preparationNodes: readonly CommandPreparationNode[];
   dispatch: DispatchNeeds;
   surface: CommandSurface;
+  canonicalHelp?: boolean;
   helpGroup?: string;
   invocation?: string;
 };
@@ -43,6 +44,7 @@ type CommandSessionSelection = {
 
 export type CommandMeta = {
   surface?: CommandSurface;
+  canonicalHelp?: boolean;
   helpGroup?: string;
   invocation?: string;
 };
@@ -94,6 +96,7 @@ export function declareSessionCommand<
     preparationNodes: preparationNodesForRequirements(declaration.requirements),
     dispatch,
     surface: declaration.surface ?? "user",
+    canonicalHelp: declaration.canonicalHelp === true,
     helpGroup: declaration.helpGroup,
     invocation: declaration.invocation,
   };
@@ -153,6 +156,7 @@ export function declareMultiSessionCommand<TParsed>(
     preparationNodes: preparationNodesForRequirements(declaration.default.requirements),
     dispatch,
     surface: declaration.surface ?? "user",
+    canonicalHelp: declaration.canonicalHelp === true,
     helpGroup: declaration.helpGroup,
     invocation: declaration.invocation,
   };
@@ -209,6 +213,7 @@ export function declareConditionalSessionCommand<
     preparationNodes: preparationNodesForRequirements(declaration.default.requirements),
     dispatch,
     surface: declaration.surface ?? "user",
+    canonicalHelp: declaration.canonicalHelp === true,
     helpGroup: declaration.helpGroup,
     invocation: declaration.invocation,
   };

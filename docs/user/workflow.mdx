@@ -28,6 +28,10 @@ An external agent requests one bounded action instead:
 agentplane task advance <task-id> --agent-json
 ```
 
+Immediately after creation, that packet is a read-only PLANNER request. The generated Plan is only
+a marker and cannot be approved. `task run` reports the same planning boundary without launching an
+implementation provider; managed execution begins after a task-specific plan is approved.
+
 The detailed lifecycle below is the diagnostic and recovery expansion of that route:
 
 1. Run preflight.

@@ -5,9 +5,10 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { CliError } from "../../shared/errors.js";
 
 import { cmdFinish } from "./finish-command.js";
-import { cmdVerifyParsed } from "./verify-record.js";
 import { existingCommitInfo } from "./finish-shared.js";
 import { readCommitInfo } from "./shared.js";
+import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
+import { cmdTaskComment } from "./comment.js";
 
 const output = createCliEmitter();
 
@@ -21,13 +22,14 @@ export type TaskCompleteParsed = {
   body?: string;
   force: boolean;
   yes: boolean;
+  acceptUnobserved: boolean;
   json: boolean;
 };
 
 export const taskCompleteSpec: CommandSpec<TaskCompleteParsed> = {
   id: ["task", "complete"],
   group: "Task",
-  summary: "Record OK verification and finish a direct task, or print the branch_pr close route.",
+  summary: "Compatibility closeout for an already verified, independently reviewed task.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -61,7 +63,7 @@ export const taskCompleteSpec: CommandSpec<TaskCompleteParsed> = {
       kind: "string",
       name: "note",
       valueHint: "<text>",
-      description: "Verification note. Defaults to the result.",
+      description: "Legacy compatibility field; this command does not create verification.",
     },
     {
       kind: "string",
@@ -71,12 +73,19 @@ export const taskCompleteSpec: CommandSpec<TaskCompleteParsed> = {
     },
     { kind: "boolean", name: "force", default: false, description: "Forward --force to finish." },
     { kind: "boolean", name: "yes", default: false, description: "Auto-approve force gates." },
+    {
+      kind: "boolean",
+      name: "accept-unobserved",
+      default: false,
+      description:
+        "Unsafe compatibility override for a missing observed runner receipt; requires --yes and is recorded in task history.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit machine-readable JSON." },
   ],
   examples: [
     {
       cmd: 'agentplane task complete 202602030608-F1Q8AB --result "Parser edge case fixed" --commit abcdef1',
-      why: "Record verification and finish when the current workflow route allows it.",
+      why: "Close an evidence-ready task without synthesizing verification or review evidence.",
     },
   ],
   validateRaw: (raw) => {
@@ -99,6 +108,7 @@ export const taskCompleteSpec: CommandSpec<TaskCompleteParsed> = {
     body: typeof raw.opts.body === "string" ? String(raw.opts.body) : undefined,
     force: raw.opts.force === true,
     yes: raw.opts.yes === true,
+    acceptUnobserved: raw.opts["accept-unobserved"] === true,
     json: raw.opts.json === true,
   }),
 };
@@ -109,22 +119,28 @@ export function makeRunTaskCompleteHandler(
   return async (ctx: CommandCtx, p: TaskCompleteParsed): Promise<number> => {
     const command = await getCtx("task complete");
     const workflowMode = command.config.workflow_mode;
+    const task = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+    const unsafeOverrideUsed = assertCompletionEvidenceReady({
+      task,
+      acceptUnobserved: p.acceptUnobserved,
+      yes: p.yes,
+    });
     if (workflowMode !== "branch_pr") {
       await assertDirectFinishCommitReady({ ctx: command, taskId: p.taskId, commit: p.commit });
     }
 
-    await cmdVerifyParsed({
-      ctx: command,
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride,
-      taskId: p.taskId,
-      state: "ok",
-      by: p.by,
-      note: p.note ?? p.result,
-      quiet: true,
-    });
-
     if (workflowMode === "branch_pr") {
+      if (unsafeOverrideUsed) {
+        await cmdTaskComment({
+          ctx: command,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride,
+          taskId: p.taskId,
+          author: "HUMAN",
+          body: "UNSAFE compatibility override: operator accepted a missing AgentPlane-observed runner receipt before task complete route projection.",
+          quiet: true,
+        });
+      }
       const nextCommand = `agentplane task next-action ${p.taskId} --explain`;
       const prCommand = `agentplane pr open ${p.taskId} --branch task/${p.taskId}/<slug> --author ${p.by}`;
       const payload = {
@@ -161,7 +177,7 @@ export function makeRunTaskCompleteHandler(
       author: p.author,
       body:
         p.body ??
-        `Verified: ${p.result}. Guided shortcut recorded verification and is closing the direct task with traceable commit metadata.`,
+        `Verified: ${p.result}. Compatibility closeout preserved existing verification and quality-review evidence.${unsafeOverrideUsed ? " UNSAFE: operator accepted missing observed runner receipt." : ""}`,
       result: p.result,
       commit: p.commit,
       breaking: false,
@@ -194,6 +210,43 @@ export function makeRunTaskCompleteHandler(
     }
     return 0;
   };
+}
+
+function assertCompletionEvidenceReady(opts: {
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  acceptUnobserved: boolean;
+  yes: boolean;
+}): boolean {
+  if (opts.task.verification?.state !== "ok") {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: [
+        "task complete cannot turn an executor claim into verification.",
+        `task=${opts.task.id}`,
+        `verification.state=${opts.task.verification?.state ?? "missing"}`,
+        `Fix: agentplane task advance ${opts.task.id} --agent-json`,
+      ].join("\n"),
+    });
+  }
+  assertEvaluatorQualityReviewPassed({ task: opts.task, command: "finish" });
+
+  const receipt = opts.task.runner?.execution_receipt;
+  const observed =
+    receipt?.observed_by === "agentplane" && receipt.verification_state === "observed_success";
+  if (observed) return false;
+  if (opts.acceptUnobserved && opts.yes) return true;
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message: [
+      "task complete requires an AgentPlane-observed successful runner receipt.",
+      `task=${opts.task.id}`,
+      `runner.execution_receipt=${receipt ? receipt.verification_state : "missing"}`,
+      `Fix: agentplane task run ${opts.task.id}`,
+      "Unsafe compatibility override: add --accept-unobserved --yes only after an explicit operator review.",
+    ].join("\n"),
+  });
 }
 
 async function assertDirectFinishCommitReady(opts: {

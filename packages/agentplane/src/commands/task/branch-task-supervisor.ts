@@ -17,6 +17,7 @@ const MAX_BRANCH_SUPERVISOR_STEPS = 32;
 
 export type BranchTaskSupervisorStopCode =
   | "approval_required"
+  | "semantic_input_required"
   | "human_input_required"
   | "wait_required"
   | "terminal_attention"
@@ -409,6 +410,18 @@ export async function superviseBranchTaskRunWithPorts(
       continue;
     }
     if (step.kind === "agent_episode") {
+      if (step.episode.purpose === "planning") {
+        return stopResult(
+          current,
+          {
+            code: "semantic_input_required",
+            reason: step.summary,
+            route_step_id: step.id,
+            operation_id: null,
+          },
+          progress,
+        );
+      }
       const outcome = await ports.execute_episode({ decision: current, decide: ports.decide });
       current = outcome.decision;
       progress.journal = outcome.journal ?? progress.journal;

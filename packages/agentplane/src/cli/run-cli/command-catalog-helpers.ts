@@ -53,3 +53,10 @@ export function getHelpCommandEntriesFrom(
 ): readonly CommandEntry[] {
   return entries.filter((entry) => isCommandVisibleInHelp(entry, mode));
 }
+
+export function getCanonicalHelpCommandEntriesFrom(
+  entries: readonly CommandEntry[],
+  mode: HelpSurfaceMode,
+): readonly CommandEntry[] {
+  return entries.filter((entry) => entry.canonicalHelp && isCommandVisibleInHelp(entry, mode));
+}

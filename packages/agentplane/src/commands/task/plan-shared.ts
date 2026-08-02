@@ -15,6 +15,7 @@ import {
   taskObservationSectionName,
   toStringArray,
 } from "./shared.js";
+import { isPlannerSemanticPlanRequired } from "./doc-template.js";
 
 export type PlanBackend = CommandContext["taskBackend"] & {
   getTaskDoc: NonNullable<CommandContext["taskBackend"]["getTaskDoc"]>;
@@ -95,6 +96,19 @@ export function assertPlanCanBeApproved(opts: {
   doc: string;
 }): void {
   assertPlanSectionPresent(opts.task.id, opts.doc, "approve");
+  const plan = extractDocSection(opts.doc, "Plan");
+  if (isPlannerSemanticPlanRequired(plan)) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: [
+        `${opts.task.id}: cannot approve the generated planning placeholder.`,
+        "semantic_plan=missing",
+        `Fix: agentplane task advance ${opts.task.id} --agent-json`,
+        `Or set an explicit plan: agentplane task plan set ${opts.task.id} --text "..." --updated-by PLANNER`,
+      ].join("\n"),
+    });
+  }
   ensureAgentFilledRequiredDocSections({
     task: opts.task,
     config: opts.config,

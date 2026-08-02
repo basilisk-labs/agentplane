@@ -1,7 +1,10 @@
 import { getHumanInputState, humanInputAnswerCommand } from "../task/human-input.js";
+import { isPlannerSemanticPlanRequired } from "../task/doc-template.js";
+import { extractDocSection } from "../task/shared.js";
 import { branchStep, doneBranchStep } from "./workflow-step-branch.js";
 import {
   approvalStep,
+  agentEpisodeStep,
   cliOperationStep,
   commonExecution,
   directStep,
@@ -75,6 +78,32 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
     };
   }
   if (state.task.plan_approval?.state !== "approved") {
+    if (isPlannerSemanticPlanRequired(extractDocSection(String(state.task.doc ?? ""), "Plan"))) {
+      return agentEpisodeStep({
+        state,
+        id: "agent.planning",
+        code: "semantic_planning_required",
+        phase: "semantic_planning_required",
+        checkout: "base_checkout",
+        role: "PLANNER",
+        purpose: "planning",
+        summary:
+          "prepare a task-specific semantic plan before requesting plan approval or owner-scoped execution",
+        objective:
+          "Turn the task intent, scope, relevant context, and verification needs into a concrete implementation plan without approving or starting the task.",
+        mustNot: [
+          "do not approve the plan or start implementation",
+          "do not mutate implementation, Git history, provider state, or task lifecycle status",
+          "do not keep the generated planning placeholder as the proposed plan",
+        ],
+        returnControlWhen:
+          "after PLANNER records a task-specific Plan with task plan set; request a fresh action packet for approval",
+        verificationCandidate: `agentplane task plan set ${id} --text "<task-specific-plan>" --updated-by PLANNER`,
+        evidenceMissing: ["semantic_plan"],
+        compatibilityCommand: `agentplane task plan set ${id} --text "<task-specific-plan>" --updated-by PLANNER`,
+        selectedBlocker: routeBlockerFor(state, "plan_not_approved"),
+      });
+    }
     return approvalStep({
       state,
       id: "approval.plan",

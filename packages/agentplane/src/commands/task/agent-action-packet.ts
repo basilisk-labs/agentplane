@@ -69,6 +69,9 @@ function semanticInstruction(
   >["episode"]["purpose"],
 ): string {
   switch (purpose) {
+    case "planning": {
+      return "Prepare a task-specific semantic plan from the supplied intent and context, then report it for explicit approval.";
+    }
     case "implementation": {
       return "Perform the scoped implementation from the prepared context and report a semantic outcome.";
     }

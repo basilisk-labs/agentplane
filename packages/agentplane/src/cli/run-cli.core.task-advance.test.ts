@@ -154,7 +154,7 @@ async function readRoute(
 }
 
 describe("runCli task advance", { timeout: 180_000 }, () => {
-  it("returns one compact approval action without changing repository state", async () => {
+  it("returns one compact planning action without changing repository state", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -173,9 +173,10 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(first).toMatchObject({
       schema_version: 1,
       task_id: taskId,
-      transition_id: agentTransitionId("approval.plan"),
-      action: { kind: "approval_required" },
-      stop: { reason: "authority_boundary", resume: "request_fresh_packet" },
+      transition_id: agentTransitionId("agent.planning"),
+      action: { kind: "agent_episode" },
+      authority: { role: "PLANNER", mutation: "read_only" },
+      stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
     });
     expect(first.state_fingerprint).toBe(await readRouteFingerprint(root, taskId));
     expect(first.context_refs.length).toBeGreaterThan(0);

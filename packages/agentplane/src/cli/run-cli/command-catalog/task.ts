@@ -177,6 +177,7 @@ import {
 export const TASK_COMMANDS = [
   fromCommandsTaskTaskCommand(taskSpec, "runTask", {
     requirements: NO_CONTEXT_REQUIREMENTS,
+    canonicalHelp: true,
   }),
   fromCommandsTaskHandoffCommand(taskHandoffSpec, "runTaskHandoff", {
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -208,6 +209,7 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskActiveSpec, {
     load: loadTaskActiveSpec,
     requirements: TASK_ROUTE_LOCAL_REQUIREMENTS,
+    canonicalHelp: true,
   }),
   declareSessionCommand(taskAskSpec, {
     load: loadTaskAskSpec,
@@ -254,11 +256,13 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskAdvanceSpec, {
     load: loadTaskAdvanceSpec,
     requirements: RUNNER_EXECUTION_REQUIREMENTS,
+    canonicalHelp: true,
   }),
   declareSessionCommand(taskNewSpec, {
     load: loadTaskNewSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
+    canonicalHelp: true,
   }),
   declareSessionCommand(taskBeginSpec, {
     load: loadTaskBeginSpec,
@@ -269,6 +273,7 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskBriefSpec, {
     load: loadTaskBriefSpec,
     requirements: TASK_ROUTE_REQUIREMENTS,
+    canonicalHelp: true,
   }),
   declareSessionCommand(taskRunStatusSpec, {
     load: loadTaskRunStatusSpec,
@@ -307,6 +312,7 @@ export const TASK_COMMANDS = [
     helpGroup: "Maintenance",
   }),
   declareConditionalSessionCommand(taskRunSpec, {
+    canonicalHelp: true,
     default: {
       load: loadTaskRunPreparationSpec,
       requirements: RUNNER_PREPARATION_REQUIREMENTS,

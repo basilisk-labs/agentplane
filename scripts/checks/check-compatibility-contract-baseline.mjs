@@ -336,6 +336,7 @@ function validateReviewedCandidate({
     "202607302125-Y61ZHN",
     "202607221852-ECBY56",
     "202608021231-PZGG3V",
+    "202608021534-YN84E1",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -363,6 +364,7 @@ function validateReviewedCandidate({
     "202607221852-ECBY56",
     "202608021231-PZGG3V",
     "202608021231-SHYJGK",
+    "202608021534-YN84E1",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -494,7 +496,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
-        surface_sha256: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
+        surface_sha256: "dc99c14dd9a186313e0698783d9d93741ccee0d5d6cefd58966ffd64f562163a",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -1604,6 +1606,13 @@ function validateReviewedCandidate({
       valueHint: "<1-60>",
     },
     {
+      command: "task complete",
+      name: "accept-unobserved",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "task run",
       name: "allow-danger-full-access",
       kind: "boolean",
@@ -1892,6 +1901,12 @@ function validateReviewedCandidate({
       command: "task authority grant",
       name: "ttl-minutes",
       source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task complete",
+      name: "accept-unobserved",
+      source_task: "202608021534-YN84E1",
     },
     {
       kind: "option",

@@ -326,7 +326,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     route_decision: decision,
   } = opts.prepared;
   const task = taskEnvelope.task;
-  const role = workOrderRole(task.metadata.owner ?? "");
+  const role = workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const mutationPath = decision.oracle.mutationPathHint;
   const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
