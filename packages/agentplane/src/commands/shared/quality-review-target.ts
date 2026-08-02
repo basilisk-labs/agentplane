@@ -1,4 +1,10 @@
-import { gitDiffNames, gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
+import {
+  gitDiffNames,
+  gitIsAncestor,
+  gitRevParse,
+  gitShowFile,
+  resolveBaseBranch,
+} from "@agentplaneorg/core/git";
 import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
@@ -328,6 +334,8 @@ export async function resolveQualityReviewTargetSha(opts: {
   lifecycleTaskIds?: readonly string[];
   headSha?: string | null;
   previousEvaluatedSha?: string | null;
+  workflowMode?: "direct" | "branch_pr";
+  baseRef?: string | null;
 }): Promise<string | null> {
   const requestedHead = opts.headSha?.trim();
   const head =
@@ -357,6 +365,18 @@ export async function resolveQualityReviewTargetSha(opts: {
     if (!resolved) return null;
     return (await gitIsAncestor(opts.gitRoot, resolved, head)) ? resolved : null;
   })();
+  const baseHeadSha = await (async (): Promise<string | null> => {
+    if (opts.workflowMode !== "branch_pr") return null;
+    const baseRef = await resolveBaseBranch({
+      cwd: opts.gitRoot,
+      rootOverride: opts.gitRoot,
+      cliBaseOpt: opts.baseRef ?? null,
+      mode: "branch_pr",
+    }).catch(() => null);
+    return baseRef
+      ? await gitRevParse(opts.gitRoot, [`${baseRef}^{commit}`]).catch(() => null)
+      : null;
+  })();
 
   let current = head;
   let currentTaskArtifactHead: string | null = null;
@@ -367,7 +387,10 @@ export async function resolveQualityReviewTargetSha(opts: {
     }
 
     const mergeParent = await gitRevParse(opts.gitRoot, [`${current}^2`]).catch(() => null);
-    if (mergeParent) {
+    const isBaseSyncMerge = Boolean(
+      mergeParent && baseHeadSha && (await gitIsAncestor(opts.gitRoot, mergeParent, baseHeadSha)),
+    );
+    if (mergeParent && isBaseSyncMerge) {
       const changedAgainstMergeParent = await gitDiffNames(opts.gitRoot, mergeParent, current);
       if (
         await hasReviewableChangesAgainstMergeParent({
@@ -402,6 +425,10 @@ export async function resolveQualityReviewTargetSha(opts: {
     const touchesOnlyWorkflowArtifacts = changed.every((name) =>
       name.startsWith(workflowArtifactPrefix),
     );
+    if (mergeParent && !isBaseSyncMerge && touchesOnlyWorkflowArtifacts && !touchesCurrentTaskSet) {
+      current = parent;
+      continue;
+    }
     if (!touchesOnlyCurrentTaskSet && !touchesOnlyWorkflowArtifacts) {
       return currentTaskArtifactHead ?? current;
     }

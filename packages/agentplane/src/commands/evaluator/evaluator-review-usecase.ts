@@ -236,6 +236,7 @@ export async function prepareEvaluatorReview(opts: {
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
     taskIds: normalizeBranchPrBatchTaskIds(opts.task, opts.task.id),
+    workflowMode: opts.ctx.config.workflow_mode,
   });
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>

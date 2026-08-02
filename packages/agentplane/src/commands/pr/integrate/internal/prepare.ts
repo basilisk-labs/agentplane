@@ -353,6 +353,7 @@ export async function prepareIntegrate(opts: {
     taskIds: normalizeBranchPrBatchTaskIds(task, opts.taskId),
     headSha: branchHeadSha,
     previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
+    workflowMode: loadedConfig.workflow_mode,
   });
   assertEvaluatorQualityReviewPassed({
     task,
