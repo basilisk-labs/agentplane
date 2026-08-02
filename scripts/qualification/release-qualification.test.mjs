@@ -15,7 +15,11 @@ import {
   validateQualificationReport,
 } from "./release-qualification.mjs";
 import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
-import { compareMatchedLatencySamples } from "./measure-v0.7.1-matched-cli-latency.mjs";
+import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
+import {
+  compareMatchedLatencySamples,
+  validateMatchedLatencyReport,
+} from "./measure-v0.7.1-matched-cli-latency.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -54,6 +58,45 @@ function reportFor(manifest, results, mode = "audit") {
     results,
     sourceIdentity: { commit: "a".repeat(40), tree: "b".repeat(40), clean: true },
   });
+}
+
+function efficiencyMeasurement() {
+  const evidence = JSON.parse(
+    readFileSync(
+      path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
+      "utf8",
+    ),
+  );
+  const measurement = structuredClone(evidence.measurement);
+  for (const [field, baseline] of Object.entries(measurement.baseline.actual_values.latency_ms)) {
+    measurement.candidate.actual_values.latency_ms[field].mean = baseline.mean;
+  }
+  return measurement;
+}
+
+function matchedPhase(sampleCount = 20, offset = 0) {
+  const baselineDurations = Array.from({ length: sampleCount }, (_unused, index) => 100 + index);
+  const candidateDurations = baselineDurations.map((value) => value - 10 + offset);
+  const command = compareMatchedLatencySamples({
+    id: "quickstart",
+    baselineDurations,
+    candidateDurations,
+    baselineExitCode: 0,
+    candidateExitCode: 0,
+  });
+  return {
+    commands: [command],
+    provider_excluded_time_to_verified: {
+      definition: "synthetic deterministic path",
+      ...compareMatchedLatencySamples({
+        id: "provider_excluded_time_to_verified",
+        baselineDurations,
+        candidateDurations,
+        baselineExitCode: 0,
+        candidateExitCode: 0,
+      }),
+    },
+  };
 }
 
 describe("v0.7.1 release qualification contract", () => {
@@ -242,14 +285,7 @@ describe("v0.7.1 release qualification contract", () => {
   });
 
   it("rejects a token regression even when aggregate evidence is complete", () => {
-    const evidence = JSON.parse(
-      readFileSync(
-        path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
-        "utf8",
-      ),
-    );
-    const measurement = evidence.measurement;
-    const regressed = structuredClone(measurement);
+    const regressed = efficiencyMeasurement();
     regressed.candidate.actual_values.provider_tokens.input_tokens =
       regressed.baseline.actual_values.provider_tokens.input_tokens + 1;
     const result = evaluateEfficiencyMeasurement(regressed, regressed.candidate.subject_sha);
@@ -257,6 +293,82 @@ describe("v0.7.1 release qualification contract", () => {
       result.failures.some((item) => item.metric === "provider_tokens.input_tokens"),
       true,
     );
+  });
+
+  it("rejects verified-success, scope, and provider-independent time regressions", () => {
+    const verifiedSuccess = efficiencyMeasurement();
+    verifiedSuccess.candidate.actual_values.outcomes.verified_success =
+      verifiedSuccess.baseline.actual_values.outcomes.verified_success - 1;
+    assert.equal(
+      evaluateEfficiencyMeasurement(
+        verifiedSuccess,
+        verifiedSuccess.candidate.subject_sha,
+      ).failures.some((item) => item.metric === "outcomes.verified_success"),
+      true,
+    );
+
+    const scopeViolation = efficiencyMeasurement();
+    scopeViolation.candidate.actual_values.outcomes.scope_violation =
+      scopeViolation.baseline.actual_values.outcomes.scope_violation + 1;
+    assert.equal(
+      evaluateEfficiencyMeasurement(
+        scopeViolation,
+        scopeViolation.candidate.subject_sha,
+      ).failures.some((item) => item.metric === "outcomes.scope_violation"),
+      true,
+    );
+
+    const timeToVerified = efficiencyMeasurement();
+    timeToVerified.candidate.actual_values.latency_ms.time_to_verified_result_ms.mean =
+      timeToVerified.baseline.actual_values.latency_ms.time_to_verified_result_ms.mean + 1;
+    assert.equal(
+      evaluateEfficiencyMeasurement(
+        timeToVerified,
+        timeToVerified.candidate.subject_sha,
+      ).failures.some((item) => item.metric === "latency.time_to_verified_result_ms.mean"),
+      true,
+    );
+  });
+
+  it("rejects an agent packet that grows beyond the release limit", () => {
+    const oversizedPacket = JSON.stringify({
+      schema_version: 1,
+      task_id: "202608021231-PACKET",
+      transition_id: "tr_test",
+      state_fingerprint: `sha256:${"a".repeat(64)}`,
+      action: { kind: "agent_episode", instruction: "x".repeat(2100) },
+      authority: {
+        role: "CODER",
+        mutation: "scoped_write",
+        network: "deny",
+        required: false,
+        reference: null,
+      },
+      context_refs: [],
+      stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
+    });
+    assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 2048/u);
+  });
+
+  it("requires distinct frozen cold and warm sample sets with at least 20 pairs", () => {
+    const report = {
+      schema_version: 2,
+      kind: "agentplane.v0.7.1_matched_cli_latency",
+      phases: { cold: matchedPhase(20, 0), warm: matchedPhase(20, 1) },
+    };
+    assert.equal(validateMatchedLatencyReport(report), report);
+    assert.notDeepEqual(
+      report.phases.cold.commands[0].candidate.samples_ms,
+      report.phases.warm.commands[0].candidate.samples_ms,
+    );
+
+    const missingWarm = structuredClone(report);
+    delete missingWarm.phases.warm;
+    assert.throws(() => validateMatchedLatencyReport(missingWarm), /omits warm commands/u);
+
+    const insufficientCold = structuredClone(report);
+    insufficientCold.phases.cold = matchedPhase(19);
+    assert.throws(() => validateMatchedLatencyReport(insufficientCold), /requires 20 samples/u);
   });
 
   it("gates matched CLI latency on median and p95", () => {
