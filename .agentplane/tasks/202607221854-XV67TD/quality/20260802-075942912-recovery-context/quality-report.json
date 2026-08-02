@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-XV67TD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T08:00:24.811Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "8338ecabd7cf0d16f30c135c4c5a1258bc21936c",
+  "blueprint_digest": "0ef0f1e3df4e10da3b921bca013da9fd289d8b7e1c0c5c3df150396bb9764b38",
+  "findings": [
+    "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence, so the claimed prepublish, regression, doctor, and clean-state results cannot be independently evaluated."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-XV67TD/quality/20260802-075942912-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221854-XV67TD/README.md"
+  ],
+  "missing_tests": [
+    "Frozen deterministic result for `bun run release:prepublish` at evaluated SHA 8338ecabd7cf0d16f30c135c4c5a1258bc21936c.",
+    "Frozen deterministic result for the compatibility regression test covering both pre-version and already-versioned worktrees.",
+    "Frozen deterministic `ap doctor` and tracked/untracked clean-state results for the evaluated candidate."
+  ],
+  "hidden_assumptions": [
+    "The prose verification record accurately reflects commands executed at the evaluated SHA despite the absence of frozen observed runtime evidence.",
+    "The prepublish suite actually exercised all positive, negative, migration, and concurrency-sensitive release paths claimed by the task record."
+  ],
+  "residual_risks": [
+    "Regenerate the evaluator packet after attaching supervisor-observed deterministic results for the declared pre-merge checks at SHA 8338ecabd7cf0d16f30c135c4c5a1258bc21936c; then repeat semantic evaluation. Hosted publication checks may remain pending because this episode reviews the pre-merge candidate."
+  ]
+}

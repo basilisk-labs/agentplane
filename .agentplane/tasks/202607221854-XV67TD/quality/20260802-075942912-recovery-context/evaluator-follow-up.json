@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221854-XV67TD-933009cca69dcccb1bff6592",
+  "task_id": "202607221854-XV67TD",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the evaluator packet after attaching supervisor-observed deterministic results for the declared pre-merge checks at SHA 8338ecabd7cf0d16f30c135c4c5a1258bc21936c; then repeat semantic evaluation. Hosted publication checks may remain pending because this episode reviews the pre-merge candidate.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence, so the claimed prepublish, regression, doctor, and clean-state results cannot be independently evaluated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-XV67TD/quality/20260802-075942912-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7c2d360cbf398128e05b26f927755e15a494ebd4f9df8ad963748433ffbf09b3",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-XV67TD/README.md",
+          "sha256": "sha256:8d7dd62191f48f31434d1b0a3f3d6365211ee60a89d7cfa795d109f377b8f4c2",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221854-XV67TD/quality/20260802-075942912-recovery-context/evaluator-result.json"
+}
