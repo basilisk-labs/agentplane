@@ -13,7 +13,7 @@ Created: 2026-08-02T15:36:39.848Z
 ## Verification
 
 - State: ok
-- Note: Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression 21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite evidence remains source-applicable.
+- Note: Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
