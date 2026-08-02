@@ -5,6 +5,10 @@ import { decodeEscapedTaskTextNewlines } from "./shared/docs.js";
 export const TASK_DOC_VERSION_V3 = 3;
 export const PLANNER_SEMANTIC_PLAN_PLACEHOLDER =
   "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.";
+const LEGACY_TASK_DOC_SYNTHETIC_PLAN =
+  /^1\. Implement the change for "[^\n]*"\.\n2\. Run required checks and capture verification evidence\.\n3\. Finalize task findings and finish with traceable commit metadata\.$/u;
+const LEGACY_TASK_BEGIN_SYNTHETIC_PLAN =
+  /^1\. Clarify the smallest safe implementation scope for: [^\n]+\.\n2\. Make the scoped change using existing project conventions\.\n3\. Run the task Verify Steps and record the result before finishing\.$/u;
 
 function normalizeTaskHumanText(text: string): string {
   return decodeEscapedTaskTextNewlines(text).trim();
@@ -39,7 +43,12 @@ function buildDefaultPlan(): string {
 }
 
 export function isPlannerSemanticPlanRequired(plan: string | null | undefined): boolean {
-  return plan?.replaceAll("\r\n", "\n").trim() === PLANNER_SEMANTIC_PLAN_PLACEHOLDER;
+  const normalized = plan?.replaceAll("\r\n", "\n").trim() ?? "";
+  return (
+    normalized === PLANNER_SEMANTIC_PLAN_PLACEHOLDER ||
+    LEGACY_TASK_DOC_SYNTHETIC_PLAN.test(normalized) ||
+    LEGACY_TASK_BEGIN_SYNTHETIC_PLAN.test(normalized)
+  );
 }
 
 function buildDefaultVerifyStepsTemplate(opts: { title: string }): string {

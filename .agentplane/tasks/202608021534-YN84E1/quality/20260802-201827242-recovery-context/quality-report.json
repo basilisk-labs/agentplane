@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021534-YN84E1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T20:18:27.459Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "f4870b156d511fa924fb87163340a10ef8f79db6",
+  "blueprint_digest": "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545",
+  "findings": [
+    "task begin --plan records updated_by=HUMAN even though the CLI cannot prove the caller is human; this fabricates provenance on an agent-accessible compatibility path.",
+    "The planning guard recognizes only the new exact placeholder, so an unapproved or previously approved legacy synthetic default plan can bypass the new semantic PLANNER boundary."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Add a fail-closed assertion for task complete with verification and quality review but no AgentPlane-observed runner receipt before exercising the unsafe override."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes all open tasks were created after the placeholder migration."
+  ],
+  "residual_risks": [
+    "Attribute explicit task begin plans to PLANNER rather than HUMAN unless a separately authenticated human provenance channel exists.\nRecognize both legacy synthetic default-plan templates and enforce the planning episode even if legacy plan_approval is already approved.\nExercise the normal missing-receipt rejection before the explicit unsafe compatibility path."
+  ]
+}

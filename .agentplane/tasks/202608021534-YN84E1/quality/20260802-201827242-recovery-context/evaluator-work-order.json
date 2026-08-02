@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021534-YN84E1-44f949b7ecf71bd7ad9d79e8",
+  "prepared_at": "2026-08-02T20:18:27.242Z",
+  "task": {
+    "id": "202608021534-YN84E1",
+    "revision": 9,
+    "objective": "Harden the v0.7.1 guided lifecycle and canonical help surface\n\nMake task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-guided.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+      "bun run typecheck",
+      "bun run lint:core",
+      "bun run docs:cli:check",
+      "bun run docs:bootstrap:check",
+      "bun run docs:ia:check",
+      "node .agentplane/policy/check-routing.mjs",
+      "bun run test:critical",
+      "node scripts/qualification/check-v0.7.1-product-contract.mjs",
+      "- In scope: Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run.\n- Out of scope: unrelated refactors not required for \"Harden the v0.7.1 guided lifecycle and canonical help surface\".",
+      "1. Map the current task begin, task complete, task advance, task run, quickstart, README, and default help paths to one explicit supervisor contract while preserving advanced compatibility entrypoints.\n2. Change task begin so it creates or prepares the task and stops at a typed semantic planning boundary without synthesizing or approving a task-specific plan.\n3. Change task complete so normal closure fails closed unless matching observed checks and an evaluator or explicit human verdict are present; retain any compatibility bypass only as an explicit unsafe advanced path with durable evidence.\n4. Make task advance and task run share the same state-machine boundary semantics, promote them in README and quickstart, and limit default help to 10-12 canonical operations while moving aliases, recovery, and maintainer commands behind advanced discovery.\n5. Add focused contract and regression tests for every allowed and rejected path, then run docs:check, test:critical, and the v0.7.1 product-contract gate.",
+      "1. Run the focused cli-core lifecycle/help suite listed in task verify. Expected: begin stops on a PLANNER semantic boundary; normal complete rejects missing observed checks or missing evaluator/human verdict; the unsafe compatibility override requires explicit operator confirmation and leaves durable history; advance and run expose the same state-machine boundary.\n2. Run typecheck, lint:core, docs:cli:check, docs:bootstrap:check, docs:ia:check, and the policy routing check. Expected: default help exposes no more than 12 canonical operations, promotes task advance/task run, generated docs are current, and repository policy remains valid.\n3. Run test:critical and scripts/qualification/check-v0.7.1-product-contract.mjs. Expected: all trust-boundary, recovery, package, compatibility-ratchet, and v0.7.1 product gates pass."
+    ]
+  },
+  "evaluated_sha": "f4870b156d511fa924fb87163340a10ef8f79db6",
+  "diff_base_sha": "ed94f65a0ff27eaf0b0add2413780630a87e838b",
+  "blueprint_digest": "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021534-YN84E1/README.md",
+      "sha256": "sha256:d41241d8624ef6ecaed309fb83724ef5948551469d1412cbd554b8c7f4a94ade",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:af493fb02a3b2f192513ca271685ebe5cb545414731bb0143d48bba0eb83eee5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:935f53de15a7e0276079e3e1256ceb0ef2b3659eef3d2473bb16013d1456e3e9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:9515e5ee176f339fe0b05ac720a214987ae407235554545c087cc8d5c21b1927",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

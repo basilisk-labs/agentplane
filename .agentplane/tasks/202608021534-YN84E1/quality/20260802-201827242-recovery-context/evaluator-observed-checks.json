@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.test.ts packages/agentplane/src/cli/run-cli.core.task-guided.test.ts packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+    "bun run typecheck",
+    "bun run lint:core",
+    "bun run docs:cli:check",
+    "bun run docs:bootstrap:check",
+    "bun run docs:ia:check",
+    "node .agentplane/policy/check-routing.mjs",
+    "bun run test:critical",
+    "node scripts/qualification/check-v0.7.1-product-contract.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T20:15:06.679Z",
+    "updated_by": "TESTER",
+    "note": "PASS: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, policy routing, v0.7.1 product contract, and critical-cli 77/77 all passed against f4870b156d51."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

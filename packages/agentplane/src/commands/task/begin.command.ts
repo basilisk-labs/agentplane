@@ -178,7 +178,7 @@ export function makeRunTaskBeginHandler(
         rootOverride: ctx.rootOverride,
         taskId,
         text: p.plan,
-        updatedBy: "HUMAN",
+        updatedBy: "PLANNER",
       });
     }
 

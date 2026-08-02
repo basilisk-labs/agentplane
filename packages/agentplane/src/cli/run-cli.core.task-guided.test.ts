@@ -107,6 +107,49 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
       approvalIo.restore();
     }
 
+    expect(
+      await runCli([
+        "task",
+        "plan",
+        "set",
+        payload!.task_id,
+        "--text",
+        '1. Implement the change for "Fix parser edge case".\n2. Run required checks and capture verification evidence.\n3. Finalize task findings and finish with traceable commit metadata.',
+        "--updated-by",
+        "PLANNER",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    const legacyApprovalIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "plan",
+        "approve",
+        payload!.task_id,
+        "--by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(legacyApprovalIo.stderr).toContain("cannot approve the generated planning placeholder");
+    } finally {
+      legacyApprovalIo.restore();
+    }
+    const command = await loadCommandContext({ cwd: root, rootOverride: null });
+    await getTaskStore(command).mutate(payload!.task_id, () =>
+      setTaskFieldsIntent({
+        plan_approval: {
+          state: "approved",
+          updated_at: "2026-08-01T00:00:00.000Z",
+          updated_by: "ORCHESTRATOR",
+          note: "Legacy synthetic approval fixture.",
+        },
+      }),
+    );
+
     const runIo = captureStdIO();
     try {
       const code = await runCli(["task", "run", payload!.task_id, "--json", "--root", root]);
@@ -157,6 +200,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     );
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain('state: "pending"');
+    expect(readme).toContain('doc_updated_by: "PLANNER"');
     expect(readme).toContain("Implement the explicit branch change");
   });
 
@@ -429,6 +473,26 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
       ioEvaluator.restore();
     }
 
+    const observedReceiptIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "complete",
+        taskId,
+        "--result",
+        "Must remain open without a runner receipt",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(observedReceiptIo.stderr).toContain(
+        "task complete requires an AgentPlane-observed successful runner receipt",
+      );
+    } finally {
+      observedReceiptIo.restore();
+    }
+
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -461,7 +525,8 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain('state: "ok"');
     expect(readme).toContain(
-      "UNSAFE compatibility override: operator accepted a missing AgentPlane-observed runner receipt",
+      "CODER used --accept-unobserved --yes. UNSAFE compatibility override: accepted a missing AgentPlane-observed runner receipt",
     );
+    expect(readme).toContain('author: "CODER"');
   });
 });
