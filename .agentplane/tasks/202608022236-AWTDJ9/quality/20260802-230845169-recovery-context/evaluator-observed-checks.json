@@ -1,0 +1,24 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T23:07:28.863Z",
+    "updated_by": "TESTER",
+    "note": "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608022236-AWTDJ9/verification/20260802230728863-b5c73632012ff2fb.json",
+      "sha256": "sha256:d4d7ca5878216294b4c008aceba65cb99994c71af7e8e838636ec675d2d4f104"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
