@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,14 +25,12 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
-commit:
-  hash: "240d65e3c39c59737a1e16abfdbd5ed33fb7ebbe"
-  message: "🐛 VMBX4H workflow: scope base-sync policy to task diff"
+  state: "needs_rework"
+  updated_at: "2026-08-02T02:02:53.717Z"
+  updated_by: "TESTER"
+  note: "Verification contract correction required: use the repository Knip baseline gate, not the raw diagnostic binary."
+  attempts: 1
+commit: null
 comments:
   -
     author: "CODER"
@@ -55,8 +53,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation: base-sync hooks now evaluate task-side paths against the merged configured-base parent; focused regression tests cover incoming base artifacts and task-side implementation rejection."
+  -
+    type: "verify"
+    at: "2026-08-02T02:02:53.717Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Verification contract correction required: use the repository Knip baseline gate, not the raw diagnostic binary."
 doc_version: 3
-doc_updated_at: "2026-08-02T01:59:28.211Z"
+doc_updated_at: "2026-08-02T02:03:11.710Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
@@ -77,16 +81,49 @@ sections:
     1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts`. Expected: all hook guard cases pass, including configured-base positive and task-side negative cases.
     2. Run `bun run typecheck`. Expected: TypeScript validation exits 0.
     3. Run `bun run lint:core`. Expected: core lint exits 0.
-    4. Run `bun run arch:check && bun run knip`. Expected: architecture boundaries and dependency hygiene pass.
+    4. Run `bun run arch:check && bun run knip:check`. Expected: architecture boundaries and the accepted unused-code baseline pass.
     5. Run `bun run format:check && git diff --check`. Expected: formatting and whitespace checks pass.
     6. Reproduce the blocked YMYYQ8 merge from current main after integration. Expected: both pre-commit and commit-msg hooks accept incoming main implementation/task artifacts while continuing to enforce the docs task-side diff.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-02T02:02:53.717Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Verification contract correction required: use the repository Knip baseline gate, not the raw diagnostic binary.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T01:59:28.211Z, excerpt_hash=sha256:741ca27e824c864e33f211dce7f4657ea84a30f5895010d3c6c58b1e4793f60c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020147-VMBX4H-base-sync-policy/.agentplane/tasks/202608020147-VMBX4H/blueprint/resolved-snapshot.json
+    - old_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+    - current_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020147-VMBX4H
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608020147-VMBX4H
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The focused tests, typecheck, lint, and architecture checks passed. The literal bun run knip command invoked the raw Knip binary and exited 1 on the repository's accepted 543-item baseline; bun run knip:check passed 543/543.
+      Impact: The implementation is not implicated, but the declared Verify Step would record a false failure against known debt.
+      Resolution: Replace bun run knip with bun run knip:check in Verify Steps, then rerun the complete acceptance set on the committed branch.
 extensions:
   workflow_route_baseline:
     start_head_sha: "4e6cf3e54a11ac56c07cabc0b9d8b01d89ac274f"
@@ -117,13 +154,43 @@ When a branch_pr task merges the configured base, pre-commit must evaluate only 
 1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts`. Expected: all hook guard cases pass, including configured-base positive and task-side negative cases.
 2. Run `bun run typecheck`. Expected: TypeScript validation exits 0.
 3. Run `bun run lint:core`. Expected: core lint exits 0.
-4. Run `bun run arch:check && bun run knip`. Expected: architecture boundaries and dependency hygiene pass.
+4. Run `bun run arch:check && bun run knip:check`. Expected: architecture boundaries and the accepted unused-code baseline pass.
 5. Run `bun run format:check && git diff --check`. Expected: formatting and whitespace checks pass.
 6. Reproduce the blocked YMYYQ8 merge from current main after integration. Expected: both pre-commit and commit-msg hooks accept incoming main implementation/task artifacts while continuing to enforce the docs task-side diff.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-02T02:02:53.717Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Verification contract correction required: use the repository Knip baseline gate, not the raw diagnostic binary.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T01:59:28.211Z, excerpt_hash=sha256:741ca27e824c864e33f211dce7f4657ea84a30f5895010d3c6c58b1e4793f60c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020147-VMBX4H-base-sync-policy/.agentplane/tasks/202608020147-VMBX4H/blueprint/resolved-snapshot.json
+- old_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+- current_digest: 7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020147-VMBX4H
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608020147-VMBX4H
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -132,3 +199,7 @@ When a branch_pr task merges the configured base, pre-commit must evaluate only 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The focused tests, typecheck, lint, and architecture checks passed. The literal bun run knip command invoked the raw Knip binary and exited 1 on the repository's accepted 543-item baseline; bun run knip:check passed 543/543.
+  Impact: The implementation is not implicated, but the declared Verify Step would record a false failure against known debt.
+  Resolution: Replace bun run knip with bun run knip:check in Verify Steps, then rerun the complete acceptance set on the committed branch.
