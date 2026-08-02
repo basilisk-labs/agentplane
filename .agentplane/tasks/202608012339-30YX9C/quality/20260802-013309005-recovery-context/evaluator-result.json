@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen diff is limited to the intended path-classification rule and focused tests; current verification is bound to the evaluated SHA and covers positive and negative policy boundaries after base synchronization.",
+      "broken_invariant": "No invariant is broken; scope, negative-path protection, current-SHA verification, and recovery from prior branch drift are adequately evidenced.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:280acc8c1b2e023f6658f973d9e95fae6f9bc4d454c72caad305339b29e294cf"
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/verification/20260802013225586-2d97c0b14f1aeca4.json",
+          "sha256": "sha256:a6396e34f9211a8eac517e454be03e55d17d7626ee3b4ae1e78b831e761d6611"
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/README.md",
+          "sha256": "sha256:d31668c46527f94c6b93ff63f97844237aa9630049aed709f390ca9a92af1367",
+          "section": "Plan"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Generated social-card artifacts are intentionally limited to manifest.json and files ending in .png under website/static/img/social."
+  ]
+}

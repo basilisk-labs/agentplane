@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608020016-TDXFVT-ce11ee5983a9156b2114d7b6",
+  "task_id": "202608020016-TDXFVT",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add and run the missing lifecycle-only base-sync merge negative regression, then regenerate SHA-bound verification evidence for the resulting reviewed head.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The regression suite covers managed-artifact-only base-sync merges but does not cover the separately required lifecycle-only base-sync merge boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/README.md",
+          "sha256": "sha256:fab3fba0d4637be3e05eed9ccd97e55e4ad1843fb88dd7f399ea87facec41f09",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:516e768678f450ca2f2b0acdffbf1c0f47747913c8d240f1535a39d43881fee6",
+          "lines": "The added merge-negative test covers only a task-side managed evaluator artifact; no lifecycle-only base-sync merge fixture is added."
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004856843-75a19cd55dcd95b5.json",
+          "sha256": "sha256:0a177ba50ce2df790bb91a6824bb541ee7fd820cc1a839648afe48c68ee1f07e",
+          "lines": "Evidence reports semantic base-sync selection and managed-artifact-only rejection, but not lifecycle-only merge rejection."
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-result.json"
+}

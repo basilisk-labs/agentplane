@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608012350-3KR5T7-9870326869f0cf89abe041f8",
+  "task_id": "202608012350-3KR5T7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Re-run the mandatory documentation checks and freshness gates, capture their deterministic results plus final tracked/untracked status in the frozen evidence, and then repeat evaluation against the same one-file implementation scope.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet contains no deterministic check results, runner history, or runtime evidence supporting the recorded verification claims.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7b1eb49bdf59e2971f2196ab635f946407f68547f00ab8636a636dc1fb6befac",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:701c84ae6b2be4ef41f5b64e07aa41ab2e193e808a331fdd4a40a472bdd90f07",
+          "section": "plan.requiredEvidence"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The recorded verification omits the mandatory documentation-policy checks `node .agentplane/policy/check-routing.mjs` and `agentplane doctor`.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.docs.md",
+          "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/README.md",
+          "sha256": "sha256:1a6409abcb569959ec4067676658a73ab7d2ab43ab98a6b62237731d0858945d",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235318012-recovery-context/evaluator-result.json"
+}

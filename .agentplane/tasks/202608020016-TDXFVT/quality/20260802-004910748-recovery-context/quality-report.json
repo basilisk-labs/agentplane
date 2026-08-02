@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020016-TDXFVT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T00:49:50.540Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "eeca863bd45a0c627a13dd1f7709dcbde578a836",
+  "blueprint_digest": "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c",
+  "findings": [
+    "The regression suite covers managed-artifact-only base-sync merges but does not cover the separately required lifecycle-only base-sync merge boundary."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020016-TDXFVT/README.md",
+    ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004856843-75a19cd55dcd95b5.json"
+  ],
+  "missing_tests": [
+    "Add a branch_pr base-sync merge fixture whose task-side delta is lifecycle-only and assert that resolveQualityReviewTargetSha returns no semantic review target."
+  ],
+  "hidden_assumptions": [
+    "The existing non-merge lifecycle-only tests are assumed to prove the new second-parent merge path even though that path has distinct comparison and target-selection logic."
+  ],
+  "residual_risks": [
+    "Add and run the missing lifecycle-only base-sync merge negative regression, then regenerate SHA-bound verification evidence for the resulting reviewed head."
+  ]
+}

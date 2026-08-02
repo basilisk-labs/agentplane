@@ -44,9 +44,9 @@ versioned files, then builds a local projection for fast search and retrieval.
 Use it when an agent needs facts, wiki pages, graph edges, capability notes, or task-specific
 source sets that should survive outside one chat session.
 
-## Context management in v0.6
+## Context management in v0.7
 
-Agentplane v0.6 turns local context from a search helper into a context-management workflow:
+Agentplane v0.7 keeps the v0.6 repo-owned context model and adds supervised semantic publication:
 
 - raw sources remain in the repository and are treated as evidence
 - wiki pages accumulate synthesis instead of forcing agents to re-derive it from scratch
@@ -317,12 +317,13 @@ The verifier does not require every known term to be linked. Agents should still
 Markdown cross-links when an existing page or glossary anchor helps a future reader navigate related
 concepts, decisions, modules, risks, or entities.
 
-During the v0.7 supervisor migration, repository-local receipt bytes and their task reference are
-not treated as authenticated evidence. The standalone command and `context finalize-task` fail
-closed with `compatibility_unverified` instead of accepting a matching path and SHA-256 from the
-same writable repository. Until the beta supervisor supplies the observation through a trusted
-channel, run `context wiki lint`, `context graph validate`, and `context doctor` separately and
-record independent task verification with `ap verify`.
+Repository-local receipt bytes and their task reference are not an authentication channel. The
+standalone verifier and `context finalize-task` therefore remain fail-closed with
+`compatibility_unverified` when only a matching path and SHA-256 from the same writable repository
+are available. Use `context supervise-task <task-id> --extraction <sgr-json>` for the authenticated
+supervisor path: it supplies the in-memory observation, owns the mechanical checks, and records the
+durable phase receipts. For a manual recovery, run `context wiki lint`, `context graph validate`,
+and `context doctor` separately and record independent task verification with `ap verify`.
 
 ## How this differs from RAG
 

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:69bb81303e3cb4a3751a11dc5f99929e47a1f0245e0c1c3ff49f66cb3bb8a8a0",
+  "implementation_sha": "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7",
+  "kind": "task_verification_record",
+  "note": "Command: bun run docs:cli:check && bun run schemas:check && bun run docs:ia:check && node .agentplane/policy/check-routing.mjs && bun run typescript:toolchain:check. Result: pass. Evidence: generated CLI and schemas fresh, IA/sidebar aligned, routing OK, TypeScript 7.0.2 typecheck and 6.0.3 compiler-API split confirmed. Scope: generated contracts and documentation structure. Command: bunx vitest run [9 SGR/work-order/receipt/supervisor test files]. Result: pass. Evidence: 9 files, 90 tests. Scope: documented direct, context, branch_pr, WorkOrder, SemanticResult, and ExecutionReceipt behavior. Command: bun run docs:site:check && bun run docs:social:check. Result: pass. Evidence: production Docusaurus build, navigation check, design check, and 221/221 social images. Scope: published site surfaces. Command: bun run package:install-smoke. Result: pass. Evidence: installed migration matrix 8/8 and local tarball smoke 202608020230-5EPM2Z. Scope: fresh, 0.6.24, 0.6.26, direct, branch_pr, workflow/task migration and rollback. Command: bun run format:check && git diff --check && git diff --cached --check. Result: pass. Evidence: Prettier and whitespace clean. Scope: final docs diff. Real workflow proof: merge main into YMYYQ8 committed as de63e018d without bypass after the base-sync hook fix.",
+  "recorded_at": "2026-08-02T02:33:08.425Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Follow the migration guide on clean and 0.6.24 direct/branch_pr fixtures. Expected: commands and outcomes match the automated matrix.\n2. Compare every contract field/version/deprecation claim to generated schema/runtime metadata. Expected: no hand-authored drift.\n3. Validate direct/context/branch_pr diagrams against supervisor operation fixtures. Expected: CLI-owned mechanics and agent-owned semantics are explicit.\n4. Run generated site/CLI checks, full site check, link/IA checks, and policy routing.",
+  "scope_digest": "sha256:60405b8a0ca51b616614fb64ce1c6ff9f6290d31c75fbf503925769beeaaea59",
+  "task_id": "202607221854-YMYYQ8",
+  "verification_command": "agentplane verify 202607221854-YMYYQ8 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/policy/rules/task-bound-mutation.test.ts\nResult: pass (1 file, 2 tests)\nEvidence: docs tasks may commit the exact Docusaurus navigation and generated social-card paths; website/src implementation remains blocked.\nScope: task-bound mutation policy.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: native TypeScript build completed without diagnostics.\nScope: repository type surface.\n\nCommand: bun run docs:site:check\nResult: pass\nEvidence: generated docs and llms-full are fresh, site typecheck/build/navigation/design checks passed, 220 social images verified.\nScope: complete documentation site gate.",
+  "digest": "sha256:007c1a79f7a181227f58d9e8b11520cef753e82eac86cd987df432180054da38",
+  "implementation_sha": "ad886bd07c86af5eb185b6b43ba3fea9f2b1d938",
+  "kind": "task_verification_record",
+  "note": "Docs-site artifacts are correctly scoped and regression-protected.",
+  "recorded_at": "2026-08-01T23:45:30.490Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow documentation tasks to commit canonical site artifacts\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow documentation tasks to commit canonical site artifacts\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c",
+  "task_id": "202608012339-30YX9C",
+  "verification_command": "agentplane verify 202608012339-30YX9C --ok --by TESTER",
+  "verifier": "TESTER"
+}

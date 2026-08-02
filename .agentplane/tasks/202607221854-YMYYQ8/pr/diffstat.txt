@@ -1,0 +1,19 @@
+ ROADMAP.md                                         |  33 ++--
+ docs/README.md                                     |   3 +
+ docs/developer/architecture.mdx                    | 175 +++++++++++++++++-
+ docs/developer/local-context.mdx                   |  13 +-
+ docs/developer/testing-and-quality.mdx             |  16 ++
+ docs/index.mdx                                     |   2 +
+ docs/releases/index.mdx                            |   4 +
+ docs/user/breaking-changes.mdx                     |  21 ++-
+ docs/user/commands.mdx                             |  34 ++--
+ docs/user/local-context.mdx                        |  17 +-
+ docs/user/setup.mdx                                |   7 +-
+ docs/user/task-lifecycle.mdx                       |  27 +++
+ docs/user/v0-7-migration.mdx                       | 200 +++++++++++++++++++++
+ website/docusaurus.config.ts                       |   4 +
+ website/sidebars.ts                                |   1 +
+ .../static/img/social/docs/user/v0-7-migration.png | Bin 0 -> 61654 bytes
+ website/static/img/social/manifest.json            |   8 +
+ website/static/llms-full.txt                       |  68 +++++--
+ 18 files changed, 567 insertions(+), 66 deletions(-)

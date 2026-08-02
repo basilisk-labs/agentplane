@@ -463,6 +463,7 @@ export async function buildTaskRouteDecision(opts: {
           taskIds: batchOwnership.role === "none" ? [task.id] : batchOwnership.allTaskIds,
           headSha: prFlow?.branch.headSha ?? resume.head_sha,
           previousEvaluatedSha: task.quality_review.evaluated_sha,
+          workflowMode: ctx.config.workflow_mode,
         }).catch(() => null)
       : null;
   const blockers = await deriveBlockers({

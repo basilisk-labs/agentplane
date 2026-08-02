@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:402626cc2121b987adab3c8483ca71f569d2012495384d10380ec4132d414501",
+  "implementation_sha": "e0696c7e61bdabf496f895a5a7a9cfc6931525f2",
+  "kind": "task_verification_record",
+  "note": "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 18 tests passed, including configured-base positive and task-side negative cases. Scope: hook path attribution and commit-message policy. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint for repository code. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations and Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance: reproduce the original YMYYQ8 configured-base merge before closing this blocker.",
+  "recorded_at": "2026-08-02T02:05:42.500Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts`. Expected: all hook guard cases pass, including configured-base positive and task-side negative cases.\n2. Run `bun run typecheck`. Expected: TypeScript validation exits 0.\n3. Run `bun run lint:core`. Expected: core lint exits 0.\n4. Run `bun run arch:check && bun run knip:check`. Expected: architecture boundaries and the accepted unused-code baseline pass.\n5. Run `bun run format:check && git diff --check`. Expected: formatting and whitespace checks pass.\n6. Reproduce the blocked YMYYQ8 merge from current main after integration. Expected: both pre-commit and commit-msg hooks accept incoming main implementation/task artifacts while continuing to enforce the docs task-side diff.",
+  "scope_digest": "sha256:12511fc9893777d78f8e5cb37a870d687666190068890a87eceac1a7bd9fef65",
+  "task_id": "202608020147-VMBX4H",
+  "verification_command": "agentplane verify 202608020147-VMBX4H --ok --by TESTER",
+  "verifier": "TESTER"
+}

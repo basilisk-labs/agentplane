@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608012339-30YX9C-166ba2d1f854b1a6b8902d40",
+  "task_id": "202608012339-30YX9C",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Remove or separately account for the unrelated website/static/llms-full.txt changes, record the required policy routing check, and rerun the focused mutation-policy test and full documentation-site gate on the resulting SHA.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The patch includes unrelated generated documentation changes in website/static/llms-full.txt concerning evaluator execution and context harvesting.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234832792-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:5c3847ca78fba8079b91c17439cfab44c7a00ac577436d3505a218c2e67aebba"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "The frozen verification evidence does not record the policy routing check required by the approved plan.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/README.md",
+          "sha256": "sha256:f809aba5d872fce00e0453a3baa1255b2f493d6ce80ace8d243a0e4816edea48",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234832792-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:74ed0d1d263eac3cae80388adb333082407f0c2b152a00e9a4c1dc6768c3e137"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234832792-recovery-context/evaluator-result.json"
+}

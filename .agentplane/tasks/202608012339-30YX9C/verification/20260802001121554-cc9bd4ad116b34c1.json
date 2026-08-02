@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/policy/rules/task-bound-mutation.test.ts\nResult: pass\nEvidence: 1 test file and 4 tests passed, including adversarial executable files under the social-card subtree.\nScope: task-bound mutation policy.\n\nCommand: bun run typecheck\nResult: pass\nEvidence: native TypeScript build completed without diagnostics.\nScope: repository type surface.\n\nCommand: bun run docs:site:check\nResult: pass\nEvidence: generated docs and llms-full are fresh; site typecheck, production build, navigation, design, and 220 social images passed.\nScope: full documentation site gate.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway integrity.\n\nCommand: bun run format:check\nResult: pass\nEvidence: all matched files use Prettier code style.\nScope: repository formatting.\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor completed with zero errors; four pre-existing base reconciliation/archive warnings remain outside this task.\nScope: workflow and runtime health.\n\nCommand: git diff --name-status main...HEAD\nResult: pass\nEvidence: implementation delta is limited to packages/agentplane/src/policy/rules/task-bound-mutation.ts and its focused test; website/static/llms-full.txt is no longer in this PR delta, and remaining paths are task-local evidence.\nScope: final implementation and evidence boundary.",
+  "digest": "sha256:cc9bd4ad116b34c1a5007c74ed8fc5517202f16306313049071aac62a1fd2723",
+  "implementation_sha": null,
+  "kind": "task_verification_record",
+  "note": "Evaluator rework is resolved with current deterministic evidence.",
+  "recorded_at": "2026-08-02T00:11:21.554Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow documentation tasks to commit canonical site artifacts\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow documentation tasks to commit canonical site artifacts\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c",
+  "task_id": "202608012339-30YX9C",
+  "verification_command": "agentplane verify 202608012339-30YX9C --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608012339-30YX9C-70595eba4da5d680886e9879",
+  "prepared_at": "2026-08-02T00:13:00.840Z",
+  "task": {
+    "id": "202608012339-30YX9C",
+    "revision": 11,
+    "objective": "Allow documentation tasks to commit canonical site artifacts\n\nTreat Docusaurus documentation navigation and generated social-card artifacts as documentation paths so docs.change tasks can satisfy the full site gate without bypassing task-bound mutation policy.",
+    "acceptance_criteria": [
+      "bun run docs:site:check",
+      "bunx vitest run packages/agentplane/src/policy/rules/task-bound-mutation.test.ts",
+      "- In scope: Treat Docusaurus documentation navigation and generated social-card artifacts as documentation paths so docs.change tasks can satisfy the full site gate without bypassing task-bound mutation policy.\n- Out of scope: unrelated refactors not required for \"Allow documentation tasks to commit canonical site artifacts\".",
+      "1. Extend docs-only path classification to the canonical Docusaurus navigation files and generated social-card artifacts.\n2. Add focused policy tests that prove docs tasks may commit those exact paths while implementation paths remain blocked.\n3. Run the focused policy test, policy routing check, and full docs site gate.\n4. Open, verify, evaluate, and integrate the protected fix before resuming the migration-guide task.",
+      "PLANNER fallback scaffold for \"Allow documentation tasks to commit canonical site artifacts\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow documentation tasks to commit canonical site artifacts\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": null,
+  "diff_base_sha": null,
+  "blueprint_digest": "c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608012339-30YX9C/README.md",
+      "sha256": "sha256:133429ff87850225c76bc5695778711dff64cd5d97a625b25676c6cd4c704731",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:991a2e65beadd74b29a5cf13a6eea0786446c22272bc321aa9d255396c54e352",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:b38aabc6f5c2abd20cf51e23386ed367cf5ac1fe14e914893216e7b6576ba224",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:ec1cbe55a7e073fe890a254e6888ee8e77b5a8480e69ce4afdd35316e04b1d3f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
