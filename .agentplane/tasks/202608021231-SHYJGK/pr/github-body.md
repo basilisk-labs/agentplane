@@ -19,9 +19,9 @@ Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtur
 - Note:
 
 ```text
-Implementation rework verified without source changes: local main now matches merged origin/main
-ac112cc28, evaluator merge-base scope is clean, and exact ab8787b3 performance/contract evidence
-remains current.
+Exact SHA 9ee3a9f001e98203acd80f5ac8826599ea940678 verified: evaluator tracking-base regression
+21/21, full ci:contract, and fresh 20-pair cold/warm latency all pass; prior 4687/4687 full-suite
+evidence remains source-applicable.
 ```
 - Canonical workflow state lives in the task README.
 
