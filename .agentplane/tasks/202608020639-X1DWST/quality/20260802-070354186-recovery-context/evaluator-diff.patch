@@ -1,0 +1,415 @@
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 7305e9e37..4f2ce68a1 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -70,7 +70,7 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
+ 
+ async function runNode(args: string[]): Promise<ScriptResult> {
+   try {
+-    const result = await execFileAsync(process.execPath, args, {
++    const result = await execFileAsync("node", args, {
+       cwd: REPO_ROOT,
+       env: process.env,
+       maxBuffer: 32 * 1024 * 1024,
+@@ -157,10 +157,11 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+         candidate_id: string;
+         source_tasks: string[];
+         candidate: { surface_sha256: string; section_digests: Record<string, string> };
++        release_version_delta: Record<string, unknown>;
+         deltas: unknown[];
+       }>(COMPATIBILITY_CANDIDATE);
+       expect(compatibilityCandidate).toMatchObject({
+-        schema_version: 2,
++        schema_version: 3,
+         candidate_id: "agentplane.compatibility.v0.7.cumulative",
+         source_tasks: [
+           "202607221846-4VB97J",
+@@ -199,6 +200,26 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+             tarball_policy: "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
+           },
+         },
++        release_version_delta: {
++          source_task: "202607221854-XV67TD",
++          classification: "planned_version_parity",
++          from_version: "0.6.24",
++          to_version: "0.7.0",
++          section: "package_manifests",
++          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
++          to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
++          surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++          allowed_json_paths: [
++            "$.package_manifests[0].dependencies.@agentplaneorg/core",
++            "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
++            "$.package_manifests[0].normalized_sha256",
++            "$.package_manifests[0].version",
++            "$.package_manifests[1].normalized_sha256",
++            "$.package_manifests[1].version",
++            "$.package_manifests[2].normalized_sha256",
++            "$.package_manifests[2].version",
++          ],
++        },
+         contract_artifacts: {
+           execution_receipt_schema: {
+             path: "schemas/execution-receipt.schema.json",
+@@ -432,6 +453,116 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+     TEST_TIMEOUT_MS,
+   );
+ 
++  it("accepts only the reviewed pre-version surface or its exact planned release delta", async () => {
++    const source = `
++      import { resolveReviewedCompatibilitySurfaceMode } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
++      const reviewedSectionDigests = { cli_topology: "cli-reviewed", package_manifests: "manifest-reviewed" };
++      const releaseVersionDelta = {
++        section: "package_manifests",
++        to_sha256: "manifest-release",
++        surface_sha256: "surface-release",
++      };
++      const resolve = (currentSurfaceSha256, currentSectionDigests) =>
++        resolveReviewedCompatibilitySurfaceMode({
++          reviewedSurfaceSha256: "surface-reviewed",
++          reviewedSectionDigests,
++          releaseVersionDelta,
++          currentSurfaceSha256,
++          currentSectionDigests,
++        });
++      const errors = [];
++      for (const attempt of [
++        () => resolve("surface-release", { ...reviewedSectionDigests, package_manifests: "manifest-tampered" }),
++        () => resolve("surface-release", { cli_topology: "cli-tampered", package_manifests: "manifest-release" }),
++      ]) {
++        try {
++          attempt();
++        } catch (error) {
++          errors.push(error instanceof Error ? error.message : String(error));
++        }
++      }
++      process.stdout.write(JSON.stringify({
++        preVersion: resolve("surface-reviewed", reviewedSectionDigests),
++        releaseVersion: resolve("surface-release", {
++          ...reviewedSectionDigests,
++          package_manifests: "manifest-release",
++        }),
++        errors,
++      }));
++    `;
++    const result = await runNode(["--input-type=module", "--eval", source]);
++    expect(result).toMatchObject({ exitCode: 0, stderr: "" });
++    expect(JSON.parse(result.stdout)).toEqual({
++      preVersion: "pre_version",
++      releaseVersion: "release_version",
++      errors: [
++        expect.stringContaining("package_manifests"),
++        expect.stringContaining("cli_topology"),
++      ],
++    });
++  });
++
++  it(
++    "reconstructs the exact planned v0.7.0 manifest surface from the reviewed candidate",
++    async () => {
++      const source = `
++        import {
++          collectCompatibilitySurface,
++          compatibilitySurfaceDigest,
++          createWorktreeSource,
++          diffJsonPaths,
++          surfaceSectionDigests,
++        } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
++        const baseSource = createWorktreeSource(process.cwd());
++        const publishedManifestPaths = new Set([
++          "packages/agentplane/package.json",
++          "packages/core/package.json",
++          "packages/recipes/package.json",
++        ]);
++        const releaseSource = {
++          ...baseSource,
++          label: "planned_release_v0.7.0",
++          readText(relativePath) {
++            const text = baseSource.readText(relativePath);
++            if (!publishedManifestPaths.has(relativePath)) return text;
++            const manifest = JSON.parse(text);
++            manifest.version = "0.7.0";
++            if (relativePath === "packages/agentplane/package.json") {
++              manifest.dependencies["@agentplaneorg/core"] = "0.7.0";
++              manifest.dependencies["@agentplaneorg/recipes"] = "0.7.0";
++            }
++            return JSON.stringify(manifest);
++          },
++        };
++        const before = collectCompatibilitySurface(baseSource);
++        const after = collectCompatibilitySurface(releaseSource);
++        const sectionDigests = surfaceSectionDigests(after);
++        process.stdout.write(JSON.stringify({
++          packageManifestDigest: sectionDigests.package_manifests,
++          surfaceDigest: compatibilitySurfaceDigest(sectionDigests),
++          changedPaths: diffJsonPaths(before, after),
++        }));
++      `;
++      const result = await runNode(["--input-type=module", "--eval", source]);
++      expect(result).toMatchObject({ exitCode: 0, stderr: "" });
++      expect(JSON.parse(result.stdout)).toEqual({
++        packageManifestDigest: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
++        surfaceDigest: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++        changedPaths: [
++          "$.package_manifests[0].dependencies.@agentplaneorg/core",
++          "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
++          "$.package_manifests[0].normalized_sha256",
++          "$.package_manifests[0].version",
++          "$.package_manifests[1].normalized_sha256",
++          "$.package_manifests[1].version",
++          "$.package_manifests[2].normalized_sha256",
++          "$.package_manifests[2].version",
++        ],
++      });
++    },
++    TEST_TIMEOUT_MS,
++  );
++
+   it("detects extra CLI options and command-shell mutations before candidate review", async () => {
+     const source = `
+       import { diffCliTopology } from ${JSON.stringify(COMPATIBILITY_LIBRARY_URL)};
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index ac30817c4..116d7a3d8 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema_version": 2,
++  "schema_version": 3,
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "source_tasks": [
+     "202607221846-4VB97J",
+@@ -44,6 +44,26 @@
+       "tarball_policy": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091"
+     }
+   },
++  "release_version_delta": {
++    "source_task": "202607221854-XV67TD",
++    "classification": "planned_version_parity",
++    "from_version": "0.6.24",
++    "to_version": "0.7.0",
++    "section": "package_manifests",
++    "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
++    "to_sha256": "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
++    "surface_sha256": "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++    "allowed_json_paths": [
++      "$.package_manifests[0].dependencies.@agentplaneorg/core",
++      "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
++      "$.package_manifests[0].normalized_sha256",
++      "$.package_manifests[0].version",
++      "$.package_manifests[1].normalized_sha256",
++      "$.package_manifests[1].version",
++      "$.package_manifests[2].normalized_sha256",
++      "$.package_manifests[2].version"
++    ]
++  },
+   "contract_artifacts": {
+     "agent_work_order_schema": {
+       "path": "schemas/agent-work-order-v2.schema.json",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index b0f6faf38..be9cdf9e6 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
+ 
+ import {
+   COMPATIBILITY_BASELINE_ID,
++  COMPATIBILITY_CANDIDATE_SCHEMA_VERSION,
+   COMPATIBILITY_CONTRACT_SCHEMA_VERSION,
+   PUBLISHED_TAG,
+   PUBLISHED_TAG_SHA,
+@@ -20,6 +21,7 @@ import {
+   gitReferenceAvailable,
+   hashJson,
+   reconstructCompatibilitySurface,
++  resolveReviewedCompatibilitySurfaceMode,
+   surfaceSectionDigests,
+ } from "../lib/compatibility-contract.mjs";
+ 
+@@ -297,6 +299,7 @@ function validateReviewedCandidate({
+       "source_tasks",
+       "base",
+       "candidate",
++      "release_version_delta",
+       "contract_artifacts",
+       "review",
+       "deltas",
+@@ -304,7 +307,10 @@ function validateReviewedCandidate({
+     [],
+     "compatibility candidate",
+   );
+-  assert(candidate.schema_version === 2, "compatibility candidate schema_version drift");
++  assert(
++    candidate.schema_version === COMPATIBILITY_CANDIDATE_SCHEMA_VERSION,
++    "compatibility candidate schema_version drift",
++  );
+   assert(
+     candidate.candidate_id === "agentplane.compatibility.v0.7.cumulative",
+     "compatibility candidate id drift",
+@@ -381,11 +387,59 @@ function validateReviewedCandidate({
+     [],
+     "compatibility candidate surface",
+   );
+-  assert(candidate.candidate.surface_sha256 === currentDigest, "candidate surface digest drift");
++  const releaseVersionDelta = candidate.release_version_delta;
++  assertOnlyKeys(
++    releaseVersionDelta,
++    [
++      "source_task",
++      "classification",
++      "from_version",
++      "to_version",
++      "section",
++      "from_sha256",
++      "to_sha256",
++      "surface_sha256",
++      "allowed_json_paths",
++    ],
++    [],
++    "compatibility release version delta",
++  );
+   assert(
+-    hashJson(candidate.candidate.section_digests) === hashJson(currentSectionDigests),
+-    "candidate section digest inventory drift",
++    hashJson(releaseVersionDelta) ===
++      hashJson({
++        source_task: "202607221854-XV67TD",
++        classification: "planned_version_parity",
++        from_version: "0.6.24",
++        to_version: "0.7.0",
++        section: "package_manifests",
++        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
++        to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
++        surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++        allowed_json_paths: [
++          "$.package_manifests[0].dependencies.@agentplaneorg/core",
++          "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
++          "$.package_manifests[0].normalized_sha256",
++          "$.package_manifests[0].version",
++          "$.package_manifests[1].normalized_sha256",
++          "$.package_manifests[1].version",
++          "$.package_manifests[2].normalized_sha256",
++          "$.package_manifests[2].version",
++        ],
++      }),
++    "compatibility release version delta drift",
++  );
++  assert(
++    releaseVersionDelta.from_sha256 ===
++      candidate.candidate.section_digests[releaseVersionDelta.section],
++    "release version delta source digest drift",
+   );
++  const reviewedSurfaceMode = resolveReviewedCompatibilitySurfaceMode({
++    reviewedSurfaceSha256: candidate.candidate.surface_sha256,
++    reviewedSectionDigests: candidate.candidate.section_digests,
++    releaseVersionDelta,
++    currentSurfaceSha256: currentDigest,
++    currentSectionDigests,
++  });
+ 
+   assertOnlyKeys(
+     candidate.contract_artifacts,
+@@ -635,7 +689,12 @@ function validateReviewedCandidate({
+   );
+ 
+   assert(Array.isArray(candidate.deltas), "compatibility candidate deltas are missing");
+-  const changedSections = changedSurfaceSections(exactMainSurface, currentSurface).toSorted();
++  const changedSections = changedSurfaceSections(exactMainSurface, currentSurface)
++    .filter(
++      (section) =>
++        reviewedSurfaceMode !== "release_version" || section !== releaseVersionDelta.section,
++    )
++    .toSorted();
+   const deltaSections = candidate.deltas.map((delta) => delta.section).toSorted();
+   assert(
+     hashJson(deltaSections) === hashJson(changedSections),
+@@ -663,7 +722,7 @@ function validateReviewedCandidate({
+       `${delta.section}: candidate from digest drift`,
+     );
+     assert(
+-      delta.to_sha256 === currentSectionDigests[delta.section],
++      delta.to_sha256 === candidate.candidate.section_digests[delta.section],
+       `${delta.section}: candidate to digest drift`,
+     );
+     assert(
+@@ -1943,6 +2002,7 @@ function validateReviewedCandidate({
+     "unexpected core tarball source-file addition",
+   );
+   assert(removedSourceFiles.length === 0, "candidate removes a core tarball source file");
++  return reviewedSurfaceMode;
+ }
+ 
+ function verifyLocalReferenceIfAvailable(ref, expectedDigest, expectedCommitSha = null) {
+@@ -1966,7 +2026,7 @@ try {
+   if (currentDigest !== expectedDigest) {
+     try {
+       const candidate = readCandidate();
+-      validateReviewedCandidate({
++      const reviewedSurfaceMode = validateReviewedCandidate({
+         baseline,
+         candidate,
+         exactMainSurface,
+@@ -1974,7 +2034,7 @@ try {
+         currentDigest,
+         currentSectionDigests,
+       });
+-      candidateStatus = `approved:${candidate.candidate_id}`;
++      candidateStatus = `approved:${candidate.candidate_id}:${reviewedSurfaceMode}`;
+     } catch (error) {
+       const sections = changedSurfaceSections(exactMainSurface, currentSurface);
+       const paths = diffJsonPaths(exactMainSurface, currentSurface).slice(0, 20);
+diff --git a/scripts/lib/compatibility-contract.mjs b/scripts/lib/compatibility-contract.mjs
+index 4b5e581ce..6a9cff127 100644
+--- a/scripts/lib/compatibility-contract.mjs
++++ b/scripts/lib/compatibility-contract.mjs
+@@ -7,6 +7,7 @@ import path from "node:path";
+ import { isAllowedTarballPath, packageTarballPolicyContract } from "./package-tarball-policy.mjs";
+ 
+ export const COMPATIBILITY_CONTRACT_SCHEMA_VERSION = 2;
++export const COMPATIBILITY_CANDIDATE_SCHEMA_VERSION = 3;
+ export const COMPATIBILITY_BASELINE_ID = "agentplane.compatibility.v0.6.24";
+ export const PUBLISHED_TAG = "v0.6.24";
+ export const PUBLISHED_TAG_SHA = "30f62b82dff28909dcb3ccc2ace2bf3e356203bb";
+@@ -111,6 +112,42 @@ export function hashJson(value) {
+   return sha256Text(canonicalJson(value));
+ }
+ 
++export function resolveReviewedCompatibilitySurfaceMode({
++  reviewedSurfaceSha256,
++  reviewedSectionDigests,
++  releaseVersionDelta,
++  currentSurfaceSha256,
++  currentSectionDigests,
++}) {
++  if (
++    currentSurfaceSha256 === reviewedSurfaceSha256 &&
++    hashJson(currentSectionDigests) === hashJson(reviewedSectionDigests)
++  ) {
++    return "pre_version";
++  }
++
++  const expectedReleaseSectionDigests = {
++    ...reviewedSectionDigests,
++    [releaseVersionDelta.section]: releaseVersionDelta.to_sha256,
++  };
++  if (
++    currentSurfaceSha256 === releaseVersionDelta.surface_sha256 &&
++    hashJson(currentSectionDigests) === hashJson(expectedReleaseSectionDigests)
++  ) {
++    return "release_version";
++  }
++
++  const changedSections = Object.keys({
++    ...reviewedSectionDigests,
++    ...currentSectionDigests,
++  })
++    .filter((section) => reviewedSectionDigests[section] !== currentSectionDigests[section])
++    .toSorted(compareStrings);
++  throw new Error(
++    `reviewed compatibility surface drift: current=${currentSurfaceSha256} changed_sections=${changedSections.join(", ") || "none"}`,
++  );
++}
++
+ function cliCommandIdentity(command) {
+   return command.id.join(" ");
+ }
