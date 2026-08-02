@@ -5,9 +5,19 @@
   "diffstat_sha256": "sha256:6d9a6ac99a356baf55a2bd9b2aadcac45d8d94c89e18597fc2b9b59847aaa5af",
   "last_verified_at": "2026-08-02T22:44:56.087Z",
   "last_verified_diffstat_sha256": "sha256:6d9a6ac99a356baf55a2bd9b2aadcac45d8d94c89e18597fc2b9b59847aaa5af",
+  "pr_number": 4749,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4749",
+  "pre_merge_closure": {
+    "basis_commit": "dafc86b07cd0faafa3dbf6f0fa9dfc9bc284f164",
+    "branch": "task/202608022236-AWTDJ9/preserve-verification-freshness-after-rebase-mer",
+    "pr_number": 4749,
+    "recorded_at": "2026-08-02T22:47:35.073Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608022236-AWTDJ9",
-  "updated_at": "2026-08-02T22:37:28.488Z",
+  "updated_at": "2026-08-02T22:46:38.048Z",
   "verify": {
     "status": "pass"
   }
