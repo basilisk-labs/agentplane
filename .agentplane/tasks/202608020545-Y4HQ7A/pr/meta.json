@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608020545-Y4HQ7A/freeze-qualification-metric-policy-and-verificat",
+  "created_at": "2026-08-02T05:46:59.746Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608020545-Y4HQ7A",
+  "updated_at": "2026-08-02T05:46:59.746Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
