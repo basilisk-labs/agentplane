@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "No contract-breaking semantic defect was identified in the frozen implementation; deterministic evidence is bound to the evaluated SHA and covers the relevant positive, negative, and concurrency-sensitive paths.",
+      "broken_invariant": "No invariant is broken; this finding records the affirmative basis for the pass verdict.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8430f20b7ad7d428b01232f0a8923745cad894df1d28a6a15a2ac148f27e0bb9"
+        },
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802105659180-0f8f6099d00d87ed.json",
+          "sha256": "sha256:27e97d1410e023e7bfab54978bc62e534e77d92f9646e3a189d90e58452b6470"
+        },
+        {
+          "path": ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+          "sha256": "sha256:518e3fbdd4fc1575b259225035e4c4b5f612906acd57c55504a472444af2d239"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Remote provider state remains mutable after the audited fetch; hosted checks and provider revalidation must still pass before integration.",
+    "The required patch release for runtime changes remains a post-merge lifecycle obligation and is not proven by this pre-integration evidence packet."
+  ]
+}
