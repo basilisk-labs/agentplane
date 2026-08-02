@@ -12,6 +12,19 @@ function nullSeparatedPaths(value: string | Buffer): string[] {
   ].toSorted();
 }
 
+async function isOnFirstParentHistory(opts: {
+  gitRoot: string;
+  commit: string;
+  head: string;
+}): Promise<boolean> {
+  const { stdout } = await execFileAsync("git", ["rev-list", "--first-parent", opts.head, "--"], {
+    cwd: opts.gitRoot,
+    encoding: "buffer",
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return stdout.toString().split(/\s+/u).includes(opts.commit);
+}
+
 /**
  * During a configured-base merge, the index-to-HEAD diff includes every path
  * arriving from the base branch. Policy must attribute only the task-side
@@ -35,7 +48,11 @@ export async function resolveHookPolicyStagedPaths(opts: {
     if (!mergeHead) return fallback;
 
     const baseHead = await gitRevParse(opts.gitRoot, [`${opts.baseBranch}^{commit}`]);
-    if (mergeHead !== baseHead) return fallback;
+    if (
+      !(await isOnFirstParentHistory({ gitRoot: opts.gitRoot, commit: mergeHead, head: baseHead }))
+    ) {
+      return fallback;
+    }
 
     const { stdout } = await execFileAsync(
       "git",
