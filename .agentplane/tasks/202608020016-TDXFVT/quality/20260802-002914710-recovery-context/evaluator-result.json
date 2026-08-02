@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Hosted integration required by the approved plan is not represented in the frozen verification record.",
+      "broken_invariant": "The approved plan requires hosted integration, but the recorded verification covers focused tests, evaluator command tests, typecheck, formatting, and diff checks only.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/README.md",
+          "sha256": "sha256:edd33f7d7c6cb3d6d31b5cfdba5eeea4d46ee57bf5b8da405e43bd0a7d028a58",
+          "section": "Plan and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802002539006-c06b0678e1fb29bf.json",
+          "sha256": "sha256:23966929846ded981cc1904cf66995edb099c9fa36ad2fa1a1b1602ecb4c863c",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A merge-aware negative test where comparison with the second parent contains only authority, lifecycle, implementation-receipt, or derived managed task artifacts.",
+    "A regression test defining behavior for merge commits with more than two parents, or an explicit invariant rejecting unsupported octopus merges."
+  ],
+  "hidden_assumptions": [
+    "A branch_pr base-sync merge always has the task branch as first parent and the synchronized base as second parent.",
+    "Two-parent merge handling is sufficient for all supported base-sync workflows.",
+    "The existing compatibility suite adequately covers lifecycle-only and metadata-only changes when they occur specifically at a base-sync merge head."
+  ]
+}
