@@ -4,7 +4,7 @@ title: "Publish the AgentPlane 0.7 architecture and migration guide"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -35,11 +35,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7"
+  message: "📚 YMYYQ8 docs: publish 0.7 architecture and migration guide"
 comments:
   -
     author: "DOCS"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "DOCS"
+    body: "Implementation: publish the 0.7 architecture, responsibility boundary, migration and rollback guide, generated site surfaces, navigation, social artifact, and roadmap updates; real base-sync merge completed without hook bypass."
 events:
   -
     type: "status"
@@ -48,8 +53,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-02T02:32:42.321Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: publish the 0.7 architecture, responsibility boundary, migration and rollback guide, generated site surfaces, navigation, social artifact, and roadmap updates; real base-sync merge completed without hook bypass."
 doc_version: 3
-doc_updated_at: "2026-08-01T23:22:30.774Z"
+doc_updated_at: "2026-08-02T02:32:42.321Z"
 doc_updated_by: "DOCS"
 description: "Document the final CLI-versus-agent responsibility boundary, WorkOrder/SemanticResult/Receipt contracts, supervisor flows, knowledge lifecycle, authority model, compatibility window, migration, metrics, and operator recovery."
 sections:
