@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T20:27:03.945Z"
-  updated_by: "TESTER"
-  note: "PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed."
+  updated_at: "2026-08-02T20:38:34.056Z"
+  updated_by: "CODER"
+  note: "Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -120,8 +120,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-02T20:38:34.056Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass."
 doc_version: 3
-doc_updated_at: "2026-08-02T20:28:21.412Z"
+doc_updated_at: "2026-08-02T20:38:35.251Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -204,6 +210,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T20:38:34.056Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:28:21.412Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+    - old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -216,6 +252,10 @@ sections:
     - Observation: Legacy approved synthetic plans now stop at PLANNER; explicit compatibility plans use PLANNER provenance; missing runner receipts fail closed before the audited override.
       Impact: The evaluator findings are resolved without weakening compatibility or existing gates.
       Resolution: Fresh verification evidence is bound to implementation SHA 534adaa8862d.
+
+    - Observation: Hosted verify-contract failed only because two changed files were not Prettier-formatted.
+      Impact: PR integration was blocked; no functional regression was observed.
+      Resolution: Formatted the two files, rebuilt the repo-local runtime, and reran all declared gates successfully.
 extensions:
   workflow_route_baseline:
     start_head_sha: "ed94f65a0ff27eaf0b0add2413780630a87e838b"
@@ -310,6 +350,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T20:38:34.056Z — VERIFY — ok
+
+By: CODER
+
+Note: Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:28:21.412Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+- old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -326,3 +396,7 @@ DecisionContextRef:
 - Observation: Legacy approved synthetic plans now stop at PLANNER; explicit compatibility plans use PLANNER provenance; missing runner receipts fail closed before the audited override.
   Impact: The evaluator findings are resolved without weakening compatibility or existing gates.
   Resolution: Fresh verification evidence is bound to implementation SHA 534adaa8862d.
+
+- Observation: Hosted verify-contract failed only because two changed files were not Prettier-formatted.
+  Impact: PR integration was blocked; no functional regression was observed.
+  Resolution: Formatted the two files, rebuilt the repo-local runtime, and reran all declared gates successfully.
