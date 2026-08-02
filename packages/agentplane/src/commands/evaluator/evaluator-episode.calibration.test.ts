@@ -15,7 +15,7 @@ import {
 } from "../shared/workflow-step-fingerprint.js";
 import { getHumanInputState } from "../task/human-input.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
-import { cmdTaskAdd } from "../workflow.js";
+import { cmdTaskAdd, cmdTaskPlanSet } from "../workflow.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
@@ -380,6 +380,12 @@ describe("evaluator episode calibration", () => {
     await writeDefaultConfig(root);
     const taskId = "202607290000-EC07";
     await addTask(root, taskId);
+    await cmdTaskPlanSet({
+      cwd: root,
+      taskId,
+      text: "Evaluate deterministic evidence refresh routing.",
+      updatedBy: "PLANNER",
+    });
     await commitTarget(root);
 
     const initialCommand = await loadCommandContext({ cwd: root, rootOverride: root });
