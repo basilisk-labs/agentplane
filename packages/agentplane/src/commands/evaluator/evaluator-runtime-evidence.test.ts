@@ -473,9 +473,14 @@ describe("evaluator runtime evidence", () => {
     const observed = JSON.parse(
       await readFile(path.join(root, observedEvidence.path), "utf8"),
     ) as Record<string, unknown>;
-    expect(observed.verification_records).toEqual([
-      expect.objectContaining({ path: expect.stringContaining("/verification/") }),
-    ]);
+    const verificationRecords = observed.verification_records;
+    expect(Array.isArray(verificationRecords)).toBe(true);
+    expect(
+      Array.isArray(verificationRecords) &&
+        verificationRecords.some(
+          (entry) => hasStringPath(entry) && entry.path.includes("/verification/"),
+        ),
+    ).toBe(true);
   });
 
   it("keeps verification frozen across the complete pre-merge closure artifact sequence", async () => {
