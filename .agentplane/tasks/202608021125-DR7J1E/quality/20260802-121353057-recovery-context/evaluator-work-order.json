@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021125-DR7J1E-8ce93b7d4b07468506736429",
+  "prepared_at": "2026-08-02T12:13:53.057Z",
+  "task": {
+    "id": "202608021125-DR7J1E",
+    "revision": 16,
+    "objective": "Build the v0.7.1 end-to-end release qualification suite\n\nSpecify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured.",
+    "acceptance_criteria": [
+      "In scope: the complete public task lifecycle in direct and branch_pr modes; managed runner and external-agent supervisor paths; automatic task/context/knowledge preparation; authority and fingerprint boundaries; verification and evaluator outcomes; PR synchronization, hosted checks, integration and cleanup; failure recovery; context packet size; command count; provider and evaluator token usage; latency; scope correctness; benchmark comparison; CI and release evidence. The user-provided architecture audit and the current v0.7.0 qualification artifacts are input evidence. Out of scope for this task: implementing every discovered product fix. Each confirmed release-blocking defect that cannot be fixed without materially widening this task becomes a separate executable task before release.",
+      "1. Inventory the candidate command, lifecycle, runner, context, benchmark, and release surfaces and map every supported use case to a deterministic E2E scenario.\n2. Define a versioned E2E manifest with direct and branch_pr flows, managed and external-agent frontends, approvals, human input, rework, evaluator, external wait, effect-in-doubt, crash/restart, stale state, context cold/warm/stale/provenance cases, and hosted integration boundaries.\n3. Build hermetic scenario drivers that use the packaged candidate binary, isolated repositories, deterministic fixtures, recorded provider episodes only where semantics are required, and machine-readable receipts for correctness, calls, tokens, packet size, wall time, scope, and recovery.\n4. Add matched baseline versus candidate qualification with explicit statistical aggregation and gates: zero unexpected lifecycle errors, no trust-boundary or scope regressions, no token regression and a material matched token saving, compact external-agent packets, at most two canonical external-agent operations for the normal flow, and setup/time-to-verified at or below the declared baseline.\n5. Execute the full local matrix and bounded provider replay against the candidate, classify every failure as product, contract, infrastructure, or diagnostic, and produce a release-blocking defect ledger with reproduction commands and proposed fixes.\n6. Integrate the suite into CI/release qualification, document local and hosted execution, run all declared checks, obtain independent evaluator review, and merge through the guarded branch_pr lane.",
+      "1. Run e2e:v0.7.1:check; require the versioned manifest to cover every declared workflow mode, supervisor frontend, lifecycle state, context condition, semantic stop, recovery state, and hosted boundary, and require unit coverage for manifest validation, audit-versus-gate exit behavior, exact-subject efficiency thresholds, and matched latency thresholds.\n2. Run the core and full audit profiles; require every selected scenario to execute, every non-zero result to become a classified defect with reproduction and evidence, audit mode to exit zero after writing a valid report even when the candidate is blocked, and partial selections never to claim readiness.\n3. Run the packed-candidate install scenario in an isolated temporary repository; require install, init, context ingest/search, lifecycle policy failures, migration coverage, and cleanup to complete without unexpected exits, invariant violations, leaked writes, or stale-state acceptance.\n4. Run the lifecycle, context, supervisor-parity, recovery, and hosted focused suites; require them to pass and preserve deterministic context freshness, provenance, budget, state fingerprint, authority, replay, effect-in-doubt, hosted wait, and cleanup behavior.\n5. Run the external product-contract probe; require it to encode the final release acceptance contract of task creation plus task advance --agent-json, no manual Git/worktree/PR/verify/finish/integrate/cleanup choreography, one compact representation per field, and a packet no larger than 2048 bytes. For this harness task, a missing product capability must be reported as a release-blocking defect rather than treated as a harness failure.\n6. Run the managed-runner parity suite; require shared supervisor state and evidence projections to pass. The final release gate, not this harness integration task, requires the external product-contract probe itself to pass.\n7. Run the historical efficiency evidence checker and the matched v0.6.26 CLI benchmark; require complete metrics and stable hashes, require unsupported exact-SHA or latency claims to fail closed, and require the report to preserve measured token reduction separately from release-blocking latency or provenance failures.\n8. Run failure/recovery scenarios for interruption, process loss, provider ambiguity, effect-in-doubt, replay, duplicate side effects, stale fingerprints, evaluator rework, approval expiry, hosted wait, and cleanup races; require deterministic safe stops and recoverable next actions.\n9. Run focused tests, critical CLI, typecheck, workflow coverage, full ci:contract, task-state check, doctor, and policy routing; require all harness and unchanged product contracts to pass.\n10. Validate the qualification report and defect ledger: every failure has classification, reproduction, evidence, impact, proposed fix, owner task, and release disposition; no speed or token-saving claim is emitted without matched evidence.\n11. Dry-run the provider selection and require the final gate to reject execution unless --provider, exact subject, and exact Codex version are supplied. The final release task must run the bounded 50-run and 55-provider-episode matrix once with no hidden retry; this harness task must not spend provider episodes on a known-blocked, non-final SHA.\n12. Run independent EVALUATOR review on the exact harness implementation revision and require pass before integration."
+    ]
+  },
+  "evaluated_sha": "03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112",
+  "diff_base_sha": "6e8723251676578cedc8ef8d53b76e3da06833f6",
+  "blueprint_digest": "ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021125-DR7J1E/README.md",
+      "sha256": "sha256:5e1a59563552f62aa5aac0cf91437b0a0bd23870876f0bfc32c93ceef470a8a6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121353057-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:aeb25d1d62fc612535fde1a204c41a1c1587d8c01b156c8ecd602217c5e39025",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121353057-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:7b2144b53530fbc256a74da8f60ee2f652c213132b265bd8e90f3cdc836de96e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121353057-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:5f959439eb533157d867d0412210a6b36a4bfaeccd634712d891906592f480a6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

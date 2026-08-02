@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "needs_rework",
+    "attempts": 1,
+    "updated_at": "2026-08-02T12:04:56.261Z",
+    "updated_by": "TESTER",
+    "note": "Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

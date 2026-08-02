@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021125-DR7J1E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T12:29:33.894Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112",
+  "blueprint_digest": "ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a",
+  "findings": [
+    "The defect ledger uses PENDING labels instead of executable task IDs, and multiple confirmed release-blocking defects share the same placeholder owner."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021125-DR7J1E/README.md",
+    ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/defects.md",
+    ".agentplane/cache/v0.7.1-qualification/03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112/report.json",
+    ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-122829311-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Validate that every blocking defect owner_task is an existing executable AgentPlane task ID rather than a PENDING placeholder, and that distinct confirmed release-blocking defects have distinct owner tasks when the task contract requires separate tasks."
+  ],
+  "hidden_assumptions": [
+    "A PENDING-* label is treated as equivalent to an executable task ID.",
+    "The supervisor and efficiency defects may remain untracked until a later release step.",
+    "Multiple independently confirmed blockers may share one future owner despite the explicit separate-task requirement."
+  ],
+  "residual_risks": [
+    "Create separate executable tasks for the confirmed release-blocking defects, emit their real task IDs in the report and ledger, and replace the test that currently accepts PENDING owner labels with task-ID and task-existence validation."
+  ]
+}

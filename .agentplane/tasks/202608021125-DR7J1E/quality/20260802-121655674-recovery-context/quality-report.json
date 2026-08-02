@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021125-DR7J1E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T12:17:23.827Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112",
+  "blueprint_digest": "ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a",
+  "findings": [
+    "The frozen packet contains no deterministic verification records or runtime evidence for the evaluated SHA; its verification note instead names a different revision."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-121655674-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608021125-DR7J1E/README.md"
+  ],
+  "missing_tests": [
+    "Frozen, machine-readable results for every declared verification command, including command, exit status, timestamp, and exact tested SHA.",
+    "A consistency check rejecting verification evidence whose recorded implementation SHA differs from the evaluator work order's evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The narrative TESTER verification note is assumed to represent deterministic execution despite empty verification_records, runner_history, and runtime_evidence arrays.",
+    "Results attributed to revision dc914a1600847b56bbdcd06f90a3eb6f33a03d61 are assumed to apply unchanged to evaluated SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112."
+  ],
+  "residual_risks": [
+    "Regenerate the frozen evaluator packet after recording deterministic results for all declared checks against exact evaluated SHA 03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112; the current packet contains only a narrative verification state tied to a different revision."
+  ]
+}
