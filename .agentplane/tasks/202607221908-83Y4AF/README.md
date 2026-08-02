@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-rc.2 milestone"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -33,9 +33,9 @@ verify:
   - "bun run release:prepublish"
   - "bun run task-state:check"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-01T23:20:19.664Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
