@@ -6,14 +6,14 @@ Created: 2026-08-02T00:17:10.319Z
 
 - Task: `202608020016-TDXFVT`
 - Title: Preserve evaluator work units across base-sync merges
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m`
 - Canonical task record: `.agentplane/tasks/202608020016-TDXFVT/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate.
+- Note: Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,10 +29,17 @@ Created: 2026-08-02T00:17:10.319Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-runtime-evidence.test.ts   |  93 +++++++++++++++
- .../commands/shared/quality-review-target.test.ts  | 125 +++++++++++++++++++++
- .../src/commands/shared/quality-review-target.ts   |  62 ++++++++++
- 3 files changed, 280 insertions(+)
+ .../evaluator/evaluator-qualification-review.ts    |   1 +
+ .../commands/evaluator/evaluator-review-usecase.ts |   1 +
+ .../evaluator/evaluator-runtime-evidence.test.ts   |  93 +++++++++++
+ .../evaluator/evaluator-verification-records.ts    |   2 +
+ .../src/commands/pr/integrate/internal/prepare.ts  |   1 +
+ .../commands/shared/quality-review-target.test.ts  | 171 +++++++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   |  91 ++++++++++-
+ .../src/commands/shared/route-decision-blockers.ts |   1 +
+ .../src/commands/shared/route-decision.ts          |   1 +
+ .../src/commands/task/verify-record-execute.ts     |   1 +
+ 10 files changed, 362 insertions(+), 1 deletion(-)
 ```
 
 </details>

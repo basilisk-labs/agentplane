@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m",
   "created_at": "2026-08-02T00:17:10.319Z",
-  "diffstat_sha256": "sha256:93aacf430b417d0c2370be391a1975d09b4df99842aba18f2ab0170929aa126f",
-  "last_verified_at": "2026-08-02T00:53:36.501Z",
-  "last_verified_diffstat_sha256": "sha256:93aacf430b417d0c2370be391a1975d09b4df99842aba18f2ab0170929aa126f",
+  "diffstat_sha256": "sha256:d49543b9be671839d12d5ca00ffd9b8c7e8bc1542fe28b8a715ce7aab06b8c07",
+  "last_verified_at": "2026-08-02T01:14:10.132Z",
+  "last_verified_diffstat_sha256": "sha256:d49543b9be671839d12d5ca00ffd9b8c7e8bc1542fe28b8a715ce7aab06b8c07",
   "pr_number": 4734,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4734",
   "pre_merge_closure": {
