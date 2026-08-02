@@ -743,6 +743,12 @@ describe("evaluator run command", () => {
       "local planning commit\n",
       "chore: local planning commit",
     );
+    const { stdout: localBaseBranchOutput } = await execFileAsync(
+      "git",
+      ["branch", "--show-current"],
+      { cwd: root },
+    );
+    const localBaseBranch = localBaseBranchOutput.trim();
 
     await execFileAsync("git", ["branch", "published-main", commonBase], { cwd: root });
     await execFileAsync("git", ["switch", "published-main"], { cwd: root });
@@ -759,16 +765,18 @@ describe("evaluator run command", () => {
       "export const evaluated = true;\n",
       "feat: evaluated",
     );
-    await execFileAsync("git", ["config", "branch.main.remote", "."], { cwd: root });
-    await execFileAsync("git", ["config", "branch.main.merge", "refs/heads/published-main"], {
-      cwd: root,
-    });
+    await execFileAsync("git", ["config", `branch.${localBaseBranch}.remote`, "."], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["config", `branch.${localBaseBranch}.merge`, "refs/heads/published-main"],
+      { cwd: root },
+    );
 
     await expect(
       resolveEvaluatorDiffBase({
         gitRoot: root,
         evaluatedSha,
-        baseRef: "main",
+        baseRef: localBaseBranch,
       }),
     ).resolves.toBe(publishedBase);
   });

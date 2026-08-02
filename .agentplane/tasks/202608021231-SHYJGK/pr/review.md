@@ -57,7 +57,7 @@ Created: 2026-08-02T15:36:39.848Z
  .../agentplane/src/cli/run-cli/registry.run.ts     |  14 +-
  .../evaluator/evaluator-catalog.command.ts         |   8 +-
  .../commands/evaluator/evaluator-diff-evidence.ts  |  31 ++-
- .../evaluator/evaluator-run.command.test.ts        |  40 +++
+ .../evaluator/evaluator-run.command.test.ts        |  48 ++++
  .../src/commands/evaluator/evaluator.command.ts    |  36 +--
  .../src/commands/hermes/hermes.command.ts          |  13 -
  .../release/bun-compiled-cli-smoke-script.test.ts  |   9 +-
@@ -83,7 +83,7 @@ Created: 2026-08-02T15:36:39.848Z
  scripts/release/check-package-tarball.mjs          |   7 +-
  scripts/release/generate-cli-help-catalog.mjs      |  24 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |  58 +++-
- 54 files changed, 1761 insertions(+), 653 deletions(-)
+ 54 files changed, 1769 insertions(+), 653 deletions(-)
 ```
 
 </details>
