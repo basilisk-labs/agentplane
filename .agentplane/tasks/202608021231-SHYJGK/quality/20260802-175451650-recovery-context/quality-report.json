@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-SHYJGK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T17:55:32.239Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "cf1dfbb106f0c46ec549aecceef60b4f5fe203eb",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "findings": [
+    "The frozen evidence asserts exact-SHA success but contains no deterministic check records, runtime evidence, raw latency samples, or hosted-check results from which the evaluator can validate the required correctness and performance gates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175451650-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608021231-SHYJGK/README.md"
+  ],
+  "missing_tests": [
+    "Frozen exact-SHA results for the focused interactive-init and branch-worktree tests, including the negative and minimal-context cases.",
+    "Frozen exact-SHA results for ci:test, isolated replay-security without retry, typecheck, and every required supervisor/lifecycle/recovery/product-contract/workflow/doctor/policy gate.",
+    "Frozen matched-latency artifact containing environment metadata, at least 20 cold and 20 warm interleaved raw samples per candidate, per-command median and p95 comparisons, provider-excluded time-to-verified results, and threshold verdicts.",
+    "Frozen hosted-check results for the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes checks and artifacts that are not included in the frozen evidence set.",
+    "The referenced matched-latency artifact was produced from evaluated SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb under the approved comparison method.",
+    "The broad ci:test and ci:contract claims cover every explicitly required negative, concurrency-sensitive, packaging, and lifecycle check."
+  ],
+  "residual_risks": [
+    "Rebuild the evaluator work order with the existing exact-SHA deterministic check outputs and matched-latency artifact included as frozen evidence, including raw samples and hosted-check results; no implementation change is indicated by the current evidence gap."
+  ]
+}

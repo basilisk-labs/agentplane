@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:88ed267dacbce278d0e13a41f7c2df867b1caf3c7b7989db03f62da790b28e15",
+  "implementation_sha": "cf1dfbb106f0c46ec549aecceef60b4f5fe203eb",
+  "kind": "task_verification_record",
+  "note": "Exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb verified: ci:test 4687/4687 and ci:contract pass; frozen matched-latency evidence contains 20 cold and 20 warm pairs for baseline 0.6.26 and candidate, raw samples, environment, per-command median/p95, and provider-excluded aggregate with no failures.",
+  "recorded_at": "2026-08-02T17:54:31.172Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused interactive-init and branch worktree runtime tests with no retry. Expected: all previously reproduced failures pass and assertions match the current evaluator-skepticism and minimal-context contracts.\n2. Run bun run ci:test with the normal release configuration. Expected: every maintained test file and test passes; the replay-security test also passes in isolation without relying on a retry.\n3. Run the matched CLI latency harness with at least 20 warm and 20 cold repetitions per candidate and baseline. Expected: deterministic setup median is no slower than the accepted v0.6.24 baseline, p95 is within 10%, and time-to-verified does not regress after excluding provider variance.\n4. Run v0.7 supervisor, lifecycle, recovery, product-contract, efficiency-evidence, test:critical, typecheck, workflow coverage, ci:contract, task-state, doctor, and policy routing gates. Expected: all pass while verified success, scope, token, packet-size, and lifecycle-ownership invariants remain at least as strong as the current candidate.\n5. Run an independent EVALUATOR review against the exact implementation SHA, then require all hosted checks before integration.",
+  "scope_digest": "sha256:19a63d656db04360f1930e5514fc7b110d08b464e56ffcd148f3f5c78c7d4ea5",
+  "task_id": "202608021231-SHYJGK",
+  "verification_command": "agentplane verify 202608021231-SHYJGK --ok --by TESTER",
+  "verifier": "TESTER"
+}

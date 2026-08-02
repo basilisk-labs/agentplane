@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608021231-SHYJGK-294060bcbb501af4e999150a",
+  "task_id": "202608021231-SHYJGK",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Produce deterministic verification evidence for exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb, then repeat the independent semantic evaluation using the refreshed frozen packet.",
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "The frozen verification evidence covers SHA bae5543faa00a8425ed46a5cf5c99c7b74338453, but the work order evaluates SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175318240-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:3dc5cdd01f7d4ce703a2a8e909e1098f6cb150163848bd4aa2bed0cd227737ae",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:90f3b5d3f555fe14b27fdf04fcbff5fc7511bd410a1ffd7aa1d2cc238e026e72",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175318240-recovery-context/evaluator-result.json"
+}

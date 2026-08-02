@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-SHYJGK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T17:53:55.644Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "cf1dfbb106f0c46ec549aecceef60b4f5fe203eb",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "findings": [
+    "The frozen verification evidence covers SHA bae5543faa00a8425ed46a5cf5c99c7b74338453, but the work order evaluates SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175318240-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608021231-SHYJGK/README.md"
+  ],
+  "missing_tests": [
+    "Run and freeze the declared checks and relevant release gates against exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb, including the 20-pair cold and warm matched-latency qualification."
+  ],
+  "hidden_assumptions": [
+    "The changes between the previously verified SHA and the evaluated SHA affect only benchmark evidence and tests and therefore do not require exact-SHA re-verification."
+  ],
+  "residual_risks": [
+    "Produce deterministic verification evidence for exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb, then repeat the independent semantic evaluation using the refreshed frozen packet."
+  ]
+}
