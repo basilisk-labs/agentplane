@@ -181,6 +181,10 @@ Implementation layout: canonical script implementations live under `scripts/chec
 | `dev:turbo:docs`                   | `TURBO_TELEMETRY_DISABLED=1 turbo run typecheck build --filter='./website' --summarize`                                                                                                                                          | Run dev workflow: turbo docs.                             |
 | `dev:turbo:graph`                  | `mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid`                                                             | Run dev workflow: turbo graph.                            |
 | `dev:turbo:ls`                     | `TURBO_TELEMETRY_DISABLED=1 turbo ls --output=json`                                                                                                                                                                              | Run dev workflow: turbo ls.                               |
+| `e2e:v0.7.1:audit`                 | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
+| `e2e:v0.7.1:check`                 | `node --test scripts/qualification/release-qualification.test.mjs && node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --dry-run`                                                      | Run e2e workflow: v0.7.1 check.                           |
+| `e2e:v0.7.1:core-audit`            | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile core`                                                                                                                                    | Run e2e workflow: v0.7.1 core-audit.                      |
+| `e2e:v0.7.1:gate`                  | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode gate --profile full --provider`                                                                                                                          | Run e2e workflow: v0.7.1 gate.                            |
 | `format`                           | `prettier . --write`                                                                                                                                                                                                             | Format repository files with Prettier.                    |
 | `format:changed`                   | `node scripts/checks/check-changed-format.mjs`                                                                                                                                                                                   | Run format workflow: changed.                             |
 | `format:check`                     | `prettier . --check`                                                                                                                                                                                                             | Check formatting drift with Prettier.                     |
@@ -234,6 +238,10 @@ Implementation layout: canonical script implementations live under `scripts/chec
 - `dev:turbo:docs` is currently grouped as `misc` (review namespace intent).
 - `dev:turbo:graph` is currently grouped as `misc` (review namespace intent).
 - `dev:turbo:ls` is currently grouped as `misc` (review namespace intent).
+- `e2e:v0.7.1:audit` is currently grouped as `misc` (review namespace intent).
+- `e2e:v0.7.1:check` is currently grouped as `misc` (review namespace intent).
+- `e2e:v0.7.1:core-audit` is currently grouped as `misc` (review namespace intent).
+- `e2e:v0.7.1:gate` is currently grouped as `misc` (review namespace intent).
 - `format:changed` is currently grouped as `misc` (review namespace intent).
 - `format:check` is currently grouped as `misc` (review namespace intent).
 - `framework:dev:bootstrap` is currently grouped as `misc` (review namespace intent).

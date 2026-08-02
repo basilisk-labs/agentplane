@@ -1,0 +1,406 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.release_qualification_manifest",
+  "release": "0.7.1",
+  "required_coverage": {
+    "workflow_modes": ["direct", "branch_pr"],
+    "supervisor_frontends": ["managed_run", "external_advance"],
+    "lifecycle_states": [
+      "planned",
+      "ready",
+      "doing",
+      "verify_rework",
+      "verified",
+      "integrated",
+      "done",
+      "blocked"
+    ],
+    "context_conditions": [
+      "fresh",
+      "warm",
+      "stale",
+      "missing",
+      "conflicting",
+      "provenance_restricted",
+      "token_budgeted"
+    ],
+    "semantic_stops": ["approval_required", "human_review", "scope_drift", "missing_knowledge"],
+    "recovery_states": [
+      "interruption",
+      "process_loss",
+      "provider_ambiguity",
+      "effect_in_doubt",
+      "replay",
+      "duplicate_side_effect",
+      "stale_fingerprint",
+      "evaluator_rework",
+      "approval_expiry",
+      "hosted_wait",
+      "cleanup_race"
+    ],
+    "hosted_boundaries": ["pr_publish", "checks", "merge", "hosted_close", "release_publish"]
+  },
+  "scenarios": [
+    {
+      "id": "qualification-contract",
+      "title": "Qualification manifest, report, threshold, and audit/gate contracts",
+      "tier": "core",
+      "command": ["node", "--test", "scripts/qualification/release-qualification.test.mjs"],
+      "timeout_ms": 60000,
+      "coverage": {},
+      "failure": {
+        "classification": "qualification_harness_contract_failure",
+        "impact": "The release verdict or defect ledger cannot be trusted.",
+        "proposed_fix": "Repair the versioned manifest/report contract and add a regression case before using the gate.",
+        "owner_task": "202608021125-DR7J1E",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "packaged-candidate-flow",
+      "title": "Packed candidate install, initialization, context, lifecycle, and migration flow",
+      "tier": "full",
+      "command": ["node", "scripts/release/check-local-tarball-install-smoke.mjs"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "workflow_modes": ["branch_pr"],
+        "lifecycle_states": ["planned", "ready", "doing", "blocked"],
+        "context_conditions": ["fresh", "missing", "stale"],
+        "semantic_stops": ["approval_required"],
+        "recovery_states": ["stale_fingerprint"]
+      },
+      "failure": {
+        "classification": "packaged_candidate_e2e_failure",
+        "impact": "The installable release does not preserve the repository-tested lifecycle or context contract.",
+        "proposed_fix": "Reproduce from the packed tarballs, attribute the failing phase, and repair the published package boundary.",
+        "owner_task": "202608021125-DR7J1E",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "lifecycle-matrix",
+      "title": "Direct and branch_pr lifecycle state matrix",
+      "tier": "core",
+      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-lifecycle"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "workflow_modes": ["direct", "branch_pr"],
+        "lifecycle_states": [
+          "planned",
+          "ready",
+          "doing",
+          "verify_rework",
+          "verified",
+          "integrated",
+          "done",
+          "blocked"
+        ],
+        "semantic_stops": ["human_review", "scope_drift"]
+      },
+      "failure": {
+        "classification": "task_lifecycle_regression",
+        "impact": "At least one supported task-management state or workflow route is unsafe or inconsistent.",
+        "proposed_fix": "Use the failing focused test as the reproducer and repair the shared state-machine projection before release.",
+        "owner_task": "PENDING-v0.7.1-lifecycle-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "context-matrix",
+      "title": "Automatic context-layer freshness, provenance, conflict, and budget matrix",
+      "tier": "core",
+      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-context"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "context_conditions": [
+          "fresh",
+          "warm",
+          "stale",
+          "missing",
+          "conflicting",
+          "provenance_restricted",
+          "token_budgeted"
+        ],
+        "semantic_stops": ["missing_knowledge"]
+      },
+      "failure": {
+        "classification": "context_layer_regression",
+        "impact": "The executor may receive stale, excessive, unattributed, conflicting, or insufficient context.",
+        "proposed_fix": "Repair the failing context resolver/projection path and preserve deterministic source attribution.",
+        "owner_task": "PENDING-v0.7.1-context-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "supervisor-frontends",
+      "title": "Managed runner and compact external-agent supervisor protocol",
+      "tier": "core",
+      "command": ["node", "scripts/qualification/check-v0.7.1-product-contract.mjs"],
+      "timeout_ms": 120000,
+      "coverage": {
+        "workflow_modes": ["direct", "branch_pr"],
+        "supervisor_frontends": ["managed_run", "external_advance"],
+        "semantic_stops": ["approval_required", "human_review", "scope_drift"]
+      },
+      "failure": {
+        "classification": "supervisor_product_contract_missing",
+        "impact": "External agents still reconstruct or execute lifecycle shell choreography and the default UX bypasses the canonical supervisor.",
+        "proposed_fix": "Add task advance --agent-json over the task-run state machine, compact its packet to 2048 bytes, and route onboarding away from semantic begin/complete shortcuts.",
+        "owner_task": "PENDING-v0.7.1-supervisor-unification",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "supervisor-parity",
+      "title": "Shared supervisor state-machine parity and evidence outcomes",
+      "tier": "core",
+      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-supervisor"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "supervisor_frontends": ["managed_run", "external_advance"],
+        "lifecycle_states": ["doing", "verify_rework", "verified", "done", "blocked"]
+      },
+      "failure": {
+        "classification": "supervisor_state_machine_divergence",
+        "impact": "Managed and external execution can produce different lifecycle or evidence truth for the same task.",
+        "proposed_fix": "Move both frontends onto one typed transition engine and add a matched trace assertion for the failing state.",
+        "owner_task": "PENDING-v0.7.1-supervisor-unification",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "recovery-matrix",
+      "title": "Interruption, ambiguity, replay, stale authority, hosted wait, and cleanup recovery",
+      "tier": "core",
+      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-recovery"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "recovery_states": [
+          "interruption",
+          "process_loss",
+          "provider_ambiguity",
+          "effect_in_doubt",
+          "replay",
+          "duplicate_side_effect",
+          "stale_fingerprint",
+          "evaluator_rework",
+          "approval_expiry",
+          "hosted_wait",
+          "cleanup_race"
+        ]
+      },
+      "failure": {
+        "classification": "recovery_safety_regression",
+        "impact": "A failed or ambiguous task episode can repeat side effects, accept stale authority, or become unrecoverable.",
+        "proposed_fix": "Repair the failing recovery transition and retain the exact state fingerprint/effect evidence in its regression test.",
+        "owner_task": "PENDING-v0.7.1-recovery-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "hosted-boundary-matrix",
+      "title": "PR publication, checks, merge, hosted close, and release boundary matrix",
+      "tier": "full",
+      "command": ["node", "scripts/checks/run-vitest-suite.mjs", "v0.7-hosted"],
+      "timeout_ms": 900000,
+      "coverage": {
+        "hosted_boundaries": ["pr_publish", "checks", "merge", "hosted_close", "release_publish"],
+        "recovery_states": ["hosted_wait", "cleanup_race"]
+      },
+      "failure": {
+        "classification": "hosted_boundary_regression",
+        "impact": "Local task truth can diverge from GitHub or publication truth.",
+        "proposed_fix": "Repair the failing hosted boundary adapter and preserve remote readback evidence before closeout.",
+        "owner_task": "PENDING-v0.7.1-hosted-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "efficiency-evidence",
+      "title": "Matched token, quality, structural-hash, and lifecycle-latency evidence",
+      "tier": "core",
+      "depends_on": ["provider-matrix"],
+      "command": [
+        "node",
+        "scripts/qualification/check-v0.7.1-efficiency-evidence.mjs",
+        "--evidence",
+        "{candidateEvidence}",
+        "--subject",
+        "{subject}",
+        "--out",
+        "{evidenceDir}/efficiency-evidence.json"
+      ],
+      "timeout_ms": 60000,
+      "coverage": {},
+      "failure": {
+        "classification": "efficiency_or_latency_gate_failure",
+        "impact": "The release cannot substantiate its token-saving or acceleration claims on the exact candidate revision.",
+        "proposed_fix": "Capture matched exact-revision evidence, then remove attributed setup/time-to-verified regressions without reducing verified-success quality.",
+        "owner_task": "PENDING-v0.7.1-efficiency",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "cli-latency",
+      "title": "Deterministic CLI cold and wall-time latency guards",
+      "tier": "full",
+      "command": [
+        "node",
+        "scripts/checks/check-cli-walltime-baseline.mjs",
+        "--warmups",
+        "1",
+        "--attempts",
+        "1"
+      ],
+      "timeout_ms": 300000,
+      "coverage": {},
+      "failure": {
+        "classification": "absolute_cli_latency_diagnostic",
+        "impact": "Formal CLI preparation exceeds the historical absolute threshold in the current environment; a matched baseline decides release impact.",
+        "proposed_fix": "Correlate the absolute result with the matched v0.6.26 comparison before attributing a product regression.",
+        "owner_task": "PENDING-v0.7.1-efficiency",
+        "release_disposition": "advisory"
+      }
+    },
+    {
+      "id": "matched-cli-latency",
+      "title": "Interleaved v0.6.26 versus packed-candidate CLI latency",
+      "tier": "full",
+      "command": [
+        "node",
+        "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs",
+        "--subject",
+        "{subject}",
+        "--out",
+        "{evidenceDir}/matched-cli-latency.json"
+      ],
+      "timeout_ms": 900000,
+      "coverage": {},
+      "failure": {
+        "classification": "matched_cli_latency_regression",
+        "impact": "The packed candidate is slower than published 0.6.26 on the same fixture, Node runtime, host, and interleaved sample sequence.",
+        "proposed_fix": "Use the per-command matched deltas to remove duplicated startup, Git, task-index, or context work from the candidate hot path.",
+        "owner_task": "PENDING-v0.7.1-efficiency",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "full-contract",
+      "title": "Repository contract, type/tooling, architecture, and baseline guards",
+      "tier": "full",
+      "command": ["bun", "run", "ci:contract"],
+      "timeout_ms": 1800000,
+      "coverage": {},
+      "failure": {
+        "classification": "repository_contract_failure",
+        "impact": "The candidate violates a required source, policy, architecture, formatting, or maintained-baseline contract.",
+        "proposed_fix": "Attribute the first failing contract and repair it without weakening the maintained guard.",
+        "owner_task": "PENDING-v0.7.1-contract-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "critical-cli",
+      "title": "Critical CLI behavior suite",
+      "tier": "full",
+      "command": ["bun", "run", "test:critical"],
+      "timeout_ms": 1800000,
+      "coverage": {},
+      "failure": {
+        "classification": "critical_cli_failure",
+        "impact": "A release-critical CLI contract is broken.",
+        "proposed_fix": "Repair the first failing critical CLI behavior and preserve its focused regression test.",
+        "owner_task": "PENDING-v0.7.1-critical-cli-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "typecheck",
+      "title": "TypeScript candidate build and type contract",
+      "tier": "full",
+      "command": ["bun", "run", "typecheck"],
+      "timeout_ms": 1800000,
+      "coverage": {},
+      "failure": {
+        "classification": "type_contract_failure",
+        "impact": "The candidate does not compile under the pinned TypeScript toolchain.",
+        "proposed_fix": "Repair the reported type boundary without weakening strictness or changing the pinned toolchain during release qualification.",
+        "owner_task": "PENDING-v0.7.1-type-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "workflow-coverage",
+      "title": "Workflow runtime coverage and harness matrix",
+      "tier": "full",
+      "command": ["bun", "run", "coverage:workflow-suite"],
+      "timeout_ms": 1800000,
+      "coverage": {},
+      "failure": {
+        "classification": "workflow_coverage_failure",
+        "impact": "A formal workflow transition lacks executable coverage or violates its coverage threshold.",
+        "proposed_fix": "Add or repair the smallest deterministic workflow scenario and keep the matrix synchronized.",
+        "owner_task": "PENDING-v0.7.1-workflow-coverage-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "doctor",
+      "title": "Candidate repository diagnostics",
+      "tier": "full",
+      "command": ["node", "packages/agentplane/bin/agentplane.js", "doctor"],
+      "timeout_ms": 300000,
+      "coverage": {},
+      "failure": {
+        "classification": "doctor_failure",
+        "impact": "The release candidate diagnoses its own repository state as invalid.",
+        "proposed_fix": "Resolve the reported repository/configuration invariant and rerun doctor on the exact candidate revision.",
+        "owner_task": "PENDING-v0.7.1-doctor-fix",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "release-task-state",
+      "title": "Release task registry and closeout state",
+      "tier": "full",
+      "command": ["bun", "run", "task-state:check"],
+      "timeout_ms": 300000,
+      "coverage": {},
+      "failure": {
+        "classification": "release_task_state_not_ready",
+        "impact": "The release candidate still contains unfinished or invalid task truth.",
+        "proposed_fix": "Finish or explicitly disposition release-scoped tasks and rerun the task-state contract on the exact release revision.",
+        "owner_task": "PENDING-v0.7.1-release-closeout",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "provider-matrix",
+      "title": "Bounded Codex semantic qualification: 50 runs and 55 provider episodes",
+      "tier": "provider",
+      "command": [
+        "node",
+        "scripts/bench/capture-agent-efficiency-candidate.mjs",
+        "--subject",
+        "{subject}",
+        "--codex-version",
+        "{codexVersion}",
+        "--runs",
+        "5"
+      ],
+      "timeout_ms": 7200000,
+      "coverage": {
+        "workflow_modes": ["direct", "branch_pr"],
+        "supervisor_frontends": ["managed_run", "external_advance"],
+        "semantic_stops": ["approval_required", "human_review", "scope_drift", "missing_knowledge"]
+      },
+      "failure": {
+        "classification": "semantic_provider_qualification_failure",
+        "impact": "The exact candidate lacks complete no-retry semantic quality and token telemetry.",
+        "proposed_fix": "Classify the failed episode without retrying it, repair the attributable product defect, and run a new explicitly versioned candidate generation.",
+        "owner_task": "PENDING-v0.7.1-provider-qualification",
+        "release_disposition": "block"
+      }
+    }
+  ]
+}

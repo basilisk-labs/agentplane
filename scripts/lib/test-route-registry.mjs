@@ -347,6 +347,75 @@ const CRITICAL_CLI_SUITE = {
   hookTimeout: "120000",
 };
 
+const V07_LIFECYCLE_FILES = [
+  "packages/agentplane/src/commands/task/plan.unit.test.ts",
+  "packages/agentplane/src/commands/task/shared.verify-steps.test.ts",
+  "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
+  "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+  "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+  "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts",
+  "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+  "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+];
+
+const V07_CONTEXT_FILES = [
+  "packages/agentplane/src/context/ingest-task.test.ts",
+  "packages/agentplane/src/context/ingest-task-pack.test.ts",
+  "packages/agentplane/src/context/search-freshness.unit.test.ts",
+  "packages/agentplane/src/context/reindex-projection.test.ts",
+  "packages/agentplane/src/context/knowledge-ref.test.ts",
+  "packages/agentplane/src/context/source-spans.test.ts",
+  "packages/agentplane/src/context/coverage-validation.test.ts",
+  "packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts",
+  "packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts",
+  "packages/agentplane/src/commands/context/search.fts5.unit.test.ts",
+  "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
+  "packages/agentplane/src/runner/context/task-context.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+];
+
+const V07_SUPERVISOR_FILES = [
+  "packages/core/src/runner/supervisor-execution-episode.test.ts",
+  "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+  "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
+  "packages/agentplane/src/commands/shared/workflow-step.test.ts",
+  "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
+  "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
+  "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+  "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+];
+
+const V07_RECOVERY_FILES = [
+  "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-active-claim-reconciliation.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts",
+  "packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts",
+  "packages/agentplane/src/commands/integrate-queue-recovery.test.ts",
+  "packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts",
+];
+
+const V07_HOSTED_FILES = [
+  "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts",
+  "packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts",
+  "packages/agentplane/src/commands/task/hosted-merge-sync.test.ts",
+  "packages/agentplane/src/commands/pr/integrate/cmd.protected-base.test.ts",
+  "packages/agentplane/src/commands/release/apply.push-recovery.test.ts",
+  "packages/agentplane/src/commands/release/apply.apply-flow.test.ts",
+];
+
 export const VITEST_SUITES = {
   "backend-critical": {
     files: BACKEND_CRITICAL_FILES,
@@ -397,6 +466,36 @@ export const VITEST_SUITES = {
     files: WORKFLOW_COVERAGE_FILES,
     maxWorkers: "4",
     pool: "threads",
+  },
+  "v0.7-context": {
+    chunkSize: 8,
+    files: V07_CONTEXT_FILES,
+    maxWorkers: "2",
+    pool: "forks",
+  },
+  "v0.7-hosted": {
+    chunkSize: 4,
+    files: V07_HOSTED_FILES,
+    maxWorkers: "2",
+    pool: "forks",
+  },
+  "v0.7-lifecycle": {
+    chunkSize: 6,
+    files: V07_LIFECYCLE_FILES,
+    maxWorkers: "2",
+    pool: "forks",
+  },
+  "v0.7-recovery": {
+    chunkSize: 6,
+    files: V07_RECOVERY_FILES,
+    maxWorkers: "2",
+    pool: "forks",
+  },
+  "v0.7-supervisor": {
+    chunkSize: 6,
+    files: V07_SUPERVISOR_FILES,
+    maxWorkers: "2",
+    pool: "forks",
   },
 };
 
