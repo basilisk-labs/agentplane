@@ -3,7 +3,7 @@ import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { decodeEscapedTaskTextNewlines } from "./shared/docs.js";
 
 export const TASK_DOC_VERSION_V3 = 3;
-export const PLANNER_SEMANTIC_PLAN_PLACEHOLDER =
+const PLANNER_SEMANTIC_PLAN_PLACEHOLDER =
   "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.";
 const LEGACY_TASK_DOC_SYNTHETIC_PLAN =
   /^1\. Implement the change for "[^\n]*"\.\n2\. Run required checks and capture verification evidence\.\n3\. Finalize task findings and finish with traceable commit metadata\.$/u;
