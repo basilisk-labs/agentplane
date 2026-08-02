@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608021231-SHYJGK-5a90afaac197de2518387a5f",
+  "task_id": "202608021231-SHYJGK",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Rebuild the evaluator work order with the existing exact-SHA deterministic check outputs and matched-latency artifact included as frozen evidence, including raw samples and hosted-check results; no implementation change is indicated by the current evidence gap.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen evidence asserts exact-SHA success but contains no deterministic check records, runtime evidence, raw latency samples, or hosted-check results from which the evaluator can validate the required correctness and performance gates.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175451650-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7e5160e2399462393d306f491b8661fdb8d97367571486132a4dc4d3c7ca5b83",
+          "section": "verification_records, runner_history, and runtime_evidence are empty"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:a11d5c51a719828db9fe6850dc363d3316ea105e494cac4de525e3267a87be88",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175451650-recovery-context/evaluator-result.json"
+}

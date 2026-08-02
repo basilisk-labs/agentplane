@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "high",
+      "summary": "The frozen verification evidence covers SHA bae5543faa00a8425ed46a5cf5c99c7b74338453, but the work order evaluates SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb.",
+      "broken_invariant": "Independent deterministic verification must cover the exact implementation SHA under evaluation before the quality gate can pass.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-175318240-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:3dc5cdd01f7d4ce703a2a8e909e1098f6cb150163848bd4aa2bed0cd227737ae",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:90f3b5d3f555fe14b27fdf04fcbff5fc7511bd410a1ffd7aa1d2cc238e026e72",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and freeze the declared checks and relevant release gates against exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb, including the 20-pair cold and warm matched-latency qualification."
+  ],
+  "hidden_assumptions": [
+    "The changes between the previously verified SHA and the evaluated SHA affect only benchmark evidence and tests and therefore do not require exact-SHA re-verification."
+  ],
+  "recovery_context": "Produce deterministic verification evidence for exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb, then repeat the independent semantic evaluation using the refreshed frozen packet.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

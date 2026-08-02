@@ -1,0 +1,44 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run typecheck",
+    "node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject HEAD --out .agentplane/cache/v0.7.1-matched-cli-latency.json"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T18:07:12.019Z",
+    "updated_by": "TESTER",
+    "note": "Exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb verified with frozen runtime evidence: 4687/4687 full tests, full contract, focused negative/replay checks, and 20-pair cold/warm matched latency all pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021231-SHYJGK/verification/20260802180712019-e9e650940f24de59.json",
+      "sha256": "sha256:7a81c85180422e679d9a542920d446f12c6d079b50e213ea4fc79e3324b078fd"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/v071-shyjgk/ci-contract.log",
+      "sha256": "sha256:e791a72e2e2ea65b81d1812d945130f0fd41ad36f36b98cb766265b7b080cb12"
+    },
+    {
+      "path": ".agentplane/cache/v071-shyjgk/ci-test.log",
+      "sha256": "sha256:632f5a355f8bc8488144b4c60891417cef8ce162e01d621a3be4e703f66f0d93"
+    },
+    {
+      "path": ".agentplane/cache/v071-shyjgk/focused-and-replay.log",
+      "sha256": "sha256:b99d26dfef541721efb2c519520d3a10c4a7cfb8db37e240442fa7154863ac66"
+    },
+    {
+      "path": ".agentplane/cache/v071-shyjgk/matched-cli-latency.json",
+      "sha256": "sha256:60a8cc947e85e8bc95d607109b4817c7300b5b8cef69ad97736ec791bdc8cf59"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

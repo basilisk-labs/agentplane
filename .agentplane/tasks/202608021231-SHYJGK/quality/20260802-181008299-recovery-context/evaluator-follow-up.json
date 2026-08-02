@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021231-SHYJGK-b90c53afed4c1f0c617ce584",
+  "task_id": "202608021231-SHYJGK",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Separate the unrelated task-document and dependency-graph mutations from this implementation patch, or provide frozen evidence that classifies them as intentional task-owned drift and records explicit re-approval; then rerun exact-SHA verification on the resulting patch.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The evaluated patch includes four unrelated task definitions and changes another task's dependency graph, but the frozen evidence contains no drift classification or re-approval for those repository mutations.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-181008299-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:dbae8bf2b1c3cd27743a3a077569e2e0e62e262e1e0348af08b26641393132b6",
+          "line": 1
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:62307d2e1f60ba1429e63851369ae703d5903d1952ad97b9fcca39e04fafc66f",
+          "section": "Scope"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-181008299-recovery-context/evaluator-result.json"
+}

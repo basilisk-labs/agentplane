@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021231-SHYJGK-b90c53afed4c1f0c617ce584",
+  "prepared_at": "2026-08-02T18:07:34.029Z",
+  "task": {
+    "id": "202608021231-SHYJGK",
+    "revision": 12,
+    "objective": "Remove the v0.7.1 matched CLI latency regression\n\nProfile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject HEAD --out .agentplane/cache/v0.7.1-matched-cli-latency.json",
+      "- In scope: Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness.\n- Out of scope: unrelated refactors not required for \"Remove the v0.7.1 matched CLI latency regression\".",
+      "1. Freeze the v0.6.24 and current v0.7.1 matched CLI setup and time-to-verified baselines with warm and cold repetitions, separating harness cost from provider cost.\n2. Repair the five reproducible full-suite defects discovered during supervisor qualification: update stale interactive-init answer fixtures and resolve the sibling-task worktree expectation against the minimal-context product contract.\n3. Profile the deterministic task advance/task run hot path and remove redundant filesystem, route, schema, and process work until matched setup overhead returns to the accepted baseline without weakening fingerprints, authority, evidence, recovery, or evaluator separation.\n4. Add a release E2E/full-suite gate and regression thresholds for median, p95, verified success, scope violations, token usage, and packet size.\n5. Run exact-SHA deterministic verification, independent EVALUATOR review, hosted checks, and branch_pr integration.",
+      "1. Run the focused interactive-init and branch worktree runtime tests with no retry. Expected: all previously reproduced failures pass and assertions match the current evaluator-skepticism and minimal-context contracts.\n2. Run bun run ci:test with the normal release configuration. Expected: every maintained test file and test passes; the replay-security test also passes in isolation without relying on a retry.\n3. Run the matched CLI latency harness with at least 20 warm and 20 cold repetitions per candidate and baseline. Expected: deterministic setup median is no slower than the accepted v0.6.24 baseline, p95 is within 10%, and time-to-verified does not regress after excluding provider variance.\n4. Run v0.7 supervisor, lifecycle, recovery, product-contract, efficiency-evidence, test:critical, typecheck, workflow coverage, ci:contract, task-state, doctor, and policy routing gates. Expected: all pass while verified success, scope, token, packet-size, and lifecycle-ownership invariants remain at least as strong as the current candidate.\n5. Run an independent EVALUATOR review against the exact implementation SHA, then require all hosted checks before integration."
+    ]
+  },
+  "evaluated_sha": "cf1dfbb106f0c46ec549aecceef60b4f5fe203eb",
+  "diff_base_sha": "91c5b9011c34bcd4328ed79bf05c3cd0cc44585b",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+      "sha256": "sha256:62307d2e1f60ba1429e63851369ae703d5903d1952ad97b9fcca39e04fafc66f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-180734029-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:dbae8bf2b1c3cd27743a3a077569e2e0e62e262e1e0348af08b26641393132b6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-180734029-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:57182ffa1acda5f9d89047b35852d0f0d1da5d03d9447f7b976fcefd7d1cc370",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/verification/20260802180712019-e9e650940f24de59.json",
+      "sha256": "sha256:7a81c85180422e679d9a542920d446f12c6d079b50e213ea4fc79e3324b078fd",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/v071-shyjgk/ci-contract.log",
+      "sha256": "sha256:e791a72e2e2ea65b81d1812d945130f0fd41ad36f36b98cb766265b7b080cb12",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-2",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/v071-shyjgk/ci-test.log",
+      "sha256": "sha256:632f5a355f8bc8488144b4c60891417cef8ce162e01d621a3be4e703f66f0d93",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-3",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/v071-shyjgk/focused-and-replay.log",
+      "sha256": "sha256:b99d26dfef541721efb2c519520d3a10c4a7cfb8db37e240442fa7154863ac66",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-4",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/v071-shyjgk/matched-cli-latency.json",
+      "sha256": "sha256:60a8cc947e85e8bc95d607109b4817c7300b5b8cef69ad97736ec791bdc8cf59",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-180734029-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:03b3e226e750f78e08d9fb469b25925faba72e7ad15dd7caa1368528f86cc091",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

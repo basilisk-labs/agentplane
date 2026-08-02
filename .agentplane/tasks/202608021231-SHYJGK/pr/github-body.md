@@ -19,9 +19,9 @@ Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtur
 - Note:
 
 ```text
-Exact implementation SHA bae5543faa00a8425ed46a5cf5c99c7b74338453 verified: ci:test 4687/4687,
-ci:contract, critical/lifecycle/supervisor/recovery/workflow/doctor/task-state gates, isolated
-replay-security 10/10, npm and Bun packed smokes, and interleaved 20-run matched latency all pass.
+Exact SHA cf1dfbb106f0c46ec549aecceef60b4f5fe203eb verified with frozen runtime evidence: 4687/4687
+full tests, full contract, focused negative/replay checks, and 20-pair cold/warm matched latency all
+pass.
 ```
 - Canonical workflow state lives in the task README.
 
