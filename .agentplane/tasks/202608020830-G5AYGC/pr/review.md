@@ -24,12 +24,15 @@ Created: 2026-08-02T08:31:33.846Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T08:31:33.846Z
+- Updated: 2026-08-02T08:31:59.635Z
 - Branch: task/202608020830-G5AYGC/disambiguate-release-evidence-task-selection
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607221854-XV67TD/README.md    | 54 +++++++++++++++++++---
+ .../release/release-task-evidence-script.test.ts   | 26 +++++++++--
+ scripts/release/release-task-evidence.mjs          | 19 +++++++-
+ 3 files changed, 88 insertions(+), 11 deletions(-)
 ```
 
 </details>

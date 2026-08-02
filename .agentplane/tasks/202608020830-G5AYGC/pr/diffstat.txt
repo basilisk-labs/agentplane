@@ -1,0 +1,4 @@
+ .agentplane/tasks/202607221854-XV67TD/README.md    | 54 +++++++++++++++++++---
+ .../release/release-task-evidence-script.test.ts   | 26 +++++++++--
+ scripts/release/release-task-evidence.mjs          | 19 +++++++-
+ 3 files changed, 88 insertions(+), 11 deletions(-)

@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T08:02:14.241Z"
-  updated_by: "TESTER"
-  note: "Fresh typed pre-merge evidence passed at 8338ecabd7cf; exact-SHA publication and postpublish checks remain pending by release design."
+  updated_at: "2026-08-02T08:35:33.305Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.7.0."
   attempts: 0
 quality_review:
   state: "pass"
@@ -112,8 +112,8 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T08:04:11.872Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-08-02T08:35:33.305Z"
+doc_updated_by: "DEUS"
 description: "Integrate the fully verified RF-00 through RF-27 program, run exact release gates on the final main SHA, publish all packages and GitHub release, audit hosted evidence, and confirm post-publish compatibility."
 sections:
   Summary: |-
@@ -252,6 +252,27 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+    ### Hosted publish
+
+    - State: ok
+    - Note: Hosted publish confirmed for v0.7.0.
+    - Details:
+      - release_sha: 9a8c2695c104897b26007a3dada75e37f562a840
+      - version: 0.7.0
+      - tag: v0.7.0
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.0
+      - ghcr: published
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/30739430330
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 2ae08ed63588331b54b35676817f88bf3754b356 | https://github.com/basilisk-labs/homebrew-tap/pull/33
+      - external_scoop: published | basilisk-labs/scoop-bucket | 9a98a27587bbbcce665350d77961be180adffddf | https://github.com/basilisk-labs/scoop-bucket/pull/33
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | ae1aede382c729ece324a11c2efed1f0db5da1c8 | https://github.com/basilisk-labs/setup-agentplane/pull/33
+    <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Before publication, abort the candidate and revert the version/release commit through a new approved task branch.
@@ -409,6 +430,27 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
+### Hosted publish
+
+- State: ok
+- Note: Hosted publish confirmed for v0.7.0.
+- Details:
+  - release_sha: 9a8c2695c104897b26007a3dada75e37f562a840
+  - version: 0.7.0
+  - tag: v0.7.0
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.0
+  - ghcr: published
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/30739430330
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 2ae08ed63588331b54b35676817f88bf3754b356 | https://github.com/basilisk-labs/homebrew-tap/pull/33
+  - external_scoop: published | basilisk-labs/scoop-bucket | 9a98a27587bbbcce665350d77961be180adffddf | https://github.com/basilisk-labs/scoop-bucket/pull/33
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | ae1aede382c729ece324a11c2efed1f0db5da1c8 | https://github.com/basilisk-labs/setup-agentplane/pull/33
+<!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

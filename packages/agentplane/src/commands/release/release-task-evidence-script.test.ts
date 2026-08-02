@@ -109,6 +109,7 @@ async function writeTaskReadme(
       },
       verification: {
         state: verificationState,
+        attempts: 2,
         updated_at: null,
         updated_by: null,
         note: null,
@@ -175,6 +176,18 @@ function buildPublishResult(success = true) {
       npmSmoke: { passed: true, outcome: "success" },
       tag: { ensured: true, outcome: "success", existed: false },
       githubRelease: { created: true, outcome: "success" },
+      ghcr: { published: true, outcome: "success" },
+    },
+    external: {
+      modules: [
+        {
+          name: "homebrew",
+          repository: "basilisk-labs/homebrew-tap",
+          status: "published",
+          prUrl: "https://github.com/basilisk-labs/homebrew-tap/pull/33",
+          verification: { sha: "2ae08ed63588331b54b35676817f88bf3754b356" },
+        },
+      ],
     },
     failures: [],
     job: {
@@ -327,7 +340,7 @@ describe("release-task-evidence script", () => {
     expect(payload.task_id).toBe(taskId);
   }, 60_000);
 
-  it("prefers the unique version-matched release task over an unrelated task changed by the publish SHA", async () => {
+  it("ignores a version-matched code task that only carries release tags", async () => {
     const root = await initRepo();
     const releaseTaskId = "202604191130-RELEASE";
     await writeTaskReadme(root, releaseTaskId, {
@@ -338,8 +351,10 @@ describe("release-task-evidence script", () => {
     });
     await commitAll(root, "merge release task");
     await writeTaskReadme(root, "202604191131-UNRELATED", {
-      title: "Close unrelated task",
-      tags: ["maintenance"],
+      title: "Enforce v0.3.15 release dependency closure",
+      tags: ["release", "v0.3.15"],
+      taskKind: "code",
+      mutationScope: "code",
     });
     const releaseSha = await commitAll(root, "close unrelated task before publish");
     const publishResultPath = await writePublishResult(root, buildPublishResult(true));
@@ -485,6 +500,11 @@ describe("release-task-evidence script", () => {
     expect(updated).toContain(
       "publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/24628440381",
     );
+    expect(updated).toContain("ghcr: published");
+    expect(updated).toContain(
+      "external_homebrew: published | basilisk-labs/homebrew-tap | 2ae08ed63588331b54b35676817f88bf3754b356 | https://github.com/basilisk-labs/homebrew-tap/pull/33",
+    );
+    expect(updated).toContain("attempts: 2");
     expect(updated).toContain('updated_by: "DEUS"');
     expect(updated).toContain('state: "ok"');
 
