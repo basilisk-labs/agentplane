@@ -50,7 +50,7 @@ export const taskCompleteSpec: CommandSpec<TaskCompleteParsed> = {
       name: "by",
       valueHint: "<id>",
       default: "CODER",
-      description: "Verifier id.",
+      description: "Compatibility actor id; used for PR guidance and unsafe-override audit history.",
     },
     {
       kind: "string",
@@ -136,8 +136,8 @@ export function makeRunTaskCompleteHandler(
           cwd: ctx.cwd,
           rootOverride: ctx.rootOverride,
           taskId: p.taskId,
-          author: "HUMAN",
-          body: "UNSAFE compatibility override: operator accepted a missing AgentPlane-observed runner receipt before task complete route projection.",
+          author: p.by,
+          body: `${p.by} used --accept-unobserved --yes. UNSAFE compatibility override: accepted a missing AgentPlane-observed runner receipt before task complete route projection.`,
           quiet: true,
         });
       }

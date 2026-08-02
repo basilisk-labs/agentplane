@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021534-YN84E1-44f949b7ecf71bd7ad9d79e8",
+  "task_id": "202608021534-YN84E1",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Attribute explicit task begin plans to PLANNER rather than HUMAN unless a separately authenticated human provenance channel exists.\nRecognize both legacy synthetic default-plan templates and enforce the planning episode even if legacy plan_approval is already approved.\nExercise the normal missing-receipt rejection before the explicit unsafe compatibility path.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "task begin --plan records updated_by=HUMAN even though the CLI cannot prove the caller is human; this fabricates provenance on an agent-accessible compatibility path.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "summary": "The planning guard recognizes only the new exact placeholder, so an unapproved or previously approved legacy synthetic default plan can bypass the new semantic PLANNER boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-result.json"
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "task begin --plan records updated_by=HUMAN even though the CLI cannot prove the caller is human; this fabricates provenance on an agent-accessible compatibility path.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The planning guard recognizes only the new exact placeholder, so an unapproved or previously approved legacy synthetic default plan can bypass the new semantic PLANNER boundary.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a fail-closed assertion for task complete with verification and quality review but no AgentPlane-observed runner receipt before exercising the unsafe override."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes all open tasks were created after the placeholder migration."
+  ],
+  "recovery_context": "Attribute explicit task begin plans to PLANNER rather than HUMAN unless a separately authenticated human provenance channel exists.\nRecognize both legacy synthetic default-plan templates and enforce the planning episode even if legacy plan_approval is already approved.\nExercise the normal missing-receipt rejection before the explicit unsafe compatibility path."
+}
