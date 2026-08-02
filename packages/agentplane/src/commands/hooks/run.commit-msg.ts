@@ -2,13 +2,14 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { readFile } from "node:fs/promises";
 
 import { loadConfig } from "@agentplaneorg/core/config";
-import { GitContext } from "@agentplaneorg/core/git";
+import { GitContext, resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { assertDcoSignoff } from "../guard/impl/dco.js";
 import type { HooksRunOptions } from "./run.js";
+import { resolveHookPolicyStagedPaths } from "./base-sync-policy-paths.js";
 import {
   envFlag,
   inferTaskIdFromCurrentBranch,
@@ -42,6 +43,23 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
+  const git = new GitContext({ gitRoot: resolved.gitRoot });
+  const stagedPaths = await git.statusStagedPaths();
+  const baseBranch =
+    loaded.config.workflow_mode === "branch_pr"
+      ? await resolveBaseBranch({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+          cliBaseOpt: null,
+          mode: loaded.config.workflow_mode,
+        })
+      : null;
+  const policyStagedPaths = await resolveHookPolicyStagedPaths({
+    gitRoot: resolved.gitRoot,
+    workflowMode: loaded.config.workflow_mode,
+    baseBranch,
+    stagedPaths,
+  });
 
   const taskId =
     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
@@ -80,7 +98,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     action: "hook_commit_msg",
     config: loaded.config,
     taskId,
-    git: { stagedPaths: await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths() },
+    git: { stagedPaths: policyStagedPaths },
     commit: {
       subject,
       body: raw,

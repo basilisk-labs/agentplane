@@ -19,6 +19,35 @@ function restoreEnv(name: string, previous: string | undefined): void {
   else process.env[name] = previous;
 }
 
+async function writeDocsTask(root: string, taskId: string): Promise<void> {
+  await mkdir(`${root}/.agentplane/tasks/${taskId}`, { recursive: true });
+  await writeFile(
+    `${root}/.agentplane/tasks/${taskId}/README.md`,
+    [
+      "---",
+      `id: "${taskId}"`,
+      'title: "Documentation task"',
+      'status: "DOING"',
+      'priority: "med"',
+      'owner: "CODER"',
+      "depends_on: []",
+      'tags: ["docs"]',
+      'task_kind: "docs"',
+      'mutation_scope: "docs"',
+      'blueprint_request: "docs.change"',
+      "verify: []",
+      "comments: []",
+      "doc_version: 3",
+      'doc_updated_at: "2026-01-01T00:00:00.000Z"',
+      'doc_updated_by: "CODER"',
+      'description: "Documentation task."',
+      "---",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+}
+
 describe("runCli hooks pre-commit guards", () => {
   it("hooks run pre-commit allows tasks.json with env override", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -460,6 +489,94 @@ describe("runCli hooks pre-commit guards", () => {
     } finally {
       io.restore();
       restoreEnv("AGENTPLANE_ALLOW_TASKS", prev);
+    }
+  });
+
+  it("attributes a configured-base merge to the task-side docs diff", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const otherTaskId = "202601010102-OTHER1";
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeDocsTask(root, taskId);
+    await writeFile(`${root}/README.md`, "base\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/docs-sync`], { cwd: root });
+    await mkdir(`${root}/docs`, { recursive: true });
+    await writeFile(`${root}/docs/guide.mdx`, "# Guide\n", "utf8");
+    await execFileAsync("git", ["add", "docs/guide.mdx"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "docs: add guide"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await mkdir(`${root}/.agentplane/tasks/${otherTaskId}/quality/run`, { recursive: true });
+    await mkdir(`${root}/src`, { recursive: true });
+    await writeFile(
+      `${root}/.agentplane/tasks/${otherTaskId}/quality/run/evaluator-result.json`,
+      "{}\n",
+      "utf8",
+    );
+    await writeFile(`${root}/src/base-fix.ts`, "export const baseFix = true;\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "fix: advance base"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", `task/${taskId}/docs-sync`], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "main"], { cwd: root });
+
+    const messagePath = `${root}/COMMIT_EDITMSG`;
+    await writeFile(
+      messagePath,
+      "🔀 ABCDEF task: sync configured base\n\nSigned-off-by: Test User <test@example.com>\n",
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(0);
+      await expect(
+        runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]),
+      ).resolves.toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("still rejects a task-side implementation diff during a configured-base merge", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeDocsTask(root, taskId);
+    await writeFile(`${root}/README.md`, "base\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/docs-sync`], { cwd: root });
+    await mkdir(`${root}/src`, { recursive: true });
+    await writeFile(`${root}/src/task-change.ts`, "export const taskChange = true;\n", "utf8");
+    await execFileAsync("git", ["add", "src/task-change.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed invalid task change"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await writeFile(`${root}/README.md`, "advanced base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "docs: advance base"], { cwd: root });
+    await execFileAsync("git", ["checkout", `task/${taskId}/docs-sync`], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(5);
+      expect(io.stderr).toContain("src/task-change.ts");
+      expect(io.stderr).not.toContain("README.md");
+    } finally {
+      io.restore();
     }
   });
 });
