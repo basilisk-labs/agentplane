@@ -6,14 +6,14 @@ Created: 2026-08-02T19:28:52.617Z
 
 - Task: `202608021534-YN84E1`
 - Title: Harden the v0.7.1 guided lifecycle and canonical help surface
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021534-YN84E1/harden-the-v0-7-1-guided-lifecycle-and-canonical`
 - Canonical task record: `.agentplane/tasks/202608021534-YN84E1/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, policy routing, v0.7.1 product contract, and critical-cli 77/77 all passed against f4870b156d51.
+- Note: PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

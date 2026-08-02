@@ -1,10 +1,11 @@
 ---
 id: "202608021534-YN84E1"
 title: "Harden the v0.7.1 guided lifecycle and canonical help surface"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -32,39 +33,39 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T20:15:06.679Z"
+  updated_at: "2026-08-02T20:27:03.945Z"
   updated_by: "TESTER"
-  note: "PASS: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, policy routing, v0.7.1 product contract, and critical-cli 77/77 all passed against f4870b156d51."
+  note: "PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T20:18:27.459Z"
+  updated_at: "2026-08-02T20:27:33.758Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "f4870b156d511fa924fb87163340a10ef8f79db6"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "534adaa8862d7e22e360aa21d47199bf4d1802e5"
   blueprint_digest: "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545"
   evidence_refs:
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608021534-YN84E1/README.md"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-201827242-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "task begin --plan records updated_by=HUMAN even though the CLI cannot prove the caller is human; this fabricates provenance on an agent-accessible compatibility path."
-    - "The planning guard recognizes only the new exact placeholder, so an unapproved or previously approved legacy synthetic default plan can bypass the new semantic PLANNER boundary."
+    - "New and legacy synthetic plans, including already-approved legacy state, resolve to the same read-only PLANNER episode before execution."
+    - "Compatibility inputs no longer fabricate HUMAN provenance, and task complete cannot synthesize verification or silently accept a missing observed runner receipt."
+    - "The default help surface is bounded to 11 canonical operations while targeted and --all discovery preserve the complete compatible CLI."
 commit:
-  hash: "f4870b156d511fa924fb87163340a10ef8f79db6"
-  message: "🛡️ YN84E1 code: harden guided lifecycle boundaries"
+  hash: "534adaa8862d7e22e360aa21d47199bf4d1802e5"
+  message: "🛡️ YN84E1 code: close evaluator rework gaps"
 comments:
   -
     author: "CODER"
@@ -72,6 +73,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: guided lifecycle boundaries, canonical help, compatibility ratchet, focused regressions, and v0.7.1 product contract."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: truthful plan provenance, legacy synthetic-plan migration guard, and missing runner-receipt regression."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -93,8 +100,28 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, policy routing, v0.7.1 product contract, and critical-cli 77/77 all passed against f4870b156d51."
+  -
+    type: "status"
+    at: "2026-08-02T20:25:05.714Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: truthful plan provenance, legacy synthetic-plan migration guard, and missing runner-receipt regression."
+  -
+    type: "verify"
+    at: "2026-08-02T20:27:03.945Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed."
+  -
+    type: "status"
+    at: "2026-08-02T20:28:21.412Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T20:15:07.705Z"
+doc_updated_at: "2026-08-02T20:28:21.412Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -147,6 +174,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T20:27:03.945Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:25:05.714Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+    - old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -155,6 +212,10 @@ sections:
     - Observation: Guided lifecycle now preserves the PLANNER semantic boundary, refuses synthetic verification, and exposes 11 canonical top-level help operations.
       Impact: The normal path is fail-closed while the legacy unobserved closeout path is explicit and auditable.
       Resolution: No verification defects or residual gaps found in the approved scope.
+
+    - Observation: Legacy approved synthetic plans now stop at PLANNER; explicit compatibility plans use PLANNER provenance; missing runner receipts fail closed before the audited override.
+      Impact: The evaluator findings are resolved without weakening compatibility or existing gates.
+      Resolution: Fresh verification evidence is bound to implementation SHA 534adaa8862d.
 extensions:
   workflow_route_baseline:
     start_head_sha: "ed94f65a0ff27eaf0b0add2413780630a87e838b"
@@ -219,6 +280,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T20:27:03.945Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T20:25:05.714Z, excerpt_hash=sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-YN84E1-harden-the-v0-7-1-guided-lifecycle-and-canonical/.agentplane/tasks/202608021534-YN84E1/blueprint/resolved-snapshot.json
+- old_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- current_digest: 228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-YN84E1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -231,3 +322,7 @@ DecisionContextRef:
 - Observation: Guided lifecycle now preserves the PLANNER semantic boundary, refuses synthetic verification, and exposes 11 canonical top-level help operations.
   Impact: The normal path is fail-closed while the legacy unobserved closeout path is explicit and auditable.
   Resolution: No verification defects or residual gaps found in the approved scope.
+
+- Observation: Legacy approved synthetic plans now stop at PLANNER; explicit compatibility plans use PLANNER provenance; missing runner receipts fail closed before the audited override.
+  Impact: The evaluator findings are resolved without weakening compatibility or existing gates.
+  Resolution: Fresh verification evidence is bound to implementation SHA 534adaa8862d.
