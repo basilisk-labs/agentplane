@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,31 @@ verification:
   updated_by: "TESTER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 18 tests passed, including configured-base positive and task-side negative cases. Scope: hook path attribution and commit-message policy. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint for repository code. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations and Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance: reproduce the original YMYYQ8 configured-base merge before closing this blocker."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-02T02:06:46.027Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "e0696c7e61bdabf496f895a5a7a9cfc6931525f2"
+  blueprint_digest: "7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c"
+  evidence_refs:
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/README.md"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "A non-base merge is misclassified as a configured-base merge whenever its MERGE_HEAD is any ancestor of the current configured base tip."
 commit: null
 comments:
   -

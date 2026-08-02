@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "A non-base merge is misclassified as a configured-base merge whenever its MERGE_HEAD is any ancestor of the current configured base tip.",
+      "broken_invariant": "Ordinary commits and non-base merges must retain the original staged-path enforcement surface. The implementation checks `gitIsAncestor(mergeHead, baseHead)` instead of establishing that MERGE_HEAD represents the configured-base history being synchronized, so merging a topic commit already reachable from the configured base can replace the staged set with a task-side diff and exclude incoming paths from policy evaluation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6c93008f0e6a0cd451121b5d5ed23ad806269c4191583356dd7fbdbb8bc148f3",
+          "section": "packages/agentplane/src/commands/hooks/base-sync-policy-paths.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/README.md",
+          "sha256": "sha256:c2b2966a434cef33d8700e30ab40559b3bfdd7c9bd573a9bec40c4c7d7258613",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a non-base merge regression where MERGE_HEAD is reachable from the configured base tip; assert that pre-commit and commit-msg preserve the original staged-path set rather than applying base-sync attribution."
+  ],
+  "hidden_assumptions": [
+    "Any single MERGE_HEAD that is an ancestor of the configured base tip is assumed to identify a configured-base merge, although this condition also matches topic or historical commits reachable from that base."
+  ],
+  "recovery_context": "Tighten configured-base merge identification so reachability alone cannot classify non-base merges, then add the missing reachable-topic regression for both hook paths and rerun the declared verification set."
+}
