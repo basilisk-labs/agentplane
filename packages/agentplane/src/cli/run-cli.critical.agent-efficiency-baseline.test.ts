@@ -519,23 +519,23 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "packages/core/package.json",
           "packages/recipes/package.json",
         ]);
-        const releaseSource = {
+        const versionedSource = (version) => ({
           ...baseSource,
-          label: "planned_release_v0.7.0",
+          label: \`planned_release_v\${version}\`,
           readText(relativePath) {
             const text = baseSource.readText(relativePath);
             if (!publishedManifestPaths.has(relativePath)) return text;
             const manifest = JSON.parse(text);
-            manifest.version = "0.7.0";
+            manifest.version = version;
             if (relativePath === "packages/agentplane/package.json") {
-              manifest.dependencies["@agentplaneorg/core"] = "0.7.0";
-              manifest.dependencies["@agentplaneorg/recipes"] = "0.7.0";
+              manifest.dependencies["@agentplaneorg/core"] = version;
+              manifest.dependencies["@agentplaneorg/recipes"] = version;
             }
             return JSON.stringify(manifest);
           },
-        };
-        const before = collectCompatibilitySurface(baseSource);
-        const after = collectCompatibilitySurface(releaseSource);
+        });
+        const before = collectCompatibilitySurface(versionedSource("0.6.24"));
+        const after = collectCompatibilitySurface(versionedSource("0.7.0"));
         const sectionDigests = surfaceSectionDigests(after);
         process.stdout.write(JSON.stringify({
           packageManifestDigest: sectionDigests.package_manifests,
