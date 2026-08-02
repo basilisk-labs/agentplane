@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const COVERAGE_DIMENSIONS = [
@@ -14,6 +14,7 @@ const COVERAGE_DIMENSIONS = [
 
 const TIERS = new Set(["core", "full", "provider"]);
 const RELEASE_DISPOSITIONS = new Set(["block", "advisory"]);
+const TASK_ID_PATTERN = /^\d{12}-[A-Z0-9]{6}$/u;
 
 function assertNonEmptyString(value, label) {
   if (typeof value !== "string" || value.trim().length === 0) {
@@ -33,12 +34,23 @@ function assertStringArray(value, label, options = {}) {
   }
 }
 
-function assertFailureContract(failure, label) {
+function assertFailureContract(failure, label, options = {}) {
   if (!failure || typeof failure !== "object" || Array.isArray(failure)) {
     throw new TypeError(`${label} must be an object`);
   }
   for (const field of ["classification", "impact", "proposed_fix", "owner_task"]) {
     assertNonEmptyString(failure[field], `${label}.${field}`);
+  }
+  if (!TASK_ID_PATTERN.test(failure.owner_task)) {
+    throw new Error(`${label}.owner_task must be an executable AgentPlane task id`);
+  }
+  if (
+    options.repoRoot &&
+    !existsSync(
+      path.join(options.repoRoot, ".agentplane", "tasks", failure.owner_task, "README.md"),
+    )
+  ) {
+    throw new Error(`${label}.owner_task does not exist: ${failure.owner_task}`);
   }
   if (!RELEASE_DISPOSITIONS.has(failure.release_disposition)) {
     throw new Error(`${label}.release_disposition must be block or advisory`);
@@ -69,11 +81,13 @@ export function readQualificationManifest(filePath) {
       `failed to read qualification manifest ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
-  validateQualificationManifest(manifest);
+  validateQualificationManifest(manifest, {
+    repoRoot: path.resolve(path.dirname(filePath), "../.."),
+  });
   return manifest;
 }
 
-export function validateQualificationManifest(manifest) {
+export function validateQualificationManifest(manifest, options = {}) {
   if (!manifest || manifest.schema_version !== 1) {
     throw new Error("qualification manifest must use schema_version=1");
   }
@@ -106,7 +120,7 @@ export function validateQualificationManifest(manifest) {
     if (!Number.isSafeInteger(scenario.timeout_ms) || scenario.timeout_ms < 1000) {
       throw new Error(`${label}.timeout_ms must be an integer >= 1000`);
     }
-    assertFailureContract(scenario.failure, `${label}.failure`);
+    assertFailureContract(scenario.failure, `${label}.failure`, options);
     if (scenario.depends_on !== undefined) {
       assertStringArray(scenario.depends_on, `${label}.depends_on`);
     }
