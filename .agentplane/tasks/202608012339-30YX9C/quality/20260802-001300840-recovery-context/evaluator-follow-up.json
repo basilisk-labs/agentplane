@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608012339-30YX9C-70595eba4da5d680886e9879",
+  "task_id": "202608012339-30YX9C",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet from a committed task work unit so it includes the actual patch and deterministic check records tied to that commit; then rerun semantic evaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Semantic evaluation cannot proceed because the frozen diff contains no committed task work unit, while the observed-checks artifact contains no verification records, runner history, or runtime evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:991a2e65beadd74b29a5cf13a6eea0786446c22272bc321aa9d255396c54e352",
+          "line": 1,
+          "lines": "1"
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b38aabc6f5c2abd20cf51e23386ed367cf5ac1fe14e914893216e7b6576ba224",
+          "line": 14,
+          "lines": "14-17"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-result.json"
+}

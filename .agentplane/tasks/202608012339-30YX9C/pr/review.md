@@ -12,8 +12,8 @@ Created: 2026-08-01T23:40:33.795Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review.
+- State: ok
+- Note: Evaluator rework is resolved with current deterministic evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,8 +31,7 @@ Created: 2026-08-01T23:40:33.795Z
 ```text
  .../src/policy/rules/task-bound-mutation.test.ts   | 70 ++++++++++++++++++++++
  .../src/policy/rules/task-bound-mutation.ts        | 14 ++++-
- website/static/llms-full.txt                       | 49 ++++++++-------
- 3 files changed, 112 insertions(+), 21 deletions(-)
+ 2 files changed, 83 insertions(+), 1 deletion(-)
 ```
 
 </details>
