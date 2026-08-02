@@ -19,8 +19,8 @@ Fix qualification packet generation so lifecycle-only changes to the qualificati
 - Note:
 
 ```text
-Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift
-enforcement pass all declared gates.
+Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing
+command records; no implementation change.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -13,7 +13,7 @@ Created: 2026-08-02T04:39:09.970Z
 ## Verification
 
 - State: ok
-- Note: Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates.
+- Note: Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

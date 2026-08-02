@@ -4,7 +4,7 @@ title: "Allow qualification packets to ignore root lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T05:00:24.844Z"
+  updated_at: "2026-08-02T05:02:52.866Z"
   updated_by: "TESTER"
-  note: "Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates."
+  note: "Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -98,8 +98,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates."
+  -
+    type: "verify"
+    at: "2026-08-02T05:02:52.866Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change."
 doc_version: 3
-doc_updated_at: "2026-08-02T05:00:25.910Z"
+doc_updated_at: "2026-08-02T05:02:53.926Z"
 doc_updated_by: "CODER"
 description: "Fix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior."
 sections:
@@ -177,6 +183,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T05:02:52.866Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T05:00:25.910Z, excerpt_hash=sha256:8df2fb2790522e59ea2abcf3cfb4a53d0b96cd65634636512bac1675a35005df
+
+    Details:
+
+    Command: bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-qualification-packet.test.ts src/commands/shared/quality-review-target.test.ts
+    Result: pass
+    Evidence: 2 test files passed; 24 tests passed, including lifecycle drift acceptance plus root dependency and body drift rejection.
+    Scope: qualification packet root pinning and shared lifecycle comparator
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript native 7.0.2 build completed with exit code 0.
+    Scope: workspace compile-time contract
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: repository policy gateway routing
+
+    Command: ap doctor
+    Result: pass
+    Evidence: doctor OK with zero errors; warnings are pre-existing historical task metadata findings.
+    Scope: workflow runtime, workspace, branch_pr drift, runtime source, blueprints, and prompt graph
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli completed 12 of 12 chunks with all tests passing.
+    Scope: release-critical CLI safety and trust-boundary regression suite
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, policy routing, compatibility, RF-04 baselines, lifecycle, TypeScript toolchain, architecture, clone, knip, and coverage thresholds all passed.
+    Scope: full repository contract gate
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020432-CCE1A2-allow-qualification-packets-to-ignore-root-lifec/.agentplane/tasks/202608020432-CCE1A2/blueprint/resolved-snapshot.json
+    - old_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+    - current_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020432-CCE1A2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608020432-CCE1A2
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -281,6 +347,66 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T05:02:52.866Z — VERIFY — ok
+
+By: TESTER
+
+Note: Refreshed deterministic verification evidence for a728b1134 with six machine-readable passing command records; no implementation change.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T05:00:25.910Z, excerpt_hash=sha256:8df2fb2790522e59ea2abcf3cfb4a53d0b96cd65634636512bac1675a35005df
+
+Details:
+
+Command: bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-qualification-packet.test.ts src/commands/shared/quality-review-target.test.ts
+Result: pass
+Evidence: 2 test files passed; 24 tests passed, including lifecycle drift acceptance plus root dependency and body drift rejection.
+Scope: qualification packet root pinning and shared lifecycle comparator
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript native 7.0.2 build completed with exit code 0.
+Scope: workspace compile-time contract
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: repository policy gateway routing
+
+Command: ap doctor
+Result: pass
+Evidence: doctor OK with zero errors; warnings are pre-existing historical task metadata findings.
+Scope: workflow runtime, workspace, branch_pr drift, runtime source, blueprints, and prompt graph
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli completed 12 of 12 chunks with all tests passing.
+Scope: release-critical CLI safety and trust-boundary regression suite
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, policy routing, compatibility, RF-04 baselines, lifecycle, TypeScript toolchain, architecture, clone, knip, and coverage thresholds all passed.
+Scope: full repository contract gate
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020432-CCE1A2-allow-qualification-packets-to-ignore-root-lifec/.agentplane/tasks/202608020432-CCE1A2/blueprint/resolved-snapshot.json
+- old_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+- current_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020432-CCE1A2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608020432-CCE1A2
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
