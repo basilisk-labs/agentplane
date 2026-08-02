@@ -1,0 +1,33 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck",
+    "node scripts/qualification/check-v0.7.1-product-contract.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T14:22:45.910Z",
+    "updated_by": "TESTER",
+    "note": "Fresh SHA-bound deterministic evidence recorded for implementation 06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021231-PZGG3V/verification/20260802142245910-4f7c9e0ade2b77be.json",
+      "sha256": "sha256:0f15844879f6672925ca4d7faf286a86fa9bf8c26d3d274312274868ec21b40e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/task-verification/202608021231-PZGG3V/06582bde1138360f789c18399c86df20279bafee-checks.json",
+      "sha256": "sha256:e07c53861d81848f5cf3541c34adbdc0cb594d8fceee5a9fcd1f48a56ac6cc0b"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
