@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b7d664f1ecd6a37e82e6ed5f626da501b80c0a8af947d55b4ad1c66c0c9da4b6",
+  "implementation_sha": "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7",
+  "kind": "task_verification_record",
+  "note": "Verified documentation and migration package after evaluator rework: standalone bun run docs:site:generate:check passed with generated reference and llms-full both fresh; agentplane doctor completed OK with 0 errors. Previously recorded gates remain green: docs:cli:check, schemas:check, docs:ia:check, policy routing, typescript:toolchain:check, 90 focused contract/supervisor/work-order/receipt tests, docs:site:check including production build/design, docs:social:check 221/221, package:install-smoke migration matrix 8 scenarios plus local tarball smoke, format:check and git diff checks.",
+  "recorded_at": "2026-08-02T02:36:43.747Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Follow the migration guide on clean and 0.6.24 direct/branch_pr fixtures. Expected: commands and outcomes match the automated matrix.\n2. Compare every contract field/version/deprecation claim to generated schema/runtime metadata. Expected: no hand-authored drift.\n3. Validate direct/context/branch_pr diagrams against supervisor operation fixtures. Expected: CLI-owned mechanics and agent-owned semantics are explicit.\n4. Run generated site/CLI checks, full site check, link/IA checks, and policy routing.",
+  "scope_digest": "sha256:60405b8a0ca51b616614fb64ce1c6ff9f6290d31c75fbf503925769beeaaea59",
+  "task_id": "202607221854-YMYYQ8",
+  "verification_command": "agentplane verify 202607221854-YMYYQ8 --ok --by TESTER",
+  "verifier": "TESTER"
+}
