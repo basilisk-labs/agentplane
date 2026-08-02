@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Post-publication acceptance remains intentionally pending and must not be inferred from the pre-merge verification result.",
+      "broken_invariant": "The release contract requires exact-SHA publication evidence, postpublish audit, published-package smoke testing, hosted readback, and final clean main state before the release task is finished.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-XV67TD/README.md",
+          "sha256": "sha256:143c822cc07a04e1482a743d2eefacf2aab492fbd3a1531b5b2343658748fc39",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-XV67TD/verification/20260802080214241-8c93d70756a4d19a.json",
+          "sha256": "sha256:ca01c99f792bb4aee2c78876f93c4be31bfd6d296a3d9dd6305e151d4e2ca47a"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-XV67TD/quality/20260802-080239365-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:0fea5e56c32187ceac9433069d232ca07834802cfcbf0b884fbe515b715fafad",
+          "section": "requiredEvidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "After protected-main publication, run bun run release:postpublish:audit and bun run release:smoke:published against the exact published SHA, then record npm, GitHub release/tag/workflow, hosted-close, origin/main, local-main, and clean-state readback."
+  ],
+  "hidden_assumptions": [
+    "The protected publication workflow will publish exactly evaluated SHA 8338ecabd7cf0d16f30c135c4c5a1258bc21936c without version, tag, package, or provenance drift.",
+    "The four ap doctor warnings classified as historical remain non-release-blocking through integration and final readback."
+  ]
+}

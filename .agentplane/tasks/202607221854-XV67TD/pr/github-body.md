@@ -15,8 +15,13 @@ Integrate the fully verified RF-00 through RF-27 program, run exact release gate
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Fresh typed pre-merge evidence passed at 8338ecabd7cf; exact-SHA publication and postpublish checks
+remain pending by release design.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

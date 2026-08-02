@@ -6,14 +6,14 @@ Created: 2026-08-02T06:25:59.862Z
 
 - Task: `202607221854-XV67TD`
 - Title: Prepare and publish AgentPlane 0.7.0
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221854-XV67TD/prepare-and-publish-agentplane-0-7-0`
 - Canonical task record: `.agentplane/tasks/202607221854-XV67TD/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Fresh typed pre-merge evidence passed at 8338ecabd7cf; exact-SHA publication and postpublish checks remain pending by release design.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

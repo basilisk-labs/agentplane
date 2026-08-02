@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run release:prepublish\nResult: pass\nEvidence: exit_code=0 at implementation SHA 8338ecabd7cf0d16f30c135c4c5a1258bc21936c; release-ci-base=99/99 chunks; workflow coverage=50/50; significant coverage=204/204; release-critical=16/16; compatibility=approved release_version; RF-04 replay=50 runs and 70/70 outcomes; local tarball migration=8/8\nScope: Exact pre-merge v0.7.0 release candidate; all local contract, test, coverage, package, docs, migration, architecture, and release gates without skips\n\nCommand: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nResult: pass\nEvidence: 9/9 tests passed, including exact 0.6.24 to 0.7.0 manifest reconstruction\nScope: Compatibility-delta regression on both pre-version and already-versioned worktrees at 8338ecabd7cf0d16f30c135c4c5a1258bc21936c\n\nCommand: ap doctor\nResult: pass\nEvidence: doctor OK; errors=0; warnings=4, all pre-existing historical task-projection findings and none release-blocking\nScope: Current task worktree and repo-local AgentPlane 0.7.0 runtime\n\nCommand: git status --short --untracked-files=all\nResult: pass\nEvidence: Only current task lifecycle, verification, PR metadata, and evaluator artifacts are present; no unintended product, release, or generated artifact changes\nScope: Task worktree after deterministic pre-merge verification",
+  "digest": "sha256:8c93d70756a4d19ab7d22b4d1df5683fe9a7b82a8e889da9dd6b8d5e8fe1dc3e",
+  "implementation_sha": "8338ecabd7cf0d16f30c135c4c5a1258bc21936c",
+  "kind": "task_verification_record",
+  "note": "Fresh typed pre-merge evidence passed at 8338ecabd7cf; exact-SHA publication and postpublish checks remain pending by release design.",
+  "recorded_at": "2026-08-02T08:02:14.241Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun run release:prepublish` on the exact candidate SHA. Expected: all contract, test, coverage, package, docs, migration, architecture, and release gates pass with no skip.\n2. Publish through the authorized workflow. Expected: package versions, provenance, tag, GitHub Release, and workflow SHA are identical.\n3. Run `bun run release:postpublish:audit` and `bun run release:smoke:published`. Expected: every public distribution surface and installed 0.7 flow passes.\n4. Read back npm metadata, GitHub release/workflow, merged task PRs, hosted close, `origin/main`, and local main. Expected: complete traceable evidence and no version/SHA drift.\n5. Run `ap doctor` and final tracked/untracked status. Expected: no release-blocking warning or unintended artifact.",
+  "scope_digest": "sha256:ee7bb88825c6d5e7d50bd918e72b3c83e0d65178f8129aca1f3d08348dae12c8",
+  "task_id": "202607221854-XV67TD",
+  "verification_command": "agentplane verify 202607221854-XV67TD --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-XV67TD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T08:03:23.930Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8338ecabd7cf0d16f30c135c4c5a1258bc21936c",
+  "blueprint_digest": "0ef0f1e3df4e10da3b921bca013da9fd289d8b7e1c0c5c3df150396bb9764b38",
+  "findings": [
+    "Post-publication acceptance remains intentionally pending and must not be inferred from the pre-merge verification result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-XV67TD/README.md",
+    ".agentplane/tasks/202607221854-XV67TD/verification/20260802080214241-8c93d70756a4d19a.json",
+    ".agentplane/tasks/202607221854-XV67TD/quality/20260802-080239365-recovery-context/evaluator-blueprint.json"
+  ],
+  "missing_tests": [
+    "After protected-main publication, run bun run release:postpublish:audit and bun run release:smoke:published against the exact published SHA, then record npm, GitHub release/tag/workflow, hosted-close, origin/main, local-main, and clean-state readback."
+  ],
+  "hidden_assumptions": [
+    "The protected publication workflow will publish exactly evaluated SHA 8338ecabd7cf0d16f30c135c4c5a1258bc21936c without version, tag, package, or provenance drift.",
+    "The four ap doctor warnings classified as historical remain non-release-blocking through integration and final readback."
+  ],
+  "residual_risks": []
+}

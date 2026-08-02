@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "ap doctor",
+    "bun run release:postpublish:audit",
+    "bun run release:prepublish",
+    "bun run release:smoke:published"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T08:02:14.241Z",
+    "updated_by": "TESTER",
+    "note": "Fresh typed pre-merge evidence passed at 8338ecabd7cf; exact-SHA publication and postpublish checks remain pending by release design."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221854-XV67TD/verification/20260802080214241-8c93d70756a4d19a.json",
+      "sha256": "sha256:ca01c99f792bb4aee2c78876f93c4be31bfd6d296a3d9dd6305e151d4e2ca47a"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

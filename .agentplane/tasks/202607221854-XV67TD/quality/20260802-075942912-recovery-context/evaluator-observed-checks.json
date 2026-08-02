@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "ap doctor",
+    "bun run release:postpublish:audit",
+    "bun run release:prepublish",
+    "bun run release:smoke:published"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T07:59:16.907Z",
+    "updated_by": "TESTER",
+    "note": "Pre-merge v0.7.0 candidate verification passed at 8338ecabd7cf; hosted publication and postpublish audit remain pending by release design."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
