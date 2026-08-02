@@ -2,10 +2,10 @@
 id: "202608020016-TDXFVT"
 title: "Preserve evaluator work units across base-sync merges"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -28,27 +28,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T00:54:20.283Z"
+  updated_at: "2026-08-02T01:15:39.644Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "18f931a3bb4bdf599bf6e5ab589460f10510f4e1"
+  evaluated_sha: "8f0f28419421fa9de757752da254ad18ec30b705"
   blueprint_digest: "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c"
   evidence_refs:
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608020016-TDXFVT/README.md"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/verification/20260802005336501-6914f4bfb8b34e78.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/verification/20260802011410132-1089fd5c4c9a8c97.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-blueprint.json"
   findings:
-    - "No contract-breaking issue was found; merge-aware target selection preserves semantic task work while rejecting managed-artifact-only and lifecycle-only merge deltas."
+    - "No contract-breaking divergence found: branch_pr target resolution recognizes configured-base sync merges, preserves the semantic task diff and SHA-bound verification record, and excludes managed-artifact-only, lifecycle-only, and non-base merge cases."
 commit:
-  hash: "8f0f28419421fa9de757752da254ad18ec30b705"
-  message: "🐛 TDXFVT evaluator: restrict merge-aware review to base sync"
+  hash: "52df16cccb2bd87d3d2e063ec8241d19f151d9e7"
+  message: "🧪 TDXFVT task: record configured-base review verification"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: restrict merge-aware review to the configured base and preserve the prior review across unrelated lifecycle merges."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -161,8 +164,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate."
+  -
+    type: "status"
+    at: "2026-08-02T01:16:58.910Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T01:14:10.990Z"
+doc_updated_at: "2026-08-02T01:16:58.910Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr evaluator packet preparation so a merge of current main into a task branch preserves the committed task work unit, actual diff, and matching verification records instead of freezing an empty packet. Add focused regression coverage for merge-aware target selection."
 sections:
@@ -481,6 +491,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "8f0f28419421fa9de757752da254ad18ec30b705"
+    message: "🐛 TDXFVT evaluator: restrict merge-aware review to base sync"
   workflow_route_baseline:
     start_head_sha: "5d4a8de1a96bc29e13012ce01bfc65661ff5fa19"
     version: 1
