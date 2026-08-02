@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-rc.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -38,16 +38,21 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-02T05:39:38.630Z"
+  updated_by: "TESTER"
+  note: "0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json."
   attempts: 0
-commit: null
+commit:
+  hash: "fb473719873ac29f6bdf54a31736370b14a8fff4"
+  message: "🔀 83Y4AF task: sync qualification packet fix"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: synchronized main qualification-packet lifecycle-drift fix; branch evidence remains ready for TESTER verification."
 events:
   -
     type: "status"
@@ -56,9 +61,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-02T05:19:06.939Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: synchronized main qualification-packet lifecycle-drift fix; branch evidence remains ready for TESTER verification."
+  -
+    type: "verify"
+    at: "2026-08-02T05:39:38.630Z"
+    author: "TESTER"
+    state: "ok"
+    note: "0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:50:12.223Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-08-02T05:39:40.496Z"
+doc_updated_by: "CODER"
 description: "Run the executable fan-in gate for 0.7.0-rc.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
   Summary: |-
@@ -81,12 +99,85 @@ sections:
     4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-02T05:39:38.630Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: 0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T05:19:06.939Z, excerpt_hash=sha256:2384710ecc9f75e27c368f5ff4db8cd9450219ccd9d72e160f3a93c28d9bf52b
+
+    Details:
+
+    Command: dependency closure audit for 202607221908-83Y4AF
+    Result: pass
+    Evidence: 70/70 transitive dependencies are DONE with verification ok, quality pass, and main lineage; 5/5 leaves are ancestors; 11/11 direct dependency PRs are MERGED; rc2-qualification.v1.json
+    Scope: complete 0.7.0-rc.2 dependency fan-in and hosted-close lineage
+
+    Command: bun test packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+    Result: pass
+    Evidence: 6/6 tests and 40 assertions passed; lifecycle-only root drift is accepted while dependency and arbitrary body drift remain rejected
+    Scope: deterministic qualification-packet regression and flake classification
+
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: tasks=3205 release_closure=72
+    Scope: canonical task registry and release closure
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: shared guards OK; trust-boundary reviewed violations=0
+    Scope: shared guards and trust-boundary safety
+
+    Command: bun run arch:check
+    Result: pass
+    Evidence: dependency-cruiser known violations=0 and no dependency violations found
+    Scope: package and command architecture boundaries
+
+    Command: bun run bench:agent-efficiency:check and bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: 10 RF-04 scenarios and 10 measured cost metrics; replay 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells
+    Scope: frozen structural, token-accounting, verified-success, rework, and safety metrics
+
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: release-ci-base 99/99 chunks; installed migration matrix 8 scenarios; workflow coverage 50/50; significant coverage 204/204; release-critical 16/16
+    Scope: complete local release contract for reviewed SHA fb4737198
+
+    Command: 0.7.0-rc.2 publication decision review
+    Result: pass
+    Evidence: qualified_unpublished; no external integration consumer requires rc.2; evidence-only task forbids unplanned version or registry mutation while remaining 0.7 waves are open
+    Scope: optional prerelease decision and stable 0.7.0 release boundary
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-83Y4AF-qualify-the-agentplane-0-7-0-rc-2-milestone/.agentplane/tasks/202607221908-83Y4AF/blueprint/resolved-snapshot.json
+    - old_digest: e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d
+    - current_digest: e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-83Y4AF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221908-83Y4AF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Do not mutate product state during qualification beyond evidence artifacts.
     - If a prerelease was not published, revert only the gate evidence through its task branch.
     - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
-  Findings: ""
+  Findings: |-
+    - Observation: The first verification attempt exposed that qualification packet pinning treated root task lifecycle drift as product drift.
+      Impact: A valid rc.2 milestone could not be qualified after ordinary task lifecycle updates, while loosening the wrong comparison could have hidden dependency declaration drift.
+      Resolution: Merged the lifecycle-only root comparison fix from main, retained exact reviewed-SHA pinning for dependencies and evidence, added negative regression tests, and reran the complete release gate on fb4737198.
 extensions:
   workflow_route_baseline:
     start_head_sha: "443f1c6ee9e1b520ee19b33a276e4eec99237f4b"
@@ -122,6 +213,76 @@ Run the executable fan-in gate for 0.7.0-rc.2, prove every included leaf is DONE
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-02T05:39:38.630Z — VERIFY — ok
+
+By: TESTER
+
+Note: 0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T05:19:06.939Z, excerpt_hash=sha256:2384710ecc9f75e27c368f5ff4db8cd9450219ccd9d72e160f3a93c28d9bf52b
+
+Details:
+
+Command: dependency closure audit for 202607221908-83Y4AF
+Result: pass
+Evidence: 70/70 transitive dependencies are DONE with verification ok, quality pass, and main lineage; 5/5 leaves are ancestors; 11/11 direct dependency PRs are MERGED; rc2-qualification.v1.json
+Scope: complete 0.7.0-rc.2 dependency fan-in and hosted-close lineage
+
+Command: bun test packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+Result: pass
+Evidence: 6/6 tests and 40 assertions passed; lifecycle-only root drift is accepted while dependency and arbitrary body drift remain rejected
+Scope: deterministic qualification-packet regression and flake classification
+
+Command: bun run task-state:check
+Result: pass
+Evidence: tasks=3205 release_closure=72
+Scope: canonical task registry and release closure
+
+Command: bun run guards:check
+Result: pass
+Evidence: shared guards OK; trust-boundary reviewed violations=0
+Scope: shared guards and trust-boundary safety
+
+Command: bun run arch:check
+Result: pass
+Evidence: dependency-cruiser known violations=0 and no dependency violations found
+Scope: package and command architecture boundaries
+
+Command: bun run bench:agent-efficiency:check and bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: 10 RF-04 scenarios and 10 measured cost metrics; replay 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells
+Scope: frozen structural, token-accounting, verified-success, rework, and safety metrics
+
+Command: bun run release:prepublish
+Result: pass
+Evidence: release-ci-base 99/99 chunks; installed migration matrix 8 scenarios; workflow coverage 50/50; significant coverage 204/204; release-critical 16/16
+Scope: complete local release contract for reviewed SHA fb4737198
+
+Command: 0.7.0-rc.2 publication decision review
+Result: pass
+Evidence: qualified_unpublished; no external integration consumer requires rc.2; evidence-only task forbids unplanned version or registry mutation while remaining 0.7 waves are open
+Scope: optional prerelease decision and stable 0.7.0 release boundary
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-83Y4AF-qualify-the-agentplane-0-7-0-rc-2-milestone/.agentplane/tasks/202607221908-83Y4AF/blueprint/resolved-snapshot.json
+- old_digest: e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d
+- current_digest: e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-83Y4AF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221908-83Y4AF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -131,3 +292,7 @@ Run the executable fan-in gate for 0.7.0-rc.2, prove every included leaf is DONE
 - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
 
 ## Findings
+
+- Observation: The first verification attempt exposed that qualification packet pinning treated root task lifecycle drift as product drift.
+  Impact: A valid rc.2 milestone could not be qualified after ordinary task lifecycle updates, while loosening the wrong comparison could have hidden dependency declaration drift.
+  Resolution: Merged the lifecycle-only root comparison fix from main, retained exact reviewed-SHA pinning for dependencies and evidence, added negative regression tests, and reran the complete release gate on fb4737198.
