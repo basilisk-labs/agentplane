@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e7bd5ad6a42c890c6bb030cbda7043c753223e7441b3405e4d80752ea9c70168",
   "pr_number": 4743,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4743",
+  "pre_merge_closure": {
+    "basis_commit": "1bcc70fd3dc92a1e7ddf21bd899d5e218639af75",
+    "branch": "task/202608021125-DR7J1E/build-the-v0-7-1-end-to-end-release-qualificatio",
+    "pr_number": 4743,
+    "recorded_at": "2026-08-02T13:08:41.745Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608021125-DR7J1E",

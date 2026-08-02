@@ -1,10 +1,11 @@
 ---
 id: "202608021125-DR7J1E"
 title: "Build the v0.7.1 end-to-end release qualification suite"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -65,8 +66,8 @@ quality_review:
   findings:
     - "The qualification harness satisfies the approved recovery-context contract at the exact evaluated revision: deterministic local matrices pass, expected product and performance failures remain fail-closed and classified, and each blocker has a distinct executable owner task."
 commit:
-  hash: "5881186a69c595777e39496e1e4899ef45011d8c"
-  message: "🧪 DR7J1E task: refine qualification verification"
+  hash: "1bcc70fd3dc92a1e7ddf21bd899d5e218639af75"
+  message: "🧪 DR7J1E task: record qualification approval"
 comments:
   -
     author: "TESTER"
@@ -77,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Rework completed: separated harness acceptance from final release acceptance, preserved fail-closed product and performance gates, and added the interleaved published-0.6.26 matched latency scenario to the full profile."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -129,9 +133,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Qualification harness verified against exact clean implementation SHA 81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and each observed blocker has an executable owner."
+  -
+    type: "status"
+    at: "2026-08-02T13:08:41.691Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T13:06:48.123Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-02T13:08:41.691Z"
+doc_updated_by: "TESTER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
   Summary: |-
@@ -456,6 +467,9 @@ sections:
       Impact: Without frozen declared checks, semantic review cannot associate results with the evaluated implementation revision.
       Resolution: Recorded eight executable verification commands in task metadata and this exact-revision verification record before rerunning EVALUATOR.
 extensions:
+  implementation_commit:
+    hash: "81d9e5f433d4ee95dda12e2d521ff8499822fd98"
+    message: "🧪 DR7J1E task: fix qualification identity lint"
   workflow_route_baseline:
     start_head_sha: "6e8723251676578cedc8ef8d53b76e3da06833f6"
     version: 1
