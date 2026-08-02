@@ -1,1 +1,1 @@
-🚧 30YX9C task: Allow documentation tasks to commit canonical site artifacts [202608012339-30YX9C]
+✅ 30YX9C task: Allow documentation tasks to commit canonical site artifacts [202608012339-30YX9C]

@@ -1,10 +1,11 @@
 ---
 id: "202608012339-30YX9C"
 title: "Allow documentation tasks to commit canonical site artifacts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -30,33 +31,33 @@ verification:
   note: "Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T00:13:55.995Z"
+  updated_at: "2026-08-02T01:33:38.461Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
-  evaluated_sha: null
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "b7baf5024e6a29d69ca138fd73e57fda5e098da4"
   blueprint_digest: "c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e"
   evidence_refs:
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608012339-30YX9C/README.md"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-001300840-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608012339-30YX9C/verification/20260802013225586-2d97c0b14f1aeca4.json"
+    - ".agentplane/tasks/202608012339-30YX9C/quality/20260802-013309005-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Semantic evaluation cannot proceed because the frozen diff contains no committed task work unit, while the observed-checks artifact contains no verification records, runner history, or runtime evidence."
+    - "The frozen diff is limited to the intended path-classification rule and focused tests; current verification is bound to the evaluated SHA and covers positive and negative policy boundaries after base synchronization."
 commit:
-  hash: "b7baf5024e6a29d69ca138fd73e57fda5e098da4"
-  message: "🔀 30YX9C task: sync main after evaluator fix"
+  hash: "c68afe086691bc6b0d1a217e8b66ad959e00cab1"
+  message: "🧪 30YX9C task: record merge-aware verification"
 comments:
   -
     author: "CODER"
@@ -70,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: resynchronize with main after the merge-aware evaluator fix and bind fresh verification to the current base-sync commit."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -123,8 +127,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates."
+  -
+    type: "status"
+    at: "2026-08-02T01:34:47.823Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T01:32:26.413Z"
+doc_updated_at: "2026-08-02T01:34:47.823Z"
 doc_updated_by: "CODER"
 description: "Treat Docusaurus documentation navigation and generated social-card artifacts as documentation paths so docs.change tasks can satisfy the full site gate without bypassing task-bound mutation policy."
 sections:
@@ -349,6 +360,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "b7baf5024e6a29d69ca138fd73e57fda5e098da4"
+    message: "🔀 30YX9C task: sync main after evaluator fix"
   workflow_route_baseline:
     start_head_sha: "5319bbdeecb05adc2c436e4039f5046a5bfeb89a"
     version: 1

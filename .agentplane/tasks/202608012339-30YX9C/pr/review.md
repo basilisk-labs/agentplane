@@ -6,7 +6,7 @@ Created: 2026-08-01T23:40:33.795Z
 
 - Task: `202608012339-30YX9C`
 - Title: Allow documentation tasks to commit canonical site artifacts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608012339-30YX9C/allow-documentation-tasks-to-commit-canonical-si`
 - Canonical task record: `.agentplane/tasks/202608012339-30YX9C/README.md`
 
