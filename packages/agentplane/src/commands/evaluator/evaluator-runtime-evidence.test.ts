@@ -390,6 +390,94 @@ describe("evaluator runtime evidence", () => {
     expect(prepared.work_order.evaluated_sha).toBe(sourceSha);
   });
 
+  it("freezes the task diff and verification record after a branch_pr base-sync merge", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV25";
+    await addTask(root, taskId);
+    await commitTaskArtifacts(root, taskId, "docs: establish task state");
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", baseBranch], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/fixture`], { cwd: root });
+    await commitPath(root, "src/evaluated.ts");
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    const otherTaskId = "202605240900-ABCD";
+    await addTask(root, otherTaskId);
+    await commitTaskArtifacts(root, otherTaskId, "docs: advance unrelated base task");
+    await execFileAsync("git", ["checkout", `task/${taskId}/fixture`], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
+      cwd: root,
+    });
+    const { stdout: mergeShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const mergeSha = mergeShaOutput.trim();
+
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    command.config.workflow_mode = "branch_pr";
+    const taskRoot = path.join(root, `.agentplane/tasks/${taskId}`);
+    await mkdir(path.join(taskRoot, "pr"), { recursive: true });
+    await writeFile(
+      path.join(taskRoot, "pr", "meta.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: taskId,
+        branch: `task/${taskId}/fixture`,
+        base: baseBranch,
+        created_at: "2026-05-24T09:00:00.000Z",
+        updated_at: "2026-05-24T09:00:00.000Z",
+        status: "OPEN",
+      })}\n`,
+      "utf8",
+    );
+    await cmdVerifyParsed({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      state: "ok",
+      by: "TESTER",
+      note: "Base-sync merge verification passed.",
+      details:
+        "Command: bunx vitest run evaluator-runtime-evidence.test.ts\nResult: pass\nEvidence: base-sync merge fixture passed\nScope: merge-aware branch_pr semantic review target",
+      quiet: true,
+    });
+
+    const verificationRecord = await readVerificationRecord(root, taskId);
+    expect(verificationRecord.implementation_sha).toBe(mergeSha);
+    const task = await loadTaskFromContext({ ctx: command, taskId });
+    const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+    const evaluator = catalog.find((entry) => entry.id === "recovery-context");
+    if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
+    const prepared = await prepareEvaluatorReview({
+      ctx: command,
+      task,
+      evaluator,
+      provenance: "evaluator_supplied",
+    });
+    expect(prepared.work_order.evaluated_sha).toBe(mergeSha);
+    const actualDiff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
+    if (!actualDiff) throw new Error("Missing frozen actual diff.");
+    const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
+    expect(frozenDiff).toContain("src/evaluated.ts");
+    expect(frozenDiff).not.toContain(otherTaskId);
+    const observedEvidence = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    );
+    if (!observedEvidence) throw new Error("Missing observed checks evidence.");
+    const observed = JSON.parse(
+      await readFile(path.join(root, observedEvidence.path), "utf8"),
+    ) as Record<string, unknown>;
+    expect(observed.verification_records).toEqual([
+      expect.objectContaining({ path: expect.stringContaining("/verification/") }),
+    ]);
+  });
+
   it("keeps verification frozen across the complete pre-merge closure artifact sequence", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

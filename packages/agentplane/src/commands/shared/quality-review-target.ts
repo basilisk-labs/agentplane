@@ -269,6 +269,49 @@ export async function isAuthorityOnlyTaskReadmeAdvance(opts: {
   return true;
 }
 
+async function hasReviewableChangesAgainstMergeParent(opts: {
+  gitRoot: string;
+  parent: string;
+  current: string;
+  changed: readonly string[];
+  workflowArtifactPrefix: string;
+  lifecycleTaskIdSet: ReadonlySet<string>;
+  taskIdForPath: (name: string) => string | null;
+  taskRelativePath: (name: string) => string | null;
+}): Promise<boolean> {
+  if (opts.changed.some((name) => !name.startsWith(opts.workflowArtifactPrefix))) return true;
+
+  const currentTaskChanges = opts.changed.filter((name) => opts.taskRelativePath(name) !== null);
+  if (currentTaskChanges.length === 0) return false;
+  const taskReadmeAdvance = {
+    gitRoot: opts.gitRoot,
+    parent: opts.parent,
+    current: opts.current,
+    changed: currentTaskChanges,
+    taskRelativePath: opts.taskRelativePath,
+  };
+  if (
+    (await isAuthorityOnlyTaskReadmeAdvance(taskReadmeAdvance)) ||
+    (await isImplementationReceiptTaskReadmeAdvance(taskReadmeAdvance)) ||
+    (currentTaskChanges.every((name) => {
+      const taskId = opts.taskIdForPath(name);
+      return taskId !== null && opts.lifecycleTaskIdSet.has(taskId);
+    }) &&
+      (await isLifecycleOnlyTaskReadmeAdvance(taskReadmeAdvance)))
+  ) {
+    return false;
+  }
+
+  const relativePaths = currentTaskChanges.flatMap((name) => {
+    const relativePath = opts.taskRelativePath(name);
+    return relativePath === null ? [] : [relativePath];
+  });
+  return !(
+    relativePaths.some((name) => isDerivedTaskArtifact(name)) &&
+    relativePaths.every((name) => isManagedTaskArtifact(name))
+  );
+}
+
 /**
  * Resolve the commit that must be covered by a semantic quality review.
  *
@@ -321,6 +364,25 @@ export async function resolveQualityReviewTargetSha(opts: {
   for (;;) {
     if (current === previousEvaluatedSha) {
       return currentTaskArtifactHead ?? current;
+    }
+
+    const mergeParent = await gitRevParse(opts.gitRoot, [`${current}^2`]).catch(() => null);
+    if (mergeParent) {
+      const changedAgainstMergeParent = await gitDiffNames(opts.gitRoot, mergeParent, current);
+      if (
+        await hasReviewableChangesAgainstMergeParent({
+          gitRoot: opts.gitRoot,
+          parent: mergeParent,
+          current,
+          changed: changedAgainstMergeParent,
+          workflowArtifactPrefix,
+          lifecycleTaskIdSet,
+          taskIdForPath,
+          taskRelativePath,
+        })
+      ) {
+        return currentTaskArtifactHead ?? current;
+      }
     }
 
     let parent: string;
