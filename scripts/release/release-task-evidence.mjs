@@ -141,8 +141,7 @@ async function resolveReleaseTaskIdsFromRegistry(manifest) {
       : [];
     const releaseMarked =
       String(frontmatter.task_kind ?? "").toLowerCase() === "release" ||
-      String(frontmatter.mutation_scope ?? "").toLowerCase() === "release" ||
-      tags.some((tag) => tag.toLowerCase() === "release");
+      String(frontmatter.mutation_scope ?? "").toLowerCase() === "release";
     if (!releaseMarked) continue;
     const releaseRefs = [frontmatter.title, frontmatter.description, ...tags]
       .map((value) => String(value ?? "").trim())
@@ -454,8 +453,23 @@ function renderHostedPublishEvidence(manifest, repo) {
     `  - github_release: ${manifest.checks.githubRelease.created ? "created" : manifest.checks.githubRelease.outcome}`,
     `  - release_url: ${releaseUrl}`,
   ];
+  if (manifest.checks?.ghcr) {
+    lines.push(
+      `  - ghcr: ${manifest.checks.ghcr.published ? "published" : manifest.checks.ghcr.outcome}`,
+    );
+  }
   if (publishRunUrl) {
     lines.push(`  - publish_run: ${publishRunUrl}`);
+  }
+  for (const module of manifest.external?.modules ?? []) {
+    const name = String(module.name ?? "external")
+      .trim()
+      .replaceAll(/[^0-9A-Za-z_-]+/gu, "-");
+    const details = [module.status];
+    if (module.repository) details.push(module.repository);
+    if (module.verification?.sha) details.push(module.verification.sha);
+    if (module.prUrl) details.push(module.prUrl);
+    lines.push(`  - external_${name}: ${details.filter(Boolean).join(" | ")}`);
   }
   lines.push(HOSTED_PUBLISH_EVIDENCE_END);
   return lines.join("\n");
@@ -519,6 +533,7 @@ async function runApply(argv) {
   const nextFrontmatter = {
     ...parsed.frontmatter,
     verification: {
+      ...parsed.frontmatter.verification,
       state: "ok",
       updated_at: at,
       updated_by: args.author,

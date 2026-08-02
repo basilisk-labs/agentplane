@@ -4,7 +4,7 @@ title: "Disambiguate release evidence task selection"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -39,7 +39,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-02T08:31:33.718Z"
+doc_updated_at: "2026-08-02T08:40:44.827Z"
 doc_updated_by: "CODER"
 description: "Fix post-publish evidence discovery so code tasks tagged release are not treated as release tasks; add regression coverage and record the authoritative v0.7.0 publish result on task 202607221854-XV67TD."
 sections:
@@ -67,7 +67,12 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: release-task-evidence treated any DONE task tagged release as a release task, so code task 202607221908-PWFH5K made v0.7.0 discovery ambiguous.
+      Impact: The publish workflow skipped its optional task-evidence follow-up even though publish-result remained authoritative and all release channels succeeded.
+      Resolution: Require semantic task_kind=release or mutation_scope=release, cover the tag-only code-task regression, preserve verification attempts, and record GHCR plus external distribution evidence.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
 extensions:
   workflow_route_baseline:
     start_head_sha: "9a8c2695c104897b26007a3dada75e37f562a840"
@@ -111,3 +116,9 @@ Fix post-publish evidence discovery so code tasks tagged release are not treated
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: release-task-evidence treated any DONE task tagged release as a release task, so code task 202607221908-PWFH5K made v0.7.0 discovery ambiguous.
+  Impact: The publish workflow skipped its optional task-evidence follow-up even though publish-result remained authoritative and all release channels succeeded.
+  Resolution: Require semantic task_kind=release or mutation_scope=release, cover the tag-only code-task regression, preserve verification attempts, and record GHCR plus external distribution evidence.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
