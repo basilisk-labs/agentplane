@@ -8,10 +8,10 @@
   "pr_number": 4745,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4745",
   "pre_merge_closure": {
-    "basis_commit": "9ee3a9f001e98203acd80f5ac8826599ea940678",
+    "basis_commit": "4274c2c92ddf366eda81ba214db8ae37abf20073",
     "branch": "task/202608021231-SHYJGK/remove-the-v0-7-1-matched-cli-latency-regression",
     "pr_number": 4745,
-    "recorded_at": "2026-08-02T18:47:09.674Z",
+    "recorded_at": "2026-08-02T19:03:55.239Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

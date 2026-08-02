@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -54,8 +54,8 @@ quality_review:
   findings:
     - "The evaluated SHA changes only the cross-platform evaluator test fixture relative to the previously benchmarked production implementation; the frozen task record documents exact-SHA regression coverage and continued applicability of the production latency and contract evidence."
 commit:
-  hash: "9ee3a9f001e98203acd80f5ac8826599ea940678"
-  message: "🛡️ SHYJGK code: prefer current tracked base"
+  hash: "4274c2c92ddf366eda81ba214db8ae37abf20073"
+  message: "🧩 SHYJGK task: record refreshed evaluator pass"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -140,8 +143,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract."
+  -
+    type: "status"
+    at: "2026-08-02T19:03:55.193Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T18:58:31.626Z"
+doc_updated_at: "2026-08-02T19:03:55.194Z"
 doc_updated_by: "CODER"
 description: "Profile the packed v0.7.1 candidate against published 0.6.26 on identical fixtures and remove duplicated startup, repository, task-index, and context preparation work until every release-gated command has a non-regressing interleaved median without weakening correctness."
 sections:
@@ -545,6 +555,9 @@ sections:
       Impact: The exact implementation SHA is independently covered by deterministic correctness, architecture, compatibility, negative release-threshold, and performance evidence.
       Resolution: Record exact-SHA verification and return the task to independent EVALUATOR review.
 extensions:
+  implementation_commit:
+    hash: "8947e7cb10cd5c2e84433c66b3a08a80adf8f35c"
+    message: "🧪 SHYJGK code: make evaluator fixture branch-agnostic"
   workflow_route_baseline:
     start_head_sha: "902c828daa257e8411d54a56d8b52055e4d5f03f"
     version: 1
