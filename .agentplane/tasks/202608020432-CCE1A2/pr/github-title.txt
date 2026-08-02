@@ -1,1 +1,1 @@
-🚧 CCE1A2 task: Allow qualification packets to ignore root lifecycle drift [202608020432-CCE1A2]
+✅ CCE1A2 task: Allow qualification packets to ignore root lifecycle drift [202608020432-CCE1A2]
