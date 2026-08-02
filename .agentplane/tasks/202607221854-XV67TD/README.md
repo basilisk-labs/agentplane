@@ -1,10 +1,10 @@
 ---
 id: "202607221854-XV67TD"
 title: "Prepare and publish AgentPlane 0.7.0"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,9 +28,9 @@ verify:
   - "bun run release:prepublish"
   - "bun run release:smoke:published"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-02T06:25:27.001Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -39,11 +39,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-02T06:25:59.743Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:54:40.299Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-08-02T06:25:59.743Z"
+doc_updated_by: "INTEGRATOR"
 description: "Integrate the fully verified RF-00 through RF-27 program, run exact release gates on the final main SHA, publish all packages and GitHub release, audit hosted evidence, and confirm post-publish compatibility."
 sections:
   Summary: |-
@@ -73,6 +83,10 @@ sections:
     - After any package is public, do not overwrite it; stop, record exact partial-publication evidence, and follow the release recovery path with a new patch version.
     - Preserve all hosted evidence and never rewrite published tags or package versions.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "1c4f6b2e3d5103e1f62c71c104c5c615061eb4b4"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
