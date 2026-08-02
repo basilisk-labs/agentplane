@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -56,8 +56,8 @@ quality_review:
   findings:
     - "A non-base merge is misclassified as a configured-base merge whenever its MERGE_HEAD is any ancestor of the current configured base tip."
 commit:
-  hash: "a8d26f7da58a3bd9d52b5cb43ce4703521cb7a6e"
-  message: "🐛 VMBX4H workflow: require exact base tip for sync"
+  hash: "97ccd56e30db87970246b331fee2a48ec074aaf3"
+  message: "🧪 VMBX4H workflow: satisfy topic regression lint"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: require MERGE_HEAD to equal the configured base tip and cover a reachable non-base topic merge in both hooks."
+  -
+    author: "CODER"
+    body: "Rework complete: exact-base identity enforced; reachable-topic regression now passes for pre-commit and commit-msg and satisfies lint."
 events:
   -
     type: "status"
@@ -102,8 +105,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework: require MERGE_HEAD to equal the configured base tip and cover a reachable non-base topic merge in both hooks."
+  -
+    type: "status"
+    at: "2026-08-02T02:12:19.045Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework complete: exact-base identity enforced; reachable-topic regression now passes for pre-commit and commit-msg and satisfies lint."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:09:48.351Z"
+doc_updated_at: "2026-08-02T02:12:19.045Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
