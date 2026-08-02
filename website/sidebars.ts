@@ -49,6 +49,7 @@ const sidebars: SidebarsConfig = {
         "start/first-local-run",
         "start/what-agentplane-writes",
         "user/setup",
+        "user/v0-7-migration",
         "user/prerequisites",
       ],
     },

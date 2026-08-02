@@ -1677,6 +1677,14 @@
       "svgSha256": "e6f696bd8617bda3d1686eb1e03d0ac09d6086f53f2bb04d9a133b18a0757dd6"
     },
     {
+      "route": "/docs/user/v0-7-migration",
+      "output": "static/img/social/docs/user/v0-7-migration.png",
+      "section": "User",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "Migrate to Agentplane 0.7",
+      "svgSha256": "71669289bf1ecfe0161a2322c713bc0cb877a6bfad9e90f9da4817c70f8e9ad4"
+    },
+    {
       "route": "/docs/user/website-ia",
       "output": "static/img/social/docs/user/website-ia.png",
       "section": "User",

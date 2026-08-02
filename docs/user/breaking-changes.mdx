@@ -10,6 +10,9 @@ Current Agentplane repositories are driven by the Node CLI `agentplane` with rep
 
 ## Current compatibility boundaries
 
+For the complete 0.6.24/0.6.26 migration and rollback procedure, see
+[Migrate to Agentplane 0.7](v0-7-migration).
+
 1. Repository state lives under `.agentplane/`; root-level legacy workflow files are not read as
    fallbacks.
 2. Initialization and framework upgrades run through `agentplane init` and `agentplane upgrade`.
@@ -20,13 +23,23 @@ Current Agentplane repositories are driven by the Node CLI `agentplane` with rep
 5. `direct` remains supported, but protected-base repositories should use hosted PR merge and
    hosted close automation for `branch_pr` work.
 6. Redmine backend configuration is env-first for credentials and field IDs.
+7. New semantic episodes require `AgentWorkOrder` v2 and return `AgentSemanticResult` v2. The CLI
+   writes observed facts into a separate `ExecutionReceipt` v2.
+8. Workflow v1 remains readable during the compatibility window, but supported writers persist v2.
+9. Historical 0.6.24 task-local run artifacts are read-only compatibility input. New runs use
+   supervisor-owned storage and do not reuse the legacy write location.
+10. `evaluator execute` is the model-backed review path. `evaluator run` remains an explicit
+    compatibility recorder and requires supplied provenance.
 
 ## Upgrade checklist
 
-1. Install or update the CLI and run `agentplane upgrade`.
-2. Run `agentplane doctor`.
-3. If doctor reports active task README migration drift, run `agentplane task migrate-doc --all`.
-4. Regenerate generated docs only when command specs changed.
+1. Install the exact intended CLI version and confirm it with `agentplane runtime explain`.
+2. Run `agentplane upgrade --dry-run`, then `agentplane upgrade --yes --migrate-task-docs`.
+3. Re-run the dry run and require `0 add, 0 update, 0 remove`.
+4. Run `agentplane doctor`.
+5. Resume active branch work with `agentplane work resume <task-id>` instead of creating a new
+   worktree.
+6. Regenerate generated docs only when command specs changed.
 
 ## Notes
 

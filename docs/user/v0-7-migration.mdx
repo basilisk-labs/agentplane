@@ -1,0 +1,200 @@
+---
+title: "Migrate to Agentplane 0.7"
+description: "Upgrade fresh, 0.6.24, and 0.6.26 repositories without losing task, workflow, worktree, or rollback state."
+---
+
+# Migrate to Agentplane 0.7
+
+Agentplane 0.7 changes who owns orchestration, not who owns semantic decisions. The CLI now prepares
+bounded work, checks current state, supervises configured runner episodes, observes results, and
+applies allowed lifecycle operations. PLANNER, CURATOR, EXECUTOR, and EVALUATOR roles still own
+interpretation, design, implementation, synthesis, and quality judgment.
+
+This guide covers the migration surface exercised by the installed-package matrix:
+
+| Starting state    | Covered workflows       | Preserved state                                                                     |
+| ----------------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| Fresh repository  | `direct`, `branch_pr`   | Workflow v2 and task README v3 are created directly.                                |
+| Agentplane 0.6.24 | `direct`, `branch_pr`   | Active task status, owner, route, task branch, and existing worktree are preserved. |
+| Agentplane 0.6.26 | `direct`, `branch_pr`   | The latest 0.6 maintenance fixes and active lifecycle state are preserved.          |
+| Workflow v1       | `direct`, `branch_pr`   | Migration is idempotent and the receipt can restore exact source bytes.             |
+| Task README v2    | `direct` matrix fixture | `upgrade --migrate-task-docs` produces README v3 without losing the legacy body.    |
+
+The matrix deliberately upgrades active tasks. You do not need to finish or abandon current work
+before upgrading.
+
+## Before upgrading
+
+1. Commit or otherwise preserve every tracked change you intend to keep.
+2. Record the current branch and all linked worktrees.
+3. Install the exact 0.7 version you intend to test. Do not use an unpinned prerelease in CI.
+4. Confirm which binary the repository will execute.
+
+```bash
+git status --short --untracked-files=all
+git worktree list
+npm install --global agentplane@0.7.0
+agentplane runtime explain
+```
+
+For a prerelease, replace `0.7.0` with its exact published identifier.
+
+## Upgrade the repository
+
+Run the upgrade from the repository's base checkout, not from a linked task worktree:
+
+```bash
+agentplane upgrade --dry-run
+agentplane upgrade --yes --migrate-task-docs
+agentplane upgrade --dry-run
+agentplane doctor
+```
+
+Expected result:
+
+- the first dry run reports the managed changes without writing them;
+- apply updates managed framework assets and migrates eligible task documents;
+- the second dry run reports `0 add, 0 update, 0 remove`;
+- `doctor` reports no blocking error.
+
+Review and commit the managed upgrade as one repository change. If the second dry run is not a
+no-op, stop and inspect the reported paths instead of repeatedly applying the upgrade.
+
+## Resume an active direct task
+
+After the base upgrade, ask the route oracle for one current action:
+
+```bash
+agentplane task brief <task-id>
+agentplane task next-action <task-id> --explain
+```
+
+If a configured runner owns execution, `agentplane task run <task-id>` supervises the typed route.
+If an external coding agent owns execution, give it the brief and run the exact command emitted by
+`next-action`; recompute the route after every completed mutation. Both paths use the same task,
+fingerprint, authority, and evidence contracts.
+
+For a migrated README v2 task, confirm that the task is still `DOING`, its owner is unchanged, and
+the document now reports `doc_version: 3`.
+
+## Resume an active branch_pr task
+
+Do not create a second branch or worktree. Resolve the existing authoritative checkout first:
+
+```bash
+agentplane work resume <task-id>
+agentplane task brief <task-id>
+agentplane task next-action <task-id> --explain --remote
+```
+
+Run owner-scoped work from the path printed by `work resume` or `task brief`. The migration matrix
+asserts that resume keeps the original task worktree count unchanged. PR metadata, hosted checks,
+and provider truth are loaded only when the route requests remote state.
+
+## Migrate Workflow v1
+
+The 0.7 runtime can read Workflow v1 during the compatibility window, but supported writers emit
+Workflow v2. Migrate explicitly so recovery remains auditable:
+
+```bash
+agentplane workflow migrate --dry-run
+agentplane workflow migrate
+agentplane doctor
+```
+
+Re-running `agentplane workflow migrate` on the result is a no-op. The apply command writes a
+receipt under `.agentplane/workflows/migrations/`. To restore the exact original bytes:
+
+```bash
+agentplane workflow migrate \
+  --rollback .agentplane/workflows/migrations/workflow-v1-to-v2-<digest>.json
+```
+
+Rollback refuses to overwrite a workflow whose current hash no longer matches the receipt target.
+See [Workflow migration and recovery](workflow-migration) for the full transaction boundary.
+
+## Contract versions in 0.7
+
+These versions are generated from runtime schemas; they are not independent documentation types:
+
+| Contract              | Current write/invocation version | Compatibility boundary                                                                                 |
+| --------------------- | -------------------------------: | ------------------------------------------------------------------------------------------------------ |
+| Workflow document     |                                2 | Version 1 remains readable and has exact-byte receipt migration.                                       |
+| Task README           |                                3 | Version 2 is migrated only through the explicit task-doc migration path.                               |
+| `StateFingerprint`    |                                1 | A stale or unavailable required component blocks invocation.                                           |
+| `KnowledgeRef`        |                                1 | References existing repo-owned context; it does not copy a second knowledge base into the run.         |
+| `AgentWorkOrder`      |                                2 | New agent episodes require v2; the v1 surface is retained for deterministic compatibility conversion.  |
+| `AgentSemanticResult` |                                2 | The agent reports semantic status, findings, uncertainty, blockers, requests, and claimed checks only. |
+| `ExecutionReceipt`    |                                2 | New supervisor observations use v2; the validator can read historical v1 receipts.                     |
+| Typed `WorkflowStep`  |                                1 | CLI argv is a compatibility projection, not the internal orchestration protocol.                       |
+
+Canonical JSON Schemas live under `schemas/`. `AgentWorkOrder` binds one role and objective to a
+task revision, state fingerprint, authority, prepared evidence, required inputs and outputs,
+verification intent, semantic-result schema, and stop rules. `ExecutionReceipt` is separately
+written by Agentplane from process, Git, filesystem, artifact, and check observations. An agent's
+`claimed_checks` never become observed checks merely because the schema accepted them.
+
+## Behavior changes and compatibility surfaces
+
+- `task brief` and `task next-action --explain` are the route authority. Agents should not rebuild
+  lifecycle state from policy prose or combine several guessed commands.
+- `task run` can supervise both `direct` and `branch_pr` tasks. It stops on typed approval, human
+  input, wait, rework, or blocked results instead of fabricating progress.
+- External side effects require an authority record bound to the operation digest and current state
+  scope. Plan approval, PR publication, merge, release, and deployment are not inferred from model
+  output.
+- `evaluator execute` runs one read-only EVALUATOR episode and applies a validated result.
+  `evaluator run` remains a compatibility recorder for an independently supplied human or evaluator
+  verdict; it does not execute a model.
+- New runner artifacts use supervisor-owned Git administration storage. Historical 0.6.24
+  task-local run artifacts remain readable when no safe supervisor artifact shadows them, but new
+  runs are never created in the legacy location.
+- Context ingestion keeps the existing repo-owned LLM-wiki. A CURATOR produces the semantic
+  extraction result; `context supervise-task` owns transactional apply, lint, indexing, checks,
+  evaluation, and resumable mechanical completion.
+- Preparation-cache prototypes were rejected because safe candidates did not meet the measured
+  five-percent end-to-end threshold. Mutable task, Git, provider, authority, policy, and semantic
+  truth remain live instead of being served from a speculative cache.
+
+## Recovery and rollback
+
+Use the smallest recovery surface that still preserves truth:
+
+1. `agentplane runtime explain` proves which CLI is active.
+2. `agentplane doctor` reports project, workflow, task-document, and runtime drift.
+3. `agentplane task next-action <task-id> --explain --remote` resolves task and hosted route state.
+4. `agentplane work resume <task-id>` recovers an existing branch_pr checkout without duplicating it.
+5. `agentplane task run status|inspect <task-id>` distinguishes active, terminal, legacy, and
+   reconcile-required supervisor state.
+6. `agentplane task run reconcile <task-id>` is allowed only for a stale, provably reconcilable
+   owner; it never signals a persisted PID.
+7. Revert the committed managed-upgrade change if repository assets must return to 0.6. Do not mix
+   a partial file restore with a 0.7 runtime.
+
+Never overwrite a published prerelease tag or package. Route a release defect through a new version.
+
+## Maintainer compiler change
+
+The framework checkout uses pinned native TypeScript 7.0.2 for `bun run typecheck`. ESLint,
+dependency analysis, and scripts that consume the compiler API remain pinned to TypeScript 6.0.3.
+Neither compiler is a runtime dependency of the published packages. The immediate diagnostic
+rollback is:
+
+```bash
+AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck
+```
+
+This split is intentional: the measured typecheck improvement is retained without forcing compiler
+API consumers onto an incompatible implementation.
+
+## Final acceptance
+
+After migration, all of these must hold:
+
+- the second upgrade dry run is a no-op;
+- `agentplane doctor` passes;
+- every active task retains identity, status, owner, and route;
+- `task brief --json` and `task next-action --json` emit a typed task/action;
+- `branch_pr` resume finds exactly one existing worktree;
+- Workflow v1 rollback restores exact source bytes when exercised;
+- installed-package smoke and the repository's own checks pass before release or merge.

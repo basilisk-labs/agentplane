@@ -17,6 +17,22 @@ bun run typecheck
 bun run test:fast
 ```
 
+## TypeScript 7 typecheck boundary
+
+`bun run typecheck` uses the pinned native TypeScript 7.0.2 compiler through
+`scripts/checks/run-typescript-build.mjs`. The `typescript` package remains pinned to 6.0.3 for
+typescript-eslint, dependency-cruiser, and repository scripts that consume the compiler API.
+
+Check the split contract explicitly:
+
+```bash
+bun run typescript:toolchain:check
+AGENTPLANE_TYPESCRIPT_PACKAGE=typescript bun run typecheck
+```
+
+The second command is the immediate compatibility diagnostic, not the default build lane. Published
+runtime packages do not depend on `@typescript/native`.
+
 ## Local Turborepo graph
 
 Turborepo is used only as a framework-checkout developer overlay. It is not part of the installed

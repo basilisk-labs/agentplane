@@ -5,6 +5,33 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
 
 ## Overview
 
+Agentplane 0.7 exposes one route model through two execution styles:
+
+- an external agent runs the exact command from `task next-action --explain` and recomputes after
+  each mutation;
+- a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
+  bounded semantic episodes.
+
+The supervisor does not turn approvals, open questions, hosted waits, or semantic choices into
+automatic success. It returns a typed stop at those boundaries. See
+[Migrate to Agentplane 0.7](v0-7-migration) for compatibility and recovery rules.
+
+## Supervised lifecycle
+
+After plan approval and, for `branch_pr`, worktree creation:
+
+```bash
+agentplane task brief <task-id>
+agentplane task next-action <task-id> --explain
+agentplane task run <task-id> --dry-run
+agentplane task run <task-id>
+```
+
+The prepared WorkOrder contains one semantic objective, bounded authority, required inputs and
+outputs, prepared knowledge evidence, verification intent, and stop rules. The agent returns a
+semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
+An agent-reported check is not accepted as an observed check without supervisor evidence.
+
 ## Minimal branch_pr lifecycle
 
 This repository is configured for `branch_pr`, so the normal guarded route is:

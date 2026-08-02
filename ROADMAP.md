@@ -1,7 +1,7 @@
 ---
 title: AgentPlane Roadmap
 description: Public product roadmap for AgentPlane CLI and the local-first agentic development workspace.
-lastUpdated: 2026-05-11
+lastUpdated: 2026-08-01
 ---
 
 # AgentPlane Roadmap
@@ -22,6 +22,7 @@ A user should be able to understand what the agent was asked to do, which plan c
 - **Local-first core.** The main workflow should work locally without depending on an external platform.
 - **Evidence over transcript trust.** Reviewers should inspect structured artifacts instead of relying on chat history.
 - **Policy gates before mutations.** Agentic work should pass through explicit intent, plan approval, scope constraints, and expected checks.
+- **Deterministic CLI, semantic agents.** The CLI should prepare, constrain, apply, and observe formal work; agents should interpret, design, implement, synthesize, and evaluate.
 - **Extensible, not template-bound.** Recipes, blueprints, and context profiles extend the core without reducing AgentPlane to a template catalog.
 - **Human-readable and machine-precise.** Important artifacts should be understandable by humans and formal enough for automation.
 
@@ -35,16 +36,16 @@ A user should be able to understand what the agent was asked to do, which plan c
 
 ## Roadmap at a Glance
 
-| Epic                  | Horizon | Theme       | User outcome                 |
-| --------------------- | ------- | ----------- | ---------------------------- |
-| **0.1 Workflow**      | Now     | Foundation  | baseline task lifecycle      |
-| **0.2 Configuration** | Now     | Contracts   | consistent project setup     |
-| **0.3 Tasks**         | Now     | Control     | git-native task governance   |
-| **0.4 Recipes**       | Next    | Extension   | reusable workflow kits       |
-| **0.5 Blueprints**    | Next    | Routing     | typed execution paths        |
-| **0.6 Context**       | Next    | Memory      | local knowledge layer        |
-| **0.7 Runner**        | Later   | Execution   | controlled autonomous runs   |
-| **0.8 Evaluations**   | Later   | Improvement | evidence-based quality loops |
+| Epic                  | Horizon | Theme       | User outcome               |
+| --------------------- | ------- | ----------- | -------------------------- |
+| **0.1 Workflow**      | Now     | Foundation  | baseline task lifecycle    |
+| **0.2 Configuration** | Now     | Contracts   | consistent project setup   |
+| **0.3 Tasks**         | Now     | Control     | git-native task governance |
+| **0.4 Recipes**       | Next    | Extension   | reusable workflow kits     |
+| **0.5 Blueprints**    | Next    | Routing     | typed execution paths      |
+| **0.6 Context**       | Next    | Memory      | local knowledge layer      |
+| **0.7 Supervisor**    | Now     | Execution   | governed semantic episodes |
+| **0.8 Evaluations**   | Next    | Improvement | comparative quality loops  |
 
 ## Epics
 
@@ -84,17 +85,19 @@ This epic introduces the local context layer as a core part of AgentPlane rather
 
 By the end of this epic, users will be able to maintain a git-native knowledge layer inside their project. Human-readable context will be versioned in the repository, while machine-derived indexes, embeddings, caches, and local databases remain reproducible implementation details. This gives agents durable memory without making the project dependent on opaque external state.
 
-### 0.7 **Runner:** controlled autonomous runs.
+### 0.7 **Supervisor:** governed semantic episodes.
 
-This epic builds the AgentPlane Runner on top of tasks, policies, context, recipes, and blueprints. The runner is not a separate orchestration model; it is the execution layer that performs agentic work through already-resolved task routes, explicit stop rules, evidence requirements, and repository-local policy gates.
+This epic makes the CLI the authority for formal preparation and lifecycle mechanics without moving semantic judgment into code. A shared typed supervisor resolves the current task route, prepares a bounded `AgentWorkOrder`, retrieves digest-addressed knowledge, enforces state and authority preconditions, invokes one specialized semantic role, and records an independent `ExecutionReceipt`.
 
-By the end of this epic, users will be able to run more autonomous workflows while preserving control over what the agent is allowed to do. The runner will coordinate execution, collect evidence, respect task boundaries, and stop when policy, uncertainty, or verification requirements demand human review.
+The same supervisor model covers direct tasks, `branch_pr`, context assimilation, Hermes, and read-only evaluation. It persists effect intent before side effects, stops on approval, input, or hosted waits, resumes mechanical context phases without replaying semantic work, and separates agent-claimed checks from observed evidence. Granular command capabilities and typed rendering let the supervisor call use cases without capturing and reparsing CLI text.
+
+By the end of this epic, users can delegate formal orchestration to Agentplane while retaining explicit control over plan approval, external side effects, merge, release, deployment, ambiguity, and semantic acceptance. The existing repo-owned context layer remains the durable knowledge plane rather than being replaced by a per-run prompt store.
 
 ### 0.8 **Evaluations:** evidence-based quality loops.
 
 This epic introduces evaluations as the feedback layer for AgentPlane. Evaluations measure whether agents, recipes, prompts, blueprints, runner behavior, and lifecycle flows are improving or regressing. The goal is to make quality changes testable rather than subjective.
 
-The initial evaluator catalog starts earlier as a public inspection surface: projects can store prompt modules under `.agentplane/evaluators`, and users can inspect them with `agentplane evaluator list` and `agentplane evaluator show <id>`. CLI execution of evaluators remains a 0.8 deliverable.
+Agentplane 0.7 already provides the bounded model-backed evaluation primitive: projects store prompt modules under `.agentplane/evaluators`, inspect them with `agentplane evaluator list` and `agentplane evaluator show <id>`, and run one read-only episode with `agentplane evaluator execute <task-id>`. The 0.8 horizon expands from a single-task quality gate into comparative evaluation, calibration, and recursive improvement across agents, prompts, recipes, blueprints, and supervisor policies.
 
 By the end of this epic, users will be able to compare baseline and candidate behavior using repeatable scenarios, structured evidence, and quality gates. Teams will be able to improve recipes, prompts, and execution policies through controlled evaluation loops instead of relying on anecdotal agent performance.
 

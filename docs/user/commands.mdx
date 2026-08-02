@@ -127,12 +127,23 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-Execution is usually owned by agents working in the repository through Codex, an IDE, or another
-human-assisted workflow. Runner execution remains outside the normal command path for ordinary
-agents; the route oracle should point agents at the current checkout unless an explicit integration
-such as `parallel-codex` or a configured custom runner owns the run.
+There are two supported execution paths. An external agent can work in the authoritative checkout
+and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
+supervise the same typed route:
 
-Runner maintenance commands are intentionally kept on the hidden help surface:
+```bash
+agentplane task next-action <task-id> --explain
+agentplane task run <task-id> --dry-run
+agentplane task run <task-id>
+```
+
+`--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
+formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
+and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
+runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
+reconstruct lifecycle state from prose.
+
+Runner maintenance commands remain on the advanced help surface:
 
 ```bash
 agentplane task run status <task-id> --json
@@ -228,12 +239,13 @@ materialization, indexing, evaluation, and the apply receipt. Write modes mark s
 with `extensions.context_harvest` and `extensions.context_task_extraction` so unchanged sources do
 not create duplicate work. Write modes require `agentplane context init` first.
 
-During the v0.7 supervisor migration, a persisted execution receipt is diagnostic evidence, not an
-authentication channel. `context verify-task` and `context finalize-task` therefore fail closed with
-`compatibility_unverified` when only a repository-local receipt is available. Run the component
-checks (`context wiki lint`, `context graph validate`, `context doctor`) and record independent
-verification with `ap verify`; the beta supervisor restores the authenticated end-to-end gate. See
-[Local context](local-context).
+A persisted execution receipt is diagnostic evidence, not an authentication channel.
+`context verify-task` and `context finalize-task` therefore fail closed with
+`compatibility_unverified` when only a repository-local receipt is available. The supported
+end-to-end path is `context supervise-task <task-id> --extraction <sgr-json>`, which supplies the
+live supervisor observation directly. Manual recovery can still run `context wiki lint`,
+`context graph validate`, and `context doctor`, then record independent verification with
+`ap verify`. See [Local context](local-context).
 
 `context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
 page with Agentplane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
