@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608021231-PZGG3V/unify-the-v0-7-1-task-supervisor-and-external-ad",
   "created_at": "2026-08-02T13:20:44.174Z",
-  "diffstat_sha256": "sha256:380173c531942a79c0d3be8f523f1c985a09922e655969eabe832d995ef7377c",
+  "diffstat_sha256": "sha256:af65acfcfdc405816e9b1a03b14517159280f973147db89d4d7ac465aeaa5ab9",
   "last_verified_at": "2026-08-02T14:22:45.910Z",
   "last_verified_diffstat_sha256": "sha256:380173c531942a79c0d3be8f523f1c985a09922e655969eabe832d995ef7377c",
   "pr_number": 4744,

@@ -56,7 +56,7 @@ export type DirectTaskSupervisorResult = {
   workflow_mode: "direct";
   status: "finalized" | "stopped";
   phase: string;
-  route: { step_id: string; code: string };
+  route: { step_id: string; code: string; state_fingerprint: string };
   stop: DirectTaskSupervisorStop | null;
   executor: {
     run_id: string;
@@ -123,7 +123,11 @@ export function stoppedResult(opts: {
     workflow_mode: "direct",
     status: "stopped",
     phase: opts.decision.workflowStep.phase,
-    route: { step_id: opts.decision.workflowStep.id, code: routeCode(opts.decision) },
+    route: {
+      step_id: opts.decision.workflowStep.id,
+      code: routeCode(opts.decision),
+      state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
+    },
     stop: opts.stop,
     executor: opts.executor ?? null,
     evaluator: opts.evaluator ?? null,

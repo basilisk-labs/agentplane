@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -21,6 +23,7 @@ type AgentContextRef = {
 export type AgentActionPacket = {
   schema_version: 1;
   task_id: string;
+  transition_id: string;
   state_fingerprint: string;
   action: {
     kind: AgentActionKind;
@@ -34,6 +37,16 @@ export type AgentActionPacket = {
     reference: string | null;
   };
   context_refs: AgentContextRef[];
+  recovery?: {
+    reason:
+      | "effect_in_doubt"
+      | "budget_exhausted"
+      | "concurrent_execution"
+      | "completed_operation"
+      | "stale_state"
+      | "control_plane_stop";
+    evidence_digest: string;
+  };
   stop: {
     reason:
       | "semantic_boundary"
@@ -179,14 +192,32 @@ function packetBytes(packet: AgentActionPacket): number {
   return Buffer.byteLength(JSON.stringify(packet), "utf8");
 }
 
+export function agentTransitionId(stepId: string): string {
+  return `tr_${createHash("sha256").update(stepId).digest("hex").slice(0, 32)}`;
+}
+
 export function buildAgentActionPacket(opts: {
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
+  recovery?: AgentActionPacket["recovery"];
 }): AgentActionPacket {
-  const projected = actionFor(opts.decision);
+  const projected = opts.recovery
+    ? {
+        action: {
+          kind: "framework_transition" as const,
+          instruction:
+            "Return control for recovery of the recorded control-plane state, then request a fresh packet.",
+        },
+        stop: {
+          reason: "control_plane_boundary" as const,
+          resume: "request_fresh_packet" as const,
+        },
+      }
+    : actionFor(opts.decision);
   const packet: AgentActionPacket = {
     schema_version: 1,
     task_id: opts.decision.task.id,
+    transition_id: agentTransitionId(opts.decision.workflowStep.id),
     state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
     ...projected,
     authority: {
@@ -200,6 +231,7 @@ export function buildAgentActionPacket(opts: {
           : null,
     },
     context_refs: compactContextRefs(opts.work_order),
+    ...(opts.recovery ? { recovery: opts.recovery } : {}),
   };
 
   while (packet.context_refs.length > 0 && packetBytes(packet) > MAX_AGENT_ACTION_PACKET_BYTES) {

@@ -92,7 +92,7 @@ export type BranchTaskSupervisorResult = {
   workflow_mode: "branch_pr";
   status: "finalized" | "stopped";
   phase: string;
-  route: { step_id: string; code: string };
+  route: { step_id: string; code: string; state_fingerprint: string };
   stop: BranchTaskSupervisorStop | null;
   executor: BranchExecutorEvidence | null;
   evaluator: BranchEvaluatorEvidence | null;
@@ -183,7 +183,11 @@ function stopResult(
     workflow_mode: "branch_pr",
     status: "stopped",
     phase: decision.workflowStep.phase,
-    route: { step_id: decision.workflowStep.id, code: routeCode(decision) },
+    route: {
+      step_id: decision.workflowStep.id,
+      code: routeCode(decision),
+      state_fingerprint: decision.workflowStep.preconditionFingerprint.digest,
+    },
     stop,
     executor: progress.executor,
     evaluator: progress.evaluator,
@@ -265,7 +269,11 @@ function finalizedResult(
     workflow_mode: "branch_pr",
     status: "finalized",
     phase: decision.workflowStep.phase,
-    route: { step_id: decision.workflowStep.id, code: routeCode(decision) },
+    route: {
+      step_id: decision.workflowStep.id,
+      code: routeCode(decision),
+      state_fingerprint: decision.workflowStep.preconditionFingerprint.digest,
+    },
     stop: null,
     executor: progress.executor,
     evaluator: progress.evaluator,

@@ -5,6 +5,7 @@ import type { WorkflowStep } from "../shared/workflow-step.js";
 
 import {
   assertAgentActionPacketHasNoChoreography,
+  agentTransitionId,
   buildAgentActionPacket,
   MAX_AGENT_ACTION_PACKET_BYTES,
 } from "./agent-action-packet.js";
@@ -162,6 +163,7 @@ describe("compact agent action packet", () => {
     const packet = packetFor(workflowStep);
     expect(packet.action.kind).toBe(kind);
     expect(packet.stop.reason).toBe(stopReason);
+    expect(packet.transition_id).toBe(agentTransitionId(workflowStep.id));
     expect(packet.state_fingerprint).toBe(FINGERPRINT);
     expect(packet.context_refs).toEqual([
       { kind: "task_document", ref: `.agentplane/tasks/${TASK_ID}/README.md` },
@@ -201,6 +203,32 @@ describe("compact agent action packet", () => {
     );
     expect(packet.action.kind).toBe("framework_transition");
     expect(packet.stop.reason).toBe("control_plane_boundary");
+    expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
+  });
+
+  it("returns typed recovery evidence without leaking lifecycle choreography", () => {
+    const workflowStep = step({
+      kind: "cli_operation",
+      operation: {
+        id: "task.start",
+        type: "task_start",
+        params: { taskId: TASK_ID },
+      } as never,
+    });
+    const packet = buildAgentActionPacket({
+      decision: decision(workflowStep),
+      work_order: workOrder(),
+      recovery: {
+        reason: "effect_in_doubt",
+        evidence_digest: `sha256:${"b".repeat(64)}`,
+      },
+    });
+    expect(packet).toMatchObject({
+      transition_id: agentTransitionId(workflowStep.id),
+      action: { kind: "framework_transition" },
+      recovery: { reason: "effect_in_doubt" },
+      stop: { reason: "control_plane_boundary" },
+    });
     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
   });
 });
