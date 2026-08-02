@@ -18,6 +18,7 @@
     "test:project": "vitest --config vitest.workspace.ts run --project",
     "test:precommit": "node scripts/checks/run-vitest-suite.mjs precommit",
     "test:critical": "node scripts/checks/run-vitest-suite.mjs critical-cli",
+    "test:cli:critical": "bun run test:critical",
     "test:platform-critical": "node scripts/checks/run-vitest-suite.mjs platform-critical",
     "test:backend-critical": "node scripts/checks/run-vitest-suite.mjs backend-critical",
     "test:release:critical": "node scripts/checks/run-vitest-suite.mjs release-critical",

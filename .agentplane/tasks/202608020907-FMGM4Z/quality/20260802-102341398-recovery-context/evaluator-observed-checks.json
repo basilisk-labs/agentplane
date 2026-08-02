@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T10:22:58.849Z",
+    "updated_by": "TESTER",
+    "note": "Commit 44958d9dab2f59303e9a75526a25366a65f1f3c4 passed 16 focused files (156 tests), TypeScript build, critical CLI (12 chunks, 79 tests), full ci:contract, task-state, doctor, and policy routing."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

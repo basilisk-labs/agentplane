@@ -104,6 +104,7 @@ Implementation layout: canonical script implementations live under `scripts/chec
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `test`                   | `bun run test:fast`                                                                                               | Run test workflow commands.           |
 | `test:backend-critical`  | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                       | Run test workflow: backend-critical.  |
+| `test:cli:critical`      | `bun run test:critical`                                                                                           | Run test workflow: cli critical.      |
 | `test:critical`          | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                           | Run test workflow: critical.          |
 | `test:fast`              | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit` | Run test workflow: fast.              |
 | `test:platform-critical` | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                      | Run test workflow: platform-critical. |

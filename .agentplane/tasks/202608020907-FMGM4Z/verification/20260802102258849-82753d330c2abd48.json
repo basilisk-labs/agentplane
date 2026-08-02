@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:82753d330c2abd4870d544776a05f81c8584e9aae84651a4ecd301e35c780091",
+  "implementation_sha": "44958d9dab2f59303e9a75526a25366a65f1f3c4",
+  "kind": "task_verification_record",
+  "note": "Commit 44958d9dab2f59303e9a75526a25366a65f1f3c4 passed 16 focused files (156 tests), TypeScript build, critical CLI (12 chunks, 79 tests), full ci:contract, task-state, doctor, and policy routing.",
+  "recorded_at": "2026-08-02T10:22:58.849Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts\n2. Run every added or affected focused test file for assimilated stale-branch behavior.\n3. bun run test:cli:critical\n4. bun run workflows:command-check\n5. bun run lifecycle:invariants\n6. bun run typecheck\n7. bun run guards:check\n8. bun run ci:contract\n9. bun run task-state:check\n10. ap doctor\n11. node .agentplane/policy/check-routing.mjs\n12. Verify every audited remote branch has an explicit disposition and no current-main regression remains.",
+  "scope_digest": "sha256:b83d86ef9b92cd331d8dd233b4ad13e37c1d40b2604ac5a55750e7ee4cdc3bed",
+  "task_id": "202608020907-FMGM4Z",
+  "verification_command": "agentplane verify 202608020907-FMGM4Z --ok --by TESTER",
+  "verifier": "TESTER"
+}

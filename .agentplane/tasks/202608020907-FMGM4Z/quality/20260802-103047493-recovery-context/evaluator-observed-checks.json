@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T10:30:25.891Z",
+    "updated_by": "TESTER",
+    "note": "Commit-bound deterministic evidence refreshed for 44958d9dab2f59303e9a75526a25366a65f1f3c4: focused 156, route 58, critical 79, full contract, state/policy diagnostics, and 28-ref branch audit pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802103025891-a08a6581525d151f.json",
+      "sha256": "sha256:23fa8a0f098bffc2c14be0ea11e1460e65ee95981262c6bb8d39c8a744906f4e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+      "sha256": "sha256:e871151b39e2588ce3ce4d8553abc862b8451643d53b7c3897d610b990208db0"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

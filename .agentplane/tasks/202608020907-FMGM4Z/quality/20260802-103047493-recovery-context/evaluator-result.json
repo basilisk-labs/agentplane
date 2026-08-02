@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Two mandatory Verify Steps were replaced with different commands without recorded approval, so the approved verification contract was not satisfied.",
+      "broken_invariant": "All checks listed in Verify Steps must be executed or recorded as approved skips; changing required commands constitutes material drift requiring re-approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+          "sha256": "sha256:bbde2fb35f53384cb689a005ff7c61a767d502a1539424685ae821c2f208393c",
+          "section": "Verify Steps; Findings"
+        },
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802103025891-a08a6581525d151f.json",
+          "sha256": "sha256:23fa8a0f098bffc2c14be0ea11e1460e65ee95981262c6bb8d39c8a744906f4e",
+          "section": "details; scope"
+        },
+        {
+          "path": ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+          "sha256": "sha256:e871151b39e2588ce3ce4d8553abc862b8451643d53b7c3897d610b990208db0",
+          "section": "verification_contract_corrections"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks; Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Execute the two literal mandatory commands from Verify Steps 1 and 3 after correcting the approved verification contract, or record each as a skipped check with reason, risk, and explicit approval before rerunning the canonical substitutes."
+  ],
+  "hidden_assumptions": [
+    "Passing the configured Vitest runner is assumed to be an approved equivalent of the declared Bun test runner.",
+    "The repository's test:critical script is assumed to be an approved equivalent of the nonexistent declared test:cli:critical script."
+  ],
+  "recovery_context": "Obtain explicit re-approval of the corrected verification commands, update the verification contract through the authorized lifecycle route, and record fresh commit-bound verification evidence against that approved contract before reevaluation."
+}

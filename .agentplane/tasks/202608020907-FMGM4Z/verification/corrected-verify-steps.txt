@@ -1,0 +1,12 @@
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts
+2. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/task/close-tail-state.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-provenance.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts packages/agentplane/src/commands/task/active.command.unit.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts
+3. bun run test:critical
+4. bun run workflows:command-check
+5. bun run lifecycle:invariants
+6. bun run typecheck
+7. bun run guards:check
+8. bun run ci:contract
+9. bun run task-state:check
+10. ap doctor
+11. node .agentplane/policy/check-routing.mjs
+12. node .agentplane/tasks/202608020907-FMGM4Z/verification/verify-branch-disposition.mjs /Users/densmirnov/Github/agentplane
