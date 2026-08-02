@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020545-Y4HQ7A",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T05:59:00.282Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "98f9f6eddf07875fcc41893cb4d48586739a42ee",
+  "blueprint_digest": "d4c657b73e3cd568e9448c86101dcd64dec629ad8a74c48d3445646109c610b4",
+  "findings": [
+    "The implementation preserves raw RF-04 failures, deterministically separates policy-authorized diagnostic latency failures from blocking failures, rejects unclassified failures, and selects qualification verification records using the packet implementation SHA while retaining the evaluated evidence SHA as the reviewed head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020545-Y4HQ7A/quality/20260802-055808971-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020545-Y4HQ7A/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "RF-04 timing failures intended to be diagnostic are canonically identified by the latency. failure-ID prefix when comparison_policy.timing is diagnostic_only_never_gated."
+  ],
+  "residual_risks": []
+}

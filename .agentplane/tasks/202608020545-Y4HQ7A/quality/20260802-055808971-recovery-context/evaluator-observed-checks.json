@@ -1,0 +1,23 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Run TypeScript typecheck and release-critical tests. Expected: compiler and milestone lifecycle contracts pass without widening qualification-task source scope.",
+    "Run evaluator evidence tests. Expected: qualification review freezes the verification record selected by the packet implementation SHA and rejects mismatched records.",
+    "Run focused qualification-packet tests. Expected: diagnostic timing failures are explicitly non-blocking, unclassified failures remain blocking, and the packet exposes both sets."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T05:57:21.351Z",
+    "updated_by": "TESTER",
+    "note": "Verified qualification gate classification and frozen verification provenance on implementation SHA 98f9f6edd. Raw RF-04 latency failures remain visible and non-publishing, blocking failures stop packet construction, and evaluator evidence now includes the packet-selected verification record."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
