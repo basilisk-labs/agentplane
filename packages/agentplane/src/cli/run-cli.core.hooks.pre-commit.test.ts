@@ -592,9 +592,8 @@ describe("runCli hooks pre-commit guards", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
-    const baseSha = (
-      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root })
-    ).stdout.trim();
+    const revParseResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const baseSha = revParseResult.stdout.trim();
 
     await execFileAsync("git", ["checkout", "-b", "topic/already-merged"], { cwd: root });
     await mkdir(`${root}/src`, { recursive: true });
@@ -621,7 +620,7 @@ describe("runCli hooks pre-commit guards", () => {
     const messagePath = `${root}/COMMIT_EDITMSG`;
     await writeFile(
       messagePath,
-      "\ud83d\udd00 ABCDEF task: merge topic branch\n\nSigned-off-by: Test User <test@example.com>\n",
+      "🔀 ABCDEF task: merge topic branch\n\nSigned-off-by: Test User <test@example.com>\n",
       "utf8",
     );
     const preCommitIo = captureStdIO();
