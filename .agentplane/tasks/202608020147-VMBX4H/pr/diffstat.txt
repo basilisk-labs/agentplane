@@ -1,5 +1,5 @@
- .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 179 +++++++++++++++++++++
- .../src/commands/hooks/base-sync-policy-paths.ts   |  53 ++++++
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 217 +++++++++++++++++++++
+ .../src/commands/hooks/base-sync-policy-paths.ts   |  70 +++++++
  .../src/commands/hooks/run.commit-msg.ts           |  22 ++-
  .../src/commands/hooks/run.pre-commit.ts           |   9 +-
- 4 files changed, 260 insertions(+), 3 deletions(-)
+ 4 files changed, 315 insertions(+), 3 deletions(-)
