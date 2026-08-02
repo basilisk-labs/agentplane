@@ -4,7 +4,7 @@ title: "Allow documentation tasks to commit canonical site artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T00:11:21.554Z"
+  updated_at: "2026-08-02T01:32:25.586Z"
   updated_by: "TESTER"
-  note: "Evaluator rework is resolved with current deterministic evidence."
+  note: "Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -55,8 +55,8 @@ quality_review:
   findings:
     - "Semantic evaluation cannot proceed because the frozen diff contains no committed task work unit, while the observed-checks artifact contains no verification records, runner history, or runtime evidence."
 commit:
-  hash: "d2204d0434fe4cb3866aa60eba46af70363e07fd"
-  message: "🔀 30YX9C task: sync main after llms repair"
+  hash: "b7baf5024e6a29d69ca138fd73e57fda5e098da4"
+  message: "🔀 30YX9C task: sync main after evaluator fix"
 comments:
   -
     author: "CODER"
@@ -67,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Rework completed: synced main after the dedicated llms-full repair, so this PR now contains only the task-bound policy implementation and its task evidence; all focused, type, site, routing, formatting, doctor, and scope checks pass."
+  -
+    author: "CODER"
+    body: "Rework: resynchronize with main after the merge-aware evaluator fix and bind fresh verification to the current base-sync commit."
 events:
   -
     type: "status"
@@ -107,8 +110,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Evaluator rework is resolved with current deterministic evidence."
+  -
+    type: "status"
+    at: "2026-08-02T01:31:30.995Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: resynchronize with main after the merge-aware evaluator fix and bind fresh verification to the current base-sync commit."
+  -
+    type: "verify"
+    at: "2026-08-02T01:32:25.586Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates."
 doc_version: 3
-doc_updated_at: "2026-08-02T00:11:22.363Z"
+doc_updated_at: "2026-08-02T01:32:26.413Z"
 doc_updated_by: "CODER"
 description: "Treat Docusaurus documentation navigation and generated social-card artifacts as documentation paths so docs.change tasks can satisfy the full site gate without bypassing task-bound mutation policy."
 sections:
@@ -252,6 +268,61 @@ sections:
     Result: pass
     Evidence: implementation delta is limited to packages/agentplane/src/policy/rules/task-bound-mutation.ts and its focused test; website/static/llms-full.txt is no longer in this PR delta, and remaining paths are task-local evidence.
     Scope: final implementation and evidence boundary.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012339-30YX9C-allow-documentation-tasks-to-commit-canonical-si/.agentplane/tasks/202608012339-30YX9C/blueprint/resolved-snapshot.json
+    - old_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+    - current_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608012339-30YX9C
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T01:32:25.586Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T01:31:30.995Z, excerpt_hash=sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/policy/rules/task-bound-mutation.test.ts
+    Result: pass
+    Evidence: 1 test file and 4 policy boundary tests passed, including canonical documentation navigation and social-card paths while implementation paths remain blocked.
+    Scope: task-bound mutation policy behavior.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: native TypeScript build completed without diagnostics.
+    Scope: repository type surface.
+
+    Command: bun run docs:site:check
+    Result: pass
+    Evidence: generated reference and llms-full freshness, site typecheck/build, 220 social images, navigation, and design checks passed.
+    Scope: documentation site gate.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: policy gateway constraints.
+
+    Command: bun run format:check && git diff --check
+    Result: pass
+    Evidence: repository formatting and whitespace validation passed.
+    Scope: current branch diff.
 
     BlueprintSnapshotRef:
     - state: current
@@ -432,6 +503,61 @@ Command: git diff --name-status main...HEAD
 Result: pass
 Evidence: implementation delta is limited to packages/agentplane/src/policy/rules/task-bound-mutation.ts and its focused test; website/static/llms-full.txt is no longer in this PR delta, and remaining paths are task-local evidence.
 Scope: final implementation and evidence boundary.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012339-30YX9C-allow-documentation-tasks-to-commit-canonical-si/.agentplane/tasks/202608012339-30YX9C/blueprint/resolved-snapshot.json
+- old_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+- current_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608012339-30YX9C
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T01:32:25.586Z — VERIFY — ok
+
+By: TESTER
+
+Note: Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T01:31:30.995Z, excerpt_hash=sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/policy/rules/task-bound-mutation.test.ts
+Result: pass
+Evidence: 1 test file and 4 policy boundary tests passed, including canonical documentation navigation and social-card paths while implementation paths remain blocked.
+Scope: task-bound mutation policy behavior.
+
+Command: bun run typecheck
+Result: pass
+Evidence: native TypeScript build completed without diagnostics.
+Scope: repository type surface.
+
+Command: bun run docs:site:check
+Result: pass
+Evidence: generated reference and llms-full freshness, site typecheck/build, 220 social images, navigation, and design checks passed.
+Scope: documentation site gate.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy gateway constraints.
+
+Command: bun run format:check && git diff --check
+Result: pass
+Evidence: repository formatting and whitespace validation passed.
+Scope: current branch diff.
 
 BlueprintSnapshotRef:
 - state: current
