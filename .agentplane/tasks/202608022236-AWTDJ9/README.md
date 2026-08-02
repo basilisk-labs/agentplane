@@ -1,10 +1,11 @@
 ---
 id: "202608022236-AWTDJ9"
 title: "Preserve verification freshness after rebase merge"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +54,8 @@ quality_review:
     - "PASS: active or open tasks still resolve the live task-branch head, so subsequent semantic commits continue to invalidate stale verification records."
     - "PASS: the behavior is proven by focused unit coverage, 14 route files / 60 tests, 79 critical tests, all static and size gates, and a live readback against merged PR 4748."
 commit:
-  hash: "bfb6abc89187231c2497ef737c67e98a45e997b2"
-  message: "🐛 AWTDJ9 verification: preserve merged task evidence"
+  hash: "dafc86b07cd0faafa3dbf6f0fa9dfc9bc284f164"
+  message: "✅ AWTDJ9 task: record verification and evaluator pass"
 comments:
   -
     author: "CODER"
@@ -62,6 +63,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: preserve accepted verification evidence after hosted rebase merge without weakening active-branch freshness."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -83,8 +87,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified at bfb6abc89: hosted rebase-merge evidence remains current and active-branch freshness remains fail-closed."
+  -
+    type: "status"
+    at: "2026-08-02T22:47:35.029Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T22:44:56.939Z"
+doc_updated_at: "2026-08-02T22:47:35.029Z"
 doc_updated_by: "CODER"
 description: "Fix the branch_pr route oracle so a DONE task remains terminal after GitHub rebase-merge and hosted close, while still invalidating verification for new semantic commits on an active task branch."
 sections:
@@ -161,6 +172,9 @@ sections:
       Impact: Using the base checkout head for a merged, hosted-closed task created a false verification_required blocker on completed work.
       Resolution: For DONE tasks with merged PR and hosted close recorded on base, bind verification to the canonical passed quality-review target; retain live branch-head resolution before merge.
 extensions:
+  implementation_commit:
+    hash: "bfb6abc89187231c2497ef737c67e98a45e997b2"
+    message: "🐛 AWTDJ9 verification: preserve merged task evidence"
   workflow_route_baseline:
     start_head_sha: "05423cade6f22a75b10a70cdbf7809d0c501377b"
     version: 1
