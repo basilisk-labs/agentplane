@@ -4,7 +4,7 @@ title: "Build the v0.7.1 end-to-end release qualification suite"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "03dbdc7b8c0cefbd4df5fcdefa2f2ca84ad2b112"
+  message: "🧪 DR7J1E task: add v0.7.1 qualification gate"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation recorded: added the versioned v0.7.1 qualification manifest, audit/gate runner, classified defect ledger, focused lifecycle/context/supervisor/recovery/hosted suites, exact-subject efficiency checks, packed install coverage, and an interleaved 0.6.26 matched CLI benchmark. Verified: e2e:v0.7.1:check and ci:contract pass; full local audit completed with classified release blockers."
 events:
   -
     type: "status"
@@ -40,9 +45,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-02T12:04:14.764Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation recorded: added the versioned v0.7.1 qualification manifest, audit/gate runner, classified defect ledger, focused lifecycle/context/supervisor/recovery/hosted suites, exact-subject efficiency checks, packed install coverage, and an interleaved 0.6.26 matched CLI benchmark. Verified: e2e:v0.7.1:check and ci:contract pass; full local audit completed with classified release blockers."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:00:43.091Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-08-02T12:04:14.764Z"
+doc_updated_by: "CODER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
   Summary: |-
