@@ -2,10 +2,10 @@
 id: "202608020016-TDXFVT"
 title: "Preserve evaluator work units across base-sync merges"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T00:53:36.501Z"
+  updated_at: "2026-08-02T01:14:10.132Z"
   updated_by: "TESTER"
-  note: "Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate."
+  note: "Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate."
   attempts: 0
 quality_review:
   state: "pass"
@@ -47,8 +47,8 @@ quality_review:
   findings:
     - "No contract-breaking issue was found; merge-aware target selection preserves semantic task work while rejecting managed-artifact-only and lifecycle-only merge deltas."
 commit:
-  hash: "18f931a3bb4bdf599bf6e5ab589460f10510f4e1"
-  message: "🧪 TDXFVT evaluator: cover lifecycle merge deltas"
+  hash: "8f0f28419421fa9de757752da254ad18ec30b705"
+  message: "🐛 TDXFVT evaluator: restrict merge-aware review to base sync"
 comments:
   -
     author: "CODER"
@@ -71,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: restrict merge-aware review to the configured base and preserve the prior review across unrelated lifecycle merges."
 events:
   -
     type: "status"
@@ -145,8 +148,21 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-08-02T01:13:42.854Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: restrict merge-aware review to the configured base and preserve the prior review across unrelated lifecycle merges."
+  -
+    type: "verify"
+    at: "2026-08-02T01:14:10.132Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate."
 doc_version: 3
-doc_updated_at: "2026-08-02T00:55:07.087Z"
+doc_updated_at: "2026-08-02T01:14:10.990Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr evaluator packet preparation so a merge of current main into a task branch preserves the committed task work unit, actual diff, and matching verification records instead of freezing an empty packet. Add focused regression coverage for merge-aware target selection."
 sections:
@@ -389,6 +405,56 @@ sections:
     Result: pass
     Evidence: no whitespace errors were reported.
     Scope: evaluated implementation diff.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020016-TDXFVT-preserve-evaluator-work-units-across-base-sync-m/.agentplane/tasks/202608020016-TDXFVT/blueprint/resolved-snapshot.json
+    - old_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+    - current_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020016-TDXFVT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T01:14:10.132Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T01:13:42.854Z, excerpt_hash=sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: 2 test files and 25 tests passed, including configured base-sync selection and non-base lifecycle merge preservation.
+    Scope: merge-aware evaluator target and frozen evidence behavior.
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: 1 test file and 20 evaluator command tests passed.
+    Scope: evaluator command compatibility.
+
+    Command: bun run typecheck && bun run lint:core && bun run arch:check && bun run knip:check
+    Result: pass
+    Evidence: native typecheck, ESLint, architecture boundaries, and knip baseline all passed.
+    Scope: repository static gates.
+
+    Command: bun run format:check && git diff --check
+    Result: pass
+    Evidence: formatting and whitespace validation passed.
+    Scope: current implementation diff.
 
     BlueprintSnapshotRef:
     - state: current
@@ -668,6 +734,56 @@ Command: git diff --check
 Result: pass
 Evidence: no whitespace errors were reported.
 Scope: evaluated implementation diff.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020016-TDXFVT-preserve-evaluator-work-units-across-base-sync-m/.agentplane/tasks/202608020016-TDXFVT/blueprint/resolved-snapshot.json
+- old_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+- current_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020016-TDXFVT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T01:14:10.132Z — VERIFY — ok
+
+By: TESTER
+
+Note: Configured-base merge boundary and unrelated lifecycle-merge preservation pass the full local gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T01:13:42.854Z, excerpt_hash=sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: 2 test files and 25 tests passed, including configured base-sync selection and non-base lifecycle merge preservation.
+Scope: merge-aware evaluator target and frozen evidence behavior.
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: 1 test file and 20 evaluator command tests passed.
+Scope: evaluator command compatibility.
+
+Command: bun run typecheck && bun run lint:core && bun run arch:check && bun run knip:check
+Result: pass
+Evidence: native typecheck, ESLint, architecture boundaries, and knip baseline all passed.
+Scope: repository static gates.
+
+Command: bun run format:check && git diff --check
+Result: pass
+Evidence: formatting and whitespace validation passed.
+Scope: current implementation diff.
 
 BlueprintSnapshotRef:
 - state: current
