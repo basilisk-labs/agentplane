@@ -32,15 +32,16 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
   const taskIds =
     opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
   const finalizedEvaluatedSha = hostedCloseVerificationTarget(opts.task, opts.prFlow);
+  const liveBranchHead = opts.prFlow?.branch.headSha?.trim() ?? null;
   const headSha =
-    (finalizedEvaluatedSha ??
-      opts.prFlow?.branch.headSha ??
+    (liveBranchHead ??
+      finalizedEvaluatedSha ??
       opts.resume.head_sha ??
       (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash.trim() : "")) ||
     null;
   if (!headSha) return false;
   const evaluatedSha =
-    finalizedEvaluatedSha ??
+    (liveBranchHead ? null : finalizedEvaluatedSha) ??
     (await resolveQualityReviewTargetSha({
       gitRoot: opts.ctx.resolvedProject.gitRoot,
       workflowDir: opts.ctx.config.paths.workflow_dir,
@@ -70,7 +71,7 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
       workflowMode: "branch_pr",
     },
     snapshotRef:
-      opts.prFlow?.branch.headSha ??
+      liveBranchHead ??
       (opts.prFlow?.pr.state === "MERGED" ? opts.prFlow.pr.headSha : null) ??
       opts.resume.head_sha ??
       null,

@@ -32,9 +32,9 @@ remains fail-closed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/route-decision-verification.test.ts     | 136 +++++++++++++++++++++
- .../commands/shared/route-decision-verification.ts |  50 +++++---
- 2 files changed, 172 insertions(+), 14 deletions(-)
+ .../shared/route-decision-verification.test.ts     | 161 +++++++++++++++++++++
+ .../commands/shared/route-decision-verification.ts |  51 +++++--
+ 2 files changed, 198 insertions(+), 14 deletions(-)
 ```
 
 </details>

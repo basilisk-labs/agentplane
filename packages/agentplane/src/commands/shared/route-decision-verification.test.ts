@@ -22,6 +22,7 @@ import { hasAcceptedVerificationForCurrentImplementation } from "./route-decisio
 const reviewedSha = "a".repeat(40);
 const mergedPrHead = "b".repeat(40);
 const rewrittenBaseHead = "c".repeat(40);
+const newerBranchHead = "d".repeat(40);
 
 const task = {
   id: "T-1",
@@ -114,7 +115,7 @@ describe("route verification target selection", () => {
   });
 
   it("keeps the live task-branch head authoritative before merge", async () => {
-    const branchHead = "d".repeat(40);
+    const branchHead = newerBranchHead;
     const flow = mergedFlow();
     flow.pr.state = "OPEN";
     flow.branch.headSha = branchHead;
@@ -131,6 +132,30 @@ describe("route verification target selection", () => {
 
     expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
       expect.objectContaining({ headSha: branchHead }),
+    );
+  });
+
+  it("keeps a surviving task-branch head authoritative after merge", async () => {
+    const flow = mergedFlow();
+    flow.branch.headSha = newerBranchHead;
+    mocks.resolveQualityReviewTargetSha.mockResolvedValue(newerBranchHead);
+
+    await hasAcceptedVerificationForCurrentImplementation({
+      ctx,
+      task,
+      resume,
+      prFlow: flow,
+      batchOwnership: { role: "none" },
+    });
+
+    expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
+      expect.objectContaining({ headSha: newerBranchHead }),
+    );
+    expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        evaluatedSha: newerBranchHead,
+        snapshotRef: newerBranchHead,
+      }),
     );
   });
 });
