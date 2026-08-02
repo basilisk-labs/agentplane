@@ -15,14 +15,14 @@ Fix branch_pr evaluator packet preparation so a merge of current main into a tas
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Merge-aware evaluator packet regression and compatibility checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T00:17:10.319Z
+- Updated: 2026-08-02T00:24:39.694Z
 - Branch: task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

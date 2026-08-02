@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T00:25:39.006Z",
+    "updated_by": "TESTER",
+    "note": "Merge-aware evaluator packet regression and compatibility checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802002539006-c06b0678e1fb29bf.json",
+      "sha256": "sha256:23966929846ded981cc1904cf66995edb099c9fa36ad2fa1a1b1602ecb4c863c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
