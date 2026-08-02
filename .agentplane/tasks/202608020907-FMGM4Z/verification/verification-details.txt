@@ -1,17 +1,17 @@
 Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts
 Result: pass
 Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
-Scope: Corrected and approved Verify Step 1; 5 files and 58 tests at implementation SHA 44958d9dab2f59303e9a75526a25366a65f1f3c4.
+Scope: Corrected and approved Verify Step 1; 5 files and 58 tests at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
 
 Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/task/close-tail-state.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-provenance.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts packages/agentplane/src/commands/task/active.command.unit.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts
 Result: pass
 Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
-Scope: Corrected and approved affected matrix; provider-rebase reconciliation, foreign-artifact repair, read-only active claims, concurrent task-active reads, cleanup races, and close-tail behavior; 12 files and 118 tests.
+Scope: Corrected and approved affected matrix at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c; provider-rebase reconciliation, foreign-artifact repair, read-only active claims, concurrent task-active reads, cleanup races, and close-tail behavior; 12 files and 118 tests.
 
 Command: bun run test:critical
 Result: pass
 Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
-Scope: Canonical critical CLI route; 12 of 12 chunks and 79 tests.
+Scope: Canonical critical CLI route, including the restored test:cli:critical compatibility alias, at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c; 12 of 12 chunks and 79 tests.
 
 Command: bun run workflows:command-check && bun run lifecycle:invariants && bun run guards:check
 Result: pass
@@ -21,12 +21,12 @@ Scope: Workflow command guidance, lifecycle parity and invariants, shared guards
 Command: bun run typecheck
 Result: pass
 Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
-Scope: TypeScript build for implementation SHA 44958d9dab2f59303e9a75526a25366a65f1f3c4.
+Scope: TypeScript build for implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
 
 Command: bun run ci:contract
 Result: pass
 Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
-Scope: Full formatting, schema, docs, compatibility, RF-04 50-run replay, hotspot, architecture, clone, Knip, and coverage contract.
+Scope: Full formatting, schema, generated script documentation, compatibility, RF-04 50-run replay, hotspot, architecture, clone, Knip, and coverage contract at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
 
 Command: bun run task-state:check && ap doctor && node .agentplane/policy/check-routing.mjs
 Result: pass

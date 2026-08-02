@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608020907-FMGM4Z-d0ca1d46f16ea28964f01b54",
+  "task_id": "202608020907-FMGM4Z",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The earlier verification-contract correction was substantively addressed, but the subsequent test:cli:critical alias commit is outside the recorded commit-bound evidence. Reverify the final evaluated revision and update the task verification record before requesting another evaluation.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen diff adds the test:cli:critical package script and its documentation after the recorded verification commit, while every verification record remains bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 and the task asserts that the implementation SHA did not change.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8430f20b7ad7d428b01232f0a8923745cad894df1d28a6a15a2ac148f27e0bb9",
+          "section": "package.json and scripts/README.md additions"
+        },
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+          "sha256": "sha256:da6532f2144f77ac5bcc32cb747a5f07dc78d98e4bf1b19ddde11351a4f44b75",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-result.json"
+}

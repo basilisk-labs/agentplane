@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020907-FMGM4Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T10:48:46.936Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c",
+  "blueprint_digest": "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8",
+  "findings": [
+    "The frozen diff adds the test:cli:critical package script and its documentation after the recorded verification commit, while every verification record remains bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 and the task asserts that the implementation SHA did not change."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Run `bun run test:cli:critical` and the applicable contract checks against the evaluated revision containing the restored alias, then record commit-bound verification for that exact revision."
+  ],
+  "hidden_assumptions": [
+    "Adding a package-script compatibility alias and documenting it does not change the implementation state requiring fresh verification.",
+    "Verification bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 remains sufficient for a later evaluated revision containing tracked package and documentation changes."
+  ],
+  "residual_risks": [
+    "The earlier verification-contract correction was substantively addressed, but the subsequent test:cli:critical alias commit is outside the recorded commit-bound evidence. Reverify the final evaluated revision and update the task verification record before requesting another evaluation."
+  ]
+}

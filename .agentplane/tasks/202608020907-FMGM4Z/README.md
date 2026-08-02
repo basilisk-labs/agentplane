@@ -4,7 +4,7 @@ title: "Assimilate v0.6.26 maintenance fixes into v0.7"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -21,37 +21,35 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T10:40:45.364Z"
+  updated_at: "2026-08-02T10:56:59.180Z"
   updated_by: "TESTER"
-  note: "All 12 corrected Verify Steps passed literally after ORCHESTRATOR approval at 2026-08-02T10:33:33.209Z for implementation 44958d9dab2f59303e9a75526a25366a65f1f3c4."
+  note: "Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T10:31:35.361Z"
+  updated_at: "2026-08-02T10:48:46.936Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "44958d9dab2f59303e9a75526a25366a65f1f3c4"
+  evaluated_sha: "e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c"
   blueprint_digest: "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8"
   evidence_refs:
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202608020907-FMGM4Z/README.md"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802103025891-a08a6581525d151f.json"
-    - ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Two mandatory Verify Steps were replaced with different commands without recorded approval, so the approved verification contract was not satisfied."
+    - "The frozen diff adds the test:cli:critical package script and its documentation after the recorded verification commit, while every verification record remains bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 and the task asserts that the implementation SHA did not change."
 commit:
   hash: "44958d9dab2f59303e9a75526a25366a65f1f3c4"
   message: "🐛 FMGM4Z task: assimilate maintenance fixes"
@@ -105,8 +103,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All 12 corrected Verify Steps passed literally after ORCHESTRATOR approval at 2026-08-02T10:33:33.209Z for implementation 44958d9dab2f59303e9a75526a25366a65f1f3c4."
+  -
+    type: "verify"
+    at: "2026-08-02T10:56:59.180Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass."
 doc_version: 3
-doc_updated_at: "2026-08-02T10:40:46.276Z"
+doc_updated_at: "2026-08-02T10:57:00.225Z"
 doc_updated_by: "CODER"
 description: "Audit every non-main branch, port only missing v0.6.25/v0.6.26 and stale-PR correctness fixes into the current v0.7 architecture, preserve stronger v0.7 contracts, and prove no maintenance regression remains."
 sections:
@@ -271,6 +275,76 @@ sections:
     Result: pass
     Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
     Scope: Full formatting, schema, docs, compatibility, RF-04 50-run replay, hotspot, architecture, clone, Knip, and coverage contract.
+
+    Command: bun run task-state:check && ap doctor && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: Task projection, repository diagnostics with zero errors, and policy graph routing.
+
+    Command: node .agentplane/tasks/202608020907-FMGM4Z/verification/verify-branch-disposition.mjs /Users/densmirnov/Github/agentplane
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: 28 observed remote refs, explicit disposition for all 24 in-scope source branches, and proof that the excluded agentplane-loops checkout remains at its remote head with no tracked mutation.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020907-FMGM4Z-assimilate-v0-6-26-maintenance-fixes-into-v0-7/.agentplane/tasks/202608020907-FMGM4Z/blueprint/resolved-snapshot.json
+    - old_digest: 8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8
+    - current_digest: 8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020907-FMGM4Z
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T10:56:59.180Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T10:40:46.276Z, excerpt_hash=sha256:f32aee33634f0e789f5b52b9324cc44f708c3b423ce70b0d956430c861e4bb18
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: Corrected and approved Verify Step 1; 5 files and 58 tests at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
+
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/task/close-tail-state.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-provenance.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts packages/agentplane/src/commands/task/active.command.unit.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: Corrected and approved affected matrix at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c; provider-rebase reconciliation, foreign-artifact repair, read-only active claims, concurrent task-active reads, cleanup races, and close-tail behavior; 12 files and 118 tests.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: Canonical critical CLI route, including the restored test:cli:critical compatibility alias, at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c; 12 of 12 chunks and 79 tests.
+
+    Command: bun run workflows:command-check && bun run lifecycle:invariants && bun run guards:check
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: Workflow command guidance, lifecycle parity and invariants, shared guards, and trust-boundary ratchet.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: TypeScript build for implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+    Scope: Full formatting, schema, generated script documentation, compatibility, RF-04 50-run replay, hotspot, architecture, clone, Knip, and coverage contract at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
 
     Command: bun run task-state:check && ap doctor && node .agentplane/policy/check-routing.mjs
     Result: pass
@@ -487,6 +561,76 @@ Command: bun run ci:contract
 Result: pass
 Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
 Scope: Full formatting, schema, docs, compatibility, RF-04 50-run replay, hotspot, architecture, clone, Knip, and coverage contract.
+
+Command: bun run task-state:check && ap doctor && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: Task projection, repository diagnostics with zero errors, and policy graph routing.
+
+Command: node .agentplane/tasks/202608020907-FMGM4Z/verification/verify-branch-disposition.mjs /Users/densmirnov/Github/agentplane
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: 28 observed remote refs, explicit disposition for all 24 in-scope source branches, and proof that the excluded agentplane-loops checkout remains at its remote head with no tracked mutation.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020907-FMGM4Z-assimilate-v0-6-26-maintenance-fixes-into-v0-7/.agentplane/tasks/202608020907-FMGM4Z/blueprint/resolved-snapshot.json
+- old_digest: 8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8
+- current_digest: 8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020907-FMGM4Z
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T10:56:59.180Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T10:40:46.276Z, excerpt_hash=sha256:f32aee33634f0e789f5b52b9324cc44f708c3b423ce70b0d956430c861e4bb18
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: Corrected and approved Verify Step 1; 5 files and 58 tests at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/task/close-tail-state.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-provenance.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts packages/agentplane/src/commands/task/active.command.unit.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: Corrected and approved affected matrix at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c; provider-rebase reconciliation, foreign-artifact repair, read-only active claims, concurrent task-active reads, cleanup races, and close-tail behavior; 12 files and 118 tests.
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: Canonical critical CLI route, including the restored test:cli:critical compatibility alias, at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c; 12 of 12 chunks and 79 tests.
+
+Command: bun run workflows:command-check && bun run lifecycle:invariants && bun run guards:check
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: Workflow command guidance, lifecycle parity and invariants, shared guards, and trust-boundary ratchet.
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: TypeScript build for implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/202608020907-FMGM4Z/verification-evidence.json
+Scope: Full formatting, schema, generated script documentation, compatibility, RF-04 50-run replay, hotspot, architecture, clone, Knip, and coverage contract at implementation SHA e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c.
 
 Command: bun run task-state:check && ap doctor && node .agentplane/policy/check-routing.mjs
 Result: pass

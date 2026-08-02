@@ -1,3 +1,4 @@
+ package.json                                       |   1 +
  .../src/cli/run-cli.core.tasks.active.test.ts      |  49 ++
  .../src/commands/branch/cleanup-merged-proof.ts    | 368 +-------
  .../cleanup-merged-provider-compatibility.ts       | 119 +++
@@ -46,5 +47,6 @@
  packages/core/src/git/git-client.ts                |  28 +-
  packages/core/src/git/git-diff.ts                  |  32 +-
  packages/core/src/git/index.ts                     |   3 +
+ scripts/README.md                                  |   1 +
  scripts/baselines/knip-baseline.json               |  66 +-
- 49 files changed, 5849 insertions(+), 528 deletions(-)
+ 51 files changed, 5851 insertions(+), 528 deletions(-)

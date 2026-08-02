@@ -18,8 +18,8 @@ Audit origin/codex/fix-v0.6.24-closeout-route at v0.6.26 and every remaining non
 - Note:
 
 ```text
-All 12 corrected Verify Steps passed literally after ORCHESTRATOR approval at
-2026-08-02T10:33:33.209Z for implementation 44958d9dab2f59303e9a75526a25366a65f1f3c4.
+Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias,
+full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -31,6 +31,7 @@ All 12 corrected Verify Steps passed literally after ORCHESTRATOR approval at
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ package.json                                       |   1 +
  .../src/cli/run-cli.core.tasks.active.test.ts      |  49 ++
  .../src/commands/branch/cleanup-merged-proof.ts    | 368 +-------
  .../cleanup-merged-provider-compatibility.ts       | 119 +++
@@ -79,8 +80,9 @@ All 12 corrected Verify Steps passed literally after ORCHESTRATOR approval at
  packages/core/src/git/git-client.ts                |  28 +-
  packages/core/src/git/git-diff.ts                  |  32 +-
  packages/core/src/git/index.ts                     |   3 +
+ scripts/README.md                                  |   1 +
  scripts/baselines/knip-baseline.json               |  66 +-
- 49 files changed, 5849 insertions(+), 528 deletions(-)
+ 51 files changed, 5851 insertions(+), 528 deletions(-)
 ```
 
 </details>
