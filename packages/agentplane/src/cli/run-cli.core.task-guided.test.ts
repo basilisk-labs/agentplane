@@ -134,7 +134,9 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
         root,
       ]);
       expect(code).toBe(3);
-      expect(legacyApprovalIo.stderr).toContain("cannot approve the generated planning placeholder");
+      expect(legacyApprovalIo.stderr).toContain(
+        "cannot approve the generated planning placeholder",
+      );
     } finally {
       legacyApprovalIo.restore();
     }

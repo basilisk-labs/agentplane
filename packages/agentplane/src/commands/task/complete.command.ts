@@ -50,7 +50,8 @@ export const taskCompleteSpec: CommandSpec<TaskCompleteParsed> = {
       name: "by",
       valueHint: "<id>",
       default: "CODER",
-      description: "Compatibility actor id; used for PR guidance and unsafe-override audit history.",
+      description:
+        "Compatibility actor id; used for PR guidance and unsafe-override audit history.",
     },
     {
       kind: "string",
