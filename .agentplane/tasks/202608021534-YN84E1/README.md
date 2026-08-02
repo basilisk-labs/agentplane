@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -63,8 +63,8 @@ quality_review:
     - "The only implementation delta since the accepted semantic review is Prettier line wrapping in the guided lifecycle test and task complete option description; no control flow, provenance, gate, or assertion meaning changed."
     - "Fresh verification record binds the complete declared suite to 15c1edc58761832097756ba8bc56cc78181fd2f8, closing the stale-evidence condition exposed by the rework."
 commit:
-  hash: "534adaa8862d7e22e360aa21d47199bf4d1802e5"
-  message: "🛡️ YN84E1 code: close evaluator rework gaps"
+  hash: "a47c0ec01b991c13340e236c6b98a91a9fdc3f29"
+  message: "✅ YN84E1 task: record current-head evaluator pass"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -125,8 +128,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass."
+  -
+    type: "status"
+    at: "2026-08-02T20:41:49.624Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T20:38:35.251Z"
+doc_updated_at: "2026-08-02T20:41:49.624Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -256,6 +266,9 @@ sections:
       Impact: PR integration was blocked; no functional regression was observed.
       Resolution: Formatted the two files, rebuilt the repo-local runtime, and reran all declared gates successfully.
 extensions:
+  implementation_commit:
+    hash: "15c1edc58761832097756ba8bc56cc78181fd2f8"
+    message: "🚧 YN84E1 task: fix guided lifecycle formatting"
   workflow_route_baseline:
     start_head_sha: "ed94f65a0ff27eaf0b0add2413780630a87e838b"
     version: 1
