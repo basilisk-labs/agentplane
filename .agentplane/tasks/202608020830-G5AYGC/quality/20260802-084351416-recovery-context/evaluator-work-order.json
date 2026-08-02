@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020830-G5AYGC-7399834a39f21358295d28df",
+  "prepared_at": "2026-08-02T08:43:51.416Z",
+  "task": {
+    "id": "202608020830-G5AYGC",
+    "revision": 9,
+    "objective": "Disambiguate release evidence task selection\n\nFix post-publish evidence discovery so code tasks tagged release are not treated as release tasks; add regression coverage and record the authoritative v0.7.0 publish result on task 202607221854-XV67TD.",
+    "acceptance_criteria": [
+      "- In scope: make release evidence discovery require semantic release classification (`task_kind=release` or `mutation_scope=release`); add regression coverage for code tasks that merely carry a `release` tag; apply the authoritative publish-result from run 30739430330 to release task 202607221854-XV67TD.\n- Out of scope: republishing v0.7.0, moving its tag, changing release contents, or unrelated task-classification refactors.",
+      "1. Reproduce the ambiguous release-task selection against the authoritative v0.7.0 publish result and isolate the classifier boundary.\n2. Tighten release-task discovery to semantic release kind/scope and add a regression fixture proving tag-only code tasks are excluded.\n3. Run focused tests and repository gates, then apply the exact hosted publish evidence to task 202607221854-XV67TD.\n4. Record independent verification and integrate the follow-up through the protected branch workflow.",
+      "1. Run `bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: all tests pass, including a case where a DONE code task tagged `release` and `v0.7` is not selected as the release task.\n2. Run `bun scripts/release-task-evidence.mjs prepare --publish-result <authoritative-v0.7.0-result> --json`. Expected: it resolves exactly task `202607221854-XV67TD` with no ambiguity.\n3. Run `bun scripts/release-task-evidence.mjs apply --publish-result <authoritative-v0.7.0-result> --task-id 202607221854-XV67TD --json`, then inspect that task README. Expected: exact SHA, tag, workflow run, npm, GHCR, GitHub Release, and external distribution evidence are recorded without changing release state.\n4. Run `ap doctor` and `node .agentplane/policy/check-routing.mjs`. Expected: both repository gates pass.\n5. Review the diff against scope. Expected: no tag movement, republish, version change, or unrelated task mutation."
+    ]
+  },
+  "evaluated_sha": "c1441d8fbae4122d351bd395ee2724a893e49f37",
+  "diff_base_sha": "9a8c2695c104897b26007a3dada75e37f562a840",
+  "blueprint_digest": "378f5e501f18163398259c351c708e9c0616ae6f593384dded2450166b397f57",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020830-G5AYGC/README.md",
+      "sha256": "sha256:ba3e5085f340703ce58d1d42c22f743a1e82daceecb7da25f46822aa2be299e3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020830-G5AYGC/quality/20260802-084351416-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:39ab72cf540557152adacff5f0389684a123dc09bae54bad5f54ef54405cb397",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020830-G5AYGC/quality/20260802-084351416-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:43cd07458b5e363313bc1501f22dcd8568d1c7adfe1500bcf41900292451464b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020830-G5AYGC/quality/20260802-084351416-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:7c32c437387b940280e1385cfa6f65dcd597991bbc1340b53560837919d2aa2a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

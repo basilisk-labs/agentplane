@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The read-only evaluator sandbox cannot independently rerun the focused test because Bun cannot create its temporary directory; frozen verification records a successful writable-environment run at the evaluated SHA.",
+      "broken_invariant": "No implementation invariant is broken; independent rerun capability is constrained by the evaluator authority boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020830-G5AYGC/quality/20260802-084351416-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:43cd07458b5e363313bc1501f22dcd8568d1c7adfe1500bcf41900292451464b",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608020830-G5AYGC/README.md",
+          "sha256": "sha256:ba3e5085f340703ce58d1d42c22f743a1e82daceecb7da25f46822aa2be299e3",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen TESTER verification was executed in an environment permitting temporary-directory creation and corresponds to evaluated SHA c1441d8fbae4122d351bd395ee2724a893e49f37.",
+    "The authoritative publish-result schema guarantees that external module names, repositories, verification SHAs, and PR URLs are trusted evidence values suitable for direct Markdown rendering."
+  ]
+}
