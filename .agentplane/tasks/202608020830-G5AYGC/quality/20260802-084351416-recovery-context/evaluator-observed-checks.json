@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T08:43:11.340Z",
+    "updated_by": "TESTER",
+    "note": "Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts\nResult: pass\nEvidence: 8/8 tests and 32 assertions passed, including tag-only code-task exclusion, semantic ambiguity rejection, evidence rendering, and idempotence.\nScope: focused release evidence discovery and rendering regression.\n\nCommand: bun scripts/release-task-evidence.mjs prepare --release-sha 9a8c2695c104897b26007a3dada75e37f562a840 --publish-result publish-result.json --repo basilisk-labs/agentplane --json\nResult: pass\nEvidence: actionable=true and task_id=202607221854-XV67TD with no ambiguity.\nScope: authoritative v0.7.0 publish-result resolution.\n\nCommand: rg release_sha, ghcr, and external channels in .agentplane/tasks/202607221854-XV67TD/README.md\nResult: pass\nEvidence: exact release SHA plus GHCR and Homebrew, Scoop, setup-agentplane verification SHAs are recorded; verification attempts remain 0.\nScope: hosted publication evidence completeness.\n\nCommand: ap doctor and node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: doctor OK with pre-existing non-blocking archive warnings; policy routing OK.\nScope: repository workflow and policy gates.\n\nCommand: bun run ci:contract and bun run test:critical\nResult: pass\nEvidence: full static contract passed; all 12/12 critical CLI chunks passed at implementation commit c1441d8fbae4122d351bd395ee2724a893e49f37.\nScope: regression matrix and critical CLI compatibility.\n\nCommand: git diff --name-only origin/main...HEAD, git rev-list -n 1 v0.7.0, and npm view agentplane@0.7.0 version\nResult: pass\nEvidence: diff is limited to evidence implementation/tests/task artifacts; tag remains at 9a8c2695c104897b26007a3dada75e37f562a840 and public CLI remains 0.7.0.\nScope: approved boundary and release immutability."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

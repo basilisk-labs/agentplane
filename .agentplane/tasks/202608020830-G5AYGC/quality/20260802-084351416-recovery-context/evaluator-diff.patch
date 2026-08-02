@@ -1,0 +1,203 @@
+diff --git a/.agentplane/tasks/202607221854-XV67TD/README.md b/.agentplane/tasks/202607221854-XV67TD/README.md
+index ce541e3c6..b19809714 100644
+--- a/.agentplane/tasks/202607221854-XV67TD/README.md
++++ b/.agentplane/tasks/202607221854-XV67TD/README.md
+@@ -35,9 +35,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-08-02T08:02:14.241Z"
+-  updated_by: "TESTER"
+-  note: "Fresh typed pre-merge evidence passed at 8338ecabd7cf; exact-SHA publication and postpublish checks remain pending by release design."
++  updated_at: "2026-08-02T08:35:33.305Z"
++  updated_by: "DEUS"
++  note: "Hosted publish confirmed for v0.7.0."
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -112,8 +112,8 @@ events:
+     to: "DONE"
+     note: "Verified: pre-merge closure packet is ready for the task PR."
+ doc_version: 3
+-doc_updated_at: "2026-08-02T08:04:11.872Z"
+-doc_updated_by: "INTEGRATOR"
++doc_updated_at: "2026-08-02T08:35:33.305Z"
++doc_updated_by: "DEUS"
+ description: "Integrate the fully verified RF-00 through RF-27 program, run exact release gates on the final main SHA, publish all packages and GitHub release, audit hosted evidence, and confirm post-publish compatibility."
+ sections:
+   Summary: |-
+@@ -252,6 +252,27 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    <!-- BEGIN HOSTED PUBLISH EVIDENCE -->
++    ### Hosted publish
++
++    - State: ok
++    - Note: Hosted publish confirmed for v0.7.0.
++    - Details:
++      - release_sha: 9a8c2695c104897b26007a3dada75e37f562a840
++      - version: 0.7.0
++      - tag: v0.7.0
++      - @agentplaneorg/core: published_in_run
++      - @agentplaneorg/recipes: published_in_run
++      - agentplane: published_in_run
++      - npm_smoke: pass
++      - github_release: created
++      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.0
++      - ghcr: published
++      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/30739430330
++      - external_homebrew: published | basilisk-labs/homebrew-tap | 2ae08ed63588331b54b35676817f88bf3754b356 | https://github.com/basilisk-labs/homebrew-tap/pull/33
++      - external_scoop: published | basilisk-labs/scoop-bucket | 9a98a27587bbbcce665350d77961be180adffddf | https://github.com/basilisk-labs/scoop-bucket/pull/33
++      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | ae1aede382c729ece324a11c2efed1f0db5da1c8 | https://github.com/basilisk-labs/setup-agentplane/pull/33
++    <!-- END HOSTED PUBLISH EVIDENCE -->
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Before publication, abort the candidate and revert the version/release commit through a new approved task branch.
+@@ -409,6 +430,27 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++<!-- BEGIN HOSTED PUBLISH EVIDENCE -->
++### Hosted publish
++
++- State: ok
++- Note: Hosted publish confirmed for v0.7.0.
++- Details:
++  - release_sha: 9a8c2695c104897b26007a3dada75e37f562a840
++  - version: 0.7.0
++  - tag: v0.7.0
++  - @agentplaneorg/core: published_in_run
++  - @agentplaneorg/recipes: published_in_run
++  - agentplane: published_in_run
++  - npm_smoke: pass
++  - github_release: created
++  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.0
++  - ghcr: published
++  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/30739430330
++  - external_homebrew: published | basilisk-labs/homebrew-tap | 2ae08ed63588331b54b35676817f88bf3754b356 | https://github.com/basilisk-labs/homebrew-tap/pull/33
++  - external_scoop: published | basilisk-labs/scoop-bucket | 9a98a27587bbbcce665350d77961be180adffddf | https://github.com/basilisk-labs/scoop-bucket/pull/33
++  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | ae1aede382c729ece324a11c2efed1f0db5da1c8 | https://github.com/basilisk-labs/setup-agentplane/pull/33
++<!-- END HOSTED PUBLISH EVIDENCE -->
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -417,4 +459,4 @@ DecisionContextRef:
+ - After any package is public, do not overwrite it; stop, record exact partial-publication evidence, and follow the release recovery path with a new patch version.
+ - Preserve all hosted evidence and never rewrite published tags or package versions.
+ 
+-## Findings
++## Findings
+\ No newline at end of file
+diff --git a/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts b/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
+index 59376c647..4ab27c744 100644
+--- a/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
++++ b/packages/agentplane/src/commands/release/release-task-evidence-script.test.ts
+@@ -109,6 +109,7 @@ async function writeTaskReadme(
+       },
+       verification: {
+         state: verificationState,
++        attempts: 2,
+         updated_at: null,
+         updated_by: null,
+         note: null,
+@@ -175,6 +176,18 @@ function buildPublishResult(success = true) {
+       npmSmoke: { passed: true, outcome: "success" },
+       tag: { ensured: true, outcome: "success", existed: false },
+       githubRelease: { created: true, outcome: "success" },
++      ghcr: { published: true, outcome: "success" },
++    },
++    external: {
++      modules: [
++        {
++          name: "homebrew",
++          repository: "basilisk-labs/homebrew-tap",
++          status: "published",
++          prUrl: "https://github.com/basilisk-labs/homebrew-tap/pull/33",
++          verification: { sha: "2ae08ed63588331b54b35676817f88bf3754b356" },
++        },
++      ],
+     },
+     failures: [],
+     job: {
+@@ -327,7 +340,7 @@ describe("release-task-evidence script", () => {
+     expect(payload.task_id).toBe(taskId);
+   }, 60_000);
+ 
+-  it("prefers the unique version-matched release task over an unrelated task changed by the publish SHA", async () => {
++  it("ignores a version-matched code task that only carries release tags", async () => {
+     const root = await initRepo();
+     const releaseTaskId = "202604191130-RELEASE";
+     await writeTaskReadme(root, releaseTaskId, {
+@@ -338,8 +351,10 @@ describe("release-task-evidence script", () => {
+     });
+     await commitAll(root, "merge release task");
+     await writeTaskReadme(root, "202604191131-UNRELATED", {
+-      title: "Close unrelated task",
+-      tags: ["maintenance"],
++      title: "Enforce v0.3.15 release dependency closure",
++      tags: ["release", "v0.3.15"],
++      taskKind: "code",
++      mutationScope: "code",
+     });
+     const releaseSha = await commitAll(root, "close unrelated task before publish");
+     const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+@@ -485,6 +500,11 @@ describe("release-task-evidence script", () => {
+     expect(updated).toContain(
+       "publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/24628440381",
+     );
++    expect(updated).toContain("ghcr: published");
++    expect(updated).toContain(
++      "external_homebrew: published | basilisk-labs/homebrew-tap | 2ae08ed63588331b54b35676817f88bf3754b356 | https://github.com/basilisk-labs/homebrew-tap/pull/33",
++    );
++    expect(updated).toContain("attempts: 2");
+     expect(updated).toContain('updated_by: "DEUS"');
+     expect(updated).toContain('state: "ok"');
+ 
+diff --git a/scripts/release/release-task-evidence.mjs b/scripts/release/release-task-evidence.mjs
+index 401f3dbc6..e48b969f8 100644
+--- a/scripts/release/release-task-evidence.mjs
++++ b/scripts/release/release-task-evidence.mjs
+@@ -141,8 +141,7 @@ async function resolveReleaseTaskIdsFromRegistry(manifest) {
+       : [];
+     const releaseMarked =
+       String(frontmatter.task_kind ?? "").toLowerCase() === "release" ||
+-      String(frontmatter.mutation_scope ?? "").toLowerCase() === "release" ||
+-      tags.some((tag) => tag.toLowerCase() === "release");
++      String(frontmatter.mutation_scope ?? "").toLowerCase() === "release";
+     if (!releaseMarked) continue;
+     const releaseRefs = [frontmatter.title, frontmatter.description, ...tags]
+       .map((value) => String(value ?? "").trim())
+@@ -454,9 +453,24 @@ function renderHostedPublishEvidence(manifest, repo) {
+     `  - github_release: ${manifest.checks.githubRelease.created ? "created" : manifest.checks.githubRelease.outcome}`,
+     `  - release_url: ${releaseUrl}`,
+   ];
++  if (manifest.checks?.ghcr) {
++    lines.push(
++      `  - ghcr: ${manifest.checks.ghcr.published ? "published" : manifest.checks.ghcr.outcome}`,
++    );
++  }
+   if (publishRunUrl) {
+     lines.push(`  - publish_run: ${publishRunUrl}`);
+   }
++  for (const module of manifest.external?.modules ?? []) {
++    const name = String(module.name ?? "external")
++      .trim()
++      .replaceAll(/[^0-9A-Za-z_-]+/gu, "-");
++    const details = [module.status];
++    if (module.repository) details.push(module.repository);
++    if (module.verification?.sha) details.push(module.verification.sha);
++    if (module.prUrl) details.push(module.prUrl);
++    lines.push(`  - external_${name}: ${details.filter(Boolean).join(" | ")}`);
++  }
+   lines.push(HOSTED_PUBLISH_EVIDENCE_END);
+   return lines.join("\n");
+ }
+@@ -519,6 +533,7 @@ async function runApply(argv) {
+   const nextFrontmatter = {
+     ...parsed.frontmatter,
+     verification: {
++      ...parsed.frontmatter.verification,
+       state: "ok",
+       updated_at: at,
+       updated_by: args.author,
