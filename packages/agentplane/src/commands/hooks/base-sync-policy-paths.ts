@@ -1,4 +1,4 @@
-import { gitIsAncestor, gitRevParse } from "@agentplaneorg/core/git";
+import { gitRevParse } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 function nullSeparatedPaths(value: string | Buffer): string[] {
@@ -35,7 +35,7 @@ export async function resolveHookPolicyStagedPaths(opts: {
     if (!mergeHead) return fallback;
 
     const baseHead = await gitRevParse(opts.gitRoot, [`${opts.baseBranch}^{commit}`]);
-    if (!(await gitIsAncestor(opts.gitRoot, mergeHead, baseHead))) return fallback;
+    if (mergeHead !== baseHead) return fallback;
 
     const { stdout } = await execFileAsync(
       "git",

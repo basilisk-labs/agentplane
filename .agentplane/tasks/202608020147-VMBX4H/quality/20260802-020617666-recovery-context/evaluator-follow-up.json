@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608020147-VMBX4H-7a0a6b873141fa90ad8f82e1",
+  "task_id": "202608020147-VMBX4H",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Tighten configured-base merge identification so reachability alone cannot classify non-base merges, then add the missing reachable-topic regression for both hook paths and rerun the declared verification set.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "A non-base merge is misclassified as a configured-base merge whenever its MERGE_HEAD is any ancestor of the current configured base tip.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6c93008f0e6a0cd451121b5d5ed23ad806269c4191583356dd7fbdbb8bc148f3",
+          "section": "packages/agentplane/src/commands/hooks/base-sync-policy-paths.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608020147-VMBX4H/README.md",
+          "sha256": "sha256:c2b2966a434cef33d8700e30ab40559b3bfdd7c9bd573a9bec40c4c7d7258613",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-020617666-recovery-context/evaluator-result.json"
+}

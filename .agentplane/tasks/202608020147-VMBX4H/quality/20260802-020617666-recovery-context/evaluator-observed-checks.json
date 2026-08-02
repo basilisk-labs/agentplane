@@ -1,0 +1,23 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts",
+    "bun run typecheck",
+    "bun run lint:core"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T02:05:42.500Z",
+    "updated_by": "TESTER",
+    "note": "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 18 tests passed, including configured-base positive and task-side negative cases. Scope: hook path attribution and commit-message policy. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint for repository code. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations and Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance: reproduce the original YMYYQ8 configured-base merge before closing this blocker."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

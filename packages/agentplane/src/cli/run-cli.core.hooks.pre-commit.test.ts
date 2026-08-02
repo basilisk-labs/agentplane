@@ -579,4 +579,67 @@ describe("runCli hooks pre-commit guards", () => {
       io.restore();
     }
   });
+
+  it("does not treat a reachable topic merge as a configured-base merge", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeDocsTask(root, taskId);
+    await writeFile(`${root}/README.md`, "base\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore: establish base"], { cwd: root });
+    const baseSha = (
+      await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root })
+    ).stdout.trim();
+
+    await execFileAsync("git", ["checkout", "-b", "topic/already-merged"], { cwd: root });
+    await mkdir(`${root}/src`, { recursive: true });
+    await writeFile(`${root}/src/topic-change.ts`, "export const topicChange = true;\n", "utf8");
+    await execFileAsync("git", ["add", "src/topic-change.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: add topic change"], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", "topic/already-merged", "-m", "merge topic"], {
+      cwd: root,
+    });
+
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/docs-sync`, baseSha], {
+      cwd: root,
+    });
+    await mkdir(`${root}/docs`, { recursive: true });
+    await writeFile(`${root}/docs/guide.mdx`, "# Guide\n", "utf8");
+    await execFileAsync("git", ["add", "docs/guide.mdx"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "docs: add guide"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", "--no-commit", "topic/already-merged"], {
+      cwd: root,
+    });
+
+    const messagePath = `${root}/COMMIT_EDITMSG`;
+    await writeFile(
+      messagePath,
+      "\ud83d\udd00 ABCDEF task: merge topic branch\n\nSigned-off-by: Test User <test@example.com>\n",
+      "utf8",
+    );
+    const preCommitIo = captureStdIO();
+    try {
+      await expect(runCli(["hooks", "run", "pre-commit", "--root", root])).resolves.toBe(5);
+      expect(preCommitIo.stderr).toContain("src/topic-change.ts");
+    } finally {
+      preCommitIo.restore();
+    }
+
+    const commitMsgIo = captureStdIO();
+    try {
+      await expect(
+        runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]),
+      ).resolves.toBe(5);
+      expect(commitMsgIo.stderr).toContain("src/topic-change.ts");
+    } finally {
+      commitMsgIo.restore();
+    }
+  });
 });
