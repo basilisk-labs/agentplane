@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020907-FMGM4Z-73c1d35564437a5d16ef0706",
+  "prepared_at": "2026-08-02T10:30:47.493Z",
+  "task": {
+    "id": "202608020907-FMGM4Z",
+    "revision": 12,
+    "objective": "Assimilate v0.6.26 maintenance fixes into v0.7\n\nAudit every non-main branch, port only missing v0.6.25/v0.6.26 and stale-PR correctness fixes into the current v0.7 architecture, preserve stronger v0.7 contracts, and prove no maintenance regression remains.",
+    "acceptance_criteria": [
+      "Audit origin/codex/fix-v0.6.24-closeout-route at v0.6.26 and every remaining non-main remote task branch except agentplane-loops. Port only correctness or efficiency behavior that current main lacks. Preserve the v0.7 typed supervisor, authority, evidence, retrieval, and TypeScript boundaries. Include focused regression coverage, branch disposition evidence, and any required release follow-up. Do not merge stale branches wholesale and do not modify agentplane-loops.",
+      "1. Classify every non-main remote branch as merged, superseded, dependency-only, or carrying missing behavior. 2. Reproduce each candidate maintenance regression against current main. 3. Implement the minimal compatible fixes and focused tests in one dedicated task worktree. 4. Run focused tests, CLI critical coverage, workflow contracts, typecheck, guards, doctor, and task-state checks. 5. Record evaluator evidence, open a PR, wait for hosted checks, merge through the protected-main route, and clean the task branch/worktree. 6. If runtime code changes, publish a patch release from the merged main.",
+      "1. bun test packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts\n2. Run every added or affected focused test file for assimilated stale-branch behavior.\n3. bun run test:cli:critical\n4. bun run workflows:command-check\n5. bun run lifecycle:invariants\n6. bun run typecheck\n7. bun run guards:check\n8. bun run ci:contract\n9. bun run task-state:check\n10. ap doctor\n11. node .agentplane/policy/check-routing.mjs\n12. Verify every audited remote branch has an explicit disposition and no current-main regression remains."
+    ]
+  },
+  "evaluated_sha": "44958d9dab2f59303e9a75526a25366a65f1f3c4",
+  "diff_base_sha": "3b4ea1fa8e78bf28cd51e6d3fb2eb585533b3a8f",
+  "blueprint_digest": "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+      "sha256": "sha256:bbde2fb35f53384cb689a005ff7c61a767d502a1539424685ae821c2f208393c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:172c3397a4564d0801658aeec63ce159af27844ea668a67f402a61057d50fa10",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:1aed8d7ad80367eeafb7a0450d162590658d74f5158164563f491fbf79c25873",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802103025891-a08a6581525d151f.json",
+      "sha256": "sha256:23fa8a0f098bffc2c14be0ea11e1460e65ee95981262c6bb8d39c8a744906f4e",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+      "sha256": "sha256:e871151b39e2588ce3ce4d8553abc862b8451643d53b7c3897d610b990208db0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-103047493-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:8b922ac4af7fc868b12135f3cd15f6ba267488ba5a20ad88b72634d882c803eb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

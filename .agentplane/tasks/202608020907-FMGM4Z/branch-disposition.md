@@ -18,6 +18,8 @@ Excluded by explicit scope: `origin/agentplane-loops`.
 
 ## v0.6.26 maintenance line
 
+Source branch: `origin/codex/fix-v0.6.24-closeout-route`.
+
 `v0.6.26` and `v0.7.0` diverge from merge base `30f62b82dff28909dcb3ccc2ace2bf3e356203bb`; `v0.6.26` is not an ancestor of `v0.7.0`. The maintenance line contains 18 non-release-artifact implementation commits grouped below.
 
 | Maintenance change | Disposition in v0.7 | Evidence |
@@ -33,12 +35,12 @@ Excluded by explicit scope: `origin/agentplane-loops`.
 
 | Branch / PR | Disposition | Evidence |
 | --- | --- | --- |
-| `origin/task/202607252218-XBHBE5/...` / #4623 | Superseded | KnowledgeRef incident archival already landed through task `202607270445-Y3V80T`. |
-| `origin/task/202607252223-THDN0G/...` / #4626 | Ported compatibly | Command-scoped branch inventory memoization, bounded `task active` fan-out, and read-only runner inspection were adapted to current v0.7. |
-| `origin/task/202607252235-5ZKP6T/...` / #4625 | Ported compatibly | Worktree materialization no longer copies foreign task READMEs; historical replicas receive provenance-gated, revalidated deterministic repair. |
-| `origin/task/202607260005-EMP7RC/...` / #4628 | Ported compatibly | Provider-rebased cleanup now requires canonical commit objects, symmetric patch proof, closure coverage, and provider-snapshot revalidation while preserving later v0.7 authority-tail and GitHub update-head handling. |
-| `origin/task/202607291650-R1N8C5/...` / #4673 | Superseded | Current `gitRefreshBranchTrackingRef` and branch-publication coverage implement the constrained-refspec repair with later v0.7 safeguards. |
-| `origin/task/202607300641-72A55V/...` / #4683 | Superseded | RF-04 archival already landed through task `202607300654-0ANCWF`. |
+| `origin/task/202607252218-XBHBE5/archive-resolved-knowledgeref-guard-incident` / #4623 | Superseded | KnowledgeRef incident archival already landed through task `202607270445-Y3V80T`. |
+| `origin/task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active` / #4626 | Ported compatibly | Command-scoped branch inventory memoization, bounded `task active` fan-out, and read-only runner inspection were adapted to current v0.7. |
+| `origin/task/202607252235-5ZKP6T/prevent-foreign-task-artifacts-in-branch-pr-work` / #4625 | Ported compatibly | Worktree materialization no longer copies foreign task READMEs; historical replicas receive provenance-gated, revalidated deterministic repair. |
+| `origin/task/202607260005-EMP7RC/reconcile-provider-rebased-protected-pr-heads` / #4628 | Ported compatibly | Provider-rebased cleanup now requires canonical commit objects, symmetric patch proof, closure coverage, and provider-snapshot revalidation while preserving later v0.7 authority-tail and GitHub update-head handling. |
+| `origin/task/202607291650-R1N8C5/restore-pr-head-tracking-after-constrained-refsp` / #4673 | Superseded | Current `gitRefreshBranchTrackingRef` and branch-publication coverage implement the constrained-refspec repair with later v0.7 safeguards. |
+| `origin/task/202607300641-72A55V/archive-the-externally-mitigated-rf-04-provider` / #4683 | Superseded | RF-04 archival already landed through task `202607300654-0ANCWF`. |
 
 ## Dependency branches
 
@@ -55,7 +57,7 @@ Dependency updates are not maintenance correctness fixes and are not mixed into 
 
 ## Result
 
-Every non-main remote branch in scope has an explicit disposition. Missing correctness behavior is confined to THDN0G, 5ZKP6T, EMP7RC, and the SHA-bound subset of 773BXT; those changes are implemented in this task. No stale branch is merged wholesale.
+Every non-main remote branch in scope has an explicit disposition. The active FMGM4Z replacement branch is excluded because it is the output of this audit, not an assimilation source. Missing correctness behavior is confined to THDN0G, 5ZKP6T, EMP7RC, and the SHA-bound subset of 773BXT; those changes are implemented in this task. No stale branch is merged wholesale.
 
 ## Verification contract observations
 

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020907-FMGM4Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T10:31:35.361Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "44958d9dab2f59303e9a75526a25366a65f1f3c4",
+  "blueprint_digest": "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8",
+  "findings": [
+    "Two mandatory Verify Steps were replaced with different commands without recorded approval, so the approved verification contract was not satisfied."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+    ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802103025891-a08a6581525d151f.json",
+    ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Execute the two literal mandatory commands from Verify Steps 1 and 3 after correcting the approved verification contract, or record each as a skipped check with reason, risk, and explicit approval before rerunning the canonical substitutes."
+  ],
+  "hidden_assumptions": [
+    "Passing the configured Vitest runner is assumed to be an approved equivalent of the declared Bun test runner.",
+    "The repository's test:critical script is assumed to be an approved equivalent of the nonexistent declared test:cli:critical script."
+  ],
+  "residual_risks": [
+    "Obtain explicit re-approval of the corrected verification commands, update the verification contract through the authorized lifecycle route, and record fresh commit-bound verification evidence against that approved contract before reevaluation."
+  ]
+}

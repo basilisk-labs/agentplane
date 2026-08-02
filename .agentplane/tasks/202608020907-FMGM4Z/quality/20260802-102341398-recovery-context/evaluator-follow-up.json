@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608020907-FMGM4Z-fdbe4973de104bf61a7433c2",
+  "task_id": "202608020907-FMGM4Z",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen evaluator packet with deterministic, commit-bound outputs for the focused suites and every required gate, plus explicit branch-disposition and flake/residual-risk evidence; then repeat semantic evaluation against the same evaluated SHA or a newly frozen SHA.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen verification evidence contains no check records, runner history, or runtime evidence for the evaluated commit; the verification note alone cannot prove the required positive, negative, and concurrency-sensitive paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-102341398-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:383b67319f208ffaf8c36499a10925a9622543cf59b3e01cfd4f33ff18076403",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-102341398-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:8b922ac4af7fc868b12135f3cd15f6ba267488ba5a20ad88b72634d882c803eb",
+          "section": "plan.requiredEvidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+          "sha256": "sha256:cf8b2b226c6e509232ef088788029205ba6cc1848b7d3f4bc3c7f67925bb6127",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-102341398-recovery-context/evaluator-result.json"
+}
