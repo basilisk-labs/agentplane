@@ -107,7 +107,7 @@ describe("v0.7.1 release qualification contract", () => {
           subject,
           head: subject,
           tree: "b".repeat(40),
-          statusPorcelain: " M packages\/agentplane\/src\/cli.ts",
+          statusPorcelain: " M packages/agentplane/src/cli.ts",
         }),
       /candidate repository must be clean/u,
     );
