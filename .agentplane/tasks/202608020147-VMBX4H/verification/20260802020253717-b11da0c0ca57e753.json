@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b11da0c0ca57e753f43219eed5c82a8f70e6d7837de71938203a5ea51fd4ad5e",
+  "implementation_sha": "e0696c7e61bdabf496f895a5a7a9cfc6931525f2",
+  "kind": "task_verification_record",
+  "note": "Verification contract correction required: use the repository Knip baseline gate, not the raw diagnostic binary.",
+  "recorded_at": "2026-08-02T02:02:53.717Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts`. Expected: all hook guard cases pass, including configured-base positive and task-side negative cases.\n2. Run `bun run typecheck`. Expected: TypeScript validation exits 0.\n3. Run `bun run lint:core`. Expected: core lint exits 0.\n4. Run `bun run arch:check && bun run knip`. Expected: architecture boundaries and dependency hygiene pass.\n5. Run `bun run format:check && git diff --check`. Expected: formatting and whitespace checks pass.\n6. Reproduce the blocked YMYYQ8 merge from current main after integration. Expected: both pre-commit and commit-msg hooks accept incoming main implementation/task artifacts while continuing to enforce the docs task-side diff.",
+  "scope_digest": "sha256:741ca27e824c864e33f211dce7f4657ea84a30f5895010d3c6c58b1e4793f60c",
+  "task_id": "202608020147-VMBX4H",
+  "verification_command": "agentplane verify 202608020147-VMBX4H --rework --by TESTER",
+  "verifier": "TESTER"
+}

@@ -15,14 +15,19 @@ When a branch_pr task merges the configured base, pre-commit must evaluate only 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Verification contract correction required: use the repository Knip baseline gate, not the raw
+diagnostic binary.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T01:48:08.791Z
+- Updated: 2026-08-02T01:59:08.696Z
 - Branch: task/202608020147-VMBX4H/base-sync-policy
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
