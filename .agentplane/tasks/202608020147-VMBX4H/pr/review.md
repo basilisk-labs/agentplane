@@ -6,7 +6,7 @@ Created: 2026-08-02T01:48:08.791Z
 
 - Task: `202608020147-VMBX4H`
 - Title: Scope pre-commit mutation policy to task-side base-sync diff
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608020147-VMBX4H/base-sync-policy`
 - Canonical task record: `.agentplane/tasks/202608020147-VMBX4H/README.md`
 
