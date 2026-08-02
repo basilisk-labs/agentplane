@@ -19,8 +19,8 @@ Fix qualification packet generation so lifecycle-only changes to the qualificati
 - Note:
 
 ```text
-Verified the qualification root lifecycle fix on implementation bdfe5b8e3840; focused and full
-repository gates pass.
+Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift
+enforcement pass all declared gates.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,9 +32,11 @@ repository gates pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/evaluator/evaluator-qualification-packet.test.ts | 11 +++++++++++
- packages/agentplane/src/commands/task/qualification-packet.ts |  4 +++-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+ .../evaluator-qualification-packet.test.ts         | 60 ++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   | 21 +++++-
+ .../task/qualification-packet-pinned-task.ts       | 80 ++++++++++++++++++----
+ .../src/commands/task/qualification-packet.ts      | 10 ++-
+ 4 files changed, 153 insertions(+), 18 deletions(-)
 ```
 
 </details>

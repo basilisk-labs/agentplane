@@ -4,7 +4,7 @@ title: "Allow qualification packets to ignore root lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T04:48:24.175Z"
+  updated_at: "2026-08-02T05:00:24.844Z"
   updated_by: "TESTER"
-  note: "Verified the qualification root lifecycle fix on implementation bdfe5b8e3840; focused and full repository gates pass."
+  note: "Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates."
   attempts: 0
 quality_review:
   state: "rework"
@@ -91,8 +91,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implemented rework: dependency IDs now come from the reviewed root document, and current root drift must match the shared lifecycle-only comparator. Added negative coverage for dependency declaration changes and arbitrary root body changes. Checks passed: 24 focused tests, typecheck, test:critical, and ci:contract."
+  -
+    type: "verify"
+    at: "2026-08-02T05:00:24.844Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates."
 doc_version: 3
-doc_updated_at: "2026-08-02T04:59:35.227Z"
+doc_updated_at: "2026-08-02T05:00:25.910Z"
 doc_updated_by: "CODER"
 description: "Fix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior."
 sections:
@@ -138,6 +144,38 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608020432-CCE1A2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T05:00:24.844Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T04:59:35.227Z, excerpt_hash=sha256:8df2fb2790522e59ea2abcf3cfb4a53d0b96cd65634636512bac1675a35005df
+
+    Details:
+
+    Rework target: a728b1134fe36ed3d9625654b85108ace23af33e. Focused regression: evaluator qualification packet plus quality review target suites passed 24/24. Positive coverage: status and workflow_route_baseline lifecycle drift remain accepted. Negative coverage: changed root dependency declarations and arbitrary root body changes are rejected before packet creation; dependency README, PR metadata, quality report, missing/incomplete leaf, cycle, and post-review tamper checks remain fail-closed. Typecheck passed with TypeScript 7.0.2. Doctor passed with only pre-existing repository-history warnings. test:critical passed all 12 chunks. ci:contract passed formatting, schemas, policy routing, compatibility, RF-04 baselines, lifecycle, TypeScript toolchain, architecture, clone, knip, and coverage thresholds. The earlier EVALUATOR RCI-001 finding is addressed by sourcing root dependency IDs from the reviewed root document and independently comparing current root content through the shared lifecycle-only comparator. Downstream acceptance remains the real rc.2 verify after integration.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020432-CCE1A2-allow-qualification-packets-to-ignore-root-lifec/.agentplane/tasks/202608020432-CCE1A2/blueprint/resolved-snapshot.json
+    - old_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+    - current_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020432-CCE1A2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -210,6 +248,38 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608020432-CCE1A2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T05:00:24.844Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified evaluator rework on a728b1134: reviewed-root dependency pinning and lifecycle-only drift enforcement pass all declared gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T04:59:35.227Z, excerpt_hash=sha256:8df2fb2790522e59ea2abcf3cfb4a53d0b96cd65634636512bac1675a35005df
+
+Details:
+
+Rework target: a728b1134fe36ed3d9625654b85108ace23af33e. Focused regression: evaluator qualification packet plus quality review target suites passed 24/24. Positive coverage: status and workflow_route_baseline lifecycle drift remain accepted. Negative coverage: changed root dependency declarations and arbitrary root body changes are rejected before packet creation; dependency README, PR metadata, quality report, missing/incomplete leaf, cycle, and post-review tamper checks remain fail-closed. Typecheck passed with TypeScript 7.0.2. Doctor passed with only pre-existing repository-history warnings. test:critical passed all 12 chunks. ci:contract passed formatting, schemas, policy routing, compatibility, RF-04 baselines, lifecycle, TypeScript toolchain, architecture, clone, knip, and coverage thresholds. The earlier EVALUATOR RCI-001 finding is addressed by sourcing root dependency IDs from the reviewed root document and independently comparing current root content through the shared lifecycle-only comparator. Downstream acceptance remains the real rc.2 verify after integration.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020432-CCE1A2-allow-qualification-packets-to-ignore-root-lifec/.agentplane/tasks/202608020432-CCE1A2/blueprint/resolved-snapshot.json
+- old_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+- current_digest: a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020432-CCE1A2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
