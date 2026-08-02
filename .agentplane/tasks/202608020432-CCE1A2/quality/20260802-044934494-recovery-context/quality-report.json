@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020432-CCE1A2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T04:50:13.825Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "2bb1cb8b8d5c6af0ffa46f35345266558c0bbea3",
+  "blueprint_digest": "a4c56f74d4383dcfdb6e3a1e2210a147336c98db504306ba4b9bbfa39b9745e1",
+  "findings": [
+    "Dependency closure trusts the entire current root task, so post-review removal of a declared dependency can silently remove that dependency from SHA-bound qualification."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020432-CCE1A2/quality/20260802-044934494-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020432-CCE1A2/README.md"
+  ],
+  "missing_tests": [
+    "Add a negative regression test that removes an existing root dependency after the reviewed implementation SHA and confirms packet creation fails closed or still validates the reviewed dependency closure.",
+    "Add a negative regression test for other non-lifecycle root changes after the reviewed SHA to prove the exemption is limited to lifecycle fields."
+  ],
+  "hidden_assumptions": [
+    "The current root task differs from its reviewed-SHA version only in lifecycle fields.",
+    "Root dependency declarations cannot be removed or otherwise altered between the reviewed SHA and packet creation."
+  ],
+  "residual_risks": [
+    "Constrain the root exemption to verified lifecycle-only drift, or derive and validate dependency IDs against the reviewed root so post-review dependency removal cannot shrink the SHA-bound closure. Extend regression coverage beyond the status-only positive case."
+  ]
+}

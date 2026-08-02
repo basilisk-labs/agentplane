@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T04:48:24.175Z",
+    "updated_by": "TESTER",
+    "note": "Verified the qualification root lifecycle fix on implementation bdfe5b8e3840; focused and full repository gates pass."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
