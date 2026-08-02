@@ -8,10 +8,10 @@
   "pr_number": 4747,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4747",
   "pre_merge_closure": {
-    "basis_commit": "a47c0ec01b991c13340e236c6b98a91a9fdc3f29",
+    "basis_commit": "82865faff0b09bdc290b3c9364f44e6863680480",
     "branch": "task/202608021534-YN84E1/harden-the-v0-7-1-guided-lifecycle-and-canonical",
     "pr_number": 4747,
-    "recorded_at": "2026-08-02T20:41:49.688Z",
+    "recorded_at": "2026-08-02T20:52:41.372Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

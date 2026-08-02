@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -63,8 +63,8 @@ quality_review:
     - "PLANNER_SEMANTIC_PLAN_PLACEHOLDER is referenced only inside doc-template.ts, so module-private visibility matches its actual ownership and eliminates the new Knip debt without suppressing the baseline."
     - "The semantic planning placeholder generation and legacy-placeholder detection still use the same constant; focused lifecycle tests 41/41 and typecheck pass on 375dd720e."
 commit:
-  hash: "a47c0ec01b991c13340e236c6b98a91a9fdc3f29"
-  message: "✅ YN84E1 task: record current-head evaluator pass"
+  hash: "82865faff0b09bdc290b3c9364f44e6863680480"
+  message: "✅ YN84E1 task: record dead-code evaluator pass"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -141,8 +144,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full critical/docs/product gates remain unchanged."
+  -
+    type: "status"
+    at: "2026-08-02T20:52:41.322Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T20:50:54.417Z"
+doc_updated_at: "2026-08-02T20:52:41.323Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -307,8 +317,8 @@ sections:
       Resolution: Kept the constant module-private; no call site or control flow changed, and Knip returned to the accepted baseline.
 extensions:
   implementation_commit:
-    hash: "15c1edc58761832097756ba8bc56cc78181fd2f8"
-    message: "🚧 YN84E1 task: fix guided lifecycle formatting"
+    hash: "375dd720e5b88f4d28805af3756b04f7a8d49053"
+    message: "🚧 YN84E1 task: keep planner placeholder internal"
   workflow_route_baseline:
     start_head_sha: "ed94f65a0ff27eaf0b0add2413780630a87e838b"
     version: 1
