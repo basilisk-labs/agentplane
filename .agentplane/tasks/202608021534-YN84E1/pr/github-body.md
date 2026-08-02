@@ -19,8 +19,9 @@ Make task begin stop at a real semantic planning boundary, make task complete fa
 - Note:
 
 ```text
-Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical
-suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass.
+Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided
+lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full
+critical/docs/product gates remain unchanged.
 ```
 - Canonical workflow state lives in the task README.
 
