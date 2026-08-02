@@ -11,6 +11,7 @@ import {
   expect,
   it,
   mkGitRepoRootWithBranch,
+  recordVerificationOk,
   runCli,
   runCliSilent,
   writeConfig,
@@ -616,13 +617,13 @@ describe("runCli route decision commands", () => {
       };
       expect(parsed.applied).toContainEqual(
         expect.objectContaining({
-          code: "approve_plan",
+          code: "semantic_planning_required",
           status: "skipped",
-          reason: "requires_approval_or_provider_action",
+          reason: "not_in_safe_apply_allowlist",
         }),
       );
       expect(parsed.applied).not.toContainEqual(
-        expect.objectContaining({ code: "approve_plan", status: "applied" }),
+        expect.objectContaining({ code: "semantic_planning_required", status: "applied" }),
       );
     } finally {
       repairIo.restore();
@@ -656,15 +657,26 @@ describe("runCli route decision commands", () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: prepare done route fixture"], {
+      cwd: root,
+    });
+    await recordVerificationOk(root, taskId);
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
     await writeFile(
       readmePath,
       readme
-        .replace('status: "TODO"', 'status: "DONE"')
-        .replace(/(verification:\s+state: )"[^"]+"/u, '$1"ok"')
-        .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Merge PR #1"'),
+        .replace('status: "DOING"', 'status: "DONE"')
+        .replace(
+          "commit: null",
+          `commit:\n  hash: "${implementationHead.trim()}"\n  message: "Merge PR #1"`,
+        ),
       "utf8",
     );
     const statusIo = captureStdIO();
@@ -695,6 +707,119 @@ describe("runCli route decision commands", () => {
     expect(parsed.nextAction).toMatchObject({
       code: "refresh_remote_route",
       command: `agentplane task next-action ${taskId} --remote --explain`,
+    });
+  });
+
+  it("invalidates a passing verification record after a semantic branch commit", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Require verification evidence for the current semantic implementation head.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const branch = `task/${taskId}/verification-freshness`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: exercise verification freshness on the task branch.",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: prepare verification fixture"], {
+      cwd: root,
+    });
+
+    await writeFile(path.join(root, "impl.txt"), "first implementation\n", "utf8");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: first implementation"], { cwd: root });
+    const { stdout: firstImplementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      firstImplementationHead.trim(),
+      "--author",
+      "CODER",
+      "--body",
+      "Implementation committed: first semantic implementation.",
+      "--root",
+      root,
+    ]);
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", "--all"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: record fresh verification"], {
+      cwd: root,
+    });
+
+    const [, fresh] = await runJson<{ blockers: { code: string; summary: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(fresh.blockers.map((blocker) => blocker.code)).not.toContain("verification_required");
+
+    await writeFile(path.join(root, "impl.txt"), "second implementation\n", "utf8");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: second implementation"], { cwd: root });
+    const { stdout: secondImplementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      secondImplementationHead.trim(),
+      "--author",
+      "CODER",
+      "--body",
+      "Implementation committed: second semantic implementation.",
+      "--root",
+      root,
+    ]);
+
+    const [, stale] = await runJson<{ blockers: { code: string; summary: string }[] }>([
+      "task",
+      "status",
+      taskId,
+      "--route",
+      "--json",
+      "--root",
+      root,
+    ]);
+    expect(stale.blockers).toContainEqual({
+      code: "verification_required",
+      summary: "the passing verification record does not cover the current implementation head",
     });
   });
 

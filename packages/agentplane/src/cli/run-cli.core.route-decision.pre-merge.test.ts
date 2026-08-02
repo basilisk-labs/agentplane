@@ -138,6 +138,13 @@ async function createClosedPreMergeTask(): Promise<{
     "CODER",
     "--note",
     "Implementation verified before closure.",
+    "--details",
+    [
+      "Command: pre-merge route fixture verification",
+      "Result: pass",
+      "Evidence: implementation fixture committed",
+      "Scope: pre-merge closure route decisions",
+    ].join("\n"),
     "--root",
     root,
   ]);
@@ -225,6 +232,24 @@ async function createClosedPreMergeTask(): Promise<{
     });
   }
   await runCliSilent([
+    "verify",
+    taskId,
+    "--ok",
+    "--by",
+    "CODER",
+    "--note",
+    "Final pre-merge implementation target verified after closure refresh.",
+    "--details",
+    [
+      "Command: final pre-merge route fixture verification",
+      "Result: pass",
+      "Evidence: post-finish lifecycle fixture committed",
+      "Scope: final pre-merge closure route decisions",
+    ].join("\n"),
+    "--root",
+    root,
+  ]);
+  await runCliSilent([
     "evaluator",
     "run",
     taskId,
@@ -284,7 +309,8 @@ async function createClosedPreMergeTask(): Promise<{
   const { stdout: branchHeadRaw } = await execFileAsync("git", ["rev-parse", branchName], {
     cwd: root,
   });
-  return { root, taskId, baseBranch, branchName, branchHeadSha: branchHeadRaw.trim() };
+  const branchHeadSha = branchHeadRaw.trim();
+  return { root, taskId, baseBranch, branchName, branchHeadSha };
 }
 
 describe("pre-merge closure route decisions", () => {
