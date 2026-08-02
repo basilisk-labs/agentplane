@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022128-39YSZ1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T22:08:42.393Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "090b377f541f68647993e9b3c54ac92162cca7e7",
+  "blueprint_digest": "a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565",
+  "findings": [
+    "PASS: route progression is blocked when the recorded verification does not cover the current semantic implementation head, while a fresh signed record unlocks quality review.",
+    "PASS: record schema, task identity, timestamp, result, verifier, note, scope digest, canonical digest, and structured check details are validated before any semantic Git resolution.",
+    "PASS: committed branch snapshot fallback accepts only canonical full hexadecimal refs, constrains task paths to the repository, and fails closed on malformed or unreadable evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-220842234-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

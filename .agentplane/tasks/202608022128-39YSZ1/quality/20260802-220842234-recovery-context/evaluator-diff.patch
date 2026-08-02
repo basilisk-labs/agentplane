@@ -1,0 +1,828 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts
+index 8776fc6fe..482c09818 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts
+@@ -545,7 +545,7 @@ describe("runCli route decision batch ownership", () => {
+     }
+   });
+ 
+-  it("keeps plan approval ahead of included batch delegation in the route oracle", async () => {
++  it("keeps semantic planning ahead of included batch delegation in the route oracle", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+@@ -565,9 +565,9 @@ describe("runCli route decision batch ownership", () => {
+         next_action: { code: string; command: string };
+         route_oracle: { phase: string; authoritativeCheckout: string };
+       };
+-      expect(parsed.next_action.code).toBe("approve_plan");
++      expect(parsed.next_action.code).toBe("semantic_planning_required");
+       expect(parsed.route_oracle).toMatchObject({
+-        phase: "needs_plan_approval",
++        phase: "semantic_planning_required",
+         authoritativeCheckout: "base_checkout",
+       });
+     } finally {
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts
+index dfaf2d542..4b215fc66 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts
+@@ -138,6 +138,13 @@ async function createClosedPreMergeTask(): Promise<{
+     "CODER",
+     "--note",
+     "Implementation verified before closure.",
++    "--details",
++    [
++      "Command: pre-merge route fixture verification",
++      "Result: pass",
++      "Evidence: implementation fixture committed",
++      "Scope: pre-merge closure route decisions",
++    ].join("\n"),
+     "--root",
+     root,
+   ]);
+@@ -224,6 +231,24 @@ async function createClosedPreMergeTask(): Promise<{
+       cwd: root,
+     });
+   }
++  await runCliSilent([
++    "verify",
++    taskId,
++    "--ok",
++    "--by",
++    "CODER",
++    "--note",
++    "Final pre-merge implementation target verified after closure refresh.",
++    "--details",
++    [
++      "Command: final pre-merge route fixture verification",
++      "Result: pass",
++      "Evidence: post-finish lifecycle fixture committed",
++      "Scope: final pre-merge closure route decisions",
++    ].join("\n"),
++    "--root",
++    root,
++  ]);
+   await runCliSilent([
+     "evaluator",
+     "run",
+@@ -284,7 +309,8 @@ async function createClosedPreMergeTask(): Promise<{
+   const { stdout: branchHeadRaw } = await execFileAsync("git", ["rev-parse", branchName], {
+     cwd: root,
+   });
+-  return { root, taskId, baseBranch, branchName, branchHeadSha: branchHeadRaw.trim() };
++  const branchHeadSha = branchHeadRaw.trim();
++  return { root, taskId, baseBranch, branchName, branchHeadSha };
+ }
+ 
+ describe("pre-merge closure route decisions", () => {
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+index ac7e9fe4c..3d8d00ce6 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+@@ -11,6 +11,7 @@ import {
+   expect,
+   it,
+   mkGitRepoRootWithBranch,
++  recordVerificationOk,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -616,13 +617,13 @@ describe("runCli route decision commands", () => {
+       };
+       expect(parsed.applied).toContainEqual(
+         expect.objectContaining({
+-          code: "approve_plan",
++          code: "semantic_planning_required",
+           status: "skipped",
+-          reason: "requires_approval_or_provider_action",
++          reason: "not_in_safe_apply_allowlist",
+         }),
+       );
+       expect(parsed.applied).not.toContainEqual(
+-        expect.objectContaining({ code: "approve_plan", status: "applied" }),
++        expect.objectContaining({ code: "semantic_planning_required", status: "applied" }),
+       );
+     } finally {
+       repairIo.restore();
+@@ -656,15 +657,26 @@ describe("runCli route decision commands", () => {
+       root,
+     ]);
+     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
++    await execFileAsync("git", ["add", "--all"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "task: prepare done route fixture"], {
++      cwd: root,
++    });
++    await recordVerificationOk(root, taskId);
+ 
+     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+     const readme = await readFile(readmePath, "utf8");
++    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
+     await writeFile(
+       readmePath,
+       readme
+-        .replace('status: "TODO"', 'status: "DONE"')
+-        .replace(/(verification:\s+state: )"[^"]+"/u, '$1"ok"')
+-        .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Merge PR #1"'),
++        .replace('status: "DOING"', 'status: "DONE"')
++        .replace(
++          "commit: null",
++          `commit:\n  hash: "${implementationHead.trim()}"\n  message: "Merge PR #1"`,
++        ),
+       "utf8",
+     );
+     const statusIo = captureStdIO();
+@@ -698,6 +710,119 @@ describe("runCli route decision commands", () => {
+     });
+   });
+ 
++  it("invalidates a passing verification record after a semantic branch commit", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    const taskId = await createBranchPrTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Require verification evidence for the current semantic implementation head.",
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++
++    const branch = `task/${taskId}/verification-freshness`;
++    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: exercise verification freshness on the task branch.",
++      "--root",
++      root,
++    ]);
++    await execFileAsync("git", ["add", "--all"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "task: prepare verification fixture"], {
++      cwd: root,
++    });
++
++    await writeFile(path.join(root, "impl.txt"), "first implementation\n", "utf8");
++    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "feat: first implementation"], { cwd: root });
++    const { stdout: firstImplementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--commit",
++      firstImplementationHead.trim(),
++      "--author",
++      "CODER",
++      "--body",
++      "Implementation committed: first semantic implementation.",
++      "--root",
++      root,
++    ]);
++    await recordVerificationOk(root, taskId);
++    await execFileAsync("git", ["add", "--all"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "task: record fresh verification"], {
++      cwd: root,
++    });
++
++    const [, fresh] = await runJson<{ blockers: { code: string; summary: string }[] }>([
++      "task",
++      "status",
++      taskId,
++      "--route",
++      "--json",
++      "--root",
++      root,
++    ]);
++    expect(fresh.blockers.map((blocker) => blocker.code)).not.toContain("verification_required");
++
++    await writeFile(path.join(root, "impl.txt"), "second implementation\n", "utf8");
++    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "feat: second implementation"], { cwd: root });
++    const { stdout: secondImplementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    await runCliSilent([
++      "task",
++      "set-status",
++      taskId,
++      "DOING",
++      "--commit",
++      secondImplementationHead.trim(),
++      "--author",
++      "CODER",
++      "--body",
++      "Implementation committed: second semantic implementation.",
++      "--root",
++      root,
++    ]);
++
++    const [, stale] = await runJson<{ blockers: { code: string; summary: string }[] }>([
++      "task",
++      "status",
++      taskId,
++      "--route",
++      "--json",
++      "--root",
++      root,
++    ]);
++    expect(stale.blockers).toContainEqual({
++      code: "verification_required",
++      summary: "the passing verification record does not cover the current implementation head",
++    });
++  });
++
+   it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+index b05108a1b..1ae467638 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+@@ -1,35 +1,11 @@
+-import { createHash } from "node:crypto";
+-import { readdir, readFile, realpath, stat } from "node:fs/promises";
++import { readFile, realpath, stat } from "node:fs/promises";
+ import path from "node:path";
+-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ 
+-import type { TaskData } from "../../backends/task-backend.js";
+-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+-import { parseVerificationCheckDetails } from "../shared/verification-details.js";
++export { verificationRecordPaths } from "../shared/task-verification-records.js";
+ 
+ const RUNTIME_EVIDENCE_PREFIX = ".agentplane/cache/";
+ const MAX_RUNTIME_EVIDENCE_FILES = 16;
+ 
+-type VerificationRecordTargetContext = {
+-  gitRoot: string;
+-  workflowDir: string;
+-  taskIds?: readonly string[];
+-  workflowMode?: "direct" | "branch_pr";
+-};
+-
+-function sha256(value: string): `sha256:${string}` {
+-  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+-}
+-
+-function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
+-  const verifySteps = task.sections?.["Verify Steps"];
+-  return typeof verifySteps === "string" && verifySteps.trim() ? sha256(verifySteps.trim()) : null;
+-}
+-
+-function hasConcreteCheckDetails(details: unknown): boolean {
+-  return parseVerificationCheckDetails(details) !== null;
+-}
+-
+ function detailsEvidencePaths(details: unknown): string[] {
+   if (typeof details !== "string" || !details.trim()) return [];
+   return details
+@@ -72,100 +48,6 @@ async function verifiedRuntimeEvidencePath(opts: {
+   }
+ }
+ 
+-function hasValidRecordDigest(record: Record<string, unknown>): boolean {
+-  const { digest, ...payload } = record;
+-  return (
+-    typeof digest === "string" &&
+-    /^sha256:[a-f0-9]{64}$/u.test(digest) &&
+-    digest === sha256(JSON.stringify(canonicalizeJson(payload)))
+-  );
+-}
+-
+-async function matchesCurrentVerification(
+-  raw: unknown,
+-  task: TaskData,
+-  evaluatedSha: string | null,
+-  targetContext?: VerificationRecordTargetContext,
+-): Promise<boolean> {
+-  const verification = task.verification;
+-  const scopeDigest = verifyStepsDigest(task);
+-  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
+-    return false;
+-  }
+-  const record = raw as Record<string, unknown>;
+-  const implementationSha =
+-    typeof record.implementation_sha === "string" ? record.implementation_sha : null;
+-  const matchesEvaluatedTarget =
+-    implementationSha === evaluatedSha ||
+-    (implementationSha !== null &&
+-      targetContext !== undefined &&
+-      (await resolveQualityReviewTargetSha({
+-        gitRoot: targetContext.gitRoot,
+-        workflowDir: targetContext.workflowDir,
+-        taskId: task.id,
+-        taskIds: targetContext.taskIds,
+-        headSha: implementationSha,
+-        previousEvaluatedSha: evaluatedSha,
+-        workflowMode: targetContext.workflowMode,
+-      })) === evaluatedSha);
+-  return (
+-    record.schema_version === 1 &&
+-    record.kind === "task_verification_record" &&
+-    record.task_id === task.id &&
+-    record.recorded_at === verification.updated_at &&
+-    record.result === verification.state &&
+-    record.verifier === verification.updated_by &&
+-    record.note === verification.note &&
+-    matchesEvaluatedTarget &&
+-    record.scope_digest === scopeDigest &&
+-    hasValidRecordDigest(record) &&
+-    hasConcreteCheckDetails(record.details)
+-  );
+-}
+-
+-async function isAcceptedVerificationRecord(
+-  filePath: string,
+-  task: TaskData,
+-  evaluatedSha: string | null,
+-  targetContext?: VerificationRecordTargetContext,
+-): Promise<boolean> {
+-  try {
+-    return await matchesCurrentVerification(
+-      JSON.parse(await readFile(filePath, "utf8")),
+-      task,
+-      evaluatedSha,
+-      targetContext,
+-    );
+-  } catch {
+-    return false;
+-  }
+-}
+-
+-export async function verificationRecordPaths(
+-  taskRoot: string,
+-  task: TaskData,
+-  evaluatedSha: string | null,
+-  targetContext?: VerificationRecordTargetContext,
+-): Promise<string[]> {
+-  try {
+-    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
+-    const candidates = entries
+-      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+-      .map((entry) => path.join(taskRoot, "verification", entry.name))
+-      .toSorted();
+-    const accepted = await Promise.all(
+-      candidates.map(async (filePath) => ({
+-        filePath,
+-        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha, targetContext),
+-      })),
+-    );
+-    return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
+-  } catch (error) {
+-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
+-    throw error;
+-  }
+-}
+-
+ /**
+  * Resolves only regular local runtime artifacts explicitly cited by a current,
+  * accepted verification record. The path boundary prevents verification prose
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 8ea900758..7b07ea2a9 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -19,6 +19,7 @@ import {
+   type TaskWorktreeCleanliness,
+ } from "./task-worktree-cleanliness.js";
+ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
++import { hasAcceptedVerificationRecord } from "./task-verification-records.js";
+ import {
+   filterTaskWorktreeBlockingPaths,
+   isTaskArtifactPath,
+@@ -276,20 +277,73 @@ export function addTaskWorktreeCleanlinessBlocker(opts: {
+ export function addVerificationRequiredBlocker(opts: {
+   blockers: RouteBlocker[];
+   task: TaskData;
++  acceptedVerificationRecord?: boolean;
+ }): void {
+   const status = String(opts.task.status).toUpperCase();
+   const hasRecordedImplementationCommit =
+     typeof opts.task.commit?.hash === "string" && opts.task.commit.hash.trim().length > 0;
+   const requiresVerification =
+     status === "DONE" || (status === "DOING" && hasRecordedImplementationCommit);
+-  if (!requiresVerification || opts.task.verification?.state === "ok") {
++  if (
++    !requiresVerification ||
++    (opts.task.verification?.state === "ok" && opts.acceptedVerificationRecord !== false)
++  ) {
+     return;
+   }
+   addBlocker(
+     opts.blockers,
+     "verification_required",
+-    "the recorded task implementation does not have a passing verification record",
++    opts.task.verification?.state === "ok"
++      ? "the passing verification record does not cover the current implementation head"
++      : "the recorded task implementation does not have a passing verification record",
++  );
++}
++
++async function hasAcceptedVerificationForCurrentImplementation(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  resume: TaskResumeContext;
++  prFlow: PrFlowStatusReport | null;
++  batchOwnership: RouteBatchOwnership;
++}): Promise<boolean> {
++  const taskIds =
++    opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
++  const headSha =
++    (opts.prFlow?.branch.headSha ??
++      opts.resume.head_sha ??
++      (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash.trim() : "")) ||
++    null;
++  if (!headSha) return false;
++  const evaluatedSha = await resolveQualityReviewTargetSha({
++    gitRoot: opts.ctx.resolvedProject.gitRoot,
++    workflowDir: opts.ctx.config.paths.workflow_dir,
++    taskId: opts.task.id,
++    taskIds,
++    lifecycleTaskIds: taskIds,
++    headSha,
++    previousEvaluatedSha:
++      opts.task.quality_review?.evaluated_sha ??
++      (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash : null),
++    workflowMode: "branch_pr",
++  }).catch(() => null);
++  if (!evaluatedSha) return false;
++  const taskRoot = path.join(
++    opts.ctx.resolvedProject.gitRoot,
++    opts.ctx.config.paths.workflow_dir,
++    opts.task.id,
+   );
++  return await hasAcceptedVerificationRecord({
++    taskRoot,
++    task: opts.task,
++    evaluatedSha,
++    targetContext: {
++      gitRoot: opts.ctx.resolvedProject.gitRoot,
++      workflowDir: opts.ctx.config.paths.workflow_dir,
++      taskIds,
++      workflowMode: "branch_pr",
++    },
++    snapshotRef: opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? null,
++  }).catch(() => false);
+ }
+ 
+ export async function deriveBlockers(opts: {
+@@ -328,7 +382,14 @@ export async function deriveBlockers(opts: {
+     });
+   }
+   if (opts.workflowMode === "branch_pr") {
+-    addVerificationRequiredBlocker({ blockers, task: opts.task });
++    addVerificationRequiredBlocker({
++      blockers,
++      task: opts.task,
++      acceptedVerificationRecord:
++        opts.task.verification?.state === "ok"
++          ? await hasAcceptedVerificationForCurrentImplementation(opts)
++          : undefined,
++    });
+   }
+   if (opts.workflowMode === "branch_pr") {
+     addConflictReworkBlockers(blockers, opts.conflictRework);
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
+index 829cf21e1..9abeeecaa 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts
+@@ -90,6 +90,42 @@ describe("route task-worktree blockers", () => {
+     expect(blockers).toEqual([]);
+   });
+ 
++  it("requires a fresh accepted verification record for the current implementation", () => {
++    const task = {
++      id: "T-1",
++      title: "Task",
++      description: "Task",
++      status: "DOING",
++      priority: "med",
++      owner: "CODER",
++      depends_on: [],
++      tags: [],
++      verify: ["bun test"],
++      verification: { state: "ok" as const },
++      commit: { hash: "abc123", message: "feat: implementation" },
++    };
++    const staleBlockers: RouteBlocker[] = [];
++    addVerificationRequiredBlocker({
++      blockers: staleBlockers,
++      task,
++      acceptedVerificationRecord: false,
++    });
++    expect(staleBlockers).toEqual([
++      {
++        code: "verification_required",
++        summary: "the passing verification record does not cover the current implementation head",
++      },
++    ]);
++
++    const freshBlockers: RouteBlocker[] = [];
++    addVerificationRequiredBlocker({
++      blockers: freshBlockers,
++      task,
++      acceptedVerificationRecord: true,
++    });
++    expect(freshBlockers).toEqual([]);
++  });
++
+   it("requires every path to be clean once the route reaches integration", () => {
+     expect(
+       collect({
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.test.ts b/packages/agentplane/src/commands/shared/task-verification-records.test.ts
+new file mode 100644
+index 000000000..6695a03e1
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-verification-records.test.ts
+@@ -0,0 +1,69 @@
++import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++
++const gitRevParse = vi.hoisted(() => vi.fn());
++
++vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
++  ...(await importOriginal<Record<string, unknown>>()),
++  gitRevParse,
++}));
++
++import { verificationRecordPaths } from "./task-verification-records.js";
++
++const tempRoots: string[] = [];
++
++afterEach(async () => {
++  gitRevParse.mockReset();
++  await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++
++describe("task verification records", () => {
++  it("rejects stale record metadata before resolving semantic Git history", async () => {
++    const gitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-record-"));
++    tempRoots.push(gitRoot);
++    const taskId = "T-1";
++    const taskRoot = path.join(gitRoot, ".agentplane", "tasks", taskId);
++    const verificationDir = path.join(taskRoot, "verification");
++    await mkdir(verificationDir, { recursive: true });
++    await writeFile(
++      path.join(verificationDir, "stale.json"),
++      `${JSON.stringify({
++        implementation_sha: "b".repeat(40),
++        recorded_at: "2026-01-01T00:00:00.000Z",
++      })}\n`,
++      "utf8",
++    );
++    const task = {
++      id: taskId,
++      title: "Task",
++      description: "Task",
++      status: "DOING",
++      priority: "med",
++      owner: "CODER",
++      depends_on: [],
++      tags: ["code"],
++      verify: ["bun test"],
++      verification: {
++        state: "ok" as const,
++        updated_at: "2026-01-02T00:00:00.000Z",
++        updated_by: "TESTER",
++        note: "Current verification",
++      },
++      sections: { "Verify Steps": "Run bun test. Expected: pass." },
++    } satisfies TaskData;
++
++    await expect(
++      verificationRecordPaths(taskRoot, task, "a".repeat(40), {
++        gitRoot,
++        workflowDir: ".agentplane/tasks",
++        taskIds: [taskId],
++        workflowMode: "branch_pr",
++      }),
++    ).resolves.toEqual([]);
++    expect(gitRevParse).not.toHaveBeenCalled();
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/task-verification-records.ts b/packages/agentplane/src/commands/shared/task-verification-records.ts
+new file mode 100644
+index 000000000..de5042b9a
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-verification-records.ts
+@@ -0,0 +1,196 @@
++import { createHash } from "node:crypto";
++import { readdir, readFile } from "node:fs/promises";
++import path from "node:path";
++import { gitEnv, gitShowFile, toGitPath } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
++import { parseVerificationCheckDetails } from "./verification-details.js";
++
++export type VerificationRecordTargetContext = {
++  gitRoot: string;
++  workflowDir: string;
++  taskIds?: readonly string[];
++  workflowMode?: "direct" | "branch_pr";
++};
++
++function sha256(value: string): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
++  const verifySteps = task.sections?.["Verify Steps"];
++  return typeof verifySteps === "string" && verifySteps.trim() ? sha256(verifySteps.trim()) : null;
++}
++
++function hasConcreteCheckDetails(details: unknown): boolean {
++  return parseVerificationCheckDetails(details) !== null;
++}
++
++function hasValidRecordDigest(record: Record<string, unknown>): boolean {
++  const { digest, ...payload } = record;
++  return (
++    typeof digest === "string" &&
++    /^sha256:[a-f0-9]{64}$/u.test(digest) &&
++    digest === sha256(JSON.stringify(canonicalizeJson(payload)))
++  );
++}
++
++async function matchesCurrentVerification(
++  raw: unknown,
++  task: TaskData,
++  evaluatedSha: string | null,
++  targetContext?: VerificationRecordTargetContext,
++): Promise<boolean> {
++  const verification = task.verification;
++  const scopeDigest = verifyStepsDigest(task);
++  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
++    return false;
++  }
++  const record = raw as Record<string, unknown>;
++  if (
++    record.schema_version !== 1 ||
++    record.kind !== "task_verification_record" ||
++    record.task_id !== task.id ||
++    record.recorded_at !== verification.updated_at ||
++    record.result !== verification.state ||
++    record.verifier !== verification.updated_by ||
++    record.note !== verification.note ||
++    record.scope_digest !== scopeDigest ||
++    !hasValidRecordDigest(record) ||
++    !hasConcreteCheckDetails(record.details)
++  ) {
++    return false;
++  }
++  const implementationSha =
++    typeof record.implementation_sha === "string" ? record.implementation_sha : null;
++  return (
++    implementationSha === evaluatedSha ||
++    (implementationSha !== null &&
++      targetContext !== undefined &&
++      (await resolveQualityReviewTargetSha({
++        gitRoot: targetContext.gitRoot,
++        workflowDir: targetContext.workflowDir,
++        taskId: task.id,
++        taskIds: targetContext.taskIds,
++        headSha: implementationSha,
++        previousEvaluatedSha: evaluatedSha,
++        workflowMode: targetContext.workflowMode,
++      })) === evaluatedSha)
++  );
++}
++
++async function isAcceptedVerificationRecord(
++  filePath: string,
++  task: TaskData,
++  evaluatedSha: string | null,
++  targetContext?: VerificationRecordTargetContext,
++): Promise<boolean> {
++  try {
++    return await matchesCurrentVerification(
++      JSON.parse(await readFile(filePath, "utf8")),
++      task,
++      evaluatedSha,
++      targetContext,
++    );
++  } catch {
++    return false;
++  }
++}
++
++export async function verificationRecordPaths(
++  taskRoot: string,
++  task: TaskData,
++  evaluatedSha: string | null,
++  targetContext?: VerificationRecordTargetContext,
++): Promise<string[]> {
++  try {
++    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
++    const candidates = entries
++      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
++      .map((entry) => path.join(taskRoot, "verification", entry.name))
++      .toSorted();
++    const accepted = await Promise.all(
++      candidates.map(async (filePath) => ({
++        filePath,
++        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha, targetContext),
++      })),
++    );
++    return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
++    throw error;
++  }
++}
++
++async function verificationRecordsFromGitSnapshot(opts: {
++  gitRoot: string;
++  taskRoot: string;
++  ref: string;
++}): Promise<unknown[]> {
++  if (!/^[0-9a-f]{40,64}$/u.test(opts.ref)) return [];
++  const taskRootRelative = toGitPath(path.relative(opts.gitRoot, opts.taskRoot));
++  if (
++    !taskRootRelative ||
++    taskRootRelative === ".." ||
++    taskRootRelative.startsWith("../") ||
++    path.isAbsolute(taskRootRelative)
++  ) {
++    return [];
++  }
++  const verificationPrefix = `${taskRootRelative}/verification/`;
++  try {
++    const { stdout } = await execFileAsync(
++      "git",
++      ["ls-tree", "-r", "--name-only", "-z", opts.ref, "--", verificationPrefix],
++      { cwd: opts.gitRoot, env: gitEnv(), encoding: "buffer" },
++    );
++    const names = (Buffer.isBuffer(stdout) ? stdout.toString("utf8") : String(stdout))
++      .split("\0")
++      .filter(
++        (name) =>
++          name.startsWith(verificationPrefix) &&
++          name.endsWith(".json") &&
++          !name.slice(verificationPrefix.length).includes("/"),
++      )
++      .toSorted();
++    return await Promise.all(
++      names.map(
++        async (name): Promise<unknown> =>
++          JSON.parse(await gitShowFile(opts.gitRoot, opts.ref, name)) as unknown,
++      ),
++    );
++  } catch {
++    return [];
++  }
++}
++
++export async function hasAcceptedVerificationRecord(opts: {
++  taskRoot: string;
++  task: TaskData;
++  evaluatedSha: string | null;
++  targetContext?: VerificationRecordTargetContext;
++  snapshotRef?: string | null;
++}): Promise<boolean> {
++  const localRecords = await verificationRecordPaths(
++    opts.taskRoot,
++    opts.task,
++    opts.evaluatedSha,
++    opts.targetContext,
++  );
++  if (localRecords.length > 0) return true;
++  if (!opts.snapshotRef || !opts.targetContext) return false;
++  const snapshotRecords = await verificationRecordsFromGitSnapshot({
++    gitRoot: opts.targetContext.gitRoot,
++    taskRoot: opts.taskRoot,
++    ref: opts.snapshotRef,
++  });
++  const accepted = await Promise.all(
++    snapshotRecords.map((record) =>
++      matchesCurrentVerification(record, opts.task, opts.evaluatedSha, opts.targetContext),
++    ),
++  );
++  return accepted.some(Boolean);
++}
