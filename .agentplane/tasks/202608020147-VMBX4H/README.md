@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -56,8 +56,8 @@ quality_review:
   findings:
     - "Configured-base detection depends on the mutable current base tip, so a concurrent base advance after merge start makes the hook fall back to the full staged-path set and misattributes incoming base changes to the active task."
 commit:
-  hash: "97ccd56e30db87970246b331fee2a48ec074aaf3"
-  message: "🧪 VMBX4H workflow: satisfy topic regression lint"
+  hash: "b216a1aab48031196114f1d64429754c9daddf36"
+  message: "🐛 VMBX4H workflow: recognize historical base sync tips"
 comments:
   -
     author: "CODER"
@@ -71,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Rework complete: exact-base identity enforced; reachable-topic regression now passes for pre-commit and commit-msg and satisfies lint."
+  -
+    author: "CODER"
+    body: "Rework: classify historical configured-base tips through first-parent history, preserving concurrent base advances while rejecting side-parent topic merges."
 events:
   -
     type: "status"
@@ -118,8 +121,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 19 tests passed; exact-base positive, task-side implementation negative, and reachable non-base topic negative cover both hooks. Scope: merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0 after the evaluator rework. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge."
+  -
+    type: "status"
+    at: "2026-08-02T02:17:47.105Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: classify historical configured-base tips through first-parent history, preserving concurrent base advances while rejecting side-parent topic merges."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:13:49.712Z"
+doc_updated_at: "2026-08-02T02:17:47.105Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
