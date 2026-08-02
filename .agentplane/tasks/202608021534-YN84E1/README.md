@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -64,8 +64,8 @@ quality_review:
     - "The Hermes assertion now verifies the more precise bounded return condition emitted for an unplanned task; raw shell execution remains disabled and control still returns after one typed semantic boundary."
     - "Both changed suites pass 24/24, and all six files affected by parallel local contention pass serially 67/67 without timeout changes or assertion weakening."
 commit:
-  hash: "82865faff0b09bdc290b3c9364f44e6863680480"
-  message: "✅ YN84E1 task: record dead-code evaluator pass"
+  hash: "b0e9412c3f96ba4864609583866c9096b0c04601"
+  message: "✅ YN84E1 task: record unit evaluator pass"
 comments:
   -
     author: "CODER"
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -158,8 +161,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior critical/docs/product gates pass."
+  -
+    type: "status"
+    at: "2026-08-02T21:19:13.489Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T21:17:16.753Z"
+doc_updated_at: "2026-08-02T21:19:13.491Z"
 doc_updated_by: "CODER"
 description: "Make task begin stop at a real semantic planning boundary, make task complete fail closed without observed checks plus evaluator or explicit human receipt, keep compatibility flows advanced-only, and cap default help at 10-12 canonical operations centered on task advance and task run."
 sections:
@@ -358,8 +368,8 @@ sections:
       Resolution: Updated only the two obsolete expectations, then passed their focused set and all six locally affected files sequentially without increasing timeouts or weakening assertions.
 extensions:
   implementation_commit:
-    hash: "375dd720e5b88f4d28805af3756b04f7a8d49053"
-    message: "🚧 YN84E1 task: keep planner placeholder internal"
+    hash: "5d684b345cf63fd83f9cfa171af88c8cdf5eee8a"
+    message: "🧪 YN84E1 code: align fixtures with planner boundary"
   workflow_route_baseline:
     start_head_sha: "ed94f65a0ff27eaf0b0add2413780630a87e838b"
     version: 1
