@@ -6,7 +6,7 @@ Created: 2026-08-02T04:39:09.970Z
 
 - Task: `202608020432-CCE1A2`
 - Title: Allow qualification packets to ignore root lifecycle drift
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608020432-CCE1A2/allow-qualification-packets-to-ignore-root-lifec`
 - Canonical task record: `.agentplane/tasks/202608020432-CCE1A2/README.md`
 
