@@ -356,6 +356,41 @@ describe("quality review target resolver", () => {
     await expect(resolveTarget({ root, taskId })).resolves.toBe(mergeShaOutput.trim());
   });
 
+  it("ignores a base-sync merge whose task-side delta contains only managed artifacts", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-MANAGED-MERGE";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/managed-base-sync"], { cwd: root });
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/quality/prior/quality-report.json`,
+      "{}\n",
+      "test: record managed evaluator artifact",
+    );
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/README.md",
+      "unrelated base task state\n",
+      "docs: advance unrelated base task",
+    );
+    await execFileAsync("git", ["checkout", "task/managed-base-sync"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
+      cwd: root,
+    });
+
+    await expect(resolveTarget({ root, taskId })).resolves.toBeNull();
+  });
+
   it("selects a new independently reviewable task metadata work unit", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-METADATA";

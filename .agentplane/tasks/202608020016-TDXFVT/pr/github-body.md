@@ -16,7 +16,7 @@ Fix branch_pr evaluator packet preparation so a merge of current main into a tas
 ## Verification
 
 - State: ok
-- Note: Merge-aware evaluator packet regression and compatibility checks passed.
+- Note: Hosted static-analysis rework is resolved and the full local verify-static surface passes.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +27,10 @@ Fix branch_pr evaluator packet preparation so a merge of current main into a tas
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-runtime-evidence.test.ts   | 88 ++++++++++++++++++++++
- .../commands/shared/quality-review-target.test.ts  | 38 ++++++++++
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 93 ++++++++++++++++++++++
+ .../commands/shared/quality-review-target.test.ts  | 38 +++++++++
  .../src/commands/shared/quality-review-target.ts   | 62 +++++++++++++++
- 3 files changed, 188 insertions(+)
+ 3 files changed, 193 insertions(+)
 ```
 
 </details>
