@@ -1,0 +1,22 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run typecheck",
+    "node scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs --subject HEAD --out .agentplane/cache/v0.7.1-matched-cli-latency.json"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T18:58:30.659Z",
+    "updated_by": "TESTER",
+    "note": "Exact SHA 8947e7cb10cd5c2e84433c66b3a08a80adf8f35c verified: the hosted default-branch failure is reproduced and fixed; evaluator suite passes 21/21 with global Git config disabled; production runtime is unchanged from the passing 9ee3 benchmark and ci:contract."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

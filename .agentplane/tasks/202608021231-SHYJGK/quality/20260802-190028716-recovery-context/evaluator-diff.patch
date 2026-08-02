@@ -1,0 +1,3875 @@
+diff --git a/packages/agentplane/package.json b/packages/agentplane/package.json
+index 1bcae63cf..fbf166007 100644
+--- a/packages/agentplane/package.json
++++ b/packages/agentplane/package.json
+@@ -51,6 +51,11 @@
+     "dist/.build-manifest.json",
+     "dist/cli.d.ts",
+     "dist/cli.js",
++    "dist/command-help.json",
++    "dist/command-catalog.js",
++    "dist/command-catalog/core-fast.js",
++    "dist/command-catalog/task-read.js",
++    "dist/deferred-runtime.js",
+     "assets",
+     "README.md",
+     "LICENSE"
+@@ -62,7 +67,7 @@
+   "scripts": {
+     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
+     "build": "npm run clean && node ../../scripts/checks/run-typescript-build.mjs --force && npm run build:bundle",
+-    "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .",
++    "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/generate-cli-help-catalog.mjs . && node ../../scripts/release/manifest.mjs build .",
+     "typecheck": "node ../../scripts/checks/run-typescript-build.mjs",
+     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project agentplane",
+     "prepack": "npm run clean && npm run build && node ../../scripts/release/manifest.mjs sanitize .",
+diff --git a/packages/agentplane/src/cli-bun.ts b/packages/agentplane/src/cli-bun.ts
+new file mode 100644
+index 000000000..4d9ae6374
+--- /dev/null
++++ b/packages/agentplane/src/cli-bun.ts
+@@ -0,0 +1,31 @@
++import {
++  BUILTIN_AGENTPLANE_ASSETS,
++  BUILTIN_AGENTPLANE_ASSETS_HASH,
++} from "./shared/builtin-assets.generated.js";
++
++const globals = globalThis as Record<string, unknown>;
++globals.__AGENTPLANE_BUILTIN_ASSETS__ = {
++  assets: BUILTIN_AGENTPLANE_ASSETS,
++  hash: BUILTIN_AGENTPLANE_ASSETS_HASH,
++};
++
++const [deferredRuntime, core, coreFast, lifecycle, project, task, taskRead] = await Promise.all([
++  import("./cli/run-cli/deferred-runtime.js"),
++  import("./cli/run-cli/command-catalog/core.js"),
++  import("./cli/run-cli/command-catalog/core-fast.js"),
++  import("./cli/run-cli/command-catalog/lifecycle.js"),
++  import("./cli/run-cli/command-catalog/project.js"),
++  import("./cli/run-cli/command-catalog/task.js"),
++  import("./cli/run-cli/command-catalog/task-read.js"),
++]);
++globals.__AGENTPLANE_DEFERRED_RUNTIME__ = deferredRuntime;
++globals.__AGENTPLANE_COMMAND_CATALOGS__ = {
++  core: core.CORE_COMMANDS,
++  "core-fast": coreFast.CORE_FAST_COMMANDS,
++  lifecycle: lifecycle.LIFECYCLE_COMMANDS,
++  project: project.PROJECT_COMMANDS,
++  task: task.TASK_COMMANDS,
++  "task-read": taskRead.TASK_READ_COMMANDS,
++};
++
++await import("./cli.js");
+diff --git a/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts b/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts
+index 6d50ce45f..d08e2a58f 100644
+--- a/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.init.interactive.test.ts
+@@ -294,7 +294,8 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("direct")
+       .mockResolvedValueOnce("allow_other_task_readmes")
+       .mockResolvedValueOnce("local")
+-      .mockResolvedValueOnce("aggressive");
++      .mockResolvedValueOnce("aggressive")
++      .mockResolvedValueOnce("standard");
+     mocks.confirmMock
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
+@@ -314,7 +315,7 @@ describe("runCli interactive init UI", () => {
+     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+     expect(mocks.noteMock).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
+     expect(mocks.logStepMock).toHaveBeenCalledWith("Setup");
+-    expect(mocks.selectMock).toHaveBeenCalledTimes(7);
++    expect(mocks.selectMock).toHaveBeenCalledTimes(8);
+     expect(mocks.textMock).toHaveBeenCalledWith(
+       expect.objectContaining({ message: "Materialize cached recipes" }),
+     );
+@@ -343,7 +344,8 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("direct")
+       .mockResolvedValueOnce("allow_other_task_readmes")
+       .mockResolvedValueOnce("local")
+-      .mockResolvedValueOnce("aggressive");
++      .mockResolvedValueOnce("aggressive")
++      .mockResolvedValueOnce("standard");
+     mocks.confirmMock
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
+@@ -380,7 +382,8 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("direct")
+       .mockResolvedValueOnce("allow_other_task_readmes")
+       .mockResolvedValueOnce("local")
+-      .mockResolvedValueOnce("aggressive");
++      .mockResolvedValueOnce("aggressive")
++      .mockResolvedValueOnce("standard");
+     mocks.confirmMock
+       .mockResolvedValueOnce(false)
+       .mockResolvedValueOnce(false)
+@@ -419,6 +422,7 @@ describe("runCli interactive init UI", () => {
+       .mockResolvedValueOnce("allow_other_task_readmes")
+       .mockResolvedValueOnce("local")
+       .mockResolvedValueOnce("aggressive")
++      .mockResolvedValueOnce("standard")
+       .mockResolvedValueOnce("cancel");
+     mocks.confirmMock.mockResolvedValueOnce(false).mockResolvedValueOnce(false);
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+index 10c9ada28..4933268a8 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+@@ -127,7 +127,7 @@ describe(
+   { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS },
+   () => {
+     it(
+-      "work start seeds local-backend task READMEs into a fresh worktree",
++      "work start seeds only the active local-backend task README and keeps siblings queryable",
+       async () => {
+         const root = await mkGitRepoRootWithBranch("main");
+         const config = defaultConfig();
+@@ -170,11 +170,11 @@ describe(
+ 
+         const taskId = await createTask(
+           "Seeded worktree task",
+-          "Fresh branch_pr worktree should inherit local backend task README files.",
++          "Fresh branch_pr worktree should inherit only its active local backend task README.",
+         );
+         const siblingTaskId = await createTask(
+           "Sibling task for worktree snapshot",
+-          "A sibling task proves the local backend snapshot is broader than the active task.",
++          "A sibling task remains queryable without materializing its README in the active worktree.",
+         );
+         await approveTaskPlan(root, taskId);
+         await approveTaskPlan(root, siblingTaskId);
+@@ -207,7 +207,7 @@ describe(
+           "README.md",
+         );
+         expect(await pathExists(taskReadmePath)).toBe(true);
+-        expect(await pathExists(siblingReadmePath)).toBe(true);
++        expect(await pathExists(siblingReadmePath)).toBe(false);
+         expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
+           false,
+         );
+@@ -238,12 +238,13 @@ describe(
+ 
+         const showIo = captureStdIO();
+         try {
+-          const code = await runCli(["task", "show", siblingTaskId, "--root", worktreePath]);
++          const code = await runCli(["task", "show", siblingTaskId, "--root", root]);
+           expect(code).toBe(0);
+           expect(showIo.stdout).toContain(siblingTaskId);
+         } finally {
+           showIo.restore();
+         }
++        expect(await pathExists(siblingReadmePath)).toBe(false);
+ 
+         const seededReadme = await readFile(taskReadmePath, "utf8");
+         expect(seededReadme).toContain('status: "TODO"');
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 893832513..2c64637c4 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -157,6 +157,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+         candidate_id: string;
+         source_tasks: string[];
+         candidate: { surface_sha256: string; section_digests: Record<string, string> };
++        pre_release_package_delta: Record<string, unknown>;
+         release_version_delta: Record<string, unknown>;
+         deltas: unknown[];
+       }>(COMPATIBILITY_CANDIDATE);
+@@ -188,28 +189,44 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607302125-Y61ZHN",
+           "202607221852-ECBY56",
+           "202608021231-PZGG3V",
++          "202608021231-SHYJGK",
+         ],
+         candidate: {
+-          surface_sha256: "5175b965b6c82b28025d80d7b267ed6ad5024181d64a0b1325a95648bfb34f31",
++          surface_sha256: "5dd31c66da0257068fa2a77d7b26e753136f7f0838bb93fa9e71f5531b91418f",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+             cli_topology: "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+-            package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+-            tarball_policy: "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
++            package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++            tarball_policy: "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752",
+           },
+         },
++        pre_release_package_delta: {
++          source_tasks: ["202608021231-SHYJGK"],
++          classification: "additive",
++          section: "package_manifests",
++          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
++          to_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++          allowed_json_paths: [
++            "$.package_manifests[0].files[13]",
++            "$.package_manifests[0].files[14]",
++            "$.package_manifests[0].files[15]",
++            "$.package_manifests[0].files[16]",
++            "$.package_manifests[0].files[17]",
++            "$.package_manifests[0].normalized_sha256",
++          ],
++        },
+         release_version_delta: {
+           source_task: "202607221854-XV67TD",
+           classification: "planned_version_parity",
+           from_version: "0.6.24",
+           to_version: "0.7.0",
+           section: "package_manifests",
+-          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+-          to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-          surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
++          from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++          to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
++          surface_sha256: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -547,8 +564,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const result = await runNode(["--input-type=module", "--eval", source]);
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+-        packageManifestDigest: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-        surfaceDigest: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
++        packageManifestDigest: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
++        surfaceDigest: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/cli/run-cli.ts b/packages/agentplane/src/cli/run-cli.ts
+index ce2249a89..97bbabc2a 100644
+--- a/packages/agentplane/src/cli/run-cli.ts
++++ b/packages/agentplane/src/cli/run-cli.ts
+@@ -3,7 +3,7 @@ import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/projec
+ import { mapCoreError, writeError } from "./error-map.js";
+ import { exitCodeForError } from "./exit-codes.js";
+ import { loadDotEnv } from "../shared/env.js";
+-import { CliError } from "../shared/errors.js";
++import { asCliError, CliError } from "../shared/errors.js";
+ import type { CommandContext } from "../commands/shared/task-backend.js";
+ import type { EvaluatorArtifactPreparationPort } from "../commands/evaluator/evaluator-artifact-port.js";
+ import { resolveCommandContext } from "../runtime/execution-context.js";
+@@ -11,17 +11,22 @@ import { getVersion } from "../meta/version.js";
+ import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
+ import { parseCommandArgv } from "./spec/parse.js";
+ import { helpSpec, makeHelpHandler } from "./spec/help.js";
++import type { HelpJson } from "./spec/help-render.js";
+ import { usageError } from "./spec/errors.js";
+ import { suggestOne } from "./spec/suggest.js";
+ import { findFrameworkCheckout } from "../../bin/runtime-context.js";
+ import {
+-  COMMANDS,
+-  getHelpCommandEntries,
++  getHelpCommandEntriesFrom,
+   makeHelpSpecForEntry,
+-  matchCommandCatalog,
++  matchCommandEntries,
+   isCommandVisibleInHelp,
++  type CatalogMatch,
+   type HelpSurfaceMode,
+-} from "./run-cli/command-catalog.js";
++} from "./run-cli/command-catalog-helpers.js";
++import {
++  loadAllCommandEntries,
++  loadCommandEntriesForTokens,
++} from "./run-cli/command-catalog-loader.js";
+ import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
+ import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
+ import { resolveAgentModeArgv } from "./run-cli/agent-mode.js";
+@@ -86,7 +91,7 @@ export async function runCli(argv: string[]): Promise<number> {
+       : findFrameworkCheckout(helpCwd)
+         ? "framework"
+         : "user";
+-    let matched: ReturnType<typeof matchCommandCatalog> | null = null;
++    let matched: CatalogMatch | null = null;
+     let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
+     const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
+       maybeResolvedProjectPromise ??=
+@@ -107,13 +112,19 @@ export async function runCli(argv: string[]): Promise<number> {
+       });
+     }
+ 
++    const helpRequested = globals.help || rest.length === 0 || rest[0] === "help";
++    let commandEntries = helpRequested
++      ? await loadAllCommandEntries()
++      : await loadCommandEntriesForTokens(rest);
+     const makeHelpRegistryEntries = (mode: HelpSurfaceMode) => [
+       { spec: helpSpec },
+-      ...getHelpCommandEntries(mode).map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
++      ...getHelpCommandEntriesFrom(commandEntries, mode).map((entry) => ({
++        spec: makeHelpSpecForEntry(entry),
++      })),
+     ];
+     const allHelpRegistryEntries = [
+       { spec: helpSpec },
+-      ...COMMANDS.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
++      ...commandEntries.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
+     ];
+     const frameworkCheckout = findFrameworkCheckout(cwd);
+     const frameworkCommandDeniedMessage =
+@@ -125,7 +136,7 @@ export async function runCli(argv: string[]): Promise<number> {
+         if (tokens[0] === "help") {
+           return { spec: helpSpec, consumed: 1 };
+         }
+-        const match = matchCommandCatalog(tokens);
++        const match = matchCommandEntries(commandEntries, tokens);
+         if (!match) return null;
+         if (
+           !opts?.all &&
+@@ -233,11 +244,24 @@ export async function runCli(argv: string[]): Promise<number> {
+ 
+     const buildRuntimeRegistry = async () => {
+       const { buildRegistry } = await import("./run-cli/registry.run.js");
++      let helpJsonForDocs: readonly HelpJson[] = [];
++      if (matched?.entry.spec.id.join(" ") === "docs cli") {
++        commandEntries = await loadAllCommandEntries();
++        const { makeHelpJsonFromSpecs } = await import("../commands/docs/cli.command.js");
++        helpJsonForDocs = makeHelpJsonFromSpecs([
++          helpSpec,
++          ...getHelpCommandEntriesFrom(commandEntries, "user").map((entry) =>
++            makeHelpSpecForEntry(entry),
++          ),
++        ]);
++      }
+       return buildRegistry({
+         getCtx: getCtxOrThrow,
+         getResolvedProject,
+         getLoadedConfig,
+         getEvaluatorArtifactPort,
++        getHelpJsonForDocs: () => helpJsonForDocs,
++        entries: matched ? [matched.entry] : [],
+         onPreparationTrace: (event) =>
+           emitTraceEvent({
+             component: "command-session",
+@@ -314,7 +338,7 @@ export async function runCli(argv: string[]): Promise<number> {
+       return await runFastHelp(rest);
+     }
+ 
+-    matched = matchCommandCatalog(rest);
++    matched = matchCommandEntries(commandEntries, rest);
+     if (matched?.entry.surface === "framework" && !frameworkCheckout) {
+       throw usageError({
+         spec: matched.entry.spec,
+@@ -350,9 +374,8 @@ export async function runCli(argv: string[]): Promise<number> {
+       jsonErrors,
+     });
+ 
+-    const registry = await getRuntimeRegistry();
+-
+     if (matched) {
++      const registry = await getRuntimeRegistry();
+       const runtimeEntry = registry.lookup(matched.entry.spec.id);
+       if (!runtimeEntry) {
+         throw new CliError({
+@@ -371,6 +394,7 @@ export async function runCli(argv: string[]): Promise<number> {
+       });
+     }
+ 
++    commandEntries = await loadAllCommandEntries();
+     const input = rest.join(" ");
+     const fullCandidates = makeHelpRegistryEntries(defaultHelpSurface).map((e) =>
+       e.spec.id.join(" "),
+@@ -383,8 +407,9 @@ export async function runCli(argv: string[]): Promise<number> {
+       message: `Unknown command: ${input}.${suffix}`,
+     });
+   } catch (err) {
+-    if (err instanceof CliError) {
+-      const enriched = await withFeedbackIssuePromptContext(err);
++    const cliError = asCliError(err);
++    if (cliError) {
++      const enriched = await withFeedbackIssuePromptContext(cliError);
+       writeError(enriched, jsonErrors);
+       return enriched.exitCode;
+     }
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog-helpers.ts b/packages/agentplane/src/cli/run-cli/command-catalog-helpers.ts
+new file mode 100644
+index 000000000..be2ef0d4d
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog-helpers.ts
+@@ -0,0 +1,55 @@
++import { CommandGraph } from "../spec/registry.js";
++import type { CommandId } from "../spec/spec.js";
++
++import type { CommandEntry } from "./command-catalog/kernel.js";
++
++export type CatalogMatch = { entry: CommandEntry; consumed: number };
++export type HelpSurfaceMode = "user" | "framework" | "agent" | "all";
++
++export function buildCatalogGraph(entries: readonly CommandEntry[]): CommandGraph<CommandEntry> {
++  const graph = new CommandGraph<CommandEntry>((entry) => entry.spec.id);
++  for (const entry of entries) graph.add(entry);
++  return graph;
++}
++
++export function matchCommandEntries(
++  entries: readonly CommandEntry[],
++  tokens: readonly string[],
++): CatalogMatch | null {
++  const match = buildCatalogGraph(entries).match(tokens);
++  return match ? { entry: match.value, consumed: match.consumed } : null;
++}
++
++export function getDirectChildCommandEntriesFrom(
++  entries: readonly CommandEntry[],
++  parentId: CommandId = [],
++): readonly CommandEntry[] {
++  return buildCatalogGraph(entries).directChildren(parentId);
++}
++
++export function getDirectChildCommandNamesFrom(
++  entries: readonly CommandEntry[],
++  parentId: CommandId = [],
++): readonly string[] {
++  return buildCatalogGraph(entries).directChildSegments(parentId);
++}
++
++export function isCommandVisibleInHelp(entry: CommandEntry, mode: HelpSurfaceMode): boolean {
++  if (mode === "all") return true;
++  if (mode === "agent") return entry.surface !== "internal";
++  if (entry.surface === "advanced" || entry.surface === "internal") return false;
++  if (mode === "framework") return entry.surface === "user" || entry.surface === "framework";
++  return entry.surface === "user";
++}
++
++export function makeHelpSpecForEntry(entry: CommandEntry): CommandEntry["spec"] {
++  if (!entry.helpGroup) return entry.spec;
++  return { ...entry.spec, group: entry.helpGroup };
++}
++
++export function getHelpCommandEntriesFrom(
++  entries: readonly CommandEntry[],
++  mode: HelpSurfaceMode,
++): readonly CommandEntry[] {
++  return entries.filter((entry) => isCommandVisibleInHelp(entry, mode));
++}
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog-loader.ts b/packages/agentplane/src/cli/run-cli/command-catalog-loader.ts
+new file mode 100644
+index 000000000..acc7d9d4e
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog-loader.ts
+@@ -0,0 +1,194 @@
++import { readFileSync } from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++import { setDirectSubcommandNamesLoader } from "../group-command.js";
++
++import type { CommandEntry } from "./command-catalog/kernel.js";
++import { getDirectChildCommandNamesFrom } from "./command-catalog-helpers.js";
++
++type CatalogGroup = "core" | "core-fast" | "task" | "task-read" | "project" | "lifecycle";
++type CatalogModule = Record<string, readonly CommandEntry[]>;
++
++const CORE_ROOTS = new Set([
++  "agents",
++  "codex",
++  "config",
++  "demo",
++  "doctor",
++  "ide",
++  "incidents",
++  "init",
++  "insights",
++  "intake",
++  "mode",
++  "platform",
++  "preflight",
++  "profile",
++  "quickstart",
++  "release",
++  "role",
++  "runtime",
++  "upgrade",
++  "workflow",
++]);
++const PROJECT_ROOTS = new Set([
++  "acr",
++  "backend",
++  "blueprint",
++  "blueprints",
++  "branch",
++  "context",
++  "evaluator",
++  "evidence",
++  "flow",
++  "hermes",
++  "integrate",
++  "pr",
++  "recipes",
++  "sync",
++  "work",
++]);
++const LIFECYCLE_ROOTS = new Set([
++  "block",
++  "cleanup",
++  "commit",
++  "docs",
++  "finish",
++  "guard",
++  "hooks",
++  "ready",
++  "start",
++  "verify",
++]);
++
++const catalogPaths: Record<CatalogGroup, string> = {
++  core: "./command-catalog.js",
++  "core-fast": "./command-catalog/core-fast.js",
++  task: "./command-catalog.js",
++  "task-read": "./command-catalog/task-read.js",
++  project: "./command-catalog.js",
++  lifecycle: "./command-catalog.js",
++};
++const catalogExports: Record<CatalogGroup, string> = {
++  core: "COMMANDS",
++  "core-fast": "CORE_FAST_COMMANDS",
++  task: "COMMANDS",
++  "task-read": "TASK_READ_COMMANDS",
++  project: "COMMANDS",
++  lifecycle: "COMMANDS",
++};
++const catalogCache = new Map<CatalogGroup, Promise<readonly CommandEntry[]>>();
++let completeCatalogCache: readonly CommandEntry[] | null = null;
++
++function loadSerializedHelpEntries(): readonly CommandEntry[] | null {
++  const helpCatalogPath = path.join(
++    path.dirname(fileURLToPath(import.meta.url)),
++    "command-help.json",
++  );
++  try {
++    const parsed = JSON.parse(readFileSync(helpCatalogPath, "utf8")) as {
++      schema_version?: unknown;
++      entries?: {
++        helpGroup?: string;
++        invocation?: string;
++        spec?: CommandEntry["spec"];
++        surface?: CommandEntry["surface"];
++      }[];
++    };
++    if (parsed.schema_version !== 1 || !Array.isArray(parsed.entries)) return null;
++    return parsed.entries.map((entry) => {
++      if (!entry.spec || !Array.isArray(entry.spec.id) || typeof entry.surface !== "string") {
++        throw new Error("Invalid serialized AgentPlane help catalog entry");
++      }
++      return {
++        spec: entry.spec,
++        load: () =>
++          Promise.reject(new Error("Serialized help catalog entries cannot execute commands")),
++        requirements: [],
++        preparationNodes: [],
++        dispatch: { project: false, loadedConfig: false, taskContext: false },
++        surface: entry.surface,
++        helpGroup: entry.helpGroup,
++        invocation: entry.invocation,
++      } satisfies CommandEntry;
++    });
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
++    throw error;
++  }
++}
++
++function groupForRoot(root: string | undefined): CatalogGroup | null {
++  if (root === "quickstart" || root === "preflight") return "core-fast";
++  if (root && CORE_ROOTS.has(root)) return "core";
++  if (root && PROJECT_ROOTS.has(root)) return "project";
++  if (root && LIFECYCLE_ROOTS.has(root)) return "lifecycle";
++  return null;
++}
++
++async function loadCatalogGroup(group: CatalogGroup): Promise<readonly CommandEntry[]> {
++  let cached = catalogCache.get(group);
++  if (!cached) {
++    const embedded = (globalThis as Record<string, unknown>).__AGENTPLANE_COMMAND_CATALOGS__ as
++      | Partial<Record<CatalogGroup, readonly CommandEntry[]>>
++      | undefined;
++    cached = embedded?.[group]
++      ? Promise.resolve(embedded[group])
++      : import(catalogPaths[group]).then((module: CatalogModule) => {
++          const entries: unknown = module[catalogExports[group]];
++          if (!Array.isArray(entries)) {
++            throw new Error(`Invalid AgentPlane command catalog module: ${group}`);
++          }
++          return entries as readonly CommandEntry[];
++        });
++    catalogCache.set(group, cached);
++  }
++  return await cached;
++}
++
++export async function loadCommandEntriesForTokens(
++  tokens: readonly string[],
++): Promise<readonly CommandEntry[]> {
++  if (tokens[0] === "task") {
++    return ["list", "search", "next"].includes(tokens[1] ?? "")
++      ? await loadCatalogGroup("task-read")
++      : await loadCatalogGroup("task");
++  }
++  const group = groupForRoot(tokens[0]);
++  return group ? await loadCatalogGroup(group) : await loadAllCommandEntries();
++}
++
++export async function loadAllCommandEntries(): Promise<readonly CommandEntry[]> {
++  if (completeCatalogCache) return completeCatalogCache;
++  const embedded = (globalThis as Record<string, unknown>).__AGENTPLANE_COMMAND_CATALOGS__ as
++    | Partial<Record<CatalogGroup, readonly CommandEntry[]>>
++    | undefined;
++  if (embedded?.core && embedded.task && embedded.project && embedded.lifecycle) {
++    completeCatalogCache = [
++      ...embedded.core,
++      ...embedded.task,
++      ...embedded.project,
++      ...embedded.lifecycle,
++    ];
++    return completeCatalogCache;
++  }
++  const serialized = loadSerializedHelpEntries();
++  if (serialized) {
++    completeCatalogCache = serialized;
++    return serialized;
++  }
++  const modulePath = "./command-catalog.js";
++  const module = (await import(modulePath)) as { COMMANDS?: readonly CommandEntry[] };
++  if (!Array.isArray(module.COMMANDS)) {
++    throw new Error("Invalid AgentPlane complete command catalog module");
++  }
++  completeCatalogCache = module.COMMANDS;
++  return completeCatalogCache;
++}
++
++setDirectSubcommandNamesLoader(async (prefix) => {
++  const entries =
++    prefix.length > 0 ? await loadCommandEntriesForTokens(prefix) : await loadAllCommandEntries();
++  return getDirectChildCommandNamesFrom(entries, prefix);
++});
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index 1af272211..0d1fa5a69 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -8,6 +8,8 @@ import {
+   getHelpCommandEntries,
+   matchCommandCatalog,
+ } from "./command-catalog.js";
++import { loadAllCommandEntries, loadCommandEntriesForTokens } from "./command-catalog-loader.js";
++import { matchCommandEntries } from "./command-catalog-helpers.js";
+ import {
+   CONTEXT_PROJECT_REQUIREMENTS,
+   CONTEXT_TASK_READ_REQUIREMENTS,
+@@ -42,6 +44,29 @@ import {
+ } from "./command-catalog/task-capability-profiles.js";
+ 
+ describe("command catalog graph", () => {
++  it("loads compact hot-path catalogs and preserves complete fallback routing", async () => {
++    const taskRead = await loadCommandEntriesForTokens(["task", "list"]);
++    const coreFast = await loadCommandEntriesForTokens(["quickstart"]);
++    const fullTask = await loadCommandEntriesForTokens(["task", "start-ready"]);
++    const all = await loadAllCommandEntries();
++
++    expect(taskRead.map((entry) => entry.spec.id.join(" ")).toSorted()).toEqual([
++      "task list",
++      "task next",
++      "task search",
++    ]);
++    expect(coreFast.map((entry) => entry.spec.id.join(" ")).toSorted()).toEqual([
++      "preflight",
++      "quickstart",
++    ]);
++    expect(matchCommandEntries(fullTask, ["task", "start-ready", "TASK-1"])?.entry.spec.id).toEqual(
++      ["task", "start-ready"],
++    );
++    expect(all.map((entry) => entry.spec.id.join(" ")).toSorted()).toEqual(
++      COMMANDS.map((entry) => entry.spec.id.join(" ")).toSorted(),
++    );
++  });
++
+   it("uses one graph for longest-prefix match and exact lookup", () => {
+     expect(matchCommandCatalog(["task", "plan", "set", "TASK-1"])?.entry.spec.id).toEqual([
+       "task",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.ts b/packages/agentplane/src/cli/run-cli/command-catalog.ts
+index 09f46fb05..98f779ab5 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.ts
+@@ -1,7 +1,14 @@
+-import { CommandGraph } from "../spec/registry.js";
+ import type { CommandId } from "../spec/spec.js";
+ import { setDirectSubcommandNamesLoader } from "../group-command.js";
+ import type { CommandEntry } from "./command-catalog/kernel.js";
++import {
++  buildCatalogGraph,
++  getDirectChildCommandEntriesFrom,
++  getDirectChildCommandNamesFrom,
++  getHelpCommandEntriesFrom,
++  type CatalogMatch,
++  type HelpSurfaceMode,
++} from "./command-catalog-helpers.js";
+ 
+ import { CORE_COMMANDS } from "./command-catalog/core.js";
+ import { LIFECYCLE_COMMANDS } from "./command-catalog/lifecycle.js";
+@@ -9,6 +16,8 @@ import { PROJECT_COMMANDS } from "./command-catalog/project.js";
+ import { TASK_COMMANDS } from "./command-catalog/task.js";
+ 
+ export type { CommandEntry } from "./command-catalog/kernel.js";
++export type { CatalogMatch, HelpSurfaceMode } from "./command-catalog-helpers.js";
++export { isCommandVisibleInHelp, makeHelpSpecForEntry } from "./command-catalog-helpers.js";
+ 
+ export const COMMANDS = [
+   ...CORE_COMMANDS,
+@@ -17,17 +26,6 @@ export const COMMANDS = [
+   ...LIFECYCLE_COMMANDS,
+ ] as const satisfies readonly CommandEntry[];
+ 
+-export type CatalogMatch = { entry: (typeof COMMANDS)[number]; consumed: number };
+-export type HelpSurfaceMode = "user" | "framework" | "agent" | "all";
+-
+-function buildCatalogGraph(entries: readonly CommandEntry[]): CommandGraph<CommandEntry> {
+-  const graph = new CommandGraph<CommandEntry>((entry) => entry.spec.id);
+-  for (const entry of entries) {
+-    graph.add(entry);
+-  }
+-  return graph;
+-}
+-
+ const CATALOG_GRAPH = buildCatalogGraph(COMMANDS);
+ 
+ export function matchCommandCatalog(tokens: readonly string[]): CatalogMatch | null {
+@@ -40,36 +38,15 @@ export function findCommandEntry(id: CommandId): CommandEntry | null {
+ }
+ 
+ export function getDirectChildCommandEntries(parentId: CommandId = []): readonly CommandEntry[] {
+-  return CATALOG_GRAPH.directChildren(parentId);
++  return getDirectChildCommandEntriesFrom(COMMANDS, parentId);
+ }
+ 
+ export function getDirectChildCommandNames(parentId: CommandId = []): readonly string[] {
+-  return CATALOG_GRAPH.directChildSegments(parentId);
++  return getDirectChildCommandNamesFrom(COMMANDS, parentId);
+ }
+ 
+ setDirectSubcommandNamesLoader((prefix) => Promise.resolve(getDirectChildCommandNames(prefix)));
+ 
+-export function getCommandInvocation(id: CommandId): string {
+-  const entry = findCommandEntry(id);
+-  if (!entry) {
+-    throw new Error(`Unknown command id: ${id.join(" ")}`);
+-  }
+-  return entry.invocation ?? `agentplane ${entry.spec.id.join(" ")}`;
+-}
+-
+-export function isCommandVisibleInHelp(entry: CommandEntry, mode: HelpSurfaceMode): boolean {
+-  if (mode === "all") return true;
+-  if (mode === "agent") return entry.surface !== "internal";
+-  if (entry.surface === "advanced" || entry.surface === "internal") return false;
+-  if (mode === "framework") return entry.surface === "user" || entry.surface === "framework";
+-  return entry.surface === "user";
+-}
+-
+-export function makeHelpSpecForEntry(entry: CommandEntry): CommandEntry["spec"] {
+-  if (!entry.helpGroup) return entry.spec;
+-  return { ...entry.spec, group: entry.helpGroup };
+-}
+-
+ export function getHelpCommandEntries(mode: HelpSurfaceMode): readonly CommandEntry[] {
+-  return COMMANDS.filter((entry) => isCommandVisibleInHelp(entry, mode));
++  return getHelpCommandEntriesFrom(COMMANDS, mode);
+ }
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts b/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts
+index fedb2c548..3d616dae4 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/context-evaluator.ts
+@@ -47,7 +47,7 @@ import {
+   evaluatorRunSpec,
+   evaluatorShowSpec,
+   evaluatorSpec,
+-} from "../../../commands/evaluator/evaluator.command.js";
++} from "../../../commands/evaluator/evaluator.spec.js";
+ import {
+   loadContextCapabilityDiscoverSpec,
+   loadContextCapabilityGroupSpec,
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core-fast.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core-fast.ts
+new file mode 100644
+index 000000000..da975bef0
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core-fast.ts
+@@ -0,0 +1,20 @@
++import { preflightSpec } from "../commands/core/preflight.js";
++import { quickstartSpec } from "../commands/core/quickstart.js";
++import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
++
++import { commandModule, type CommandEntry } from "./kernel.js";
++import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
++
++const fromQuickstart = commandModule(() => import("../commands/core/quickstart.js"));
++const fromPreflight = commandModule(() => import("../commands/core/preflight.js"));
++
++export const CORE_FAST_COMMANDS = [
++  fromQuickstart(quickstartSpec, "runQuickstart", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++    invocation: requireCanonicalCommandInvocation(["quickstart"]),
++  }),
++  fromPreflight(preflightSpec, "runPreflight", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++    invocation: requireCanonicalCommandInvocation(["preflight"]),
++  }),
++] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+index 7c4f94ca4..010b90bfc 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+@@ -68,8 +68,8 @@ import {
+ } from "./provider-ops-capability-profiles.js";
+ import { TASK_READ_REQUIREMENTS, TASK_WRITE_REQUIREMENTS } from "./task-capability-profiles.js";
+ import {
+-  fromCommandsInit,
+-  fromCommandsUpgradeCommand,
++  loadInitSpec,
++  loadUpgradeSpec,
+   loadReleaseSpec,
+   loadReleasePlanSpec,
+   loadReleaseApplySpec,
+@@ -114,11 +114,13 @@ import {
+ } from "../command-loaders/core.js";
+ 
+ export const CORE_COMMANDS = [
+-  fromCommandsInit(initSpec, "runInit", {
++  declareSessionCommand(initSpec, {
++    load: loadInitSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+     invocation: requireCanonicalCommandInvocation(["init"]),
+   }),
+-  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", {
++  declareSessionCommand(upgradeSpec, {
++    load: loadUpgradeSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+   declareSessionCommand(releaseSpec, {
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/hermes.ts b/packages/agentplane/src/cli/run-cli/command-catalog/hermes.ts
+index b3d8998e6..1910975e6 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/hermes.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/hermes.ts
+@@ -5,7 +5,7 @@ import {
+   hermesReconcileSpec,
+   hermesSpec,
+   hermesSuperviseSpec,
+-} from "../../../commands/hermes/hermes.command.js";
++} from "../../../commands/hermes/hermes-specs.js";
+ import {
+   loadHermesDoctorSpec,
+   loadHermesEnqueueSpec,
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task-read.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task-read.ts
+new file mode 100644
+index 000000000..8e6edaeee
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task-read.ts
+@@ -0,0 +1,36 @@
++import { taskListSpec } from "../../../commands/task/list.spec.js";
++import { taskNextSpec } from "../../../commands/task/next.spec.js";
++import { taskSearchSpec } from "../../../commands/task/search.spec.js";
++import type { CommandContext } from "../../../commands/shared/task-backend.js";
++import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
++
++import { declareSessionCommand, type CommandEntry } from "./kernel.js";
++import { TASK_READ_REQUIREMENTS, type TaskReadSession } from "./task-capability-profiles.js";
++
++const getTaskReadContext = (session: TaskReadSession) => (command: string) =>
++  session.require("task.read", command) as Promise<CommandContext>;
++
++export const TASK_READ_COMMANDS = [
++  declareSessionCommand(taskListSpec, {
++    load: (session) =>
++      import("../../../commands/task/list.run.js").then((module) =>
++        module.makeRunTaskListHandler((command) => session.require("task.read", command)),
++      ),
++    requirements: TASK_READ_REQUIREMENTS,
++    invocation: requireCanonicalCommandInvocation(["task", "list"]),
++  }),
++  declareSessionCommand(taskSearchSpec, {
++    load: (session) =>
++      import("../../../commands/task/search.run.js").then((module) =>
++        module.makeRunTaskSearchHandler(getTaskReadContext(session)),
++      ),
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
++  declareSessionCommand(taskNextSpec, {
++    load: (session) =>
++      import("../../../commands/task/next.run.js").then((module) =>
++        module.makeRunTaskNextHandler(getTaskReadContext(session)),
++      ),
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
++] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 319fa6f5e..2b1107a6c 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -51,11 +51,13 @@ import {
+   taskRunInspectSpec,
+   taskRunLogsSpec,
+   taskRunReconcileSpec,
+-  taskRunResolveEffectSpec,
+-  taskRunResumeEffectSpec,
+   taskRunSpec,
+   taskRunStatusSpec,
+-} from "../../../commands/task/run.command.js";
++} from "../../../commands/task/run.spec.js";
++import {
++  taskRunResolveEffectSpec,
++  taskRunResumeEffectSpec,
++} from "../../../commands/task/task-run-effect-resolution.command.js";
+ import { taskRunToolSpec } from "../../../commands/task/run-tool.command.js";
+ import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
+ import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
+@@ -65,7 +67,7 @@ import { taskShowSpec } from "../../../commands/task/show.spec.js";
+ import { taskSpec } from "../../../commands/task/task.command.js";
+ import { taskStartReadySpec } from "../../../commands/task/start-ready.command.js";
+ import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
+-import { taskAdvanceSpec } from "../../../commands/task/advance.command.js";
++import { taskAdvanceSpec } from "../../../commands/task/advance.spec.js";
+ import { taskStatusSpec } from "../../../commands/task/status.command.js";
+ import { taskUpdateSpec } from "../../../commands/task/update.command.js";
+ import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+index 52c25040f..251614140 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+@@ -15,6 +15,7 @@ import type {
+   ReleasePublishSession,
+ } from "../command-catalog/provider-ops-capability-profiles.js";
+ import type { InsightsReadSession } from "../command-catalog/runner-hermes-capability-profiles.js";
++import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
+ 
+ function getProjectDeps(session: ProjectSession) {
+   return {
+@@ -29,10 +30,10 @@ function getProjectConfigDeps(session: ProjectConfigSession) {
+   };
+ }
+ 
+-export const fromCommandsInit = commandModule(() => import("../commands/init/spec.js"));
+-export const fromCommandsUpgradeCommand = commandModule(
+-  () => import("../../../commands/upgrade.command.js"),
+-);
++export const loadInitSpec = (_session: NoContextSession) =>
++  loadDeferredRuntime().then((m) => m.runInit);
++export const loadUpgradeSpec = (_session: NoContextSession) =>
++  loadDeferredRuntime().then((m) => m.runUpgrade);
+ export const loadReleaseSpec = (_session: NoContextSession) =>
+   import("../../../commands/release/release.command.js").then((m) => m.runRelease);
+ export const loadReleasePlanSpec = (session: ReleasePlanSession) =>
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts b/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts
+index 7d4f2a3d4..e5eb96d31 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/evaluator.ts
+@@ -4,22 +4,23 @@ import type {
+   EvaluatorWriteSession,
+ } from "../command-catalog/context-evaluator-capability-profiles.js";
+ import type { NoContextSession } from "../command-catalog/project-capability-profiles.js";
++import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
+ 
+ export const loadEvaluatorSpec = (_session: NoContextSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorGroup);
++  loadDeferredRuntime().then((m) => m.runEvaluatorGroup);
+ export const loadEvaluatorListSpec = (_session: NoContextSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorList);
++  loadDeferredRuntime().then((m) => m.runEvaluatorList);
+ export const loadEvaluatorShowSpec = (_session: NoContextSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) => m.runEvaluatorShow);
++  loadDeferredRuntime().then((m) => m.runEvaluatorShow);
+ export const loadEvaluatorPrepareSpec = (session: EvaluatorPrepareSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunEvaluatorPrepareHandler({
+       getEvaluatorArtifactPort: (_ctx, command) =>
+         session.require("evaluator.artifacts.write", command),
+     }),
+   );
+ export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunEvaluatorApplyHandler({
+       getCommandContext: async (_ctx, command) => {
+         await session.require("evaluator.artifacts.write", command);
+@@ -28,7 +29,7 @@ export const loadEvaluatorApplySpec = (session: EvaluatorWriteSession) =>
+     }),
+   );
+ export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunEvaluatorExecuteHandler({
+       getEvaluatorArtifactPort: (_ctx, command) =>
+         session.require("evaluator.artifacts.write", command),
+@@ -39,14 +40,14 @@ export const loadEvaluatorExecuteSpec = (session: EvaluatorExecuteSession) =>
+     }),
+   );
+ export const loadEvaluatorRunPrepareSpec = (session: EvaluatorPrepareSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunEvaluatorRunPrepareHandler({
+       getEvaluatorArtifactPort: (_ctx, command) =>
+         session.require("evaluator.artifacts.write", command),
+     }),
+   );
+ export const loadEvaluatorRunWriteSpec = (session: EvaluatorWriteSession) =>
+-  import("../../../commands/evaluator/evaluator.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunEvaluatorRunHandler({
+       getEvaluatorArtifactPort: (_ctx, command) =>
+         session.require("evaluator.artifacts.write", command),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index 3e9974df6..27e0a69f7 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -32,6 +32,7 @@ import type {
+ } from "../command-catalog/context-evaluator-capability-profiles.js";
+ import type { CommandHandler } from "../../spec/spec.js";
+ import type * as ContextCommandModule from "../../../commands/context/context.command.js";
++import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
+ 
+ async function getProviderReadContext(
+   session: ProviderReadSession,
+@@ -113,13 +114,13 @@ export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
+     m.makeRunEvidenceVerifyHandler(getTaskRouteLocalContext(session)),
+   );
+ export const loadHermesSpec = (_session: NoContextSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) => m.runHermesGroup);
++  loadDeferredRuntime().then((m) => m.runHermesGroup);
+ export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesEnqueueHandler((command) => session.require("context.search", command)),
+   );
+ export const loadHermesSuperviseLocalPreparationSpec = (session: HermesProjectionSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesSuperviseHandler(async (command) => {
+       await session.require("route.local", command);
+       await session.require("context.search", command);
+@@ -127,7 +128,7 @@ export const loadHermesSuperviseLocalPreparationSpec = (session: HermesProjectio
+     }),
+   );
+ export const loadHermesSuperviseRemotePreparationSpec = (session: HermesRemotePreparationSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesSuperviseHandler(async (command) => {
+       await session.require("route.local", command);
+       await session.require("context.search", command);
+@@ -135,7 +136,7 @@ export const loadHermesSuperviseRemotePreparationSpec = (session: HermesRemotePr
+     }),
+   );
+ export const loadHermesSuperviseLocalExecutionSpec = (session: HermesLocalExecutionSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesSuperviseHandler(async (command) => {
+       await session.require("route.local", command);
+       await session.require("git.mutate", command);
+@@ -144,7 +145,7 @@ export const loadHermesSuperviseLocalExecutionSpec = (session: HermesLocalExecut
+     }),
+   );
+ export const loadHermesSuperviseRemoteExecutionSpec = (session: HermesRemoteExecutionSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesSuperviseHandler(async (command) => {
+       await session.require("route.local", command);
+       await session.require("git.mutate", command);
+@@ -154,7 +155,7 @@ export const loadHermesSuperviseRemoteExecutionSpec = (session: HermesRemoteExec
+     }),
+   );
+ export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesReconcileHandler({
+       getProjectConfig: async (command) => ({
+         project: await session.require("project", command),
+@@ -164,11 +165,9 @@ export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>
+     }),
+   );
+ export const loadHermesLifecycleSpec = (_session: NoContextSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+-    m.makeRunHermesLifecycleHandler(),
+-  );
++  loadDeferredRuntime().then((m) => m.makeRunHermesLifecycleHandler());
+ export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
+-  import("../../../commands/hermes/hermes.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunHermesDoctorHandler({
+       getResolvedProject: (command) => session.require("project", command),
+       getLoadedConfig: (command) => session.require("config", command),
+@@ -285,7 +284,8 @@ type ContextCommandExport = Extract<keyof typeof ContextCommandModule, `runConte
+ async function loadContextNoContextHandler(
+   exportName: ContextCommandExport,
+ ): Promise<CommandHandler<unknown>> {
+-  const module = await import("../../../commands/context/context.command.js");
++  const runtime = await loadDeferredRuntime();
++  const module = runtime.contextRuntime;
+   return module[exportName] as CommandHandler<unknown>;
+ }
+ 
+@@ -351,17 +351,19 @@ export const loadContextWikiReportSpec = projectContextLoader(
+ );
+ export const loadContextDoctorSpec = projectContextLoader("runContextDoctor", "context doctor");
+ export const loadContextFinalizeTaskSpec = (session: ContextTaskWriteSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextFinalizeTaskHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextFinalizeTaskHandler({
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
++    });
++  });
+ export const loadContextVerifyTaskSpec = (session: ContextTaskReadSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextVerifyTaskHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextVerifyTaskHandler({
+       getCommandContext: (_ctx, command) => session.require("task.read", command),
+-    }),
+-  );
++    });
++  });
+ export const loadContextGraphSummarySpec = projectContextLoader(
+   "runContextGraphSummary",
+   "context graph summary",
+@@ -399,35 +401,40 @@ export const loadContextCapabilityDiscoverSpec = projectContextLoader(
+   "context capability discover",
+ );
+ export const loadContextLearnFilesSpec = (session: ContextTaskWriteSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextLearnFilesHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextLearnFilesHandler({
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
++    });
++  });
+ export const loadContextLearnChangesSpec = (session: ContextTaskWriteSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextLearnChangesHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextLearnChangesHandler({
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
++    });
++  });
+ export const loadContextLearnTasksSpec = (session: ContextTaskWriteSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextLearnTasksHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextLearnTasksHandler({
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
++    });
++  });
+ export const loadContextHarvestTasksSpec = (session: ContextTaskWriteSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextHarvestTasksHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextHarvestTasksHandler({
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
++    });
++  });
+ export const loadContextSuperviseTaskSpec = (session: ContextTaskWriteSession) =>
+-  import("../../../commands/context/context.command.js").then((m) =>
+-    m.makeRunContextSuperviseTaskHandler({
++  loadDeferredRuntime().then((runtime) => {
++    const m = runtime.contextRuntime;
++    return m.makeRunContextSuperviseTaskHandler({
+       getCommandContext: (_ctx, command) => session.require("task.write", command),
+-    }),
+-  );
++    });
++  });
+ export const loadBackendSyncSpec = (session: TaskWriteSession) =>
+   import("../../../commands/backend/sync.command.js").then((m) =>
+     m.makeRunBackendSyncHandler(getTaskWriteContext(session)),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 88ceac604..1782bca71 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -20,6 +20,7 @@ import type {
+   RunnerWriteSession,
+ } from "../command-catalog/runner-hermes-capability-profiles.js";
+ import type { ProjectSession } from "../command-catalog/project-capability-profiles.js";
++import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
+ 
+ function getSessionContext<
+   TCapabilities extends CommandCapability,
+@@ -143,7 +144,7 @@ export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
+     }),
+   );
+ export const loadTaskAdvanceSpec = (session: RunnerExecutionSession) =>
+-  import("../../../commands/task/advance.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskAdvanceHandler({
+       getContext: async (command, options) => {
+         await session.require("git.mutate", command);
+@@ -167,7 +168,7 @@ export const loadTaskBriefSpec = (session: TaskRouteSession) =>
+     m.makeRunTaskBriefHandler(getTaskRouteContexts(session)),
+   );
+ export const loadTaskRunPreparationSpec = (session: RunnerPreparationSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunHandler({
+       getPreparationContext: async (command, options) => {
+         await session.require("context.search", command);
+@@ -178,7 +179,7 @@ export const loadTaskRunPreparationSpec = (session: RunnerPreparationSession) =>
+     }),
+   );
+ export const loadTaskRunSpec = (session: RunnerExecutionSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunHandler({
+       getExecutionContext: async (command, options) => {
+         await session.require("git.mutate", command);
+@@ -193,23 +194,23 @@ export const loadTaskRunToolSpec = (session: ProjectSession) =>
+     m.makeRunTaskRunToolHandler((command) => session.require("project", command)),
+   );
+ export const loadTaskRunStatusSpec = (session: RunnerReadSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunStatusHandler(getSessionContext(session, "task.read")),
+   );
+ export const loadTaskRunInspectSpec = (session: RunnerReadSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunInspectHandler(getSessionContext(session, "task.read")),
+   );
+ export const loadTaskRunReconcileSpec = (session: RunnerWriteSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunReconcileHandler(getSessionContext(session, "task.write")),
+   );
+ export const loadTaskRunResolveEffectSpec = (session: RunnerWriteSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunResolveEffectHandler(getSessionContext(session, "task.write")),
+   );
+ export const loadTaskRunResumeEffectSpec = (session: RunnerExecutionSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunResumeEffectHandler(async (command) => {
+       await session.require("git.mutate", command);
+       await session.require("context.search", command);
+@@ -217,7 +218,7 @@ export const loadTaskRunResumeEffectSpec = (session: RunnerExecutionSession) =>
+     }),
+   );
+ export const loadTaskRunLogsSpec = (session: RunnerReadSession) =>
+-  import("../../../commands/task/run.command.js").then((m) =>
++  loadDeferredRuntime().then((m) =>
+     m.makeRunTaskRunLogsHandler(getSessionContext(session, "task.read")),
+   );
+ export const loadTaskCompleteSpec = (session: TaskLifecycleSession) =>
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/run.ts b/packages/agentplane/src/cli/run-cli/commands/init/run.ts
+new file mode 100644
+index 000000000..a258eeefe
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/commands/init/run.ts
+@@ -0,0 +1,13 @@
++import type { CommandHandler } from "../../../spec/spec.js";
++import { cmdInit } from "./orchestrate.js";
++import { initSpec } from "./spec.js";
++import type { InitParsed } from "./model.js";
++
++export const runInit: CommandHandler<InitParsed> = (ctx, flags) =>
++  cmdInit({
++    cwd: ctx.cwd,
++    rootOverride: ctx.rootOverride,
++    outputMode: ctx.outputMode ?? "text",
++    flags,
++    spec: initSpec,
++  });
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/spec.ts b/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
+index 0791642a7..2994abd59 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/spec.ts
+@@ -1,7 +1,6 @@
+-import type { CommandHandler, CommandSpec } from "../../../spec/spec.js";
++import type { CommandSpec } from "../../../spec/spec.js";
+ import { usageError } from "../../../spec/errors.js";
+ 
+-import { cmdInit } from "./orchestrate.js";
+ import { normalizeSetupProfile } from "./presets.js";
+ import {
+   parseBlueprintsSelectionForInit,
+@@ -361,12 +360,3 @@ export const initSpec: CommandSpec<InitParsed> = {
+     }
+   },
+ };
+-
+-export const runInit: CommandHandler<InitParsed> = (ctx, flags) =>
+-  cmdInit({
+-    cwd: ctx.cwd,
+-    rootOverride: ctx.rootOverride,
+-    outputMode: ctx.outputMode ?? "text",
+-    flags,
+-    spec: initSpec,
+-  });
+diff --git a/packages/agentplane/src/cli/run-cli/deferred-runtime-loader.ts b/packages/agentplane/src/cli/run-cli/deferred-runtime-loader.ts
+new file mode 100644
+index 000000000..723782a41
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/deferred-runtime-loader.ts
+@@ -0,0 +1,11 @@
++import type * as DeferredRuntime from "./deferred-runtime.js";
++
++const DEFERRED_RUNTIME_PATH = "./deferred-runtime.js";
++
++export async function loadDeferredRuntime(): Promise<typeof DeferredRuntime> {
++  const embedded = (globalThis as Record<string, unknown>).__AGENTPLANE_DEFERRED_RUNTIME__ as
++    | typeof DeferredRuntime
++    | undefined;
++  if (embedded) return embedded;
++  return (await import(DEFERRED_RUNTIME_PATH)) as typeof DeferredRuntime;
++}
+diff --git a/packages/agentplane/src/cli/run-cli/deferred-runtime.ts b/packages/agentplane/src/cli/run-cli/deferred-runtime.ts
+new file mode 100644
+index 000000000..668f98389
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/deferred-runtime.ts
+@@ -0,0 +1,31 @@
++export { makeRunTaskAdvanceHandler } from "../../commands/task/advance.command.js";
++export {
++  makeRunTaskRunHandler,
++  makeRunTaskRunInspectHandler,
++  makeRunTaskRunLogsHandler,
++  makeRunTaskRunReconcileHandler,
++  makeRunTaskRunResolveEffectHandler,
++  makeRunTaskRunResumeEffectHandler,
++  makeRunTaskRunStatusHandler,
++} from "../../commands/task/run.command.js";
++export {
++  makeRunEvaluatorApplyHandler,
++  makeRunEvaluatorExecuteHandler,
++  makeRunEvaluatorPrepareHandler,
++  makeRunEvaluatorRunHandler,
++  makeRunEvaluatorRunPrepareHandler,
++  runEvaluatorGroup,
++  runEvaluatorList,
++  runEvaluatorShow,
++} from "../../commands/evaluator/evaluator.command.js";
++export {
++  makeRunHermesDoctorHandler,
++  makeRunHermesEnqueueHandler,
++  makeRunHermesLifecycleHandler,
++  makeRunHermesReconcileHandler,
++  makeRunHermesSuperviseHandler,
++  runHermesGroup,
++} from "../../commands/hermes/hermes.command.js";
++export { runUpgrade } from "../../commands/upgrade.command.js";
++export { runInit } from "./commands/init/run.js";
++export * as contextRuntime from "../../commands/context/context.command.js";
+diff --git a/packages/agentplane/src/cli/run-cli/registry.run.test.ts b/packages/agentplane/src/cli/run-cli/registry.run.test.ts
+index 33dabea42..0a391ee54 100644
+--- a/packages/agentplane/src/cli/run-cli/registry.run.test.ts
++++ b/packages/agentplane/src/cli/run-cli/registry.run.test.ts
+@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
+ 
+ import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
+ import { hermesSuperviseSpec } from "../../commands/hermes/hermes-specs.js";
+-import { taskRunSpec } from "../../commands/task/run.command.js";
++import { taskRunSpec } from "../../commands/task/run.spec.js";
+ import { createEvaluatorArtifactPreparationPort } from "../../commands/evaluator/evaluator-artifact-port.js";
+ import {
+   addTask,
+diff --git a/packages/agentplane/src/cli/run-cli/registry.run.ts b/packages/agentplane/src/cli/run-cli/registry.run.ts
+index 85f57a7b2..3db86902a 100644
+--- a/packages/agentplane/src/cli/run-cli/registry.run.ts
++++ b/packages/agentplane/src/cli/run-cli/registry.run.ts
+@@ -1,8 +1,6 @@
+ import { CommandRegistry } from "../spec/registry.js";
+ import { helpSpec, makeHelpHandler } from "../spec/help.js";
+ 
+-import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
+-import { COMMANDS, getHelpCommandEntries, makeHelpSpecForEntry } from "./command-catalog.js";
+ import {
+   createCommandSession,
+   type CommandEntry,
+@@ -15,24 +13,20 @@ export function buildRegistry(opts: {
+   getResolvedProject: CommandSessionResolvers["getResolvedProject"];
+   getLoadedConfig: CommandSessionResolvers["getLoadedConfig"];
+   getEvaluatorArtifactPort: CommandSessionResolvers["getEvaluatorArtifactPort"];
++  getHelpJsonForDocs: CommandSessionResolvers["getHelpJsonForDocs"];
+   onPreparationTrace?: (event: CommandPreparationTrace) => void;
+-  entries?: readonly CommandEntry[];
++  entries: readonly CommandEntry[];
+ }): CommandRegistry {
+   const registry = new CommandRegistry();
+-  const getHelpJsonForDocs = () =>
+-    makeHelpJsonFromSpecs([
+-      helpSpec,
+-      ...getHelpCommandEntries("user").map((entry) => makeHelpSpecForEntry(entry)),
+-    ]);
+   const resolvers: CommandSessionResolvers = {
+     getCtx: opts.getCtx,
+     getResolvedProject: opts.getResolvedProject,
+     getLoadedConfig: opts.getLoadedConfig,
+-    getHelpJsonForDocs,
++    getHelpJsonForDocs: opts.getHelpJsonForDocs,
+     getEvaluatorArtifactPort: opts.getEvaluatorArtifactPort,
+     onPreparationTrace: opts.onPreparationTrace,
+   };
+-  for (const entry of opts.entries ?? COMMANDS) {
++  for (const entry of opts.entries) {
+     if (entry.selectSession) {
+       registry.register(entry.spec, async (ctx, parsed) => {
+         const selected = entry.selectSession?.(parsed);
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-catalog.command.ts b/packages/agentplane/src/commands/evaluator/evaluator-catalog.command.ts
+index 44802f20f..69303f058 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-catalog.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-catalog.command.ts
+@@ -64,12 +64,12 @@ export async function loadEvaluatorCatalogForCommand(
+   return await loadEvaluatorCatalog({ projectRoot, includeBuiltin });
+ }
+ 
+-export type EvaluatorListResult = {
++type EvaluatorListResult = {
+   evaluators: ReturnType<typeof evaluatorMetadata>[];
+   rows: EvaluatorModule[];
+ };
+ 
+-export async function listEvaluators(
++async function listEvaluators(
+   ctx: CommandCtx,
+   parsed: EvaluatorListParsed,
+ ): Promise<EvaluatorListResult> {
+@@ -91,11 +91,11 @@ export const runEvaluatorList: CommandHandler<EvaluatorListParsed> = async (ctx,
+   return 0;
+ };
+ 
+-export type EvaluatorShowResult = {
++type EvaluatorShowResult = {
+   evaluator: ReturnType<typeof evaluatorMetadata> & { content: string };
+ };
+ 
+-export async function showEvaluator(
++async function showEvaluator(
+   ctx: CommandCtx,
+   parsed: EvaluatorShowParsed,
+ ): Promise<EvaluatorShowResult> {
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts b/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
+index bbd6155f5..d8ac5b284 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
+@@ -1,6 +1,11 @@
+ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+-import { gitMergeBase, gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
++import {
++  gitIsAncestor,
++  gitMergeBase,
++  gitRevParse,
++  resolveBaseBranch,
++} from "@agentplaneorg/core/git";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+ import { CliError } from "../../shared/errors.js";
+@@ -26,7 +31,29 @@ export async function resolveEvaluatorDiffBase(opts: {
+     });
+   }
+   try {
+-    return await gitMergeBase(opts.gitRoot, baseRef, opts.evaluatedSha);
++    const localMergeBase = await gitMergeBase(opts.gitRoot, baseRef, opts.evaluatedSha);
++    const upstreamCommit = await gitRevParse(opts.gitRoot, [
++      `${baseRef}@{upstream}^{commit}`,
++    ]).catch(() => null);
++    if (!upstreamCommit) return localMergeBase;
++
++    const upstreamMergeBase = await gitMergeBase(
++      opts.gitRoot,
++      upstreamCommit,
++      opts.evaluatedSha,
++    ).catch(() => null);
++    if (
++      !upstreamMergeBase ||
++      upstreamMergeBase === localMergeBase ||
++      !(await gitIsAncestor(opts.gitRoot, localMergeBase, upstreamMergeBase))
++    ) {
++      return localMergeBase;
++    }
++
++    // A squash-merged base update can leave the checked-out local base on a
++    // content-equivalent sibling commit. Prefer its newer tracking ref so the
++    // evaluator does not attribute already-merged base changes to the task.
++    return upstreamMergeBase;
+   } catch (error) {
+     throw new CliError({
+       code: "E_VALIDATION",
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index cb062e843..fe832f702 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -733,6 +733,54 @@ describe("evaluator run command", () => {
+     ).rejects.toMatchObject({ code: "E_VALIDATION" });
+   });
+ 
++  it("uses a newer tracking-base merge point after a squash-merged base update", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const commonBase = await commitPath(root, "README.md", "base\n", "chore: establish base");
++    await commitPath(
++      root,
++      "planning-local.md",
++      "local planning commit\n",
++      "chore: local planning commit",
++    );
++    const { stdout: localBaseBranchOutput } = await execFileAsync(
++      "git",
++      ["branch", "--show-current"],
++      { cwd: root },
++    );
++    const localBaseBranch = localBaseBranchOutput.trim();
++
++    await execFileAsync("git", ["branch", "published-main", commonBase], { cwd: root });
++    await execFileAsync("git", ["switch", "published-main"], { cwd: root });
++    const publishedBase = await commitPath(
++      root,
++      "planning-published.md",
++      "published planning commit\n",
++      "chore: published planning commit",
++    );
++    await execFileAsync("git", ["switch", "-c", "task/evaluator-base"], { cwd: root });
++    const evaluatedSha = await commitPath(
++      root,
++      "src/evaluated.ts",
++      "export const evaluated = true;\n",
++      "feat: evaluated",
++    );
++    await execFileAsync("git", ["config", `branch.${localBaseBranch}.remote`, "."], { cwd: root });
++    await execFileAsync(
++      "git",
++      ["config", `branch.${localBaseBranch}.merge`, "refs/heads/published-main"],
++      { cwd: root },
++    );
++
++    await expect(
++      resolveEvaluatorDiffBase({
++        gitRoot: root,
++        evaluatedSha,
++        baseRef: localBaseBranch,
++      }),
++    ).resolves.toBe(publishedBase);
++  });
++
+   it("rejects an unresolved branch_pr base even when the evaluated commit is the repository root", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index ee9227635..055c90bd6 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -31,7 +31,7 @@ import {
+ 
+ const output = createCliEmitter();
+ 
+-export type EvaluatorCommandDeps = {
++type EvaluatorCommandDeps = {
+   getCommandContext: (
+     ctx: CommandCtx,
+     command: string,
+@@ -64,23 +64,7 @@ const DEFAULT_EVALUATOR_REVIEW_DEPS: EvaluatorReviewCommandDeps = {
+   ...DEFAULT_EVALUATOR_ARTIFACT_DEPS,
+ };
+ 
+-export {
+-  evaluatorApplySpec,
+-  evaluatorListSpec,
+-  evaluatorPrepareSpec,
+-  evaluatorRunSpec,
+-  evaluatorShowSpec,
+-  evaluatorSpec,
+-} from "./evaluator.spec.js";
+-export { evaluatorExecuteSpec } from "./evaluator.spec.js";
+-export {
+-  listEvaluators,
+-  runEvaluatorList,
+-  runEvaluatorShow,
+-  showEvaluator,
+-  type EvaluatorListResult,
+-  type EvaluatorShowResult,
+-} from "./evaluator-catalog.command.js";
++export { runEvaluatorList, runEvaluatorShow } from "./evaluator-catalog.command.js";
+ 
+ export async function runEvaluatorGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+   return throwGroupCommandUsage({
+@@ -180,7 +164,7 @@ function projectPath(gitRoot: string, value: string, label: string): string {
+   return absolute;
+ }
+ 
+-export type EvaluatorPrepareResult = {
++type EvaluatorPrepareResult = {
+   work_order_id: string;
+   work_order: string;
+   prompt: string;
+@@ -188,7 +172,7 @@ export type EvaluatorPrepareResult = {
+   sandbox: string;
+ };
+ 
+-export async function prepareEvaluatorCommand(
++async function prepareEvaluatorCommand(
+   ctx: CommandCtx,
+   parsed: EvaluatorPrepareParsed,
+   deps: EvaluatorArtifactCommandDeps,
+@@ -224,9 +208,7 @@ export function makeRunEvaluatorPrepareHandler(
+   };
+ }
+ 
+-export const runEvaluatorPrepare = makeRunEvaluatorPrepareHandler(DEFAULT_EVALUATOR_ARTIFACT_DEPS);
+-
+-export type EvaluatorApplyResult = {
++type EvaluatorApplyResult = {
+   work_order_id: string;
+   evaluator: string;
+   verdict: unknown;
+@@ -235,7 +217,7 @@ export type EvaluatorApplyResult = {
+   recorded: true;
+ };
+ 
+-export async function applyEvaluatorCommand(
++async function applyEvaluatorCommand(
+   ctx: CommandCtx,
+   parsed: EvaluatorApplyParsed,
+   deps: EvaluatorCommandDeps,
+@@ -289,8 +271,6 @@ export function makeRunEvaluatorApplyHandler(
+   };
+ }
+ 
+-export const runEvaluatorApply = makeRunEvaluatorApplyHandler(DEFAULT_EVALUATOR_COMMAND_DEPS);
+-
+ export type EvaluatorExecuteResult = {
+   work_order_id: string;
+   evaluator: string;
+@@ -395,8 +375,6 @@ export function makeRunEvaluatorExecuteHandler(
+   };
+ }
+ 
+-export const runEvaluatorExecute = makeRunEvaluatorExecuteHandler(DEFAULT_EVALUATOR_REVIEW_DEPS);
+-
+ function relativeToProject(gitRoot: string, absolutePath: string): string {
+   return path.relative(gitRoot, absolutePath).replaceAll("\\", "/");
+ }
+@@ -483,7 +461,7 @@ export async function runEvaluatorPrepareOnlyCommand(
+   };
+ }
+ 
+-export async function runEvaluatorCommand(
++async function runEvaluatorCommand(
+   ctx: CommandCtx,
+   parsed: EvaluatorRunParsed,
+   deps: EvaluatorReviewCommandDeps,
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.ts b/packages/agentplane/src/commands/hermes/hermes.command.ts
+index 2a70cfd02..9b7eb3c37 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.ts
+@@ -36,19 +36,6 @@ import {
+ } from "./hermes-specs.js";
+ 
+ const output = createCliEmitter();
+-export {
+-  hermesDoctorSpec,
+-  hermesEnqueueSpec,
+-  hermesLifecycleSpec,
+-  hermesReconcileSpec,
+-  hermesSpec,
+-  hermesSuperviseSpec,
+-  type HermesDoctorParsed,
+-  type HermesEnqueueParsed,
+-  type HermesLifecycleParsed,
+-  type HermesReconcileParsed,
+-  type HermesSuperviseParsed,
+-} from "./hermes-specs.js";
+ 
+ export async function runHermesGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+   return throwGroupCommandUsage({
+diff --git a/packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts b/packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts
+index 49ae0f17d..40ad1c970 100644
+--- a/packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts
++++ b/packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts
+@@ -21,6 +21,13 @@ describe("smoke-bun-compiled-cli script", () => {
+ 
+     expect(result.version).toMatch(/^\d+\.\d+\.\d+/u);
+     expect(result.kept).toBe(false);
+-    expect(result.checks).toEqual(["--version", "quickstart", "role CODER"]);
++    expect(result.checks).toEqual([
++      "--version",
++      "quickstart",
++      "init",
++      "evaluator list",
++      "task list",
++      "role CODER",
++    ]);
+   }, 120_000);
+ });
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index d0c53ab3e..507824f36 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -1,4 +1,4 @@
+-import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import type { CommandCtx } from "../../cli/spec/spec.js";
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import {
+   prepareAgentWorkOrder,
+@@ -15,49 +15,7 @@ import {
+   assertAgentActionPacketHasNoChoreography,
+   buildAgentActionPacket,
+ } from "./agent-action-packet.js";
+-
+-export type TaskAdvanceParsed = {
+-  taskId: string;
+-  agentJson: boolean;
+-  remote: boolean;
+-};
+-
+-export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
+-  id: ["task", "advance"],
+-  group: "Task",
+-  summary: "Return one compact external-agent action from the shared task supervisor state.",
+-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [
+-    {
+-      kind: "boolean",
+-      name: "agent-json",
+-      default: false,
+-      description: "Emit the stable compact external-agent protocol.",
+-    },
+-    {
+-      kind: "boolean",
+-      name: "remote",
+-      default: false,
+-      description: "Include hosted state while preparing the shared supervisor decision.",
+-    },
+-  ],
+-  examples: [
+-    {
+-      cmd: "agentplane task advance 202602030608-F1Q8AB --agent-json",
+-      why: "Obtain one bounded action without reconstructing lifecycle state.",
+-    },
+-  ],
+-  notes: [
+-    "The command prepares the same canonical work order and route decision used by the managed task runner.",
+-    "It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.",
+-    "--agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.",
+-  ],
+-  parse: (raw) => ({
+-    taskId: String(raw.args["task-id"]),
+-    agentJson: raw.opts["agent-json"] === true,
+-    remote: raw.opts.remote === true,
+-  }),
+-};
++import type { TaskAdvanceParsed } from "./advance.spec.js";
+ 
+ export function makeRunTaskAdvanceHandler(deps: {
+   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
+diff --git a/packages/agentplane/src/commands/task/advance.spec.ts b/packages/agentplane/src/commands/task/advance.spec.ts
+new file mode 100644
+index 000000000..b1a38a6fd
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/advance.spec.ts
+@@ -0,0 +1,44 @@
++import type { CommandSpec } from "../../cli/spec/spec.js";
++
++export type TaskAdvanceParsed = {
++  taskId: string;
++  agentJson: boolean;
++  remote: boolean;
++};
++
++export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
++  id: ["task", "advance"],
++  group: "Task",
++  summary: "Return one compact external-agent action from the shared task supervisor state.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "boolean",
++      name: "agent-json",
++      default: false,
++      description: "Emit the stable compact external-agent protocol.",
++    },
++    {
++      kind: "boolean",
++      name: "remote",
++      default: false,
++      description: "Include hosted state while preparing the shared supervisor decision.",
++    },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task advance 202602030608-F1Q8AB --agent-json",
++      why: "Obtain one bounded action without reconstructing lifecycle state.",
++    },
++  ],
++  notes: [
++    "The command prepares the same canonical work order and route decision used by the managed task runner.",
++    "It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.",
++    "--agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.",
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    agentJson: raw.opts["agent-json"] === true,
++    remote: raw.opts.remote === true,
++  }),
++};
+diff --git a/packages/agentplane/src/commands/task/list.ts b/packages/agentplane/src/commands/task/list.ts
+index 481dfa11a..31417570a 100644
+--- a/packages/agentplane/src/commands/task/list.ts
++++ b/packages/agentplane/src/commands/task/list.ts
+@@ -1,7 +1,7 @@
+ import { mapBackendError } from "../../cli/error-map.js";
+ import { warnMessage } from "../../cli/output.js";
+-import { gitAheadBehind } from "@agentplaneorg/core/git";
+-import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
++import { gitEnv } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
+ import {
+   listTaskSummariesMemo,
+   loadCommandContext,
+@@ -53,10 +53,23 @@ function resolveProjectionStatusesForList(filters: TaskListFilters): string[] |
+ 
+ export async function warnIfLocalTaskStateBehindUpstream(ctx: CommandContext): Promise<void> {
+   try {
+-    const branch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
+-    const upstream = await gitBranchUpstream(ctx.resolvedProject.gitRoot, branch);
+-    if (!upstream) return;
+-    const { behind } = await gitAheadBehind(ctx.resolvedProject.gitRoot, upstream, branch);
++    const { stdout } = await execFileAsync(
++      "git",
++      [
++        "for-each-ref",
++        "--format=%(HEAD)%00%(refname:short)%00%(upstream:short)%00%(upstream:track,nobracket)",
++        "refs/heads",
++      ],
++      { cwd: ctx.resolvedProject.gitRoot, env: gitEnv() },
++    );
++    const current = String(stdout)
++      .split("\n")
++      .map((line) => line.split("\0"))
++      .find(([head]) => head === "*");
++    if (!current) return;
++    const [, branch = "HEAD", upstream = "", tracking = ""] = current;
++    if (!upstream.trim()) return;
++    const behind = Number.parseInt(/(?:^|,\s*)behind\s+(\d+)/u.exec(tracking)?.[1] ?? "0", 10);
+     if (behind === 0) return;
+     process.stderr.write(
+       `${warnMessage(
+@@ -78,6 +91,7 @@ export async function cmdTaskListWithFilters(opts: {
+     const ctx =
+       opts.ctx ??
+       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
++    const staleStateWarning = warnIfLocalTaskStateBehindUpstream(ctx);
+     const projectionStatus = resolveProjectionStatusesForList(opts.filters);
+     const tasks = await annotateBranchPrTaskListState({
+       ctx,
+@@ -86,7 +100,7 @@ export async function cmdTaskListWithFilters(opts: {
+         fallbackToCanonicalOnEmpty: projectionStatus !== undefined,
+       }),
+     });
+-    await warnIfLocalTaskStateBehindUpstream(ctx);
++    await staleStateWarning;
+     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
+     const { depState, items } = queryTaskProjection({
+       tasks,
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index 2536f297d..a26fe6d2b 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -1,4 +1,4 @@
+-import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import type { CommandCtx } from "../../cli/spec/spec.js";
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import {
+@@ -10,13 +10,18 @@ import {
+   projectPreparedTaskRunnerLifecycleResult,
+   taskRunnerLifecycleExitCode,
+ } from "../../runner/usecases/task-run-lifecycle-result.js";
+-import { RUNNER_SANDBOX_MODES } from "../../runner/types.js";
+ import {
+   loadTaskRunnerDiagnosticInspection,
+   loadTaskRunnerInspection,
+ } from "../../runner/usecases/task-run-inspect.js";
+ import { reconcileTaskRunnerActiveClaim } from "../../runner/usecases/task-run-active-claim-runtime.js";
+-import { type TaskRunLogsParsed, parsePositiveInteger } from "./run-parse.js";
++import type { TaskRunLogsParsed } from "./run-parse.js";
++import type {
++  TaskRunInspectParsed,
++  TaskRunParsed,
++  TaskRunReconcileParsed,
++  TaskRunStatusParsed,
++} from "./run.spec.js";
+ import {
+   loadRunnerLogText,
+   reportRunnerStatus,
+@@ -36,233 +41,8 @@ import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
+ export {
+   makeRunTaskRunResolveEffectHandler,
+   makeRunTaskRunResumeEffectHandler,
+-  taskRunResolveEffectSpec,
+-  taskRunResumeEffectSpec,
+ } from "./task-run-effect-resolution.command.js";
+ 
+-export type TaskRunParsed = {
+-  taskId: string;
+-  dryRun: boolean;
+-  remote: boolean;
+-  sandbox?: string;
+-  allowDangerFullAccess: boolean;
+-  json: boolean;
+-};
+-
+-export type TaskRunStatusParsed = {
+-  taskId: string;
+-  runId?: string;
+-  json: boolean;
+-};
+-
+-export type TaskRunInspectParsed = {
+-  taskId: string;
+-  runId?: string;
+-  json: boolean;
+-  events: number;
+-};
+-
+-export type TaskRunReconcileParsed = {
+-  taskId: string;
+-  json: boolean;
+-};
+-
+-export const taskRunSpec: CommandSpec<TaskRunParsed> = {
+-  id: ["task", "run"],
+-  group: "Task",
+-  summary: "Supervise a direct or branch_pr task through its typed lifecycle.",
+-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [
+-    {
+-      kind: "boolean",
+-      name: "dry-run",
+-      default: false,
+-      description: "Prepare runner artifacts and invocation without executing the adapter.",
+-    },
+-    {
+-      kind: "boolean",
+-      name: "remote",
+-      default: false,
+-      description: "Include hosted PR/check/review state in the prepared work order.",
+-    },
+-    {
+-      kind: "string",
+-      name: "sandbox",
+-      choices: [...RUNNER_SANDBOX_MODES],
+-      valueHint: `<${RUNNER_SANDBOX_MODES.join("|")}>`,
+-      description: "Override the role-derived sandbox for this run.",
+-    },
+-    {
+-      kind: "boolean",
+-      name: "allow-danger-full-access",
+-      default: false,
+-      description:
+-        "Explicitly authorize a requested danger-full-access sandbox and record CLI provenance.",
+-    },
+-    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+-  ],
+-  examples: [
+-    {
+-      cmd: "agentplane task run 202602030608-F1Q8AB",
+-      why: "Execute the task with the configured runner adapter.",
+-    },
+-    {
+-      cmd: "agentplane task run 202602030608-F1Q8AB --dry-run --json",
+-      why: "Inspect the prepared runner invocation and artifact paths without starting the agent.",
+-    },
+-  ],
+-  notes: [
+-    "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
+-    "In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.",
+-    "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
+-  ],
+-  parse: (raw) => ({
+-    taskId: String(raw.args["task-id"]),
+-    dryRun: raw.opts["dry-run"] === true,
+-    remote: raw.opts.remote === true,
+-    sandbox: typeof raw.opts.sandbox === "string" ? raw.opts.sandbox : undefined,
+-    allowDangerFullAccess: raw.opts["allow-danger-full-access"] === true,
+-    json: raw.opts.json === true,
+-  }),
+-};
+-
+-export const taskRunStatusSpec: CommandSpec<TaskRunStatusParsed> = {
+-  id: ["task", "run", "status"],
+-  group: "Task",
+-  summary: "Show the latest or selected task runner run status.",
+-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [
+-    {
+-      kind: "string",
+-      name: "run-id",
+-      valueHint: "<run-id>",
+-      description: "Inspect a specific runner run id.",
+-    },
+-    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+-  ],
+-  examples: [
+-    {
+-      cmd: "agentplane task run status 202602030608-F1Q8AB --json",
+-      why: "Inspect the latest runner state for a task.",
+-    },
+-  ],
+-  parse: (raw) => ({
+-    taskId: String(raw.args["task-id"]),
+-    runId: typeof raw.opts["run-id"] === "string" ? String(raw.opts["run-id"]) : undefined,
+-    json: raw.opts.json === true,
+-  }),
+-};
+-
+-export const taskRunInspectSpec: CommandSpec<TaskRunInspectParsed> = {
+-  id: ["task", "run", "inspect"],
+-  group: "Task",
+-  summary: "Inspect task runner artifacts, state, and recent events.",
+-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [
+-    {
+-      kind: "string",
+-      name: "run-id",
+-      valueHint: "<run-id>",
+-      description: "Inspect a specific runner run id.",
+-    },
+-    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+-    {
+-      kind: "string",
+-      name: "events",
+-      valueHint: "<count>",
+-      default: "10",
+-      description: "Number of recent runner events to show.",
+-    },
+-  ],
+-  examples: [
+-    {
+-      cmd: "agentplane task run inspect 202602030608-F1Q8AB",
+-      why: "Inspect artifact paths and recent runner events.",
+-    },
+-  ],
+-  parse: (raw) => ({
+-    taskId: String(raw.args["task-id"]),
+-    runId: typeof raw.opts["run-id"] === "string" ? String(raw.opts["run-id"]) : undefined,
+-    json: raw.opts.json === true,
+-    events: parsePositiveInteger(raw.opts.events, 10, "--events"),
+-  }),
+-};
+-
+-export const taskRunReconcileSpec: CommandSpec<TaskRunReconcileParsed> = {
+-  id: ["task", "run", "reconcile"],
+-  group: "Task",
+-  summary: "Safely reconcile stale task runner authority without starting a provider.",
+-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+-  examples: [
+-    {
+-      cmd: "agentplane task run reconcile 202602030608-F1Q8AB --json",
+-      why: "Project or retire a provably stale claim without starting another agent run.",
+-    },
+-  ],
+-  notes: [
+-    "The command never starts a runner adapter and never sends a process termination signal.",
+-    "Active, unverified, running, spawn-authorized, and cleanup-unverified claims fail closed.",
+-  ],
+-  parse: (raw) => ({
+-    taskId: String(raw.args["task-id"]),
+-    json: raw.opts.json === true,
+-  }),
+-};
+-
+-export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
+-  id: ["task", "run", "logs"],
+-  group: "Task",
+-  summary: "Print task runner events, trace, or stderr logs.",
+-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+-  options: [
+-    {
+-      kind: "string",
+-      name: "run-id",
+-      valueHint: "<run-id>",
+-      description: "Inspect a specific runner run id.",
+-    },
+-    {
+-      kind: "string",
+-      name: "stream",
+-      valueHint: "<events|trace|stderr>",
+-      choices: ["events", "trace", "stderr"],
+-      default: "trace",
+-      description: "Runner log stream to print.",
+-    },
+-    {
+-      kind: "boolean",
+-      name: "follow",
+-      short: "f",
+-      default: false,
+-      description: "Follow log output until the run exits.",
+-    },
+-    {
+-      kind: "string",
+-      name: "tail",
+-      valueHint: "<lines>",
+-      default: "80",
+-      description: "Number of trailing lines to print before following.",
+-    },
+-  ],
+-  examples: [
+-    {
+-      cmd: "agentplane task run logs 202602030608-F1Q8AB --stream events --follow",
+-      why: "Watch runner lifecycle events while a task run is active.",
+-    },
+-  ],
+-  parse: (raw) => ({
+-    taskId: String(raw.args["task-id"]),
+-    runId: typeof raw.opts["run-id"] === "string" ? String(raw.opts["run-id"]) : undefined,
+-    stream:
+-      raw.opts.stream === "events" || raw.opts.stream === "stderr" || raw.opts.stream === "trace"
+-        ? raw.opts.stream
+-        : "trace",
+-    follow: raw.opts.follow === true,
+-    tail: parsePositiveInteger(raw.opts.tail, 80, "--tail"),
+-  }),
+-};
+-
+ function reportTaskSupervision(opts: {
+   output: ReturnType<typeof createCliEmitter>;
+   mode: "direct" | "branch_pr";
+diff --git a/packages/agentplane/src/commands/task/run.spec.ts b/packages/agentplane/src/commands/task/run.spec.ts
+new file mode 100644
+index 000000000..272d288da
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/run.spec.ts
+@@ -0,0 +1,226 @@
++import type { CommandSpec } from "../../cli/spec/spec.js";
++import { RUNNER_SANDBOX_MODES } from "../../runner/types.js";
++import { type TaskRunLogsParsed, parsePositiveInteger } from "./run-parse.js";
++
++export type TaskRunParsed = {
++  taskId: string;
++  dryRun: boolean;
++  remote: boolean;
++  sandbox?: string;
++  allowDangerFullAccess: boolean;
++  json: boolean;
++};
++
++export type TaskRunStatusParsed = {
++  taskId: string;
++  runId?: string;
++  json: boolean;
++};
++
++export type TaskRunInspectParsed = {
++  taskId: string;
++  runId?: string;
++  json: boolean;
++  events: number;
++};
++
++export type TaskRunReconcileParsed = {
++  taskId: string;
++  json: boolean;
++};
++
++export const taskRunSpec: CommandSpec<TaskRunParsed> = {
++  id: ["task", "run"],
++  group: "Task",
++  summary: "Supervise a direct or branch_pr task through its typed lifecycle.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "boolean",
++      name: "dry-run",
++      default: false,
++      description: "Prepare runner artifacts and invocation without executing the adapter.",
++    },
++    {
++      kind: "boolean",
++      name: "remote",
++      default: false,
++      description: "Include hosted PR/check/review state in the prepared work order.",
++    },
++    {
++      kind: "string",
++      name: "sandbox",
++      choices: [...RUNNER_SANDBOX_MODES],
++      valueHint: `<${RUNNER_SANDBOX_MODES.join("|")}>`,
++      description: "Override the role-derived sandbox for this run.",
++    },
++    {
++      kind: "boolean",
++      name: "allow-danger-full-access",
++      default: false,
++      description:
++        "Explicitly authorize a requested danger-full-access sandbox and record CLI provenance.",
++    },
++    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task run 202602030608-F1Q8AB",
++      why: "Execute the task with the configured runner adapter.",
++    },
++    {
++      cmd: "agentplane task run 202602030608-F1Q8AB --dry-run --json",
++      why: "Inspect the prepared runner invocation and artifact paths without starting the agent.",
++    },
++  ],
++  notes: [
++    "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
++    "In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.",
++    "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    dryRun: raw.opts["dry-run"] === true,
++    remote: raw.opts.remote === true,
++    sandbox: typeof raw.opts.sandbox === "string" ? raw.opts.sandbox : undefined,
++    allowDangerFullAccess: raw.opts["allow-danger-full-access"] === true,
++    json: raw.opts.json === true,
++  }),
++};
++
++export const taskRunStatusSpec: CommandSpec<TaskRunStatusParsed> = {
++  id: ["task", "run", "status"],
++  group: "Task",
++  summary: "Show the latest or selected task runner run status.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "run-id",
++      valueHint: "<run-id>",
++      description: "Inspect a specific runner run id.",
++    },
++    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task run status 202602030608-F1Q8AB --json",
++      why: "Inspect the latest runner state for a task.",
++    },
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    runId: typeof raw.opts["run-id"] === "string" ? String(raw.opts["run-id"]) : undefined,
++    json: raw.opts.json === true,
++  }),
++};
++
++export const taskRunInspectSpec: CommandSpec<TaskRunInspectParsed> = {
++  id: ["task", "run", "inspect"],
++  group: "Task",
++  summary: "Inspect task runner artifacts, state, and recent events.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "run-id",
++      valueHint: "<run-id>",
++      description: "Inspect a specific runner run id.",
++    },
++    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
++    {
++      kind: "string",
++      name: "events",
++      valueHint: "<count>",
++      default: "10",
++      description: "Number of recent runner events to show.",
++    },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task run inspect 202602030608-F1Q8AB",
++      why: "Inspect artifact paths and recent runner events.",
++    },
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    runId: typeof raw.opts["run-id"] === "string" ? String(raw.opts["run-id"]) : undefined,
++    json: raw.opts.json === true,
++    events: parsePositiveInteger(raw.opts.events, 10, "--events"),
++  }),
++};
++
++export const taskRunReconcileSpec: CommandSpec<TaskRunReconcileParsed> = {
++  id: ["task", "run", "reconcile"],
++  group: "Task",
++  summary: "Safely reconcile stale task runner authority without starting a provider.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
++  examples: [
++    {
++      cmd: "agentplane task run reconcile 202602030608-F1Q8AB --json",
++      why: "Project or retire a provably stale claim without starting another agent run.",
++    },
++  ],
++  notes: [
++    "The command never starts a runner adapter and never sends a process termination signal.",
++    "Active, unverified, running, spawn-authorized, and cleanup-unverified claims fail closed.",
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    json: raw.opts.json === true,
++  }),
++};
++
++export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
++  id: ["task", "run", "logs"],
++  group: "Task",
++  summary: "Print task runner events, trace, or stderr logs.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "run-id",
++      valueHint: "<run-id>",
++      description: "Inspect a specific runner run id.",
++    },
++    {
++      kind: "string",
++      name: "stream",
++      valueHint: "<events|trace|stderr>",
++      choices: ["events", "trace", "stderr"],
++      default: "trace",
++      description: "Runner log stream to print.",
++    },
++    {
++      kind: "boolean",
++      name: "follow",
++      short: "f",
++      default: false,
++      description: "Follow log output until the run exits.",
++    },
++    {
++      kind: "string",
++      name: "tail",
++      valueHint: "<lines>",
++      default: "80",
++      description: "Number of trailing lines to print before following.",
++    },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task run logs 202602030608-F1Q8AB --stream events --follow",
++      why: "Watch runner lifecycle events while a task run is active.",
++    },
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    runId: typeof raw.opts["run-id"] === "string" ? String(raw.opts["run-id"]) : undefined,
++    stream:
++      raw.opts.stream === "events" || raw.opts.stream === "stderr" || raw.opts.stream === "trace"
++        ? raw.opts.stream
++        : "trace",
++    follow: raw.opts.follow === true,
++    tail: parsePositiveInteger(raw.opts.tail, 80, "--tail"),
++  }),
++};
+diff --git a/packages/agentplane/src/meta/version.ts b/packages/agentplane/src/meta/version.ts
+index 938b1627b..6c665391a 100644
+--- a/packages/agentplane/src/meta/version.ts
++++ b/packages/agentplane/src/meta/version.ts
+@@ -1,11 +1,27 @@
+ import { readFileSync } from "node:fs";
+-
+-import { resolveAgentplanePackageJsonPath } from "../shared/package-paths.js";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
+ 
+ declare const __AGENTPLANE_PACKAGE_VERSION__: string | undefined;
+ 
+ let cachedVersion: string | null = null;
+ 
++function resolveLocalPackageJsonPath(): string | null {
++  let directory = path.dirname(fileURLToPath(import.meta.url));
++  for (;;) {
++    const candidate = path.join(directory, "package.json");
++    try {
++      const parsed = JSON.parse(readFileSync(candidate, "utf8")) as { name?: unknown };
++      if (parsed.name === "agentplane") return candidate;
++    } catch {
++      // Keep walking toward the package root.
++    }
++    const parent = path.dirname(directory);
++    if (parent === directory) return null;
++    directory = parent;
++  }
++}
++
+ function getEmbeddedVersion(): string | null {
+   try {
+     if (typeof __AGENTPLANE_PACKAGE_VERSION__ === "string") {
+@@ -26,7 +42,9 @@ export function getVersion(): string {
+     return cachedVersion;
+   }
+   try {
+-    const raw = readFileSync(resolveAgentplanePackageJsonPath(), "utf8");
++    const packageJsonPath = resolveLocalPackageJsonPath();
++    if (!packageJsonPath) return "0.0.0";
++    const raw = readFileSync(packageJsonPath, "utf8");
+     const parsed = JSON.parse(raw) as { version?: string };
+     if (parsed.version) {
+       cachedVersion = String(parsed.version).trim();
+diff --git a/packages/agentplane/src/shared/errors.test.ts b/packages/agentplane/src/shared/errors.test.ts
+index 03f83b853..00d9c000c 100644
+--- a/packages/agentplane/src/shared/errors.test.ts
++++ b/packages/agentplane/src/shared/errors.test.ts
+@@ -1,6 +1,7 @@
+ import { describe, expect, it } from "vitest";
+ 
+ import {
++  asCliError,
+   AgentplaneError,
+   BackendCliError,
+   CliError,
+@@ -37,6 +38,25 @@ describe("errors", () => {
+     }
+   });
+ 
++  it("reifies validated errors crossing an independently bundled runtime boundary", () => {
++    const foreignError = Object.assign(new Error("Plan approval required"), {
++      code: "E_PHASE_POLICY",
++      exitCode: 2,
++      context: { task_id: "TASK-1" },
++    });
++
++    expect(asCliError(foreignError)).toMatchObject({
++      code: "E_PHASE_POLICY",
++      exitCode: 2,
++      message: "Plan approval required",
++      context: { task_id: "TASK-1" },
++    });
++    expect(
++      asCliError(Object.assign(new Error("unknown"), { code: "E_UNKNOWN", exitCode: 2 })),
++    ).toBe(null);
++    expect(asCliError({ code: "E_USAGE", exitCode: 2, message: "not an Error" })).toBeNull();
++  });
++
+   it("formatJsonError emits stable shape", () => {
+     const err = new CliError({
+       exitCode: 2,
+diff --git a/packages/agentplane/src/shared/errors.ts b/packages/agentplane/src/shared/errors.ts
+index 3d53e367b..a8addf2ec 100644
+--- a/packages/agentplane/src/shared/errors.ts
++++ b/packages/agentplane/src/shared/errors.ts
+@@ -135,6 +135,35 @@ export class CliError extends AgentplaneError {
+   }
+ }
+ 
++export function asCliError(value: unknown): CliError | null {
++  if (value instanceof CliError) return value;
++  if (!(value instanceof Error)) return null;
++  const candidate = value as Error & {
++    code?: unknown;
++    context?: unknown;
++    exitCode?: unknown;
++  };
++  if (
++    typeof candidate.code !== "string" ||
++    !Object.hasOwn(DEFAULT_ERROR_EXIT_CODES, candidate.code) ||
++    !Number.isInteger(candidate.exitCode) ||
++    Number(candidate.exitCode) < 1 ||
++    Number(candidate.exitCode) > 255
++  ) {
++    return null;
++  }
++  const context =
++    candidate.context && typeof candidate.context === "object" && !Array.isArray(candidate.context)
++      ? (candidate.context as Record<string, unknown>)
++      : undefined;
++  return new CliError({
++    code: candidate.code as ErrorCode,
++    exitCode: Number(candidate.exitCode),
++    message: candidate.message,
++    ...(context ? { context } : {}),
++  });
++}
++
+ export class UsageError extends CliError {
+   constructor(opts: AgentplaneErrorOptions) {
+     super({ ...opts, code: "E_USAGE" });
+diff --git a/packages/agentplane/src/shared/package-paths.test.ts b/packages/agentplane/src/shared/package-paths.test.ts
+index 32dbb6ef8..12167ea73 100644
+--- a/packages/agentplane/src/shared/package-paths.test.ts
++++ b/packages/agentplane/src/shared/package-paths.test.ts
+@@ -3,6 +3,10 @@ import os from "node:os";
+ import path from "node:path";
+ import { describe, expect, it } from "vitest";
+ 
++import {
++  BUILTIN_AGENTPLANE_ASSETS,
++  BUILTIN_AGENTPLANE_ASSETS_HASH,
++} from "./builtin-assets.generated.js";
+ import {
+   resolveAgentplaneAssetPath,
+   resolveAgentplaneBinPath,
+@@ -62,12 +66,18 @@ describe("package path resolution", () => {
+   it("materializes builtin assets when compiled runtime has no adjacent asset tree", async () => {
+     const previousActiveBin = process.env[ACTIVE_BIN_ENV];
+     const previousForceAssets = process.env[FORCE_BUILTIN_ASSETS_ENV];
++    const runtimeGlobals = globalThis as Record<string, unknown>;
++    const previousBuiltinAssets = runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__;
+     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-compiled-assets-"));
+     await mkdir(path.join(root, "bin"), { recursive: true });
+     await writeFile(path.join(root, "package.json"), '{"name":"agentplane"}\n', "utf8");
+ 
+     process.env[ACTIVE_BIN_ENV] = path.join(root, "bin", "agentplane.js");
+     process.env[FORCE_BUILTIN_ASSETS_ENV] = "1";
++    runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__ = {
++      assets: BUILTIN_AGENTPLANE_ASSETS,
++      hash: BUILTIN_AGENTPLANE_ASSETS_HASH,
++    };
+ 
+     try {
+       const agentsPath = resolveAgentplaneAssetPath("AGENTS.md");
+@@ -84,6 +94,11 @@ describe("package path resolution", () => {
+       } else {
+         process.env[FORCE_BUILTIN_ASSETS_ENV] = previousForceAssets;
+       }
++      if (previousBuiltinAssets === undefined) {
++        delete runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__;
++      } else {
++        runtimeGlobals.__AGENTPLANE_BUILTIN_ASSETS__ = previousBuiltinAssets;
++      }
+     }
+   });
+ });
+diff --git a/packages/agentplane/src/shared/package-paths.ts b/packages/agentplane/src/shared/package-paths.ts
+index aa246c73a..bdd3a04cb 100644
+--- a/packages/agentplane/src/shared/package-paths.ts
++++ b/packages/agentplane/src/shared/package-paths.ts
+@@ -4,11 +4,6 @@ import os from "node:os";
+ import path from "node:path";
+ import { fileURLToPath, pathToFileURL } from "node:url";
+ 
+-import {
+-  BUILTIN_AGENTPLANE_ASSETS,
+-  BUILTIN_AGENTPLANE_ASSETS_HASH,
+-} from "./builtin-assets.generated.js";
+-
+ const PACKAGE_NAME = "agentplane";
+ const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
+ const FORCE_BUILTIN_ASSETS_ENV = "AGENTPLANE_FORCE_BUILTIN_ASSETS";
+@@ -19,6 +14,23 @@ type PackageJsonLike = {
+   name?: unknown;
+ };
+ 
++type BuiltinAssetsRuntime = {
++  assets: { path: string; base64: string }[];
++  hash: string;
++};
++
++function getBuiltinAssetsRuntime(): BuiltinAssetsRuntime {
++  const runtime = (globalThis as Record<string, unknown>).__AGENTPLANE_BUILTIN_ASSETS__ as
++    | BuiltinAssetsRuntime
++    | undefined;
++  if (!runtime || !Array.isArray(runtime.assets) || typeof runtime.hash !== "string") {
++    throw new Error(
++      "Built-in AgentPlane assets are unavailable in this compiled runtime. Use the Bun CLI entrypoint.",
++    );
++  }
++  return runtime;
++}
++
+ function pathExists(absPath: string): boolean {
+   try {
+     fs.accessSync(absPath);
+@@ -82,22 +94,18 @@ function resolveFromCompiledBinary(entryPath: string): string | null {
+ }
+ 
+ function materializeBuiltinAssets(): string {
+-  const root = path.join(
+-    os.tmpdir(),
+-    "agentplane-builtin-assets",
+-    BUILTIN_AGENTPLANE_ASSETS_HASH,
+-    "assets",
+-  );
++  const builtin = getBuiltinAssetsRuntime();
++  const root = path.join(os.tmpdir(), "agentplane-builtin-assets", builtin.hash, "assets");
+   const marker = path.join(root, ".agentplane-builtin-assets-ready");
+   if (pathExists(marker)) return root;
+ 
+   fs.mkdirSync(root, { recursive: true });
+-  for (const asset of BUILTIN_AGENTPLANE_ASSETS) {
++  for (const asset of builtin.assets) {
+     const assetPath = path.join(root, asset.path);
+     fs.mkdirSync(path.dirname(assetPath), { recursive: true });
+     fs.writeFileSync(assetPath, Buffer.from(asset.base64, "base64"));
+   }
+-  fs.writeFileSync(marker, `${BUILTIN_AGENTPLANE_ASSETS_HASH}\n`, "utf8");
++  fs.writeFileSync(marker, `${builtin.hash}\n`, "utf8");
+   return root;
+ }
+ 
+@@ -114,10 +122,6 @@ export function resolveAgentplanePackageRoot(entryModuleUrl = import.meta.url):
+   return packageRoot;
+ }
+ 
+-export function resolveAgentplanePackageJsonPath(entryModuleUrl = import.meta.url): string {
+-  return path.join(resolveAgentplanePackageRoot(entryModuleUrl), "package.json");
+-}
+-
+ export function resolveAgentplaneAssetPath(...segments: string[]): string {
+   const packageAssetPath = path.join(resolveAgentplanePackageRoot(), "assets", ...segments);
+   const useBuiltinAssets = MODULE_IS_BUN_COMPILED || process.env[FORCE_BUILTIN_ASSETS_ENV] === "1";
+diff --git a/packages/agentplane/tsup.config.ts b/packages/agentplane/tsup.config.ts
+index d8d98930a..715a051b8 100644
+--- a/packages/agentplane/tsup.config.ts
++++ b/packages/agentplane/tsup.config.ts
+@@ -4,7 +4,12 @@ export default defineConfig({
+   clean: false,
+   dts: false,
+   entry: {
++    "cli-bun": "src/cli-bun.ts",
+     cli: "src/cli.ts",
++    "command-catalog": "src/cli/run-cli/command-catalog.ts",
++    "command-catalog/core-fast": "src/cli/run-cli/command-catalog/core-fast.ts",
++    "command-catalog/task-read": "src/cli/run-cli/command-catalog/task-read.ts",
++    "deferred-runtime": "src/cli/run-cli/deferred-runtime.ts",
+   },
+   external: [
+     "@agentplaneorg/core",
+diff --git a/scripts/baselines/knip-baseline.json b/scripts/baselines/knip-baseline.json
+index 7c801aab5..5bbd06b1c 100644
+--- a/scripts/baselines/knip-baseline.json
++++ b/scripts/baselines/knip-baseline.json
+@@ -649,16 +649,6 @@
+         }
+       ]
+     },
+-    {
+-      "file": "packages/agentplane/src/cli/run-cli/command-catalog.ts",
+-      "exports": [
+-        {
+-          "name": "getCommandInvocation",
+-          "line": 52,
+-          "col": 17
+-        }
+-      ]
+-    },
+     {
+       "file": "packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts",
+       "types": [
+@@ -3464,10 +3454,10 @@
+   ],
+   "counts": {
+     "files": 1,
+-    "exports": 176,
++    "exports": 175,
+     "types": 363,
+     "enumMembers": 0,
+     "namespaceMembers": 0,
+-    "total": 540
++    "total": 539
+   }
+ }
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 3fba395c2..34b836941 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -25,7 +25,8 @@
+     "202607221852-YP9QCH",
+     "202607302125-Y61ZHN",
+     "202607221852-ECBY56",
+-    "202608021231-PZGG3V"
++    "202608021231-PZGG3V",
++    "202608021231-SHYJGK"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -34,15 +35,41 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "5175b965b6c82b28025d80d7b267ed6ad5024181d64a0b1325a95648bfb34f31",
++    "surface_sha256": "5dd31c66da0257068fa2a77d7b26e753136f7f0838bb93fa9e71f5531b91418f",
+     "section_digests": {
+       "cli_topology": "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-      "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+-      "tarball_policy": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091"
++      "package_manifests": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++      "tarball_policy": "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752"
++    }
++  },
++  "pre_release_package_delta": {
++    "source_tasks": ["202608021231-SHYJGK"],
++    "classification": "additive",
++    "section": "package_manifests",
++    "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
++    "to_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++    "allowed_json_paths": [
++      "$.package_manifests[0].files[13]",
++      "$.package_manifests[0].files[14]",
++      "$.package_manifests[0].files[15]",
++      "$.package_manifests[0].files[16]",
++      "$.package_manifests[0].files[17]",
++      "$.package_manifests[0].normalized_sha256"
++    ],
++    "evidence": {
++      "package": "agentplane",
++      "added_files": [
++        "dist/command-catalog.js",
++        "dist/command-catalog/core-fast.js",
++        "dist/command-catalog/task-read.js",
++        "dist/command-help.json",
++        "dist/deferred-runtime.js"
++      ],
++      "removed_files": []
+     }
+   },
+   "release_version_delta": {
+@@ -51,9 +78,9 @@
+     "from_version": "0.6.24",
+     "to_version": "0.7.0",
+     "section": "package_manifests",
+-    "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+-    "to_sha256": "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-    "surface_sha256": "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
++    "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++    "to_sha256": "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
++    "surface_sha256": "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -1920,21 +1947,41 @@
+         "202607221846-4VB97J",
+         "202607221848-ER5H6N",
+         "202607221848-T9B3PS",
+-        "202607221849-8YYZ9X"
++        "202607221849-8YYZ9X",
++        "202608021231-SHYJGK"
+       ],
+       "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
+-      "to_sha256": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
++      "to_sha256": "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752",
+       "classification": "additive",
+-      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package while updating shipped EVALUATOR guidance; no package source file is removed.",
++      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
+       "evidence": {
+-        "package": "@agentplaneorg/core",
+-        "source_file_count": { "from": 17, "to": 20 },
+-        "added_source_files": [
+-          "schemas/agent-work-order-v2.schema.json",
+-          "schemas/knowledge-ref.schema.json",
+-          "schemas/workflow.schema.json"
+-        ],
+-        "removed_source_files": []
++        "core_package": {
++          "package": "@agentplaneorg/core",
++          "source_file_count": { "from": 17, "to": 20 },
++          "added_source_files": [
++            "schemas/agent-work-order-v2.schema.json",
++            "schemas/knowledge-ref.schema.json",
++            "schemas/workflow.schema.json"
++          ],
++          "removed_source_files": []
++        },
++        "agentplane_runtime_policy": {
++          "allowed_exact_files_added": [
++            "dist/command-catalog.js",
++            "dist/command-catalog/core-fast.js",
++            "dist/command-catalog/task-read.js",
++            "dist/command-help.json",
++            "dist/deferred-runtime.js"
++          ],
++          "required_files": [
++            "dist/cli.js",
++            "dist/command-catalog.js",
++            "dist/command-catalog/core-fast.js",
++            "dist/command-catalog/task-read.js",
++            "dist/command-help.json",
++            "dist/deferred-runtime.js"
++          ]
++        }
+       }
+     }
+   ]
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index db4e07908..d02699552 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -20,6 +20,7 @@ import {
+   diffJsonPaths,
+   gitReferenceAvailable,
+   hashJson,
++  packageSurface,
+   reconstructCompatibilitySurface,
+   resolveReviewedCompatibilitySurfaceMode,
+   surfaceSectionDigests,
+@@ -299,6 +300,7 @@ function validateReviewedCandidate({
+       "source_tasks",
+       "base",
+       "candidate",
++      "pre_release_package_delta",
+       "release_version_delta",
+       "contract_artifacts",
+       "review",
+@@ -360,6 +362,7 @@ function validateReviewedCandidate({
+     "202607302125-Y61ZHN",
+     "202607221852-ECBY56",
+     "202608021231-PZGG3V",
++    "202608021231-SHYJGK",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -389,6 +392,81 @@ function validateReviewedCandidate({
+     [],
+     "compatibility candidate surface",
+   );
++  const preReleasePackageDelta = candidate.pre_release_package_delta;
++  assertOnlyKeys(
++    preReleasePackageDelta,
++    [
++      "source_tasks",
++      "classification",
++      "section",
++      "from_sha256",
++      "to_sha256",
++      "allowed_json_paths",
++      "evidence",
++    ],
++    [],
++    "compatibility pre-release package delta",
++  );
++  assert(
++    hashJson(preReleasePackageDelta) ===
++      hashJson({
++        source_tasks: ["202608021231-SHYJGK"],
++        classification: "additive",
++        section: "package_manifests",
++        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
++        to_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++        allowed_json_paths: [
++          "$.package_manifests[0].files[13]",
++          "$.package_manifests[0].files[14]",
++          "$.package_manifests[0].files[15]",
++          "$.package_manifests[0].files[16]",
++          "$.package_manifests[0].files[17]",
++          "$.package_manifests[0].normalized_sha256",
++        ],
++        evidence: {
++          package: "agentplane",
++          added_files: [
++            "dist/command-catalog.js",
++            "dist/command-catalog/core-fast.js",
++            "dist/command-catalog/task-read.js",
++            "dist/command-help.json",
++            "dist/deferred-runtime.js",
++          ],
++          removed_files: [],
++        },
++      }),
++    "compatibility pre-release package delta drift",
++  );
++  assert(
++    preReleasePackageDelta.from_sha256 ===
++      baseline.references.exact_main.section_digests.package_manifests &&
++      preReleasePackageDelta.to_sha256 === candidate.candidate.section_digests.package_manifests,
++    "pre-release package delta digest drift",
++  );
++  const preReleasePackageManifests = currentSurface.package_manifests.map((manifest) => {
++    const normalizedManifest = structuredClone(manifest);
++    delete normalizedManifest.path;
++    delete normalizedManifest.normalized_sha256;
++    normalizedManifest.version = "0.6.24";
++    if (manifest.path === "packages/agentplane/package.json") {
++      normalizedManifest.dependencies["@agentplaneorg/core"] = "0.6.24";
++      normalizedManifest.dependencies["@agentplaneorg/recipes"] = "0.6.24";
++    }
++    return packageSurface(manifest.path, normalizedManifest);
++  });
++  assert(
++    hashJson(preReleasePackageManifests) === preReleasePackageDelta.to_sha256,
++    "pre-release package manifest reconstruction drift",
++  );
++  const packageLayoutPaths = diffJsonPaths(
++    exactMainSurface.package_manifests,
++    preReleasePackageManifests,
++    "$.package_manifests",
++  );
++  assert(
++    hashJson(packageLayoutPaths) === hashJson(preReleasePackageDelta.allowed_json_paths),
++    "pre-release package manifest path drift",
++  );
+   const releaseVersionDelta = candidate.release_version_delta;
+   assertOnlyKeys(
+     releaseVersionDelta,
+@@ -414,9 +492,9 @@ function validateReviewedCandidate({
+         from_version: "0.6.24",
+         to_version: "0.7.0",
+         section: "package_manifests",
+-        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+-        to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-        surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
++        from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
++        to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
++        surface_sha256: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -747,6 +825,7 @@ function validateReviewedCandidate({
+       "202607221848-ER5H6N",
+       "202607221848-T9B3PS",
+       "202607221849-8YYZ9X",
++      "202608021231-SHYJGK",
+     ],
+   };
+   for (const delta of candidate.deltas) {
+@@ -2046,16 +2125,29 @@ function validateReviewedCandidate({
+     .filter((file) => !afterPackage.source_files.includes(file))
+     .toSorted();
+   assert(tarballDelta?.classification === "additive", "tarball candidate delta must be additive");
++  const beforeAllowedAgentplaneFiles =
++    exactMainSurface.tarball_policy.policy.allowed.agentplane_exact_files;
++  const afterAllowedAgentplaneFiles =
++    currentSurface.tarball_policy.policy.allowed.agentplane_exact_files;
++  const allowedAgentplaneFilesAdded = afterAllowedAgentplaneFiles
++    .filter((file) => !beforeAllowedAgentplaneFiles.includes(file))
++    .toSorted();
+   assert(
+     hashJson(tarballDelta.evidence) ===
+       hashJson({
+-        package: packageName,
+-        source_file_count: {
+-          from: beforePackage.source_file_count,
+-          to: afterPackage.source_file_count,
++        core_package: {
++          package: packageName,
++          source_file_count: {
++            from: beforePackage.source_file_count,
++            to: afterPackage.source_file_count,
++          },
++          added_source_files: addedSourceFiles,
++          removed_source_files: removedSourceFiles,
++        },
++        agentplane_runtime_policy: {
++          allowed_exact_files_added: allowedAgentplaneFilesAdded,
++          required_files: currentSurface.tarball_policy.policy.required_agentplane_files,
+         },
+-        added_source_files: addedSourceFiles,
+-        removed_source_files: removedSourceFiles,
+       }),
+     "tarball candidate evidence drift",
+   );
+@@ -2072,11 +2164,25 @@ function validateReviewedCandidate({
+   return reviewedSurfaceMode;
+ }
+ 
+-function verifyLocalReferenceIfAvailable(ref, expectedDigest, expectedCommitSha = null) {
++function verifyLocalReferenceIfAvailable({
++  ref,
++  expectedDigest,
++  expectedCommitSha = null,
++  expectedSectionDigests,
++  frozenSections,
++}) {
+   if (!gitReferenceAvailable(repoRoot, ref)) return "offline-frozen";
+   if (expectedCommitSha) assertGitRefMatchesSha(repoRoot, ref, expectedCommitSha);
+   const surface = collectCompatibilitySurface(createGitSource(repoRoot, ref));
+-  const digest = compatibilitySurfaceDigest(surfaceSectionDigests(surface));
++  const sectionDigests = surfaceSectionDigests(surface);
++  const frozenTarballPolicy = frozenSections[expectedSectionDigests.tarball_policy];
++  assert(frozenTarballPolicy, `${ref}: frozen tarball policy section is missing`);
++  assert(
++    hashJson(surface.tarball_policy.packages) === hashJson(frozenTarballPolicy.packages),
++    `${ref}: local Git tarball source inventory differs from frozen reference`,
++  );
++  sectionDigests.tarball_policy = expectedSectionDigests.tarball_policy;
++  const digest = compatibilitySurfaceDigest(sectionDigests);
+   assert(digest === expectedDigest, `${ref}: local Git surface differs from frozen reference`);
+   return "verified-local";
+ }
+@@ -2119,12 +2225,19 @@ try {
+     }
+   }
+ 
+-  const publishedStatus = verifyLocalReferenceIfAvailable(
+-    PUBLISHED_TAG,
+-    baseline.references.published_tag.surface_sha256,
+-    PUBLISHED_TAG_SHA,
+-  );
+-  const exactMainStatus = verifyLocalReferenceIfAvailable(TASK_PARENT_MAIN_SHA, expectedDigest);
++  const publishedStatus = verifyLocalReferenceIfAvailable({
++    ref: PUBLISHED_TAG,
++    expectedDigest: baseline.references.published_tag.surface_sha256,
++    expectedCommitSha: PUBLISHED_TAG_SHA,
++    expectedSectionDigests: baseline.references.published_tag.section_digests,
++    frozenSections: baseline.sections,
++  });
++  const exactMainStatus = verifyLocalReferenceIfAvailable({
++    ref: TASK_PARENT_MAIN_SHA,
++    expectedDigest,
++    expectedSectionDigests: baseline.references.exact_main.section_digests,
++    frozenSections: baseline.sections,
++  });
+   const driftLabel = baseline.preexisting_drift.surface_changed
+     ? `surface:${baseline.preexisting_drift.changed_sections.join(",")}`
+     : "commit-only";
+diff --git a/scripts/generate/generate-bun-cli-assets.mjs b/scripts/generate/generate-bun-cli-assets.mjs
+index 883dcf688..87b7f217c 100644
+--- a/scripts/generate/generate-bun-cli-assets.mjs
++++ b/scripts/generate/generate-bun-cli-assets.mjs
+@@ -9,7 +9,7 @@ import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runt
+ 
+ const DEFAULT_OUT_DIR = ".agentplane/.release/publish/bun";
+ const MANIFEST_NAME = "bun-assets.json";
+-const CLI_ENTRY = "packages/agentplane/dist/cli.js";
++const CLI_ENTRY = "packages/agentplane/dist/cli-bun.js";
+ const TARGETS = [
+   {
+     bunTarget: "bun-darwin-arm64",
+diff --git a/scripts/lib/package-tarball-policy.mjs b/scripts/lib/package-tarball-policy.mjs
+index be4ae0866..86201b850 100644
+--- a/scripts/lib/package-tarball-policy.mjs
++++ b/scripts/lib/package-tarball-policy.mjs
+@@ -10,6 +10,14 @@ export const REQUIRED_TARBALL_FILES = Object.freeze([
+   "LICENSE",
+   "dist/.build-manifest.json",
+ ]);
++export const REQUIRED_AGENTPLANE_TARBALL_FILES = Object.freeze([
++  "dist/cli.js",
++  "dist/command-catalog.js",
++  "dist/command-catalog/core-fast.js",
++  "dist/command-catalog/task-read.js",
++  "dist/command-help.json",
++  "dist/deferred-runtime.js",
++]);
+ 
+ const DENIED_PREFIXES = Object.freeze([".agentplane/", "src/", "docs/", "scripts/", "website/"]);
+ const DENIED_SEGMENTS = Object.freeze(["/__snapshots__/"]);
+@@ -31,6 +39,11 @@ const AGENTPLANE_EXACT_FILES = Object.freeze([
+   "dist/.build-manifest.json",
+   "dist/cli.d.ts",
+   "dist/cli.js",
++  "dist/command-catalog.js",
++  "dist/command-catalog/core-fast.js",
++  "dist/command-catalog/task-read.js",
++  "dist/command-help.json",
++  "dist/deferred-runtime.js",
+ ]);
+ const LIBRARY_EXACT_FILES = Object.freeze([
+   "package.json",
+@@ -41,6 +54,7 @@ const LIBRARY_EXACT_FILES = Object.freeze([
+ const LIBRARY_DIST_PATTERN = /^dist\/.+\.(?:js|d\.ts)$/u;
+ 
+ export function isDeniedTarballPath(pathInPackage) {
++  if (pathInPackage === "dist/command-help.json") return false;
+   if (DENIED_PREFIXES.some((prefix) => pathInPackage.startsWith(prefix))) return true;
+   if (DENIED_SEGMENTS.some((segment) => pathInPackage.includes(segment))) return true;
+   return DENIED_FILE_PATTERNS.some((pattern) => pattern.test(pathInPackage));
+@@ -62,6 +76,7 @@ export function packageTarballPolicyContract() {
+       (left, right) => left.name.localeCompare(right.name) || left.dir.localeCompare(right.dir),
+     ),
+     required_files: REQUIRED_TARBALL_FILES.toSorted(),
++    required_agentplane_files: REQUIRED_AGENTPLANE_TARBALL_FILES.toSorted(),
+     denied: {
+       prefixes: DENIED_PREFIXES.toSorted(),
+       segments: DENIED_SEGMENTS.toSorted(),
+diff --git a/scripts/qualification/check-v0.7.1-product-contract.mjs b/scripts/qualification/check-v0.7.1-product-contract.mjs
+index 9c7e1c893..9a2b769bd 100644
+--- a/scripts/qualification/check-v0.7.1-product-contract.mjs
++++ b/scripts/qualification/check-v0.7.1-product-contract.mjs
+@@ -5,6 +5,8 @@ import os from "node:os";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
++import { isDirectRun } from "../lib/script-runtime.mjs";
++
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+ const cliPath = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
+@@ -56,7 +58,7 @@ function checkManagedFrontend(failures) {
+   if (result.status !== 0) failures.push("managed task run frontend is not publicly executable");
+ }
+ 
+-function assertCompactPacket(packetText) {
++export function assertCompactAgentPacket(packetText) {
+   const bytes = Buffer.byteLength(packetText, "utf8");
+   assert.ok(bytes <= MAX_AGENT_PACKET_BYTES, `agent packet is ${bytes} bytes; maximum is 2048`);
+   const packet = JSON.parse(packetText);
+@@ -152,7 +154,7 @@ function checkExternalFrontend(failures) {
+       [cliPath, "task", "advance", taskId, "--agent-json"],
+       tempRoot,
+     ).trim();
+-    assertCompactPacket(packet);
++    assertCompactAgentPacket(packet);
+   } catch (error) {
+     failures.push(error instanceof Error ? error.message : String(error));
+   } finally {
+@@ -177,9 +179,11 @@ function main() {
+   );
+ }
+ 
+-try {
+-  main();
+-} catch (error) {
+-  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+-  process.exitCode = 1;
++if (isDirectRun(import.meta.url)) {
++  try {
++    main();
++  } catch (error) {
++    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
++    process.exitCode = 1;
++  }
+ }
+diff --git a/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs b/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
+index 94a166c67..6088fe8d6 100644
+--- a/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
++++ b/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
+@@ -1,6 +1,6 @@
+ import { createHash } from "node:crypto";
+ import { execFileSync, spawnSync } from "node:child_process";
+-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+ import os from "node:os";
+ import path from "node:path";
+ import { performance } from "node:perf_hooks";
+@@ -21,12 +21,12 @@ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+ const suiteConfigPath = path.join(repoRoot, "scripts", "cli-walltime-suites.json");
+ const BASELINE_VERSION = "0.6.26";
+ const PACKAGES = ["core", "recipes", "agentplane"];
+-const RUNS = 7;
+-const WARMUPS = 1;
++const DEFAULT_RUNS = 20;
++const DEFAULT_WARMUPS = 2;
+ 
+ function parseArgs(argv) {
+   const { flags, positionals } = parseScriptArgs(argv, {
+-    valueFlags: ["subject", "out"],
++    valueFlags: ["subject", "out", "runs", "warmups"],
+   });
+   if (positionals.length > 0) {
+     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
+@@ -35,7 +35,15 @@ function parseArgs(argv) {
+   if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
+     throw new Error("--subject must be a full 40-character Git commit SHA");
+   }
+-  return { outputPath: path.resolve(flags.out), subject: flags.subject };
++  const runs = Number.parseInt(flags.runs ?? String(DEFAULT_RUNS), 10);
++  const warmups = Number.parseInt(flags.warmups ?? String(DEFAULT_WARMUPS), 10);
++  if (!Number.isInteger(runs) || runs < 20) {
++    throw new Error("--runs must be an integer >= 20");
++  }
++  if (!Number.isInteger(warmups) || warmups < 1) {
++    throw new Error("--warmups must be an integer >= 1");
++  }
++  return { outputPath: path.resolve(flags.out), runs, subject: flags.subject, warmups };
+ }
+ 
+ function run(command, args, options = {}) {
+@@ -150,10 +158,10 @@ function initializeFixture(root, baselineCli) {
+   );
+ }
+ 
+-function measuredInvocation(cliPath, argv) {
++function measuredInvocation(cliPath, argv, cwd) {
+   const startedAt = performance.now();
+   const result = spawnSync(process.execPath, [cliPath, ...argv], {
+-    cwd: cliRepoRootFromPath(cliPath),
++    cwd,
+     encoding: "utf8",
+     env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1" },
+     maxBuffer: 10 * 1024 * 1024,
+@@ -166,6 +174,11 @@ function measuredInvocation(cliPath, argv) {
+   };
+ }
+ 
++function fixtureCopy(source, destination) {
++  rmSync(destination, { recursive: true, force: true });
++  cpSync(source, destination, { recursive: true });
++}
++
+ export function compareMatchedLatencySamples({
+   id,
+   baselineDurations,
+@@ -180,12 +193,23 @@ export function compareMatchedLatencySamples({
+   const deltaMs = roundMs(candidate.median_ms - baseline.median_ms);
+   const deltaRatio = baseline.median_ms === 0 ? null : deltaMs / baseline.median_ms;
+   const passed =
+-    baselineExitCode === 0 && candidateExitCode === 0 && candidate.median_ms <= baseline.median_ms;
++    baselineExitCode === 0 &&
++    candidateExitCode === 0 &&
++    candidate.median_ms <= baseline.median_ms &&
++    candidate.p95_ms <= baseline.p95_ms * 1.1;
+   return {
+     id,
+-    baseline: { ...baseline, exit_code: baselineExitCode, stderr: baselineStderr.slice(-500) },
++    baseline: {
++      ...baseline,
++      sample_count: baselineDurations.length,
++      samples_ms: baselineDurations,
++      exit_code: baselineExitCode,
++      stderr: baselineStderr.slice(-500),
++    },
+     candidate: {
+       ...candidate,
++      sample_count: candidateDurations.length,
++      samples_ms: candidateDurations,
+       exit_code: candidateExitCode,
+       stderr: candidateStderr.slice(-500),
+     },
+@@ -195,68 +219,140 @@ export function compareMatchedLatencySamples({
+   };
+ }
+ 
+-function measureMatched({ baselineCli, candidateCli, fixtureRoot }) {
+-  const config = readSuiteConfigMap(suiteConfigPath);
+-  const suite = config.suites.get("cli_walltime_baseline");
+-  if (!suite) throw new Error("cli_walltime_baseline suite is missing");
++function invocationOrder(index, baseline, candidate) {
++  return index % 2 === 0 ? [baseline, candidate] : [candidate, baseline];
++}
++
++function aggregateSamples(commands, side) {
++  const sampleCount = commands[0]?.[side]?.samples_ms.length ?? 0;
++  return Array.from({ length: sampleCount }, (_unused, sampleIndex) =>
++    roundMs(
++      commands.reduce((total, command) => total + (command[side].samples_ms[sampleIndex] ?? 0), 0),
++    ),
++  );
++}
++
++function providerExcludedTimeToVerified(commands) {
++  return {
++    definition:
++      "sum of the matched deterministic CLI command wall times at each sample index; fixture cloning, package installation, harness setup, and provider execution are excluded",
++    ...compareMatchedLatencySamples({
++      id: "provider_excluded_time_to_verified",
++      baselineDurations: aggregateSamples(commands, "baseline"),
++      candidateDurations: aggregateSamples(commands, "candidate"),
++      baselineExitCode: commands.every((command) => command.baseline.exit_code === 0) ? 0 : 1,
++      candidateExitCode: commands.every((command) => command.candidate.exit_code === 0) ? 0 : 1,
++    }),
++  };
++}
++
++function measurementCapture(id) {
++  const state = {
++    baseline: { durations: [], exitCode: null, stderr: "" },
++    candidate: { durations: [], exitCode: null, stderr: "" },
++  };
++  return {
++    record(kind, result) {
++      state[kind].durations.push(result.duration_ms);
++      state[kind].exitCode = result.exit_code;
++      state[kind].stderr = result.stderr;
++    },
++    comparison() {
++      return compareMatchedLatencySamples({
++        id,
++        baselineDurations: state.baseline.durations,
++        candidateDurations: state.candidate.durations,
++        baselineExitCode: state.baseline.exitCode,
++        candidateExitCode: state.candidate.exitCode,
++        baselineStderr: state.baseline.stderr,
++        candidateStderr: state.candidate.stderr,
++      });
++    },
++  };
++}
++
++function measureWarmPhase({
++  baselineCli,
++  candidateCli,
++  baselineFixtureRoot,
++  candidateFixtureRoot,
++  runs,
++  warmups,
++  suite,
++}) {
+   const commands = [];
+ 
+   for (const spec of suite.commands) {
+     const baselineArgv = interpolateArgs(spec.argv, {
+-      root: fixtureRoot,
++      root: baselineFixtureRoot,
+       repoRoot: cliRepoRootFromPath(baselineCli),
+     });
+     const candidateArgv = interpolateArgs(spec.argv, {
+-      root: fixtureRoot,
++      root: candidateFixtureRoot,
+       repoRoot: cliRepoRootFromPath(candidateCli),
+     });
+-    for (let index = 0; index < WARMUPS; index += 1) {
+-      measuredInvocation(baselineCli, baselineArgv);
+-      measuredInvocation(candidateCli, candidateArgv);
++    for (let index = 0; index < warmups; index += 1) {
++      measuredInvocation(baselineCli, baselineArgv, baselineFixtureRoot);
++      measuredInvocation(candidateCli, candidateArgv, candidateFixtureRoot);
+     }
+-    const baselineDurations = [];
+-    const candidateDurations = [];
+-    let baselineExitCode = null;
+-    let candidateExitCode = null;
+-    let baselineStderr = "";
+-    let candidateStderr = "";
+-    for (let index = 0; index < RUNS; index += 1) {
+-      const order =
+-        index % 2 === 0
+-          ? [
+-              ["baseline", baselineCli, baselineArgv],
+-              ["candidate", candidateCli, candidateArgv],
+-            ]
+-          : [
+-              ["candidate", candidateCli, candidateArgv],
+-              ["baseline", baselineCli, baselineArgv],
+-            ];
+-      for (const [kind, cliPath, argv] of order) {
+-        const result = measuredInvocation(cliPath, argv);
+-        if (kind === "baseline") {
+-          baselineDurations.push(result.duration_ms);
+-          baselineExitCode = result.exit_code;
+-          baselineStderr = result.stderr;
+-        } else {
+-          candidateDurations.push(result.duration_ms);
+-          candidateExitCode = result.exit_code;
+-          candidateStderr = result.stderr;
++    const capture = measurementCapture(spec.id);
++    for (let index = 0; index < runs; index += 1) {
++      const order = invocationOrder(
++        index,
++        ["baseline", baselineCli, baselineArgv, baselineFixtureRoot],
++        ["candidate", candidateCli, candidateArgv, candidateFixtureRoot],
++      );
++      for (const [kind, cliPath, argv, cwd] of order) {
++        const result = measuredInvocation(cliPath, argv, cwd);
++        capture.record(kind, result);
++      }
++    }
++    commands.push(capture.comparison());
++  }
++  return { commands, provider_excluded_time_to_verified: providerExcludedTimeToVerified(commands) };
++}
++
++function measureColdPhase({ baselineCli, candidateCli, fixtureSeed, coldRoot, runs, suite }) {
++  const commands = [];
++  for (const spec of suite.commands) {
++    const capture = measurementCapture(spec.id);
++    for (let index = 0; index < runs; index += 1) {
++      const order = invocationOrder(index, ["baseline", baselineCli], ["candidate", candidateCli]);
++      for (const [kind, cliPath] of order) {
++        const fixtureRoot = path.join(coldRoot, `${spec.id}-${String(index)}-${kind}`);
++        fixtureCopy(fixtureSeed, fixtureRoot);
++        const argv = interpolateArgs(spec.argv, {
++          root: fixtureRoot,
++          repoRoot: cliRepoRootFromPath(cliPath),
++        });
++        const result = measuredInvocation(cliPath, argv, fixtureRoot);
++        rmSync(fixtureRoot, { recursive: true, force: true });
++        capture.record(kind, result);
++      }
++    }
++    commands.push(capture.comparison());
++  }
++  return { commands, provider_excluded_time_to_verified: providerExcludedTimeToVerified(commands) };
++}
++
++export function validateMatchedLatencyReport(report) {
++  if (report.schema_version !== 2 || report.kind !== "agentplane.v0.7.1_matched_cli_latency") {
++    throw new Error("matched CLI latency report must use schema_version=2");
++  }
++  for (const phaseName of ["cold", "warm"]) {
++    const phase = report.phases?.[phaseName];
++    if (!phase || !Array.isArray(phase.commands) || phase.commands.length === 0) {
++      throw new Error(`matched CLI latency report omits ${phaseName} commands`);
++    }
++    for (const command of [phase.provider_excluded_time_to_verified, ...phase.commands]) {
++      for (const side of ["baseline", "candidate"]) {
++        if (command?.[side]?.sample_count < 20 || command[side].samples_ms.length < 20) {
++          throw new Error(`${phaseName}.${command?.id ?? "unknown"}.${side} requires 20 samples`);
+         }
+       }
+     }
+-    commands.push(
+-      compareMatchedLatencySamples({
+-        id: spec.id,
+-        baselineDurations,
+-        candidateDurations,
+-        baselineExitCode,
+-        candidateExitCode,
+-        baselineStderr,
+-        candidateStderr,
+-      }),
+-    );
+   }
+-  return commands;
++  return report;
+ }
+ 
+ function main(argv = process.argv.slice(2)) {
+@@ -266,29 +362,65 @@ function main(argv = process.argv.slice(2)) {
+   const baselinePrefix = path.join(tempRoot, "baseline");
+   const candidatePrefix = path.join(tempRoot, "candidate");
+   const packDirectory = path.join(tempRoot, "packs");
+-  const fixtureRoot = path.join(tempRoot, "fixture");
++  const fixtureSeed = path.join(tempRoot, "fixture-seed");
++  const baselineWarmFixture = path.join(tempRoot, "fixture-warm-baseline");
++  const candidateWarmFixture = path.join(tempRoot, "fixture-warm-candidate");
++  const coldRoot = path.join(tempRoot, "fixture-cold");
+   const cacheDirectory = path.join(repoRoot, ".agentplane", ".npm-cache");
+   try {
+-    for (const directory of [baselinePrefix, candidatePrefix, packDirectory, fixtureRoot]) {
++    for (const directory of [
++      baselinePrefix,
++      candidatePrefix,
++      packDirectory,
++      fixtureSeed,
++      coldRoot,
++    ]) {
+       mkdirSync(directory, { recursive: true });
+     }
+     const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
+     const candidate = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
+     const candidateCli = candidate.cli;
+-    initializeFixture(fixtureRoot, baselineCli);
++    initializeFixture(fixtureSeed, baselineCli);
++    fixtureCopy(fixtureSeed, baselineWarmFixture);
++    fixtureCopy(fixtureSeed, candidateWarmFixture);
+     const baselineVersion = run(process.execPath, [baselineCli, "--version"], {
+-      cwd: fixtureRoot,
++      cwd: fixtureSeed,
+     }).trim();
+     const candidateVersion = run(process.execPath, [candidateCli, "--version"], {
+-      cwd: fixtureRoot,
++      cwd: fixtureSeed,
+     }).trim();
+     if (baselineVersion !== BASELINE_VERSION) {
+       throw new Error(`expected baseline ${BASELINE_VERSION}, got ${baselineVersion}`);
+     }
+-    const commands = measureMatched({ baselineCli, candidateCli, fixtureRoot });
+-    const failures = commands.filter((command) => command.verdict !== "pass");
+-    const result = {
+-      schema_version: 1,
++    const config = readSuiteConfigMap(suiteConfigPath);
++    const suite = config.suites.get("cli_walltime_baseline");
++    if (!suite) throw new Error("cli_walltime_baseline suite is missing");
++    const phases = {
++      cold: measureColdPhase({
++        baselineCli,
++        candidateCli,
++        fixtureSeed,
++        coldRoot,
++        runs: options.runs,
++        suite,
++      }),
++      warm: measureWarmPhase({
++        baselineCli,
++        candidateCli,
++        baselineFixtureRoot: baselineWarmFixture,
++        candidateFixtureRoot: candidateWarmFixture,
++        runs: options.runs,
++        warmups: options.warmups,
++        suite,
++      }),
++    };
++    const failures = Object.entries(phases).flatMap(([phase, result]) =>
++      [result.provider_excluded_time_to_verified, ...result.commands]
++        .filter((command) => command.verdict !== "pass")
++        .map((command) => `${phase}.${command.id}`),
++    );
++    const result = validateMatchedLatencyReport({
++      schema_version: 2,
+       kind: "agentplane.v0.7.1_matched_cli_latency",
+       subject: options.subject,
+       source_identity: sourceIdentity,
+@@ -297,16 +429,31 @@ function main(argv = process.argv.slice(2)) {
+         sha256,
+         version,
+       })),
+-      environment: { node: process.version, platform: process.platform, arch: process.arch },
++      environment: {
++        node: process.version,
++        platform: process.platform,
++        release: os.release(),
++        arch: process.arch,
++        cpu_count: os.cpus().length,
++      },
+       baseline_version: baselineVersion,
+       candidate_version: candidateVersion,
+-      runs: RUNS,
+-      warmups: WARMUPS,
+-      comparison: "candidate_median_ms <= baseline_median_ms",
+-      commands,
+-      failure_ids: failures.map((command) => command.id),
++      sample_contract: {
++        runs_per_phase: options.runs,
++        warmups_before_warm_phase_per_command: options.warmups,
++        cold: "one invocation in a fresh copy of the identical initialized fixture; fixture-copy time is excluded",
++        warm: "one invocation in a persistent per-subject fixture after explicit unmeasured warmups",
++        process:
++          "every sample launches a new Node.js process; baseline/candidate order alternates by sample index",
++        os_cache: "not reset; alternating order controls shared host-cache drift",
++        provider: "not invoked",
++      },
++      comparison:
++        "for every command and provider-excluded aggregate in both phases: candidate_median_ms <= baseline_median_ms and candidate_p95_ms <= baseline_p95_ms * 1.10",
++      phases,
++      failure_ids: failures,
+       verdict: failures.length === 0 ? "pass" : "fail",
+-    };
++    });
+     mkdirSync(path.dirname(options.outputPath), { recursive: true });
+     writeFileSync(options.outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");
+     process.stdout.write(
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 6b3fa3b18..42d958246 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -15,7 +15,11 @@ import {
+   validateQualificationReport,
+ } from "./release-qualification.mjs";
+ import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
+-import { compareMatchedLatencySamples } from "./measure-v0.7.1-matched-cli-latency.mjs";
++import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
++import {
++  compareMatchedLatencySamples,
++  validateMatchedLatencyReport,
++} from "./measure-v0.7.1-matched-cli-latency.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -56,6 +60,45 @@ function reportFor(manifest, results, mode = "audit") {
+   });
+ }
+ 
++function efficiencyMeasurement() {
++  const evidence = JSON.parse(
++    readFileSync(
++      path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
++      "utf8",
++    ),
++  );
++  const measurement = structuredClone(evidence.measurement);
++  for (const [field, baseline] of Object.entries(measurement.baseline.actual_values.latency_ms)) {
++    measurement.candidate.actual_values.latency_ms[field].mean = baseline.mean;
++  }
++  return measurement;
++}
++
++function matchedPhase(sampleCount = 20, offset = 0) {
++  const baselineDurations = Array.from({ length: sampleCount }, (_unused, index) => 100 + index);
++  const candidateDurations = baselineDurations.map((value) => value - 10 + offset);
++  const command = compareMatchedLatencySamples({
++    id: "quickstart",
++    baselineDurations,
++    candidateDurations,
++    baselineExitCode: 0,
++    candidateExitCode: 0,
++  });
++  return {
++    commands: [command],
++    provider_excluded_time_to_verified: {
++      definition: "synthetic deterministic path",
++      ...compareMatchedLatencySamples({
++        id: "provider_excluded_time_to_verified",
++        baselineDurations,
++        candidateDurations,
++        baselineExitCode: 0,
++        candidateExitCode: 0,
++      }),
++    },
++  };
++}
++
+ describe("v0.7.1 release qualification contract", () => {
+   it("maps every required dimension to an executable scenario", () => {
+     const manifest = readQualificationManifest(manifestPath);
+@@ -242,14 +285,7 @@ describe("v0.7.1 release qualification contract", () => {
+   });
+ 
+   it("rejects a token regression even when aggregate evidence is complete", () => {
+-    const evidence = JSON.parse(
+-      readFileSync(
+-        path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
+-        "utf8",
+-      ),
+-    );
+-    const measurement = evidence.measurement;
+-    const regressed = structuredClone(measurement);
++    const regressed = efficiencyMeasurement();
+     regressed.candidate.actual_values.provider_tokens.input_tokens =
+       regressed.baseline.actual_values.provider_tokens.input_tokens + 1;
+     const result = evaluateEfficiencyMeasurement(regressed, regressed.candidate.subject_sha);
+@@ -259,7 +295,83 @@ describe("v0.7.1 release qualification contract", () => {
+     );
+   });
+ 
+-  it("gates matched CLI latency on an interleaved median with no regression allowance", () => {
++  it("rejects verified-success, scope, and provider-independent time regressions", () => {
++    const verifiedSuccess = efficiencyMeasurement();
++    verifiedSuccess.candidate.actual_values.outcomes.verified_success =
++      verifiedSuccess.baseline.actual_values.outcomes.verified_success - 1;
++    assert.equal(
++      evaluateEfficiencyMeasurement(
++        verifiedSuccess,
++        verifiedSuccess.candidate.subject_sha,
++      ).failures.some((item) => item.metric === "outcomes.verified_success"),
++      true,
++    );
++
++    const scopeViolation = efficiencyMeasurement();
++    scopeViolation.candidate.actual_values.outcomes.scope_violation =
++      scopeViolation.baseline.actual_values.outcomes.scope_violation + 1;
++    assert.equal(
++      evaluateEfficiencyMeasurement(
++        scopeViolation,
++        scopeViolation.candidate.subject_sha,
++      ).failures.some((item) => item.metric === "outcomes.scope_violation"),
++      true,
++    );
++
++    const timeToVerified = efficiencyMeasurement();
++    timeToVerified.candidate.actual_values.latency_ms.time_to_verified_result_ms.mean =
++      timeToVerified.baseline.actual_values.latency_ms.time_to_verified_result_ms.mean + 1;
++    assert.equal(
++      evaluateEfficiencyMeasurement(
++        timeToVerified,
++        timeToVerified.candidate.subject_sha,
++      ).failures.some((item) => item.metric === "latency.time_to_verified_result_ms.mean"),
++      true,
++    );
++  });
++
++  it("rejects an agent packet that grows beyond the release limit", () => {
++    const oversizedPacket = JSON.stringify({
++      schema_version: 1,
++      task_id: "202608021231-PACKET",
++      transition_id: "tr_test",
++      state_fingerprint: `sha256:${"a".repeat(64)}`,
++      action: { kind: "agent_episode", instruction: "x".repeat(2100) },
++      authority: {
++        role: "CODER",
++        mutation: "scoped_write",
++        network: "deny",
++        required: false,
++        reference: null,
++      },
++      context_refs: [],
++      stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
++    });
++    assert.throws(() => assertCompactAgentPacket(oversizedPacket), /maximum is 2048/u);
++  });
++
++  it("requires distinct frozen cold and warm sample sets with at least 20 pairs", () => {
++    const report = {
++      schema_version: 2,
++      kind: "agentplane.v0.7.1_matched_cli_latency",
++      phases: { cold: matchedPhase(20, 0), warm: matchedPhase(20, 1) },
++    };
++    assert.equal(validateMatchedLatencyReport(report), report);
++    assert.notDeepEqual(
++      report.phases.cold.commands[0].candidate.samples_ms,
++      report.phases.warm.commands[0].candidate.samples_ms,
++    );
++
++    const missingWarm = structuredClone(report);
++    delete missingWarm.phases.warm;
++    assert.throws(() => validateMatchedLatencyReport(missingWarm), /omits warm commands/u);
++
++    const insufficientCold = structuredClone(report);
++    insufficientCold.phases.cold = matchedPhase(19);
++    assert.throws(() => validateMatchedLatencyReport(insufficientCold), /requires 20 samples/u);
++  });
++
++  it("gates matched CLI latency on median and p95", () => {
+     const passing = compareMatchedLatencySamples({
+       id: "quickstart",
+       baselineDurations: [100, 101, 102, 103, 104, 105, 106],
+@@ -274,8 +386,16 @@ describe("v0.7.1 release qualification contract", () => {
+       baselineExitCode: 0,
+       candidateExitCode: 0,
+     });
++    const failingP95 = compareMatchedLatencySamples({
++      id: "quickstart",
++      baselineDurations: [100, 101, 102, 103, 104, 105, 106],
++      candidateDurations: [90, 91, 92, 93, 94, 95, 130],
++      baselineExitCode: 0,
++      candidateExitCode: 0,
++    });
+     assert.equal(passing.verdict, "pass");
+     assert.equal(failing.verdict, "fail");
++    assert.equal(failingP95.verdict, "fail");
+     assert.equal(failing.delta_ms, 4);
+   });
+ });
+diff --git a/scripts/release/check-package-tarball.mjs b/scripts/release/check-package-tarball.mjs
+index 4d19c9d28..4f9ff5ce8 100644
+--- a/scripts/release/check-package-tarball.mjs
++++ b/scripts/release/check-package-tarball.mjs
+@@ -7,6 +7,7 @@ import {
+   isAllowedTarballPath,
+   isDeniedTarballPath,
+   PACKAGE_TARBALL_IDENTITIES,
++  REQUIRED_AGENTPLANE_TARBALL_FILES,
+   REQUIRED_TARBALL_FILES,
+ } from "../lib/package-tarball-policy.mjs";
+ import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
+@@ -72,7 +73,11 @@ function checkPackage(pkg, outDir) {
+   const files = packed.files;
+   const denied = files.filter((file) => isDeniedTarballPath(file));
+   const unexpected = files.filter((file) => !isAllowedTarballPath(file, pkg.name));
+-  const missing = REQUIRED_TARBALL_FILES.filter((file) => !files.includes(file));
++  const required =
++    pkg.name === "agentplane"
++      ? [...REQUIRED_TARBALL_FILES, ...REQUIRED_AGENTPLANE_TARBALL_FILES]
++      : REQUIRED_TARBALL_FILES;
++  const missing = required.filter((file) => !files.includes(file));
+ 
+   if (files.includes("dist/.build-manifest.json")) {
+     assertSanitizedManifest(packed.filename, pkg.name, String(packageJson.version));
+diff --git a/scripts/release/generate-cli-help-catalog.mjs b/scripts/release/generate-cli-help-catalog.mjs
+new file mode 100644
+index 000000000..d8108a063
+--- /dev/null
++++ b/scripts/release/generate-cli-help-catalog.mjs
+@@ -0,0 +1,24 @@
++import { writeFile } from "node:fs/promises";
++import path from "node:path";
++import { pathToFileURL } from "node:url";
++
++const packageRoot = path.resolve(process.argv[2] ?? process.cwd());
++const catalogPath = path.join(packageRoot, "dist", "command-catalog.js");
++const outputPath = path.join(packageRoot, "dist", "command-help.json");
++const catalog = await import(`${pathToFileURL(catalogPath).href}?generated=${Date.now()}`);
++
++if (!Array.isArray(catalog.COMMANDS)) {
++  throw new TypeError(`command catalog did not export COMMANDS: ${catalogPath}`);
++}
++
++const entries = catalog.COMMANDS.map((entry) => ({
++  helpGroup: entry.helpGroup,
++  invocation: entry.invocation,
++  spec: entry.spec,
++  surface: entry.surface,
++}));
++
++await writeFile(outputPath, `${JSON.stringify({ schema_version: 1, entries })}\n`, "utf8");
++process.stdout.write(
++  `generated ${path.relative(packageRoot, outputPath)} (${entries.length} commands)\n`,
++);
+diff --git a/scripts/release/smoke-bun-compiled-cli.mjs b/scripts/release/smoke-bun-compiled-cli.mjs
+index 7412e9fb1..ddfbc36eb 100644
+--- a/scripts/release/smoke-bun-compiled-cli.mjs
++++ b/scripts/release/smoke-bun-compiled-cli.mjs
+@@ -17,11 +17,11 @@ function usage() {
+   return [
+     "Usage: node scripts/smoke-bun-compiled-cli.mjs [options]",
+     "",
+-    "Compile packages/agentplane/dist/cli.js with Bun or smoke-test a Bun executable release archive.",
++    "Compile packages/agentplane/dist/cli-bun.js with Bun or smoke-test a Bun executable release archive.",
+     "",
+     "Options:",
+     "  --artifact <path>              Bun executable archive to smoke-test",
+-    "  --entry <path>                Built CLI entrypoint (default: packages/agentplane/dist/cli.js)",
++    "  --entry <path>                Built CLI entrypoint (default: packages/agentplane/dist/cli-bun.js)",
+     "  --expected-version <semver>   Expected AgentPlane version (default: packages/agentplane/package.json)",
+     "  --skip-cli-commands           Validate archive layout only; do not execute the CLI",
+     "  --keep                        Keep the compiled temp directory for inspection",
+@@ -51,7 +51,7 @@ function parseArgs(argv, repoRoot) {
+     entry:
+       typeof flags.entry === "string"
+         ? path.resolve(repoRoot, flags.entry)
+-        : path.resolve(repoRoot, "packages/agentplane/dist/cli.js"),
++        : path.resolve(repoRoot, "packages/agentplane/dist/cli-bun.js"),
+     expectedVersion:
+       typeof flags["expected-version"] === "string" ? flags["expected-version"].trim() : null,
+     skipCliCommands: Boolean(flags["skip-cli-commands"]),
+@@ -83,6 +83,52 @@ function assertFile(filePath, label) {
+ 
+ function initSmokeGitRepo(cwd) {
+   run("git", ["init"], { cwd });
++  run("git", ["config", "user.name", "AgentPlane Bun Smoke"], { cwd });
++  run("git", ["config", "user.email", "agentplane-bun-smoke@example.com"], { cwd });
++}
++
++function runDeferredRuntimeSmoke(executable, cwd) {
++  run(
++    executable,
++    [
++      "init",
++      "--yes",
++      "--setup-profile",
++      "light",
++      "--workflow",
++      "direct",
++      "--backend",
++      "local",
++      "--hooks",
++      "false",
++      "--require-plan-approval",
++      "true",
++      "--evaluator-skepticism",
++      "standard",
++    ],
++    { cwd },
++  );
++  run(executable, ["evaluator", "list"], { cwd });
++  const taskId = run(
++    executable,
++    [
++      "task",
++      "new",
++      "--title",
++      "Bun runtime smoke",
++      "--description",
++      "Exercise deferred command runtime and compact task catalog",
++      "--priority",
++      "med",
++      "--owner",
++      "CODER",
++      "--tag",
++      "smoke",
++    ],
++    { cwd },
++  ).trim();
++  const taskList = run(executable, ["task", "list"], { cwd });
++  assertIncludes(taskList, taskId, "task list");
+ }
+ 
+ function inferTarget(artifactPath) {
+@@ -132,11 +178,12 @@ function smokeBunArchive(args) {
+     initSmokeGitRepo(extractDir);
+     const quickstartOutput = run(executable, ["quickstart"], { cwd: extractDir });
+     assertIncludes(quickstartOutput, "agentplane quickstart", "quickstart");
++    runDeferredRuntimeSmoke(executable, extractDir);
+     return {
+       artifact: args.artifact,
+       target: `${target.platform}-${target.arch}`,
+       version,
+-      checks: ["archive layout", "--version", "quickstart"],
++      checks: ["archive layout", "--version", "quickstart", "init", "evaluator list", "task list"],
+       executed: true,
+     };
+   } finally {
+@@ -177,6 +224,7 @@ function smokeBunCompiledCli(args, repoRoot) {
+     initSmokeGitRepo(tempDir);
+     const quickstartOutput = run(executable, ["quickstart"], { cwd: tempDir });
+     assertIncludes(quickstartOutput, "agentplane quickstart", "quickstart");
++    runDeferredRuntimeSmoke(executable, tempDir);
+ 
+     const roleOutput = run(executable, ["role", "CODER"], { cwd: tempDir });
+     assertIncludes(roleOutput, "### CODER", "role CODER");
+@@ -185,7 +233,7 @@ function smokeBunCompiledCli(args, repoRoot) {
+       executable,
+       kept: args.keep,
+       version,
+-      checks: ["--version", "quickstart", "role CODER"],
++      checks: ["--version", "quickstart", "init", "evaluator list", "task list", "role CODER"],
+     };
+   } finally {
+     if (!args.keep) rmSync(tempDir, { recursive: true, force: true });

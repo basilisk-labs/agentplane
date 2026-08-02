@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-SHYJGK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T19:01:30.150Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8947e7cb10cd5c2e84433c66b3a08a80adf8f35c",
+  "blueprint_digest": "adacf99e71211dda177deeb758f3484329d3dcf8e922a6d79a27c7526816fd23",
+  "findings": [
+    "The evaluated SHA changes only the cross-platform evaluator test fixture relative to the previously benchmarked production implementation; the frozen task record documents exact-SHA regression coverage and continued applicability of the production latency and contract evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-SHYJGK/README.md",
+    ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-190028716-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-190028716-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The previously recorded exact-production benchmark remains representative at the evaluated SHA because the intervening source change is limited to the evaluator test fixture."
+  ],
+  "residual_risks": []
+}
