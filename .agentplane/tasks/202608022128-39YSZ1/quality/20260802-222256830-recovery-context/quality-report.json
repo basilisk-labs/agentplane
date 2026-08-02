@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022128-39YSZ1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T22:22:57.137Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "137ca290fca0c71cc945a70bc959257d0775357b",
+  "blueprint_digest": "a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565",
+  "findings": [
+    "PASS: verification routing was extracted into a focused module, reducing route-decision-blockers.ts from 624 to 578 lines without changing the fail-closed contract.",
+    "PASS: the semantic-commit invalidation scenario and DONE remote-truth fixture moved to a focused integration test, reducing the existing oversized test to 1104 lines and total oversized baseline to 11355.",
+    "PASS: 13 route files / 58 tests, 12 critical chunks / 79 tests, typecheck, lint, Knip 539/539, policy routing, and hotspot checks all pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-222256830-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608022128-39YSZ1-2246d65b116047244b3ed48f",
+  "prepared_at": "2026-08-02T22:22:56.830Z",
+  "task": {
+    "id": "202608022128-39YSZ1",
+    "revision": 14,
+    "objective": "Require fresh verification evidence in the route oracle\n\nPrevent task next-action from accepting verification evidence that predates the current implementation HEAD. Route changed commits back through verification before evaluator review or integration.",
+    "acceptance_criteria": [
+      "- In scope: Prevent task next-action from accepting verification evidence that predates the current implementation HEAD. Route changed commits back through verification before evaluator review or integration.\n- Out of scope: unrelated refactors not required for \"Require fresh verification evidence in the route oracle\".",
+      "1. Inspect the route decision path and the canonical verification-record helpers to define current-HEAD freshness without duplicating state logic. 2. Make task next-action require an accepted verification record bound to the current implementation HEAD before quality review or integration. 3. Add regression tests for a fresh record and for a new commit invalidating prior verification. 4. Run focused routing tests, typecheck, static analysis, and critical tests; record evaluator evidence and integrate through the protected GitHub PR route.",
+      "1. Run the route-decision and verification-record focused suites. Expected: a current signed verification record is accepted from the task worktree or committed task-branch snapshot, while a later semantic commit yields verification_required.\n2. Run typecheck, lint:core, knip:check, and the policy routing check. Expected: all static, dependency, and policy gates pass without increasing accepted baselines.\n3. Run test:critical. Expected: the critical CLI trust-boundary and efficiency suite passes without regressions."
+    ]
+  },
+  "evaluated_sha": "137ca290fca0c71cc945a70bc959257d0775357b",
+  "diff_base_sha": "be9304ea05e50ec3824ef085f0f70402474e318a",
+  "blueprint_digest": "a3c05e79e256ce8659cc8f39bd14c64856f51f6c9cd48ccf24a057a1e7cd8565",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608022128-39YSZ1/README.md",
+      "sha256": "sha256:06a53719e9153ad0adf8795d681dfc22121341956c0d10b6df38914e3d93b999",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-222256830-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:77f9a8bb164e5f8c16a14611d3486eb2401a3f1ddf4bdb04c0e12fe85ef3ab51",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-222256830-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:73869a935d768b275acda7547830ab12e74f32791ce0e5d30d64dccb08fef0e6",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608022128-39YSZ1/verification/20260802222148541-5b1e66c6e57ddfa7.json",
+      "sha256": "sha256:abd6e13a0e4cde97a9da9f408ebbd935b52a45aad5581da493ae47aaa0143d12",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-222256830-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d017dc9f58c04556d04469354a578d537cd3676856c38fef2bf9acf401f62300",
+      "required": true
+    }
+  ]
+}
