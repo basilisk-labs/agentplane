@@ -4,7 +4,7 @@ title: "Build the v0.7.1 end-to-end release qualification suite"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,9 @@ verification:
   updated_by: "TESTER"
   note: "Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated."
   attempts: 1
-commit: null
+commit:
+  hash: "5881186a69c595777e39496e1e4899ef45011d8c"
+  message: "🧪 DR7J1E task: refine qualification verification"
 comments:
   -
     author: "TESTER"
@@ -35,6 +37,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation recorded: added the versioned v0.7.1 qualification manifest, audit/gate runner, classified defect ledger, focused lifecycle/context/supervisor/recovery/hosted suites, exact-subject efficiency checks, packed install coverage, and an interleaved 0.6.26 matched CLI benchmark. Verified: e2e:v0.7.1:check and ci:contract pass; full local audit completed with classified release blockers."
+  -
+    author: "CODER"
+    body: "Rework completed: separated harness acceptance from final release acceptance, preserved fail-closed product and performance gates, and added the interleaved published-0.6.26 matched latency scenario to the full profile."
 events:
   -
     type: "status"
@@ -56,8 +61,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework the task verification contract: the harness correctly emits release-blocking defects, but current Verify Steps incorrectly require the not-yet-fixed candidate to pass the final product gate before the harness can be integrated."
+  -
+    type: "status"
+    at: "2026-08-02T12:06:19.128Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework completed: separated harness acceptance from final release acceptance, preserved fail-closed product and performance gates, and added the interleaved published-0.6.26 matched latency scenario to the full profile."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:05:48.595Z"
+doc_updated_at: "2026-08-02T12:06:19.128Z"
 doc_updated_by: "CODER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
