@@ -6,7 +6,7 @@ Created: 2026-08-02T11:27:47.149Z
 
 - Task: `202608021125-DR7J1E`
 - Title: Build the v0.7.1 end-to-end release qualification suite
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021125-DR7J1E/build-the-v0-7-1-end-to-end-release-qualificatio`
 - Canonical task record: `.agentplane/tasks/202608021125-DR7J1E/README.md`
 
