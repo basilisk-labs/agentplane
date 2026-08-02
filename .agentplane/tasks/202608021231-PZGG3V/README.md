@@ -4,7 +4,7 @@ title: "Unify the v0.7.1 task supervisor and external advance protocol"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "06582bde1138360f789c18399c86df20279bafee"
+  message: "✨ PZGG3V task: unify supervisor frontends"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed at 06582bde1138360f789c18399c86df20279bafee. Local product, supervisor, lifecycle, recovery, critical, type, policy, and repository contract checks passed; independent verification remains with TESTER."
 events:
   -
     type: "status"
@@ -42,8 +47,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-02T14:11:49.069Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed at 06582bde1138360f789c18399c86df20279bafee. Local product, supervisor, lifecycle, recovery, critical, type, policy, and repository contract checks passed; independent verification remains with TESTER."
 doc_version: 3
-doc_updated_at: "2026-08-02T13:20:44.053Z"
+doc_updated_at: "2026-08-02T14:11:49.069Z"
 doc_updated_by: "CODER"
 description: "Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding."
 sections:
