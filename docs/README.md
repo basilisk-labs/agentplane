@@ -31,6 +31,9 @@ Docs are organized into an agent-first public navigation model on top of `docs/u
 - `Reference`
 - `Release notes`
 
+The versioned upgrade entrypoint is `docs/user/v0-7-migration.mdx`; keep its supported-source
+matrix aligned with the installed migration matrix in `scripts/lib/installed-migration-matrix.mjs`.
+
 Framework maintainer documentation for developing Agentplane itself lives under `docs/developer/`.
 It is direct-link only and intentionally omitted from the public sidebar and public docs index.
 Use `docs/developer/harness-dev.mdx` as the maintainer entrypoint.

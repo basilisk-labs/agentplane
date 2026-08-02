@@ -145,9 +145,10 @@ agentplane context ingest --changed
 agentplane context verify-task <task-id>
 ```
 
-During the v0.7 supervisor migration, the standalone verifier fails closed when the only execution
-evidence is a repository-local receipt. Use the component context checks and `ap verify` described
-in [Local context](local-context) until the beta supervisor restores authenticated handoff.
+The standalone verifier fails closed when the only execution evidence is a repository-local
+receipt. Use `context supervise-task <task-id> --extraction <sgr-json>` for authenticated supervised
+handoff, or use the component context checks and `ap verify` recovery described in
+[Local context](local-context).
 
 See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
 

@@ -19,11 +19,175 @@ For the architectural decision and practical boundary guidance, see [ADR: Zod Co
 
 ## Current priority
 
-This page describes the current `0.4` implementation surfaces. It is not an endorsement of expanding
-recipe, runner, or prompt-assembly scope outside an approved task plan.
+This page describes the Agentplane 0.7 architecture. The release goal is a mechanically
+authoritative, semantically blind CLI: deterministic facts and lifecycle mechanics move out of
+agent reasoning, while interpretation, design, implementation, synthesis, and quality judgment stay
+with specialized semantic roles.
 
-The former `0.3` stabilization backlog is historical. Current work should treat release notes, ADRs,
-tests, and the runtime contracts below as the active evidence source.
+The rule is narrower than "automate everything." A step belongs in the CLI control plane only when
+its inputs and outputs are typed, its preconditions are mechanically decidable, its outcome can be
+independently observed, and its side effects are bounded by policy and current authority. Otherwise
+the route emits an agent episode, approval, human-input request, wait, or terminal result.
+
+## Agentplane 0.7 plane model
+
+| Plane     | Owns                                                                                                                                                | Must not own                                                                     |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Knowledge | Repo-owned sources, wiki, facts, graph, glossary, provenance, and rebuildable retrieval projections.                                                | Per-run semantic decisions or a second hidden knowledge base.                    |
+| Control   | Task/project/Git/provider truth, typed route steps, state fingerprints, authority, process supervision, deterministic operations, and transactions. | Architecture choices, prose interpretation, implementation, or quality verdicts. |
+| Semantic  | One bounded PLANNER, CURATOR, EXECUTOR, or EVALUATOR responsibility per episode.                                                                    | Direct lifecycle mutation or claims of observed process/Git/check truth.         |
+| Evidence  | Supervisor-observed process, Git, filesystem, artifact, check, effect, and provider receipts.                                                       | Promotion of agent-reported claims without observation.                          |
+
+The stable loop is:
+
+```text
+CLI prepares facts and candidates
+  -> one semantic role interprets or creates
+  -> CLI validates schema, provenance, state, and authority
+  -> CLI applies an allowed result and independently observes the outcome
+```
+
+This extends the existing context extraction pattern to task execution and evaluation instead of
+creating a second context system.
+
+## Versioned semantic boundary
+
+| Contract              | Version | Responsibility                                                                                                                 |
+| --------------------- | ------: | ------------------------------------------------------------------------------------------------------------------------------ |
+| `StateFingerprint`    |       1 | Binds a prepared step to current task, Git, checkout, provider, policy, and related state.                                     |
+| `KnowledgeRef`        |       1 | Digest-addressed reference into the existing context plane plus retrieval provenance.                                          |
+| `AgentWorkOrder`      |       2 | One role, objective, task revision, authority, bounded evidence, required inputs/outputs, verification intent, and stop rules. |
+| `AgentSemanticResult` |       2 | Semantic status, summary, findings, uncertainty, blocker, bounded knowledge request, and claimed checks.                       |
+| `ExecutionReceipt`    |       2 | Agentplane-observed process, Git, artifact, filesystem scope, checks, cleanup, and success-policy evidence.                    |
+| `WorkflowStep`        |       1 | One `cli_operation`, `agent_episode`, `approval`, `human_input`, `wait`, or `terminal` decision.                               |
+
+The generated schemas under `schemas/` are the public contract truth. New agent invocation requires
+`AgentWorkOrder` v2. Historical WorkOrder v1 has deterministic compatibility conversion;
+historical `ExecutionReceipt` v1 remains readable, while new receipts use v2.
+
+`claimed_checks` in `AgentSemanticResult` are deliberately not `checks` in `ExecutionReceipt`. The
+former records what an agent says; the latter records what the supervisor observed.
+
+## Supervised flows
+
+### Direct task
+
+```mermaid
+sequenceDiagram
+  participant U as User or orchestrator
+  participant C as Agentplane control plane
+  participant X as EXECUTOR
+  participant E as EVALUATOR
+  participant G as Git and checks
+  U->>C: task run task-id
+  C->>C: Resolve route, fingerprint, authority, knowledge, and WorkOrder
+  C->>X: One implementation episode
+  X-->>C: AgentSemanticResult v2
+  C->>G: Observe process, diff, artifacts, and declared checks
+  G-->>C: ExecutionReceipt v2
+  C->>E: Read-only review WorkOrder
+  E-->>C: Typed quality result
+  C->>C: Verify and finish, or stop for rework, input, approval, or wait
+```
+
+The EXECUTOR lifecycle event delta must remain zero: the agent edits the approved workspace and
+returns semantic output; the supervisor owns start, observed checks, verification recording, and
+eligible finish operations.
+
+### Context assimilation
+
+```mermaid
+sequenceDiagram
+  participant C as Agentplane control plane
+  participant K as CURATOR
+  participant W as Context transaction
+  participant E as EVALUATOR
+  C->>C: Scan, hash, lock sources, retrieve canonical candidates
+  C->>K: Assimilation WorkOrder and bounded evidence
+  K-->>C: Context extraction SGR
+  C->>C: Validate schema, provenance, and managed paths
+  C->>W: Apply, lint, index, graph, coverage, doctor, and smoke checks
+  W-->>C: Durable phase receipts
+  C->>E: Read-only context quality review
+  E-->>C: Typed quality result
+  C->>C: Finalize or emit a bounded rework/input stop
+```
+
+Completed mechanical phases are journaled. After a crash or deterministic failure, resume repeats
+only the failed phase and does not replay the CURATOR result or already completed effects.
+
+### branch_pr task
+
+```mermaid
+sequenceDiagram
+  participant U as User or orchestrator
+  participant C as Agentplane control plane
+  participant X as EXECUTOR
+  participant T as TESTER
+  participant E as EVALUATOR
+  participant P as Git provider
+  U->>C: task run task-id with remote truth when required
+  C->>X: Implementation or bounded rework episode
+  X-->>C: Semantic result plus implementation commit
+  C->>T: Verification episode
+  T-->>C: Semantic verification result
+  C->>E: Read-only quality-review episode
+  E-->>C: Typed verdict
+  C->>P: Open or update PR under matching authority
+  C->>P: Enqueue the exact reviewed head
+  P-->>C: Hosted checks, merge, or wait state
+  C->>C: Finalize only from explicit provider and cleanup truth
+```
+
+The supervisor does not imitate plan approval, provider merge, or another external side effect. A
+missing authority becomes a typed approval step. A pending check or integration queue becomes a
+typed wait. Merge-conflict or stale-head repair becomes a separate semantic rework episode.
+
+## Authority and effect safety
+
+Every protected side effect is bound to an operation digest, a current `StateFingerprint`, a state
+scope digest, an actor, a policy rule, and an expiry. A matching record authorizes only that
+operation under that state. A changed task revision, Git head, provider state, or policy scope makes
+the prepared operation stale.
+
+The supervisor persists effect intent before execution. An interrupted effect is not blindly
+retried: it remains `effect_in_doubt` until reconciled from external evidence. This applies to PR,
+integration, release, and other side-effecting routes as well as process ownership.
+
+Phase-scoped run tools use a signed run/work-order capability. Global command visibility is an
+operator UX surface, not the security boundary.
+
+## Knowledge and retrieval boundary
+
+The context plane remains the durable LLM-wiki under `context/**`. Work orders carry `KnowledgeRef`
+records and bounded prepared excerpts, with an included, omitted, missing, or stale receipt for each
+declared reference. FTS5/BM25 search, aliases, graph expansion, freshness checks, and deterministic
+candidate construction happen before the episode. Low-confidence gaps can produce one bounded
+`KnowledgeRequest`; they do not grant the agent unrestricted discovery or create another wiki.
+
+Post-task learning produces source-backed proposals. CURATOR review remains the promotion boundary,
+so a successful task does not automatically contaminate canonical project knowledge.
+
+## Application and rendering boundary
+
+Commands declare granular `CommandSession` capabilities. A command that asks only for project or
+task-read state cannot silently resolve provider, network, task-write, Git-write, or artifact-write
+capabilities. Use cases return typed results; human, plain, JSON, and error renderers own stdout and
+stderr compatibility. Supervisor code calls use cases rather than parsing CLI output.
+
+Architecture checks enforce these boundaries with zero active dependency violations. Command-family
+migration was delivered in vertical slices rather than a big-bang rewrite.
+
+## Performance policy
+
+Preparation traces record node inputs, dependencies, bytes, invalidation causes, and cacheability.
+Semantic, authority, provider, and mutable repository truth remain non-cacheable. Persistent and
+command-local preparation-cache candidates were removed after safe variants failed the required
+five-percent end-to-end threshold; the architecture retains measurements instead of unjustified
+state.
+
+Cost is evaluated per verified result. A token or latency reduction never offsets a safety,
+observed-success, or evidence-provenance regression.
 
 ## Framework control plane
 
@@ -192,6 +356,7 @@ Release is split into planning and apply:
 
 ## Related docs
 
+- [Migrate to Agentplane 0.7](../user/v0-7-migration)
 - [Project layout](project-layout)
 - [Module topology](module-topology)
 - [CLI contract](cli-contract)

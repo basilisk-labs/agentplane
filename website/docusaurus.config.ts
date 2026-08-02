@@ -206,6 +206,10 @@ const config = {
               to: "/docs/start/quickstart",
             },
             {
+              label: "Upgrade to 0.7",
+              to: "/docs/user/v0-7-migration",
+            },
+            {
               label: "Examples",
               to: "/examples",
             },
