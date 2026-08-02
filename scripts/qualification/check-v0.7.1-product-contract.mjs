@@ -58,6 +58,29 @@ function checkManagedFrontend(failures) {
   if (result.status !== 0) failures.push("managed task run frontend is not publicly executable");
 }
 
+function checkCanonicalHelp(failures) {
+  const result = probeCli(["help", "--json"]);
+  if (result.status !== 0) {
+    failures.push("canonical help registry is not executable");
+    return;
+  }
+  try {
+    const ids = JSON.parse(result.stdout).map((entry) => entry.id.join(" "));
+    if (ids.length > 12)
+      failures.push(`canonical help exposes ${ids.length} commands; maximum is 12`);
+    for (const required of ["task new", "task advance", "task run", "context search"]) {
+      if (!ids.includes(required)) failures.push(`canonical help omits ${required}`);
+    }
+    if (ids.includes("task begin") || ids.includes("task complete")) {
+      failures.push("canonical help exposes compatibility begin/complete shortcuts");
+    }
+  } catch (error) {
+    failures.push(
+      `canonical help is not valid JSON: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
 export function assertCompactAgentPacket(packetText) {
   const bytes = Buffer.byteLength(packetText, "utf8");
   assert.ok(bytes <= MAX_AGENT_PACKET_BYTES, `agent packet is ${bytes} bytes; maximum is 2048`);
@@ -155,6 +178,53 @@ function checkExternalFrontend(failures) {
       tempRoot,
     ).trim();
     assertCompactAgentPacket(packet);
+    const parsedPacket = JSON.parse(packet);
+    assert.equal(parsedPacket.transition_id.length > 0, true, "planning transition is required");
+    assert.equal(
+      parsedPacket.action.kind,
+      "agent_episode",
+      "new tasks must stop for semantic planning",
+    );
+    assert.equal(
+      parsedPacket.authority.role,
+      "PLANNER",
+      "planning packet must delegate to PLANNER",
+    );
+    assert.equal(
+      parsedPacket.authority.mutation,
+      "read_only",
+      "planning packet cannot mutate lifecycle state",
+    );
+
+    const prematureApproval = probeCli(
+      ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR"],
+      tempRoot,
+    );
+    assert.notEqual(
+      prematureApproval.status,
+      0,
+      "generated planning placeholder must not be approvable",
+    );
+    assert.match(prematureApproval.stderr, /semantic plan|planning placeholder/iu);
+
+    const managedBoundary = probeCli(["task", "run", taskId, "--json"], tempRoot);
+    assert.equal(
+      managedBoundary.status,
+      0,
+      "managed run must return the planning boundary without failure",
+    );
+    const managed = JSON.parse(managedBoundary.stdout);
+    assert.equal(
+      managed.route.step_id,
+      "agent.planning",
+      "run and advance must share planning state",
+    );
+    assert.equal(managed.stop.code, "semantic_input_required", "run must type the planning stop");
+    assert.equal(
+      managed.metrics.provider_episodes,
+      0,
+      "planning stop must not launch an implementation provider",
+    );
   } catch (error) {
     failures.push(error instanceof Error ? error.message : String(error));
   } finally {
@@ -165,6 +235,7 @@ function checkExternalFrontend(failures) {
 function main() {
   const failures = [];
   checkOnboarding(failures);
+  checkCanonicalHelp(failures);
   checkManagedFrontend(failures);
   checkExternalFrontend(failures);
   if (failures.length > 0) {

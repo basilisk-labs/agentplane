@@ -12,6 +12,7 @@ if (!Array.isArray(catalog.COMMANDS)) {
 }
 
 const entries = catalog.COMMANDS.map((entry) => ({
+  canonicalHelp: entry.canonicalHelp === true,
   helpGroup: entry.helpGroup,
   invocation: entry.invocation,
   spec: entry.spec,

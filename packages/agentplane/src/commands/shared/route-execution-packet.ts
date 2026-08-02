@@ -5,7 +5,14 @@ export type RouteExecutionPacket = {
   actionKind: "local_command" | "provider_action" | "wait" | "stop";
   safeToMutate: boolean;
   requiresProviderAction: boolean;
-  recommendedRole: "ORCHESTRATOR" | "CODER" | "TESTER" | "INTEGRATOR" | "EVALUATOR" | "USER";
+  recommendedRole:
+    | "ORCHESTRATOR"
+    | "PLANNER"
+    | "CODER"
+    | "TESTER"
+    | "INTEGRATOR"
+    | "EVALUATOR"
+    | "USER";
   authoritativeCheckout: RouteOracle["authoritativeCheckout"];
   authoritativeCheckoutPath: string | null;
   mutationPathHint: string | null;

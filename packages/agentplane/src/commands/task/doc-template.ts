@@ -3,6 +3,8 @@ import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { decodeEscapedTaskTextNewlines } from "./shared/docs.js";
 
 export const TASK_DOC_VERSION_V3 = 3;
+export const PLANNER_SEMANTIC_PLAN_PLACEHOLDER =
+  "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.";
 
 function normalizeTaskHumanText(text: string): string {
   return decodeEscapedTaskTextNewlines(text).trim();
@@ -32,12 +34,12 @@ function buildDefaultScope(opts: { title: string; description: string }): string
   ].join("\n");
 }
 
-function buildDefaultPlan(opts: { title: string }): string {
-  return [
-    `1. Implement the change for "${opts.title}".`,
-    "2. Run required checks and capture verification evidence.",
-    "3. Finalize task findings and finish with traceable commit metadata.",
-  ].join("\n");
+function buildDefaultPlan(): string {
+  return PLANNER_SEMANTIC_PLAN_PLACEHOLDER;
+}
+
+export function isPlannerSemanticPlanRequired(plan: string | null | undefined): boolean {
+  return plan?.replaceAll("\r\n", "\n").trim() === PLANNER_SEMANTIC_PLAN_PLACEHOLDER;
 }
 
 function buildDefaultVerifyStepsTemplate(opts: { title: string }): string {
@@ -89,7 +91,7 @@ export function defaultTaskDocV3(opts: { title: string; description: string }): 
     "Scope",
     buildDefaultScope({ title: opts.title, description: opts.description }),
   );
-  body = setMarkdownSection(body, "Plan", buildDefaultPlan({ title: opts.title }));
+  body = setMarkdownSection(body, "Plan", buildDefaultPlan());
   body = setMarkdownSection(
     body,
     "Verify Steps",

@@ -118,6 +118,7 @@ export const CORE_COMMANDS = [
     load: loadInitSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["init"]),
+    canonicalHelp: true,
   }),
   declareSessionCommand(upgradeSpec, {
     load: loadUpgradeSpec,
@@ -156,6 +157,7 @@ export const CORE_COMMANDS = [
   fromCommandsCoreQuickstart(quickstartSpec, "runQuickstart", {
     requirements: NO_CONTEXT_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["quickstart"]),
+    canonicalHelp: true,
   }),
   declareCommand(demoSpec, {
     load: loadDemoSpec,
@@ -284,7 +286,10 @@ export const CORE_COMMANDS = [
     load: loadIdeSyncSpec,
     requirements: PROJECT_REQUIREMENTS,
   }),
-  fromCommandsDoctorRun(doctorSpec, "runDoctor", { requirements: PROJECT_REQUIREMENTS }),
+  fromCommandsDoctorRun(doctorSpec, "runDoctor", {
+    requirements: PROJECT_REQUIREMENTS,
+    canonicalHelp: true,
+  }),
   fromCommandsWorkflowCommand(workflowSpec, "runWorkflow", {
     requirements: NO_CONTEXT_REQUIREMENTS,
     surface: "framework",

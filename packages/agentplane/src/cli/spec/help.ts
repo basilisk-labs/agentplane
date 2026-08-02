@@ -31,9 +31,9 @@ export type HelpRegistryView = {
 export const helpSpec: CommandSpec<HelpParsed> = {
   id: ["help"],
   group: "Core",
-  summary: "Show help for a command.",
+  summary: "Show the canonical command surface or help for one command.",
   description:
-    "Renders spec-derived help for migrated commands. Use --compact for minimal output and --json for machine-readable help.",
+    "Lists the small canonical workflow by default. Use --all for the complete catalog, --compact for minimal output, and --json for machine-readable help.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   options: [
     { kind: "boolean", name: "compact", description: "Compact help (usage + options)." },
@@ -41,7 +41,7 @@ export const helpSpec: CommandSpec<HelpParsed> = {
     {
       kind: "boolean",
       name: "all",
-      description: "Include framework-dev and internal maintenance commands in registry output.",
+      description: "Include the complete advanced, framework-dev, and maintenance catalog.",
     },
   ],
   examples: [

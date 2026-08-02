@@ -17,6 +17,7 @@ import { suggestOne } from "./spec/suggest.js";
 import { findFrameworkCheckout } from "../../bin/runtime-context.js";
 import {
   getHelpCommandEntriesFrom,
+  getCanonicalHelpCommandEntriesFrom,
   makeHelpSpecForEntry,
   matchCommandEntries,
   isCommandVisibleInHelp,
@@ -118,7 +119,7 @@ export async function runCli(argv: string[]): Promise<number> {
       : await loadCommandEntriesForTokens(rest);
     const makeHelpRegistryEntries = (mode: HelpSurfaceMode) => [
       { spec: helpSpec },
-      ...getHelpCommandEntriesFrom(commandEntries, mode).map((entry) => ({
+      ...getCanonicalHelpCommandEntriesFrom(commandEntries, mode).map((entry) => ({
         spec: makeHelpSpecForEntry(entry),
       })),
     ];

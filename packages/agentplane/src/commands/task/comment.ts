@@ -64,6 +64,7 @@ export async function cmdTaskComment(opts: {
   taskId: string;
   author: string;
   body: string;
+  quiet?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -81,11 +82,13 @@ export async function cmdTaskComment(opts: {
           body: opts.body,
         }),
     });
-    emitCommandResult(output, {
-      kind: "success",
-      action: "commented",
-      target: opts.taskId,
-    });
+    if (!opts.quiet) {
+      emitCommandResult(output, {
+        kind: "success",
+        action: "commented",
+        target: opts.taskId,
+      });
+    }
     return 0;
   } catch (err) {
     throw mapBackendError(err, { command: "task comment", root: opts.rootOverride ?? null });

@@ -15,7 +15,8 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
     "Default external-agent path: task new -> task advance --agent-json. The packet exposes one bounded action while Agentplane retains lifecycle authority.",
-    "Default managed-agent path: create and approve the task, then use task run to supervise the typed lifecycle.",
+    "Default managed-agent path: create the task, record and approve the semantic plan, then use task run to supervise the typed lifecycle.",
+    "The generated Plan is an explicit placeholder: task plan approve fails until PLANNER or a human records a task-specific plan.",
     "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
     "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
@@ -32,7 +33,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     },
     {
       cmd: "agentplane task run <task-id>",
-      why: "Let the managed runner resolve semantic boundaries using the same supervisor state.",
+      why: "After plan approval, let the managed runner resolve eligible semantic boundaries using the same supervisor state.",
     },
     {
       cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',

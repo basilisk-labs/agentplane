@@ -113,7 +113,8 @@ Read [Local context](docs/user/local-context.mdx).
 ```bash
 agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record" --owner DOCS --tag docs
 agentplane task advance <task-id> --agent-json
-# Or, after semantic plan approval, let the configured runner supervise the task:
+# A new task first returns a PLANNER packet; its generated placeholder cannot be approved.
+# After the semantic plan is recorded and approved, let the configured runner supervise the task:
 agentplane task run <task-id>
 ```
 

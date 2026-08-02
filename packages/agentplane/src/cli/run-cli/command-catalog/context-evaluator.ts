@@ -198,6 +198,7 @@ export const CONTEXT_COMMANDS = [
   declareSessionCommand(contextSearchSpec, {
     load: loadContextSearchSpec,
     requirements: CONTEXT_PROJECT_REQUIREMENTS,
+    canonicalHelp: true,
   }),
   declareSessionCommand(contextDashboardSpec, {
     load: loadContextDashboardSpec,

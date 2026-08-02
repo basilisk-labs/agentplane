@@ -74,6 +74,7 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
     },
   ],
   notes: [
+    "A task with only the generated planning placeholder stops at the typed PLANNER boundary without starting an implementation provider; use task advance --agent-json to hand that semantic episode to an external agent.",
     "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
     "In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.",
     "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
