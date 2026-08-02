@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  assertQualificationSubjectIdentity,
   buildQualificationReport,
   qualificationExitCode,
   readQualificationManifest,
@@ -51,6 +52,7 @@ function reportFor(manifest, results, mode = "audit") {
     startedAt: "2026-08-02T00:00:00.000Z",
     finishedAt: "2026-08-02T00:00:01.000Z",
     results,
+    sourceIdentity: { commit: "a".repeat(40), tree: "b".repeat(40), clean: true },
   });
 }
 
@@ -75,6 +77,39 @@ describe("v0.7.1 release qualification contract", () => {
     assert.throws(
       () => validateQualificationManifest(missing, { repoRoot }),
       /owner_task does not exist/u,
+    );
+  });
+
+  it("binds qualification evidence to the exact clean Git subject", () => {
+    const subject = "a".repeat(40);
+    assert.deepEqual(
+      assertQualificationSubjectIdentity({
+        subject,
+        head: subject,
+        tree: "b".repeat(40),
+        statusPorcelain: "",
+      }),
+      { commit: subject, tree: "b".repeat(40), clean: true },
+    );
+    assert.throws(
+      () =>
+        assertQualificationSubjectIdentity({
+          subject,
+          head: "c".repeat(40),
+          tree: "b".repeat(40),
+          statusPorcelain: "",
+        }),
+      /does not match repository HEAD/u,
+    );
+    assert.throws(
+      () =>
+        assertQualificationSubjectIdentity({
+          subject,
+          head: subject,
+          tree: "b".repeat(40),
+          statusPorcelain: " M packages\/agentplane\/src\/cli.ts",
+        }),
+      /candidate repository must be clean/u,
     );
   });
 

@@ -1,5 +1,6 @@
+import { createHash } from "node:crypto";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
@@ -13,6 +14,7 @@ import {
   summarizeDurations,
 } from "../lib/cli-benchmark-shared.mjs";
 import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+import { readQualificationSubjectIdentity } from "./release-qualification.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -58,7 +60,13 @@ function npmPack(packageDirectory, packDirectory, cacheDirectory) {
   const match = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(output);
   if (!match) throw new Error(`npm pack did not return JSON for ${packageDirectory}`);
   const entry = JSON.parse(match[2])[0];
-  return path.join(packDirectory, entry.filename);
+  const tarballPath = path.join(packDirectory, entry.filename);
+  return {
+    name: entry.name,
+    path: tarballPath,
+    sha256: `sha256:${createHash("sha256").update(readFileSync(tarballPath)).digest("hex")}`,
+    version: entry.version,
+  };
 }
 
 function installedCli(prefix) {
@@ -75,14 +83,24 @@ function installBaseline(prefix, cacheDirectory) {
 }
 
 function installCandidate(prefix, packDirectory, cacheDirectory) {
-  const tarballs = PACKAGES.map((name) =>
+  const packages = PACKAGES.map((name) =>
     npmPack(path.join(repoRoot, "packages", name), packDirectory, cacheDirectory),
   );
-  run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", ...tarballs], {
-    cwd: prefix,
-    env: { NPM_CONFIG_CACHE: cacheDirectory },
-  });
-  return installedCli(prefix);
+  run(
+    "npm",
+    [
+      "install",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      ...packages.map((item) => item.path),
+    ],
+    {
+      cwd: prefix,
+      env: { NPM_CONFIG_CACHE: cacheDirectory },
+    },
+  );
+  return { cli: installedCli(prefix), packages };
 }
 
 function initializeFixture(root, baselineCli) {
@@ -243,6 +261,7 @@ function measureMatched({ baselineCli, candidateCli, fixtureRoot }) {
 
 function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
+  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-matched-cli-latency-"));
   const baselinePrefix = path.join(tempRoot, "baseline");
   const candidatePrefix = path.join(tempRoot, "candidate");
@@ -254,7 +273,8 @@ function main(argv = process.argv.slice(2)) {
       mkdirSync(directory, { recursive: true });
     }
     const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
-    const candidateCli = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
+    const candidate = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
+    const candidateCli = candidate.cli;
     initializeFixture(fixtureRoot, baselineCli);
     const baselineVersion = run(process.execPath, [baselineCli, "--version"], {
       cwd: fixtureRoot,
@@ -271,6 +291,12 @@ function main(argv = process.argv.slice(2)) {
       schema_version: 1,
       kind: "agentplane.v0.7.1_matched_cli_latency",
       subject: options.subject,
+      source_identity: sourceIdentity,
+      candidate_packages: candidate.packages.map(({ name, sha256, version }) => ({
+        name,
+        sha256,
+        version,
+      })),
       environment: { node: process.version, platform: process.platform, arch: process.arch },
       baseline_version: baselineVersion,
       candidate_version: candidateVersion,
