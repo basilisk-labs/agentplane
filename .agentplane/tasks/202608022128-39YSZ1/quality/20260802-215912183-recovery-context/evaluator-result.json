@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "matchesCurrentVerification resolves semantic Git targets before rejecting records whose timestamp, verifier, note, scope, or digest cannot match the current verification state; long verification histories therefore add unnecessary route latency.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022128-39YSZ1/quality/20260802-215912183-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "No focused assertion yet proves stale metadata records are rejected before semantic SHA resolution."
+  ],
+  "hidden_assumptions": [
+    "Verification directories remain small enough that eager Git traversal is negligible."
+  ]
+}
