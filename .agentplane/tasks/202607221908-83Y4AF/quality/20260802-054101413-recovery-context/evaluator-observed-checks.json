@@ -1,0 +1,26 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run arch:check",
+    "bun run guards:check",
+    "bun run release:prepublish",
+    "bun run task-state:check"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T05:39:38.630Z",
+    "updated_by": "TESTER",
+    "note": "0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "path": ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+    "digest": "sha256:0015f723c36c1d5d7e59280669093d1f640f3203779c5b043fb4ded65f45384d",
+    "implementation_sha": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+    "evidence_commit": "ca4150746ed0c0552c4978f98125e57f6cbd9fc3"
+  }
+}

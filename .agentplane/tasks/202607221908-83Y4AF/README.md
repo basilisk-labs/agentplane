@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-rc.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -43,6 +43,33 @@ verification:
   updated_by: "TESTER"
   note: "0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-02T05:41:59.454Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "ca4150746ed0c0552c4978f98125e57f6cbd9fc3"
+  blueprint_digest: "e7bb65c5ed6cab07de1a1b0b089c785c04f967ff007f0e2dd215fbed5c98773d"
+  evidence_refs:
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-83Y4AF/README.md"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json"
+    - ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The qualification packet marks two RF-04 latency comparisons as failed, while the verification record declares the RF-04 metrics and milestone gate green."
+    - "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence, so the reported release-gate results cannot be independently reconstructed from this episode's evidence."
 commit:
   hash: "fb473719873ac29f6bdf54a31736370b14a8fff4"
   message: "🔀 83Y4AF task: sync qualification packet fix"

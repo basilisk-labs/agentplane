@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-83Y4AF-cb58d8d386b31051e62442fb",
+  "task_id": "202607221908-83Y4AF",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Reconcile the qualification decision with the two failed RF-04 latency comparisons, either by recording an approved non-blocking classification with explicit rationale or by treating them as rework. Then regenerate the frozen verification evidence so the declared checks are independently tied to implementation SHA fb473719873ac29f6bdf54a31736370b14a8fff4.",
+  "findings": [
+    {
+      "id": "RF04-LATENCY-REGRESSIONS",
+      "summary": "The qualification packet marks two RF-04 latency comparisons as failed, while the verification record declares the RF-04 metrics and milestone gate green.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+          "sha256": "sha256:157dd12d92ed524b1e17ba2d2cb8ddafa9dac5383fde3c672b3c11dca9bd3d47",
+          "section": "rf04.candidate_measurement.comparisons"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-83Y4AF/README.md",
+          "sha256": "sha256:91c85a587606a6a4c2f9e77505b8293375488e27bc1b79f45658636a1745a2a3",
+          "section": "Verification"
+        }
+      ]
+    },
+    {
+      "id": "DETERMINISTIC-EVIDENCE-NOT-FROZEN",
+      "summary": "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence, so the reported release-gate results cannot be independently reconstructed from this episode's evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:39ca223f8658c5001b75213032291d7a94f68d4efc7d19c2885e551d1cc65adb",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221908-83Y4AF/evidence/qualification-packet.v1.json",
+          "sha256": "sha256:157dd12d92ed524b1e17ba2d2cb8ddafa9dac5383fde3c672b3c11dca9bd3d47",
+          "section": "verification.checks"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-83Y4AF/quality/20260802-054101413-recovery-context/evaluator-result.json"
+}
