@@ -16,7 +16,7 @@ Prevent task next-action from accepting verification evidence that predates the 
 ## Verification
 
 - State: ok
-- Note: Verified: stale-record short-circuit, route freshness, static gates, and critical behavior pass at 090b377f5.
+- Note: Verified at 137ca290f: route freshness and CI hotspot rework pass all required local gates.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,13 +29,15 @@ Prevent task next-action from accepting verification evidence that predates the 
 ```text
  .../cli/run-cli.core.route-decision.batch.test.ts  |   6 +-
  .../run-cli.core.route-decision.pre-merge.test.ts  |  28 ++-
- .../src/cli/run-cli.core.route-decision.test.ts    | 137 +++++++++++++-
- .../evaluator/evaluator-verification-records.ts    | 122 +------------
- .../src/commands/shared/route-decision-blockers.ts |  67 ++++++-
+ .../src/cli/run-cli.core.route-decision.test.ts    |  69 +------
+ ...un-cli.core.route-decision.verification.test.ts | 230 +++++++++++++++++++++
+ .../evaluator/evaluator-verification-records.ts    | 122 +----------
+ .../src/commands/shared/route-decision-blockers.ts |  23 ++-
  .../route-decision-blockers.worktree.test.ts       |  36 ++++
- .../shared/task-verification-records.test.ts       |  69 ++++++++
- .../commands/shared/task-verification-records.ts   | 196 +++++++++++++++++++++
- 8 files changed, 528 insertions(+), 133 deletions(-)
+ .../commands/shared/route-decision-verification.ts |  56 +++++
+ .../shared/task-verification-records.test.ts       |  69 +++++++
+ .../commands/shared/task-verification-records.ts   | 196 ++++++++++++++++++
+ 10 files changed, 641 insertions(+), 194 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision*.test.ts packages/agentplane/src/commands/shared/task-verification-records.test.ts packages/agentplane/src/cli/run-cli.core.route-decision*.test.ts --maxWorkers=1 --fileParallelism=false\nResult: pass\nEvidence: 13 test files and 58 tests passed, including stale metadata short-circuit, semantic commit invalidation, fresh record acceptance, and branch snapshot recovery\nScope: route oracle and verification freshness\n\nCommand: bun run typecheck; bun run lint:core; bun run knip:check; node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: typecheck and lint passed, Knip baseline 539/539, policy routing OK\nScope: static, dependency, and policy gates\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: route-decision-blockers.ts is 578 lines and oversized test baseline is 10 entries / 11355 lines\nScope: CI hotspot and oversized-test budgets\n\nCommand: bun run test:critical\nResult: pass\nEvidence: 12 chunks and 79 critical CLI tests passed\nScope: critical CLI trust-boundary and efficiency regression suite",
+  "digest": "sha256:5b1e66c6e57ddfa7908b9b7f57f8bda855d7f07ff26b4a0c3a235c47c4106db4",
+  "implementation_sha": "137ca290fca0c71cc945a70bc959257d0775357b",
+  "kind": "task_verification_record",
+  "note": "Verified at 137ca290f: route freshness and CI hotspot rework pass all required local gates.",
+  "recorded_at": "2026-08-02T22:21:48.541Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the route-decision and verification-record focused suites. Expected: a current signed verification record is accepted from the task worktree or committed task-branch snapshot, while a later semantic commit yields verification_required.\n2. Run typecheck, lint:core, knip:check, and the policy routing check. Expected: all static, dependency, and policy gates pass without increasing accepted baselines.\n3. Run test:critical. Expected: the critical CLI trust-boundary and efficiency suite passes without regressions.",
+  "scope_digest": "sha256:42df10439030619fac720406369f65f3379d60cd19ee691903516856de8ceb77",
+  "task_id": "202608022128-39YSZ1",
+  "verification_command": "agentplane verify 202608022128-39YSZ1 --ok --by TESTER",
+  "verifier": "TESTER"
+}
