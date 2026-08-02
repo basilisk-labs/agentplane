@@ -8,7 +8,7 @@ vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
 vi.mock("@agentplaneorg/core/git", () => ({
-  gitEnv: () => ({}),
+  gitProofEnv: () => ({}),
 }));
 
 describe("taskCloseAlreadyRecordedOnBase", () => {
@@ -63,6 +63,8 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
       taskId?: string;
       status?: string;
       commitHash?: string;
+      basisCommit?: string;
+      objectType?: string;
       branch?: string;
       prNumber?: number;
       markerPrNumber?: number | null;
@@ -76,7 +78,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
           "---",
           `id: "${opts.taskId ?? "T-1"}"`,
           `status: "${opts.status ?? "DONE"}"`,
-          `commit: { hash: "${opts.commitHash ?? "closed"}", message: "closed" }`,
+          `commit: { hash: "${opts.commitHash ?? "a".repeat(40)}", message: "closed" }`,
           "---",
           "# Task",
           "",
@@ -94,12 +96,13 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
           pre_merge_closure: {
             state: "closed_before_merge",
             branch: resolvedBranch,
-            basis_commit: "pre-rebase-basis",
+            basis_commit: opts.basisCommit ?? "b".repeat(40),
             ...(opts.markerPrNumber === null ? {} : { pr_number: opts.markerPrNumber ?? prNumber }),
           },
         })}\n`,
         stderr: "",
-      });
+      })
+      .mockResolvedValue({ stdout: `${opts.objectType ?? "commit"}\n`, stderr: "" });
   }
 
   async function recorded(
@@ -148,6 +151,19 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
     await expect(recorded()).resolves.toBe(false);
 
     mockBaseArtifacts({ markerPrNumber: 999 });
+    await expect(recorded()).resolves.toBe(false);
+  });
+
+  it("rejects mutable task or closure identities before treating base evidence as recorded", async () => {
+    mockBaseArtifacts({ commitHash: "task/T-1/work" });
+    await expect(recorded()).resolves.toBe(false);
+
+    mockBaseArtifacts({ basisCommit: "refs/heads/main" });
+    await expect(recorded()).resolves.toBe(false);
+  });
+
+  it("rejects tag objects before treating base evidence as recorded", async () => {
+    mockBaseArtifacts({ objectType: "tag" });
     await expect(recorded()).resolves.toBe(false);
   });
 });

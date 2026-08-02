@@ -29,6 +29,10 @@ export {
 export type CommandMemo = {
   tasks?: Promise<TaskData[]>;
   taskProjection?: Promise<TaskSummary[]>;
+  taskBranchInventory?: Promise<{
+    localBranches: string[];
+    remoteBranches: string[];
+  }>;
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
   agentIds?: Promise<string[]>;

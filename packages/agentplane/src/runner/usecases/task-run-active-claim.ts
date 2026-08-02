@@ -22,6 +22,7 @@ import {
   type TaskRunnerClaimedRunAuthority,
 } from "./task-run-active-claim-authority.js";
 import { competingTaskRunnerActiveClaimError } from "./task-run-active-claim-conflict.js";
+import { inspectClaimDirectory } from "./task-run-active-claim-inspection.js";
 import {
   acquireTaskRunnerActiveClaimRecoveryLease,
   beginTaskRunnerActiveClaimRetirement,
@@ -156,7 +157,8 @@ export async function readObservedClaim(
 export async function readTaskRunnerActiveClaim(
   opts: TaskRunnerActiveClaimPathOptions,
 ): Promise<TaskRunnerActiveClaim | null> {
-  const directory = await resolveClaimDirectory(opts);
+  const directory = await inspectClaimDirectory(opts);
+  if (!directory) return null;
   const observed = await readObservedClaim(directory);
   return observed?.claim ?? null;
 }

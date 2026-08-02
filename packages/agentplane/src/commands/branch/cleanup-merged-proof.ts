@@ -4,35 +4,26 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import {
   findWorktreeForBranch,
-  gitDiffNames,
-  gitEnv,
+  gitProofDiffNames,
   gitListBranchesByPrefixes,
   parseTaskIdFromBranch,
   parseTaskIdFromCloseBranch,
 } from "@agentplaneorg/core/git";
-import { execFileAsync } from "@agentplaneorg/core/process";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
-import { gitIsAncestor } from "../shared/git-ops.js";
+import {
+  gitCommitObjectExists,
+  gitProofIsAncestor,
+  isCanonicalFullCommitOid,
+} from "../shared/git-ops.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
-import {
-  observeExistingGithubPrByBranch,
-  observeExistingGithubPrByNumber,
-  type GithubPrLookupResult,
-} from "../pr/internal/sync-github.js";
-import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import {
-  taskCloseAlreadyRecordedOnBase,
-  taskPreMergeClosureRecordedOnBase,
-} from "../task/close-tail-state.js";
-import { isAuthorityOnlyTaskReadmeAdvance } from "../shared/quality-review-target.js";
+import type { ProviderReconciliationProof } from "./cleanup-merged-provider-reconciliation.js";
+import { targetedCleanupProof } from "./cleanup-merged-targeted-proof.js";
+
+export { revalidateCleanupCandidate } from "./cleanup-merged-targeted-proof.js";
 
 type CleanupBranchKind = "task" | "task-close";
-
-type GithubCommitRecord = {
-  parents?: { sha?: string | null }[];
-};
 
 export type CleanupCandidate = {
   taskId: string;
@@ -45,7 +36,9 @@ export type CleanupCandidate = {
     | "merged_meta_on_base"
     | "tree_equivalent"
     | "patch_equivalent"
-    | "provider_merge";
+    | "provider_merge"
+    | "provider_rebase";
+  providerReconciliation?: ProviderReconciliationProof;
 };
 
 type CleanupBlockedCandidate = {
@@ -93,333 +86,20 @@ async function taskLifecycleProofOnBase(opts: {
   taskId: string;
 }): Promise<CleanupCandidate["proof"] | null> {
   const taskCommitHash = opts.task.commit?.hash?.trim() ?? "";
-  if (taskCommitHash && (await gitIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))) {
+  if (
+    isCanonicalFullCommitOid(taskCommitHash) &&
+    (await gitCommitObjectExists(opts.gitRoot, taskCommitHash)) &&
+    (await gitProofIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))
+  ) {
     return "task_commit_on_base";
   }
   const meta = await readCleanupPrMetaIfPresent(opts);
   const mergeCommit = meta?.status === "MERGED" ? (meta.merge_commit?.trim() ?? "") : "";
-  return mergeCommit && (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
+  return isCanonicalFullCommitOid(mergeCommit) &&
+    (await gitCommitObjectExists(opts.gitRoot, mergeCommit)) &&
+    (await gitProofIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
     ? "merged_meta_on_base"
     : null;
-}
-
-function commandFailedWithExitCode(error: unknown, code: number): boolean {
-  return (error as { code?: number | string } | null)?.code === code;
-}
-
-async function gitTreesEquivalent(opts: {
-  gitRoot: string;
-  baseBranch: string;
-  branch: string;
-}): Promise<boolean> {
-  try {
-    await execFileAsync("git", ["diff", "--quiet", opts.baseBranch, opts.branch, "--"], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
-    return true;
-  } catch (error) {
-    if (commandFailedWithExitCode(error, 1)) return false;
-    throw error;
-  }
-}
-
-async function gitLinearPatchsetEquivalent(opts: {
-  gitRoot: string;
-  baseBranch: string;
-  branch: string;
-}): Promise<boolean> {
-  const { stdout: mergeCommits } = await execFileAsync(
-    "git",
-    ["rev-list", "--merges", `${opts.baseBranch}..${opts.branch}`],
-    { cwd: opts.gitRoot, env: gitEnv() },
-  );
-  if (mergeCommits.trim()) return false;
-  const { stdout } = await execFileAsync("git", ["cherry", opts.baseBranch, opts.branch], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .every((line) => line.startsWith("- "));
-}
-
-async function observeProviderPr(opts: {
-  gitRoot: string;
-  branch: string;
-  baseBranch: string;
-  prNumber: number | null;
-}): Promise<GithubPrLookupResult> {
-  return opts.prNumber
-    ? await observeExistingGithubPrByNumber({
-        gitRoot: opts.gitRoot,
-        branch: opts.branch,
-        baseBranch: opts.baseBranch,
-        prNumber: opts.prNumber,
-      })
-    : await observeExistingGithubPrByBranch({
-        gitRoot: opts.gitRoot,
-        branch: opts.branch,
-        baseBranch: opts.baseBranch,
-      });
-}
-
-function providerUnavailableBecauseRepositoryIsLocal(result: GithubPrLookupResult): boolean {
-  return (
-    result.state === "unavailable" &&
-    result.reason === "origin is unavailable or is not a GitHub repository"
-  );
-}
-
-async function validateMergedProviderReceipt(opts: {
-  gitRoot: string;
-  baseBranch: string;
-  branchHead: string;
-  result: GithubPrLookupResult;
-}): Promise<{ prNumber: number | null; reason: string | null; observedHeadSha: string | null }> {
-  if (opts.result.state === "not_found") {
-    return {
-      prNumber: null,
-      reason: "provider PR was not found for the exact branch and base",
-      observedHeadSha: null,
-    };
-  }
-  if (opts.result.state === "unavailable") {
-    return {
-      prNumber: null,
-      reason: `provider lookup is unavailable: ${opts.result.reason}`,
-      observedHeadSha: null,
-    };
-  }
-  const observed = opts.result.pr;
-  if (observed.status !== "MERGED") {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider PR #${observed.prNumber} is ${observed.status.toLowerCase()}, not merged`,
-      observedHeadSha: null,
-    };
-  }
-  if ((observed.base?.trim() ?? "") !== opts.baseBranch) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider base mismatch: expected=${opts.baseBranch} observed=${observed.base ?? "-"}`,
-      observedHeadSha: null,
-    };
-  }
-  const mergeCommit = observed.mergeCommit?.trim() ?? "";
-  if (!mergeCommit || !(await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider merge commit is not on ${opts.baseBranch}: ${mergeCommit || "-"}`,
-      observedHeadSha: null,
-    };
-  }
-  const observedHeadSha = observed.headSha?.trim() ?? "";
-  if (!observedHeadSha || observedHeadSha !== opts.branchHead) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider head mismatch: local=${opts.branchHead} observed=${observed.headSha ?? "-"}`,
-      observedHeadSha: observedHeadSha || null,
-    };
-  }
-  return { prNumber: observed.prNumber, reason: null, observedHeadSha };
-}
-
-/**
- * GitHub's "Update branch" produces a merge commit whose parents are the
- * task branch head and a commit already contained by the protected base. The
- * provider can retain that head after its task branch was deleted, so local
- * ref equality is not available during cleanup. This shape proves the update
- * added only base context to the exact local task head.
- */
-async function isProviderBaseUpdateOfLocalHead(opts: {
-  gitRoot: string;
-  baseBranch: string;
-  branchHeadSha: string;
-  providerHeadSha: string;
-}): Promise<boolean> {
-  try {
-    const repo = await resolveDefaultGithubRepo(opts.gitRoot);
-    const commit = await runGhApiJson<GithubCommitRecord>(opts.gitRoot, [
-      `repos/${repo}/commits/${opts.providerHeadSha}`,
-    ]);
-    const parents = (commit.parents ?? [])
-      .map((parent) => parent.sha?.trim() ?? "")
-      .filter(Boolean);
-    if (parents.length !== 2 || !parents.includes(opts.branchHeadSha)) return false;
-    const baseParent = parents.find((parent) => parent !== opts.branchHeadSha);
-    return Boolean(baseParent && (await gitIsAncestor(opts.gitRoot, baseParent, opts.baseBranch)));
-  } catch {
-    return false;
-  }
-}
-
-/**
- * A durable authority record can be written after the provider has merged the
- * task branch but before local cleanup runs. The record must not let arbitrary
- * post-merge work masquerade as merged content, so accept only a non-empty
- * descendant chain whose every commit changes this task README solely by its
- * authority extension and revision.
- */
-async function hasAuthorityOnlyPostMergeTail(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-  providerHeadSha: string;
-  branchHeadSha: string;
-}): Promise<boolean> {
-  if (!(await gitIsAncestor(opts.gitRoot, opts.providerHeadSha, opts.branchHeadSha))) {
-    return false;
-  }
-  const { stdout } = await execFileAsync(
-    "git",
-    ["rev-list", "--reverse", `${opts.providerHeadSha}..${opts.branchHeadSha}`],
-    { cwd: opts.gitRoot, env: gitEnv() },
-  );
-  const commits = stdout
-    .split("\n")
-    .map((value) => value.trim())
-    .filter(Boolean);
-  if (commits.length === 0) return false;
-
-  const taskReadme = path.posix.join(opts.workflowDir, opts.taskId, "README.md");
-  for (const current of commits) {
-    const { stdout: parentOutput } = await execFileAsync("git", ["rev-parse", `${current}^`], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
-    const parent = parentOutput.trim();
-    const changed = await gitDiffNames(opts.gitRoot, parent, current);
-    const authorityOnly = await isAuthorityOnlyTaskReadmeAdvance({
-      gitRoot: opts.gitRoot,
-      parent,
-      current,
-      changed,
-      taskRelativePath: (name) => (name === taskReadme ? "README.md" : null),
-    });
-    if (!authorityOnly) return false;
-  }
-  return true;
-}
-
-async function targetedCleanupProof(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  baseBranch: string;
-  taskId: string;
-  branch: string;
-  kind: CleanupBranchKind;
-}): Promise<{
-  proof: CleanupCandidate["proof"] | null;
-  reason: string | null;
-  expectedHeadSha: string;
-}> {
-  const branchHeadResult = await execFileAsync("git", ["rev-parse", opts.branch], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
-  const branchHead = branchHeadResult.stdout.trim();
-  const result = (proof: CleanupCandidate["proof"] | null, reason: string | null) => ({
-    proof,
-    reason,
-    expectedHeadSha: branchHead,
-  });
-  const meta = await readCleanupPrMetaIfPresent(opts);
-  const metaBranch = meta?.branch?.trim() ?? "";
-  const recordedPrNumber =
-    metaBranch === opts.branch && Number.isInteger(meta?.pr_number) && Number(meta?.pr_number) > 0
-      ? Number(meta?.pr_number)
-      : null;
-  const recordedHostedIdentity =
-    metaBranch === opts.branch &&
-    (recordedPrNumber !== null ||
-      Boolean(meta?.pr_url?.trim()) ||
-      meta?.status === "OPEN" ||
-      meta?.status === "CLOSED" ||
-      meta?.status === "MERGED");
-  const providerResult = await observeProviderPr({
-    gitRoot: opts.gitRoot,
-    branch: opts.branch,
-    baseBranch: opts.baseBranch,
-    prNumber: recordedPrNumber,
-  });
-  let providerReceipt = await validateMergedProviderReceipt({
-    gitRoot: opts.gitRoot,
-    baseBranch: opts.baseBranch,
-    branchHead,
-    result: providerResult,
-  });
-
-  if (
-    providerReceipt.reason &&
-    providerReceipt.observedHeadSha &&
-    (await hasAuthorityOnlyPostMergeTail({
-      gitRoot: opts.gitRoot,
-      workflowDir: opts.workflowDir,
-      taskId: opts.taskId,
-      providerHeadSha: providerReceipt.observedHeadSha,
-      branchHeadSha: branchHead,
-    }))
-  ) {
-    providerReceipt = { ...providerReceipt, reason: null };
-  }
-
-  if (
-    providerReceipt.reason &&
-    providerReceipt.observedHeadSha &&
-    (await isProviderBaseUpdateOfLocalHead({
-      gitRoot: opts.gitRoot,
-      baseBranch: opts.baseBranch,
-      branchHeadSha: branchHead,
-      providerHeadSha: providerReceipt.observedHeadSha,
-    }))
-  ) {
-    providerReceipt = { ...providerReceipt, reason: null };
-  }
-
-  if (opts.kind === "task") {
-    if (providerReceipt.reason) return result(null, providerReceipt.reason);
-    const closureRecorded =
-      providerReceipt.prNumber !== null &&
-      (await taskPreMergeClosureRecordedOnBase({
-        gitRoot: opts.gitRoot,
-        workflowDir: opts.workflowDir,
-        taskId: opts.taskId,
-        baseBranch: opts.baseBranch,
-        branch: opts.branch,
-        prNumber: providerReceipt.prNumber,
-      }));
-    return closureRecorded
-      ? result("provider_merge", null)
-      : result(null, "exact pre-merge closure evidence is not recorded on base");
-  }
-
-  const closeRecorded = await taskCloseAlreadyRecordedOnBase({
-    gitRoot: opts.gitRoot,
-    workflowDir: opts.workflowDir,
-    taskId: opts.taskId,
-    baseBranch: opts.baseBranch,
-  });
-  if (!closeRecorded) return result(null, "task-close evidence is not recorded on base");
-  if (providerResult.state === "found") {
-    return providerReceipt.reason
-      ? result(null, providerReceipt.reason)
-      : result("provider_merge", null);
-  }
-  if (recordedHostedIdentity) return result(null, providerReceipt.reason);
-  if (
-    providerResult.state === "unavailable" &&
-    !providerUnavailableBecauseRepositoryIsLocal(providerResult)
-  ) {
-    return result(null, providerReceipt.reason);
-  }
-  if (await gitTreesEquivalent(opts)) return result("tree_equivalent", null);
-  if (await gitLinearPatchsetEquivalent(opts)) {
-    return result("patch_equivalent", null);
-  }
-  return result(null, "provider-less task-close branch is not tree/patch equivalent to base");
 }
 
 export async function resolveCleanupPlan(opts: {
@@ -485,6 +165,7 @@ export async function resolveCleanupPlan(opts: {
         workflowDir: opts.workflowDir,
         baseBranch: opts.baseBranch,
         taskId: target.taskId,
+        taskCommitSha: task.commit?.hash?.trim() ?? "",
         branch,
         kind: target.kind,
       });
@@ -495,6 +176,9 @@ export async function resolveCleanupPlan(opts: {
           worktreePath,
           expectedHeadSha: proof.expectedHeadSha,
           proof: proof.proof,
+          ...(proof.providerReconciliation
+            ? { providerReconciliation: proof.providerReconciliation }
+            : {}),
         });
       } else {
         blocked.push({
@@ -506,7 +190,7 @@ export async function resolveCleanupPlan(opts: {
       }
       continue;
     }
-    const diff = await gitDiffNames(opts.gitRoot, opts.baseBranch, branch);
+    const diff = await gitProofDiffNames(opts.gitRoot, opts.baseBranch, branch);
     const lifecycleProof = await taskLifecycleProofOnBase({
       gitRoot: opts.gitRoot,
       workflowDir: opts.workflowDir,

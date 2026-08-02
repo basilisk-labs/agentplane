@@ -664,12 +664,12 @@
       "types": [
         {
           "name": "CommandSurface",
-          "line": 22,
+          "line": 25,
           "col": 13
         },
         {
           "name": "DispatchNeeds",
-          "line": 15,
+          "line": 19,
           "col": 13
         }
       ]
@@ -1294,22 +1294,22 @@
       "exports": [
         {
           "name": "gitAddPaths",
-          "line": 23,
-          "col": 3
-        },
-        {
-          "name": "gitCommit",
           "line": 24,
           "col": 3
         },
         {
+          "name": "gitCommit",
+          "line": 25,
+          "col": 3
+        },
+        {
           "name": "gitListBranches",
-          "line": 21,
+          "line": 22,
           "col": 3
         },
         {
           "name": "gitStagedPaths",
-          "line": 26,
+          "line": 27,
           "col": 3
         }
       ]
@@ -1345,28 +1345,6 @@
         {
           "name": "PromptGraphSummary",
           "line": 36,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/shared/task-backend.ts",
-      "exports": [
-        {
-          "name": "backendHasLocalCanonicalSource",
-          "line": 137,
-          "col": 17
-        },
-        {
-          "name": "backendWritesTaskReadmes",
-          "line": 141,
-          "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "CommandMemo",
-          "line": 25,
           "col": 13
         }
       ]
@@ -2056,7 +2034,7 @@
       "types": [
         {
           "name": "RunnerCapabilityDescriptor",
-          "line": 5,
+          "line": 7,
           "col": 13
         }
       ]
@@ -2066,7 +2044,7 @@
       "types": [
         {
           "name": "RunnerTimeoutPolicy",
-          "line": 113,
+          "line": 165,
           "col": 13
         }
       ]
@@ -2131,17 +2109,17 @@
       "types": [
         {
           "name": "CancelledTaskRunnerExecution",
-          "line": 7,
-          "col": 3
-        },
-        {
-          "name": "ResumedTaskRunnerExecution",
           "line": 8,
           "col": 3
         },
         {
-          "name": "RetriedTaskRunnerExecution",
+          "name": "ResumedTaskRunnerExecution",
           "line": 9,
+          "col": 3
+        },
+        {
+          "name": "RetriedTaskRunnerExecution",
+          "line": 10,
           "col": 3
         }
       ]
@@ -2268,24 +2246,24 @@
       "exports": [
         {
           "name": "resolveExecutionContext",
-          "line": 84,
+          "line": 87,
           "col": 23
         },
         {
           "name": "resolveReadOnlyExecutionContext",
-          "line": 74,
+          "line": 77,
           "col": 23
         }
       ],
       "types": [
         {
           "name": "AgentplaneBackendContext",
-          "line": 28,
+          "line": 29,
           "col": 13
         },
         {
           "name": "AgentplaneRepositoryContext",
-          "line": 22,
+          "line": 23,
           "col": 13
         }
       ]
@@ -2955,22 +2933,22 @@
       "types": [
         {
           "name": "BlueprintDecisionEvidenceRequirement",
-          "line": 241,
+          "line": 242,
           "col": 13
         },
         {
           "name": "BlueprintDecisionStopRule",
-          "line": 247,
+          "line": 248,
           "col": 13
         },
         {
           "name": "BlueprintRejectedRoute",
-          "line": 230,
+          "line": 231,
           "col": 13
         },
         {
           "name": "BlueprintSelectedRoute",
-          "line": 235,
+          "line": 236,
           "col": 13
         },
         {
@@ -3486,10 +3464,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 178,
-    "types": 365,
+    "exports": 176,
+    "types": 363,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 544
+    "total": 540
   }
 }

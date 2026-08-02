@@ -32,28 +32,20 @@ export async function materializeLocalBackendReadmesForWorktree(opts: {
 
   const relativeRoot = path.relative(opts.repoRoot, sourceRoot);
   const targetRoot = path.join(opts.worktreePath, relativeRoot);
-  const entries = await readdir(sourceRoot, { withFileTypes: true }).catch(() => []);
+  const sourceTaskRoot = path.join(sourceRoot, opts.taskId);
+  const sourceReadme = path.join(sourceTaskRoot, "README.md");
+  if (!(await fileExists(sourceReadme))) return;
 
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
+  const targetReadme = path.join(targetRoot, opts.taskId, "README.md");
+  await mkdir(path.dirname(targetReadme), { recursive: true });
+  await copyFile(sourceReadme, targetReadme);
 
-    const sourceTaskRoot = path.join(sourceRoot, entry.name);
-    const sourceReadme = path.join(sourceRoot, entry.name, "README.md");
-    if (!(await fileExists(sourceReadme))) continue;
-
-    const targetReadme = path.join(targetRoot, entry.name, "README.md");
-    await mkdir(path.dirname(targetReadme), { recursive: true });
-    await copyFile(sourceReadme, targetReadme);
-
-    if (entry.name !== opts.taskId) continue;
-
-    // Hand off ownership of the active task README to the task worktree so
-    // later merges cannot collide with a stale untracked copy on the base checkout.
-    await rm(sourceReadme, { force: true });
-    const remainingEntries = await readdir(sourceTaskRoot).catch(() => []);
-    if (remainingEntries.length === 0) {
-      await rm(sourceTaskRoot, { recursive: true, force: true });
-    }
+  // Hand off ownership of the active task README to the task worktree so
+  // later merges cannot collide with a stale untracked copy on the base checkout.
+  await rm(sourceReadme, { force: true });
+  const remainingEntries = await readdir(sourceTaskRoot).catch(() => []);
+  if (remainingEntries.length === 0) {
+    await rm(sourceTaskRoot, { recursive: true, force: true });
   }
 }
 

@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { execFileAsync } from "../process/run-process.js";
-import { gitEnv } from "./git-client.js";
+import { gitEnv, gitProofEnv } from "./git-client.js";
 
 export type GitDiffRange = "two-dot" | "three-dot";
 
@@ -50,13 +50,14 @@ async function resolveDiffBase(
   branch: string,
   range: GitDiffRange = "three-dot",
   timeoutMs?: number,
+  env: NodeJS.ProcessEnv = gitEnv(),
 ): Promise<string> {
   assertSafeGitRef(base);
   assertSafeGitRef(branch);
   if (range === "two-dot") return base;
   const { stdout } = await execFileAsync("git", ["merge-base", base, branch], {
     cwd,
-    env: gitEnv(),
+    env,
     ...(timeoutMs === undefined ? {} : { timeout: timeoutMs }),
   });
   const mergeBase = String(stdout).trim();
@@ -85,22 +86,41 @@ export async function gitShowFile(cwd: string, ref: string, relPath: string): Pr
   return String(stdout);
 }
 
-export async function gitDiffNames(
+async function gitDiffNamesWithEnv(
   cwd: string,
   base: string,
   branch: string,
-  opts?: { timeoutMs?: number },
+  opts: { timeoutMs?: number } | undefined,
+  env: NodeJS.ProcessEnv,
 ): Promise<string[]> {
-  const diffBase = await resolveDiffBase(cwd, base, branch, "three-dot", opts?.timeoutMs);
+  const diffBase = await resolveDiffBase(cwd, base, branch, "three-dot", opts?.timeoutMs, env);
   const { stdout } = await execFileAsync("git", ["diff", "--name-only", diffBase, branch], {
     cwd,
-    env: gitEnv(),
+    env,
     ...(opts?.timeoutMs === undefined ? {} : { timeout: opts.timeoutMs }),
   });
   return String(stdout)
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
+}
+
+export async function gitDiffNames(
+  cwd: string,
+  base: string,
+  branch: string,
+  opts?: { timeoutMs?: number },
+): Promise<string[]> {
+  return await gitDiffNamesWithEnv(cwd, base, branch, opts, gitEnv());
+}
+
+export async function gitProofDiffNames(
+  cwd: string,
+  base: string,
+  branch: string,
+  opts?: { timeoutMs?: number },
+): Promise<string[]> {
+  return await gitDiffNamesWithEnv(cwd, base, branch, opts, gitProofEnv());
 }
 
 export async function gitDiffNameStatus(

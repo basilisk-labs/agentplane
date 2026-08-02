@@ -6,6 +6,7 @@ import {
   gitCommit,
   gitListBranches,
   gitEnv,
+  gitProofEnv,
   gitStagedPaths,
   setPinnedBaseBranch,
 } from "@agentplaneorg/core/git";
@@ -17,7 +18,7 @@ export {
   gitBranchExists,
   gitBranchUpstream,
   gitCurrentBranch,
-  gitIsAncestor,
+  gitProofIsAncestor,
   gitListBranches,
   gitRevParse,
   gitAddPaths,
@@ -26,6 +27,25 @@ export {
   gitStagedPaths,
   resolveInitBaseBranch,
 } from "@agentplaneorg/core/git";
+
+const CANONICAL_FULL_COMMIT_OID = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
+
+export function isCanonicalFullCommitOid(value: string): boolean {
+  return CANONICAL_FULL_COMMIT_OID.test(value);
+}
+
+export async function gitCommitObjectExists(gitRoot: string, oid: string): Promise<boolean> {
+  if (!isCanonicalFullCommitOid(oid)) return false;
+  try {
+    const { stdout } = await execFileAsync("git", ["cat-file", "-t", oid], {
+      cwd: gitRoot,
+      env: gitProofEnv(),
+    });
+    return stdout.trim() === "commit";
+  } catch {
+    return false;
+  }
+}
 
 export async function promptInitBaseBranch(opts: {
   gitRoot: string;

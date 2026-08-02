@@ -125,6 +125,34 @@ describe("commands/shared/merged-branch-cleanup", () => {
     expect(mocks.rm).not.toHaveBeenCalled();
   });
 
+  it("atomically removes a proven branch while preserving a stale unregistered worktree hint", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    const worktreePathHint = "/repo/.agentplane/worktrees/task-T2-stale-hint";
+    mocks.gitRevParse.mockResolvedValue("head-1");
+
+    const result = await cleanupMergedLocalBranch({
+      gitRoot: "/repo",
+      branch: "task/T-2-stale-hint",
+      worktreePathHint,
+      expectedHeadSha: "head-1",
+    });
+
+    expect(result).toEqual({
+      removedBranch: true,
+      removedWorktree: false,
+      worktreePath: worktreePathHint,
+      skippedReason: null,
+      preservedDirtyState: false,
+      stashMessage: null,
+    });
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["update-ref", "-d", "refs/heads/task/T-2-stale-hint", "head-1"],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+    expect(mocks.rm).not.toHaveBeenCalled();
+  });
+
   it("treats a branch that disappears after worktree removal as already cleaned up", async () => {
     const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
     mocks.findWorktreeForBranch.mockResolvedValue("/repo/.agentplane/worktrees/task-T5");
