@@ -8,10 +8,10 @@
   "pr_number": 4748,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4748",
   "pre_merge_closure": {
-    "basis_commit": "090b377f541f68647993e9b3c54ac92162cca7e7",
+    "basis_commit": "b48e499b9d9155a04de61b267cd6c8d13c7d234a",
     "branch": "task/202608022128-39YSZ1/require-fresh-verification-evidence-in-the-route",
     "pr_number": 4748,
-    "recorded_at": "2026-08-02T22:09:30.881Z",
+    "recorded_at": "2026-08-02T22:24:13.803Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
