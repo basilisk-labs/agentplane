@@ -1,0 +1,25 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 1 typed finding(s).
+
+## Findings
+- The frozen verification substituted bunx vitest for the explicitly required bun test command without recording an approved skip or verification-contract change.
+
+## Evidence
+- .agentplane/tasks/202608020639-X1DWST/README.md
+- .agentplane/tasks/202608020639-X1DWST/verification/20260802065846351-88d9a262f7fc74f8.json
+- .agentplane/policy/dod.code.md
+- .agentplane/policy/dod.core.md
+
+## Missing Tests
+- Execute the declared bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts check successfully, or record an approved skip/replacement with reason and residual risk.
+- Add an end-to-end fixture that reconstructs the exact planned 0.7.0 package manifests and proves their section and surface digests equal the frozen release_version_delta values.
+
+## Hidden Assumptions
+- bunx vitest is treated as semantically interchangeable with the declared bun test command despite the task finding that the runners differ in process.execPath behavior.
+- The frozen target manifest and surface digests are assumed to represent only the listed version and internal-dependency paths; the focused test uses synthetic digests and does not independently reconstruct that exact release manifest state.
+
+## Residual Risks
+- Resolve the verification-contract drift: run the exact declared bun test command, or obtain and record approval for the Vitest substitution with the required skip reason and risk. Then freeze verification evidence for the unchanged implementation SHA and include an end-to-end exact-release manifest fixture if the target digests cannot otherwise be independently established.

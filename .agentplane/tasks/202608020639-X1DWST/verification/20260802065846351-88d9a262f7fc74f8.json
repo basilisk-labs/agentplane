@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts\nResult: pass\nEvidence: Vitest reported 1 test file passed and 8 tests passed, covering pre_version, exact release_version, tampered manifest digest, and additional-section rejection.\nScope: compatibility candidate schema v3 and planned v0.7.0 release-version delta\n\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: compatibility contract baseline OK at surface 827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064 with candidate mode pre_version.\nScope: immutable v0.6.24 baseline, reviewed cumulative candidate, and section digest inventory\n\nCommand: bun run typecheck\nResult: pass\nEvidence: scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: contract pipeline exited 0 after formatting, schemas, ACR parity, policy routing, release parity, docs, compatibility, RF-04 replay, lifecycle, toolchain, guards, lint, architecture, clone, knip, and coverage checks.\nScope: full repository contract gate",
+  "digest": "sha256:88d9a262f7fc74f8dd53fad9827fe74268178472704677c7f8697febf837efc8",
+  "implementation_sha": "300858b691a250240b9d8d1769c85a89aa65c56b",
+  "kind": "task_verification_record",
+  "note": "Verified: Deterministic command-level evidence is frozen for the exact implementation SHA; focused positive and negative release-delta coverage, compatibility ratchet, TypeScript build, and the complete contract gate all pass.",
+  "recorded_at": "2026-08-02T06:58:46.351Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Allow the v0.7 release version delta in compatibility evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Allow the v0.7 release version delta in compatibility evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:5b396e725a85e19ba63bc2b6efa28a59583b3a2a0976c62d05204a8afd3dee72",
+  "task_id": "202608020639-X1DWST",
+  "verification_command": "agentplane verify 202608020639-X1DWST --ok --by TESTER",
+  "verifier": "TESTER"
+}

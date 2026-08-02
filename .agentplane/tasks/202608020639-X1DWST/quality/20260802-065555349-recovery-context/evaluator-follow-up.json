@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608020639-X1DWST-7a6ca59abd8955fc062eed10",
+  "task_id": "202608020639-X1DWST",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Provide deterministic frozen results for all four declared checks at evaluated SHA 300858b691a250240b9d8d1769c85a89aa65c56b, including exit status and enough output to identify the executed command and covered test cases, then repeat semantic evaluation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen evidence contains a TESTER summary but no deterministic execution records, runner history, or runtime evidence for any of the four required checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065555349-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7b88f1bd20fafe9194e9d42e2fa40205089052a0e2fea19f613e74fc961f5edd",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608020639-X1DWST/README.md",
+          "sha256": "sha256:ca51fe4a02cb53762178dcd377faa3e9a03b7eb34951b56a5efe35d8e4bafe4c",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065555349-recovery-context/evaluator-result.json"
+}

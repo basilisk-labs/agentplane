@@ -12,8 +12,8 @@ Created: 2026-08-02T06:41:46.595Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: Deterministic command-level evidence is frozen for the exact implementation SHA; focused positive and negative release-delta coverage, compatibility ratchet, TypeScript build, and the complete contract gate all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,16 @@ Created: 2026-08-02T06:41:46.595Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-02T06:41:46.595Z
+- Updated: 2026-08-02T06:48:07.923Z
 - Branch: task/202608020639-X1DWST/allow-the-v0-7-release-version-delta-in-compatib
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...-cli.critical.agent-efficiency-baseline.test.ts | 72 +++++++++++++++++++-
+ .../baselines/v0.7-compatibility-candidate.json    | 22 ++++++-
+ .../check-compatibility-contract-baseline.mjs      | 76 +++++++++++++++++++---
+ scripts/lib/compatibility-contract.mjs             | 37 +++++++++++
+ 4 files changed, 197 insertions(+), 10 deletions(-)
 ```
 
 </details>
