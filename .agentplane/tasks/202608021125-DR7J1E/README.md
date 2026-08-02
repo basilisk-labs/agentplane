@@ -4,7 +4,7 @@ title: "Build the v0.7.1 end-to-end release qualification suite"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -41,7 +41,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-02T11:27:47.041Z"
+doc_updated_at: "2026-08-02T12:00:43.091Z"
 doc_updated_by: "TESTER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
@@ -72,7 +72,16 @@ sections:
     12. Run independent EVALUATOR review on the exact implementation revision and require pass before PR publication.
   Verification: "Pending execution. Evidence will include a versioned scenario manifest, machine-readable per-run receipts, matched baseline comparison, context-quality report, latency attribution, provider usage summary, and a release-blocking defect ledger."
   Rollback Plan: "Revert the task implementation commit and remove only newly added E2E/qualification registrations and generated candidate artifacts. Preserve prior v0.7 compatibility and RF-04 baselines. Never overwrite published baseline evidence; new baselines require a separately reviewed approval record."
-  Findings: "Initial audit risks to test, not assume: the supervised core is stronger than the default UX; README and quickstart still recommend task begin/task complete; task run is hidden; the external-agent path exposes manual lifecycle mechanics; tokens improve while setup and time-to-verified regress; CodeQL JavaScript/TypeScript took about twenty minutes on PR #4742; historical evidence may inflate repository and analysis cost."
+  Findings: |-
+    Initial audit risks to test, not assume: the supervised core is stronger than the default UX; README and quickstart still recommend task begin/task complete; task run is hidden; the external-agent path exposes manual lifecycle mechanics; tokens improve while setup and time-to-verified regress; CodeQL JavaScript/TypeScript took about twenty minutes on PR #4742; historical evidence may inflate repository and analysis cost.
+
+    - Observation: The first full local qualification audit passed 13 of 16 selected phases. Packed install, lifecycle, context, supervisor parity, recovery, hosted boundaries, ci:contract, critical CLI, typecheck, workflow coverage, doctor, and task-state all passed. The external supervisor/onboarding contract and exact-subject efficiency evidence remained release-blocking; the historical absolute CLI guard also failed.
+      Impact: The test architecture is executable and continues after failures, but v0.7.1 is not release-ready. The successful core matrices isolate the remaining work to product UX/supervisor and performance/evidence rather than general lifecycle correctness.
+      Resolution: Keep audit mode non-blocking for classified collection, keep gate mode fail-closed, and create separate executable fix tasks for supervisor unification and performance before the provider gate.
+
+    - Observation: An interleaved matched benchmark on the same host and Node runtime compared published 0.6.26 with the packed 0.7.0 candidate over seven samples per command. All seven measured CLI commands were slower: median regressions ranged from 19.6 percent to 31.1 percent.
+      Impact: The startup and formal preparation latency regression is product-attributable rather than only drift in the May absolute threshold; release acceleration criteria are not met.
+      Resolution: Use the per-command matched artifact to optimize shared startup and task-read paths, then rerun the exact same matched benchmark with zero median-regression allowance.
 extensions:
   workflow_route_baseline:
     start_head_sha: "6e8723251676578cedc8ef8d53b76e3da06833f6"
@@ -124,3 +133,11 @@ Revert the task implementation commit and remove only newly added E2E/qualificat
 ## Findings
 
 Initial audit risks to test, not assume: the supervised core is stronger than the default UX; README and quickstart still recommend task begin/task complete; task run is hidden; the external-agent path exposes manual lifecycle mechanics; tokens improve while setup and time-to-verified regress; CodeQL JavaScript/TypeScript took about twenty minutes on PR #4742; historical evidence may inflate repository and analysis cost.
+
+- Observation: The first full local qualification audit passed 13 of 16 selected phases. Packed install, lifecycle, context, supervisor parity, recovery, hosted boundaries, ci:contract, critical CLI, typecheck, workflow coverage, doctor, and task-state all passed. The external supervisor/onboarding contract and exact-subject efficiency evidence remained release-blocking; the historical absolute CLI guard also failed.
+  Impact: The test architecture is executable and continues after failures, but v0.7.1 is not release-ready. The successful core matrices isolate the remaining work to product UX/supervisor and performance/evidence rather than general lifecycle correctness.
+  Resolution: Keep audit mode non-blocking for classified collection, keep gate mode fail-closed, and create separate executable fix tasks for supervisor unification and performance before the provider gate.
+
+- Observation: An interleaved matched benchmark on the same host and Node runtime compared published 0.6.26 with the packed 0.7.0 candidate over seven samples per command. All seven measured CLI commands were slower: median regressions ranged from 19.6 percent to 31.1 percent.
+  Impact: The startup and formal preparation latency regression is product-attributable rather than only drift in the May absolute threshold; release acceleration criteria are not met.
+  Resolution: Use the per-command matched artifact to optimize shared startup and task-read paths, then rerun the exact same matched benchmark with zero median-regression allowance.

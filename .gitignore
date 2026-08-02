@@ -35,4 +35,5 @@ coverage
 .agentplane/by-owner
 .agentplane/tasks/*/handoff
 .agentplane/.npm-cache
+.agentplane/reports
 # Keep the external recipes repo out of the main repo index.
