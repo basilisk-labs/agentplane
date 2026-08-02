@@ -15,7 +15,20 @@ Use any coding agent to edit code. Use Agentplane to record the task state, plan
 closure around those edits. The agent writes code and uses the CLI; the human sets tasks,
 guardrails, and review boundaries.
 
-This repository is configured for `branch_pr`, so the normal guarded route is:
+This repository is configured for `branch_pr`. After task creation and semantic plan approval, the
+normal managed route is:
+
+```bash
+agentplane task run <task-id>
+```
+
+An external agent requests one bounded action instead:
+
+```bash
+agentplane task advance <task-id> --agent-json
+```
+
+The detailed lifecycle below is the diagnostic and recovery expansion of that route:
 
 1. Run preflight.
 2. Create the task, set the plan, and approve it.

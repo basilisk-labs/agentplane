@@ -16,22 +16,21 @@ Commands:
     ready  Report dependency readiness details for a task.
     task  Task lifecycle and task-store commands.
     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
+    task advance  Return one compact external-agent action from the shared task supervisor state.
     task answer  Answer and close a task user-input blocker.
     task ask  Record a blocking user question for a task.
-    task begin  Create, plan, approve, and start or route a task through the normal lifecycle.
     task brief  Print an agent-ready task brief without remote lookups by default.
     task comment  Append a comment to a task.
-    task complete  Record OK verification and finish a direct task, or print the branch_pr close route.
     task doc  Task doc commands (show/set).
     task doc set  Update a task README section.
     task doc show  Print task README content (entire doc or one section).
     task list  List active tasks with compact resolved blueprint route hints.
     task new  Create a new task (prints the generated task id).
     task next  List ready tasks (default status=TODO) with optional filters.
-    task next-action  Print the single safest next command for a task route.
     task plan  Task plan commands (set/approve/reject).
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
+    task run  Supervise a direct or branch_pr task through its typed lifecycle.
     task search  Search tasks by text or regex with optional filters.
     task show  Print task metadata and resolved blueprint route as JSON.
     task start-ready  Run readiness checks and start a task in one deterministic command.

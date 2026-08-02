@@ -23,7 +23,7 @@ export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
 
 const BOOTSTRAP_CONTEXT_COMMANDS = [
   COMMAND_SNIPPETS.core.taskActive,
-  COMMAND_SNIPPETS.core.taskBrief,
+  "agentplane task advance <task-id> --agent-json",
 ] as const;
 
 export const BOOTSTRAP_TASK_PREP_COMMANDS = [
@@ -34,10 +34,7 @@ export const BOOTSTRAP_TASK_PREP_COMMANDS = [
 
 export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   ...BOOTSTRAP_TASK_PREP_COMMANDS,
-  COMMAND_SNIPPETS.core.startTask,
-  COMMAND_SNIPPETS.core.taskVerifyShow,
-  COMMAND_SNIPPETS.core.verifyTask,
-  'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
+  "agentplane task run <task-id>",
 ] as const;
 
 export const BOOTSTRAP_VERIFICATION_COMMANDS = [
@@ -71,25 +68,24 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "2. Agent context",
     summary:
-      "Load the task-specific context surface before manually combining task docs, route status, verify steps, PR metadata, and policy notes.",
+      "Request one compact external-agent action instead of manually combining task docs, route status, checks, hosted metadata, and policy notes.",
     commands: BOOTSTRAP_CONTEXT_COMMANDS,
     notes: [
       "`task active` is the backlog selector for agents; it does not mutate task state.",
-      "`task brief` is local-first and includes route, next action, concrete route command, Verify Steps, policy modules, blueprint evidence, and source confidence.",
-      "Use `task brief <task-id> --remote` only when hosted PR/check/review state is needed for the decision.",
-      "Resolve weak source confidence or missing Verify Steps before mutation instead of reconstructing context manually.",
+      "`task advance --agent-json` prepares the canonical WorkOrder and emits one bounded action, state fingerprint, authority boundary, and compact context references.",
+      "Use `task brief` and `task next-action --explain` only when a human needs expanded diagnostic evidence.",
+      "Resolve weak source confidence or missing acceptance checks before semantic work instead of reconstructing context manually.",
     ],
   },
   {
     heading: "3. Direct happy path",
     summary:
-      "When a repository is intentionally configured for direct mode, use one short route: create the task, approve it, start it, verify it, and finish it.",
+      "When a repository is intentionally configured for direct mode, create and approve the task, then let the managed supervisor own the formal lifecycle.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
-      "Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.",
-      "Fill required README sections before approval; wait for upstream DONE tasks before `task start-ready`.",
-      "`task plan approve` and `task start-ready` must run sequentially, never in parallel.",
-      "Treat `task verify-show` as the verification contract before `verify` and `finish`. Direct `finish` creates the close commit by default.",
+      "Use `agentplane role ORCHESTRATOR` during planning; the runner receives the prepared owner-scoped semantic episode after approval.",
+      "Fill required task sections before approval and wait for upstream DONE tasks before `task run`.",
+      "Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.",
     ],
   },
   {
@@ -154,14 +150,14 @@ export function renderBootstrapDoc(): string {
     "",
     ...renderCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
     "",
-    `After preflight, use \`${COMMAND_SNIPPETS.core.taskActive}\` to choose ready work and \`${COMMAND_SNIPPETS.core.taskBrief}\` to load context. Treat \`agentplane task next-action <task-id> --explain\` as the route oracle: follow \`next_command\`, \`authoritative_checkout\`, \`primary_blocker\`, and \`phase\` instead of reconstructing branch/worktree/PR state. In \`branch_pr\`, keep PR artifacts current, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and let base-checkout \`integrate\` drive the task GitHub PR merge; use direct mode only when configured.`,
+    `After preflight, use \`${COMMAND_SNIPPETS.core.taskActive}\` to choose ready work and \`agentplane task advance <task-id> --agent-json\` for the compact external-agent protocol, or \`agentplane task run <task-id>\` for the managed runner. Use \`${COMMAND_SNIPPETS.core.taskBrief}\` and \`task next-action --explain\` only for expanded diagnostics.`,
     "",
     ...renderBootstrapSectionLines(BOOTSTRAP_SECTIONS),
     "",
     "## Non-default paths",
     "",
-    `- \`branch_pr\`: use \`${COMMAND_SNIPPETS.core.taskBrief}\`, then follow \`agentplane task next-action <task-id> --explain\` for lane, checkout, blocker, and next command. Maintain PR artifacts, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and finalize through GitHub PR merge plus Task Hosted Close.`,
-    "- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.",
+    `- Diagnostic branch_pr recovery: use \`${COMMAND_SNIPPETS.core.taskBrief}\`, then \`agentplane task next-action <task-id> --explain\` for lane, checkout, blocker, and exact formal operation.`,
+    "- Manual direct lifecycle commands remain available for recovery and compatibility, but are not the default onboarding path.",
     "- Use manual close flags only when a specific policy or recovery situation requires them.",
     "",
   ];

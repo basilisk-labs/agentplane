@@ -24,7 +24,8 @@
     "202607300150-MGCHE6",
     "202607221852-YP9QCH",
     "202607302125-Y61ZHN",
-    "202607221852-ECBY56"
+    "202607221852-ECBY56",
+    "202608021231-PZGG3V"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -33,9 +34,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064",
+    "surface_sha256": "5175b965b6c82b28025d80d7b267ed6ad5024181d64a0b1325a95648bfb34f31",
     "section_digests": {
-      "cli_topology": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
+      "cli_topology": "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -52,7 +53,7 @@
     "section": "package_manifests",
     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
     "to_sha256": "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
-    "surface_sha256": "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
+    "surface_sha256": "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@agentplaneorg/core",
       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -394,25 +395,17 @@
         "202607281655-YMPY8Y",
         "202607300150-MGCHE6",
         "202607302125-Y61ZHN",
-        "202607221852-ECBY56"
+        "202607221852-ECBY56",
+        "202608021231-PZGG3V"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
-      "classification": "additive",
-      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, a backward-compatible semantic-supersession release outcome, and one hidden signed run-scoped phase-tool command; no command or option is removed.",
+      "to_sha256": "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
+      "classification": "additive_with_visibility_simplification",
+      "summary": "Adds the compact external task advance packet, promotes the managed task runner, and demotes legacy manual lifecycle choreography to compatibility help without removing commands or options.",
       "evidence": {
-        "command_count": {
-          "from": 243,
-          "to": 255
-        },
-        "positional_count": {
-          "from": 165,
-          "to": 176
-        },
-        "option_count": {
-          "from": 767,
-          "to": 822
-        },
+        "command_count": { "from": 243, "to": 256 },
+        "positional_count": { "from": 165, "to": 177 },
+        "option_count": { "from": 767, "to": 824 },
         "added_commands": [
           "context supervise-task",
           "evaluator apply",
@@ -420,6 +413,7 @@
           "evaluator prepare",
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
+          "task advance",
           "task authority grant",
           "task run reconcile",
           "task run resolve-effect",
@@ -480,16 +474,8 @@
               }
             ],
             "options": [
-              {
-                "name": "work-order",
-                "kind": "string",
-                "valueHint": "<path>"
-              },
-              {
-                "name": "result",
-                "kind": "string",
-                "valueHint": "<path>"
-              },
+              { "name": "work-order", "kind": "string", "valueHint": "<path>" },
+              { "name": "result", "kind": "string", "valueHint": "<path>" },
               {
                 "name": "json",
                 "kind": "boolean",
@@ -614,6 +600,33 @@
               },
               {
                 "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["task", "advance"],
+            "visibility": "user",
+            "group": "Task",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "agent-json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "remote",
                 "kind": "boolean",
                 "valueHint": null,
                 "default": false
@@ -858,7 +871,124 @@
           }
         ],
         "removed_command_descriptors": [],
-        "mutated_command_shells": [],
+        "mutated_command_shells": [
+          {
+            "identity": "task begin",
+            "before": {
+              "id": ["task", "begin"],
+              "visibility": "user",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "title",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<title>"
+                }
+              ]
+            },
+            "after": {
+              "id": ["task", "begin"],
+              "visibility": "advanced",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "title",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<title>"
+                }
+              ]
+            }
+          },
+          {
+            "identity": "task complete",
+            "before": {
+              "id": ["task", "complete"],
+              "visibility": "user",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "task-id",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<task-id>"
+                }
+              ]
+            },
+            "after": {
+              "id": ["task", "complete"],
+              "visibility": "advanced",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "task-id",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<task-id>"
+                }
+              ]
+            }
+          },
+          {
+            "identity": "task next-action",
+            "before": {
+              "id": ["task", "next-action"],
+              "visibility": "user",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "task-id",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<task-id>"
+                }
+              ]
+            },
+            "after": {
+              "id": ["task", "next-action"],
+              "visibility": "advanced",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "task-id",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<task-id>"
+                }
+              ]
+            }
+          },
+          {
+            "identity": "task run",
+            "before": {
+              "id": ["task", "run"],
+              "visibility": "internal",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "task-id",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<task-id>"
+                }
+              ]
+            },
+            "after": {
+              "id": ["task", "run"],
+              "visibility": "user",
+              "group": "Task",
+              "args": [
+                {
+                  "name": "task-id",
+                  "required": true,
+                  "variadic": false,
+                  "valueHint": "<task-id>"
+                }
+              ]
+            }
+          }
+        ],
         "added_options": [
           {
             "command": "backend sync",
@@ -1030,6 +1160,20 @@
           {
             "command": "sync",
             "name": "bootstrap-projection",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "task advance",
+            "name": "agent-json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "task advance",
+            "name": "remote",
             "kind": "boolean",
             "valueHint": null,
             "default": false
@@ -1291,6 +1435,11 @@
           },
           {
             "kind": "command",
+            "command": "task advance",
+            "source_task": "202608021231-PZGG3V"
+          },
+          {
+            "kind": "command",
             "command": "task authority grant",
             "source_task": "202607221849-NWVCAG"
           },
@@ -1474,6 +1623,18 @@
             "command": "sync",
             "name": "bootstrap-projection",
             "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "kind": "option",
+            "command": "task advance",
+            "name": "agent-json",
+            "source_task": "202608021231-PZGG3V"
+          },
+          {
+            "kind": "option",
+            "command": "task advance",
+            "name": "remote",
+            "source_task": "202608021231-PZGG3V"
           },
           {
             "kind": "option",
@@ -1767,10 +1928,7 @@
       "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package while updating shipped EVALUATOR guidance; no package source file is removed.",
       "evidence": {
         "package": "@agentplaneorg/core",
-        "source_file_count": {
-          "from": 17,
-          "to": 20
-        },
+        "source_file_count": { "from": 17, "to": 20 },
         "added_source_files": [
           "schemas/agent-work-order-v2.schema.json",
           "schemas/knowledge-ref.schema.json",

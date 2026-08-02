@@ -76,7 +76,7 @@ export const intakeSpec: CommandSpec<IntakeParsed> = {
   ],
   notes: [
     "Search candidates are evidence hints, not authority.",
-    "`--write-manifest` writes a task-local artifact only; task creation remains owned by `agentplane task new` and `agentplane task begin`.",
+    "`--write-manifest` writes a task-local artifact only; canonical task creation remains owned by `agentplane task new`.",
   ],
   validateRaw: (raw) => {
     const request = Array.isArray(raw.args.request)

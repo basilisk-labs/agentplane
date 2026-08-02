@@ -65,6 +65,7 @@ import { taskShowSpec } from "../../../commands/task/show.spec.js";
 import { taskSpec } from "../../../commands/task/task.command.js";
 import { taskStartReadySpec } from "../../../commands/task/start-ready.command.js";
 import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
+import { taskAdvanceSpec } from "../../../commands/task/advance.command.js";
 import { taskStatusSpec } from "../../../commands/task/status.command.js";
 import { taskUpdateSpec } from "../../../commands/task/update.command.js";
 import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
@@ -121,6 +122,7 @@ import {
   loadTaskShowSpec,
   loadTaskStatusSpec,
   loadTaskNextActionSpec,
+  loadTaskAdvanceSpec,
   loadTaskNewSpec,
   loadTaskBeginSpec,
   loadTaskBriefSpec,
@@ -244,6 +246,12 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskNextActionSpec, {
     load: loadTaskNextActionSpec,
     requirements: TASK_ROUTE_REQUIREMENTS,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareSessionCommand(taskAdvanceSpec, {
+    load: loadTaskAdvanceSpec,
+    requirements: RUNNER_EXECUTION_REQUIREMENTS,
   }),
   declareSessionCommand(taskNewSpec, {
     load: loadTaskNewSpec,
@@ -253,6 +261,8 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskBeginSpec, {
     load: loadTaskBeginSpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
+    surface: "advanced",
+    helpGroup: "Compatibility",
   }),
   declareSessionCommand(taskBriefSpec, {
     load: loadTaskBriefSpec,
@@ -304,8 +314,6 @@ export const TASK_COMMANDS = [
       load: loadTaskRunSpec,
       requirements: RUNNER_EXECUTION_REQUIREMENTS,
     },
-    surface: "internal",
-    helpGroup: "Maintenance",
   }),
   declareSessionCommand(taskRunToolSpec, {
     load: loadTaskRunToolSpec,
@@ -316,6 +324,8 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskCompleteSpec, {
     load: loadTaskCompleteSpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
+    surface: "advanced",
+    helpGroup: "Compatibility",
   }),
   declareSessionCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,

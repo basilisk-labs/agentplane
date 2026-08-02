@@ -14,20 +14,25 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   synopsis: ["agentplane task <subcommand> [args] [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
-    "Default guided path: task begin -> task verify-show -> task complete. The low-level primitives remain available for explicit audit gates.",
+    "Default external-agent path: task new -> task advance --agent-json. The packet exposes one bounded action while Agentplane retains lifecycle authority.",
+    "Default managed-agent path: create and approve the task, then use task run to supervise the typed lifecycle.",
     "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
-    "Before manually chaining low-level diagnostics, use `agentplane task status <task-id> --route` or `agentplane task next-action <task-id>` for a route decision.",
+    "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
     "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
   ],
   examples: [
     {
-      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:fast"',
-      why: "Create, plan, approve, and start or route a normal task.",
+      cmd: 'agentplane task new --title "Fix parser edge case" --description "Handle the rejected input" --owner CODER --tag code',
+      why: "Create a task without synthesizing or approving semantic work.",
     },
     {
-      cmd: 'agentplane task complete <task-id> --result "Parser edge case fixed" --commit <hash>',
-      why: "Record OK verification and finish when the active workflow route allows it.",
+      cmd: "agentplane task advance <task-id> --agent-json",
+      why: "Return one compact external-agent action from the shared supervisor state.",
+    },
+    {
+      cmd: "agentplane task run <task-id>",
+      why: "Let the managed runner resolve semantic boundaries using the same supervisor state.",
     },
     {
       cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',
@@ -67,7 +72,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     },
     {
       cmd: "agentplane task next-action <task-id>",
-      why: "Print the single safest next command for the task route.",
+      why: "Inspect the full diagnostic route projection.",
     },
     {
       cmd: "agentplane task brief <task-id>",

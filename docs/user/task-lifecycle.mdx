@@ -7,8 +7,7 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
 
 Agentplane 0.7 exposes one route model through two execution styles:
 
-- an external agent runs the exact command from `task next-action --explain` and recomputes after
-  each mutation;
+- an external agent requests one compact packet with `task advance --agent-json`;
 - a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
   bounded semantic episodes.
 
@@ -21,8 +20,7 @@ automatic success. It returns a typed stop at those boundaries. See
 After plan approval and, for `branch_pr`, worktree creation:
 
 ```bash
-agentplane task brief <task-id>
-agentplane task next-action <task-id> --explain
+agentplane task advance <task-id> --agent-json
 agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 ```
@@ -32,7 +30,25 @@ outputs, prepared knowledge evidence, verification intent, and stop rules. The a
 semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
 An agent-reported check is not accepted as an observed check without supervisor evidence.
 
-## Minimal branch_pr lifecycle
+## Canonical branch_pr lifecycle
+
+After task creation and semantic plan approval, the default managed path is one command:
+
+```bash
+agentplane task run <task-id>
+```
+
+For an external agent, use the compact boundary. The command may perform only eligible registered
+deterministic transitions before returning the next semantic or stop packet:
+
+```bash
+agentplane task advance <task-id> --agent-json
+```
+
+The expanded sequence below is retained for diagnostics, recovery, and compatibility. It is not
+the default agent protocol.
+
+## Manual branch_pr compatibility lifecycle
 
 This repository is configured for `branch_pr`, so the normal guarded route is:
 
@@ -78,9 +94,8 @@ with `branch.task_prefix` and `branch.task_close_prefix`; the rest of the shape 
 
 ## AgentPlane-owned automation boundaries
 
-In `branch_pr`, agents should treat `task brief` and `task next-action --explain` as the live
-boundary for operations AgentPlane already owns. Run the emitted command, then recompute the route
-before doing another lifecycle step.
+In `branch_pr`, use `task advance --agent-json` as the compact machine boundary. Use `task brief`
+and `task next-action --explain` only when expanded route evidence is needed for recovery.
 
 - `work start` / `work resume` own task branch and worktree setup; do not hand-roll branch names or
   worktree creation when the route packet gives an exact command.
