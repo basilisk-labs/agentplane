@@ -19,8 +19,8 @@ Make task begin stop at a real semantic planning boundary, make task complete fa
 - Note:
 
 ```text
-PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs
-CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed.
+Fresh verification for 15c1edc58: formatting, typecheck, focused guided lifecycle tests, critical
+suite (77 tests), static/docs/policy checks, and v0.7.1 product contract pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -41,7 +41,7 @@ CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical
  packages/agentplane/src/cli/command-guide.ts       |   4 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |  49 ++--
  .../src/cli/run-cli.core.task-advance.test.ts      |   9 +-
- .../src/cli/run-cli.core.task-guided.test.ts       | 251 +++++++++++++++++++--
+ .../src/cli/run-cli.core.task-guided.test.ts       | 253 +++++++++++++++++++--
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  packages/agentplane/src/cli/run-cli.ts             |   3 +-
  .../src/cli/run-cli/command-catalog-helpers.ts     |   7 +
@@ -58,7 +58,7 @@ CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical
  .../agentplane/src/commands/task/begin.command.ts  |  53 ++---
  .../src/commands/task/branch-task-supervisor.ts    |  13 ++
  packages/agentplane/src/commands/task/comment.ts   |  13 +-
- .../src/commands/task/complete.command.ts          |  87 +++++--
+ .../src/commands/task/complete.command.ts          |  88 +++++--
  .../commands/task/direct-task-supervisor-result.ts |  21 +-
  .../agentplane/src/commands/task/doc-template.ts   |  25 +-
  .../agentplane/src/commands/task/plan-shared.ts    |  14 ++
@@ -70,7 +70,7 @@ CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical
  .../check-compatibility-contract-baseline.mjs      |  17 +-
  .../check-v0.7.1-product-contract.mjs              |  71 ++++++
  scripts/release/generate-cli-help-catalog.mjs      |   1 +
- 38 files changed, 651 insertions(+), 361 deletions(-)
+ 38 files changed, 654 insertions(+), 361 deletions(-)
 ```
 
 </details>
