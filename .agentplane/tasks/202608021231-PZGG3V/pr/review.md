@@ -12,8 +12,8 @@ Created: 2026-08-02T13:20:44.174Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

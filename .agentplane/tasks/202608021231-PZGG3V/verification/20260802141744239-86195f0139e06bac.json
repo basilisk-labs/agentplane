@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:86195f0139e06bacc388b0dab98526682b15fcf8ebda7fc018fe5084c67a352d",
+  "implementation_sha": "06582bde1138360f789c18399c86df20279bafee",
+  "kind": "task_verification_record",
+  "note": "PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change.",
+  "recorded_at": "2026-08-02T14:17:44.239Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `node scripts/qualification/check-v0.7.1-product-contract.mjs`; require public `task advance --agent-json`, a valid packet no larger than 2048 bytes, no duplicated semantic fields, no Git/worktree/PR/verify/finish/integrate/cleanup choreography, and canonical onboarding.\n2. Run the focused v0.7 supervisor, lifecycle, and recovery suites; require managed and external frontends to produce equivalent typed transitions, state fingerprints, evidence outcomes, safe stops, and replay behavior.\n3. Exercise direct and branch_pr fixtures through planned, doing, approval-required, evaluator-rework, hosted-wait, done, blocked, stale-fingerprint, and effect-in-doubt states; require one deterministic next action and no hidden side effects from `--agent-json`.\n4. Run `bun run test:critical`, `bun run typecheck`, `bun run coverage:workflow-suite`, `bun run ci:contract`, task-state validation, doctor, and policy routing; require all maintained gates to pass.\n5. Run an independent EVALUATOR review against the exact implementation SHA before PR integration.",
+  "scope_digest": "sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3",
+  "task_id": "202608021231-PZGG3V",
+  "verification_command": "agentplane verify 202608021231-PZGG3V --ok --by TESTER",
+  "verifier": "TESTER"
+}

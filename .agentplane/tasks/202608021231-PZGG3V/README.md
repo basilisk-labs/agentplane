@@ -4,7 +4,7 @@ title: "Unify the v0.7.1 task supervisor and external advance protocol"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-02T14:17:44.239Z"
+  updated_by: "TESTER"
+  note: "PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change."
   attempts: 0
 commit:
   hash: "06582bde1138360f789c18399c86df20279bafee"
@@ -54,8 +54,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed at 06582bde1138360f789c18399c86df20279bafee. Local product, supervisor, lifecycle, recovery, critical, type, policy, and repository contract checks passed; independent verification remains with TESTER."
+  -
+    type: "verify"
+    at: "2026-08-02T14:17:44.239Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change."
 doc_version: 3
-doc_updated_at: "2026-08-02T14:11:49.069Z"
+doc_updated_at: "2026-08-02T14:17:45.319Z"
 doc_updated_by: "CODER"
 description: "Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding."
 sections:
@@ -80,6 +86,36 @@ sections:
     5. Run an independent EVALUATOR review against the exact implementation SHA before PR integration.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-02T14:17:44.239Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T14:11:49.069Z, excerpt_hash=sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-PZGG3V-unify-the-v0-7-1-task-supervisor-and-external-ad/.agentplane/tasks/202608021231-PZGG3V/blueprint/resolved-snapshot.json
+    - old_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+    - current_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-PZGG3V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-PZGG3V
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -121,6 +157,36 @@ Expose one compact task advance --agent-json command over the canonical supervis
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-02T14:17:44.239Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS for implementation 06582bde1138360f789c18399c86df20279bafee: product contract, v0.7 supervisor 134, lifecycle 113, recovery 86, critical CLI, TypeScript, workflow coverage, ci:contract, task-state, doctor, and policy routing passed. Core qualification passed 6/7; the exact-SHA efficiency evidence gap is assigned to release task 202608021232-6BTB6D and is outside this supervisor change.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T14:11:49.069Z, excerpt_hash=sha256:b3e05c44062c7dd9b930664b0d062a4d2f1fd159dae50d58044419d5b06a8bb3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-PZGG3V-unify-the-v0-7-1-task-supervisor-and-external-ad/.agentplane/tasks/202608021231-PZGG3V/blueprint/resolved-snapshot.json
+- old_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+- current_digest: 1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-PZGG3V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-PZGG3V
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
