@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020016-TDXFVT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T01:15:39.644Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8f0f28419421fa9de757752da254ad18ec30b705",
+  "blueprint_digest": "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c",
+  "findings": [
+    "No contract-breaking divergence found: branch_pr target resolution recognizes configured-base sync merges, preserves the semantic task diff and SHA-bound verification record, and excludes managed-artifact-only, lifecycle-only, and non-base merge cases."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020016-TDXFVT/verification/20260802011410132-1089fd5c4c9a8c97.json",
+    ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -6,7 +6,7 @@ Created: 2026-08-02T00:17:10.319Z
 
 - Task: `202608020016-TDXFVT`
 - Title: Preserve evaluator work units across base-sync merges
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m`
 - Canonical task record: `.agentplane/tasks/202608020016-TDXFVT/README.md`
 

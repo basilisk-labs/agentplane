@@ -8,10 +8,10 @@
   "pr_number": 4734,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4734",
   "pre_merge_closure": {
-    "basis_commit": "18f931a3bb4bdf599bf6e5ab589460f10510f4e1",
+    "basis_commit": "52df16cccb2bd87d3d2e063ec8241d19f151d9e7",
     "branch": "task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m",
     "pr_number": 4734,
-    "recorded_at": "2026-08-02T00:55:07.142Z",
+    "recorded_at": "2026-08-02T01:16:58.962Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
