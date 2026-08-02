@@ -1,0 +1,33 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:critical",
+    "bun run typecheck",
+    "node scripts/qualification/check-v0.7.1-product-contract.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T15:18:17.955Z",
+    "updated_by": "TESTER",
+    "note": "Fresh exact-SHA deterministic verification with frozen command-level and scenario-level evidence for b16798c4824c9e7249bf0d27a5a89e74544513fb."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021231-PZGG3V/verification/20260802151817955-9708164349452f57.json",
+      "sha256": "sha256:2d254b755cb83c80214b6678295e0e212e5f3e952df1aa39c34d384ecdac06fd"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/task-verification/202608021231-PZGG3V/b16798c4824c9e7249bf0d27a5a89e74544513fb-checks.json",
+      "sha256": "sha256:95b41def9e911664ececd4d49cbb5419ab900891ea6e381b3979d1b902d906a7"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

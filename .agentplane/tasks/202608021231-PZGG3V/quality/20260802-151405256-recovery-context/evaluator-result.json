@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen verification evidence is bound to the superseded implementation SHA 06582bde1138360f789c18399c86df20279bafee, while this episode evaluates b16798c4824c9e7249bf0d27a5a89e74544513fb.",
+      "broken_invariant": "Independent deterministic verification must cover the exact implementation SHA under evaluation before the evaluator can establish positive, negative, and concurrency-sensitive contract coverage.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151405256-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:ee4167ba68306d34470aaf977e0f3bf00c2b6c006dd9d96a73eb44da56985864",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-PZGG3V/README.md",
+          "sha256": "sha256:b9c6c498d9e2ac34da032a0087bf1c013867438bbccec3726095c456642895ef",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Fresh SHA-bound results for the required supervisor parity, lifecycle, recovery, packet-size, critical, typecheck, workflow coverage, and repository contract checks at b16798c4824c9e7249bf0d27a5a89e74544513fb."
+  ],
+  "hidden_assumptions": [
+    "The successful checks recorded for 06582bde1138360f789c18399c86df20279bafee are assumed to remain valid after the subsequent parity and recovery changes through b16798c4824c9e7249bf0d27a5a89e74544513fb."
+  ],
+  "recovery_context": "Collect and freeze deterministic verification evidence against evaluated SHA b16798c4824c9e7249bf0d27a5a89e74544513fb, including the newly added managed/external parity and recovery coverage, then repeat the semantic evaluation.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

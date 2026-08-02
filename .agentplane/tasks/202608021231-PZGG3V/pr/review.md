@@ -6,14 +6,14 @@ Created: 2026-08-02T13:20:44.174Z
 
 - Task: `202608021231-PZGG3V`
 - Title: Unify the v0.7.1 task supervisor and external advance protocol
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021231-PZGG3V/unify-the-v0-7-1-task-supervisor-and-external-ad`
 - Canonical task record: `.agentplane/tasks/202608021231-PZGG3V/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Fresh SHA-bound deterministic evidence recorded for implementation 06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates passed.
+- Note: Fresh exact-SHA deterministic verification with frozen command-level and scenario-level evidence for b16798c4824c9e7249bf0d27a5a89e74544513fb.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

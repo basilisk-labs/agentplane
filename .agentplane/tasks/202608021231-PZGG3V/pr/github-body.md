@@ -19,9 +19,8 @@ Expose one compact task advance --agent-json command over the canonical supervis
 - Note:
 
 ```text
-Fresh SHA-bound deterministic evidence recorded for implementation
-06582bde1138360f789c18399c86df20279bafee; all supervisor-scope and maintained repository gates
-passed.
+Fresh exact-SHA deterministic verification with frozen command-level and scenario-level evidence for
+b16798c4824c9e7249bf0d27a5a89e74544513fb.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021231-PZGG3V-7f4d60647330718a5f408226",
+  "prepared_at": "2026-08-02T15:15:59.385Z",
+  "task": {
+    "id": "202608021231-PZGG3V",
+    "revision": 12,
+    "objective": "Unify the v0.7.1 task supervisor and external advance protocol\n\nExpose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "node scripts/qualification/check-v0.7.1-product-contract.mjs",
+      "- In scope: Expose one compact task advance --agent-json command over the canonical supervisor state machine, make managed and external execution produce equivalent transitions and evidence, cap executor packets at 2048 bytes, and remove semantic lifecycle shortcuts from default onboarding.\n- Out of scope: unrelated refactors not required for \"Unify the v0.7.1 task supervisor and external advance protocol\".",
+      "1. Map the existing managed task-run and route-decision state machines, then define the smallest shared typed transition/projection boundary for managed and external frontends.\n2. Add `task advance <task-id> --agent-json` as the external frontend. It must emit one next action, current state fingerprint, bounded context references, explicit stop/authority state, and no shell choreography.\n3. Route managed `task run` and external `task advance` through the same transition semantics and evidence projection, including approval, evaluator rework, hosted wait, stale state, and recovery cases.\n4. Replace default onboarding/help guidance that promotes `task begin` and `task complete` with the canonical supervisor route while retaining compatibility commands outside the default path.\n5. Add focused contract, parity, packet-size, idempotency, and lifecycle/recovery tests; run critical CLI, typecheck, v0.7 qualification probes, workflow coverage, and ci:contract.",
+      "1. Run `node scripts/qualification/check-v0.7.1-product-contract.mjs`; require public `task advance --agent-json`, a valid packet no larger than 2048 bytes, no duplicated semantic fields, no Git/worktree/PR/verify/finish/integrate/cleanup choreography, and canonical onboarding.\n2. Run the focused v0.7 supervisor, lifecycle, and recovery suites; require managed and external frontends to produce equivalent typed transitions, state fingerprints, evidence outcomes, safe stops, and replay behavior.\n3. Exercise direct and branch_pr fixtures through planned, doing, approval-required, evaluator-rework, hosted-wait, done, blocked, stale-fingerprint, and effect-in-doubt states; require one deterministic next action and no hidden side effects from `--agent-json`.\n4. Run `bun run test:critical`, `bun run typecheck`, `bun run coverage:workflow-suite`, `bun run ci:contract`, task-state validation, doctor, and policy routing; require all maintained gates to pass.\n5. Run an independent EVALUATOR review against the exact implementation SHA before PR integration."
+    ]
+  },
+  "evaluated_sha": "b16798c4824c9e7249bf0d27a5a89e74544513fb",
+  "diff_base_sha": "db3c1a42c1bf3caeaf3dba6d019116925a25b99b",
+  "blueprint_digest": "1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021231-PZGG3V/README.md",
+      "sha256": "sha256:9d1bb9b95e863daf34943c35e3cf7445d3d34fdc6e7f2076a90573138a42c65b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151559385-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0759d06a177079cdaec52d684ea3cf5599d7a30d610b9b16eb899c530b9a2d12",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151559385-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:de4eeda0ba2a36746cf151dc1840c08e76bb0c254cd852ba874f8b0ad88cc6ca",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151559385-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:6f155463b862d3ee78f4c93ea16df3cd75879f543c062fa4c3ab3ae47c28240a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
