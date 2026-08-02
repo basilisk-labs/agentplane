@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608012350-3KR5T7-e259ff150875520e5efdbc79",
+  "prepared_at": "2026-08-01T23:58:50.433Z",
+  "task": {
+    "id": "202608012350-3KR5T7",
+    "revision": 10,
+    "objective": "Regenerate llms-full after 0.6.26 assimilation\n\nRefresh the generated website/static/llms-full.txt artifact from current canonical documentation so main passes the documentation site freshness gate independently of the 0.7 migration-guide task.",
+    "acceptance_criteria": [
+      "bun run docs:site:check",
+      "- In scope: Refresh the generated website/static/llms-full.txt artifact from current canonical documentation so main passes the documentation site freshness gate independently of the 0.7 migration-guide task.\n- Out of scope: unrelated refactors not required for \"Regenerate llms-full after 0.6.26 assimilation\".",
+      "1. Regenerate website/static/llms-full.txt from the current canonical documentation on main.\n2. Confirm the diff contains only the intended generated artifact and task-local evidence.\n3. Run docs:site:generate:check and the full docs:site:check gate.\n4. Verify, evaluate, and integrate the freshness repair before resuming dependent 0.7 documentation work.",
+      "PLANNER fallback scaffold for \"Regenerate llms-full after 0.6.26 assimilation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Regenerate llms-full after 0.6.26 assimilation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "93f94d18a2d3b41aa035cde499c45a9cb2ca6266",
+  "diff_base_sha": "5319bbdeecb05adc2c436e4039f5046a5bfeb89a",
+  "blueprint_digest": "ed7f4b7078ff747fb2fe40494601be83337d1a277e10fbfcc47bf7a9d5087d07",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608012350-3KR5T7/README.md",
+      "sha256": "sha256:a117265b70e54280920aab8f7a9e9b05593c705e783924a2bd790e5c93c5bd86",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:540653c63063d5445ce4c4817590a8662e5285da310860f408238d62ae11cec3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:569cc1be1320c98e8d14964147d5eb3bef332b00d3440602c0367eeaa810044a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:701c84ae6b2be4ef41f5b64e07aa41ab2e193e808a331fdd4a40a472bdd90f07",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

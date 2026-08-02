@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen packet records no deterministic check results, runner history, or runtime evidence for the claimed successful verification.",
+      "broken_invariant": "The required docs.check evidence and executed verification results must be present before a pass verdict; README assertions alone do not prove execution.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:569cc1be1320c98e8d14964147d5eb3bef332b00d3440602c0367eeaa810044a",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:701c84ae6b2be4ef41f5b64e07aa41ab2e193e808a331fdd4a40a472bdd90f07",
+          "section": "requiredEvidence: docs.check"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/README.md",
+          "sha256": "sha256:a117265b70e54280920aab8f7a9e9b05593c705e783924a2bd790e5c93c5bd86",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Captured deterministic result for `bun run docs:site:generate:check`.",
+    "Captured deterministic result for `bun run docs:site:check`.",
+    "Captured deterministic result for `node .agentplane/policy/check-routing.mjs`.",
+    "Captured deterministic result for `agentplane doctor`.",
+    "Captured final `git status --short --untracked-files=all` output proving scope and drift classification."
+  ],
+  "hidden_assumptions": [
+    "The prose verification records in the task README accurately reflect commands that ran successfully, despite the frozen observed-checks evidence containing no corresponding deterministic records.",
+    "The generated artifact was produced from the same canonical source state represented by the evaluated SHA."
+  ],
+  "recovery_context": "Rebuild the frozen evaluator packet with current deterministic outputs for the required documentation freshness, full site, routing, doctor, and final worktree-scope checks; then rerun semantic evaluation against the same intended one-artifact change.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

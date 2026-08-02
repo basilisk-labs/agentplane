@@ -16,7 +16,7 @@ Refresh the generated website/static/llms-full.txt artifact from current canonic
 ## Verification
 
 - State: ok
-- Note: Implementation rework evidence is complete and current.
+- Note: Fresh deterministic evidence is bound to the current rework checkpoint.
 - Canonical workflow state lives in the task README.
 
 <details>

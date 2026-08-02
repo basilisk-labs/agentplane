@@ -6,14 +6,14 @@ Created: 2026-08-01T23:50:58.743Z
 
 - Task: `202608012350-3KR5T7`
 - Title: Regenerate llms-full after 0.6.26 assimilation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608012350-3KR5T7/regenerate-llms-full-after-0-6-26-assimilation`
 - Canonical task record: `.agentplane/tasks/202608012350-3KR5T7/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Implementation rework evidence is complete and current.
+- Note: Fresh deterministic evidence is bound to the current rework checkpoint.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
