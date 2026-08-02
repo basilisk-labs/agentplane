@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The patch includes unrelated generated documentation changes in website/static/llms-full.txt concerning evaluator execution and context harvesting.",
+      "broken_invariant": "The approved scope excludes unrelated changes not required to classify canonical Docusaurus navigation and social-card artifacts as documentation paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234832792-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:5c3847ca78fba8079b91c17439cfab44c7a00ac577436d3505a218c2e67aebba"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "summary": "The frozen verification evidence does not record the policy routing check required by the approved plan.",
+      "broken_invariant": "Approved plan step 3 requires the focused policy test, policy routing check, and full documentation-site gate; the observed checks contain no recorded execution evidence for the routing check.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/README.md",
+          "sha256": "sha256:f809aba5d872fce00e0453a3baa1255b2f493d6ce80ace8d243a0e4816edea48",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234832792-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:74ed0d1d263eac3cae80388adb333082407f0c2b152a00e9a4c1dc6768c3e137"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record a successful node .agentplane/policy/check-routing.mjs run against the evaluated SHA.",
+    "Verify the final patch no longer contains unrelated website/static/llms-full.txt changes, then rerun bun run docs:site:check."
+  ],
+  "hidden_assumptions": [
+    "The website/static/llms-full.txt changes are assumed to be acceptable generated output even though their subject matter is unrelated to this task and no corresponding source changes appear in the frozen patch.",
+    "The verification summary is assumed to establish command execution despite evaluator-observed-checks.json containing no verification records or runtime evidence."
+  ],
+  "recovery_context": "Remove or separately account for the unrelated website/static/llms-full.txt changes, record the required policy routing check, and rerun the focused mutation-policy test and full documentation-site gate on the resulting SHA."
+}

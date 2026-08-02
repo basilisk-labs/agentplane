@@ -4,7 +4,7 @@ title: "Allow documentation tasks to commit canonical site artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,39 +24,23 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-01T23:45:30.490Z"
-  updated_by: "TESTER"
-  note: "Docs-site artifacts are correctly scoped and regression-protected."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-02T00:09:14.050Z"
+  updated_by: "EVALUATOR"
+  note: "Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review."
+  attempts: 1
 quality_review:
   state: "rework"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-08-01T23:46:28.352Z"
+  updated_at: "2026-08-02T00:09:14.050Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "ad886bd07c86af5eb185b6b43ba3fea9f2b1d938"
+  note: "Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review."
+  evaluated_sha: "ac15e3b88a6b88cadc07a51f00748b6271a15e6c"
   blueprint_digest: "c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e"
   evidence_refs:
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202608012339-30YX9C/README.md"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608012339-30YX9C/quality/20260801-234547905-recovery-context/evaluator-blueprint.json"
-    - ".agentplane/policy/dod.code.md"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-    - ".agentplane/policy/workflow.branch_pr.md"
-  findings:
-    - "The documentation-path exception permits every file beneath website/static/img/social, including implementation or executable files that are not generated social-card artifacts."
-commit:
-  hash: "ad886bd07c86af5eb185b6b43ba3fea9f2b1d938"
-  message: "🚧 30YX9C task: allow docs site artifacts"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012339-30YX9C-allow-documentation-tasks-to-commit-canonical-si/.agentplane/tasks/202608012339-30YX9C/blueprint/resolved-snapshot.json"
+  findings: []
+commit: null
 comments:
   -
     author: "CODER"
@@ -85,8 +69,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Docs-site artifacts are correctly scoped and regression-protected."
+  -
+    type: "verify"
+    at: "2026-08-02T00:09:14.050Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review."
 doc_version: 3
-doc_updated_at: "2026-08-01T23:45:31.215Z"
+doc_updated_at: "2026-08-02T00:09:14.767Z"
 doc_updated_by: "CODER"
 description: "Treat Docusaurus documentation navigation and generated social-card artifacts as documentation paths so docs.change tasks can satisfy the full site gate without bypassing task-bound mutation policy."
 sections:
@@ -149,6 +139,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608012339-30YX9C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T00:09:14.050Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T23:45:31.215Z, excerpt_hash=sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012339-30YX9C-allow-documentation-tasks-to-commit-canonical-si/.agentplane/tasks/202608012339-30YX9C/blueprint/resolved-snapshot.json
+    - old_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+    - current_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608012339-30YX9C
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -234,6 +254,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608012339-30YX9C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T00:09:14.050Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Implementation rework must remove the unrelated llms-full delta from this PR and record the policy-routing check before a fresh quality review.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-01T23:45:31.215Z, excerpt_hash=sha256:20c0fe523c70880ad2da3591c3436261a1d304e8662f58f7c395155e72609f7c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608012339-30YX9C-allow-documentation-tasks-to-commit-canonical-si/.agentplane/tasks/202608012339-30YX9C/blueprint/resolved-snapshot.json
+- old_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+- current_digest: c91fec84f6bec1204e38bd82bf492c6b06599b974c5e33a0d59040afef82995e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608012339-30YX9C
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

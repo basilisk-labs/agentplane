@@ -15,8 +15,13 @@ Treat Docusaurus documentation navigation and generated social-card artifacts as
 
 ## Verification
 
-- State: ok
-- Note: Docs-site artifacts are correctly scoped and regression-protected.
+- State: needs_rework
+- Note:
+
+```text
+Implementation rework must remove the unrelated llms-full delta from this PR and record the
+policy-routing check before a fresh quality review.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,10 +32,10 @@ Treat Docusaurus documentation navigation and generated social-card artifacts as
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/policy/rules/task-bound-mutation.test.ts   | 49 ++++++++++++++++++++++
- .../src/policy/rules/task-bound-mutation.ts        |  6 ++-
- website/static/llms-full.txt                       | 49 +++++++++++++---------
- 3 files changed, 83 insertions(+), 21 deletions(-)
+ .../src/policy/rules/task-bound-mutation.test.ts   | 70 ++++++++++++++++++++++
+ .../src/policy/rules/task-bound-mutation.ts        | 14 ++++-
+ website/static/llms-full.txt                       | 49 ++++++++-------
+ 3 files changed, 112 insertions(+), 21 deletions(-)
 ```
 
 </details>

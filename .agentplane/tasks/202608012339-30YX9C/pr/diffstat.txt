@@ -1,4 +1,4 @@
- .../src/policy/rules/task-bound-mutation.test.ts   | 49 ++++++++++++++++++++++
- .../src/policy/rules/task-bound-mutation.ts        |  6 ++-
- website/static/llms-full.txt                       | 49 +++++++++++++---------
- 3 files changed, 83 insertions(+), 21 deletions(-)
+ .../src/policy/rules/task-bound-mutation.test.ts   | 70 ++++++++++++++++++++++
+ .../src/policy/rules/task-bound-mutation.ts        | 14 ++++-
+ website/static/llms-full.txt                       | 49 ++++++++-------
+ 3 files changed, 112 insertions(+), 21 deletions(-)
