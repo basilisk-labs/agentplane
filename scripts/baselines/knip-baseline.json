@@ -650,16 +650,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/cli/run-cli/command-catalog.ts",
-      "exports": [
-        {
-          "name": "getCommandInvocation",
-          "line": 52,
-          "col": 17
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts",
       "types": [
         {
@@ -3464,10 +3454,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 176,
+    "exports": 175,
     "types": 363,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 540
+    "total": 539
   }
 }

@@ -64,12 +64,12 @@ export async function loadEvaluatorCatalogForCommand(
   return await loadEvaluatorCatalog({ projectRoot, includeBuiltin });
 }
 
-export type EvaluatorListResult = {
+type EvaluatorListResult = {
   evaluators: ReturnType<typeof evaluatorMetadata>[];
   rows: EvaluatorModule[];
 };
 
-export async function listEvaluators(
+async function listEvaluators(
   ctx: CommandCtx,
   parsed: EvaluatorListParsed,
 ): Promise<EvaluatorListResult> {
@@ -91,11 +91,11 @@ export const runEvaluatorList: CommandHandler<EvaluatorListParsed> = async (ctx,
   return 0;
 };
 
-export type EvaluatorShowResult = {
+type EvaluatorShowResult = {
   evaluator: ReturnType<typeof evaluatorMetadata> & { content: string };
 };
 
-export async function showEvaluator(
+async function showEvaluator(
   ctx: CommandCtx,
   parsed: EvaluatorShowParsed,
 ): Promise<EvaluatorShowResult> {

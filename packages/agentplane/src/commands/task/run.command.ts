@@ -41,20 +41,7 @@ import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
 export {
   makeRunTaskRunResolveEffectHandler,
   makeRunTaskRunResumeEffectHandler,
-  taskRunResolveEffectSpec,
-  taskRunResumeEffectSpec,
 } from "./task-run-effect-resolution.command.js";
-export {
-  taskRunInspectSpec,
-  taskRunLogsSpec,
-  taskRunReconcileSpec,
-  taskRunSpec,
-  taskRunStatusSpec,
-  type TaskRunInspectParsed,
-  type TaskRunParsed,
-  type TaskRunReconcileParsed,
-  type TaskRunStatusParsed,
-} from "./run.spec.js";
 
 function reportTaskSupervision(opts: {
   output: ReturnType<typeof createCliEmitter>;

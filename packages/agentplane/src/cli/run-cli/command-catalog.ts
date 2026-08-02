@@ -6,8 +6,6 @@ import {
   getDirectChildCommandEntriesFrom,
   getDirectChildCommandNamesFrom,
   getHelpCommandEntriesFrom,
-  isCommandVisibleInHelp,
-  makeHelpSpecForEntry,
   type CatalogMatch,
   type HelpSurfaceMode,
 } from "./command-catalog-helpers.js";
@@ -48,14 +46,6 @@ export function getDirectChildCommandNames(parentId: CommandId = []): readonly s
 }
 
 setDirectSubcommandNamesLoader((prefix) => Promise.resolve(getDirectChildCommandNames(prefix)));
-
-export function getCommandInvocation(id: CommandId): string {
-  const entry = findCommandEntry(id);
-  if (!entry) {
-    throw new Error(`Unknown command id: ${id.join(" ")}`);
-  }
-  return entry.invocation ?? `agentplane ${entry.spec.id.join(" ")}`;
-}
 
 export function getHelpCommandEntries(mode: HelpSurfaceMode): readonly CommandEntry[] {
   return getHelpCommandEntriesFrom(COMMANDS, mode);

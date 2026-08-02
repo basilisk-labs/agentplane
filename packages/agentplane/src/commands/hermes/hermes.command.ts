@@ -36,19 +36,6 @@ import {
 } from "./hermes-specs.js";
 
 const output = createCliEmitter();
-export {
-  hermesDoctorSpec,
-  hermesEnqueueSpec,
-  hermesLifecycleSpec,
-  hermesReconcileSpec,
-  hermesSpec,
-  hermesSuperviseSpec,
-  type HermesDoctorParsed,
-  type HermesEnqueueParsed,
-  type HermesLifecycleParsed,
-  type HermesReconcileParsed,
-  type HermesSuperviseParsed,
-} from "./hermes-specs.js";
 
 export async function runHermesGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return throwGroupCommandUsage({
