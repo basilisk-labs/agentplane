@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The evaluated SHA changes only the cross-platform evaluator test fixture relative to the previously benchmarked production implementation; the frozen task record documents exact-SHA regression coverage and continued applicability of the production latency and contract evidence.",
+      "broken_invariant": "No invariant is broken: verification remains applicable because the post-benchmark change does not modify production runtime code, while the changed fixture is exercised under a clean Git configuration.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/README.md",
+          "sha256": "sha256:125d6e5c892f846d1619b4f23cd4669b036c7a4c382679f64bad8eb508ab4595",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-190028716-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8e4c9d7c455819248ae27753dd0496e058192d3fcd16172500a013261adf1fa7"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-SHYJGK/quality/20260802-190028716-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:ad53717e8d860ef9e17c1f6ad2415e24e2d09054dc851d225e8ed472a3471dc7"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The previously recorded exact-production benchmark remains representative at the evaluated SHA because the intervening source change is limited to the evaluator test fixture."
+  ]
+}
