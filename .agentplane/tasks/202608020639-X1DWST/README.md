@@ -1,10 +1,11 @@
 ---
 id: "202608020639-X1DWST"
 title: "Allow the v0.7 release version delta in compatibility evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -25,39 +26,38 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T06:58:46.351Z"
+  updated_at: "2026-08-02T07:05:35.627Z"
   updated_by: "TESTER"
-  note: "Verified: Deterministic command-level evidence is frozen for the exact implementation SHA; focused positive and negative release-delta coverage, compatibility ratchet, TypeScript build, and the complete contract gate all pass."
+  note: "Verified: Fresh deterministic evidence is bound to rework implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df; all four declared commands pass, including the exact bun test route and end-to-end v0.7.0 manifest reconstruction."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T06:59:50.765Z"
+  updated_at: "2026-08-02T07:06:35.336Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "300858b691a250240b9d8d1769c85a89aa65c56b"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "6394fb907dfa472246522fb26dd55c4a30ff75df"
   blueprint_digest: "0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c"
   evidence_refs:
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608020639-X1DWST/README.md"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020639-X1DWST/verification/20260802065846351-88d9a262f7fc74f8.json"
-    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-065858638-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020639-X1DWST/verification/20260802070535627-b8c89b021912b9ad.json"
+    - ".agentplane/tasks/202608020639-X1DWST/quality/20260802-070547136-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen verification substituted bunx vitest for the explicitly required bun test command without recording an approved skip or verification-contract change."
+    - "The implementation isolates the exact planned v0.7.0 manifest delta, preserves the reviewed pre-version surface, rejects section and manifest digest drift, and is covered by fresh deterministic verification bound to the evaluated SHA."
 commit:
-  hash: "300858b691a250240b9d8d1769c85a89aa65c56b"
-  message: "🛡️ X1DWST compatibility: isolate v0.7 release version delta"
+  hash: "6394fb907dfa472246522fb26dd55c4a30ff75df"
+  message: "🧪 X1DWST compatibility: prove exact release manifest surface"
 comments:
   -
     author: "CODER"
@@ -65,6 +65,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation: Added a schema-v3 reviewed release-version delta that accepts only the exact 0.7.0 package-manifest parity surface, preserves the immutable 0.6.24 baseline and pre-version candidate, and rejects any additional compatibility drift. Focused Vitest, compatibility ratchet, TypeScript build, and ci:contract pass."
+  -
+    author: "CODER"
+    body: "Rework: Made the mandatory bun test route deterministic by launching child compatibility checks with Node, and added an end-to-end reconstruction of the exact planned v0.7.0 manifests that independently proves the frozen package-manifest digest, overall surface digest, and eight allowed JSON paths. The exact declared focused command, ratchet, typecheck, and ci:contract pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -92,8 +98,28 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: Deterministic command-level evidence is frozen for the exact implementation SHA; focused positive and negative release-delta coverage, compatibility ratchet, TypeScript build, and the complete contract gate all pass."
+  -
+    type: "status"
+    at: "2026-08-02T07:02:47.035Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: Made the mandatory bun test route deterministic by launching child compatibility checks with Node, and added an end-to-end reconstruction of the exact planned v0.7.0 manifests that independently proves the frozen package-manifest digest, overall surface digest, and eight allowed JSON paths. The exact declared focused command, ratchet, typecheck, and ci:contract pass."
+  -
+    type: "verify"
+    at: "2026-08-02T07:05:35.627Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: Fresh deterministic evidence is bound to rework implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df; all four declared commands pass, including the exact bun test route and end-to-end v0.7.0 manifest reconstruction."
+  -
+    type: "status"
+    at: "2026-08-02T07:07:18.692Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T06:58:47.117Z"
+doc_updated_at: "2026-08-02T07:07:18.693Z"
 doc_updated_by: "CODER"
 description: "Freeze the exact 0.7.0 package-manifest version and internal dependency parity delta in the reviewed compatibility candidate without modifying the immutable 0.6.24 baseline, and add regression coverage that rejects every non-version manifest drift."
 sections:
@@ -177,6 +203,56 @@ sections:
     Command: bun run ci:contract
     Result: pass
     Evidence: contract pipeline exited 0 after formatting, schemas, ACR parity, policy routing, release parity, docs, compatibility, RF-04 replay, lifecycle, toolchain, guards, lint, architecture, clone, knip, and coverage checks.
+    Scope: full repository contract gate
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020639-X1DWST-allow-the-v0-7-release-version-delta-in-compatib/.agentplane/tasks/202608020639-X1DWST/blueprint/resolved-snapshot.json
+    - old_digest: 0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c
+    - current_digest: 0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020639-X1DWST
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608020639-X1DWST
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T07:05:35.627Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: Fresh deterministic evidence is bound to rework implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df; all four declared commands pass, including the exact bun test route and end-to-end v0.7.0 manifest reconstruction.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T07:02:47.035Z, excerpt_hash=sha256:5b396e725a85e19ba63bc2b6efa28a59583b3a2a0976c62d05204a8afd3dee72
+
+    Details:
+
+    Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+    Result: pass
+    Evidence: Bun reported 9 tests passed, 0 failed, and 101 expectations; coverage includes exact pre-version mode, exact release-version mode, tampered manifest rejection, additional-section rejection, and reconstructed v0.7.0 manifest and surface digests.
+    Scope: declared focused compatibility regression suite at implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: compatibility contract baseline OK at reviewed pre-version surface 827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064.
+    Scope: immutable v0.6.24 baseline and reviewed cumulative candidate ratchet
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: scripts/checks/run-typescript-build.mjs exited 0.
+    Scope: repository TypeScript build
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: complete contract pipeline exited 0, including formatting, schemas, ACR and release parity, policy routing, docs, compatibility, RF-04 replay, lifecycle, toolchain, guards, lint, architecture, clone, knip, and coverage checks.
     Scope: full repository contract gate
 
     BlueprintSnapshotRef:
@@ -301,6 +377,56 @@ Scope: repository TypeScript build
 Command: bun run ci:contract
 Result: pass
 Evidence: contract pipeline exited 0 after formatting, schemas, ACR parity, policy routing, release parity, docs, compatibility, RF-04 replay, lifecycle, toolchain, guards, lint, architecture, clone, knip, and coverage checks.
+Scope: full repository contract gate
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020639-X1DWST-allow-the-v0-7-release-version-delta-in-compatib/.agentplane/tasks/202608020639-X1DWST/blueprint/resolved-snapshot.json
+- old_digest: 0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c
+- current_digest: 0c005dc9f4f0ec4a3289c7c454aa555d016c361388496939212b0387ad36612c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020639-X1DWST
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608020639-X1DWST
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T07:05:35.627Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: Fresh deterministic evidence is bound to rework implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df; all four declared commands pass, including the exact bun test route and end-to-end v0.7.0 manifest reconstruction.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T07:02:47.035Z, excerpt_hash=sha256:5b396e725a85e19ba63bc2b6efa28a59583b3a2a0976c62d05204a8afd3dee72
+
+Details:
+
+Command: bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+Result: pass
+Evidence: Bun reported 9 tests passed, 0 failed, and 101 expectations; coverage includes exact pre-version mode, exact release-version mode, tampered manifest rejection, additional-section rejection, and reconstructed v0.7.0 manifest and surface digests.
+Scope: declared focused compatibility regression suite at implementation SHA 6394fb907dfa472246522fb26dd55c4a30ff75df
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: compatibility contract baseline OK at reviewed pre-version surface 827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064.
+Scope: immutable v0.6.24 baseline and reviewed cumulative candidate ratchet
+
+Command: bun run typecheck
+Result: pass
+Evidence: scripts/checks/run-typescript-build.mjs exited 0.
+Scope: repository TypeScript build
+
+Command: bun run ci:contract
+Result: pass
+Evidence: complete contract pipeline exited 0, including formatting, schemas, ACR and release parity, policy routing, docs, compatibility, RF-04 replay, lifecycle, toolchain, guards, lint, architecture, clone, knip, and coverage checks.
 Scope: full repository contract gate
 
 BlueprintSnapshotRef:

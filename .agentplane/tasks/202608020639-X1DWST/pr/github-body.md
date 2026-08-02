@@ -19,9 +19,9 @@ Freeze the exact 0.7.0 package-manifest version and internal dependency parity d
 - Note:
 
 ```text
-Verified: Deterministic command-level evidence is frozen for the exact implementation SHA; focused
-positive and negative release-delta coverage, compatibility ratchet, TypeScript build, and the
-complete contract gate all pass.
+Verified: Fresh deterministic evidence is bound to rework implementation SHA
+6394fb907dfa472246522fb26dd55c4a30ff75df; all four declared commands pass, including the exact bun
+test route and end-to-end v0.7.0 manifest reconstruction.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,11 +33,11 @@ complete contract gate all pass.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...-cli.critical.agent-efficiency-baseline.test.ts | 72 +++++++++++++++++++-
- .../baselines/v0.7-compatibility-candidate.json    | 22 ++++++-
- .../check-compatibility-contract-baseline.mjs      | 76 +++++++++++++++++++---
- scripts/lib/compatibility-contract.mjs             | 37 +++++++++++
- 4 files changed, 197 insertions(+), 10 deletions(-)
+ ...-cli.critical.agent-efficiency-baseline.test.ts | 135 ++++++++++++++++++++-
+ .../baselines/v0.7-compatibility-candidate.json    |  22 +++-
+ .../check-compatibility-contract-baseline.mjs      |  76 ++++++++++--
+ scripts/lib/compatibility-contract.mjs             |  37 ++++++
+ 4 files changed, 259 insertions(+), 11 deletions(-)
 ```
 
 </details>
