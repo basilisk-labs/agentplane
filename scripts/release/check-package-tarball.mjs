@@ -7,6 +7,7 @@ import {
   isAllowedTarballPath,
   isDeniedTarballPath,
   PACKAGE_TARBALL_IDENTITIES,
+  REQUIRED_AGENTPLANE_TARBALL_FILES,
   REQUIRED_TARBALL_FILES,
 } from "../lib/package-tarball-policy.mjs";
 import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
@@ -72,7 +73,11 @@ function checkPackage(pkg, outDir) {
   const files = packed.files;
   const denied = files.filter((file) => isDeniedTarballPath(file));
   const unexpected = files.filter((file) => !isAllowedTarballPath(file, pkg.name));
-  const missing = REQUIRED_TARBALL_FILES.filter((file) => !files.includes(file));
+  const required =
+    pkg.name === "agentplane"
+      ? [...REQUIRED_TARBALL_FILES, ...REQUIRED_AGENTPLANE_TARBALL_FILES]
+      : REQUIRED_TARBALL_FILES;
+  const missing = required.filter((file) => !files.includes(file));
 
   if (files.includes("dist/.build-manifest.json")) {
     assertSanitizedManifest(packed.filename, pkg.name, String(packageJson.version));

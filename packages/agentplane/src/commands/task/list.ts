@@ -1,7 +1,7 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { warnMessage } from "../../cli/output.js";
-import { gitAheadBehind } from "@agentplaneorg/core/git";
-import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
+import { gitEnv } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   listTaskSummariesMemo,
   loadCommandContext,
@@ -53,10 +53,23 @@ function resolveProjectionStatusesForList(filters: TaskListFilters): string[] | 
 
 export async function warnIfLocalTaskStateBehindUpstream(ctx: CommandContext): Promise<void> {
   try {
-    const branch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
-    const upstream = await gitBranchUpstream(ctx.resolvedProject.gitRoot, branch);
-    if (!upstream) return;
-    const { behind } = await gitAheadBehind(ctx.resolvedProject.gitRoot, upstream, branch);
+    const { stdout } = await execFileAsync(
+      "git",
+      [
+        "for-each-ref",
+        "--format=%(HEAD)%00%(refname:short)%00%(upstream:short)%00%(upstream:track,nobracket)",
+        "refs/heads",
+      ],
+      { cwd: ctx.resolvedProject.gitRoot, env: gitEnv() },
+    );
+    const current = String(stdout)
+      .split("\n")
+      .map((line) => line.split("\0"))
+      .find(([head]) => head === "*");
+    if (!current) return;
+    const [, branch = "HEAD", upstream = "", tracking = ""] = current;
+    if (!upstream.trim()) return;
+    const behind = Number.parseInt(/(?:^|,\s*)behind\s+(\d+)/u.exec(tracking)?.[1] ?? "0", 10);
     if (behind === 0) return;
     process.stderr.write(
       `${warnMessage(
@@ -78,6 +91,7 @@ export async function cmdTaskListWithFilters(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const staleStateWarning = warnIfLocalTaskStateBehindUpstream(ctx);
     const projectionStatus = resolveProjectionStatusesForList(opts.filters);
     const tasks = await annotateBranchPrTaskListState({
       ctx,
@@ -86,7 +100,7 @@ export async function cmdTaskListWithFilters(opts: {
         fallbackToCanonicalOnEmpty: projectionStatus !== undefined,
       }),
     });
-    await warnIfLocalTaskStateBehindUpstream(ctx);
+    await staleStateWarning;
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const { depState, items } = queryTaskProjection({
       tasks,

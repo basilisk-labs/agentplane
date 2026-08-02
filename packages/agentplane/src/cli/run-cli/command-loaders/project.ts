@@ -32,6 +32,7 @@ import type {
 } from "../command-catalog/context-evaluator-capability-profiles.js";
 import type { CommandHandler } from "../../spec/spec.js";
 import type * as ContextCommandModule from "../../../commands/context/context.command.js";
+import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
 
 async function getProviderReadContext(
   session: ProviderReadSession,
@@ -113,13 +114,13 @@ export const loadEvidenceVerifySpec = (session: TaskRouteLocalSession) =>
     m.makeRunEvidenceVerifyHandler(getTaskRouteLocalContext(session)),
   );
 export const loadHermesSpec = (_session: NoContextSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) => m.runHermesGroup);
+  loadDeferredRuntime().then((m) => m.runHermesGroup);
 export const loadHermesEnqueueSpec = (session: HermesProjectionSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesEnqueueHandler((command) => session.require("context.search", command)),
   );
 export const loadHermesSuperviseLocalPreparationSpec = (session: HermesProjectionSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesSuperviseHandler(async (command) => {
       await session.require("route.local", command);
       await session.require("context.search", command);
@@ -127,7 +128,7 @@ export const loadHermesSuperviseLocalPreparationSpec = (session: HermesProjectio
     }),
   );
 export const loadHermesSuperviseRemotePreparationSpec = (session: HermesRemotePreparationSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesSuperviseHandler(async (command) => {
       await session.require("route.local", command);
       await session.require("context.search", command);
@@ -135,7 +136,7 @@ export const loadHermesSuperviseRemotePreparationSpec = (session: HermesRemotePr
     }),
   );
 export const loadHermesSuperviseLocalExecutionSpec = (session: HermesLocalExecutionSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesSuperviseHandler(async (command) => {
       await session.require("route.local", command);
       await session.require("git.mutate", command);
@@ -144,7 +145,7 @@ export const loadHermesSuperviseLocalExecutionSpec = (session: HermesLocalExecut
     }),
   );
 export const loadHermesSuperviseRemoteExecutionSpec = (session: HermesRemoteExecutionSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesSuperviseHandler(async (command) => {
       await session.require("route.local", command);
       await session.require("git.mutate", command);
@@ -154,7 +155,7 @@ export const loadHermesSuperviseRemoteExecutionSpec = (session: HermesRemoteExec
     }),
   );
 export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesReconcileHandler({
       getProjectConfig: async (command) => ({
         project: await session.require("project", command),
@@ -164,11 +165,9 @@ export const loadHermesReconcileSpec = (session: HermesProjectionSession) =>
     }),
   );
 export const loadHermesLifecycleSpec = (_session: NoContextSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
-    m.makeRunHermesLifecycleHandler(),
-  );
+  loadDeferredRuntime().then((m) => m.makeRunHermesLifecycleHandler());
 export const loadHermesDoctorSpec = (session: ProjectConfigSession) =>
-  import("../../../commands/hermes/hermes.command.js").then((m) =>
+  loadDeferredRuntime().then((m) =>
     m.makeRunHermesDoctorHandler({
       getResolvedProject: (command) => session.require("project", command),
       getLoadedConfig: (command) => session.require("config", command),
@@ -285,7 +284,7 @@ type ContextCommandExport = Extract<keyof typeof ContextCommandModule, `runConte
 async function loadContextNoContextHandler(
   exportName: ContextCommandExport,
 ): Promise<CommandHandler<unknown>> {
-  const module = await import("../../../commands/context/context.command.js");
+  const module = (await loadDeferredRuntime()).contextRuntime;
   return module[exportName] as CommandHandler<unknown>;
 }
 
@@ -351,17 +350,19 @@ export const loadContextWikiReportSpec = projectContextLoader(
 );
 export const loadContextDoctorSpec = projectContextLoader("runContextDoctor", "context doctor");
 export const loadContextFinalizeTaskSpec = (session: ContextTaskWriteSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextFinalizeTaskHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextFinalizeTaskHandler({
       getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
+    });
+  });
 export const loadContextVerifyTaskSpec = (session: ContextTaskReadSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextVerifyTaskHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextVerifyTaskHandler({
       getCommandContext: (_ctx, command) => session.require("task.read", command),
-    }),
-  );
+    });
+  });
 export const loadContextGraphSummarySpec = projectContextLoader(
   "runContextGraphSummary",
   "context graph summary",
@@ -399,35 +400,40 @@ export const loadContextCapabilityDiscoverSpec = projectContextLoader(
   "context capability discover",
 );
 export const loadContextLearnFilesSpec = (session: ContextTaskWriteSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextLearnFilesHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextLearnFilesHandler({
       getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
+    });
+  });
 export const loadContextLearnChangesSpec = (session: ContextTaskWriteSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextLearnChangesHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextLearnChangesHandler({
       getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
+    });
+  });
 export const loadContextLearnTasksSpec = (session: ContextTaskWriteSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextLearnTasksHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextLearnTasksHandler({
       getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
+    });
+  });
 export const loadContextHarvestTasksSpec = (session: ContextTaskWriteSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextHarvestTasksHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextHarvestTasksHandler({
       getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
+    });
+  });
 export const loadContextSuperviseTaskSpec = (session: ContextTaskWriteSession) =>
-  import("../../../commands/context/context.command.js").then((m) =>
-    m.makeRunContextSuperviseTaskHandler({
+  loadDeferredRuntime().then((runtime) => {
+    const m = runtime.contextRuntime;
+    return m.makeRunContextSuperviseTaskHandler({
       getCommandContext: (_ctx, command) => session.require("task.write", command),
-    }),
-  );
+    });
+  });
 export const loadBackendSyncSpec = (session: TaskWriteSession) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendSyncHandler(getTaskWriteContext(session)),

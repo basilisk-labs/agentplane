@@ -51,6 +51,11 @@
     "dist/.build-manifest.json",
     "dist/cli.d.ts",
     "dist/cli.js",
+    "dist/command-help.json",
+    "dist/command-catalog.js",
+    "dist/command-catalog/core-fast.js",
+    "dist/command-catalog/task-read.js",
+    "dist/deferred-runtime.js",
     "assets",
     "README.md",
     "LICENSE"
@@ -62,7 +67,7 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "npm run clean && node ../../scripts/checks/run-typescript-build.mjs --force && npm run build:bundle",
-    "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .",
+    "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/generate-cli-help-catalog.mjs . && node ../../scripts/release/manifest.mjs build .",
     "typecheck": "node ../../scripts/checks/run-typescript-build.mjs",
     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project agentplane",
     "prepack": "npm run clean && npm run build && node ../../scripts/release/manifest.mjs sanitize .",

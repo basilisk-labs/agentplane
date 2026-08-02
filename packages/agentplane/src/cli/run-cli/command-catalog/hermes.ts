@@ -5,7 +5,7 @@ import {
   hermesReconcileSpec,
   hermesSpec,
   hermesSuperviseSpec,
-} from "../../../commands/hermes/hermes.command.js";
+} from "../../../commands/hermes/hermes-specs.js";
 import {
   loadHermesDoctorSpec,
   loadHermesEnqueueSpec,

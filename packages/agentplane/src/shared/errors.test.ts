@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  asCliError,
   AgentplaneError,
   BackendCliError,
   CliError,
@@ -35,6 +36,25 @@ describe("errors", () => {
       expect(err.exitCode).toBe(exitCode);
       expect(err.name).toBe(err.constructor.name);
     }
+  });
+
+  it("reifies validated errors crossing an independently bundled runtime boundary", () => {
+    const foreignError = Object.assign(new Error("Plan approval required"), {
+      code: "E_PHASE_POLICY",
+      exitCode: 2,
+      context: { task_id: "TASK-1" },
+    });
+
+    expect(asCliError(foreignError)).toMatchObject({
+      code: "E_PHASE_POLICY",
+      exitCode: 2,
+      message: "Plan approval required",
+      context: { task_id: "TASK-1" },
+    });
+    expect(
+      asCliError(Object.assign(new Error("unknown"), { code: "E_UNKNOWN", exitCode: 2 })),
+    ).toBe(null);
+    expect(asCliError({ code: "E_USAGE", exitCode: 2, message: "not an Error" })).toBeNull();
   });
 
   it("formatJsonError emits stable shape", () => {

@@ -15,6 +15,7 @@ import type {
   ReleasePublishSession,
 } from "../command-catalog/provider-ops-capability-profiles.js";
 import type { InsightsReadSession } from "../command-catalog/runner-hermes-capability-profiles.js";
+import { loadDeferredRuntime } from "../deferred-runtime-loader.js";
 
 function getProjectDeps(session: ProjectSession) {
   return {
@@ -29,10 +30,10 @@ function getProjectConfigDeps(session: ProjectConfigSession) {
   };
 }
 
-export const fromCommandsInit = commandModule(() => import("../commands/init/spec.js"));
-export const fromCommandsUpgradeCommand = commandModule(
-  () => import("../../../commands/upgrade.command.js"),
-);
+export const loadInitSpec = (_session: NoContextSession) =>
+  loadDeferredRuntime().then((m) => m.runInit);
+export const loadUpgradeSpec = (_session: NoContextSession) =>
+  loadDeferredRuntime().then((m) => m.runUpgrade);
 export const loadReleaseSpec = (_session: NoContextSession) =>
   import("../../../commands/release/release.command.js").then((m) => m.runRelease);
 export const loadReleasePlanSpec = (session: ReleasePlanSession) =>

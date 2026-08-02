@@ -157,6 +157,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         candidate_id: string;
         source_tasks: string[];
         candidate: { surface_sha256: string; section_digests: Record<string, string> };
+        pre_release_package_delta: Record<string, unknown>;
         release_version_delta: Record<string, unknown>;
         deltas: unknown[];
       }>(COMPATIBILITY_CANDIDATE);
@@ -188,18 +189,34 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607302125-Y61ZHN",
           "202607221852-ECBY56",
           "202608021231-PZGG3V",
+          "202608021231-SHYJGK",
         ],
         candidate: {
-          surface_sha256: "5175b965b6c82b28025d80d7b267ed6ad5024181d64a0b1325a95648bfb34f31",
+          surface_sha256: "5dd31c66da0257068fa2a77d7b26e753136f7f0838bb93fa9e71f5531b91418f",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
             cli_topology: "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-            package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-            tarball_policy: "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
+            package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+            tarball_policy: "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752",
           },
+        },
+        pre_release_package_delta: {
+          source_tasks: ["202608021231-SHYJGK"],
+          classification: "additive",
+          section: "package_manifests",
+          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+          to_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+          allowed_json_paths: [
+            "$.package_manifests[0].files[13]",
+            "$.package_manifests[0].files[14]",
+            "$.package_manifests[0].files[15]",
+            "$.package_manifests[0].files[16]",
+            "$.package_manifests[0].files[17]",
+            "$.package_manifests[0].normalized_sha256",
+          ],
         },
         release_version_delta: {
           source_task: "202607221854-XV67TD",
@@ -207,9 +224,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           from_version: "0.6.24",
           to_version: "0.7.0",
           section: "package_manifests",
-          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-          to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
-          surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+          from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+          to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+          surface_sha256: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -547,8 +564,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
-        packageManifestDigest: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
-        surfaceDigest: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+        packageManifestDigest: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+        surfaceDigest: "b50c7a3eb5ca0c7f63b61a6f82ee5edd6593492e1c933cd60a29d795a098c8a5",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",

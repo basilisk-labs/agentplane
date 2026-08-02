@@ -8,6 +8,8 @@ import {
   getHelpCommandEntries,
   matchCommandCatalog,
 } from "./command-catalog.js";
+import { loadAllCommandEntries, loadCommandEntriesForTokens } from "./command-catalog-loader.js";
+import { matchCommandEntries } from "./command-catalog-helpers.js";
 import {
   CONTEXT_PROJECT_REQUIREMENTS,
   CONTEXT_TASK_READ_REQUIREMENTS,
@@ -42,6 +44,29 @@ import {
 } from "./command-catalog/task-capability-profiles.js";
 
 describe("command catalog graph", () => {
+  it("loads compact hot-path catalogs and preserves complete fallback routing", async () => {
+    const taskRead = await loadCommandEntriesForTokens(["task", "list"]);
+    const coreFast = await loadCommandEntriesForTokens(["quickstart"]);
+    const fullTask = await loadCommandEntriesForTokens(["task", "start-ready"]);
+    const all = await loadAllCommandEntries();
+
+    expect(taskRead.map((entry) => entry.spec.id.join(" ")).toSorted()).toEqual([
+      "task list",
+      "task next",
+      "task search",
+    ]);
+    expect(coreFast.map((entry) => entry.spec.id.join(" ")).toSorted()).toEqual([
+      "preflight",
+      "quickstart",
+    ]);
+    expect(matchCommandEntries(fullTask, ["task", "start-ready", "TASK-1"])?.entry.spec.id).toEqual(
+      ["task", "start-ready"],
+    );
+    expect(all.map((entry) => entry.spec.id.join(" ")).toSorted()).toEqual(
+      COMMANDS.map((entry) => entry.spec.id.join(" ")).toSorted(),
+    );
+  });
+
   it("uses one graph for longest-prefix match and exact lookup", () => {
     expect(matchCommandCatalog(["task", "plan", "set", "TASK-1"])?.entry.spec.id).toEqual([
       "task",

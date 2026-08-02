@@ -9,7 +9,7 @@ import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runt
 
 const DEFAULT_OUT_DIR = ".agentplane/.release/publish/bun";
 const MANIFEST_NAME = "bun-assets.json";
-const CLI_ENTRY = "packages/agentplane/dist/cli.js";
+const CLI_ENTRY = "packages/agentplane/dist/cli-bun.js";
 const TARGETS = [
   {
     bunTarget: "bun-darwin-arm64",
