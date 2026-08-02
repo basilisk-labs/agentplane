@@ -1,10 +1,11 @@
 ---
 id: "202608020545-Y4HQ7A"
 title: "Freeze qualification metric policy and verification evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -56,8 +57,8 @@ quality_review:
   findings:
     - "The implementation preserves raw RF-04 failures, deterministically separates policy-authorized diagnostic latency failures from blocking failures, rejects unclassified failures, and selects qualification verification records using the packet implementation SHA while retaining the evaluated evidence SHA as the reviewed head."
 commit:
-  hash: "98f9f6eddf07875fcc41893cb4d48586739a42ee"
-  message: "🛡️ Y4HQ7A quality: freeze qualification gate evidence"
+  hash: "04ea2e6e3ed8831e79520000b321ddc423c2377f"
+  message: "🔍 Y4HQ7A quality: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -65,6 +66,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: preserved raw RF-04 candidate failures, classified diagnostic timing separately from blocking failures, rejected unclassified blockers, and bound frozen verification records to the qualification implementation SHA."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -86,8 +90,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified qualification gate classification and frozen verification provenance on implementation SHA 98f9f6edd. Raw RF-04 latency failures remain visible and non-publishing, blocking failures stop packet construction, and evaluator evidence now includes the packet-selected verification record."
+  -
+    type: "status"
+    at: "2026-08-02T06:00:21.539Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T05:57:22.113Z"
+doc_updated_at: "2026-08-02T06:00:21.539Z"
 doc_updated_by: "CODER"
 description: "Make milestone qualification packets distinguish diagnostic-only RF-04 timing failures from blocking metric failures, and make evaluator preparation freeze the packet-selected verification record against the qualified implementation SHA. Preserve raw failures, reject unclassified blocking regressions, and keep qualification tasks evidence-only."
 sections:
@@ -185,6 +196,9 @@ sections:
       Impact: Evaluators could interpret diagnostic latency as a hidden release blocker and could not independently freeze the successful verification record, forcing rework despite valid implementation evidence.
       Resolution: Added a policy-derived qualification_gate with raw, diagnostic, and blocking failure IDs; reject any blocking IDs; and resolve qualification verification records against packet.implementation_sha while retaining the evidence commit as the reviewed artifact head.
 extensions:
+  implementation_commit:
+    hash: "98f9f6eddf07875fcc41893cb4d48586739a42ee"
+    message: "🛡️ Y4HQ7A quality: freeze qualification gate evidence"
   workflow_route_baseline:
     start_head_sha: "82905f817ef1ca58f17e3fb31ba55564435fb277"
     version: 1
