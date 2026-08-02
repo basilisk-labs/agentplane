@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "240d65e3c39c59737a1e16abfdbd5ed33fb7ebbe"
+  message: "🐛 VMBX4H workflow: scope base-sync policy to task diff"
 comments:
   -
     author: "CODER"
     body: "Start: implement base-sync-aware pre-commit path attribution and focused regression coverage."
+  -
+    author: "CODER"
+    body: "Implementation: base-sync hooks now evaluate task-side paths against the merged configured-base parent; focused regression tests cover incoming base artifacts and task-side implementation rejection."
 events:
   -
     type: "status"
@@ -43,8 +48,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement base-sync-aware pre-commit path attribution and focused regression coverage."
+  -
+    type: "status"
+    at: "2026-08-02T01:59:28.211Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: base-sync hooks now evaluate task-side paths against the merged configured-base parent; focused regression tests cover incoming base artifacts and task-side implementation rejection."
 doc_version: 3
-doc_updated_at: "2026-08-02T01:57:36.841Z"
+doc_updated_at: "2026-08-02T01:59:28.211Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
