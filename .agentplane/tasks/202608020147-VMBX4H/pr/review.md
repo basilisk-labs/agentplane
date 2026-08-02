@@ -12,8 +12,8 @@ Created: 2026-08-02T01:48:08.791Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Verification contract correction required: use the repository Knip baseline gate, not the raw diagnostic binary.
+- State: ok
+- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 1 file, 18 tests passed, including configured-base positive and task-side negative cases. Scope: hook path attribution and commit-message policy. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint for repository code. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency-cruiser violations and Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: repository formatting. Post-integration acceptance: reproduce the original YMYYQ8 configured-base merge before closing this blocker.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
