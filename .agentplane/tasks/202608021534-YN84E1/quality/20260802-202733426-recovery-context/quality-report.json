@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021534-YN84E1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T20:27:33.758Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "534adaa8862d7e22e360aa21d47199bf4d1802e5",
+  "blueprint_digest": "228623a3c88aa1f88bdb785f46b9543396f15e95c23988ad898e30dac7823545",
+  "findings": [
+    "New and legacy synthetic plans, including already-approved legacy state, resolve to the same read-only PLANNER episode before execution.",
+    "Compatibility inputs no longer fabricate HUMAN provenance, and task complete cannot synthesize verification or silently accept a missing observed runner receipt.",
+    "The default help surface is bounded to 11 canonical operations while targeted and --all discovery preserve the complete compatible CLI."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021534-YN84E1/quality/20260802-202733426-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,1 +1,1 @@
-🚧 YN84E1 task: Harden the v0.7.1 guided lifecycle and canonical help surface [202608021534-YN84E1]
+✅ YN84E1 task: Harden the v0.7.1 guided lifecycle and canonical help surface [202608021534-YN84E1]

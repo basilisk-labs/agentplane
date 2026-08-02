@@ -19,8 +19,8 @@ Make task begin stop at a real semantic planning boundary, make task complete fa
 - Note:
 
 ```text
-PASS: focused cli-core 41/41; typecheck, lint:core, docs CLI/bootstrap/IA, policy routing, v0.7.1
-product contract, and critical-cli 77/77 all passed against f4870b156d51.
+PASS after evaluator rework at 534adaa8862d: focused cli-core 41/41; typecheck, lint:core, docs
+CLI/bootstrap/IA, routing, product contract, compatibility ratchet, and critical-cli 77/77 passed.
 ```
 - Canonical workflow state lives in the task README.
 
