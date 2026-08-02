@@ -6,14 +6,14 @@ Created: 2026-08-02T00:17:10.319Z
 
 - Task: `202608020016-TDXFVT`
 - Title: Preserve evaluator work units across base-sync merges
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m`
 - Canonical task record: `.agentplane/tasks/202608020016-TDXFVT/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Merge-aware evaluator packet regression and compatibility checks passed.
+- Note: Hosted static-analysis rework is resolved and the full local verify-static surface passes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,10 +29,10 @@ Created: 2026-08-02T00:17:10.319Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-runtime-evidence.test.ts   | 88 ++++++++++++++++++++++
- .../commands/shared/quality-review-target.test.ts  | 38 ++++++++++
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 93 ++++++++++++++++++++++
+ .../commands/shared/quality-review-target.test.ts  | 38 +++++++++
  .../src/commands/shared/quality-review-target.ts   | 62 +++++++++++++++
- 3 files changed, 188 insertions(+)
+ 3 files changed, 193 insertions(+)
 ```
 
 </details>
