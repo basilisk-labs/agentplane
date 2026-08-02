@@ -1,10 +1,11 @@
 ---
 id: "202608020147-VMBX4H"
 title: "Scope pre-commit mutation policy to task-side base-sync diff"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -55,8 +56,8 @@ quality_review:
   findings:
     - "The implementation correctly limits configured-base merge policy evaluation to the index diff against the merged base parent, preserves fallback enforcement for ordinary and unrecognized merges, and covers concurrent linear base advancement plus task-side and side-parent negative cases."
 commit:
-  hash: "b216a1aab48031196114f1d64429754c9daddf36"
-  message: "🐛 VMBX4H workflow: recognize historical base sync tips"
+  hash: "46cc69a2043387e63a7207a20bea4fbfdd78e097"
+  message: "🧪 VMBX4H task: record passing evaluator review"
 comments:
   -
     author: "CODER"
@@ -73,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: classify historical configured-base tips through first-parent history, preserving concurrent base advances while rejecting side-parent topic merges."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -133,8 +137,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 19/19; configured-base acceptance survives a concurrent linear main advance, task-side implementation is still rejected by both hooks, and reachable side-parent topic merges are rejected. Scope: first-parent merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge."
+  -
+    type: "status"
+    at: "2026-08-02T02:21:07.036Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T02:19:17.771Z"
+doc_updated_at: "2026-08-02T02:21:07.037Z"
 doc_updated_by: "CODER"
 description: "When a branch_pr task merges the configured base, pre-commit must evaluate only the task-side diff against the merged base parent. Incoming main changes, including other task artifacts, must not be attributed to the active task. Preserve normal staged-path enforcement outside configured base-sync merges and add focused regression coverage."
 sections:
@@ -289,6 +300,9 @@ sections:
       Impact: The implementation is not implicated, but the declared Verify Step would record a false failure against known debt.
       Resolution: Replace bun run knip with bun run knip:check in Verify Steps, then rerun the complete acceptance set on the committed branch.
 extensions:
+  implementation_commit:
+    hash: "b216a1aab48031196114f1d64429754c9daddf36"
+    message: "🐛 VMBX4H workflow: recognize historical base sync tips"
   workflow_route_baseline:
     start_head_sha: "4e6cf3e54a11ac56c07cabc0b9d8b01d89ac274f"
     version: 1
