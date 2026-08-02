@@ -63,6 +63,7 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "pr.open": EXTERNAL_REVERSIBLE,
   "pr.head.publish": EXTERNAL_REVERSIBLE,
   "provider.pr.refresh": EXTERNAL_REVERSIBLE,
+  "flow.repair.foreign_task_readme": LOCAL_REVERSIBLE,
   "route.remote.refresh": EXTERNAL_REVERSIBLE,
   "task.pre_merge_close": EXTERNAL_HIGH_RISK,
   "integration.enqueue": EXTERNAL_HIGH_RISK,

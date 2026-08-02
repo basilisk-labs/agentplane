@@ -101,10 +101,27 @@ export async function cleanupMergedLocalBranch(opts: {
   const discoveredWorktree = await findWorktreeForBranch(opts.gitRoot, opts.branch);
   const hintedWorktreePath = opts.worktreePathHint?.trim();
   if (!discoveredWorktree && hintedWorktreePath) {
+    const worktreePath = await resolvePathFallback(hintedWorktreePath);
+    if (opts.expectedHeadSha) {
+      await assertExpectedBranchHead({
+        gitRoot: opts.gitRoot,
+        branch: opts.branch,
+        expectedHeadSha: opts.expectedHeadSha,
+      });
+      const removedBranch = await removeBranch(opts.gitRoot, opts.branch, opts.expectedHeadSha);
+      return {
+        removedBranch,
+        removedWorktree: false,
+        worktreePath,
+        skippedReason: null,
+        preservedDirtyState: false,
+        stashMessage: null,
+      };
+    }
     return {
       removedBranch: false,
       removedWorktree: false,
-      worktreePath: await resolvePathFallback(hintedWorktreePath),
+      worktreePath,
       skippedReason: "unregistered_worktree",
       preservedDirtyState: false,
       stashMessage: null,

@@ -49,10 +49,7 @@ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 export { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
-import {
-  inspectTaskWorktreeCleanliness,
-  type TaskWorktreeCleanliness,
-} from "./task-worktree-cleanliness.js";
+import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-route.js";
 import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
 export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
@@ -425,17 +422,13 @@ export async function buildTaskRouteDecision(opts: {
   const inferredBranch = inferredTaskBranch(resume, prFlow);
   const taskWorktreeBranch =
     batchOwnership.role === "included" ? batchOwnership.branch : inferredBranch;
-  const taskWorktreeCleanliness: TaskWorktreeCleanliness = taskWorktreeBranch
-    ? await inspectTaskWorktreeCleanliness({
-        gitRoot: ctx.resolvedProject.gitRoot,
-        branch: taskWorktreeBranch,
-      })
-    : {
-        state: "not_present",
-        branch: "",
-        worktreePath: null,
-        changedPaths: [],
-      };
+  const { taskWorktreeCleanliness, foreignTaskReadmeReplicaRepair } =
+    await inspectTaskWorktreeRouteState({
+      ctx,
+      activeTaskId: task.id,
+      baseBranch: resume.base_branch,
+      taskBranch: taskWorktreeBranch,
+    });
   const conflictRework: ConflictReworkPreparation | null =
     prFlow && needsProviderConflictReworkPreparation(prFlow)
       ? await prepareConflictReworkPacket({
@@ -488,6 +481,7 @@ export async function buildTaskRouteDecision(opts: {
     qualityReviewTargetSha,
     remoteEnabled,
     taskWorktree: taskWorktreeCleanliness,
+    foreignTaskReadmeReplicaRepair,
     conflictRework,
   };
   const provisionalWorkflowStep = reduceRouteState(
@@ -503,6 +497,7 @@ export async function buildTaskRouteDecision(opts: {
       cleanliness: taskWorktreeCleanliness,
       workflowDir: ctx.config.paths.workflow_dir,
       tasksPath: ctx.config.paths.tasks_path,
+      taskId: task.id,
       requireAllChanges: true,
     });
   }

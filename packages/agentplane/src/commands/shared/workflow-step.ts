@@ -8,6 +8,8 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
+import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
+import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
@@ -33,6 +35,7 @@ export type WorkflowRouteState = {
    */
   remoteEnabled?: boolean;
   taskWorktree?: TaskWorktreeCleanliness;
+  foreignTaskReadmeReplicaRepair?: ForeignTaskReadmeReplicaRepair;
   conflictRework?: ConflictReworkPreparation | null;
   preconditionFingerprint: StateFingerprint;
 };
@@ -49,6 +52,7 @@ type WorkflowOperationType =
   | "task_record_result"
   | "task_start"
   | "task_view"
+  | "workflow_repair"
   | "worktree_prepare";
 
 export type WorkflowOperationId =
@@ -62,6 +66,7 @@ export type WorkflowOperationId =
   | "pr.open"
   | "pr.sync_or_verify"
   | "provider.pr.refresh"
+  | "flow.repair.foreign_task_readme"
   | "route.remote.refresh"
   | "runner.follow"
   | "task.artifacts.commit"
@@ -92,6 +97,7 @@ export type WorkflowOperationParams = {
   "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
   "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
   "provider.pr.refresh": { taskId: string };
+  "flow.repair.foreign_task_readme": { taskId: string };
   "route.remote.refresh": { taskId: string };
   "runner.follow":
     | { mode: "reclaim"; taskId: string; author: string; reason: string }
@@ -115,7 +121,7 @@ export type WorkflowOperationParams = {
   "worktree.prepare": { taskId: string; agent: string; slug: string };
 };
 
-type WorkflowOperationSpec = {
+export type WorkflowOperationSpec = {
   type: WorkflowOperationType;
   phase: string;
   checkout: WorkflowCheckout;
@@ -305,6 +311,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     verificationCandidate: "agentplane task next-action <task-id> --remote --explain",
     needsVerificationRecord: false,
   },
+  ...foreignTaskReadmeReplicaRepairOperation(POSTCONDITION.routeRecomputed),
   "task.pre_merge_close": {
     type: "task_record_result",
     phase: "pre_merge_closure_needed",

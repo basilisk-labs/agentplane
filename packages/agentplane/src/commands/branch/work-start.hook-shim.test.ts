@@ -5,8 +5,12 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
+import { LocalBackend } from "../../backends/task-backend.js";
 import { materializeHookShimForWorktree } from "./work-start.hook-shim.js";
-import { materializeActiveTaskArtifactsForWorktree } from "./work-start.materialize.js";
+import {
+  materializeActiveTaskArtifactsForWorktree,
+  materializeLocalBackendReadmesForWorktree,
+} from "./work-start.materialize.js";
 
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
 const execFileNodeAsync = promisify(execFile);
@@ -177,5 +181,35 @@ describe("worktree task artifact materialization", () => {
         "utf8",
       ),
     ).resolves.toBe("{}\n");
+  });
+
+  it("does not materialize foreign local task READMEs into the task worktree", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-local-task-"));
+    const worktreePath = path.join(root, "worktree");
+    const activeTaskId = "202607260101-ABCD";
+    const foreignTaskId = "202607260102-BCDE";
+    const tasksRoot = path.join(root, ".agentplane", "tasks");
+    await mkdir(path.join(tasksRoot, activeTaskId), { recursive: true });
+    await mkdir(path.join(tasksRoot, foreignTaskId), { recursive: true });
+    await writeFile(path.join(tasksRoot, activeTaskId, "README.md"), "active task\n", "utf8");
+    await writeFile(path.join(tasksRoot, foreignTaskId, "README.md"), "foreign task\n", "utf8");
+
+    await materializeLocalBackendReadmesForWorktree({
+      backend: new LocalBackend({ dir: tasksRoot }),
+      repoRoot: root,
+      worktreePath,
+      taskId: activeTaskId,
+      workflowDir: ".agentplane/tasks",
+    });
+
+    await expect(
+      readFile(path.join(worktreePath, ".agentplane", "tasks", activeTaskId, "README.md"), "utf8"),
+    ).resolves.toBe("active task\n");
+    await expect(
+      readFile(path.join(worktreePath, ".agentplane", "tasks", foreignTaskId, "README.md"), "utf8"),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(path.join(tasksRoot, foreignTaskId, "README.md"), "utf8")).resolves.toBe(
+      "foreign task\n",
+    );
   });
 });

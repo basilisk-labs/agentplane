@@ -19,6 +19,10 @@ import {
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+import {
+  filterTaskWorktreeBlockingPaths,
+  isTaskArtifactPath,
+} from "./route-decision-worktree-cleanliness.js";
 
 export function routeGatePriority(code: string): number {
   if (
@@ -236,26 +240,12 @@ function includedBatchMetadataState(task: TaskData): "absent" | "valid" | "inval
   return primaryTaskId && branch && base ? "valid" : "invalid";
 }
 
-function isTaskArtifactPath(opts: {
-  workflowDir: string;
-  tasksPath: string;
-  taskId?: string;
-  relPath: string;
-}): boolean {
-  const workflowDir = opts.workflowDir.replaceAll("\\", "/").replace(/\/+$/u, "");
-  const tasksPath = opts.tasksPath.replaceAll("\\", "/").replace(/\/+$/u, "");
-  const relPath = opts.relPath.replaceAll("\\", "/");
-  const workflowPath = opts.taskId ? `${workflowDir}/${opts.taskId}` : workflowDir;
-  return (
-    relPath === workflowPath || relPath.startsWith(`${workflowPath}/`) || relPath === tasksPath
-  );
-}
-
 export function addTaskWorktreeCleanlinessBlocker(opts: {
   blockers: RouteBlocker[];
   cleanliness: TaskWorktreeCleanliness;
   workflowDir: string;
   tasksPath: string;
+  taskId?: string;
   requireAllChanges: boolean;
 }): void {
   if (opts.cleanliness.state === "unavailable") {
@@ -269,14 +259,12 @@ export function addTaskWorktreeCleanlinessBlocker(opts: {
   if (opts.cleanliness.state !== "dirty") return;
   const blockingPaths = opts.requireAllChanges
     ? opts.cleanliness.changedPaths
-    : opts.cleanliness.changedPaths.filter(
-        (relPath) =>
-          !isTaskArtifactPath({
-            workflowDir: opts.workflowDir,
-            tasksPath: opts.tasksPath,
-            relPath,
-          }),
-      );
+    : filterTaskWorktreeBlockingPaths({
+        changedPaths: opts.cleanliness.changedPaths,
+        workflowDir: opts.workflowDir,
+        tasksPath: opts.tasksPath,
+        taskId: opts.taskId,
+      });
   if (blockingPaths.length === 0) return;
   addBlocker(
     opts.blockers,
@@ -335,6 +323,7 @@ export async function deriveBlockers(opts: {
       cleanliness: opts.taskWorktreeCleanliness,
       workflowDir: opts.ctx.config.paths.workflow_dir,
       tasksPath: opts.ctx.config.paths.tasks_path,
+      taskId: opts.task.id,
       requireAllChanges: normalizedTaskStatus === "DONE",
     });
   }

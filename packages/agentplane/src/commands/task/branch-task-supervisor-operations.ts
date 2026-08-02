@@ -13,6 +13,7 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
+import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-foreign-artifact-repair.js";
 import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
@@ -130,6 +131,20 @@ export async function executeBranchWorkflowOperation(opts: {
         operation,
         `observed provider PR state for ${operation.params.taskId}`,
         exitCode,
+      );
+    }
+    case "flow.repair.foreign_task_readme": {
+      const result = await applyForeignTaskReadmeReplicaRepair({
+        ctx: command,
+        activeTaskId: operation.params.taskId,
+        baseBranch: opts.decision.workspace.baseBranch,
+      });
+      return succeeded(
+        operation,
+        result.state === "applied"
+          ? `removed proven foreign task README replica for ${operation.params.taskId}`
+          : `foreign task README replica repair was not applied: ${result.reason}`,
+        result.state === "applied" ? 0 : 1,
       );
     }
     case "task.pre_merge_close": {

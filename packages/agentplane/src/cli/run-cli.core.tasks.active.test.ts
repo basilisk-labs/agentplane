@@ -1,3 +1,6 @@
+import { lstat } from "node:fs/promises";
+import path from "node:path";
+
 import { describe } from "vitest";
 
 import {
@@ -174,6 +177,52 @@ describe("runCli task active", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("reads concurrent active routes without creating protected runner artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const taskIds = Array.from(
+      { length: 13 },
+      (_, index) => `202603010200-A${String(index).padStart(3, "0")}`,
+    );
+    await seedTaskQueryFixture(
+      root,
+      taskIds.map((id) => ({
+        id,
+        title: `Active task ${id}`,
+        description: "Exercise bounded task active route reads.",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["workflow"],
+        verify: [],
+        plan_approval: {
+          state: "approved" as const,
+          updated_at: "2026-03-01T02:00:00.000Z",
+          updated_by: "ORCHESTRATOR",
+          note: null,
+        },
+      })),
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "active", "--owner", "CODER", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(io.stdout) as { items: { task: { id: string } }[] };
+      expect(parsed.items.map((item) => item.task.id).toSorted()).toEqual(taskIds.toSorted());
+    } finally {
+      io.restore();
+    }
+
+    await expect(lstat(path.join(root, ".git", "agentplane"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
   });
 
   it("surfaces waiting-on-user questions with answer commands", async () => {

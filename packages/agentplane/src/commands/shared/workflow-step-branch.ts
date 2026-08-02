@@ -10,6 +10,7 @@ import {
   branchImplementationStep,
   cliOperationStep,
   commonExecution,
+  foreignTaskReadmeReplicaRepairStep,
   implementationReworkStep,
   includedBatchStep,
   qualityEvidenceRefreshStep,
@@ -157,7 +158,12 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (worktreeBlocker) {
+    return (
+      foreignTaskReadmeReplicaRepairStep(state, worktreeBlocker) ??
+      worktreeResolutionStep(state, worktreeBlocker)
+    );
+  }
   const conflictStep = conflictReworkRouteStep(state);
   if (conflictStep) return conflictStep;
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
@@ -402,7 +408,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (worktreeBlocker?.code === "task_worktree_state_unavailable") {
     return worktreeResolutionStep(state, worktreeBlocker);
   }
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (worktreeBlocker) {
+    return (
+      foreignTaskReadmeReplicaRepairStep(state, worktreeBlocker) ??
+      worktreeResolutionStep(state, worktreeBlocker)
+    );
+  }
   const conflictStep = conflictReworkRouteStep(state);
   if (conflictStep) return conflictStep;
   if (
