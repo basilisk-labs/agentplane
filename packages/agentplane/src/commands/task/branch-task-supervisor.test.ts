@@ -15,6 +15,7 @@ import {
   superviseBranchTaskRunWithPorts,
   type BranchTaskSupervisorPorts,
 } from "./branch-task-supervisor.js";
+import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet.js";
 
 const taskId = "202607310001-BRANCH";
 const branch = `task/${taskId}/branch-supervisor`;
@@ -437,6 +438,112 @@ function sequencePorts(
 }
 
 describe("branch_pr task supervisor", () => {
+  it.each([
+    ["planned approval", stopDecision(11, "approval"), "approval_required", "authority_boundary"],
+    ["hosted wait", stopDecision(12, "wait"), "wait_required", "external_boundary"],
+    ["done", stopDecision(13, "terminal"), null, "terminal"],
+    ["blocked", terminalAttentionDecision(14), "terminal_attention", "terminal"],
+  ] as const)(
+    "keeps managed and external %s transition identity, fingerprint, and stop parity",
+    async (_label, route, managedStop, externalStop) => {
+      const root = await mkGitRepoRoot();
+      const managed = await superviseBranchTaskRunWithPorts(sequencePorts(root, [route], []));
+      const external = buildAgentActionPacket({
+        decision: route,
+        work_order: {
+          role: "EXECUTOR",
+          authority: { sandbox: "read-only", network: "deny" },
+          required_inputs: [],
+        } as never,
+      });
+
+      expect(managed.route).toMatchObject({
+        step_id: route.workflowStep.id,
+        state_fingerprint: route.workflowStep.preconditionFingerprint.digest,
+      });
+      expect(managed.stop?.code ?? null).toBe(managedStop);
+      expect(external).toMatchObject({
+        transition_id: agentTransitionId(managed.route.step_id),
+        state_fingerprint: managed.route.state_fingerprint,
+        stop: { reason: externalStop },
+      });
+    },
+  );
+
+  it("keeps evaluator rework and stale deterministic stops on the same canonical route evidence", async () => {
+    const reworkRoot = await mkGitRepoRoot();
+    const rework = agentDecision(15, "implementation_rework");
+    const reworkPorts = sequencePorts(reworkRoot, [rework], []);
+    reworkPorts.execute_episode = () =>
+      Promise.resolve({
+        status: "stopped",
+        decision: rework,
+        stop: {
+          code: "evaluator_rework",
+          reason: "persisted evaluator rework remains authoritative",
+          route_step_id: rework.workflowStep.id,
+          operation_id: null,
+        },
+        journal: null,
+        provider_episodes: 0,
+        lifecycle_calls: 0,
+      });
+    const managedRework = await superviseBranchTaskRunWithPorts(reworkPorts);
+    const externalRework = buildAgentActionPacket({
+      decision: rework,
+      work_order: {
+        role: "EXECUTOR",
+        authority: { sandbox: "workspace-write", network: "deny" },
+        required_inputs: [],
+      } as never,
+    });
+    expect(managedRework).toMatchObject({
+      route: {
+        step_id: rework.workflowStep.id,
+        state_fingerprint: rework.workflowStep.preconditionFingerprint.digest,
+      },
+      stop: { code: "evaluator_rework" },
+    });
+    expect(externalRework).toMatchObject({
+      transition_id: agentTransitionId(managedRework.route.step_id),
+      state_fingerprint: managedRework.route.state_fingerprint,
+      action: { kind: "agent_episode" },
+      stop: { reason: "semantic_boundary" },
+    });
+
+    const staleRoot = await mkGitRepoRoot();
+    const stale = cliDecision(16, "integration.enqueue", { taskId, branch });
+    const stalePorts = sequencePorts(staleRoot, [stale], []);
+    stalePorts.execute_operation = () => Promise.reject(new Error("stale fingerprint"));
+    const managedStale = await superviseBranchTaskRunWithPorts(stalePorts);
+    const externalStale = buildAgentActionPacket({
+      decision: stale,
+      work_order: {
+        role: "EXECUTOR",
+        authority: { sandbox: "read-only", network: "deny" },
+        required_inputs: [],
+      } as never,
+      recovery: {
+        reason: "stale_state",
+        evidence_digest: `sha256:${"c".repeat(64)}`,
+      },
+    });
+    expect(managedStale).toMatchObject({
+      route: {
+        step_id: stale.workflowStep.id,
+        state_fingerprint: stale.workflowStep.preconditionFingerprint.digest,
+      },
+      stop: { code: "operation_failed", operation_id: "integration.enqueue" },
+    });
+    expect(externalStale).toMatchObject({
+      transition_id: agentTransitionId(managedStale.route.step_id),
+      state_fingerprint: managedStale.route.state_fingerprint,
+      action: { kind: "framework_transition" },
+      recovery: { reason: "stale_state" },
+      stop: { reason: "control_plane_boundary" },
+    });
+  });
+
   it("runs semantic roles, opens one PR, enqueues one exact head, then stops on provider wait", async () => {
     const root = await mkGitRepoRoot();
     const decisions = [

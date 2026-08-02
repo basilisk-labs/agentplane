@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
+import { agentTransitionId } from "../commands/task/agent-action-packet.js";
 import {
   captureStdIO,
   defaultConfig,
@@ -50,6 +51,7 @@ describe("runCli direct task supervision", () => {
       const payload = JSON.parse(runIo.stdout) as {
         schema: string;
         status: string;
+        route: { step_id: string; state_fingerprint: string };
         executor: unknown;
         evaluator: unknown;
         stop: { code: string; operation_id: string | null };
@@ -61,6 +63,27 @@ describe("runCli direct task supervision", () => {
         evaluator: null,
         stop: { code: "approval_required", operation_id: null },
       });
+      const advanceIo = captureStdIO();
+      try {
+        expect(
+          await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+          advanceIo.stderr,
+        ).toBe(0);
+        const external = JSON.parse(advanceIo.stdout) as {
+          transition_id: string;
+          state_fingerprint: string;
+          action: { kind: string };
+          stop: { reason: string };
+        };
+        expect(external).toMatchObject({
+          transition_id: agentTransitionId(payload.route.step_id),
+          state_fingerprint: payload.route.state_fingerprint,
+          action: { kind: "approval_required" },
+          stop: { reason: "authority_boundary" },
+        });
+      } finally {
+        advanceIo.restore();
+      }
     } finally {
       runIo.restore();
     }

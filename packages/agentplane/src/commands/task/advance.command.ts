@@ -73,6 +73,7 @@ export function makeRunTaskAdvanceHandler(deps: {
         taskId: parsed.taskId,
       });
     let current = await decide();
+    let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
       const step = current.workflowStep;
       if (step.kind !== "cli_operation") break;
@@ -87,12 +88,23 @@ export function makeRunTaskAdvanceHandler(deps: {
         refresh: decide,
       });
       const execution = persisted.execution;
-      if (
-        !execution.executable ||
-        execution.result?.status === "failed" ||
-        execution.stop_reason !== null ||
-        execution.refreshed_decision === null
-      ) {
+      if (!execution.executable || execution.stop_reason !== null) {
+        const journalReason = persisted.journal.stop?.reason;
+        const reason =
+          journalReason === "effect_in_doubt" || journalReason === "budget_exhausted"
+            ? journalReason
+            : execution.stop_reason?.includes("already completed")
+              ? "completed_operation"
+              : execution.stop_reason?.includes("concurrent") ||
+                  execution.stop_reason?.includes("already executing")
+                ? "concurrent_execution"
+                : execution.stop_reason?.includes("stale")
+                  ? "stale_state"
+                  : "control_plane_stop";
+        recovery = { reason, evidence_digest: persisted.journal.digest };
+        break;
+      }
+      if (execution.result?.status === "failed" || execution.refreshed_decision === null) {
         throw new CliError({
           code: "E_RUNTIME",
           message:
@@ -109,7 +121,7 @@ export function makeRunTaskAdvanceHandler(deps: {
       }
       current = execution.refreshed_decision;
     }
-    if (current.workflowStep.kind === "cli_operation") {
+    if (!recovery && current.workflowStep.kind === "cli_operation") {
       const isExpectedBoundary =
         !current.executionPacket.safeToMutate ||
         (current.workflowStep.operation.id === "runner.follow" &&
@@ -139,6 +151,7 @@ export function makeRunTaskAdvanceHandler(deps: {
     const packet = buildAgentActionPacket({
       decision: prepared.route_decision,
       work_order: prepared.work_order,
+      ...(recovery ? { recovery } : {}),
     });
     assertAgentActionPacketHasNoChoreography(packet);
 
@@ -156,6 +169,7 @@ export function makeRunTaskAdvanceHandler(deps: {
         { label: "role", value: packet.authority.role },
         { label: "mutation", value: packet.authority.mutation },
         { label: "stop", value: packet.stop.reason },
+        ...(packet.recovery ? [{ label: "recovery", value: packet.recovery.reason }] : []),
       ],
       { header: infoMessage(`task advance: ${parsed.taskId}`) },
     );

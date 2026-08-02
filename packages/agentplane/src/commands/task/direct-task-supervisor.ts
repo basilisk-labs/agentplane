@@ -518,7 +518,11 @@ export async function superviseDirectTaskRun(
       workflow_mode: "direct",
       status: "finalized",
       phase: "finalized",
-      route: { step_id: closeout.decision.workflowStep.id, code: routeCode(closeout.decision) },
+      route: {
+        step_id: closeout.decision.workflowStep.id,
+        code: routeCode(closeout.decision),
+        state_fingerprint: closeout.decision.workflowStep.preconditionFingerprint.digest,
+      },
       stop: null,
       executor: observed.executor,
       evaluator: evaluatorResult,
