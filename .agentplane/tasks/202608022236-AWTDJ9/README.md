@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T22:44:56.087Z"
+  updated_at: "2026-08-02T23:05:33.736Z"
   updated_by: "TESTER"
-  note: "Verified at bfb6abc89: hosted rebase-merge evidence remains current and active-branch freshness remains fail-closed."
+  note: "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
   attempts: 0
 quality_review:
   state: "pass"
@@ -94,8 +94,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-02T23:05:33.736Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
 doc_version: 3
-doc_updated_at: "2026-08-02T22:47:35.029Z"
+doc_updated_at: "2026-08-02T23:05:35.039Z"
 doc_updated_by: "CODER"
 description: "Fix the branch_pr route oracle so a DONE task remains terminal after GitHub rebase-merge and hosted close, while still invalidating verification for new semantic commits on an active task branch."
 sections:
@@ -163,6 +169,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-02T23:05:33.736Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified surviving task-branch authority and hosted-close fallback after PR review rework.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T22:47:35.029Z, excerpt_hash=sha256:5f91686f85e6a3b71536705721e1d7e2275f33198b7a050c2b0d0cf12244b668
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022236-AWTDJ9-preserve-verification-freshness-after-rebase-mer/.agentplane/tasks/202608022236-AWTDJ9/blueprint/resolved-snapshot.json
+    - old_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+    - current_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022236-AWTDJ9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -171,6 +207,10 @@ sections:
     - Observation: A GitHub rebase merge rewrites base history and can make the base HEAD incomparable with the pre-merge verified SHA after branch cleanup.
       Impact: Using the base checkout head for a merged, hosted-closed task created a false verification_required blocker on completed work.
       Resolution: For DONE tasks with merged PR and hosted close recorded on base, bind verification to the canonical passed quality-review target; retain live branch-head resolution before merge.
+
+    - Observation: Route suite passed 14 files/61 tests; critical CLI passed 12 chunks/79 tests; typecheck, lint:core, Knip 539/539, hotspot, oversized-test baseline, and policy routing passed; live merged task 39YSZ1 still routes to hosted_close_recorded_upstream with evidence_missing none.
+      Impact: A merged task cannot reuse stale verification when a surviving task branch contains newer semantic work, while deleted/rebased branches retain their reviewed pre-merge evidence.
+      Resolution: Prefer the live branch head and semantic resolver whenever the task branch survives; use finalized evaluated_sha only when no live task-branch head exists.
 extensions:
   implementation_commit:
     hash: "bfb6abc89187231c2497ef737c67e98a45e997b2"
@@ -254,6 +294,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-02T23:05:33.736Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified surviving task-branch authority and hosted-close fallback after PR review rework.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T22:47:35.029Z, excerpt_hash=sha256:5f91686f85e6a3b71536705721e1d7e2275f33198b7a050c2b0d0cf12244b668
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022236-AWTDJ9-preserve-verification-freshness-after-rebase-mer/.agentplane/tasks/202608022236-AWTDJ9/blueprint/resolved-snapshot.json
+- old_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+- current_digest: c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022236-AWTDJ9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -266,3 +336,7 @@ DecisionContextRef:
 - Observation: A GitHub rebase merge rewrites base history and can make the base HEAD incomparable with the pre-merge verified SHA after branch cleanup.
   Impact: Using the base checkout head for a merged, hosted-closed task created a false verification_required blocker on completed work.
   Resolution: For DONE tasks with merged PR and hosted close recorded on base, bind verification to the canonical passed quality-review target; retain live branch-head resolution before merge.
+
+- Observation: Route suite passed 14 files/61 tests; critical CLI passed 12 chunks/79 tests; typecheck, lint:core, Knip 539/539, hotspot, oversized-test baseline, and policy routing passed; live merged task 39YSZ1 still routes to hosted_close_recorded_upstream with evidence_missing none.
+  Impact: A merged task cannot reuse stale verification when a surviving task branch contains newer semantic work, while deleted/rebased branches retain their reviewed pre-merge evidence.
+  Resolution: Prefer the live branch head and semantic resolver whenever the task branch survives; use finalized evaluated_sha only when no live task-branch head exists.

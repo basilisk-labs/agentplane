@@ -16,12 +16,7 @@ Fix the branch_pr route oracle so a DONE task remains terminal after GitHub reba
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified at bfb6abc89: hosted rebase-merge evidence remains current and active-branch freshness
-remains fail-closed.
-```
+- Note: Verified surviving task-branch authority and hosted-close fallback after PR review rework.
 - Canonical workflow state lives in the task README.
 
 <details>
