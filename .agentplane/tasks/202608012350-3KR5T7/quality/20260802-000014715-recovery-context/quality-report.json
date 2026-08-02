@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608012350-3KR5T7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T00:00:52.769Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "93f94d18a2d3b41aa035cde499c45a9cb2ca6266",
+  "blueprint_digest": "ed7f4b7078ff747fb2fe40494601be83337d1a277e10fbfcc47bf7a9d5087d07",
+  "findings": [
+    "The regenerated artifact is the only implementation-path change, and the current verification record binds all required documentation and scope checks to the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608012350-3KR5T7/quality/20260802-000014715-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608012350-3KR5T7/verification/20260802000001619-69e0ceeea0d22e17.json",
+    ".agentplane/tasks/202608012350-3KR5T7/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The structured TESTER verification record is accepted as authoritative deterministic evidence of the recorded command executions; raw runner history and runtime logs are not required by the active documentation DoD."
+  ],
+  "residual_risks": []
+}

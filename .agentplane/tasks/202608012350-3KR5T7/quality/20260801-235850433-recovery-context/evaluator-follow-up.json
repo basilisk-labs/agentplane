@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608012350-3KR5T7-e259ff150875520e5efdbc79",
+  "task_id": "202608012350-3KR5T7",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Rebuild the frozen evaluator packet with current deterministic outputs for the required documentation freshness, full site, routing, doctor, and final worktree-scope checks; then rerun semantic evaluation against the same intended one-artifact change.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen packet records no deterministic check results, runner history, or runtime evidence for the claimed successful verification.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:569cc1be1320c98e8d14964147d5eb3bef332b00d3440602c0367eeaa810044a",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:701c84ae6b2be4ef41f5b64e07aa41ab2e193e808a331fdd4a40a472bdd90f07",
+          "section": "requiredEvidence: docs.check"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/README.md",
+          "sha256": "sha256:a117265b70e54280920aab8f7a9e9b05593c705e783924a2bd790e5c93c5bd86",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608012350-3KR5T7/quality/20260801-235850433-recovery-context/evaluator-result.json"
+}

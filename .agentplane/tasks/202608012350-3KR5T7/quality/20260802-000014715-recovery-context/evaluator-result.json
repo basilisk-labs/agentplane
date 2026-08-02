@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The regenerated artifact is the only implementation-path change, and the current verification record binds all required documentation and scope checks to the evaluated SHA.",
+      "broken_invariant": "No invariant is broken; the frozen evidence satisfies the approved one-artifact scope, documentation verification, and clean-worktree requirements.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/quality/20260802-000014715-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:540653c63063d5445ce4c4817590a8662e5285da310860f408238d62ae11cec3"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/verification/20260802000001619-69e0ceeea0d22e17.json",
+          "sha256": "sha256:80ffff23ca40fdf5ca0584f2762a0cd90d9474704732d07cc13975ee731c519e"
+        },
+        {
+          "path": ".agentplane/tasks/202608012350-3KR5T7/README.md",
+          "sha256": "sha256:b2bda1cc90f19cbf8b97cac65bf0a17eb7eeaa7dbf5273ae862b9be6abac91c7",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The structured TESTER verification record is accepted as authoritative deterministic evidence of the recorded command executions; raw runner history and runtime logs are not required by the active documentation DoD."
+  ]
+}
