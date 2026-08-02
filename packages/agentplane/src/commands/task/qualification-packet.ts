@@ -190,7 +190,9 @@ async function buildDependencyClosure(opts: {
   };
   const dependencies = await resolveQualificationDependencyLeaves({
     taskId: opts.task.id,
-    loadTask: pinnedTask,
+    // The root owns the current lifecycle transition; only its dependencies are reviewed evidence.
+    loadTask: (taskId) =>
+      taskId === opts.task.id ? Promise.resolve(opts.task) : pinnedTask(taskId),
   });
   const leaves = await Promise.all(
     dependencies.terminalLeaves.map(async (leaf) => {
