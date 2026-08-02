@@ -19,9 +19,9 @@ Make task begin stop at a real semantic planning boundary, make task complete fa
 - Note:
 
 ```text
-Fresh verification for 375dd720e: Knip baseline 539/539, typecheck, formatting, and focused guided
-lifecycle/help suite 41/41 pass; the sole delta is removal of an unused export and prior full
-critical/docs/product gates remain unchanged.
+Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally
+contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior
+critical/docs/product gates pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -52,6 +52,8 @@ critical/docs/product gates remain unchanged.
  .../src/cli/run-cli/command-catalog/kernel.ts      |   5 +
  .../src/cli/run-cli/command-catalog/task.ts        |   6 +
  packages/agentplane/src/cli/spec/help.ts           |   6 +-
+ .../evaluator-episode.calibration.test.ts          |   8 +-
+ .../src/commands/hermes/hermes.command.test.ts     |   2 +-
  .../src/commands/shared/route-execution-packet.ts  |   9 +-
  .../src/commands/shared/workflow-step-reducer.ts   |  29 +++
  .../src/commands/shared/workflow-step.ts           |   1 +
@@ -71,7 +73,7 @@ critical/docs/product gates remain unchanged.
  .../check-compatibility-contract-baseline.mjs      |  17 +-
  .../check-v0.7.1-product-contract.mjs              |  71 ++++++
  scripts/release/generate-cli-help-catalog.mjs      |   1 +
- 38 files changed, 654 insertions(+), 361 deletions(-)
+ 40 files changed, 662 insertions(+), 363 deletions(-)
 ```
 
 </details>

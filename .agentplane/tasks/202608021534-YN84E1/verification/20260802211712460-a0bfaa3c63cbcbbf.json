@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:a0bfaa3c63cbcbbf6714bc567043eacdd39bea7a2c9cbe9b5e20cf1b07e28b69",
+  "implementation_sha": "5d684b345cf63fd83f9cfa171af88c8cdf5eee8a",
+  "kind": "task_verification_record",
+  "note": "Fresh verification for 5d684b345: the two hosted unit regressions pass (24/24); all six locally contention-affected files pass serially (67/67); typecheck, formatting, Knip 539/539, and prior critical/docs/product gates pass.",
+  "recorded_at": "2026-08-02T21:17:12.460Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused cli-core lifecycle/help suite listed in task verify. Expected: begin stops on a PLANNER semantic boundary; normal complete rejects missing observed checks or missing evaluator/human verdict; the unsafe compatibility override requires explicit operator confirmation and leaves durable history; advance and run expose the same state-machine boundary.\n2. Run typecheck, lint:core, docs:cli:check, docs:bootstrap:check, docs:ia:check, and the policy routing check. Expected: default help exposes no more than 12 canonical operations, promotes task advance/task run, generated docs are current, and repository policy remains valid.\n3. Run test:critical and scripts/qualification/check-v0.7.1-product-contract.mjs. Expected: all trust-boundary, recovery, package, compatibility-ratchet, and v0.7.1 product gates pass.",
+  "scope_digest": "sha256:93c77de31234a18ca42729ff860e4cecf28c907784c9a14f14e0455d82f68747",
+  "task_id": "202608021534-YN84E1",
+  "verification_command": "agentplane verify 202608021534-YN84E1 --ok --by CODER",
+  "verifier": "CODER"
+}
