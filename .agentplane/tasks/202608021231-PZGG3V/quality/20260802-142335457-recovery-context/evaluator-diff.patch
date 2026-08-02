@@ -1,0 +1,2293 @@
+diff --git a/README.md b/README.md
+index 2f443825e..e54881c69 100644
+--- a/README.md
++++ b/README.md
+@@ -111,9 +111,10 @@ Read [Local context](docs/user/local-context.mdx).
+ ## First local workflow
+ 
+ ```bash
+-agentplane task begin "Inspect Agentplane artifacts" --tag docs --verify "agentplane task verify-show <task-id>"
+-agentplane task verify-show <task-id>
+-agentplane task complete <task-id> --result "Inspected generated artifacts" --commit <git-rev>
++agentplane task new --title "Inspect Agentplane artifacts" --description "Review the generated task record" --owner DOCS --tag docs
++agentplane task advance <task-id> --agent-json
++# Or, after semantic plan approval, let the configured runner supervise the task:
++agentplane task run <task-id>
+ ```
+ 
+ ## Agentplane is not
+diff --git a/docs/user/agent-bootstrap.generated.mdx b/docs/user/agent-bootstrap.generated.mdx
+index 38d2a7e76..9f5c9d637 100644
+--- a/docs/user/agent-bootstrap.generated.mdx
++++ b/docs/user/agent-bootstrap.generated.mdx
+@@ -19,7 +19,7 @@ git status --short --untracked-files=all
+ git rev-parse --abbrev-ref HEAD
+ ```
+ 
+-After preflight, use `agentplane task active` to choose ready work and `agentplane task brief <task-id>` to load context. Treat `agentplane task next-action <task-id> --explain` as the route oracle: follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase` instead of reconstructing branch/worktree/PR state. In `branch_pr`, keep PR artifacts current, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and let base-checkout `integrate` drive the task GitHub PR merge; use direct mode only when configured.
++After preflight, use `agentplane task active` to choose ready work and `agentplane task advance <task-id> --agent-json` for the compact external-agent protocol, or `agentplane task run <task-id>` for the managed runner. Use `agentplane task brief <task-id>` and `task next-action --explain` only for expanded diagnostics.
+ 
+ ## 1. Preflight
+ 
+@@ -39,32 +39,28 @@ Establish workflow mode, current branch, active task candidates, tracked-only cl
+ 
+ ## 2. Agent context
+ 
+-Load the task-specific context surface before manually combining task docs, route status, verify steps, PR metadata, and policy notes.
++Request one compact external-agent action instead of manually combining task docs, route status, checks, hosted metadata, and policy notes.
+ 
+ - `agentplane task active`
+-- `agentplane task brief <task-id>`
++- `agentplane task advance <task-id> --agent-json`
+ 
+ - `task active` is the backlog selector for agents; it does not mutate task state.
+-- `task brief` is local-first and includes route, next action, concrete route command, Verify Steps, policy modules, blueprint evidence, and source confidence.
+-- Use `task brief <task-id> --remote` only when hosted PR/check/review state is needed for the decision.
+-- Resolve weak source confidence or missing Verify Steps before mutation instead of reconstructing context manually.
++- `task advance --agent-json` prepares the canonical WorkOrder and emits one bounded action, state fingerprint, authority boundary, and compact context references.
++- Use `task brief` and `task next-action --explain` only when a human needs expanded diagnostic evidence.
++- Resolve weak source confidence or missing acceptance checks before semantic work instead of reconstructing context manually.
+ 
+ ## 3. Direct happy path
+ 
+-When a repository is intentionally configured for direct mode, use one short route: create the task, approve it, start it, verify it, and finish it.
++When a repository is intentionally configured for direct mode, create and approve the task, then let the managed supervisor own the formal lifecycle.
+ 
+ - `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`
+ - `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`
+ - `agentplane task plan approve <task-id> --by ORCHESTRATOR`
+-- `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."`
+-- `agentplane task verify-show <task-id>`
+-- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]`
+-- `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>`
++- `agentplane task run <task-id>`
+ 
+-- Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.
+-- Fill required README sections before approval; wait for upstream DONE tasks before `task start-ready`.
+-- `task plan approve` and `task start-ready` must run sequentially, never in parallel.
+-- Treat `task verify-show` as the verification contract before `verify` and `finish`. Direct `finish` creates the close commit by default.
++- Use `agentplane role ORCHESTRATOR` during planning; the runner receives the prepared owner-scoped semantic episode after approval.
++- Fill required task sections before approval and wait for upstream DONE tasks before `task run`.
++- Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.
+ 
+ ## 4. Verification and incident reuse
+ 
+@@ -96,6 +92,6 @@ Keep exceptional paths out of the normal route: use these only for recovery, fra
+ 
+ ## Non-default paths
+ 
+-- `branch_pr`: use `agentplane task brief <task-id>`, then follow `agentplane task next-action <task-id> --explain` for lane, checkout, blocker, and next command. Maintain PR artifacts, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and finalize through GitHub PR merge plus Task Hosted Close.
+-- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.
++- Diagnostic branch_pr recovery: use `agentplane task brief <task-id>`, then `agentplane task next-action <task-id> --explain` for lane, checkout, blocker, and exact formal operation.
++- Manual direct lifecycle commands remain available for recovery and compatibility, but are not the default onboarding path.
+ - Use manual close flags only when a specific policy or recovery situation requires them.
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 90be9eaf6..06e587aa8 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -63,20 +63,19 @@ Field names and casing are exact. Optional fields are omitted when no value is a
+ - Task
+   - [ready](#ready)
+   - [task active](#task-active)
++  - [task advance](#task-advance)
+   - [task answer](#task-answer)
+   - [task ask](#task-ask)
+-  - [task begin](#task-begin)
+   - [task brief](#task-brief)
+   - [task comment](#task-comment)
+-  - [task complete](#task-complete)
+   - [task doc set](#task-doc-set)
+   - [task doc show](#task-doc-show)
+   - [task list](#task-list)
+   - [task new](#task-new)
+   - [task next](#task-next)
+-  - [task next-action](#task-next-action)
+   - [task plan approve](#task-plan-approve)
+   - [task plan set](#task-plan-set)
++  - [task run](#task-run)
+   - [task search](#task-search)
+   - [task show](#task-show)
+   - [task start-ready](#task-start-ready)
+@@ -454,82 +453,80 @@ agentplane task active --json
+ 
+ - Emit machine-readable active work state.
+ 
+-### task answer
++### task advance
+ 
+-Answer and close a task user-input blocker.
++Return one compact external-agent action from the shared task supervisor state.
+ 
+ Usage:
+ 
+ ```text
+-agentplane task answer <task-id> [options]
++agentplane task advance <task-id> [options]
+ ```
+ 
+ Options:
+ 
+-- `--by <USER>`: Answer author.
+-- `--body <text>`: Answer body.
++- `--agent-json`: Emit the stable compact external-agent protocol. (default=false)
++- `--remote`: Include hosted state while preparing the shared supervisor decision. (default=false)
++
++Notes:
++
++- The command prepares the same canonical work order and route decision used by the managed task runner.
++- It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.
++- --agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.
+ 
+ Examples:
+ 
+ ```sh
+-agentplane task answer 202602030608-F1Q8AB --by USER --body "Use the existing REST API."
++agentplane task advance 202602030608-F1Q8AB --agent-json
+ ```
+ 
+-- Close the open user-input blocker.
++- Obtain one bounded action without reconstructing lifecycle state.
+ 
+-### task ask
++### task answer
+ 
+-Record a blocking user question for a task.
++Answer and close a task user-input blocker.
+ 
+ Usage:
+ 
+ ```text
+-agentplane task ask <task-id> [options]
++agentplane task answer <task-id> [options]
+ ```
+ 
+ Options:
+ 
+-- `--author <ROLE>`: Question author.
+-- `--body <text>`: Blocking question.
++- `--by <USER>`: Answer author.
++- `--body <text>`: Answer body.
+ 
+ Examples:
+ 
+ ```sh
+-agentplane task ask 202602030608-F1Q8AB --author CODER --body "Which API should this use?"
++agentplane task answer 202602030608-F1Q8AB --by USER --body "Use the existing REST API."
+ ```
+ 
+-- Block the task until the user answers.
++- Close the open user-input blocker.
+ 
+-### task begin
++### task ask
+ 
+-Create, plan, approve, and start or route a task through the normal lifecycle.
++Record a blocking user question for a task.
+ 
+ Usage:
+ 
+ ```text
+-agentplane task begin <title> [options]
++agentplane task ask <task-id> [options]
+ ```
+ 
+ Options:
+ 
+-- `--description <text>`: Task description. Defaults to the title.
+-- `--owner <id>`: Task owner id. (default=CODER)
+-- `--priority <low|normal|med|high>`: Task priority. (choices=low|normal|med|high, default=med)
+-- `--tag <tag>`: Repeatable. Adds a tag. Defaults to code. (repeatable)
+-- `--plan <text>`: Plan text. Defaults to a minimal generated plan; escaped newlines (\n) are supported by task plan set.
+-- `--verify <command>`: Repeatable. Verification commands/checks to seed on the task. (repeatable)
+-- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. (choices=analysis|content|docs|code|release|ops|context)
+-- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+-- `--blueprint-request <id>`: Explicit blueprint request stored on the task. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+-- `--json`: Emit machine-readable JSON. (default=false)
++- `--author <ROLE>`: Question author.
++- `--body <text>`: Blocking question.
+ 
+ Examples:
+ 
+ ```sh
+-agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:fast"
++agentplane task ask 202602030608-F1Q8AB --author CODER --body "Which API should this use?"
+ ```
+ 
+-- Create the task, seed a minimal plan, approve it, then start or print the branch_pr worktree route.
++- Block the task until the user answers.
+ 
+ ### task brief
+ 
+@@ -595,36 +592,6 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated
+ 
+ - Add a comment and bump doc metadata.
+ 
+-### task complete
+-
+-Record OK verification and finish a direct task, or print the branch_pr close route.
+-
+-Usage:
+-
+-```text
+-agentplane task complete <task-id> --result <text> [options]
+-```
+-
+-Options:
+-
+-- `--result <text>`: One-line result summary. (required)
+-- `--commit <hash>`: Implementation commit hash to record when finish is allowed.
+-- `--by <id>`: Verifier id. (default=CODER)
+-- `--author <id>`: Finish author id for direct-mode finish. (default=CODER)
+-- `--note <text>`: Verification note. Defaults to the result.
+-- `--body <text>`: Finish body. Defaults to Verified: &lt;result&gt;.
+-- `--force`: Forward --force to finish. (default=false)
+-- `--yes`: Auto-approve force gates. (default=false)
+-- `--json`: Emit machine-readable JSON. (default=false)
+-
+-Examples:
+-
+-```sh
+-agentplane task complete 202602030608-F1Q8AB --result "Parser edge case fixed" --commit abcdef1
+-```
+-
+-- Record verification and finish when the current workflow route allows it.
+-
+ ### task doc set
+ 
+ Update a task README section.
+@@ -814,30 +781,6 @@ agentplane task next --limit 3
+ 
+ - Limit output.
+ 
+-### task next-action
+-
+-Print the single safest next command for a task route.
+-
+-Usage:
+-
+-```text
+-agentplane task next-action <task-id> [options]
+-```
+-
+-Options:
+-
+-- `--explain`: Include route context, approval policy, blockers, and ambiguity resolution hints. (default=false)
+-- `--remote`: Include hosted PR/check/review state using configured remote tools. (default=false)
+-- `--json`: Emit JSON. (default=false)
+-
+-Examples:
+-
+-```sh
+-agentplane task next-action 202602030608-F1Q8AB
+-```
+-
+-- Get the next safe command before manually chaining diagnostics.
+-
+ ### task plan approve
+ 
+ Approve the current task plan (enforces Verify Steps gating when configured).
+@@ -891,6 +834,44 @@ agentplane task plan set 202602030608-F1Q8AB --file plan.md
+ 
+ - Write plan from a file.
+ 
++### task run
++
++Supervise a direct or branch_pr task through its typed lifecycle.
++
++Usage:
++
++```text
++agentplane task run <task-id> [options]
++```
++
++Options:
++
++- `--dry-run`: Prepare runner artifacts and invocation without executing the adapter. (default=false)
++- `--remote`: Include hosted PR/check/review state in the prepared work order. (default=false)
++- `--sandbox <read-only|workspace-write|danger-full-access>`: Override the role-derived sandbox for this run. (choices=read-only|workspace-write|danger-full-access)
++- `--allow-danger-full-access`: Explicitly authorize a requested danger-full-access sandbox and record CLI provenance. (default=false)
++- `--json`: Emit JSON. (default=false)
++
++Notes:
++
++- In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.
++- In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.
++- With the default Codex adapter, the runner prompt starts with \`/goal ...\` and then includes the AgentPlane bundle contract.
++
++Examples:
++
++```sh
++agentplane task run 202602030608-F1Q8AB
++```
++
++- Execute the task with the configured runner adapter.
++
++```sh
++agentplane task run 202602030608-F1Q8AB --dry-run --json
++```
++
++- Inspect the prepared runner invocation and artifact paths without starting the agent.
++
+ ### task search
+ 
+ Search tasks by text or regex with optional filters.
+@@ -2560,7 +2541,7 @@ Options:
+ Notes:
+ 
+ - Search candidates are evidence hints, not authority.
+-- \`--write-manifest\` writes a task-local artifact only; task creation remains owned by \`agentplane task new\` and \`agentplane task begin\`.
++- \`--write-manifest\` writes a task-local artifact only; canonical task creation remains owned by \`agentplane task new\`.
+ 
+ Examples:
+ 
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index f66f8ea53..d70377935 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -127,12 +127,11 @@ agentplane task doc set <task-id> --section Summary --text "..."
+ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
+ ```
+ 
+-There are two supported execution paths. An external agent can work in the authoritative checkout
+-and follow the one command emitted by `task next-action`. A configured runner can ask Agentplane to
+-supervise the same typed route:
++There are two canonical frontends over the same typed route. An external agent requests one compact
++packet; a configured runner resolves the semantic boundary itself:
+ 
+ ```bash
+-agentplane task next-action <task-id> --explain
++agentplane task advance <task-id> --agent-json
+ agentplane task run <task-id> --dry-run
+ agentplane task run <task-id>
+ ```
+@@ -140,8 +139,8 @@ agentplane task run <task-id>
+ `--dry-run` prepares and validates the runner bundle without starting the adapter. A real run owns
+ formal lifecycle operations, invokes bounded semantic episodes, records supervisor observations,
+ and stops on typed approval, input, wait, rework, or terminal outcomes. The external-agent and
+-runner paths share task, fingerprint, authority, route, and evidence contracts; neither should
+-reconstruct lifecycle state from prose.
++runner paths share task, fingerprint, authority, route, and evidence contracts. `task next-action
++--explain` remains the expanded forensic projection, not the normal machine protocol.
+ 
+ Runner maintenance commands remain on the advanced help surface:
+ 
+diff --git a/docs/user/task-lifecycle.mdx b/docs/user/task-lifecycle.mdx
+index d85e03a83..74366ebbb 100644
+--- a/docs/user/task-lifecycle.mdx
++++ b/docs/user/task-lifecycle.mdx
+@@ -7,8 +7,7 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
+ 
+ Agentplane 0.7 exposes one route model through two execution styles:
+ 
+-- an external agent runs the exact command from `task next-action --explain` and recomputes after
+-  each mutation;
++- an external agent requests one compact packet with `task advance --agent-json`;
+ - a configured runner uses `task run <task-id>` to let the CLI supervise eligible formal steps and
+   bounded semantic episodes.
+ 
+@@ -21,8 +20,7 @@ automatic success. It returns a typed stop at those boundaries. See
+ After plan approval and, for `branch_pr`, worktree creation:
+ 
+ ```bash
+-agentplane task brief <task-id>
+-agentplane task next-action <task-id> --explain
++agentplane task advance <task-id> --agent-json
+ agentplane task run <task-id> --dry-run
+ agentplane task run <task-id>
+ ```
+@@ -32,7 +30,25 @@ outputs, prepared knowledge evidence, verification intent, and stop rules. The a
+ semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
+ An agent-reported check is not accepted as an observed check without supervisor evidence.
+ 
+-## Minimal branch_pr lifecycle
++## Canonical branch_pr lifecycle
++
++After task creation and semantic plan approval, the default managed path is one command:
++
++```bash
++agentplane task run <task-id>
++```
++
++For an external agent, use the compact boundary. The command may perform only eligible registered
++deterministic transitions before returning the next semantic or stop packet:
++
++```bash
++agentplane task advance <task-id> --agent-json
++```
++
++The expanded sequence below is retained for diagnostics, recovery, and compatibility. It is not
++the default agent protocol.
++
++## Manual branch_pr compatibility lifecycle
+ 
+ This repository is configured for `branch_pr`, so the normal guarded route is:
+ 
+@@ -78,9 +94,8 @@ with `branch.task_prefix` and `branch.task_close_prefix`; the rest of the shape
+ 
+ ## AgentPlane-owned automation boundaries
+ 
+-In `branch_pr`, agents should treat `task brief` and `task next-action --explain` as the live
+-boundary for operations AgentPlane already owns. Run the emitted command, then recompute the route
+-before doing another lifecycle step.
++In `branch_pr`, use `task advance --agent-json` as the compact machine boundary. Use `task brief`
++and `task next-action --explain` only when expanded route evidence is needed for recovery.
+ 
+ - `work start` / `work resume` own task branch and worktree setup; do not hand-roll branch names or
+   worktree creation when the route packet gives an exact command.
+diff --git a/docs/user/workflow.mdx b/docs/user/workflow.mdx
+index 353bfd6e6..a37af5825 100644
+--- a/docs/user/workflow.mdx
++++ b/docs/user/workflow.mdx
+@@ -15,7 +15,20 @@ Use any coding agent to edit code. Use Agentplane to record the task state, plan
+ closure around those edits. The agent writes code and uses the CLI; the human sets tasks,
+ guardrails, and review boundaries.
+ 
+-This repository is configured for `branch_pr`, so the normal guarded route is:
++This repository is configured for `branch_pr`. After task creation and semantic plan approval, the
++normal managed route is:
++
++```bash
++agentplane task run <task-id>
++```
++
++An external agent requests one bounded action instead:
++
++```bash
++agentplane task advance <task-id> --agent-json
++```
++
++The detailed lifecycle below is the diagnostic and recovery expansion of that route:
+ 
+ 1. Run preflight.
+ 2. Create the task, set the plan, and approve it.
+diff --git a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+index 9ebdd3992..64bef3b77 100644
+--- a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
++++ b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+@@ -16,22 +16,21 @@ Commands:
+     ready  Report dependency readiness details for a task.
+     task  Task lifecycle and task-store commands.
+     task active  Select active agent work with next actions, blockers, dependency readiness, and freshness.
++    task advance  Return one compact external-agent action from the shared task supervisor state.
+     task answer  Answer and close a task user-input blocker.
+     task ask  Record a blocking user question for a task.
+-    task begin  Create, plan, approve, and start or route a task through the normal lifecycle.
+     task brief  Print an agent-ready task brief without remote lookups by default.
+     task comment  Append a comment to a task.
+-    task complete  Record OK verification and finish a direct task, or print the branch_pr close route.
+     task doc  Task doc commands (show/set).
+     task doc set  Update a task README section.
+     task doc show  Print task README content (entire doc or one section).
+     task list  List active tasks with compact resolved blueprint route hints.
+     task new  Create a new task (prints the generated task id).
+     task next  List ready tasks (default status=TODO) with optional filters.
+-    task next-action  Print the single safest next command for a task route.
+     task plan  Task plan commands (set/approve/reject).
+     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
+     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
++    task run  Supervise a direct or branch_pr task through its typed lifecycle.
+     task search  Search tasks by text or regex with optional filters.
+     task show  Print task metadata and resolved blueprint route as JSON.
+     task start-ready  Run readiness checks and start a task in one deterministic command.
+diff --git a/packages/agentplane/src/cli/bootstrap-guide.ts b/packages/agentplane/src/cli/bootstrap-guide.ts
+index 932968bb5..7253ce931 100644
+--- a/packages/agentplane/src/cli/bootstrap-guide.ts
++++ b/packages/agentplane/src/cli/bootstrap-guide.ts
+@@ -23,7 +23,7 @@ export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
+ 
+ const BOOTSTRAP_CONTEXT_COMMANDS = [
+   COMMAND_SNIPPETS.core.taskActive,
+-  COMMAND_SNIPPETS.core.taskBrief,
++  "agentplane task advance <task-id> --agent-json",
+ ] as const;
+ 
+ export const BOOTSTRAP_TASK_PREP_COMMANDS = [
+@@ -34,10 +34,7 @@ export const BOOTSTRAP_TASK_PREP_COMMANDS = [
+ 
+ export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
+   ...BOOTSTRAP_TASK_PREP_COMMANDS,
+-  COMMAND_SNIPPETS.core.startTask,
+-  COMMAND_SNIPPETS.core.taskVerifyShow,
+-  COMMAND_SNIPPETS.core.verifyTask,
+-  'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
++  "agentplane task run <task-id>",
+ ] as const;
+ 
+ export const BOOTSTRAP_VERIFICATION_COMMANDS = [
+@@ -71,25 +68,24 @@ const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
+   {
+     heading: "2. Agent context",
+     summary:
+-      "Load the task-specific context surface before manually combining task docs, route status, verify steps, PR metadata, and policy notes.",
++      "Request one compact external-agent action instead of manually combining task docs, route status, checks, hosted metadata, and policy notes.",
+     commands: BOOTSTRAP_CONTEXT_COMMANDS,
+     notes: [
+       "`task active` is the backlog selector for agents; it does not mutate task state.",
+-      "`task brief` is local-first and includes route, next action, concrete route command, Verify Steps, policy modules, blueprint evidence, and source confidence.",
+-      "Use `task brief <task-id> --remote` only when hosted PR/check/review state is needed for the decision.",
+-      "Resolve weak source confidence or missing Verify Steps before mutation instead of reconstructing context manually.",
++      "`task advance --agent-json` prepares the canonical WorkOrder and emits one bounded action, state fingerprint, authority boundary, and compact context references.",
++      "Use `task brief` and `task next-action --explain` only when a human needs expanded diagnostic evidence.",
++      "Resolve weak source confidence or missing acceptance checks before semantic work instead of reconstructing context manually.",
+     ],
+   },
+   {
+     heading: "3. Direct happy path",
+     summary:
+-      "When a repository is intentionally configured for direct mode, use one short route: create the task, approve it, start it, verify it, and finish it.",
++      "When a repository is intentionally configured for direct mode, create and approve the task, then let the managed supervisor own the formal lifecycle.",
+     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
+     notes: [
+-      "Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.",
+-      "Fill required README sections before approval; wait for upstream DONE tasks before `task start-ready`.",
+-      "`task plan approve` and `task start-ready` must run sequentially, never in parallel.",
+-      "Treat `task verify-show` as the verification contract before `verify` and `finish`. Direct `finish` creates the close commit by default.",
++      "Use `agentplane role ORCHESTRATOR` during planning; the runner receives the prepared owner-scoped semantic episode after approval.",
++      "Fill required task sections before approval and wait for upstream DONE tasks before `task run`.",
++      "Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.",
+     ],
+   },
+   {
+@@ -154,14 +150,14 @@ export function renderBootstrapDoc(): string {
+     "",
+     ...renderCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
+     "",
+-    `After preflight, use \`${COMMAND_SNIPPETS.core.taskActive}\` to choose ready work and \`${COMMAND_SNIPPETS.core.taskBrief}\` to load context. Treat \`agentplane task next-action <task-id> --explain\` as the route oracle: follow \`next_command\`, \`authoritative_checkout\`, \`primary_blocker\`, and \`phase\` instead of reconstructing branch/worktree/PR state. In \`branch_pr\`, keep PR artifacts current, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and let base-checkout \`integrate\` drive the task GitHub PR merge; use direct mode only when configured.`,
++    `After preflight, use \`${COMMAND_SNIPPETS.core.taskActive}\` to choose ready work and \`agentplane task advance <task-id> --agent-json\` for the compact external-agent protocol, or \`agentplane task run <task-id>\` for the managed runner. Use \`${COMMAND_SNIPPETS.core.taskBrief}\` and \`task next-action --explain\` only for expanded diagnostics.`,
+     "",
+     ...renderBootstrapSectionLines(BOOTSTRAP_SECTIONS),
+     "",
+     "## Non-default paths",
+     "",
+-    `- \`branch_pr\`: use \`${COMMAND_SNIPPETS.core.taskBrief}\`, then follow \`agentplane task next-action <task-id> --explain\` for lane, checkout, blocker, and next command. Maintain PR artifacts, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and finalize through GitHub PR merge plus Task Hosted Close.`,
+-    "- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.",
++    `- Diagnostic branch_pr recovery: use \`${COMMAND_SNIPPETS.core.taskBrief}\`, then \`agentplane task next-action <task-id> --explain\` for lane, checkout, blocker, and exact formal operation.`,
++    "- Manual direct lifecycle commands remain available for recovery and compatibility, but are not the default onboarding path.",
+     "- Use manual close flags only when a specific policy or recovery situation requires them.",
+     "",
+   ];
+diff --git a/packages/agentplane/src/cli/command-guide.test.ts b/packages/agentplane/src/cli/command-guide.test.ts
+index 151a6a1c1..0b5cafc9d 100644
+--- a/packages/agentplane/src/cli/command-guide.test.ts
++++ b/packages/agentplane/src/cli/command-guide.test.ts
+@@ -38,7 +38,7 @@ describe("command-guide", () => {
+ 
+   it("documents merge-preserving branch_pr integration by default", () => {
+     const text = renderRoleTyped("integrator");
+-    expect(text).toContain("Route oracle contract:");
++    expect(text).toContain("Route oracle diagnostic:");
+     expect(text).toContain("`authoritative_checkout`");
+     expect(text).toContain("do not manually reconstruct branch/worktree/PR state");
+     expect(text).toContain(
+@@ -88,8 +88,9 @@ describe("command-guide", () => {
+     expect(text).toContain("## First visible payoff");
+     expect(text).toContain("agentplane demo");
+     expect(text).toContain("agentplane acr validate <task-id> --mode local");
+-    expect(text).toContain('agentplane task begin "Inspect AgentPlane artifacts"');
+-    expect(text).toContain("agentplane task complete <task-id>");
++    expect(text).toContain('agentplane task new --title "Inspect AgentPlane artifacts"');
++    expect(text).toContain("agentplane task advance <task-id> --agent-json");
++    expect(text).toContain("agentplane task run <task-id>");
+     expect(text).toContain(".agentplane/tasks/<task-id>/");
+     expect(text).toContain("acr.json");
+     expect(text).toContain("## Go deeper");
+@@ -145,8 +146,10 @@ describe("command-guide", () => {
+     expect(text).toContain("agentplane task active");
+     expect(text).toContain("agentplane task brief <task-id>");
+     expect(text).toContain("task next-action <task-id> --explain");
+-    expect(text).toContain("next_command");
+-    expect(text).toContain("authoritative_checkout");
++    expect(text).toContain("agentplane task advance <task-id> --agent-json");
++    expect(text).toContain("agentplane task run <task-id>");
++    expect(text).toContain("state fingerprint");
++    expect(text).toContain("authority boundary");
+     expect(text).toContain("tracked-only cleanliness");
+     expect(text).toContain("git status --short --untracked-files=no");
+     expect(text).toContain("\n- `git status --short --untracked-files=all`\n");
+@@ -156,11 +159,8 @@ describe("command-guide", () => {
+     expect(text).toContain("agentplane incidents collect <task-id> --check");
+     expect(text).toContain("promote only real reusable incidents");
+     expect(text).toContain("plain prose stays task-local");
+-    expect(text).toContain("configured CI/provider gate");
+-    expect(text).toContain("workflow:wait-remote-checks");
+-    expect(text).not.toContain(
+-      "wait for hosted required checks with `bun run workflow:wait-remote-checks`",
+-    );
++    expect(text).toContain("expanded diagnostic evidence");
++    expect(text).not.toContain("keep PR artifacts current");
+   });
+ 
+   it("updates the planner role guidance to the explicit findings promotion flow", () => {
+diff --git a/packages/agentplane/src/cli/command-guide.ts b/packages/agentplane/src/cli/command-guide.ts
+index 4f3fdcb2e..77cf27dbb 100644
+--- a/packages/agentplane/src/cli/command-guide.ts
++++ b/packages/agentplane/src/cli/command-guide.ts
+@@ -21,10 +21,10 @@ export type RoleProfileGuide = {
+   workflow?: readonly string[];
+ };
+ 
+-const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`${COMMAND_SNIPPETS.core.taskBrief}\` to load task context, \`agentplane task next-action <task-id> --explain\` as the route oracle, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before role-scoped planning or execution.`;
++const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.taskActive}\` to select ready work, \`agentplane task advance <task-id> --agent-json\` for the compact external-agent protocol, and \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before semantic work.`;
+ 
+ const ROUTE_ORACLE_NOTE =
+-  "- Route oracle contract: follow `next_command`, `authoritative_checkout`, `primary_blocker`, and `phase`; do not manually reconstruct branch/worktree/PR state.";
++  "- Route oracle diagnostic: use `agentplane task next-action <task-id> --explain` only when the compact packet requires forensic detail; inspect `authoritative_checkout`, `primary_blocker`, and `phase`, and do not manually reconstruct branch/worktree/PR state.";
+ 
+ function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
+   return ["```bash", ...commands, "```"];
+@@ -47,8 +47,8 @@ const ROLE_GUIDES: RoleGuide[] = [
+     lines: [
+       SHARED_STARTUP_NOTE,
+       ROUTE_ORACLE_NOTE,
+-      '- For a normal first task, prefer `agentplane task begin "..." --tag <tag> --verify "<check>"`; it creates the task, writes a minimal plan, approves it, and either starts direct mode or prints the branch_pr worktree command.',
+       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
++      "- After task creation, call `agentplane task advance <task-id> --agent-json`; supply the semantic plan only when the returned packet requests it.",
+       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
+       '- Append task-local Findings via `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..."`; add `--promote --external` or `--repo-fixable` only for real reusable incidents.',
+       "- Approve plan only after required sections and Verify Steps are ready.",
+@@ -60,9 +60,8 @@ const ROLE_GUIDES: RoleGuide[] = [
+       SHARED_STARTUP_NOTE,
+       ROUTE_ORACLE_NOTE,
+       "- direct: stay in the current checkout; branch_pr: implement in the task worktree, keep PR artifacts current, and wait for hosted checks before INTEGRATOR handoff.",
+-      "- Start owner-scoped work from `agentplane task brief <task-id>` so Verify Steps, policy modules, blueprint evidence, route state, and source confidence are loaded together.",
+-      "- If branch_pr state is ambiguous, use `task next-action --explain`, `task status --route`, or `work resume` before choosing a checkout or PR action.",
+-      `- For the common path, use \`${COMMAND_SNIPPETS.core.taskBegin}\` to create/approve/start-or-route and \`${COMMAND_SNIPPETS.core.taskComplete}\` after checks pass.`,
++      "- Start from `agentplane task advance <task-id> --agent-json`; it returns one bounded action and prepared context references without lifecycle choreography.",
++      "- Use `agentplane task run <task-id>` when the configured managed runner should resolve the semantic boundary.",
+       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
+       `- Treat \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` as the verification contract, then record \`${COMMAND_SNIPPETS.core.verifyTask}\`.`,
+       `- Preferred direct close path: \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`; add \`--no-close-commit\` only for explicit manual close handling.`,
+@@ -272,12 +271,11 @@ export function renderQuickstartForMode(mode: QuickstartWorkflowMode = null): st
+       "agentplane acr validate <task-id> --mode local",
+     ]),
+     "",
+-    "For a real first task, use the guided task path:",
++    "For a real first task, create it without synthetic planning, then request one compact action:",
+     "",
+     ...renderQuickstartCommandBlock([
+-      'agentplane task begin "Inspect AgentPlane artifacts" --tag docs --verify "agentplane task verify-show <task-id>"',
+-      "agentplane task verify-show <task-id>",
+-      'agentplane task complete <task-id> --result "Inspected generated artifacts" --commit <git-rev>',
++      'agentplane task new --title "Inspect AgentPlane artifacts" --description "Review the generated task record" --owner DOCS --tag docs',
++      "agentplane task advance <task-id> --agent-json",
+     ]),
+     "",
+     "The payoff is a repo-visible task record:",
+@@ -289,12 +287,13 @@ export function renderQuickstartForMode(mode: QuickstartWorkflowMode = null): st
+     "`-- pr/             branch_pr review artifacts when that mode is active",
+     "```",
+     "",
+-    "Use that local first-success artifact to confirm the workflow shape, then let Claude Code, Codex, Cursor, Aider, or another coding agent implement the approved task.",
++    "The compact packet lets Claude Code, Codex, Cursor, Aider, or another coding agent focus on the requested semantic step while Agentplane retains formal lifecycle state.",
+     "",
+     "## Go deeper",
+     "",
+     `- \`${COMMAND_SNIPPETS.core.role}\` to activate ORCHESTRATOR for planning and the task owner role before owner-scoped execution.`,
+-    `- \`${COMMAND_SNIPPETS.core.taskBrief}\` to load the task-specific context surface before manually stitching task docs, route status, Verify Steps, PR metadata, and policy modules.`,
++    "- `agentplane task run <task-id>` to let the configured managed runner consume the same supervisor state.",
++    `- \`${COMMAND_SNIPPETS.core.taskBrief}\` for a human-readable diagnostic brief.`,
+     "- `agentplane blueprint examples` to inspect how analysis, content, docs, code, and release tasks resolve to different routes.",
+     "- `agentplane help <command>` for flags, examples, and exceptional/manual flows.",
+     "- Keep installed runtime guidance self-contained; do not depend on repo-only docs files.",
+diff --git a/packages/agentplane/src/cli/command-invocations.ts b/packages/agentplane/src/cli/command-invocations.ts
+index c35bde8a9..cdeea0270 100644
+--- a/packages/agentplane/src/cli/command-invocations.ts
++++ b/packages/agentplane/src/cli/command-invocations.ts
+@@ -20,6 +20,8 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
+   ["task list", "agentplane task list"],
+   ["task active", "agentplane task active"],
+   ["task brief", "agentplane task brief <task-id>"],
++  ["task advance", "agentplane task advance <task-id> --agent-json"],
++  ["task run", "agentplane task run <task-id>"],
+   ["task begin", 'agentplane task begin "..." --tag <tag> --verify "<check>"'],
+   ["task complete", 'agentplane task complete <task-id> --result "..." --commit <git-rev>'],
+   [
+diff --git a/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts b/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts
+index 5be144fed..645db9f32 100644
+--- a/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts
+@@ -55,7 +55,10 @@ describe("runCli docs cli", () => {
+       expect(text).toContain("`E_HANDOFF` → exit `9`");
+       expect(text).toContain("## Task");
+       expect(text).toContain("### task new");
+-      expect(text).toContain("### task begin");
++      expect(text).toContain("### task advance");
++      expect(text).toContain("### task run");
++      expect(text).not.toContain("### task begin");
++      expect(text).not.toContain("### task complete");
+       expect(text).toContain("### cleanup merged");
+       expect(text).not.toContain("### cleanup\n");
+       expect(text).not.toContain("### task\n");
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+new file mode 100644
+index 000000000..cdb991c7a
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -0,0 +1,229 @@
++import { execFile } from "node:child_process";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRoot,
++  mkGitRepoRootWithBranch,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++
++import { MAX_AGENT_ACTION_PACKET_BYTES } from "../commands/task/agent-action-packet.js";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++
++installRunCliIntegrationHarness();
++
++type AgentPacket = {
++  schema_version: number;
++  task_id: string;
++  state_fingerprint: string;
++  action: { kind: string; instruction: string };
++  authority: {
++    role: string;
++    mutation: string;
++    network: string;
++    required: boolean;
++    reference: string | null;
++  };
++  context_refs: { kind: string; ref: string; digest?: string }[];
++  stop: { reason: string; resume: string };
++};
++
++async function createTask(root: string, title: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "new",
++      "--title",
++      title,
++      "--description",
++      "Exercise the compact external-agent protocol.",
++      "--priority",
++      "med",
++      "--owner",
++      "CODER",
++      "--tag",
++      "code",
++      "--verify",
++      "bun run test:critical",
++      "--root",
++      root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    return io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++}
++
++async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
++    expect(code, io.stderr).toBe(0);
++    expect(Buffer.byteLength(io.stdout.trim(), "utf8")).toBeLessThanOrEqual(
++      MAX_AGENT_ACTION_PACKET_BYTES,
++    );
++    return JSON.parse(io.stdout) as AgentPacket;
++  } finally {
++    io.restore();
++  }
++}
++
++async function readRouteFingerprint(root: string, taskId: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
++    expect(code, io.stderr).toBe(0);
++    const payload = JSON.parse(io.stdout) as {
++      workflow_step: { preconditionFingerprint: { digest: string } };
++    };
++    return payload.workflow_step.preconditionFingerprint.digest;
++  } finally {
++    io.restore();
++  }
++}
++
++async function readRoute(
++  root: string,
++  taskId: string,
++): Promise<{
++  workflow_step: {
++    kind: string;
++    preconditionFingerprint: { digest: string };
++    request?: {
++      type: string;
++      operationId: string;
++      operationDigest: string;
++      stateFingerprintDigest: string;
++      stateScopeDigest: string;
++    };
++  };
++  route_oracle: { phase: string; authoritativeCheckout: string };
++}> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
++    expect(code, io.stderr).toBe(0);
++    return JSON.parse(io.stdout) as {
++      workflow_step: {
++        kind: string;
++        preconditionFingerprint: { digest: string };
++        request?: {
++          type: string;
++          operationId: string;
++          operationDigest: string;
++          stateFingerprintDigest: string;
++          stateScopeDigest: string;
++        };
++      };
++      route_oracle: { phase: string; authoritativeCheckout: string };
++    };
++  } finally {
++    io.restore();
++  }
++}
++
++describe("runCli task advance", { timeout: 180_000 }, () => {
++  it("returns one compact approval action without changing repository state", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root, "Compact approval packet");
++    const execFileAsync = promisify(execFile);
++    const before = await execFileAsync("git", ["status", "--porcelain=v1"], { cwd: root });
++    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
++    const taskBefore = await readFile(readmePath, "utf8");
++
++    const first = await readAgentPacket(root, taskId);
++    const second = await readAgentPacket(root, taskId);
++    const after = await execFileAsync("git", ["status", "--porcelain=v1"], { cwd: root });
++    const taskAfter = await readFile(readmePath, "utf8");
++
++    expect(first).toEqual(second);
++    expect(first).toMatchObject({
++      schema_version: 1,
++      task_id: taskId,
++      action: { kind: "approval_required" },
++      stop: { reason: "authority_boundary", resume: "request_fresh_packet" },
++    });
++    expect(first.state_fingerprint).toBe(await readRouteFingerprint(root, taskId));
++    expect(first.context_refs.length).toBeGreaterThan(0);
++    expect(JSON.stringify(first)).not.toMatch(
++      /(?:\bgit\s|\bgh\s|worktree|pr open|\bverify\b|\bfinish\b|\bintegrate\b|\bcleanup\b)/iu,
++    );
++    expect(after.stdout).toBe(before.stdout);
++    expect(taskAfter).toBe(taskBefore);
++  });
++
++  it("projects the direct runner boundary as the same semantic agent episode", async () => {
++    const root = await mkGitRepoRoot();
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++    const taskId = await createTask(root, "Direct semantic packet");
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Implement the scoped change and report evidence.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    const packet = await readAgentPacket(root, taskId);
++    expect(packet.action.kind).toBe("agent_episode");
++    expect(packet.stop).toEqual({
++      reason: "semantic_boundary",
++      resume: "request_fresh_packet",
++    });
++    expect(packet.authority).toMatchObject({ role: "EXECUTOR", network: "deny" });
++    expect(packet.state_fingerprint).toBe(await readRouteFingerprint(root, taskId));
++    const taskReadme = await readFile(
++      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
++      "utf8",
++    );
++    expect(taskReadme).toContain('status: "DOING"');
++    expect(taskReadme).toContain("Start: continue direct-mode task in current checkout.");
++  });
++
++  it("fails closed when a branch control-plane path is not authoritative", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root, "Branch semantic packet");
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Implement the scoped branch change and report evidence.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    const packet = await readAgentPacket(root, taskId);
++    const route = await readRoute(root, taskId);
++    expect(packet.action.kind).toBe("framework_transition");
++    expect(packet.stop.reason).toBe("control_plane_boundary");
++    expect(packet.authority.required).toBe(false);
++    expect(packet.state_fingerprint).toBe(route.workflow_step.preconditionFingerprint.digest);
++    expect(route.workflow_step.kind).toBe("cli_operation");
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index d08010f79..893832513 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("255commands/176args/822options");
++      expect(compatibility.stdout).toContain("256commands/177args/824options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -187,13 +187,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607221852-YP9QCH",
+           "202607302125-Y61ZHN",
+           "202607221852-ECBY56",
++          "202608021231-PZGG3V",
+         ],
+         candidate: {
+-          surface_sha256: "827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064",
++          surface_sha256: "5175b965b6c82b28025d80d7b267ed6ad5024181d64a0b1325a95648bfb34f31",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
++            cli_topology: "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+@@ -208,7 +209,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           section: "package_manifests",
+           from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+           to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-          surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++          surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -547,7 +548,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+         packageManifestDigest: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-        surfaceDigest: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++        surfaceDigest: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index fb9b49cd0..1af272211 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -583,7 +583,11 @@ describe("command catalog graph", () => {
+     expect(findCommandEntry(["release"])?.surface).toBe("framework");
+     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
+     expect(findCommandEntry(["task", "normalize"])?.surface).toBe("internal");
+-    expect(findCommandEntry(["task", "run"])?.surface).toBe("internal");
++    expect(findCommandEntry(["task", "run"])?.surface).toBe("user");
++    expect(findCommandEntry(["task", "advance"])?.surface).toBe("user");
++    expect(findCommandEntry(["task", "next-action"])?.surface).toBe("advanced");
++    expect(findCommandEntry(["task", "begin"])?.surface).toBe("advanced");
++    expect(findCommandEntry(["task", "complete"])?.surface).toBe("advanced");
+     expect(findCommandEntry(["task", "run", "tool"])?.surface).toBe("internal");
+     expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
+     expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
+@@ -591,7 +595,11 @@ describe("command catalog graph", () => {
+     const normalHelpIds = getHelpCommandEntries("user").map((entry) => entry.spec.id.join(" "));
+     expect(normalHelpIds).not.toContain("release");
+     expect(normalHelpIds).not.toContain("task normalize");
+-    expect(normalHelpIds).not.toContain("task run");
++    expect(normalHelpIds).toContain("task run");
++    expect(normalHelpIds).toContain("task advance");
++    expect(normalHelpIds).not.toContain("task next-action");
++    expect(normalHelpIds).not.toContain("task begin");
++    expect(normalHelpIds).not.toContain("task complete");
+     expect(normalHelpIds).not.toContain("task run status");
+     expect(normalHelpIds).not.toContain("task run tool");
+     expect(normalHelpIds).not.toContain("context harvest tasks");
+@@ -605,7 +613,7 @@ describe("command catalog graph", () => {
+     );
+     expect(frameworkHelpIds).toContain("release");
+     expect(frameworkHelpIds).not.toContain("task normalize");
+-    expect(frameworkHelpIds).not.toContain("task run");
++    expect(frameworkHelpIds).toContain("task run");
+     expect(frameworkHelpIds).not.toContain("task run tool");
+ 
+     const allHelpIds = getHelpCommandEntries("all").map((entry) => entry.spec.id.join(" "));
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index 35c4321f1..319fa6f5e 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -65,6 +65,7 @@ import { taskShowSpec } from "../../../commands/task/show.spec.js";
+ import { taskSpec } from "../../../commands/task/task.command.js";
+ import { taskStartReadySpec } from "../../../commands/task/start-ready.command.js";
+ import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
++import { taskAdvanceSpec } from "../../../commands/task/advance.command.js";
+ import { taskStatusSpec } from "../../../commands/task/status.command.js";
+ import { taskUpdateSpec } from "../../../commands/task/update.command.js";
+ import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
+@@ -121,6 +122,7 @@ import {
+   loadTaskShowSpec,
+   loadTaskStatusSpec,
+   loadTaskNextActionSpec,
++  loadTaskAdvanceSpec,
+   loadTaskNewSpec,
+   loadTaskBeginSpec,
+   loadTaskBriefSpec,
+@@ -244,6 +246,12 @@ export const TASK_COMMANDS = [
+   declareSessionCommand(taskNextActionSpec, {
+     load: loadTaskNextActionSpec,
+     requirements: TASK_ROUTE_REQUIREMENTS,
++    surface: "advanced",
++    helpGroup: "Advanced",
++  }),
++  declareSessionCommand(taskAdvanceSpec, {
++    load: loadTaskAdvanceSpec,
++    requirements: RUNNER_EXECUTION_REQUIREMENTS,
+   }),
+   declareSessionCommand(taskNewSpec, {
+     load: loadTaskNewSpec,
+@@ -253,6 +261,8 @@ export const TASK_COMMANDS = [
+   declareSessionCommand(taskBeginSpec, {
+     load: loadTaskBeginSpec,
+     requirements: TASK_LIFECYCLE_REQUIREMENTS,
++    surface: "advanced",
++    helpGroup: "Compatibility",
+   }),
+   declareSessionCommand(taskBriefSpec, {
+     load: loadTaskBriefSpec,
+@@ -304,8 +314,6 @@ export const TASK_COMMANDS = [
+       load: loadTaskRunSpec,
+       requirements: RUNNER_EXECUTION_REQUIREMENTS,
+     },
+-    surface: "internal",
+-    helpGroup: "Maintenance",
+   }),
+   declareSessionCommand(taskRunToolSpec, {
+     load: loadTaskRunToolSpec,
+@@ -316,6 +324,8 @@ export const TASK_COMMANDS = [
+   declareSessionCommand(taskCompleteSpec, {
+     load: loadTaskCompleteSpec,
+     requirements: TASK_LIFECYCLE_REQUIREMENTS,
++    surface: "advanced",
++    helpGroup: "Compatibility",
+   }),
+   declareSessionCommand(taskDeriveSpec, {
+     load: loadTaskDeriveSpec,
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index fbc2d38f3..88ceac604 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -142,6 +142,18 @@ export const loadTaskNextActionSpec = (session: TaskRouteSession) =>
+       ...getTaskRouteContexts(session),
+     }),
+   );
++export const loadTaskAdvanceSpec = (session: RunnerExecutionSession) =>
++  import("../../../commands/task/advance.command.js").then((m) =>
++    m.makeRunTaskAdvanceHandler({
++      getContext: async (command, options) => {
++        await session.require("git.mutate", command);
++        await session.require("context.search", command);
++        return options.includeRemote
++          ? await session.require("route.remote", command)
++          : await session.require("route.local", command);
++      },
++    }),
++  );
+ export const loadTaskNewSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/new.command.js").then((m) =>
+     m.makeRunTaskNewHandler(getSessionContext(session, "task.write")),
+diff --git a/packages/agentplane/src/commands/intake/intake.command.ts b/packages/agentplane/src/commands/intake/intake.command.ts
+index ee02cb3c5..b55e35fcd 100644
+--- a/packages/agentplane/src/commands/intake/intake.command.ts
++++ b/packages/agentplane/src/commands/intake/intake.command.ts
+@@ -76,7 +76,7 @@ export const intakeSpec: CommandSpec<IntakeParsed> = {
+   ],
+   notes: [
+     "Search candidates are evidence hints, not authority.",
+-    "`--write-manifest` writes a task-local artifact only; task creation remains owned by `agentplane task new` and `agentplane task begin`.",
++    "`--write-manifest` writes a task-local artifact only; canonical task creation remains owned by `agentplane task new`.",
+   ],
+   validateRaw: (raw) => {
+     const request = Array.isArray(raw.args.request)
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+new file mode 100644
+index 000000000..be97d8ee2
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -0,0 +1,164 @@
++import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import { createCliEmitter, infoMessage } from "../../cli/output.js";
++import {
++  prepareAgentWorkOrder,
++  requirePreparedAgentWorkOrder,
++} from "../../runner/usecases/agent-work-order.js";
++import { CliError } from "../../shared/errors.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
++import {
++  assertAgentActionPacketHasNoChoreography,
++  buildAgentActionPacket,
++} from "./agent-action-packet.js";
++
++export type TaskAdvanceParsed = {
++  taskId: string;
++  agentJson: boolean;
++  remote: boolean;
++};
++
++export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
++  id: ["task", "advance"],
++  group: "Task",
++  summary: "Return one compact external-agent action from the shared task supervisor state.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "boolean",
++      name: "agent-json",
++      default: false,
++      description: "Emit the stable compact external-agent protocol.",
++    },
++    {
++      kind: "boolean",
++      name: "remote",
++      default: false,
++      description: "Include hosted state while preparing the shared supervisor decision.",
++    },
++  ],
++  examples: [
++    {
++      cmd: "agentplane task advance 202602030608-F1Q8AB --agent-json",
++      why: "Obtain one bounded action without reconstructing lifecycle state.",
++    },
++  ],
++  notes: [
++    "The command prepares the same canonical work order and route decision used by the managed task runner.",
++    "It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.",
++    "--agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.",
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    agentJson: raw.opts["agent-json"] === true,
++    remote: raw.opts.remote === true,
++  }),
++};
++
++export function makeRunTaskAdvanceHandler(deps: {
++  getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
++}) {
++  return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
++    const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
++    const decide = async (): Promise<TaskRouteDecision> =>
++      await buildTaskRouteDecision({
++        ctx: command,
++        cwd: ctx.cwd,
++        rootOverride: ctx.rootOverride ?? null,
++        includeRemote: parsed.remote,
++        taskId: parsed.taskId,
++      });
++    let current = await decide();
++    for (let operationCount = 0; operationCount < 32; operationCount += 1) {
++      const step = current.workflowStep;
++      if (step.kind !== "cli_operation") break;
++      if (step.operation.id === "runner.follow" && step.operation.params.mode === "run") break;
++      if (!current.executionPacket.safeToMutate) break;
++      const persisted = await supervisePersistedWorkflowEpisode({
++        decision: current,
++        git_root: command.resolvedProject.gitRoot,
++        task_revision: null,
++        execute: async ({ operation }) =>
++          await executeBranchWorkflowOperation({ decision: current, operation }),
++        refresh: decide,
++      });
++      const execution = persisted.execution;
++      if (
++        !execution.executable ||
++        execution.result?.status === "failed" ||
++        execution.stop_reason !== null ||
++        execution.refreshed_decision === null
++      ) {
++        throw new CliError({
++          code: "E_RUNTIME",
++          message:
++            execution.result?.detail ??
++            execution.stop_reason ??
++            "Task advance could not complete the registered deterministic transition.",
++          context: {
++            task_id: parsed.taskId,
++            step_id: step.id,
++            operation_id: step.operation.id,
++            state_fingerprint: step.preconditionFingerprint.digest,
++          },
++        });
++      }
++      current = execution.refreshed_decision;
++    }
++    if (current.workflowStep.kind === "cli_operation") {
++      const isExpectedBoundary =
++        !current.executionPacket.safeToMutate ||
++        (current.workflowStep.operation.id === "runner.follow" &&
++          current.workflowStep.operation.params.mode === "run");
++      if (!isExpectedBoundary) {
++        throw new CliError({
++          code: "E_RUNTIME",
++          message: "Task advance exceeded its bounded deterministic transition budget.",
++          context: {
++            task_id: parsed.taskId,
++            step_id: current.workflowStep.id,
++            state_fingerprint: current.workflowStep.preconditionFingerprint.digest,
++          },
++        });
++      }
++    }
++    const prepared = requirePreparedAgentWorkOrder(
++      await prepareAgentWorkOrder({
++        command_ctx: command,
++        cwd: ctx.cwd,
++        root_override: ctx.rootOverride ?? null,
++        task_id: parsed.taskId,
++        ...(parsed.remote ? { include_remote: true } : {}),
++        runner_command: "task advance",
++      }),
++    );
++    const packet = buildAgentActionPacket({
++      decision: prepared.route_decision,
++      work_order: prepared.work_order,
++    });
++    assertAgentActionPacketHasNoChoreography(packet);
++
++    const output = createCliEmitter();
++    if (parsed.agentJson) {
++      output.json(packet);
++      return 0;
++    }
++    output.report(
++      [
++        { label: "task", value: packet.task_id },
++        { label: "state_fingerprint", value: packet.state_fingerprint },
++        { label: "action", value: packet.action.kind },
++        { label: "instruction", value: packet.action.instruction },
++        { label: "role", value: packet.authority.role },
++        { label: "mutation", value: packet.authority.mutation },
++        { label: "stop", value: packet.stop.reason },
++      ],
++      { header: infoMessage(`task advance: ${parsed.taskId}`) },
++    );
++    return 0;
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.test.ts b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+new file mode 100644
+index 000000000..612182099
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+@@ -0,0 +1,206 @@
++import { describe, expect, it } from "vitest";
++
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import type { WorkflowStep } from "../shared/workflow-step.js";
++
++import {
++  assertAgentActionPacketHasNoChoreography,
++  buildAgentActionPacket,
++  MAX_AGENT_ACTION_PACKET_BYTES,
++} from "./agent-action-packet.js";
++
++const TASK_ID = "202608021231-PACKET";
++const FINGERPRINT = `sha256:${"a".repeat(64)}`;
++
++function step(value: Partial<WorkflowStep> & Pick<WorkflowStep, "kind">): WorkflowStep {
++  return {
++    schemaVersion: 1,
++    id: "route.test",
++    phase: "test",
++    authoritativeCheckout: "current_checkout",
++    summary: "test route",
++    blockers: [],
++    selectedBlocker: null,
++    compatibility: {
++      code: "test",
++      command: null,
++      summary: "test route",
++      requiresApproval: false,
++    },
++    preconditionFingerprint: { digest: FINGERPRINT } as never,
++    execution: {
++      actionKind: "stop",
++      recommendedRole: "CODER",
++      semanticMutationAllowed: false,
++      mustNot: [],
++      returnControlWhen: "after the bounded action",
++      verificationCandidate: null,
++      evidenceMissing: [],
++      needsVerificationRecord: false,
++    },
++    ...value,
++  } as WorkflowStep;
++}
++
++function decision(workflowStep: WorkflowStep): TaskRouteDecision {
++  return {
++    task: { id: TASK_ID },
++    workflowStep,
++    executionPacket: { safeToMutate: true },
++  } as TaskRouteDecision;
++}
++
++function workOrder() {
++  return {
++    role: "EXECUTOR",
++    authority: { sandbox: "workspace-write", network: "deny" },
++    required_inputs: [
++      {
++        id: "task-document",
++        kind: "task_document",
++        description: "Task document",
++        path: `.agentplane/tasks/${TASK_ID}/README.md`,
++        required: true,
++      },
++      {
++        id: "policy",
++        kind: "policy_module",
++        description: "Policy",
++        path: ".agentplane/policy/dod.code.md",
++        required: true,
++      },
++      {
++        id: "filtered",
++        kind: "source_artifact",
++        description: "Internal lifecycle artifact",
++        path: ".agentplane/worktrees/internal.json",
++        required: false,
++      },
++    ],
++  } as never;
++}
++
++function packetFor(workflowStep: WorkflowStep) {
++  return buildAgentActionPacket({ decision: decision(workflowStep), work_order: workOrder() });
++}
++
++describe("compact agent action packet", () => {
++  it.each([
++    [
++      "planned approval",
++      step({
++        kind: "approval",
++        request: { type: "plan_approval", taskId: TASK_ID, authorityRef: "plan" },
++      }),
++      "approval_required",
++      "authority_boundary",
++    ],
++    [
++      "implementation",
++      step({
++        kind: "agent_episode",
++        episode: {
++          purpose: "implementation",
++          role: "CODER",
++          taskId: TASK_ID,
++          objective: "Implement the task",
++        },
++      }),
++      "agent_episode",
++      "semantic_boundary",
++    ],
++    [
++      "evaluator rework",
++      step({
++        kind: "agent_episode",
++        episode: {
++          purpose: "implementation_rework",
++          role: "CODER",
++          taskId: TASK_ID,
++          objective: "Address findings",
++        },
++      }),
++      "agent_episode",
++      "semantic_boundary",
++    ],
++    [
++      "human input",
++      step({
++        kind: "human_input",
++        request: {
++          type: "open_question",
++          taskId: TASK_ID,
++          questionId: "q-1",
++          question: "Choose the product behavior",
++        },
++      }),
++      "human_input_required",
++      "human_boundary",
++    ],
++    [
++      "hosted wait",
++      step({
++        kind: "wait",
++        condition: { type: "integration_queue_terminal", taskId: TASK_ID, queueStatus: "queued" },
++      }),
++      "external_wait",
++      "external_boundary",
++    ],
++    [
++      "done",
++      step({ kind: "terminal", outcome: { type: "done", taskId: TASK_ID } }),
++      "terminal",
++      "terminal",
++    ],
++    [
++      "blocked or effect in doubt",
++      step({ kind: "terminal", outcome: { type: "attention_required", taskId: TASK_ID } }),
++      "terminal",
++      "terminal",
++    ],
++  ])("projects %s through one stable action", (_label, workflowStep, kind, stopReason) => {
++    const packet = packetFor(workflowStep);
++    expect(packet.action.kind).toBe(kind);
++    expect(packet.stop.reason).toBe(stopReason);
++    expect(packet.state_fingerprint).toBe(FINGERPRINT);
++    expect(packet.context_refs).toEqual([
++      { kind: "task_document", ref: `.agentplane/tasks/${TASK_ID}/README.md` },
++      { kind: "policy_module", ref: ".agentplane/policy/dod.code.md" },
++    ]);
++    expect(Buffer.byteLength(JSON.stringify(packet), "utf8")).toBeLessThanOrEqual(
++      MAX_AGENT_ACTION_PACKET_BYTES,
++    );
++    expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
++  });
++
++  it("projects the direct runner operation as the external semantic boundary", () => {
++    const packet = packetFor(
++      step({
++        kind: "cli_operation",
++        operation: {
++          id: "runner.follow",
++          type: "runner_follow",
++          params: { mode: "run", taskId: TASK_ID },
++        } as never,
++      }),
++    );
++    expect(packet.action.kind).toBe("agent_episode");
++    expect(packet.stop.reason).toBe("semantic_boundary");
++  });
++
++  it("keeps formal operations inside the control-plane boundary", () => {
++    const packet = packetFor(
++      step({
++        kind: "cli_operation",
++        operation: {
++          id: "task.start",
++          type: "task_start",
++          params: { taskId: TASK_ID },
++        } as never,
++      }),
++    );
++    expect(packet.action.kind).toBe("framework_transition");
++    expect(packet.stop.reason).toBe("control_plane_boundary");
++    expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+new file mode 100644
+index 000000000..d0115823b
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -0,0 +1,220 @@
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++
++export const MAX_AGENT_ACTION_PACKET_BYTES = 2048;
++
++type AgentActionKind =
++  | "agent_episode"
++  | "approval_required"
++  | "human_input_required"
++  | "external_wait"
++  | "framework_transition"
++  | "terminal";
++
++type AgentContextRef = {
++  kind: "task_record" | "task_document" | "policy_module" | "knowledge_ref" | "source_artifact";
++  ref: string;
++  digest?: string;
++};
++
++export type AgentActionPacket = {
++  schema_version: 1;
++  task_id: string;
++  state_fingerprint: string;
++  action: {
++    kind: AgentActionKind;
++    instruction: string;
++  };
++  authority: {
++    role: AgentWorkOrderV2["role"];
++    mutation: "read_only" | "scoped_write";
++    network: AgentWorkOrderV2["authority"]["network"];
++    required: boolean;
++    reference: string | null;
++  };
++  context_refs: AgentContextRef[];
++  stop: {
++    reason:
++      | "semantic_boundary"
++      | "authority_boundary"
++      | "human_boundary"
++      | "external_boundary"
++      | "control_plane_boundary"
++      | "terminal";
++    resume: "request_fresh_packet" | "none";
++  };
++};
++
++const CHOREOGRAPHY_PATTERN =
++  /(?:\bgit\s|\bgh\s|worktree|pr open|\bverify\b|\bfinish\b|\bintegrate\b|\bcleanup\b)/iu;
++
++function semanticInstruction(
++  purpose: Extract<
++    TaskRouteDecision["workflowStep"],
++    { kind: "agent_episode" }
++  >["episode"]["purpose"],
++): string {
++  switch (purpose) {
++    case "implementation": {
++      return "Perform the scoped implementation from the prepared context and report a semantic outcome.";
++    }
++    case "implementation_rework": {
++      return "Address the scoped evaluator findings from the prepared context and report a semantic outcome.";
++    }
++    case "quality_review": {
++      return "Assess the scoped result against the prepared acceptance evidence and report a verdict.";
++    }
++    case "task_worktree_resolution": {
++      return "Resolve the scoped task workspace conflict described by the prepared context and report the outcome.";
++    }
++    case "verification": {
++      return "Assess the scoped result against the prepared checks and report an evidence-backed outcome.";
++    }
++  }
++}
++
++function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action" | "stop"> {
++  const step = decision.workflowStep;
++  if (step.kind === "agent_episode") {
++    return {
++      action: { kind: "agent_episode", instruction: semanticInstruction(step.episode.purpose) },
++      stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
++    };
++  }
++  if (
++    step.kind === "cli_operation" &&
++    step.operation.id === "runner.follow" &&
++    step.operation.params.mode === "run"
++  ) {
++    return {
++      action: {
++        kind: "agent_episode",
++        instruction:
++          "Perform the scoped semantic task from the prepared context and report the outcome.",
++      },
++      stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
++    };
++  }
++  if (step.kind === "approval") {
++    return {
++      action: {
++        kind: "approval_required",
++        instruction:
++          step.request.type === "plan_approval"
++            ? "Obtain an explicit decision on the prepared semantic plan, then request a fresh packet."
++            : "Obtain explicit authority for the pending protected effect, then request a fresh packet.",
++      },
++      stop: { reason: "authority_boundary", resume: "request_fresh_packet" },
++    };
++  }
++  if (step.kind === "human_input") {
++    return {
++      action: {
++        kind: "human_input_required",
++        instruction:
++          "Collect the outstanding human answer recorded on the task, then request a fresh packet.",
++      },
++      stop: { reason: "human_boundary", resume: "request_fresh_packet" },
++    };
++  }
++  if (step.kind === "wait") {
++    return {
++      action: {
++        kind: "external_wait",
++        instruction:
++          "Pause until the recorded external condition changes, then request a fresh packet.",
++      },
++      stop: { reason: "external_boundary", resume: "request_fresh_packet" },
++    };
++  }
++  if (step.kind === "terminal") {
++    return {
++      action: {
++        kind: "terminal",
++        instruction:
++          step.outcome.type === "done" || step.outcome.type === "superseded"
++            ? "No further action is required."
++            : "Return control for operator attention recorded on the task.",
++      },
++      stop: { reason: "terminal", resume: "none" },
++    };
++  }
++  return {
++    action: {
++      kind: "framework_transition",
++      instruction: decision.executionPacket.safeToMutate
++        ? "Return control so Agentplane can perform the pending deterministic transition."
++        : "Return control for recovery of the recorded control-plane path, then request a fresh packet.",
++    },
++    stop: { reason: "control_plane_boundary", resume: "request_fresh_packet" },
++  };
++}
++
++function compactContextRefs(workOrder: AgentWorkOrderV2): AgentContextRef[] {
++  const refs: AgentContextRef[] = [];
++  for (const input of workOrder.required_inputs) {
++    const ref = input.path?.trim();
++    if (!ref || ref.length > 240 || CHOREOGRAPHY_PATTERN.test(ref)) continue;
++    if (
++      input.kind !== "task_record" &&
++      input.kind !== "task_document" &&
++      input.kind !== "policy_module" &&
++      input.kind !== "knowledge_ref" &&
++      input.kind !== "source_artifact"
++    ) {
++      continue;
++    }
++    refs.push({
++      kind: input.kind,
++      ref,
++      ...(input.digest ? { digest: input.digest } : {}),
++    });
++    if (refs.length === 6) break;
++  }
++  return refs;
++}
++
++function packetBytes(packet: AgentActionPacket): number {
++  return Buffer.byteLength(JSON.stringify(packet), "utf8");
++}
++
++export function buildAgentActionPacket(opts: {
++  decision: TaskRouteDecision;
++  work_order: AgentWorkOrderV2;
++}): AgentActionPacket {
++  const projected = actionFor(opts.decision);
++  const packet: AgentActionPacket = {
++    schema_version: 1,
++    task_id: opts.decision.task.id,
++    state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
++    ...projected,
++    authority: {
++      role: opts.work_order.role,
++      mutation: opts.work_order.authority.sandbox === "read-only" ? "read_only" : "scoped_write",
++      network: opts.work_order.authority.network,
++      required: projected.action.kind === "approval_required",
++      reference:
++        opts.decision.workflowStep.kind === "approval"
++          ? opts.decision.workflowStep.request.authorityRef
++          : null,
++    },
++    context_refs: compactContextRefs(opts.work_order),
++  };
++
++  while (packet.context_refs.length > 0 && packetBytes(packet) > MAX_AGENT_ACTION_PACKET_BYTES) {
++    packet.context_refs.pop();
++  }
++  if (packetBytes(packet) > MAX_AGENT_ACTION_PACKET_BYTES) {
++    throw new Error(
++      `Agent action packet exceeds ${MAX_AGENT_ACTION_PACKET_BYTES} bytes after context compaction.`,
++    );
++  }
++  return packet;
++}
++
++export function assertAgentActionPacketHasNoChoreography(packet: AgentActionPacket): void {
++  if (CHOREOGRAPHY_PATTERN.test(JSON.stringify(packet))) {
++    throw new Error("Agent action packet leaked formal lifecycle choreography.");
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/task.command.ts b/packages/agentplane/src/commands/task/task.command.ts
+index e470f6fbb..1fbf7e855 100644
+--- a/packages/agentplane/src/commands/task/task.command.ts
++++ b/packages/agentplane/src/commands/task/task.command.ts
+@@ -14,20 +14,25 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
+   synopsis: ["agentplane task <subcommand> [args] [options]"],
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
+   notes: [
+-    "Default guided path: task begin -> task verify-show -> task complete. The low-level primitives remain available for explicit audit gates.",
++    "Default external-agent path: task new -> task advance --agent-json. The packet exposes one bounded action while Agentplane retains lifecycle authority.",
++    "Default managed-agent path: create and approve the task, then use task run to supervise the typed lifecycle.",
+     "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
+-    "Before manually chaining low-level diagnostics, use `agentplane task status <task-id> --route` or `agentplane task next-action <task-id>` for a route decision.",
++    "Use `agentplane task next-action <task-id> --explain` only for full route diagnostics.",
+     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
+     "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
+   ],
+   examples: [
+     {
+-      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:fast"',
+-      why: "Create, plan, approve, and start or route a normal task.",
++      cmd: 'agentplane task new --title "Fix parser edge case" --description "Handle the rejected input" --owner CODER --tag code',
++      why: "Create a task without synthesizing or approving semantic work.",
+     },
+     {
+-      cmd: 'agentplane task complete <task-id> --result "Parser edge case fixed" --commit <hash>',
+-      why: "Record OK verification and finish when the active workflow route allows it.",
++      cmd: "agentplane task advance <task-id> --agent-json",
++      why: "Return one compact external-agent action from the shared supervisor state.",
++    },
++    {
++      cmd: "agentplane task run <task-id>",
++      why: "Let the managed runner resolve semantic boundaries using the same supervisor state.",
+     },
+     {
+       cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',
+@@ -67,7 +72,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
+     },
+     {
+       cmd: "agentplane task next-action <task-id>",
+-      why: "Print the single safest next command for the task route.",
++      why: "Inspect the full diagnostic route projection.",
+     },
+     {
+       cmd: "agentplane task brief <task-id>",
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 116d7a3d8..3fba395c2 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -24,7 +24,8 @@
+     "202607300150-MGCHE6",
+     "202607221852-YP9QCH",
+     "202607302125-Y61ZHN",
+-    "202607221852-ECBY56"
++    "202607221852-ECBY56",
++    "202608021231-PZGG3V"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -33,9 +34,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "827471f4d3c26e7267b21ffc4474dac8b34327c6d615a1c586cd3acd3db47064",
++    "surface_sha256": "5175b965b6c82b28025d80d7b267ed6ad5024181d64a0b1325a95648bfb34f31",
+     "section_digests": {
+-      "cli_topology": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
++      "cli_topology": "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -52,7 +53,7 @@
+     "section": "package_manifests",
+     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+     "to_sha256": "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-    "surface_sha256": "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++    "surface_sha256": "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -394,25 +395,17 @@
+         "202607281655-YMPY8Y",
+         "202607300150-MGCHE6",
+         "202607302125-Y61ZHN",
+-        "202607221852-ECBY56"
++        "202607221852-ECBY56",
++        "202608021231-PZGG3V"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "dbfac97db6dcc216e2ed1f6a22319e48a6a8cea4a981c96bb84056c39d57f6ff",
+-      "classification": "additive",
+-      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, an exact-SHA recovery route for diverged task PR heads, a backward-compatible semantic-supersession release outcome, and one hidden signed run-scoped phase-tool command; no command or option is removed.",
++      "to_sha256": "dad0f9cf777526e4dc228f7f960c3e7da74a793d12bc9dea275e50d82f0015e8",
++      "classification": "additive_with_visibility_simplification",
++      "summary": "Adds the compact external task advance packet, promotes the managed task runner, and demotes legacy manual lifecycle choreography to compatibility help without removing commands or options.",
+       "evidence": {
+-        "command_count": {
+-          "from": 243,
+-          "to": 255
+-        },
+-        "positional_count": {
+-          "from": 165,
+-          "to": 176
+-        },
+-        "option_count": {
+-          "from": 767,
+-          "to": 822
+-        },
++        "command_count": { "from": 243, "to": 256 },
++        "positional_count": { "from": 165, "to": 177 },
++        "option_count": { "from": 767, "to": 824 },
+         "added_commands": [
+           "context supervise-task",
+           "evaluator apply",
+@@ -420,6 +413,7 @@
+           "evaluator prepare",
+           "integrate queue adopt-legacy-protected-conflict",
+           "pr conflict-rework",
++          "task advance",
+           "task authority grant",
+           "task run reconcile",
+           "task run resolve-effect",
+@@ -480,16 +474,8 @@
+               }
+             ],
+             "options": [
+-              {
+-                "name": "work-order",
+-                "kind": "string",
+-                "valueHint": "<path>"
+-              },
+-              {
+-                "name": "result",
+-                "kind": "string",
+-                "valueHint": "<path>"
+-              },
++              { "name": "work-order", "kind": "string", "valueHint": "<path>" },
++              { "name": "result", "kind": "string", "valueHint": "<path>" },
+               {
+                 "name": "json",
+                 "kind": "boolean",
+@@ -620,6 +606,33 @@
+               }
+             ]
+           },
++          {
++            "id": ["task", "advance"],
++            "visibility": "user",
++            "group": "Task",
++            "args": [
++              {
++                "name": "task-id",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<task-id>"
++              }
++            ],
++            "options": [
++              {
++                "name": "agent-json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "remote",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
+           {
+             "id": ["task", "authority", "grant"],
+             "visibility": "advanced",
+@@ -858,7 +871,124 @@
+           }
+         ],
+         "removed_command_descriptors": [],
+-        "mutated_command_shells": [],
++        "mutated_command_shells": [
++          {
++            "identity": "task begin",
++            "before": {
++              "id": ["task", "begin"],
++              "visibility": "user",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "title",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<title>"
++                }
++              ]
++            },
++            "after": {
++              "id": ["task", "begin"],
++              "visibility": "advanced",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "title",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<title>"
++                }
++              ]
++            }
++          },
++          {
++            "identity": "task complete",
++            "before": {
++              "id": ["task", "complete"],
++              "visibility": "user",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "task-id",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<task-id>"
++                }
++              ]
++            },
++            "after": {
++              "id": ["task", "complete"],
++              "visibility": "advanced",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "task-id",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<task-id>"
++                }
++              ]
++            }
++          },
++          {
++            "identity": "task next-action",
++            "before": {
++              "id": ["task", "next-action"],
++              "visibility": "user",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "task-id",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<task-id>"
++                }
++              ]
++            },
++            "after": {
++              "id": ["task", "next-action"],
++              "visibility": "advanced",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "task-id",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<task-id>"
++                }
++              ]
++            }
++          },
++          {
++            "identity": "task run",
++            "before": {
++              "id": ["task", "run"],
++              "visibility": "internal",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "task-id",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<task-id>"
++                }
++              ]
++            },
++            "after": {
++              "id": ["task", "run"],
++              "visibility": "user",
++              "group": "Task",
++              "args": [
++                {
++                  "name": "task-id",
++                  "required": true,
++                  "variadic": false,
++                  "valueHint": "<task-id>"
++                }
++              ]
++            }
++          }
++        ],
+         "added_options": [
+           {
+             "command": "backend sync",
+@@ -1034,6 +1164,20 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "task advance",
++            "name": "agent-json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "task advance",
++            "name": "remote",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "task authority grant",
+             "name": "by",
+@@ -1289,6 +1433,11 @@
+             "command": "pr conflict-rework",
+             "source_task": "202607260007-DQM6AW"
+           },
++          {
++            "kind": "command",
++            "command": "task advance",
++            "source_task": "202608021231-PZGG3V"
++          },
+           {
+             "kind": "command",
+             "command": "task authority grant",
+@@ -1475,6 +1624,18 @@
+             "name": "bootstrap-projection",
+             "source_task": "202607221848-0ZAB1F"
+           },
++          {
++            "kind": "option",
++            "command": "task advance",
++            "name": "agent-json",
++            "source_task": "202608021231-PZGG3V"
++          },
++          {
++            "kind": "option",
++            "command": "task advance",
++            "name": "remote",
++            "source_task": "202608021231-PZGG3V"
++          },
+           {
+             "kind": "option",
+             "command": "task authority grant",
+@@ -1767,10 +1928,7 @@
+       "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package while updating shipped EVALUATOR guidance; no package source file is removed.",
+       "evidence": {
+         "package": "@agentplaneorg/core",
+-        "source_file_count": {
+-          "from": 17,
+-          "to": 20
+-        },
++        "source_file_count": { "from": 17, "to": 20 },
+         "added_source_files": [
+           "schemas/agent-work-order-v2.schema.json",
+           "schemas/knowledge-ref.schema.json",
+diff --git a/scripts/checks/check-agent-onboarding-scenario.mjs b/scripts/checks/check-agent-onboarding-scenario.mjs
+index 55d47e057..051438e8f 100644
+--- a/scripts/checks/check-agent-onboarding-scenario.mjs
++++ b/scripts/checks/check-agent-onboarding-scenario.mjs
+@@ -63,10 +63,12 @@ const onboardingScenarios = [
+     checks: [
+       ["bootstrap", "## 2. Agent context"],
+       ["bootstrap", "agentplane task brief <task-id>"],
++      ["bootstrap", "agentplane task advance <task-id> --agent-json"],
+       ["bootstrap", "## 3. Direct happy path"],
++      ["bootstrap", "agentplane task run <task-id>"],
+       [
+         "bootstrap",
+-        "Treat `task verify-show` as the verification contract before `verify` and `finish`",
++        "Use the manual start/check/close commands only for diagnostics, recovery, or an explicitly external compatibility flow.",
+       ],
+       ["bootstrap", "## 4. Verification and incident reuse"],
+       ["bootstrap", "agentplane incidents advise <task-id>"],
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index be9cdf9e6..db4e07908 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -333,6 +333,7 @@ function validateReviewedCandidate({
+     "202607300150-MGCHE6",
+     "202607302125-Y61ZHN",
+     "202607221852-ECBY56",
++    "202608021231-PZGG3V",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -358,6 +359,7 @@ function validateReviewedCandidate({
+     "202607221852-YP9QCH",
+     "202607302125-Y61ZHN",
+     "202607221852-ECBY56",
++    "202608021231-PZGG3V",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -414,7 +416,7 @@ function validateReviewedCandidate({
+         section: "package_manifests",
+         from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+         to_sha256: "8f245783809b6ccba79e247dfe74aea1123bb034affc481df6c1177e24879500",
+-        surface_sha256: "f0cdbcf55b9ea1cd40811350326fc3b742452fab7d003355ee69cd16afdaac56",
++        surface_sha256: "0e0808e67bb6c2c764783b557e379268ba624ffc2f7958a8a5d0364a7258ee50",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -1225,6 +1227,16 @@ function validateReviewedCandidate({
+         { name: "json", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
++    {
++      id: ["task", "advance"],
++      visibility: "user",
++      group: "Task",
++      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [
++        { name: "agent-json", kind: "boolean", valueHint: null, default: false },
++        { name: "remote", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
+     {
+       id: ["task", "authority", "grant"],
+       visibility: "advanced",
+@@ -1450,6 +1462,20 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "task advance",
++      name: "agent-json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "task advance",
++      name: "remote",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "task authority grant",
+       name: "by",
+@@ -1556,6 +1582,11 @@ function validateReviewedCandidate({
+       command: "pr conflict-rework",
+       source_task: "202607260007-DQM6AW",
+     },
++    {
++      kind: "command",
++      command: "task advance",
++      source_task: "202608021231-PZGG3V",
++    },
+     {
+       kind: "command",
+       command: "task authority grant",
+@@ -1729,6 +1760,18 @@ function validateReviewedCandidate({
+       name: "bootstrap-projection",
+       source_task: "202607221848-0ZAB1F",
+     },
++    {
++      kind: "option",
++      command: "task advance",
++      name: "agent-json",
++      source_task: "202608021231-PZGG3V",
++    },
++    {
++      kind: "option",
++      command: "task advance",
++      name: "remote",
++      source_task: "202608021231-PZGG3V",
++    },
+     {
+       kind: "option",
+       command: "task authority grant",
+@@ -1809,7 +1852,30 @@ function validateReviewedCandidate({
+       source_task: "202607221846-4VB97J",
+     },
+   ];
+-  assert(cliDelta?.classification === "additive", "CLI candidate delta must be additive");
++  const expectedVisibilityMutations = [
++    ["task begin", "user", "advanced", "title", "<title>"],
++    ["task complete", "user", "advanced", "task-id", "<task-id>"],
++    ["task next-action", "user", "advanced", "task-id", "<task-id>"],
++    ["task run", "internal", "user", "task-id", "<task-id>"],
++  ].map(([identity, beforeVisibility, afterVisibility, argName, valueHint]) => ({
++    identity,
++    before: {
++      id: identity.split(" "),
++      visibility: beforeVisibility,
++      group: "Task",
++      args: [{ name: argName, required: true, variadic: false, valueHint }],
++    },
++    after: {
++      id: identity.split(" "),
++      visibility: afterVisibility,
++      group: "Task",
++      args: [{ name: argName, required: true, variadic: false, valueHint }],
++    },
++  }));
++  assert(
++    cliDelta?.classification === "additive_with_visibility_simplification",
++    "CLI candidate delta must preserve compatibility while simplifying visibility",
++  );
+   assert(
+     hashJson(cliDelta.evidence) ===
+       hashJson({
+@@ -1846,6 +1912,7 @@ function validateReviewedCandidate({
+         "evaluator prepare",
+         "integrate queue adopt-legacy-protected-conflict",
+         "pr conflict-rework",
++        "task advance",
+         "task authority grant",
+         "task run reconcile",
+         "task run resolve-effect",
+@@ -1874,8 +1941,8 @@ function validateReviewedCandidate({
+     "candidate removes an existing CLI command descriptor",
+   );
+   assert(
+-    cliTopologyDelta.mutated_command_shells.length === 0,
+-    "candidate mutates an existing CLI command shell",
++    hashJson(cliTopologyDelta.mutated_command_shells) === hashJson(expectedVisibilityMutations),
++    "candidate command-shell mutation is not the approved visibility simplification",
+   );
+   assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
+   const supersededQueueReleaseStatusMutation = {
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index dce94eb57..e33012940 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -387,8 +387,10 @@ const V07_SUPERVISOR_FILES = [
+   "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
+   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
++  "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
++  "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+   "packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+ ];
+ 
