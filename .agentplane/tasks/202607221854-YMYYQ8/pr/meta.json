@@ -3,7 +3,7 @@
   "branch": "task/202607221854-YMYYQ8/publish-the-agentplane-0-7-architecture-and-migr",
   "created_at": "2026-08-01T23:22:30.880Z",
   "diffstat_sha256": "sha256:f642cc291ba36cefdbe7ad8f089cd6c4ce0fdde9428124d8cff8636ed3c5f272",
-  "last_verified_at": "2026-08-02T02:33:08.425Z",
+  "last_verified_at": "2026-08-02T02:36:43.747Z",
   "last_verified_diffstat_sha256": "sha256:f642cc291ba36cefdbe7ad8f089cd6c4ce0fdde9428124d8cff8636ed3c5f272",
   "pr_number": 4731,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4731",

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221854-YMYYQ8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T02:34:23.770Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7",
+  "blueprint_digest": "3220ad81f8d25482b359ffb23b97448d1ec41bb3027d02d51b005f3485dabe86",
+  "findings": [
+    "The recorded verification does not show execution of the mandatory docs:site:generate:check acceptance check.",
+    "The docs/policy minimum check agentplane doctor is not present in the recorded verification evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221854-YMYYQ8/README.md",
+    ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.docs.md"
+  ],
+  "missing_tests": [
+    "Run and record bun run docs:site:generate:check against the evaluated SHA.",
+    "Run and record agentplane doctor against the evaluated repository state."
+  ],
+  "hidden_assumptions": [
+    "bun run docs:site:check is assumed to cover docs:site:generate:check, but the frozen evidence does not establish that equivalence.",
+    "Other successful documentation and migration checks are assumed to substitute for the docs DoD doctor check."
+  ],
+  "residual_risks": [
+    "Re-run the two omitted mandatory checks against evaluated SHA 2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7, record their exact outcomes, and submit refreshed frozen evidence for evaluation."
+  ]
+}

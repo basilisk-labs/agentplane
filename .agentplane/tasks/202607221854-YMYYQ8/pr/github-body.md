@@ -18,22 +18,14 @@ Document the final CLI-versus-agent responsibility boundary, WorkOrder/SemanticR
 - State: ok
 - Note:
 
-```bash
-bun run docs:cli:check && bun run schemas:check && bun run docs:ia:check && node \
-  .agentplane/policy/check-routing.mjs && bun run typescript:toolchain:check. Result: pass. \
-  Evidence: generated CLI and schemas fresh, IA/sidebar aligned, routing OK, TypeScript 7.0.2 \
-  typecheck and 6.0.3 compiler-API split confirmed. Scope: generated contracts and documentation \
-  structure. Command: bunx vitest run [9 SGR/work-order/receipt/supervisor test files]. Result: \
-  pass. Evidence: 9 files, 90 tests. Scope: documented direct, context, branch_pr, WorkOrder, \
-  SemanticResult, and ExecutionReceipt behavior. Command: bun run docs:site:check && bun run \
-  docs:social:check. Result: pass. Evidence: production Docusaurus build, navigation check, design \
-  check, and 221/221 social images. Scope: published site surfaces. Command: bun run \
-  package:install-smoke. Result: pass. Evidence: installed migration matrix 8/8 and local tarball \
-  smoke 202608020230-5EPM2Z. Scope: fresh, 0.6.24, 0.6.26, direct, branch_pr, workflow/task \
-  migration and rollback. Command: bun run format:check && git diff --check && git diff --cached \
-  --check. Result: pass. Evidence: Prettier and whitespace clean. Scope: final docs diff. Real \
-  workflow proof: merge main into YMYYQ8 committed as de63e018d without bypass after the base-sync \
-  hook fix.
+```text
+Verified documentation and migration package after evaluator rework: standalone bun run
+docs:site:generate:check passed with generated reference and llms-full both fresh; agentplane doctor
+completed OK with 0 errors. Previously recorded gates remain green: docs:cli:check, schemas:check,
+docs:ia:check, policy routing, typescript:toolchain:check, 90 focused
+contract/supervisor/work-order/receipt tests, docs:site:check including production build/design,
+docs:social:check 221/221, package:install-smoke migration matrix 8 scenarios plus local tarball
+smoke, format:check and git diff checks.
 ```
 - Canonical workflow state lives in the task README.
 

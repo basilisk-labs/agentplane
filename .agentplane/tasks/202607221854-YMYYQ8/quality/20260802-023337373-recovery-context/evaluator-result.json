@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The recorded verification does not show execution of the mandatory docs:site:generate:check acceptance check.",
+      "broken_invariant": "Every declared verification step must be executed and recorded before verification can be accepted as complete.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221854-YMYYQ8/README.md",
+          "sha256": "sha256:ece662d5fff3642b0ed4296d2815bea94c2556d803ec301bf94dcae462fcef27",
+          "section": "verify and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:83394896d4a74305ee767132322c7827fe8c1abf467d61e6b71b38c18744205c",
+          "section": "declared_checks and verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "The docs/policy minimum check agentplane doctor is not present in the recorded verification evidence.",
+      "broken_invariant": "The docs DoD requires agentplane doctor as a minimum check for docs-only changes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.docs.md",
+          "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607221854-YMYYQ8/quality/20260802-023337373-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:83394896d4a74305ee767132322c7827fe8c1abf467d61e6b71b38c18744205c",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and record bun run docs:site:generate:check against the evaluated SHA.",
+    "Run and record agentplane doctor against the evaluated repository state."
+  ],
+  "hidden_assumptions": [
+    "bun run docs:site:check is assumed to cover docs:site:generate:check, but the frozen evidence does not establish that equivalence.",
+    "Other successful documentation and migration checks are assumed to substitute for the docs DoD doctor check."
+  ],
+  "recovery_context": "Re-run the two omitted mandatory checks against evaluated SHA 2d8cb2ce0a3672a54530278d4b1d50ad3241bbe7, record their exact outcomes, and submit refreshed frozen evidence for evaluation."
+}
