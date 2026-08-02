@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020016-TDXFVT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T00:42:22.698Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "6d9968b6730e14c7bbbb7c106565e8dea25d3a24",
+  "blueprint_digest": "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c",
+  "findings": [
+    "The approved plan requires hosted integration, but the frozen verification record contains only local checks and does not demonstrate a successful hosted integration run."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020016-TDXFVT/README.md",
+    ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004126077-38d6187f16df3303.json"
+  ],
+  "missing_tests": [
+    "A successful hosted integration run against evaluated SHA 6d9968b6730e14c7bbbb7c106565e8dea25d3a24.",
+    "A merge-specific negative regression proving lifecycle-only or managed-artifact-only changes do not become a new semantic target when inspected against the second parent."
+  ],
+  "hidden_assumptions": [
+    "Passing the hosted static-analysis phases locally is assumed to be equivalent to the approved hosted integration gate.",
+    "The second parent of every relevant merge is assumed to be the synchronized base lineage; the implementation does not explicitly establish that relationship."
+  ],
+  "residual_risks": [
+    "Run and record the required hosted integration for the evaluated SHA. Add or provide merge-specific negative coverage for lifecycle-only and managed-artifact-only second-parent comparisons, then freeze a new evaluator packet."
+  ]
+}

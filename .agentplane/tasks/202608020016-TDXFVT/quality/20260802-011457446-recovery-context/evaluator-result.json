@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "No contract-breaking divergence found: branch_pr target resolution recognizes configured-base sync merges, preserves the semantic task diff and SHA-bound verification record, and excludes managed-artifact-only, lifecycle-only, and non-base merge cases.",
+      "broken_invariant": "None; the frozen implementation and verification evidence satisfy the merge-aware recovery-context invariants in scope.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:49180d2817474f32cb218b7d62fb3793c6ce438b359c9c6427ceb49dcb2c18c8"
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802011410132-1089fd5c4c9a8c97.json",
+          "sha256": "sha256:b6b32b317e57012c6968603191fb1470c75fbba8a32152e038570f77b2d383bb"
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-011457446-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:01855c3b9c8a0285fd03db5b8c2a9b0bb4f347b98bead0d9dae77fe65b10ed61"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

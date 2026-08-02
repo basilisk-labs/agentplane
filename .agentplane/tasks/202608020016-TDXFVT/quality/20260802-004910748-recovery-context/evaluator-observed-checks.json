@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T00:48:56.843Z",
+    "updated_by": "TESTER",
+    "note": "Merge-aware evaluator target rework passes the complete local static gate and positive/negative regression suite."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004856843-75a19cd55dcd95b5.json",
+      "sha256": "sha256:0a177ba50ce2df790bb91a6824bb541ee7fd820cc1a839648afe48c68ee1f07e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -1,0 +1,1 @@
+✅ TDXFVT task: Preserve evaluator work units across base-sync merges [202608020016-TDXFVT]

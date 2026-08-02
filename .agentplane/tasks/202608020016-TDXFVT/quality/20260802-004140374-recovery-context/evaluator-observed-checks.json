@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T00:41:26.077Z",
+    "updated_by": "TESTER",
+    "note": "Hosted static-analysis rework is resolved and the full local verify-static surface passes."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004126077-38d6187f16df3303.json",
+      "sha256": "sha256:8aec7e3eabf68e48bdec1cdf8705e8e5ba4566df41761032256fd5b837b6eaac"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
