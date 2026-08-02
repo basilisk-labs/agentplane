@@ -4,7 +4,7 @@ title: "Allow qualification packets to ignore root lifecycle drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -51,8 +51,8 @@ quality_review:
   findings:
     - "Dependency closure trusts the entire current root task, so post-review removal of a declared dependency can silently remove that dependency from SHA-bound qualification."
 commit:
-  hash: "bdfe5b8e384079bd8f70de6bd65c1eeaca3c018f"
-  message: "🐛 CCE1A2 qualification: permit root lifecycle drift"
+  hash: "a728b1134fe36ed3d9625654b85108ace23af33e"
+  message: "🐛 CCE1A2 qualification: pin reviewed root dependencies"
 comments:
   -
     author: "CODER"
@@ -60,6 +60,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: qualification packet dependency traversal now uses the current root lifecycle task while preserving exact reviewed-SHA loading for every dependency and evidence artifact. Regression coverage reproduces post-review lifecycle drift. Checks passed: focused qualification suite 6/6, typecheck, policy routing, doctor, test:critical, and ci:contract."
+  -
+    author: "CODER"
+    body: "Implemented rework: dependency IDs now come from the reviewed root document, and current root drift must match the shared lifecycle-only comparator. Added negative coverage for dependency declaration changes and arbitrary root body changes. Checks passed: 24 focused tests, typecheck, test:critical, and ci:contract."
 events:
   -
     type: "status"
@@ -81,8 +84,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the qualification root lifecycle fix on implementation bdfe5b8e3840; focused and full repository gates pass."
+  -
+    type: "status"
+    at: "2026-08-02T04:59:35.227Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented rework: dependency IDs now come from the reviewed root document, and current root drift must match the shared lifecycle-only comparator. Added negative coverage for dependency declaration changes and arbitrary root body changes. Checks passed: 24 focused tests, typecheck, test:critical, and ci:contract."
 doc_version: 3
-doc_updated_at: "2026-08-02T04:48:25.001Z"
+doc_updated_at: "2026-08-02T04:59:35.227Z"
 doc_updated_by: "CODER"
 description: "Fix qualification packet generation so lifecycle-only changes to the qualification root task after the reviewed implementation SHA do not trigger false dependency artifact drift, while dependency task documents and evidence remain strictly SHA-bound. Add a regression test for start-ready lifecycle drift and preserve all existing tamper rejection behavior."
 sections:
