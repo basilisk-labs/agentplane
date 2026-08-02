@@ -1,0 +1,221 @@
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification.test.ts b/packages/agentplane/src/commands/shared/route-decision-verification.test.ts
+new file mode 100644
+index 000000000..b8e3aaaac
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/route-decision-verification.test.ts
+@@ -0,0 +1,136 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { PrFlowStatusReport } from "../pr/flow-status.js";
++import type { TaskResumeContext } from "../task/handoff.shared.js";
++import type { CommandContext } from "./task-backend.js";
++
++const mocks = vi.hoisted(() => ({
++  hasAcceptedVerificationRecord: vi.fn(),
++  resolveQualityReviewTargetSha: vi.fn(),
++}));
++
++vi.mock("./task-verification-records.js", () => ({
++  hasAcceptedVerificationRecord: mocks.hasAcceptedVerificationRecord,
++}));
++vi.mock("./quality-review-target.js", () => ({
++  resolveQualityReviewTargetSha: mocks.resolveQualityReviewTargetSha,
++}));
++
++import { hasAcceptedVerificationForCurrentImplementation } from "./route-decision-verification.js";
++
++const reviewedSha = "a".repeat(40);
++const mergedPrHead = "b".repeat(40);
++const rewrittenBaseHead = "c".repeat(40);
++
++const task = {
++  id: "T-1",
++  title: "Merged task",
++  description: "Merged verification fixture",
++  status: "DONE",
++  priority: "high",
++  owner: "CODER",
++  depends_on: [],
++  tags: ["code"],
++  verify: ["bun test"],
++  verification: { state: "ok" as const },
++  quality_review: {
++    state: "pass" as const,
++    updated_at: "2026-08-02T00:00:00.000Z",
++    updated_by: "EVALUATOR",
++    provenance: "evaluator_supplied" as const,
++    note: "Reviewed pre-merge implementation",
++    evaluated_sha: reviewedSha,
++    blueprint_digest: null,
++    evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
++    findings: ["The implementation passed review."],
++  },
++} satisfies TaskData;
++
++const ctx = {
++  resolvedProject: { gitRoot: "/repo" },
++  config: { paths: { workflow_dir: ".agentplane/tasks" } },
++} as CommandContext;
++
++const resume = {
++  task_id: "T-1",
++  task_status: "DONE",
++  branch: "main",
++  base_branch: "main",
++  head_sha: rewrittenBaseHead,
++  workspace_root: "/repo",
++  pr_branch: "task/T-1/merged-task",
++  latest_handoff: null,
++  runner: {},
++} as TaskResumeContext;
++
++function mergedFlow(): PrFlowStatusReport {
++  return {
++    task: { id: "T-1", status: "DONE", verification: "ok" },
++    branch: { name: "task/T-1/merged-task", headSha: null, metaHeadSha: mergedPrHead },
++    pr: {
++      provider: "github",
++      state: "MERGED",
++      source: "metadata",
++      prNumber: 1,
++      prUrl: "https://github.com/example/repo/pull/1",
++      base: "main",
++      headSha: mergedPrHead,
++      mergeCommit: rewrittenBaseHead,
++    },
++    closeTail: { state: "recorded_on_base", base: "main" },
++    hostedChecks: { checked: false, reason: "remote lookup skipped" },
++    reviewThreads: { checked: false, reason: "remote lookup skipped" },
++    queue: { present: false },
++    handoff: { present: false },
++    nextAction: "task is complete",
++  };
++}
++
++beforeEach(() => {
++  vi.resetAllMocks();
++  mocks.hasAcceptedVerificationRecord.mockResolvedValue(true);
++});
++
++describe("route verification target selection", () => {
++  it("uses the reviewed pre-rebase target after hosted close rewrites the base history", async () => {
++    await expect(
++      hasAcceptedVerificationForCurrentImplementation({
++        ctx,
++        task,
++        resume,
++        prFlow: mergedFlow(),
++        batchOwnership: { role: "none" },
++      }),
++    ).resolves.toBe(true);
++
++    expect(mocks.resolveQualityReviewTargetSha).not.toHaveBeenCalled();
++    expect(mocks.hasAcceptedVerificationRecord).toHaveBeenCalledWith(
++      expect.objectContaining({
++        evaluatedSha: reviewedSha,
++        snapshotRef: mergedPrHead,
++      }),
++    );
++  });
++
++  it("keeps the live task-branch head authoritative before merge", async () => {
++    const branchHead = "d".repeat(40);
++    const flow = mergedFlow();
++    flow.pr.state = "OPEN";
++    flow.branch.headSha = branchHead;
++    flow.closeTail = { state: "not_applicable", reason: "implementation PR is open" };
++    mocks.resolveQualityReviewTargetSha.mockResolvedValue(branchHead);
++
++    await hasAcceptedVerificationForCurrentImplementation({
++      ctx,
++      task: { ...task, status: "DOING" },
++      resume: { ...resume, task_status: "DOING", head_sha: branchHead },
++      prFlow: flow,
++      batchOwnership: { role: "none" },
++    });
++
++    expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
++      expect.objectContaining({ headSha: branchHead }),
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification.ts b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+index e0a84d525..6fdbc8ca4 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-verification.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+@@ -8,6 +8,20 @@ import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+ import type { CommandContext } from "./task-backend.js";
+ import { hasAcceptedVerificationRecord } from "./task-verification-records.js";
+ 
++function hostedCloseVerificationTarget(
++  task: TaskData,
++  prFlow: PrFlowStatusReport | null,
++): string | null {
++  const evaluatedSha = task.quality_review?.evaluated_sha?.trim() ?? "";
++  return task.status === "DONE" &&
++    task.quality_review?.state === "pass" &&
++    prFlow?.pr.state === "MERGED" &&
++    prFlow.closeTail.state === "recorded_on_base" &&
++    /^[0-9a-f]{40,64}$/u.test(evaluatedSha)
++    ? evaluatedSha
++    : null;
++}
++
+ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+   ctx: CommandContext;
+   task: TaskData;
+@@ -17,24 +31,28 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+ }): Promise<boolean> {
+   const taskIds =
+     opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
++  const finalizedEvaluatedSha = hostedCloseVerificationTarget(opts.task, opts.prFlow);
+   const headSha =
+-    (opts.prFlow?.branch.headSha ??
++    (finalizedEvaluatedSha ??
++      opts.prFlow?.branch.headSha ??
+       opts.resume.head_sha ??
+       (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash.trim() : "")) ||
+     null;
+   if (!headSha) return false;
+-  const evaluatedSha = await resolveQualityReviewTargetSha({
+-    gitRoot: opts.ctx.resolvedProject.gitRoot,
+-    workflowDir: opts.ctx.config.paths.workflow_dir,
+-    taskId: opts.task.id,
+-    taskIds,
+-    lifecycleTaskIds: taskIds,
+-    headSha,
+-    previousEvaluatedSha:
+-      opts.task.quality_review?.evaluated_sha ??
+-      (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash : null),
+-    workflowMode: "branch_pr",
+-  }).catch(() => null);
++  const evaluatedSha =
++    finalizedEvaluatedSha ??
++    (await resolveQualityReviewTargetSha({
++      gitRoot: opts.ctx.resolvedProject.gitRoot,
++      workflowDir: opts.ctx.config.paths.workflow_dir,
++      taskId: opts.task.id,
++      taskIds,
++      lifecycleTaskIds: taskIds,
++      headSha,
++      previousEvaluatedSha:
++        opts.task.quality_review?.evaluated_sha ??
++        (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash : null),
++      workflowMode: "branch_pr",
++    }).catch(() => null));
+   if (!evaluatedSha) return false;
+   const taskRoot = path.join(
+     opts.ctx.resolvedProject.gitRoot,
+@@ -51,6 +69,10 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
+       taskIds,
+       workflowMode: "branch_pr",
+     },
+-    snapshotRef: opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? null,
++    snapshotRef:
++      opts.prFlow?.branch.headSha ??
++      (opts.prFlow?.pr.state === "MERGED" ? opts.prFlow.pr.headSha : null) ??
++      opts.resume.head_sha ??
++      null,
+   }).catch(() => false);
+ }

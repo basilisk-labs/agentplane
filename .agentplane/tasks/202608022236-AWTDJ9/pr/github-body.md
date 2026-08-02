@@ -15,8 +15,13 @@ Fix the branch_pr route oracle so a DONE task remains terminal after GitHub reba
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified at bfb6abc89: hosted rebase-merge evidence remains current and active-branch freshness
+remains fail-closed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +32,9 @@ Fix the branch_pr route oracle so a DONE task remains terminal after GitHub reba
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../shared/route-decision-verification.test.ts     | 136 +++++++++++++++++++++
+ .../commands/shared/route-decision-verification.ts |  50 +++++---
+ 2 files changed, 172 insertions(+), 14 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "PASS: the terminal exception is narrowly gated by DONE status, passed quality review, MERGED provider state, recorded_on_base close tail, and a canonical 40-64 character hexadecimal evaluated SHA.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "PASS: active or open tasks still resolve the live task-branch head, so subsequent semantic commits continue to invalidate stale verification records.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "PASS: the behavior is proven by focused unit coverage, 14 route files / 60 tests, 79 critical tests, all static and size gates, and a live readback against merged PR 4748.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

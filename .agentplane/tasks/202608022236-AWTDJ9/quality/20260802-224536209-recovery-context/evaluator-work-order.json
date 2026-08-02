@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608022236-AWTDJ9-76b5323dc635c3a956c1aa82",
+  "prepared_at": "2026-08-02T22:45:36.209Z",
+  "task": {
+    "id": "202608022236-AWTDJ9",
+    "revision": 7,
+    "objective": "Preserve verification freshness after rebase merge\n\nFix the branch_pr route oracle so a DONE task remains terminal after GitHub rebase-merge and hosted close, while still invalidating verification for new semantic commits on an active task branch.",
+    "acceptance_criteria": [
+      "- In scope: Fix the branch_pr route oracle so a DONE task remains terminal after GitHub rebase-merge and hosted close, while still invalidating verification for new semantic commits on an active task branch.\n- Out of scope: unrelated refactors not required for \"Preserve verification freshness after rebase merge\".",
+      "1. Add a regression fixture for a DONE branch_pr task after GitHub rebase-merge and hosted-close sync, where the base HEAD differs from the verified pre-merge task head. 2. Change verification target selection so an available task-branch head remains authoritative for active work, while a missing merged branch falls back to the recorded task implementation/evaluator target before the base checkout head. 3. Prove stale semantic commits still invalidate prior evidence and rerun route, static, hotspot, policy, and critical suites.",
+      "1. Run the focused route-verification suites, including a post-rebase-merge/hosted-close fixture. Expected: the merged DONE task has no verification_required blocker, while a later semantic task-branch commit still produces verification_required.\n2. Run typecheck, lint:core, knip:check, hotspots:check, and the policy routing check. Expected: all gates pass without baseline growth.\n3. Run test:critical. Expected: all critical CLI chunks pass."
+    ]
+  },
+  "evaluated_sha": "bfb6abc89187231c2497ef737c67e98a45e997b2",
+  "diff_base_sha": "05423cade6f22a75b10a70cdbf7809d0c501377b",
+  "blueprint_digest": "c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608022236-AWTDJ9/README.md",
+      "sha256": "sha256:5a64b82eac9064a4b1bccd4dc0c32715578ab5e21fa3a7c1dc27ffb85c04d644",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:23069e683247487b9ba609cc0b3a923a5f9760f651596e67dfb843e9c983904e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:cfb1e510bb156ddeec2ba97726a70ae66b99e4165b0453457788281bd2f76993",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608022236-AWTDJ9/verification/20260802224456087-ce8ce96bac3cbf49.json",
+      "sha256": "sha256:f36943ac6dc0a622f62c14f4024e2825d01926476d56d2d6df5b943f454ede3c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:3723c6a9787a2f137103067d87a7cda0d028922b381a5829aea33005a1934d3f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

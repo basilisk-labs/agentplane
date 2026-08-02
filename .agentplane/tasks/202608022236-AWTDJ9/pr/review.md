@@ -12,8 +12,8 @@ Created: 2026-08-02T22:37:28.488Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified at bfb6abc89: hosted rebase-merge evidence remains current and active-branch freshness remains fail-closed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,9 @@ Created: 2026-08-02T22:37:28.488Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../shared/route-decision-verification.test.ts     | 136 +++++++++++++++++++++
+ .../commands/shared/route-decision-verification.ts |  50 +++++---
+ 2 files changed, 172 insertions(+), 14 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022236-AWTDJ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T22:45:36.394Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "bfb6abc89187231c2497ef737c67e98a45e997b2",
+  "blueprint_digest": "c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5",
+  "findings": [
+    "PASS: the terminal exception is narrowly gated by DONE status, passed quality review, MERGED provider state, recorded_on_base close tail, and a canonical 40-64 character hexadecimal evaluated SHA.",
+    "PASS: active or open tasks still resolve the live task-branch head, so subsequent semantic commits continue to invalidate stale verification records.",
+    "PASS: the behavior is proven by focused unit coverage, 14 route files / 60 tests, 79 critical tests, all static and size gates, and a live readback against merged PR 4748."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-224536209-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
