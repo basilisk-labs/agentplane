@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020016-TDXFVT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T00:54:20.283Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "18f931a3bb4bdf599bf6e5ab589460f10510f4e1",
+  "blueprint_digest": "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c",
+  "findings": [
+    "No contract-breaking issue was found; merge-aware target selection preserves semantic task work while rejecting managed-artifact-only and lifecycle-only merge deltas."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020016-TDXFVT/verification/20260802005336501-6914f4bfb8b34e78.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Base-sync merges relevant to this workflow are ordinary two-parent merges, with the task branch as first parent and the synchronized base as second parent."
+  ],
+  "residual_risks": []
+}

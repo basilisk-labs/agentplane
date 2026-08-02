@@ -16,12 +16,7 @@ Fix branch_pr evaluator packet preparation so a merge of current main into a tas
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Merge-aware evaluator target rework passes the complete local static gate and positive/negative
-regression suite.
-```
+- Note: Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -32,10 +27,10 @@ regression suite.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-runtime-evidence.test.ts   | 93 ++++++++++++++++++++++
- .../commands/shared/quality-review-target.test.ts  | 73 +++++++++++++++++
- .../src/commands/shared/quality-review-target.ts   | 62 +++++++++++++++
- 3 files changed, 228 insertions(+)
+ .../evaluator/evaluator-runtime-evidence.test.ts   |  93 +++++++++++++++
+ .../commands/shared/quality-review-target.test.ts  | 125 +++++++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   |  62 ++++++++++
+ 3 files changed, 280 insertions(+)
 ```
 
 </details>
