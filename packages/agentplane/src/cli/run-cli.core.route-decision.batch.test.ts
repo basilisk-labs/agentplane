@@ -545,7 +545,7 @@ describe("runCli route decision batch ownership", () => {
     }
   });
 
-  it("keeps plan approval ahead of included batch delegation in the route oracle", async () => {
+  it("keeps semantic planning ahead of included batch delegation in the route oracle", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -565,9 +565,9 @@ describe("runCli route decision batch ownership", () => {
         next_action: { code: string; command: string };
         route_oracle: { phase: string; authoritativeCheckout: string };
       };
-      expect(parsed.next_action.code).toBe("approve_plan");
+      expect(parsed.next_action.code).toBe("semantic_planning_required");
       expect(parsed.route_oracle).toMatchObject({
-        phase: "needs_plan_approval",
+        phase: "semantic_planning_required",
         authoritativeCheckout: "base_checkout",
       });
     } finally {

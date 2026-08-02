@@ -1,34 +1,10 @@
-import { createHash } from "node:crypto";
-import { readdir, readFile, realpath, stat } from "node:fs/promises";
+import { readFile, realpath, stat } from "node:fs/promises";
 import path from "node:path";
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
-import type { TaskData } from "../../backends/task-backend.js";
-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
-import { parseVerificationCheckDetails } from "../shared/verification-details.js";
+export { verificationRecordPaths } from "../shared/task-verification-records.js";
 
 const RUNTIME_EVIDENCE_PREFIX = ".agentplane/cache/";
 const MAX_RUNTIME_EVIDENCE_FILES = 16;
-
-type VerificationRecordTargetContext = {
-  gitRoot: string;
-  workflowDir: string;
-  taskIds?: readonly string[];
-  workflowMode?: "direct" | "branch_pr";
-};
-
-function sha256(value: string): `sha256:${string}` {
-  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
-}
-
-function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
-  const verifySteps = task.sections?.["Verify Steps"];
-  return typeof verifySteps === "string" && verifySteps.trim() ? sha256(verifySteps.trim()) : null;
-}
-
-function hasConcreteCheckDetails(details: unknown): boolean {
-  return parseVerificationCheckDetails(details) !== null;
-}
 
 function detailsEvidencePaths(details: unknown): string[] {
   if (typeof details !== "string" || !details.trim()) return [];
@@ -69,100 +45,6 @@ async function verifiedRuntimeEvidencePath(opts: {
     return candidate;
   } catch {
     return null;
-  }
-}
-
-function hasValidRecordDigest(record: Record<string, unknown>): boolean {
-  const { digest, ...payload } = record;
-  return (
-    typeof digest === "string" &&
-    /^sha256:[a-f0-9]{64}$/u.test(digest) &&
-    digest === sha256(JSON.stringify(canonicalizeJson(payload)))
-  );
-}
-
-async function matchesCurrentVerification(
-  raw: unknown,
-  task: TaskData,
-  evaluatedSha: string | null,
-  targetContext?: VerificationRecordTargetContext,
-): Promise<boolean> {
-  const verification = task.verification;
-  const scopeDigest = verifyStepsDigest(task);
-  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
-    return false;
-  }
-  const record = raw as Record<string, unknown>;
-  const implementationSha =
-    typeof record.implementation_sha === "string" ? record.implementation_sha : null;
-  const matchesEvaluatedTarget =
-    implementationSha === evaluatedSha ||
-    (implementationSha !== null &&
-      targetContext !== undefined &&
-      (await resolveQualityReviewTargetSha({
-        gitRoot: targetContext.gitRoot,
-        workflowDir: targetContext.workflowDir,
-        taskId: task.id,
-        taskIds: targetContext.taskIds,
-        headSha: implementationSha,
-        previousEvaluatedSha: evaluatedSha,
-        workflowMode: targetContext.workflowMode,
-      })) === evaluatedSha);
-  return (
-    record.schema_version === 1 &&
-    record.kind === "task_verification_record" &&
-    record.task_id === task.id &&
-    record.recorded_at === verification.updated_at &&
-    record.result === verification.state &&
-    record.verifier === verification.updated_by &&
-    record.note === verification.note &&
-    matchesEvaluatedTarget &&
-    record.scope_digest === scopeDigest &&
-    hasValidRecordDigest(record) &&
-    hasConcreteCheckDetails(record.details)
-  );
-}
-
-async function isAcceptedVerificationRecord(
-  filePath: string,
-  task: TaskData,
-  evaluatedSha: string | null,
-  targetContext?: VerificationRecordTargetContext,
-): Promise<boolean> {
-  try {
-    return await matchesCurrentVerification(
-      JSON.parse(await readFile(filePath, "utf8")),
-      task,
-      evaluatedSha,
-      targetContext,
-    );
-  } catch {
-    return false;
-  }
-}
-
-export async function verificationRecordPaths(
-  taskRoot: string,
-  task: TaskData,
-  evaluatedSha: string | null,
-  targetContext?: VerificationRecordTargetContext,
-): Promise<string[]> {
-  try {
-    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
-    const candidates = entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
-      .map((entry) => path.join(taskRoot, "verification", entry.name))
-      .toSorted();
-    const accepted = await Promise.all(
-      candidates.map(async (filePath) => ({
-        filePath,
-        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha, targetContext),
-      })),
-    );
-    return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
-    throw error;
   }
 }
 

@@ -4,7 +4,7 @@ title: "Require fresh verification evidence in the route oracle"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -38,7 +38,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-02T21:29:21.323Z"
+doc_updated_at: "2026-08-02T21:54:36.331Z"
 doc_updated_by: "CODER"
 description: "Prevent task next-action from accepting verification evidence that predates the current implementation HEAD. Route changed commits back through verification before evaluator review or integration."
 sections:
@@ -51,11 +51,9 @@ sections:
     - Out of scope: unrelated refactors not required for "Require fresh verification evidence in the route oracle".
   Plan: "1. Inspect the route decision path and the canonical verification-record helpers to define current-HEAD freshness without duplicating state logic. 2. Make task next-action require an accepted verification record bound to the current implementation HEAD before quality review or integration. 3. Add regression tests for a fresh record and for a new commit invalidating prior verification. 4. Run focused routing tests, typecheck, static analysis, and critical tests; record evaluator evidence and integrate through the protected GitHub PR route."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Require fresh verification evidence in the route oracle". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Require fresh verification evidence in the route oracle". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run the route-decision and verification-record focused suites. Expected: a current signed verification record is accepted from the task worktree or committed task-branch snapshot, while a later semantic commit yields verification_required.
+    2. Run typecheck, lint:core, knip:check, and the policy routing check. Expected: all static, dependency, and policy gates pass without increasing accepted baselines.
+    3. Run test:critical. Expected: the critical CLI trust-boundary and efficiency suite passes without regressions.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -86,11 +84,9 @@ Prevent task next-action from accepting verification evidence that predates the 
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Require fresh verification evidence in the route oracle". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Require fresh verification evidence in the route oracle". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run the route-decision and verification-record focused suites. Expected: a current signed verification record is accepted from the task worktree or committed task-branch snapshot, while a later semantic commit yields verification_required.
+2. Run typecheck, lint:core, knip:check, and the policy routing check. Expected: all static, dependency, and policy gates pass without increasing accepted baselines.
+3. Run test:critical. Expected: the critical CLI trust-boundary and efficiency suite passes without regressions.
 
 ## Verification
 
