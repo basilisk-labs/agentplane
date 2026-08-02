@@ -19,10 +19,10 @@ Run the executable fan-in gate for 0.7.0-rc.2, prove every included leaf is DONE
 - Note:
 
 ```text
-0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety,
-architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but
-unpublished; continue the remaining waves before stable 0.7.0. Evidence:
-.agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json.
+RC.2 evidence is reverified on implementation SHA 5e0db39a3. Dependency, structural,
+token-accounting, outcome, safety, architecture, and release gates pass. Two raw latency thresholds
+remain failed but are frozen as diagnostic-only with zero blocking failures; no latency improvement
+is claimed and publication remains do_not_publish.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -18,7 +18,7 @@
           },
           "pr_number": 4596,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+          "task_artifact_commit": "5e0db39a380a949befad756a18e7f1926a14bbd3",
           "task_document": {
             "path": ".agentplane/tasks/202607221838-SD1W93/README.md",
             "sha256": "sha256:36bf87f7617f2b2424327e5d2fd3159c7abcb67bb55a67747d02243f4e20f6ad"
@@ -49,7 +49,7 @@
           },
           "pr_number": 4629,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+          "task_artifact_commit": "5e0db39a380a949befad756a18e7f1926a14bbd3",
           "task_document": {
             "path": ".agentplane/tasks/202607260532-9M7RNH/README.md",
             "sha256": "sha256:1a0f6de3ddfc3e74556018fe4f745b9e6a039b09b6529b6bd5099654c44465ff"
@@ -80,7 +80,7 @@
           },
           "pr_number": 4670,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+          "task_artifact_commit": "5e0db39a380a949befad756a18e7f1926a14bbd3",
           "task_document": {
             "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
             "sha256": "sha256:e236c7c7d3d978146b8df072bc99fa6fb9ed7b5c4ce1e0743490ac7089bb7504"
@@ -111,7 +111,7 @@
           },
           "pr_number": 4698,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+          "task_artifact_commit": "5e0db39a380a949befad756a18e7f1926a14bbd3",
           "task_document": {
             "path": ".agentplane/tasks/202607302331-3C8V0X/README.md",
             "sha256": "sha256:1021eca825e140730e5c9243c0ae8e6c2b484ca9ab2bf5901e2786ffcf627ba2"
@@ -142,7 +142,7 @@
           },
           "pr_number": 4709,
           "pre_merge_closure": "closed_before_merge",
-          "task_artifact_commit": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+          "task_artifact_commit": "5e0db39a380a949befad756a18e7f1926a14bbd3",
           "task_document": {
             "path": ".agentplane/tasks/202607311706-QB60J5/README.md",
             "sha256": "sha256:87ae61ff38af29fbe3bbeba4213c86e67d7dfcfdb75361fd628acd94def5c883"
@@ -178,10 +178,10 @@
       "202607311706-QB60J5"
     ]
   },
-  "digest": "sha256:0015f723c36c1d5d7e59280669093d1f640f3203779c5b043fb4ded65f45384d",
-  "implementation_sha": "fb473719873ac29f6bdf54a31736370b14a8fff4",
+  "digest": "sha256:27addc51e6ae89cfc9ba69c5501b4f611982335c35e493a4a575d4473c570571",
+  "implementation_sha": "5e0db39a380a949befad756a18e7f1926a14bbd3",
   "kind": "task_qualification_packet",
-  "prepared_at": "2026-08-02T05:39:38.630Z",
+  "prepared_at": "2026-08-02T06:13:42.955Z",
   "rf04": {
     "candidate_measurement": {
       "baseline_runtime_profile": {
@@ -453,6 +453,23 @@
       "scenario_count": 10,
       "sha256": "sha256:eb1b2b5102dcfedc4b70c9e93928392a6902c9111d28ce539f51ecdf94704f86",
       "structural_projection_sha256": "sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351"
+    },
+    "qualification_gate": {
+      "blocking_failure_ids": [],
+      "diagnostic_failure_ids": [
+        "latency.harness_setup_latency_ms.mean_ms",
+        "latency.time_to_verified_result_ms.mean_ms"
+      ],
+      "policy": {
+        "timing": "diagnostic_only_never_gated"
+      },
+      "qualification_decision": "do_not_publish",
+      "raw_candidate_verdict": "fail",
+      "raw_failure_ids": [
+        "latency.harness_setup_latency_ms.mean_ms",
+        "latency.time_to_verified_result_ms.mean_ms"
+      ],
+      "verdict": "pass"
     },
     "replay_comparison": {
       "baseline": {
@@ -2622,59 +2639,59 @@
     "checks": [
       {
         "command": "dependency closure audit for 202607221908-83Y4AF",
-        "evidence": "70/70 transitive dependencies are DONE with verification ok, quality pass, and main lineage; 5/5 leaves are ancestors; 11/11 direct dependency PRs are MERGED; rc2-qualification.v1.json",
+        "evidence": "70/70 transitive dependencies are DONE with verification ok, quality pass, and main lineage; 5/5 leaves are ancestors; 11/11 direct dependency pull requests are MERGED; rc2-qualification.v1.json.",
         "result": "pass",
-        "scope": "complete 0.7.0-rc.2 dependency fan-in and hosted-close lineage"
+        "scope": "complete 0.7.0-rc.2 dependency fan-in and hosted-close lineage."
       },
       {
-        "command": "bun test packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
-        "evidence": "6/6 tests and 40 assertions passed; lifecycle-only root drift is accepted while dependency and arbitrary body drift remain rejected",
+        "command": "bun test packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts",
+        "evidence": "14/14 tests and 78 assertions passed on implementation SHA 5e0db39a3; qualification-gate classification and packet-selected verification evidence are covered.",
         "result": "pass",
-        "scope": "deterministic qualification-packet regression and flake classification"
+        "scope": "corrected qualification packet, evidence lineage, and frozen evaluator inputs."
+      },
+      {
+        "command": "bun run typecheck",
+        "evidence": "native TypeScript 7 typecheck completed without errors; the TypeScript 6 compiler API compatibility lane remains unchanged.",
+        "result": "pass",
+        "scope": "TypeScript 7 migration posture and compiler compatibility."
       },
       {
         "command": "bun run task-state:check",
-        "evidence": "tasks=3205 release_closure=72",
+        "evidence": "the full prepublish run reported tasks=3205 and release_closure=72; the post-fix blocker passed the complete ci:contract gate.",
         "result": "pass",
-        "scope": "canonical task registry and release closure"
+        "scope": "canonical task registry and 0.7 release closure."
       },
       {
-        "command": "bun run guards:check",
-        "evidence": "shared guards OK; trust-boundary reviewed violations=0",
+        "command": "bun run guards:check and bun run arch:check",
+        "evidence": "the reviewed full prepublish run reported shared guards OK, trust-boundary reviewed violations=0, known architecture violations=0, and no dependency-cruiser violations; the post-fix blocker passed the complete ci:contract gate.",
         "result": "pass",
-        "scope": "shared guards and trust-boundary safety"
-      },
-      {
-        "command": "bun run arch:check",
-        "evidence": "dependency-cruiser known violations=0 and no dependency violations found",
-        "result": "pass",
-        "scope": "package and command architecture boundaries"
+        "scope": "shared guards, trust boundaries, package boundaries, and command architecture."
       },
       {
         "command": "bun run bench:agent-efficiency:check and bun run bench:agent-efficiency:replay:check",
-        "evidence": "10 RF-04 scenarios and 10 measured cost metrics; replay 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells",
+        "evidence": "structural and token-accounting gates passed for 10 scenarios; replay coverage is 50 runs, 70/70 outcomes, 27/27 provider token cells, and 170/170 scalar cells. The raw candidate retains two failed latency thresholds, both classified by the frozen policy as diagnostic-only; blocking_failure_ids is empty and no latency improvement is claimed.",
         "result": "pass",
-        "scope": "frozen structural, token-accounting, verified-success, rework, and safety metrics"
+        "scope": "RF-04 structural, token-accounting, verified-success, rework, safety, and diagnostic latency evidence."
       },
       {
-        "command": "bun run release:prepublish",
-        "evidence": "release-ci-base 99/99 chunks; installed migration matrix 8 scenarios; workflow coverage 50/50; significant coverage 204/204; release-critical 16/16",
+        "command": "bun run release:prepublish and bun run test:release:critical",
+        "evidence": "the reviewed RC.2 product SHA passed release-ci-base 99/99 chunks, installed migration matrix 8 scenarios, workflow coverage 50/50, significant coverage 204/204, and release-critical 16/16; after the focused packet fix, release-critical again passed 16/16 and the blocker passed the complete ci:contract gate.",
         "result": "pass",
-        "scope": "complete local release contract for reviewed SHA fb4737198"
+        "scope": "complete local release contract plus post-fix regression coverage."
       },
       {
         "command": "0.7.0-rc.2 publication decision review",
-        "evidence": "qualified_unpublished; no external integration consumer requires rc.2; evidence-only task forbids unplanned version or registry mutation while remaining 0.7 waves are open",
+        "evidence": "qualification_decision remains do_not_publish because raw diagnostic latency thresholds failed and no external integration consumer requires this prerelease. RC.2 remains an evidence milestone, not a latency claim or substitute for stable 0.7.0 closure.",
         "result": "pass",
-        "scope": "optional prerelease decision and stable 0.7.0 release boundary"
+        "scope": "explicit optional prerelease decision and stable 0.7.0 boundary."
       }
     ],
-    "implementation_sha": "fb473719873ac29f6bdf54a31736370b14a8fff4",
-    "note": "0.7.0-rc.2 qualification passed on reviewed product SHA fb4737198. Dependency fan-in, safety, architecture, RF-04 metrics, and the full release gate are green. Decision: qualified but unpublished; continue the remaining waves before stable 0.7.0. Evidence: .agentplane/tasks/202607221908-83Y4AF/evidence/rc2-qualification.v1.json.",
-    "record_digest": "sha256:85f18be7df5d6f08da5a74cdb80376f36ddb0f72e9dffae885be78f4530b534c",
-    "record_path": ".agentplane/tasks/202607221908-83Y4AF/verification/20260802053938630-85f18be7df5d6f08.json",
-    "record_sha256": "sha256:dad1cd8ffe9bcbce5194749f6da5225996e808e78a27eb1de2995340e607fc70",
-    "recorded_at": "2026-08-02T05:39:38.630Z",
+    "implementation_sha": "5e0db39a380a949befad756a18e7f1926a14bbd3",
+    "note": "RC.2 evidence is reverified on implementation SHA 5e0db39a3. Dependency, structural, token-accounting, outcome, safety, architecture, and release gates pass. Two raw latency thresholds remain failed but are frozen as diagnostic-only with zero blocking failures; no latency improvement is claimed and publication remains do_not_publish.",
+    "record_digest": "sha256:3c53e8981e8fd5f20dfad030cbc2f3b088131002505706d385c59f0bfb7fe7b1",
+    "record_path": ".agentplane/tasks/202607221908-83Y4AF/verification/20260802061342955-3c53e8981e8fd5f2.json",
+    "record_sha256": "sha256:1ff85fae40767876236b364ba852b9567c8ff3902d3205678e9b0d07f0b8dc08",
+    "recorded_at": "2026-08-02T06:13:42.955Z",
     "result": "ok",
     "verifier": "TESTER"
   }

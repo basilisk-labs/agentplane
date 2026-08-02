@@ -1,0 +1,15 @@
+{
+  "details": "Evaluator preparation stopped with E_VALIDATION because non-task code changed after packet implementation_sha fb4737198. This is a verification lineage failure, not a semantic release verdict.",
+  "digest": "sha256:c79504d422c21395407b3311cf0a3b781068c2058be68b4308aabace79a02268",
+  "implementation_sha": "5e0db39a380a949befad756a18e7f1926a14bbd3",
+  "kind": "task_verification_record",
+  "note": "Qualification packet is stale after the merged packet-policy implementation; regenerate verification and packet on 5e0db39a3 before quality review.",
+  "recorded_at": "2026-08-02T06:11:21.168Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-rc.2 is an ancestor and has merged verification/evaluator/hosted-close evidence.\n2. Run `bun run release:prepublish`, `bun run task-state:check`, `bun run guards:check`, `bun run arch:check`. Expected: all milestone checks pass on one reviewed SHA.\n3. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements.\n4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.",
+  "scope_digest": "sha256:2384710ecc9f75e27c368f5ff4db8cd9450219ccd9d72e160f3a93c28d9bf52b",
+  "task_id": "202607221908-83Y4AF",
+  "verification_command": "agentplane verify 202607221908-83Y4AF --rework --by EVALUATOR",
+  "verifier": "EVALUATOR"
+}
