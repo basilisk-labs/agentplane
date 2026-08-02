@@ -8,7 +8,7 @@ const outputPath = path.join(packageRoot, "dist", "command-help.json");
 const catalog = await import(`${pathToFileURL(catalogPath).href}?generated=${Date.now()}`);
 
 if (!Array.isArray(catalog.COMMANDS)) {
-  throw new Error(`command catalog did not export COMMANDS: ${catalogPath}`);
+  throw new TypeError(`command catalog did not export COMMANDS: ${catalogPath}`);
 }
 
 const entries = catalog.COMMANDS.map((entry) => ({

@@ -31,7 +31,7 @@ import {
 
 const output = createCliEmitter();
 
-export type EvaluatorCommandDeps = {
+type EvaluatorCommandDeps = {
   getCommandContext: (
     ctx: CommandCtx,
     command: string,
@@ -64,23 +64,7 @@ const DEFAULT_EVALUATOR_REVIEW_DEPS: EvaluatorReviewCommandDeps = {
   ...DEFAULT_EVALUATOR_ARTIFACT_DEPS,
 };
 
-export {
-  evaluatorApplySpec,
-  evaluatorListSpec,
-  evaluatorPrepareSpec,
-  evaluatorRunSpec,
-  evaluatorShowSpec,
-  evaluatorSpec,
-} from "./evaluator.spec.js";
-export { evaluatorExecuteSpec } from "./evaluator.spec.js";
-export {
-  listEvaluators,
-  runEvaluatorList,
-  runEvaluatorShow,
-  showEvaluator,
-  type EvaluatorListResult,
-  type EvaluatorShowResult,
-} from "./evaluator-catalog.command.js";
+export { runEvaluatorList, runEvaluatorShow } from "./evaluator-catalog.command.js";
 
 export async function runEvaluatorGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return throwGroupCommandUsage({
@@ -180,7 +164,7 @@ function projectPath(gitRoot: string, value: string, label: string): string {
   return absolute;
 }
 
-export type EvaluatorPrepareResult = {
+type EvaluatorPrepareResult = {
   work_order_id: string;
   work_order: string;
   prompt: string;
@@ -188,7 +172,7 @@ export type EvaluatorPrepareResult = {
   sandbox: string;
 };
 
-export async function prepareEvaluatorCommand(
+async function prepareEvaluatorCommand(
   ctx: CommandCtx,
   parsed: EvaluatorPrepareParsed,
   deps: EvaluatorArtifactCommandDeps,
@@ -224,9 +208,7 @@ export function makeRunEvaluatorPrepareHandler(
   };
 }
 
-export const runEvaluatorPrepare = makeRunEvaluatorPrepareHandler(DEFAULT_EVALUATOR_ARTIFACT_DEPS);
-
-export type EvaluatorApplyResult = {
+type EvaluatorApplyResult = {
   work_order_id: string;
   evaluator: string;
   verdict: unknown;
@@ -235,7 +217,7 @@ export type EvaluatorApplyResult = {
   recorded: true;
 };
 
-export async function applyEvaluatorCommand(
+async function applyEvaluatorCommand(
   ctx: CommandCtx,
   parsed: EvaluatorApplyParsed,
   deps: EvaluatorCommandDeps,
@@ -288,8 +270,6 @@ export function makeRunEvaluatorApplyHandler(
     return 0;
   };
 }
-
-export const runEvaluatorApply = makeRunEvaluatorApplyHandler(DEFAULT_EVALUATOR_COMMAND_DEPS);
 
 export type EvaluatorExecuteResult = {
   work_order_id: string;
@@ -395,8 +375,6 @@ export function makeRunEvaluatorExecuteHandler(
   };
 }
 
-export const runEvaluatorExecute = makeRunEvaluatorExecuteHandler(DEFAULT_EVALUATOR_REVIEW_DEPS);
-
 function relativeToProject(gitRoot: string, absolutePath: string): string {
   return path.relative(gitRoot, absolutePath).replaceAll("\\", "/");
 }
@@ -483,7 +461,7 @@ export async function runEvaluatorPrepareOnlyCommand(
   };
 }
 
-export async function runEvaluatorCommand(
+async function runEvaluatorCommand(
   ctx: CommandCtx,
   parsed: EvaluatorRunParsed,
   deps: EvaluatorReviewCommandDeps,

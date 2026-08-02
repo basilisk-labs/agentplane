@@ -20,13 +20,6 @@ export function matchCommandEntries(
   return match ? { entry: match.value, consumed: match.consumed } : null;
 }
 
-export function findCommandEntryIn(
-  entries: readonly CommandEntry[],
-  id: CommandId,
-): CommandEntry | null {
-  return buildCatalogGraph(entries).lookup(id);
-}
-
 export function getDirectChildCommandEntriesFrom(
   entries: readonly CommandEntry[],
   parentId: CommandId = [],

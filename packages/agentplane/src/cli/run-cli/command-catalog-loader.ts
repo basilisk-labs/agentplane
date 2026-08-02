@@ -103,9 +103,8 @@ function loadSerializedHelpEntries(): readonly CommandEntry[] | null {
       }
       return {
         spec: entry.spec,
-        load: async () => {
-          throw new Error("Serialized help catalog entries cannot execute commands");
-        },
+        load: () =>
+          Promise.reject(new Error("Serialized help catalog entries cannot execute commands")),
         requirements: [],
         preparationNodes: [],
         dispatch: { project: false, loadedConfig: false, taskContext: false },
@@ -137,11 +136,11 @@ async function loadCatalogGroup(group: CatalogGroup): Promise<readonly CommandEn
     cached = embedded?.[group]
       ? Promise.resolve(embedded[group])
       : import(catalogPaths[group]).then((module: CatalogModule) => {
-          const entries = module[catalogExports[group]];
+          const entries: unknown = module[catalogExports[group]];
           if (!Array.isArray(entries)) {
             throw new Error(`Invalid AgentPlane command catalog module: ${group}`);
           }
-          return entries;
+          return entries as readonly CommandEntry[];
         });
     catalogCache.set(group, cached);
   }

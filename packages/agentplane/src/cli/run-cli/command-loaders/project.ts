@@ -284,7 +284,8 @@ type ContextCommandExport = Extract<keyof typeof ContextCommandModule, `runConte
 async function loadContextNoContextHandler(
   exportName: ContextCommandExport,
 ): Promise<CommandHandler<unknown>> {
-  const module = (await loadDeferredRuntime()).contextRuntime;
+  const runtime = await loadDeferredRuntime();
+  const module = runtime.contextRuntime;
   return module[exportName] as CommandHandler<unknown>;
 }
 

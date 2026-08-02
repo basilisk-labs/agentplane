@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { evaluatorRunSpec } from "../../commands/evaluator/evaluator.spec.js";
 import { hermesSuperviseSpec } from "../../commands/hermes/hermes-specs.js";
-import { taskRunSpec } from "../../commands/task/run.command.js";
+import { taskRunSpec } from "../../commands/task/run.spec.js";
 import { createEvaluatorArtifactPreparationPort } from "../../commands/evaluator/evaluator-artifact-port.js";
 import {
   addTask,

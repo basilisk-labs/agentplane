@@ -17,8 +17,6 @@ import {
 } from "./agent-action-packet.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 
-export { taskAdvanceSpec, type TaskAdvanceParsed } from "./advance.spec.js";
-
 export function makeRunTaskAdvanceHandler(deps: {
   getContext: (command: string, options: { includeRemote: boolean }) => Promise<CommandContext>;
 }) {
