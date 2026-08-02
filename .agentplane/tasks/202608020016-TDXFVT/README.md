@@ -2,10 +2,10 @@
 id: "202608020016-TDXFVT"
 title: "Preserve evaluator work units across base-sync merges"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -21,35 +21,34 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-02T00:48:56.843Z"
+  updated_at: "2026-08-02T00:53:36.501Z"
   updated_by: "TESTER"
-  note: "Merge-aware evaluator target rework passes the complete local static gate and positive/negative regression suite."
+  note: "Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T00:49:50.540Z"
+  updated_at: "2026-08-02T00:54:20.283Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "eeca863bd45a0c627a13dd1f7709dcbde578a836"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "18f931a3bb4bdf599bf6e5ab589460f10510f4e1"
   blueprint_digest: "d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c"
   evidence_refs:
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608020016-TDXFVT/README.md"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/verification/20260802004856843-75a19cd55dcd95b5.json"
-    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-004910748-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/verification/20260802005336501-6914f4bfb8b34e78.json"
+    - ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-blueprint.json"
   findings:
-    - "The regression suite covers managed-artifact-only base-sync merges but does not cover the separately required lifecycle-only base-sync merge boundary."
+    - "No contract-breaking issue was found; merge-aware target selection preserves semantic task work while rejecting managed-artifact-only and lifecycle-only merge deltas."
 commit:
-  hash: "eeca863bd45a0c627a13dd1f7709dcbde578a836"
-  message: "🧪 TDXFVT evaluator: cover managed merge deltas"
+  hash: "18f931a3bb4bdf599bf6e5ab589460f10510f4e1"
+  message: "🧪 TDXFVT evaluator: cover lifecycle merge deltas"
 comments:
   -
     author: "CODER"
@@ -66,6 +65,12 @@ comments:
   -
     author: "CODER"
     body: "Rework: add the managed-artifact-only merge negative regression and make hosted integration explicitly post-evaluator in the approved plan."
+  -
+    author: "CODER"
+    body: "Rework: add the lifecycle-only base-sync regression required by the evaluator."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -120,8 +125,28 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Merge-aware evaluator target rework passes the complete local static gate and positive/negative regression suite."
+  -
+    type: "status"
+    at: "2026-08-02T00:53:33.843Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: add the lifecycle-only base-sync regression required by the evaluator."
+  -
+    type: "verify"
+    at: "2026-08-02T00:53:36.501Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate."
+  -
+    type: "status"
+    at: "2026-08-02T00:55:07.086Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T00:48:57.808Z"
+doc_updated_at: "2026-08-02T00:55:07.087Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr evaluator packet preparation so a merge of current main into a task branch preserves the committed task work unit, actual diff, and matching verification records instead of freezing an empty packet. Add focused regression coverage for merge-aware target selection."
 sections:
@@ -294,6 +319,71 @@ sections:
     Result: pass
     Evidence: 2 test files and 23 tests passed, including semantic base-sync selection and managed-artifact-only rejection.
     Scope: merge-aware evaluator target and frozen evidence behavior.
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors were reported.
+    Scope: evaluated implementation diff.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020016-TDXFVT-preserve-evaluator-work-units-across-base-sync-m/.agentplane/tasks/202608020016-TDXFVT/blueprint/resolved-snapshot.json
+    - old_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+    - current_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608020016-TDXFVT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T00:53:36.501Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T00:53:33.843Z, excerpt_hash=sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e
+
+    Details:
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: repository ESLint completed without errors on the current implementation head.
+    Scope: hosted verify-static lint phase.
+
+    Command: bun run arch:check
+    Result: pass
+    Evidence: dependency-cruiser known violations remained zero and all architecture boundaries passed.
+    Scope: hosted verify-static architecture phase.
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: unused-code baseline passed at 543 of 543 expected findings.
+    Scope: hosted verify-static dead-code phase.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: native TypeScript build completed without diagnostics.
+    Scope: repository type surface.
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+    Result: pass
+    Evidence: 2 test files and 24 tests passed, covering semantic task work selection plus managed-artifact-only and lifecycle-only merge rejection.
+    Scope: merge-aware evaluator target and frozen evidence behavior.
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: 1 test file and 20 evaluator command tests passed.
+    Scope: existing evaluator command compatibility.
 
     Command: git diff --check
     Result: pass
@@ -508,6 +598,71 @@ Command: bunx vitest run packages/agentplane/src/commands/shared/quality-review-
 Result: pass
 Evidence: 2 test files and 23 tests passed, including semantic base-sync selection and managed-artifact-only rejection.
 Scope: merge-aware evaluator target and frozen evidence behavior.
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors were reported.
+Scope: evaluated implementation diff.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608020016-TDXFVT-preserve-evaluator-work-units-across-base-sync-m/.agentplane/tasks/202608020016-TDXFVT/blueprint/resolved-snapshot.json
+- old_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+- current_digest: d4366b001e684e8df76d3b8d527cf4dfec91eee2c0a506bb4d3a515d734f9d4c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608020016-TDXFVT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T00:53:36.501Z — VERIFY — ok
+
+By: TESTER
+
+Note: Positive, managed-artifact-only, and lifecycle-only base-sync boundaries pass with the full local static gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T00:53:33.843Z, excerpt_hash=sha256:04a114f897859dcb74e1397d85f2228b064cb0ebcce6c9a9e2802fbdaebe5b4e
+
+Details:
+
+Command: bun run lint:core
+Result: pass
+Evidence: repository ESLint completed without errors on the current implementation head.
+Scope: hosted verify-static lint phase.
+
+Command: bun run arch:check
+Result: pass
+Evidence: dependency-cruiser known violations remained zero and all architecture boundaries passed.
+Scope: hosted verify-static architecture phase.
+
+Command: bun run knip:check
+Result: pass
+Evidence: unused-code baseline passed at 543 of 543 expected findings.
+Scope: hosted verify-static dead-code phase.
+
+Command: bun run typecheck
+Result: pass
+Evidence: native TypeScript build completed without diagnostics.
+Scope: repository type surface.
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts
+Result: pass
+Evidence: 2 test files and 24 tests passed, covering semantic task work selection plus managed-artifact-only and lifecycle-only merge rejection.
+Scope: merge-aware evaluator target and frozen evidence behavior.
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: 1 test file and 20 evaluator command tests passed.
+Scope: existing evaluator command compatibility.
 
 Command: git diff --check
 Result: pass

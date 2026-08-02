@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "No contract-breaking issue was found; merge-aware target selection preserves semantic task work while rejecting managed-artifact-only and lifecycle-only merge deltas.",
+      "broken_invariant": "None observed: the implementation and verification satisfy the required positive, negative, and concurrency-sensitive base-sync boundaries.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/quality/20260802-005347024-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:e2768fbdfb6027bf528db2f3345888f4a809e65f063c9246e7ebde476244a0e9"
+        },
+        {
+          "path": ".agentplane/tasks/202608020016-TDXFVT/verification/20260802005336501-6914f4bfb8b34e78.json",
+          "sha256": "sha256:0f92ab8ec35fa01525f80a483b6c8a3d66476f93960f68b04929415a90496559"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Base-sync merges relevant to this workflow are ordinary two-parent merges, with the task branch as first parent and the synchronized base as second parent."
+  ]
+}
