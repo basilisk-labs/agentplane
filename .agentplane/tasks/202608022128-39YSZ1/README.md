@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -49,8 +49,8 @@ quality_review:
     - "PASS: the semantic-commit invalidation scenario and DONE remote-truth fixture moved to a focused integration test, reducing the existing oversized test to 1104 lines and total oversized baseline to 11355."
     - "PASS: 13 route files / 58 tests, 12 critical chunks / 79 tests, typecheck, lint, Knip 539/539, policy routing, and hotspot checks all pass."
 commit:
-  hash: "090b377f541f68647993e9b3c54ac92162cca7e7"
-  message: "⚡ 39YSZ1 routing: short-circuit stale verification records"
+  hash: "b48e499b9d9155a04de61b267cd6c8d13c7d234a"
+  message: "✅ 39YSZ1 task: record hosted rework evaluator pass"
 comments:
   -
     author: "CODER"
@@ -61,6 +61,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -107,8 +110,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified at 137ca290f: route freshness and CI hotspot rework pass all required local gates."
+  -
+    type: "status"
+    at: "2026-08-02T22:24:13.757Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T22:21:49.826Z"
+doc_updated_at: "2026-08-02T22:24:13.758Z"
 doc_updated_by: "CODER"
 description: "Prevent task next-action from accepting verification evidence that predates the current implementation HEAD. Route changed commits back through verification before evaluator review or integration."
 sections:
@@ -318,6 +328,9 @@ sections:
       Impact: The change now satisfies both runtime module and oversized-test budgets without increasing either baseline.
       Resolution: Accepted with route, static, policy, hotspot, dependency, and critical regression evidence.
 extensions:
+  implementation_commit:
+    hash: "137ca290fca0c71cc945a70bc959257d0775357b"
+    message: "♻️ 39YSZ1 routing: keep route modules within size budget"
   workflow_route_baseline:
     start_head_sha: "be9304ea05e50ec3824ef085f0f70402474e318a"
     version: 1
