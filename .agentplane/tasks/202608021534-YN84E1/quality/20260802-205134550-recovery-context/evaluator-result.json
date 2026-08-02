@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "PLANNER_SEMANTIC_PLAN_PLACEHOLDER is referenced only inside doc-template.ts, so module-private visibility matches its actual ownership and eliminates the new Knip debt without suppressing the baseline.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-205134550-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The semantic planning placeholder generation and legacy-placeholder detection still use the same constant; focused lifecycle tests 41/41 and typecheck pass on 375dd720e.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-YN84E1/quality/20260802-205134550-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
