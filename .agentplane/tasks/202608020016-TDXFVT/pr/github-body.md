@@ -16,7 +16,12 @@ Fix branch_pr evaluator packet preparation so a merge of current main into a tas
 ## Verification
 
 - State: ok
-- Note: Hosted static-analysis rework is resolved and the full local verify-static surface passes.
+- Note:
+
+```text
+Merge-aware evaluator target rework passes the complete local static gate and positive/negative
+regression suite.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,9 +33,9 @@ Fix branch_pr evaluator packet preparation so a merge of current main into a tas
 
 ```text
  .../evaluator/evaluator-runtime-evidence.test.ts   | 93 ++++++++++++++++++++++
- .../commands/shared/quality-review-target.test.ts  | 38 +++++++++
+ .../commands/shared/quality-review-target.test.ts  | 73 +++++++++++++++++
  .../src/commands/shared/quality-review-target.ts   | 62 +++++++++++++++
- 3 files changed, 193 insertions(+)
+ 3 files changed, 228 insertions(+)
 ```
 
 </details>
