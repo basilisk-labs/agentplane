@@ -679,6 +679,17 @@ describe("evaluator qualification packet", () => {
       "export const qualified = true;\n",
       "feat: reviewed qualification target",
     );
+    await applyTaskMutation({
+      ctx,
+      taskId,
+      build: () => ({ intents: setTaskFieldsIntent({ status: "DOING" }) }),
+    });
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}/README.md`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "test: start qualification lifecycle"], {
+      cwd: root,
+    });
     const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
     for (const artifactPath of [
       leafReadmePath,

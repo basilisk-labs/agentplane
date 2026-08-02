@@ -29,7 +29,9 @@ Created: 2026-08-02T04:39:09.970Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/evaluator/evaluator-qualification-packet.test.ts | 11 +++++++++++
+ packages/agentplane/src/commands/task/qualification-packet.ts |  4 +++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 ```
 
 </details>
