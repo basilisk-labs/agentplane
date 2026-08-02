@@ -13,7 +13,7 @@ Created: 2026-08-01T23:40:33.795Z
 ## Verification
 
 - State: ok
-- Note: Evaluator rework is resolved with current deterministic evidence.
+- Note: Current base-sync commit passes the focused policy, type, documentation, routing, and formatting gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
