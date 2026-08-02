@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   buildQualificationReport,
   qualificationExitCode,
+  readQualificationSubjectIdentity,
   readQualificationManifest,
   renderDefectLedger,
   selectQualificationScenarios,
@@ -188,6 +189,7 @@ async function main(argv = process.argv.slice(2)) {
     return;
   }
   const manifest = readQualificationManifest(options.manifestPath);
+  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
   const scenarios = selectQualificationScenarios(manifest, {
     profile: options.profile,
     provider: options.provider,
@@ -225,6 +227,7 @@ async function main(argv = process.argv.slice(2)) {
     startedAt,
     finishedAt,
     results,
+    sourceIdentity,
   });
   const reportPath = path.join(outputDirectory, "report.json");
   const ledgerPath = path.join(outputDirectory, "defects.md");

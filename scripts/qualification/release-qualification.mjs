@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -70,6 +71,39 @@ export function stableJson(value) {
 
 export function sha256(value) {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+export function assertQualificationSubjectIdentity({ subject, head, tree, statusPorcelain }) {
+  if (!/^[a-f0-9]{40}$/u.test(subject)) {
+    throw new Error("qualification subject must be a full 40-character Git commit SHA");
+  }
+  if (subject !== head) {
+    throw new Error(`qualification subject ${subject} does not match repository HEAD ${head}`);
+  }
+  if (!/^[a-f0-9]{40}$/u.test(tree)) {
+    throw new Error("qualification repository tree must be a full 40-character Git tree SHA");
+  }
+  if (statusPorcelain.trim().length > 0) {
+    throw new Error(
+      "qualification candidate repository must be clean before packaging or execution",
+    );
+  }
+  return { commit: head, tree, clean: true };
+}
+
+export function readQualificationSubjectIdentity(repoRoot, subject) {
+  const git = (...args) =>
+    execFileSync("git", args, {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    }).trim();
+  return assertQualificationSubjectIdentity({
+    subject,
+    head: git("rev-parse", "HEAD"),
+    tree: git("rev-parse", "HEAD^{tree}"),
+    statusPorcelain: git("status", "--porcelain=v1", "--untracked-files=all"),
+  });
 }
 
 export function readQualificationManifest(filePath) {
@@ -245,6 +279,7 @@ export function buildQualificationReport({
   startedAt,
   finishedAt,
   results,
+  sourceIdentity,
 }) {
   const defects = results
     .filter((result) => result.status === "failed")
@@ -276,6 +311,7 @@ export function buildQualificationReport({
     mode,
     profile,
     subject,
+    source_identity: sourceIdentity,
     manifest: {
       path: posixRelative(repoRoot, manifestPath),
       sha256: sha256(`${stableJson(manifest)}\n`),
@@ -335,6 +371,13 @@ export function validateQualificationReport(report) {
   }
   if (!Array.isArray(report.scenarios) || !Array.isArray(report.defects)) {
     throw new TypeError("qualification report must include scenarios and defects arrays");
+  }
+  if (
+    report.source_identity?.commit !== report.subject ||
+    report.source_identity?.clean !== true ||
+    !/^[a-f0-9]{40}$/u.test(report.source_identity?.tree ?? "")
+  ) {
+    throw new Error("qualification report subject is not bound to a clean Git commit and tree");
   }
   for (const defect of report.defects) {
     for (const field of [
