@@ -294,7 +294,8 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow_other_task_readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive");
+      .mockResolvedValueOnce("aggressive")
+      .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
@@ -314,7 +315,7 @@ describe("runCli interactive init UI", () => {
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.noteMock).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
     expect(mocks.logStepMock).toHaveBeenCalledWith("Setup");
-    expect(mocks.selectMock).toHaveBeenCalledTimes(7);
+    expect(mocks.selectMock).toHaveBeenCalledTimes(8);
     expect(mocks.textMock).toHaveBeenCalledWith(
       expect.objectContaining({ message: "Materialize cached recipes" }),
     );
@@ -343,7 +344,8 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow_other_task_readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive");
+      .mockResolvedValueOnce("aggressive")
+      .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
@@ -380,7 +382,8 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("direct")
       .mockResolvedValueOnce("allow_other_task_readmes")
       .mockResolvedValueOnce("local")
-      .mockResolvedValueOnce("aggressive");
+      .mockResolvedValueOnce("aggressive")
+      .mockResolvedValueOnce("standard");
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
@@ -419,6 +422,7 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce("allow_other_task_readmes")
       .mockResolvedValueOnce("local")
       .mockResolvedValueOnce("aggressive")
+      .mockResolvedValueOnce("standard")
       .mockResolvedValueOnce("cancel");
     mocks.confirmMock.mockResolvedValueOnce(false).mockResolvedValueOnce(false);
 

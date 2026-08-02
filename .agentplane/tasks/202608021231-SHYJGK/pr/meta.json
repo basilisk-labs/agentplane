@@ -1,0 +1,16 @@
+{
+  "base": "main",
+  "branch": "task/202608021231-SHYJGK/remove-the-v0-7-1-matched-cli-latency-regression",
+  "created_at": "2026-08-02T15:36:39.848Z",
+  "diffstat_sha256": "sha256:251468197c53da4993010174110f910d50195edcea9cc9e832c4be47e67cabd6",
+  "last_verified_at": null,
+  "pr_number": 4745,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4745",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608021231-SHYJGK",
+  "updated_at": "2026-08-02T15:37:35.696Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
