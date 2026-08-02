@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202608020545-Y4HQ7A/freeze-qualification-metric-policy-and-verificat",
+  "created_at": "2026-08-02T05:46:59.746Z",
+  "diffstat_sha256": "sha256:fac9fcab8110158c4487f3d7c5ad834b81df78ef366f399af06a15b8526092aa",
+  "last_verified_at": "2026-08-02T05:57:21.351Z",
+  "last_verified_diffstat_sha256": "sha256:fac9fcab8110158c4487f3d7c5ad834b81df78ef366f399af06a15b8526092aa",
+  "pr_number": 4738,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4738",
+  "pre_merge_closure": {
+    "basis_commit": "04ea2e6e3ed8831e79520000b321ddc423c2377f",
+    "branch": "task/202608020545-Y4HQ7A/freeze-qualification-metric-policy-and-verificat",
+    "pr_number": 4738,
+    "recorded_at": "2026-08-02T06:00:21.584Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608020545-Y4HQ7A",
+  "updated_at": "2026-08-02T05:47:46.450Z",
+  "verify": {
+    "status": "pass"
+  }
+}
