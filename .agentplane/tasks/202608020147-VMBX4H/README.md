@@ -4,7 +4,7 @@ title: "Scope pre-commit mutation policy to task-side base-sync diff"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -31,30 +31,29 @@ verification:
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts. Result: pass. Evidence: 19/19; configured-base acceptance survives a concurrent linear main advance, task-side implementation is still rejected by both hooks, and reachable side-parent topic merges are rejected. Scope: first-parent merge attribution and policy enforcement. Command: bun run typecheck && bun run lint:core. Result: pass. Evidence: both exited 0. Scope: TypeScript and lint. Command: bun run arch:check && bun run knip:check. Result: pass. Evidence: zero dependency violations; Knip baseline 543/543. Scope: architecture and unused-code regression. Command: bun run format:check && git diff --check. Result: pass. Evidence: Prettier clean and no whitespace errors. Scope: formatting. Post-integration acceptance remains the real YMYYQ8 configured-base merge."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T02:14:43.496Z"
+  updated_at: "2026-08-02T02:20:15.637Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "97ccd56e30db87970246b331fee2a48ec074aaf3"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "b216a1aab48031196114f1d64429754c9daddf36"
   blueprint_digest: "7317e8041e6a074c54f73aeae61498ba6eceed33a78be81244fc0f9c7085f69c"
   evidence_refs:
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608020147-VMBX4H/README.md"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021408292-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020147-VMBX4H/quality/20260802-021931967-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Configured-base detection depends on the mutable current base tip, so a concurrent base advance after merge start makes the hook fall back to the full staged-path set and misattributes incoming base changes to the active task."
+    - "The implementation correctly limits configured-base merge policy evaluation to the index diff against the merged base parent, preserves fallback enforcement for ordinary and unrecognized merges, and covers concurrent linear base advancement plus task-side and side-parent negative cases."
 commit:
   hash: "b216a1aab48031196114f1d64429754c9daddf36"
   message: "🐛 VMBX4H workflow: recognize historical base sync tips"
