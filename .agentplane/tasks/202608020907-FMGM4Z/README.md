@@ -1,10 +1,11 @@
 ---
 id: "202608020907-FMGM4Z"
 title: "Assimilate v0.6.26 maintenance fixes into v0.7"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -26,33 +27,34 @@ verification:
   note: "Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T10:48:46.936Z"
+  updated_at: "2026-08-02T10:59:42.749Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c"
   blueprint_digest: "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8"
   evidence_refs:
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608020907-FMGM4Z/README.md"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-104742533-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802105659180-0f8f6099d00d87ed.json"
+    - ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json"
+    - ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff adds the test:cli:critical package script and its documentation after the recorded verification commit, while every verification record remains bound to 44958d9dab2f59303e9a75526a25366a65f1f3c4 and the task asserts that the implementation SHA did not change."
+    - "No contract-breaking semantic defect was identified in the frozen implementation; deterministic evidence is bound to the evaluated SHA and covers the relevant positive, negative, and concurrency-sensitive paths."
 commit:
-  hash: "44958d9dab2f59303e9a75526a25366a65f1f3c4"
-  message: "🐛 FMGM4Z task: assimilate maintenance fixes"
+  hash: "029370e80cf37953258bff636c743a58707f1d85"
+  message: "🧪 FMGM4Z task: record final verification"
 comments:
   -
     author: "CODER"
@@ -63,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: corrected the two invalid Verify Step commands through task doc set and recorded post-correction ORCHESTRATOR approval under the user's standing authorization; implementation SHA remains unchanged."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -109,8 +114,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass."
+  -
+    type: "status"
+    at: "2026-08-02T11:00:44.406Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T10:57:00.225Z"
+doc_updated_at: "2026-08-02T11:00:44.406Z"
 doc_updated_by: "CODER"
 description: "Audit every non-main branch, port only missing v0.6.25/v0.6.26 and stale-PR correctness fixes into the current v0.7 architecture, preserve stronger v0.7 contracts, and prove no maintenance regression remains."
 sections:
@@ -384,6 +396,9 @@ sections:
       Impact: The two literal command spellings cannot be green even though their intended verification surfaces are available and pass.
       Resolution: Ran the five-file set with the configured Vitest runner (58 tests) and the canonical test:critical route; recorded the mismatch in branch-disposition.md.
 extensions:
+  implementation_commit:
+    hash: "e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c"
+    message: "🐛 FMGM4Z task: restore critical CLI test alias"
   workflow_route_baseline:
     start_head_sha: "3b4ea1fa8e78bf28cd51e6d3fb2eb585533b3a8f"
     version: 1

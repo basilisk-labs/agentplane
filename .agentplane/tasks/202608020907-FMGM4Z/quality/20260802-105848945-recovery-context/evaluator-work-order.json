@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608020907-FMGM4Z-982aa10c83cb020244e84394",
+  "prepared_at": "2026-08-02T10:58:48.945Z",
+  "task": {
+    "id": "202608020907-FMGM4Z",
+    "revision": 19,
+    "objective": "Assimilate v0.6.26 maintenance fixes into v0.7\n\nAudit every non-main branch, port only missing v0.6.25/v0.6.26 and stale-PR correctness fixes into the current v0.7 architecture, preserve stronger v0.7 contracts, and prove no maintenance regression remains.",
+    "acceptance_criteria": [
+      "Audit origin/codex/fix-v0.6.24-closeout-route at v0.6.26 and every remaining non-main remote task branch except agentplane-loops. Port only correctness or efficiency behavior that current main lacks. Preserve the v0.7 typed supervisor, authority, evidence, retrieval, and TypeScript boundaries. Include focused regression coverage, branch disposition evidence, and any required release follow-up. Do not merge stale branches wholesale and do not modify agentplane-loops.",
+      "1. Classify every non-main remote branch as merged, superseded, dependency-only, or carrying missing behavior. 2. Reproduce each candidate maintenance regression against current main. 3. Implement the minimal compatible fixes and focused tests in one dedicated task worktree. 4. Run focused tests, CLI critical coverage, workflow contracts, typecheck, guards, doctor, and task-state checks. 5. Record evaluator evidence, open a PR, wait for hosted checks, merge through the protected-main route, and clean the task branch/worktree. 6. If runtime code changes, publish a patch release from the merged main.",
+      "1. bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts\n2. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/task/close-tail-state.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-provenance.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts packages/agentplane/src/commands/task/active.command.unit.test.ts packages/agentplane/src/runner/usecases/task-run-active-claim-readonly.test.ts\n3. bun run test:critical\n4. bun run workflows:command-check\n5. bun run lifecycle:invariants\n6. bun run typecheck\n7. bun run guards:check\n8. bun run ci:contract\n9. bun run task-state:check\n10. ap doctor\n11. node .agentplane/policy/check-routing.mjs\n12. node .agentplane/tasks/202608020907-FMGM4Z/verification/verify-branch-disposition.mjs /Users/densmirnov/Github/agentplane"
+    ]
+  },
+  "evaluated_sha": "e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c",
+  "diff_base_sha": "3b4ea1fa8e78bf28cd51e6d3fb2eb585533b3a8f",
+  "blueprint_digest": "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/README.md",
+      "sha256": "sha256:72472214c0e9c6917b6e4c2f347ca931f34527f4528b9d051f9499d43ccc8422",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:8430f20b7ad7d428b01232f0a8923745cad894df1d28a6a15a2ac148f27e0bb9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:8b5722b5ee4b94d54a9a7f65c4347c820f56298f3fdfed917234a9695064dbe8",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802105659180-0f8f6099d00d87ed.json",
+      "sha256": "sha256:27e97d1410e023e7bfab54978bc62e534e77d92f9646e3a189d90e58452b6470",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+      "sha256": "sha256:518e3fbdd4fc1575b259225035e4c4b5f612906acd57c55504a472444af2d239",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:8b922ac4af7fc868b12135f3cd15f6ba267488ba5a20ad88b72634d882c803eb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T10:56:59.180Z",
+    "updated_by": "TESTER",
+    "note": "Verified final implementation revision e5e4a65c: corrected affected suites, compatibility alias, full CI contract, lifecycle, typecheck, doctor, and branch disposition all pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802105659180-0f8f6099d00d87ed.json",
+      "sha256": "sha256:27e97d1410e023e7bfab54978bc62e534e77d92f9646e3a189d90e58452b6470"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json",
+      "sha256": "sha256:518e3fbdd4fc1575b259225035e4c4b5f612906acd57c55504a472444af2d239"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

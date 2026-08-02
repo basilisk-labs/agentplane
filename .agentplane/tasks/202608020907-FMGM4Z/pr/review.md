@@ -6,7 +6,7 @@ Created: 2026-08-02T09:08:27.907Z
 
 - Task: `202608020907-FMGM4Z`
 - Title: Assimilate v0.6.26 maintenance fixes into v0.7
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608020907-FMGM4Z/assimilate-v0-6-26-maintenance-fixes-into-v0-7`
 - Canonical task record: `.agentplane/tasks/202608020907-FMGM4Z/README.md`
 

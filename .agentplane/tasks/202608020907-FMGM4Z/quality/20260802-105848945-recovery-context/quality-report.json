@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608020907-FMGM4Z",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T10:59:42.749Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "e5e4a65cd3f5de85a1081dd5a3cc5e9127f65f9c",
+  "blueprint_digest": "8596b771cb5a3e5faa824bc5f3c54c7ebf19aaba87a2348d539f5e016b6390b8",
+  "findings": [
+    "No contract-breaking semantic defect was identified in the frozen implementation; deterministic evidence is bound to the evaluated SHA and covers the relevant positive, negative, and concurrency-sensitive paths."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608020907-FMGM4Z/quality/20260802-105848945-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608020907-FMGM4Z/verification/20260802105659180-0f8f6099d00d87ed.json",
+    ".agentplane/cache/202608020907-FMGM4Z/verification-evidence.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Remote provider state remains mutable after the audited fetch; hosted checks and provider revalidation must still pass before integration.",
+    "The required patch release for runtime changes remains a post-merge lifecycle obligation and is not proven by this pre-integration evidence packet."
+  ],
+  "residual_risks": []
+}
