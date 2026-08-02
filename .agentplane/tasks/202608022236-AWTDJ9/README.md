@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +53,8 @@ quality_review:
     - "When a task branch survives merge, its head is selected before finalized evaluator evidence and is reduced through the existing semantic resolver; therefore any newer semantic commit changes the verification target and invalidates the older record."
     - "When the branch is absent after rebase merge and hosted close is recorded, the narrow DONE/pass/MERGED/recorded_on_base guard retains the reviewed pre-merge SHA instead of comparing unrelated rewritten base history."
 commit:
-  hash: "dafc86b07cd0faafa3dbf6f0fa9dfc9bc284f164"
-  message: "✅ AWTDJ9 task: record verification and evaluator pass"
+  hash: "a1ac1d302e100b46c94d15d875da5c4b7ab65824"
+  message: "✅ AWTDJ9 task: record review rework evaluator pass"
 comments:
   -
     author: "CODER"
@@ -65,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -105,8 +108,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified surviving task-branch authority and hosted-close fallback after PR review rework."
+  -
+    type: "status"
+    at: "2026-08-02T23:10:01.663Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-02T23:07:30.052Z"
+doc_updated_at: "2026-08-02T23:10:01.663Z"
 doc_updated_by: "CODER"
 description: "Fix the branch_pr route oracle so a DONE task remains terminal after GitHub rebase-merge and hosted close, while still invalidating verification for new semantic commits on an active task branch."
 sections:
@@ -272,8 +282,8 @@ sections:
       Resolution: Recorded a second verification with complete structured check details.
 extensions:
   implementation_commit:
-    hash: "bfb6abc89187231c2497ef737c67e98a45e997b2"
-    message: "🐛 AWTDJ9 verification: preserve merged task evidence"
+    hash: "8f4c861ad24d8a23181674b0cf54e15cf57bb71a"
+    message: "🐛 AWTDJ9 verification: prefer surviving branch head"
   workflow_route_baseline:
     start_head_sha: "05423cade6f22a75b10a70cdbf7809d0c501377b"
     version: 1
