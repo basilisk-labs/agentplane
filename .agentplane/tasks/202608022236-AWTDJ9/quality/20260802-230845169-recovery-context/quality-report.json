@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022236-AWTDJ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T23:08:45.565Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "8f4c861ad24d8a23181674b0cf54e15cf57bb71a",
+  "blueprint_digest": "c7df3b836248f7c038ddb561e0608f660f2f35a1d313ccbe918a432b16810ea5",
+  "findings": [
+    "When a task branch survives merge, its head is selected before finalized evaluator evidence and is reduced through the existing semantic resolver; therefore any newer semantic commit changes the verification target and invalidates the older record.",
+    "When the branch is absent after rebase merge and hosted close is recorded, the narrow DONE/pass/MERGED/recorded_on_base guard retains the reviewed pre-merge SHA instead of comparing unrelated rewritten base history."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022236-AWTDJ9/quality/20260802-230845169-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "PrFlowStatusReport.branch.headSha is null only when no authoritative live task-branch head is available; the existing flow-status contract and tests are relied upon for that distinction."
+  ],
+  "residual_risks": []
+}
