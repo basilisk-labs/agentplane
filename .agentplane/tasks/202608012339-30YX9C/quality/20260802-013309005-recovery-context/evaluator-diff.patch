@@ -1,0 +1,107 @@
+diff --git a/packages/agentplane/src/policy/rules/task-bound-mutation.test.ts b/packages/agentplane/src/policy/rules/task-bound-mutation.test.ts
+new file mode 100644
+index 000000000..0863bc0ff
+--- /dev/null
++++ b/packages/agentplane/src/policy/rules/task-bound-mutation.test.ts
+@@ -0,0 +1,70 @@
++import { describe, expect, it } from "vitest";
++
++import { defaultConfig } from "@agentplaneorg/core/config";
++
++import type { PolicyContext } from "../model.js";
++import { stagedMutationRequiresTaskRule } from "./task-bound-mutation.js";
++
++function makeDocsContext(stagedPaths: string[]): PolicyContext {
++  return {
++    action: "guard_commit",
++    config: defaultConfig(),
++    taskId: "202608012339-30YX9C",
++    git: { stagedPaths },
++    commit: {
++      subject: "docs: update the documentation site",
++      taskIntent: {
++        taskKind: "docs",
++        mutationScope: "docs",
++        blueprintRequest: "docs.change",
++      },
++    },
++  };
++}
++
++describe("stagedMutationRequiresTaskRule", () => {
++  it("allows canonical documentation-site navigation files", () => {
++    const result = stagedMutationRequiresTaskRule(
++      makeDocsContext(["website/docusaurus.config.ts", "website/sidebars.ts"]),
++    );
++
++    expect(result.ok).toBe(true);
++  });
++
++  it("allows the social-card manifest and nested generated PNG artifacts", () => {
++    const result = stagedMutationRequiresTaskRule(
++      makeDocsContext([
++        "website/static/img/social/manifest.json",
++        "website/static/img/social/docs/user/v0-7-migration.png",
++      ]),
++    );
++
++    expect(result.ok).toBe(true);
++  });
++
++  it("blocks implementation and executable files inside the social-card output subtree", () => {
++    for (const stagedPath of [
++      "website/static/img/social/generate.ts",
++      "website/static/img/social/build.sh",
++      "website/static/img/social/manifest.json.bak",
++    ]) {
++      const result = stagedMutationRequiresTaskRule(makeDocsContext([stagedPath]));
++
++      expect(result.ok, stagedPath).toBe(false);
++      expect(result.errors.map((error) => error.message).join("\n")).toContain(
++        "not allowed to commit implementation-mutating paths",
++      );
++    }
++  });
++
++  it("still blocks implementation files for a documentation-only task", () => {
++    const result = stagedMutationRequiresTaskRule(
++      makeDocsContext(["website/src/theme/DocItem/Layout/index.tsx"]),
++    );
++
++    expect(result.ok).toBe(false);
++    expect(result.errors.map((error) => error.message).join("\n")).toContain(
++      "not allowed to commit implementation-mutating paths",
++    );
++  });
++});
+diff --git a/packages/agentplane/src/policy/rules/task-bound-mutation.ts b/packages/agentplane/src/policy/rules/task-bound-mutation.ts
+index ffbf7b388..4a75fd33a 100644
+--- a/packages/agentplane/src/policy/rules/task-bound-mutation.ts
++++ b/packages/agentplane/src/policy/rules/task-bound-mutation.ts
+@@ -7,13 +7,25 @@ import type { PolicyContext, PolicyResult } from "../model.js";
+ 
+ const DOC_FILE_RE = /(^|\/)(README|CHANGELOG|CONTRIBUTING|LICENSE)(\.[^/]*)?$/i;
+ const DOC_EXT_RE = /\.(md|mdx|txt|adoc|rst)$/i;
++const DOCS_SITE_PATHS = new Set(["website/docusaurus.config.ts", "website/sidebars.ts"]);
++const GENERATED_DOCS_SOCIAL_PREFIX = "website/static/img/social";
++
++function isGeneratedDocsSocialArtifact(filePath: string): boolean {
++  if (filePath === `${GENERATED_DOCS_SOCIAL_PREFIX}/manifest.json`) return true;
++  return (
++    gitPathIsUnderPrefix(filePath, GENERATED_DOCS_SOCIAL_PREFIX) &&
++    filePath.toLowerCase().endsWith(".png")
++  );
++}
+ 
+ function isDocsOnlyPath(filePath: string): boolean {
+   return (
+     DOC_FILE_RE.test(filePath) ||
+     DOC_EXT_RE.test(filePath) ||
+     gitPathIsUnderPrefix(filePath, "docs") ||
+-    gitPathIsUnderPrefix(filePath, "website/docs")
++    gitPathIsUnderPrefix(filePath, "website/docs") ||
++    DOCS_SITE_PATHS.has(filePath) ||
++    isGeneratedDocsSocialArtifact(filePath)
+   );
+ }
+ 
