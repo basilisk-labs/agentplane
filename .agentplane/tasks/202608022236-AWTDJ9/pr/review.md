@@ -13,7 +13,7 @@ Created: 2026-08-02T22:37:28.488Z
 ## Verification
 
 - State: ok
-- Note: Verified at bfb6abc89: hosted rebase-merge evidence remains current and active-branch freshness remains fail-closed.
+- Note: Verified surviving task-branch authority and hosted-close fallback after PR review rework.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:6b4f262df584663a9f209a6e585948e37e62b14fcd647c165979c61bf72c8c58",
+  "implementation_sha": "8f4c861ad24d8a23181674b0cf54e15cf57bb71a",
+  "kind": "task_verification_record",
+  "note": "Verified surviving task-branch authority and hosted-close fallback after PR review rework.",
+  "recorded_at": "2026-08-02T23:05:33.736Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused route-verification suites, including a post-rebase-merge/hosted-close fixture. Expected: the merged DONE task has no verification_required blocker, while a later semantic task-branch commit still produces verification_required.\n2. Run typecheck, lint:core, knip:check, hotspots:check, and the policy routing check. Expected: all gates pass without baseline growth.\n3. Run test:critical. Expected: all critical CLI chunks pass.",
+  "scope_digest": "sha256:5f91686f85e6a3b71536705721e1d7e2275f33198b7a050c2b0d0cf12244b668",
+  "task_id": "202608022236-AWTDJ9",
+  "verification_command": "agentplane verify 202608022236-AWTDJ9 --ok --by TESTER",
+  "verifier": "TESTER"
+}
