@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608020016-TDXFVT/preserve-evaluator-work-units-across-base-sync-m",
+  "created_at": "2026-08-02T00:17:10.319Z",
+  "diffstat_sha256": "sha256:f2934f98bb9acb73856e7284d9583e65b2857f2851089459accd07d1e7d5ce92",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608020016-TDXFVT",
+  "updated_at": "2026-08-02T00:17:10.319Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

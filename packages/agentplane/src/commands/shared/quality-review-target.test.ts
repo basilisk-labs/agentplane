@@ -318,6 +318,44 @@ describe("quality review target resolver", () => {
     );
   });
 
+  it("selects a base-sync merge when the task work is visible only against the merged parent", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-BASE-SYNC";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish task state",
+    );
+    const { stdout: baseBranchOutput } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseBranch = baseBranchOutput.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/base-sync"], { cwd: root });
+    await commitPath(
+      root,
+      "src/reviewed.ts",
+      "export const reviewed = true;\n",
+      "feat: implement task",
+    );
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/README.md",
+      "unrelated base task state\n",
+      "docs: advance unrelated base task",
+    );
+    await execFileAsync("git", ["checkout", "task/base-sync"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseBranch, "-m", "merge: sync base"], {
+      cwd: root,
+    });
+    const { stdout: mergeShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+
+    await expect(resolveTarget({ root, taskId })).resolves.toBe(mergeShaOutput.trim());
+  });
+
   it("selects a new independently reviewable task metadata work unit", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-METADATA";
