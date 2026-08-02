@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-PZGG3V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T15:19:41.126Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "b16798c4824c9e7249bf0d27a5a89e74544513fb",
+  "blueprint_digest": "1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9",
+  "findings": [
+    "The diagnostic full-suite run reports six failures outside the approved supervisor verification scope; the required maintained gates and isolated affected security rerun passed, so this does not break the task contract."
+  ],
+  "evidence_refs": [
+    ".agentplane/cache/task-verification/202608021231-PZGG3V/b16798c4824c9e7249bf0d27a5a89e74544513fb-checks.json",
+    ".agentplane/tasks/202608021231-PZGG3V/verification/20260802151817955-9708164349452f57.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The five legacy init/worktree failures classified outside scope remain unrelated to the supervisor changes and are handled through separate release follow-up."
+  ],
+  "residual_risks": []
+}

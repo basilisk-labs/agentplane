@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202608021231-PZGG3V-7f4d60647330718a5f408226",
+  "task_id": "202608021231-PZGG3V",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Freeze the referenced exact-SHA checks artifact, or an equivalent deterministic check manifest with command and scenario results, into a new evaluator work order and rerun the semantic review.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen observed-checks artifact contains a verification summary but no deterministic check records, runner history, or runtime evidence for the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151617217-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:de4eeda0ba2a36746cf151dc1840c08e76bb0c254cd852ba874f8b0ad88cc6ca",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151617217-recovery-context/evaluator-result.json"
+}

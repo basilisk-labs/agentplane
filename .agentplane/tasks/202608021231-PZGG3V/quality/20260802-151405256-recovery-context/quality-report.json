@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-PZGG3V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-02T15:15:08.302Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "b16798c4824c9e7249bf0d27a5a89e74544513fb",
+  "blueprint_digest": "1be3dfb8268d4740f319a064ba784ff7284c5752a8c3f64b544adcdc574337e9",
+  "findings": [
+    "The frozen verification evidence is bound to the superseded implementation SHA 06582bde1138360f789c18399c86df20279bafee, while this episode evaluates b16798c4824c9e7249bf0d27a5a89e74544513fb."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-PZGG3V/quality/20260802-151405256-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608021231-PZGG3V/README.md"
+  ],
+  "missing_tests": [
+    "Fresh SHA-bound results for the required supervisor parity, lifecycle, recovery, packet-size, critical, typecheck, workflow coverage, and repository contract checks at b16798c4824c9e7249bf0d27a5a89e74544513fb."
+  ],
+  "hidden_assumptions": [
+    "The successful checks recorded for 06582bde1138360f789c18399c86df20279bafee are assumed to remain valid after the subsequent parity and recovery changes through b16798c4824c9e7249bf0d27a5a89e74544513fb."
+  ],
+  "residual_risks": [
+    "Collect and freeze deterministic verification evidence against evaluated SHA b16798c4824c9e7249bf0d27a5a89e74544513fb, including the newly added managed/external parity and recovery coverage, then repeat the semantic evaluation."
+  ]
+}

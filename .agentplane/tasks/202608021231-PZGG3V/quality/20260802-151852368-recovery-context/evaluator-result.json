@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The diagnostic full-suite run reports six failures outside the approved supervisor verification scope; the required maintained gates and isolated affected security rerun passed, so this does not break the task contract.",
+      "broken_invariant": "No approved task invariant is broken; this records residual repository-level diagnostic risk without overriding the exact-SHA scoped verification.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/cache/task-verification/202608021231-PZGG3V/b16798c4824c9e7249bf0d27a5a89e74544513fb-checks.json",
+          "sha256": "sha256:95b41def9e911664ececd4d49cbb5419ab900891ea6e381b3979d1b902d906a7",
+          "section": "full_suite_diagnostic"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-PZGG3V/verification/20260802151817955-9708164349452f57.json",
+          "sha256": "sha256:2d254b755cb83c80214b6678295e0e212e5f3e952df1aa39c34d384ecdac06fd",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The five legacy init/worktree failures classified outside scope remain unrelated to the supervisor changes and are handled through separate release follow-up."
+  ]
+}
