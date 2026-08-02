@@ -4,7 +4,7 @@ title: "Build the v0.7.1 end-to-end release qualification suite"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -31,40 +31,39 @@ plan_approval:
   note: "Reapproved with executable verification commands frozen into task metadata."
 verification:
   state: "ok"
-  updated_at: "2026-08-02T12:45:31.028Z"
+  updated_at: "2026-08-02T13:06:47.117Z"
   updated_by: "TESTER"
-  note: "Qualification harness verified against implementation SHA 9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96; every observed blocker now has a distinct executable owner task and the audit correctly remains release-blocked."
+  note: "Qualification harness verified against exact clean implementation SHA 81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and each observed blocker has an executable owner."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-02T12:50:19.109Z"
+  updated_at: "2026-08-02T13:08:01.796Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "9bd2a5fe2465a8dd4ad6d4384cf765546c941141"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "81d9e5f433d4ee95dda12e2d521ff8499822fd98"
   blueprint_digest: "ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a"
   evidence_refs:
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608021125-DR7J1E/README.md"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608021125-DR7J1E/verification/20260802124531028-1210e0ba5832ecb9.json"
-    - ".agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/defects.md"
-    - ".agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/efficiency-evidence.json"
-    - ".agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/matched-cli-latency.json"
-    - ".agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/report.json"
-    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-124916756-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/verification/20260802130647117-80007dcb4b578246.json"
+    - ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/defects.md"
+    - ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/efficiency-evidence.json"
+    - ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/matched-cli-latency.json"
+    - ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json"
+    - ".agentplane/tasks/202608021125-DR7J1E/quality/20260802-130701360-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The qualification evidence was generated for subject 9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96, not the frozen evaluated SHA 9bd2a5fe2465a8dd4ad6d4384cf765546c941141."
+    - "The qualification harness satisfies the approved recovery-context contract at the exact evaluated revision: deterministic local matrices pass, expected product and performance failures remain fail-closed and classified, and each blocker has a distinct executable owner task."
 commit:
   hash: "5881186a69c595777e39496e1e4899ef45011d8c"
   message: "🧪 DR7J1E task: refine qualification verification"
@@ -124,8 +123,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Qualification harness verified against implementation SHA 9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96; every observed blocker now has a distinct executable owner task and the audit correctly remains release-blocked."
+  -
+    type: "verify"
+    at: "2026-08-02T13:06:47.117Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Qualification harness verified against exact clean implementation SHA 81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and each observed blocker has an executable owner."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:45:32.001Z"
+doc_updated_at: "2026-08-02T13:06:48.123Z"
 doc_updated_by: "CODER"
 description: "Specify and implement a deterministic E2E and benchmark matrix for every supported task lifecycle, automatic context preparation, managed and external-agent supervisor frontends, failure recovery, hosted integration, token efficiency, latency, and release acceptance. The suite must run against the candidate build, preserve observed evidence, compare to the v0.6 baseline, and emit an actionable defect ledger without claiming speed or token gains that are not measured."
 sections:
@@ -339,6 +344,76 @@ sections:
     Command: node packages/agentplane/bin/agentplane.js doctor
     Result: pass
     Evidence: .agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/report.json
+    Scope: candidate repository diagnostics
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+    - old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-02T13:06:47.117Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Qualification harness verified against exact clean implementation SHA 81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and each observed blocker has an executable owner.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:45:32.001Z, excerpt_hash=sha256:b1b7a52b8c59983caa2ba223d4d0d21e717948a7aaef13e059b9a39b331406f5
+
+    Details:
+
+    Command: bun run e2e:v0.7.1:check
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+    Scope: manifest coverage, executable defect-owner validation, exact clean Git subject binding, audit and gate semantics, efficiency and matched-latency contracts
+
+    Command: bun run e2e:v0.7.1:audit
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json | .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/defects.md | .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/efficiency-evidence.json | .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/matched-cli-latency.json
+    Scope: complete exact-SHA local qualification profile, three distinct executable blocker tasks, package hashes, exact-subject claim refusal, and v0.6.26 matched latency
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+    Scope: formatting, schemas, policy, architecture, compatibility, efficiency, lifecycle, lint, clone, knip, and coverage contracts
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+    Scope: critical CLI behavior
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+    Scope: pinned TypeScript build contract
+
+    Command: bun run coverage:workflow-suite
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+    Scope: workflow runtime coverage and harness matrix
+
+    Command: bun run task-state:check
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+    Scope: release task registry consistency including seven executable follow-up tasks
+
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
     Scope: candidate repository diagnostics
 
     BlueprintSnapshotRef:
@@ -606,6 +681,76 @@ Scope: release task registry consistency including seven executable follow-up ta
 Command: node packages/agentplane/bin/agentplane.js doctor
 Result: pass
 Evidence: .agentplane/cache/v0.7.1-qualification/9bd2a5fe2465eb6ea03ed7bb318acde36ac69e96/report.json
+Scope: candidate repository diagnostics
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021125-DR7J1E-build-the-v0-7-1-end-to-end-release-qualificatio/.agentplane/tasks/202608021125-DR7J1E/blueprint/resolved-snapshot.json
+- old_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- current_digest: ccf061c335181ec612f926f1ff052ce04e841c7941b97908835e61ffe27da85a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021125-DR7J1E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-02T13:06:47.117Z — VERIFY — ok
+
+By: TESTER
+
+Note: Qualification harness verified against exact clean implementation SHA 81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and each observed blocker has an executable owner.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-02T12:45:32.001Z, excerpt_hash=sha256:b1b7a52b8c59983caa2ba223d4d0d21e717948a7aaef13e059b9a39b331406f5
+
+Details:
+
+Command: bun run e2e:v0.7.1:check
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+Scope: manifest coverage, executable defect-owner validation, exact clean Git subject binding, audit and gate semantics, efficiency and matched-latency contracts
+
+Command: bun run e2e:v0.7.1:audit
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json | .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/defects.md | .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/efficiency-evidence.json | .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/matched-cli-latency.json
+Scope: complete exact-SHA local qualification profile, three distinct executable blocker tasks, package hashes, exact-subject claim refusal, and v0.6.26 matched latency
+
+Command: bun run ci:contract
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+Scope: formatting, schemas, policy, architecture, compatibility, efficiency, lifecycle, lint, clone, knip, and coverage contracts
+
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+Scope: critical CLI behavior
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+Scope: pinned TypeScript build contract
+
+Command: bun run coverage:workflow-suite
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+Scope: workflow runtime coverage and harness matrix
+
+Command: bun run task-state:check
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
+Scope: release task registry consistency including seven executable follow-up tasks
+
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: .agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json
 Scope: candidate repository diagnostics
 
 BlueprintSnapshotRef:

@@ -1,0 +1,50 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run e2e:v0.7.1:check",
+    "bun run e2e:v0.7.1:audit",
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run coverage:workflow-suite",
+    "bun run task-state:check",
+    "node packages/agentplane/bin/agentplane.js doctor"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-02T13:06:47.117Z",
+    "updated_by": "TESTER",
+    "note": "Qualification harness verified against exact clean implementation SHA 81d9e5f433d4ee95dda12e2d521ff8499822fd98; source tree and packed candidate hashes are frozen, and each observed blocker has an executable owner."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021125-DR7J1E/verification/20260802130647117-80007dcb4b578246.json",
+      "sha256": "sha256:71cdeb878f9cd846bd62d523fda929d3bbaf735a880d08fd7024747d0de33136"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/defects.md",
+      "sha256": "sha256:13c92469f7b99185e1ced031fc53e1ea065e95c11ee76297aca4b40d43f3fdb0"
+    },
+    {
+      "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/efficiency-evidence.json",
+      "sha256": "sha256:5fa0fb924e2a760f0d277c15fd4b6c31faccbd90ea772ee4026237e3386f2847"
+    },
+    {
+      "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/matched-cli-latency.json",
+      "sha256": "sha256:dd5f540ce6d68fc69d903cfeacb9e7c366c8b59e8ebafe9c390aee129f46d92b"
+    },
+    {
+      "path": ".agentplane/cache/v0.7.1-qualification/81d9e5f433d4ee95dda12e2d521ff8499822fd98/report.json",
+      "sha256": "sha256:c1667120140eeb6c116ca17a9e4ed8a709c068a05e9de5fabaab0dceefecc3e6"
+    }
+  ],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
