@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: "Scope expanded under the user's standing release authorization to include the hosted-check runner concurrency defect discovered during verification."
 verification:
   state: "ok"
-  updated_at: "2026-08-03T20:18:08.767Z"
+  updated_at: "2026-08-03T20:20:46.804Z"
   updated_by: "TESTER"
-  note: "PASS: all mandatory gates and typed eight-process contention outcomes recorded explicitly at 76c2607a560e."
+  note: "PASS: all seven Verify Steps, routing, evidence bundle, and full clean worktree state recorded at 76c2607a560e."
   attempts: 0
 quality_review:
   state: "rework"
@@ -175,8 +175,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: all mandatory gates and typed eight-process contention outcomes recorded explicitly at 76c2607a560e."
+  -
+    type: "verify"
+    at: "2026-08-03T20:20:46.804Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: all seven Verify Steps, routing, evidence bundle, and full clean worktree state recorded at 76c2607a560e."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:19:20.050Z"
+doc_updated_at: "2026-08-03T20:20:48.277Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:
@@ -533,6 +539,101 @@ sections:
     Result: pass
     Evidence: 160/160 concurrent starts; every cycle produced exactly one winner and seven runner_effect_operation_claimed losers
     Scope: atomic immutable effect publication and typed authority-loss behavior
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+    - old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T20:20:46.804Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: all seven Verify Steps, routing, evidence bundle, and full clean worktree state recorded at 76c2607a560e.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:19:20.050Z, excerpt_hash=sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade
+
+    Details:
+
+    Command: ap doctor legacy --json && ap doctor legacy
+    Result: pass
+    Evidence: 12 adapters; used=3 unused=6 unknown=3 blocked=0; every adapter emitted evidence and a non-empty migration command
+    Scope: manifest inventory, probes, stable JSON and human rendering
+
+    Command: focused command catalog, legacy recovery, and package fixtures within bun run test:fast
+    Result: pass
+    Evidence: full fast suite passed 536/536 files and 3786/3786 tests at implementation 76c2607a560e5110f88abbce99930002e228761d
+    Scope: default 11-operation help, hidden alias, advanced repair path, and compatibility receipts
+
+    Command: bun run package:tarball:check && bun run package:install-smoke
+    Result: pass
+    Evidence: package inventories core=103 recipes=21 agentplane=59; clean-install migration matrix 8/8
+    Scope: publishable artifacts and installed doctor legacy runtime
+
+    Command: 20-cycle eight-process contention stress
+    Result: pass
+    Evidence: 160/160 concurrent starts; every cycle produced exactly one winner and seven runner_effect_operation_claimed losers
+    Scope: atomic immutable effect publication and typed authority-loss behavior
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript 7.0.2 project build completed
+    Scope: maintained compiler and type contracts
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, compatibility, RF-04 50-run baseline, trust, architecture, clone, Knip, coverage, and lifecycle ratchets passed
+    Scope: repository contract gates
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12/12 critical chunks passed
+    Scope: efficiency, replay, exits, Git edges, protected paths, scope leakage, symlink roots, and trust boundaries
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 536/536 files and 3786/3786 tests passed in 151.99 seconds
+    Scope: maintained AgentPlane, core, recipes, and testkit behavior
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: CLI unused files 0/0 and total 0/0; core compatibility baseline 21/21 with no growth
+    Scope: unused code and compatibility baseline
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: runtime error threshold greater than 600 passed; effect-operation is 597 lines; oversized-test baseline 10 entries and 11355 lines passed
+    Scope: runtime and test module-size ratchets
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK after implementation and task evidence commits
+    Scope: canonical policy graph
+
+    Command: ap evidence bundle 202608021535-CNQKXP && ap evidence verify 202608021535-CNQKXP
+    Result: pass
+    Evidence: manifest sha256:1a4409010e73af19c97033773fb4303da4f2198fbabaea031f8d0d57704d3854 verified 74 files with zero errors
+    Scope: deterministic task evidence bundle
+
+    Command: git status --short --untracked-files=all
+    Result: pass
+    Evidence: status_entries=0 before this verification mutation; no tracked, untracked, or unrelated drift
+    Scope: complete task worktree state
 
     BlueprintSnapshotRef:
     - state: current
@@ -929,6 +1030,101 @@ Command: 20-cycle eight-process contention stress
 Result: pass
 Evidence: 160/160 concurrent starts; every cycle produced exactly one winner and seven runner_effect_operation_claimed losers
 Scope: atomic immutable effect publication and typed authority-loss behavior
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+- old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T20:20:46.804Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: all seven Verify Steps, routing, evidence bundle, and full clean worktree state recorded at 76c2607a560e.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:19:20.050Z, excerpt_hash=sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade
+
+Details:
+
+Command: ap doctor legacy --json && ap doctor legacy
+Result: pass
+Evidence: 12 adapters; used=3 unused=6 unknown=3 blocked=0; every adapter emitted evidence and a non-empty migration command
+Scope: manifest inventory, probes, stable JSON and human rendering
+
+Command: focused command catalog, legacy recovery, and package fixtures within bun run test:fast
+Result: pass
+Evidence: full fast suite passed 536/536 files and 3786/3786 tests at implementation 76c2607a560e5110f88abbce99930002e228761d
+Scope: default 11-operation help, hidden alias, advanced repair path, and compatibility receipts
+
+Command: bun run package:tarball:check && bun run package:install-smoke
+Result: pass
+Evidence: package inventories core=103 recipes=21 agentplane=59; clean-install migration matrix 8/8
+Scope: publishable artifacts and installed doctor legacy runtime
+
+Command: 20-cycle eight-process contention stress
+Result: pass
+Evidence: 160/160 concurrent starts; every cycle produced exactly one winner and seven runner_effect_operation_claimed losers
+Scope: atomic immutable effect publication and typed authority-loss behavior
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript 7.0.2 project build completed
+Scope: maintained compiler and type contracts
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, compatibility, RF-04 50-run baseline, trust, architecture, clone, Knip, coverage, and lifecycle ratchets passed
+Scope: repository contract gates
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12/12 critical chunks passed
+Scope: efficiency, replay, exits, Git edges, protected paths, scope leakage, symlink roots, and trust boundaries
+
+Command: bun run test:fast
+Result: pass
+Evidence: 536/536 files and 3786/3786 tests passed in 151.99 seconds
+Scope: maintained AgentPlane, core, recipes, and testkit behavior
+
+Command: bun run knip:check
+Result: pass
+Evidence: CLI unused files 0/0 and total 0/0; core compatibility baseline 21/21 with no growth
+Scope: unused code and compatibility baseline
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: runtime error threshold greater than 600 passed; effect-operation is 597 lines; oversized-test baseline 10 entries and 11355 lines passed
+Scope: runtime and test module-size ratchets
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK after implementation and task evidence commits
+Scope: canonical policy graph
+
+Command: ap evidence bundle 202608021535-CNQKXP && ap evidence verify 202608021535-CNQKXP
+Result: pass
+Evidence: manifest sha256:1a4409010e73af19c97033773fb4303da4f2198fbabaea031f8d0d57704d3854 verified 74 files with zero errors
+Scope: deterministic task evidence bundle
+
+Command: git status --short --untracked-files=all
+Result: pass
+Evidence: status_entries=0 before this verification mutation; no tracked, untracked, or unrelated drift
+Scope: complete task worktree state
 
 BlueprintSnapshotRef:
 - state: current
