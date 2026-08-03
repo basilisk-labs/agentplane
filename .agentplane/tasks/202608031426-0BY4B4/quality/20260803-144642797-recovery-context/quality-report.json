@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202608031426-0BY4B4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T14:47:30.763Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "cd4b21269e0a274142560a755ff235f99c9a40e8",
+  "blueprint_digest": "d0446cd16c1a55460e73253958b70aa078d944122d23c6b37691a6dd27a7ba10",
+  "findings": [
+    "The frozen packet contains only a self-reported verification note; it contains no verification records, runner history, or runtime evidence from which the declared passing checks can be independently established."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608031426-0BY4B4/README.md"
+  ],
+  "missing_tests": [
+    "Provide deterministic results for the focused queue and route reconciliation test files, including handoff recovery after review resolution and repeated cleanup idempotence.",
+    "Provide deterministic negative-case results proving failed hosted checks and unavailable or ambiguous remote state cannot auto-complete or trigger unsafe replay.",
+    "Provide deterministic evidence for the merged PR plus hosted-close plus cleanup fixture reaching queue done and terminal.done without manual queue release."
+  ],
+  "hidden_assumptions": [
+    "The CODER verification summary accurately represents the commands executed and their results despite the frozen packet containing no underlying check records.",
+    "Existing tests outside the visible patch cover failed hosted checks, ambiguous remote state, and idempotent repeated cleanup.",
+    "Reclassifying the unresolved-review gate from handoff to queued remains safe under concurrent workers and reservation retries."
+  ],
+  "residual_risks": [
+    "Attach frozen deterministic check evidence for the focused reconciliation suite and required negative cases, including command identity, exit status, and relevant assertions, then repeat semantic evaluation against the same implementation SHA."
+  ]
+}

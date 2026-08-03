@@ -13,10 +13,7 @@ Created: 2026-08-03T14:26:49.868Z
 ## Verification
 
 - State: ok
-- Note: Command: bun run ci:local:fast; focused Vitest route/queue suite; built CLI next-action against PR 4756 state.
-Result: PASS. 533 files / 3767 tests passed; 12/12 critical CLI chunks passed; focused 7 files / 99 tests passed; typecheck, lint, format, policy routing, diff, hotspot, and build gates passed.
-Evidence: implementation commit cd4b21269; actual PR 4756 route returned terminal.done with evidence_missing=none; retry tests prove unresolved review becomes queued and --wait retries without manual release.
-Scope: integration queue retry classification, finalize-time queue normalization, base synchronization proof, hosted-close terminal route, and regression tests only.
+- Note: Verified with structured command evidence: focused route and queue suite, full local CI, and live PR 4756 terminal convergence all passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

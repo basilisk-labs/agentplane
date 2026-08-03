@@ -1,0 +1,23 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Focused integration queue and route reconciliation tests pass.",
+    "Merged plus hosted-close plus cleanup converges to terminal done without manual queue release.",
+    "Open PR with unresolved review remains fail-closed and is not auto-finalized."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T14:45:26.565Z",
+    "updated_by": "CODER",
+    "note": "Command: bun run ci:local:fast; focused Vitest route/queue suite; built CLI next-action against PR 4756 state.\nResult: PASS. 533 files / 3767 tests passed; 12/12 critical CLI chunks passed; focused 7 files / 99 tests passed; typecheck, lint, format, policy routing, diff, hotspot, and build gates passed.\nEvidence: implementation commit cd4b21269; actual PR 4756 route returned terminal.done with evidence_missing=none; retry tests prove unresolved review becomes queued and --wait retries without manual release.\nScope: integration queue retry classification, finalize-time queue normalization, base synchronization proof, hosted-close terminal route, and regression tests only."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
