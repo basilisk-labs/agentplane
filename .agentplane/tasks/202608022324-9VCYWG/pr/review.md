@@ -6,7 +6,7 @@ Created: 2026-08-02T23:28:27.052Z
 
 - Task: `202608022324-9VCYWG`
 - Title: Complete the task advance semantic-result round trip
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608022324-9VCYWG/complete-the-task-advance-semantic-result-round`
 - Canonical task record: `.agentplane/tasks/202608022324-9VCYWG/README.md`
 

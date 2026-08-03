@@ -1,10 +1,11 @@
 ---
 id: "202608022324-9VCYWG"
 title: "Complete the task advance semantic-result round trip"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -31,34 +32,33 @@ verification:
   note: "Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T01:15:13.250Z"
+  updated_at: "2026-08-03T01:27:15.943Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "f48e6021df6f6cd6538d58191c1da10091d88085"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "403ff7151a155fe9d3fbc3c017cd7ac6bac2ec56"
   blueprint_digest: "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84"
   evidence_refs:
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608022324-9VCYWG/README.md"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608022324-9VCYWG/verification/20260803011331709-396c6f80bff2016f.json"
-    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/verification/20260803012547342-9cde180b3b2ac71d.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Budget-exhausted recovery can consume an accepted result without binding the completed operation to the current postcondition fingerprint."
+    - "The implementation binds recovered completed results to the accepted semantic result and the current postcondition fingerprint before consuming the exchange; focused recovery, mismatch, stale-state, replay, concurrency-sensitive, static, policy, size, and critical checks passed."
 commit:
-  hash: "f48e6021df6f6cd6538d58191c1da10091d88085"
-  message: "🚧 9VCYWG task: bind recovered completion result"
+  hash: "0822d0984d1c29cb4899acf14de57f2c4f2c5331"
+  message: "🚧 9VCYWG task: record budget recovery verification"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: bound completed supervisor result digest to the exact work order and accepted SemanticResult."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -131,8 +134,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption."
+  -
+    type: "status"
+    at: "2026-08-03T01:27:59.159Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T01:25:48.555Z"
+doc_updated_at: "2026-08-03T01:27:59.159Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
@@ -406,6 +416,9 @@ sections:
       Impact: The external agent needs only task advance plus one typed SemanticResult while Agentplane owns lifecycle, Git, checks, evaluator routing, and closeout mechanics.
       Resolution: Added direct and branch_pr round-trip coverage, accepted-effect recovery, immutable exchange binding, and compatibility ratchets; no residual blocker in task scope.
 extensions:
+  implementation_commit:
+    hash: "403ff7151a155fe9d3fbc3c017cd7ac6bac2ec56"
+    message: "🚧 9VCYWG task: bind budget-stopped recovery"
   workflow_route_baseline:
     start_head_sha: "d7b766b9c4f7c8df771e06f3c8a1a60129035087"
     version: 1

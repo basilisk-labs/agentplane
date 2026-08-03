@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:72b329c2b642faa5c44e2e701ecf75d1dfa5e0cc8c30eda0e5001e07bc02dbef",
   "pr_number": 4750,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4750",
+  "pre_merge_closure": {
+    "basis_commit": "0822d0984d1c29cb4899acf14de57f2c4f2c5331",
+    "branch": "task/202608022324-9VCYWG/complete-the-task-advance-semantic-result-round",
+    "pr_number": 4750,
+    "recorded_at": "2026-08-03T01:27:59.203Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608022324-9VCYWG",
