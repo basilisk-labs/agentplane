@@ -1,10 +1,11 @@
 ---
 id: "202608021231-BPMM04"
 title: "Record token usage on every completed task"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -53,9 +54,23 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No contract-breaking defect remains in the frozen implementation."
+token_usage:
+  agent_runs: 6
+  input_tokens: 1636294
+  journal_digest: "sha256:b069d8598697199c0f9794a689c4fb20ae98384417b093be8a4370487d03ae1a"
+  observed_agent_runs: 6
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "partial"
+  total_tokens: 1654478
+  unavailable_reason: "some_agent_runs_lack_output_reasoning_breakdown"
+  updated_at: "2026-08-03T12:28:29.581Z"
 commit:
-  hash: "613cd8095f4cebf234dafaa8348f87f173495d9e"
-  message: "🪙 BPMM04 task: record completed-task token usage"
+  hash: "f0b20929c7bfb657c371374f450c63d9c50a05f7"
+  message: "🧩 BPMM04 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -63,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: first-class completed-task token usage projected from Agentplane-owned supervisor telemetry, including exact, partial, and unavailable states; task, brief, export, hosted-close, and ACR surfaces are covered."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -138,8 +156,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified 71b53fd7a1: no-usage managed runs complete with unavailable token projection; all required gates pass."
+  -
+    type: "status"
+    at: "2026-08-03T12:28:29.581Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T12:26:25.592Z"
+doc_updated_at: "2026-08-03T12:28:29.592Z"
 doc_updated_by: "CODER"
 description: "Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage."
 sections:
@@ -636,6 +661,9 @@ sections:
       Impact: Operators and agents can inspect completion cost without reconstructing supervisor journals or accepting fabricated zero values.
       Resolution: Shared compact renderer and route summary projection added with end-to-end CLI regression coverage.
 extensions:
+  implementation_commit:
+    hash: "71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f"
+    message: "🪙 BPMM04 task: tolerate missing token telemetry"
   workflow_route_baseline:
     start_head_sha: "a447a78e85d0d520b7bb16074d6720ae3c3bc152"
     version: 1
@@ -1147,3 +1175,16 @@ DecisionContextRef:
 - Observation: Completed task token usage is consistent across task status, task brief, and both JSON projections; partial telemetry remains explicit.
   Impact: Operators and agents can inspect completion cost without reconstructing supervisor journals or accepting fabricated zero values.
   Resolution: Shared compact renderer and route summary projection added with end-to-end CLI regression coverage.
+
+## Token Usage
+
+- State: `partial`
+- Completeness: `6/6` agent runs
+- Input tokens: `1636294`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `1654478`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b069d8598697199c0f9794a689c4fb20ae98384417b093be8a4370487d03ae1a`
+- Unavailable reason: `some_agent_runs_lack_output_reasoning_breakdown`
+- Updated at: `2026-08-03T12:28:29.581Z`
