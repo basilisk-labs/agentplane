@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608032250-WDRW1E/stabilize-supervisor-latency-p95-qualification-s",
+  "created_at": "2026-08-03T22:51:23.070Z",
+  "diffstat_sha256": "sha256:a51655862cd528a47d860b9101da5b32b47316c1998a81f756400746e5649be8",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608032250-WDRW1E",
+  "updated_at": "2026-08-03T22:51:23.070Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

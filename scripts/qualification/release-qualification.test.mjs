@@ -517,14 +517,21 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(failing.delta_ms, 4);
   });
 
-  it("requires 10 cold and 30 warm supervisor samples for both public frontends", () => {
+  it("requires 20 cold and 30 warm supervisor samples for both public frontends", () => {
     const report = {
       schema_version: 1,
       kind: "agentplane.v0.7.1_supervisor_latency",
-      phases: { cold: supervisorLatencySurfaces(10), warm: supervisorLatencySurfaces(30) },
+      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
     };
 
     assert.equal(validateSupervisorLatencyReport(report), report);
+    const insufficientCold = structuredClone(report);
+    insufficientCold.phases.cold[0].candidate.sample_count = 10;
+    insufficientCold.phases.cold[0].candidate.samples = Array.from({ length: 10 }, () => 100);
+    assert.throws(
+      () => validateSupervisorLatencyReport(insufficientCold),
+      /cold\.external_advance\.candidate requires 20 samples/u,
+    );
     const insufficient = structuredClone(report);
     insufficient.phases.warm[0].candidate.sample_count = 29;
     assert.throws(
