@@ -553,6 +553,7 @@ describe("evaluator run command", () => {
     expect(prompt).toContain("# AgentPlane EVALUATOR episode");
     expect(prompt).toContain("sgr.evaluator_result.v1");
     expect(prompt).toContain("caller, not the read-only evaluator, persists it");
+    expect(prompt).toContain("Do not silently widen the declared trust model");
     expect(prompt).toContain(`result_output: ${path.relative(root, prepared.result_path)}`);
 
     const applied = await applyEvaluatorSgrReview({

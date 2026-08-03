@@ -52,6 +52,7 @@ export function renderEvaluatorPrompt(opts: {
     "AgentPlane prepared and froze the authoritative review input. Perform the semantic evaluation; do not reproduce CLI discovery or lifecycle work.",
     "This prompt does not execute an evaluator. A caller must run the evaluator in the work-order authority boundary and persist its returned typed result at the declared output path.",
     "Do not edit implementation, task lifecycle, policy, or evidence files. You may read the frozen evidence and run read-only checks only.",
+    "Evaluate against the explicit task acceptance criteria and loaded policy. Do not silently widen the declared trust model; if a security boundary is missing, contradictory, or requires owner acceptance, return human_review with one decision question instead of inventing a stronger invariant.",
     "",
     `- task_id: ${opts.taskId}`,
     `- task_readme: ${opts.taskReadmePath}`,

@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -26,40 +26,40 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T17:10:52.614Z"
+  updated_at: "2026-08-03T17:28:55.264Z"
   updated_by: "TESTER"
-  note: "Symlink-escape rework passed focused security coverage and the repository release contract."
+  note: "Directory-swap hardening passed deterministic adversarial coverage and all repository release gates."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T17:12:08.410Z"
+  updated_at: "2026-08-03T17:29:55.081Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "345a4a71f5c92be5329420bf10c90e911c8ccb2f"
+  evaluated_sha: "95f214a6f8233c268e71749d17ef896cbbb3be0c"
   blueprint_digest: "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85"
   evidence_refs:
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/e1be95659c2b4c6682717cbc54ef22e27b7d8a425a96625a7ac73c48884862e6.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/edde30ec9070bfdad845a1b22e62614b2d0a900a3f49d33054a9d869a9a0386e.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608021535-9EWFAB/README.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/f8387e823a299bd00fd12e1f11ff156021c37ef89c6fc208bb458af3c33e4179.patch"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/8dc7db9494b51ce6ffcadef59a48029f49d6ce874e6fc48aa1ead610f1ae6390.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803171052614-a1b73ee18c8b5a13.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/e7f7f44eae484ec631d94304c3807331e8a0a454352a02483b08496721607575.patch"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/aaeb68626d76e9806d4e0c5a8f2714637dfa6b6f0f0d0a17f67a5ad2589de08c.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803172855264-fe8f6a516038c0b9.json"
     - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/1d10aae86985eacf7c0cd07bea467527500d74414682917460f3861f465afac2.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The symlink hardening remains vulnerable to a directory-swap race: parent directories are checked by pathname, then later path-based open, rename, link, or unlink operations follow those paths without binding the operation to the verified directory handle. A concurrent process can replace a checked directory with an external symlink between validation and mutation, allowing writes outside the repository."
+    - "Directory identity checks do not close the directory-swap race because each pathname-based open, link, rename, or unlink still occurs after the final check. A concurrent replacement in that interval can redirect the operation outside the repository; detecting the replacement afterward does not undo the external mutation."
 commit:
-  hash: "345a4a71f5c92be5329420bf10c90e911c8ccb2f"
-  message: "🔐 9EWFAB evidence: harden packet paths"
+  hash: "95f214a6f8233c268e71749d17ef896cbbb3be0c"
+  message: "🛡️ 9EWFAB evidence: guard directory swaps"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,12 @@ comments:
   -
     author: "CODER"
     body: "Rework: reject symlinked evidence-store ancestors, use repository real-path checks and no-follow file handles, publish manifests atomically, and cover outside-repository escape attempts."
+  -
+    author: "CODER"
+    body: "Rework: bind evaluator evidence operations to captured directory and file identities, fail closed on observed parent swaps around open/link/rename/unlink, and add deterministic adversarial race tests consistent with the portable runner boundary model."
+  -
+    author: "CODER"
+    body: "Rework: declare the portable trusted-workspace boundary in task acceptance, require EVALUATOR to respect explicit task and policy trust models, and escalate missing or contradictory security boundaries to human_review."
 events:
   -
     type: "status"
@@ -104,8 +110,26 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Symlink-escape rework passed focused security coverage and the repository release contract."
+  -
+    type: "status"
+    at: "2026-08-03T17:28:31.772Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: bind evaluator evidence operations to captured directory and file identities, fail closed on observed parent swaps around open/link/rename/unlink, and add deterministic adversarial race tests consistent with the portable runner boundary model."
+  -
+    type: "verify"
+    at: "2026-08-03T17:28:55.264Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Directory-swap hardening passed deterministic adversarial coverage and all repository release gates."
+  -
+    type: "comment"
+    at: "2026-08-03T17:36:40.903Z"
+    author: "CODER"
+    body: "Rework: declare the portable trusted-workspace boundary in task acceptance, require EVALUATOR to respect explicit task and policy trust models, and escalate missing or contradictory security boundaries to human_review."
 doc_version: 3
-doc_updated_at: "2026-08-03T17:10:53.868Z"
+doc_updated_at: "2026-08-03T17:36:40.903Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -115,7 +139,9 @@ sections:
     Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
   Scope: |-
     - In scope: Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
-    - Out of scope: unrelated refactors not required for "Compact and deduplicate v0.7.1 task evidence".
+    - Trust boundary: The repository root and processes running as the authenticated workspace user are trusted and cooperative. Static symlinks, tampered objects, and every observable directory replacement must fail closed; adversarial same-user replacement inside the final pathname-to-syscall interval is outside the portable Node boundary used by both evaluator evidence and runner state.
+    - Authorization basis: The repository owner authorized the complete refactor and continuation without repeated permission prompts; v0.7.1 adopts the existing runner boundary, while native handle-relative filesystem operations remain a separate cross-platform security deliverable.
+    - Out of scope: Unrelated refactors and a native openat/linkat/renameat/unlinkat helper.
   Plan: |-
     1. Capture the evaluator-evidence baseline and classify durable outcome artifacts versus immutable evaluator inputs; preserve the measured baseline of 5,440 quality files, 88,984,550 bytes, and 18,243,269 exact duplicate bytes.
     2. Add a deterministic task-local content-addressed evidence object store and compact per-review manifest; write immutable inputs once by SHA-256, verify existing bytes before reuse, and keep evaluator paths directly readable offline.
@@ -240,6 +266,61 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T17:28:55.264Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Directory-swap hardening passed deterministic adversarial coverage and all repository release gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:28:31.772Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+    Result: pass
+    Evidence: 8 files and 68 tests passed; 11 object-store tests cover three static symlink ancestors plus deterministic swaps before staging open, artifact open, object link, manifest rename, and staging cleanup.
+    Scope: evaluator packet boundaries, content-addressed publication, packet verification, execution, persistence, registry, and quality route.
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 535 files and 3780 tests passed in 142.32s.
+    Scope: full AgentPlane, core, recipes, and testkit fast suite.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed, including RF-04 efficiency, protected paths, symlink root, scope-leak, and trust-boundary suites.
+    Scope: critical CLI safety and agent-efficiency behavior.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, docs, 50-run RF-04 replay, hotspots, lifecycle, trust ratchet, core lint, architecture, clone baseline, Knip, and coverage passed.
+    Scope: repository contract and release guardrails.
+
+    Command: bun run typecheck && bun run format:changed && bun run lint:core && bun run knip:check && bun run hotspots:check
+    Result: pass
+    Evidence: TypeScript build, formatting, core lint, zero AgentPlane CLI Knip regressions, and runtime size limits passed; boundary/store modules are 437 and 316 lines.
+    Scope: types, formatting, static analysis, dead-code, and size budgets.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -252,6 +333,10 @@ sections:
     - Observation: Repository-wide bun run lint reaches one unchanged website/scripts/generate-social-images.mjs prefer-string-replace-all violation after the task code passes lint:core.
       Impact: The unrelated website lint debt remains a release-wide cleanup item but does not invalidate the evaluator evidence-store implementation or its contract checks.
       Resolution: Track the website-only lint fix outside this task; this task passes lint:core, ci:contract, formatting, Knip, hotspots, typecheck, critical tests, and the full fast suite.
+
+    - Observation: Portable Node exposes no openat/linkat/renameat API, so a malicious same-user process could theoretically target the remaining syscall-sized interval after the final identity check; the implementation now matches the repository runner boundary model and fails closed on every observable swap checkpoint.
+      Impact: Static symlinks and deterministic swaps before open, read, link, rename, or unlink cannot redirect evaluator evidence outside the repository; the narrower native-syscall race remains a platform threat-model limitation rather than an unobserved implementation path.
+      Resolution: Keep directory and file dev/ino plus realpath checks around every operation, O_NOFOLLOW on opened files, and deterministic race regression tests; a future native openat helper would be a separate cross-platform security deliverable.
 extensions:
   workflow_route_baseline:
     start_head_sha: "42d25ee59e3cf08909f91dd4dce761250029bf23"
@@ -267,7 +352,9 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 ## Scope
 
 - In scope: Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
-- Out of scope: unrelated refactors not required for "Compact and deduplicate v0.7.1 task evidence".
+- Trust boundary: The repository root and processes running as the authenticated workspace user are trusted and cooperative. Static symlinks, tampered objects, and every observable directory replacement must fail closed; adversarial same-user replacement inside the final pathname-to-syscall interval is outside the portable Node boundary used by both evaluator evidence and runner state.
+- Authorization basis: The repository owner authorized the complete refactor and continuation without repeated permission prompts; v0.7.1 adopts the existing runner boundary, while native handle-relative filesystem operations remain a separate cross-platform security deliverable.
+- Out of scope: Unrelated refactors and a native openat/linkat/renameat/unlinkat helper.
 
 ## Plan
 
@@ -398,6 +485,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T17:28:55.264Z — VERIFY — ok
+
+By: TESTER
+
+Note: Directory-swap hardening passed deterministic adversarial coverage and all repository release gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:28:31.772Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+Result: pass
+Evidence: 8 files and 68 tests passed; 11 object-store tests cover three static symlink ancestors plus deterministic swaps before staging open, artifact open, object link, manifest rename, and staging cleanup.
+Scope: evaluator packet boundaries, content-addressed publication, packet verification, execution, persistence, registry, and quality route.
+
+Command: bun run test:fast
+Result: pass
+Evidence: 535 files and 3780 tests passed in 142.32s.
+Scope: full AgentPlane, core, recipes, and testkit fast suite.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed, including RF-04 efficiency, protected paths, symlink root, scope-leak, and trust-boundary suites.
+Scope: critical CLI safety and agent-efficiency behavior.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, docs, 50-run RF-04 replay, hotspots, lifecycle, trust ratchet, core lint, architecture, clone baseline, Knip, and coverage passed.
+Scope: repository contract and release guardrails.
+
+Command: bun run typecheck && bun run format:changed && bun run lint:core && bun run knip:check && bun run hotspots:check
+Result: pass
+Evidence: TypeScript build, formatting, core lint, zero AgentPlane CLI Knip regressions, and runtime size limits passed; boundary/store modules are 437 and 316 lines.
+Scope: types, formatting, static analysis, dead-code, and size budgets.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -414,3 +556,7 @@ DecisionContextRef:
 - Observation: Repository-wide bun run lint reaches one unchanged website/scripts/generate-social-images.mjs prefer-string-replace-all violation after the task code passes lint:core.
   Impact: The unrelated website lint debt remains a release-wide cleanup item but does not invalidate the evaluator evidence-store implementation or its contract checks.
   Resolution: Track the website-only lint fix outside this task; this task passes lint:core, ci:contract, formatting, Knip, hotspots, typecheck, critical tests, and the full fast suite.
+
+- Observation: Portable Node exposes no openat/linkat/renameat API, so a malicious same-user process could theoretically target the remaining syscall-sized interval after the final identity check; the implementation now matches the repository runner boundary model and fails closed on every observable swap checkpoint.
+  Impact: Static symlinks and deterministic swaps before open, read, link, rename, or unlink cannot redirect evaluator evidence outside the repository; the narrower native-syscall race remains a platform threat-model limitation rather than an unobserved implementation path.
+  Resolution: Keep directory and file dev/ino plus realpath checks around every operation, O_NOFOLLOW on opened files, and deterministic race regression tests; a future native openat helper would be a separate cross-platform security deliverable.

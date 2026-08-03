@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T17:28:55.264Z",
+    "updated_by": "TESTER",
+    "note": "Directory-swap hardening passed deterministic adversarial coverage and all repository release gates."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021535-9EWFAB/verification/20260803172855264-fe8f6a516038c0b9.json",
+      "sha256": "sha256:12cdee165c81a67173e0143f7f7b6ca9955f0849f3c0752ccdf3482d666501f7"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
