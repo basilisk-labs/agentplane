@@ -6,7 +6,7 @@ Created: 2026-08-03T16:19:36.596Z
 
 - Task: `202608021535-9EWFAB`
 - Title: Compact and deduplicate v0.7.1 task evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021535-9EWFAB/compact-and-deduplicate-v0-7-1-task-evidence`
 - Canonical task record: `.agentplane/tasks/202608021535-9EWFAB/README.md`
 
