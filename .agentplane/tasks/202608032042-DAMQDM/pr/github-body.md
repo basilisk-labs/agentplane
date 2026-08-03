@@ -27,9 +27,9 @@ Make the v0.7.1 qualification selector exclude scenarios whose dependencies are 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/qualification/release-qualification.mjs    | 33 ++++++++++++++++++----
+ scripts/qualification/release-qualification.mjs    | 31 ++++++++++++++++++----
  .../qualification/release-qualification.test.mjs   | 22 ++++++++++++---
- 2 files changed, 45 insertions(+), 10 deletions(-)
+ 2 files changed, 44 insertions(+), 9 deletions(-)
 ```
 
 </details>

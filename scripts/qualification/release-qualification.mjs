@@ -206,7 +206,7 @@ export function selectQualificationScenarios(manifest, options) {
   if (!new Set(["core", "full"]).has(profile)) {
     throw new Error("qualification profile must be core or full");
   }
-  const requested = new Set(options.scenarioIds ?? []);
+  const requested = new Set(options.scenarioIds);
   const unknown = [...requested].filter(
     (id) => !manifest.scenarios.some((scenario) => scenario.id === id),
   );
