@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T22:21:16.897Z",
+    "updated_by": "TESTER",
+    "note": "Evidence rerun path restriction and static checks pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608032207-V8HMV8/verification/20260803222116897-21ac1bfc3fdc580e.json",
+      "sha256": "sha256:626f284c5aa73f3a49e65fe30d55e260aa9ccf6d18daa21fd731339909c3ec30"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

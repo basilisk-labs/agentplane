@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608032207-V8HMV8",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T22:21:34.323Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "be24b434ccc3fcbdce64f00dacb0f870afc7e28a",
+  "blueprint_digest": "8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b",
+  "findings": [
+    "Path normalization happens before namespace classification; .agentplane/reports/<run> and .agentplane/tasks/<task-id>/evidence remain rerunnable, while root, outside-repository, traversal-normalized, and source directories are rejected before Git cleanliness evaluation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/352a72283782d21d8d90c65d3162be69843f0f927e71251749fcd1f8daaa3436.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
