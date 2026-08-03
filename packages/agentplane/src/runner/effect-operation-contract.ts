@@ -28,6 +28,21 @@ export function runnerEffectRuntimeError(
   });
 }
 
+export function runnerEffectClaimedError(
+  operation: RunnerEffectOperation,
+  observedClaimDigest: string | null,
+): CliError {
+  return runnerEffectRuntimeError(
+    "Runner effect start authority is already claimed by another supervisor.",
+    {
+      reason: "runner_effect_operation_claimed",
+      operation_key: operation.operation_key,
+      claim_generation: operation.claim_generation,
+      observed_claim_digest: observedClaimDigest,
+    },
+  );
+}
+
 function taskIdFromRunnerEffectBundle(bundle: RunnerContextBundle): string {
   const taskId = bundle.task?.metadata?.task_id ?? bundle.target.task_id;
   if (!taskId) throw new Error("Runner effect operation requires a task-bound invocation.");

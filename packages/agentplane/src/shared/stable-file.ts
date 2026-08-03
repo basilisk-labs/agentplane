@@ -1,5 +1,6 @@
+import { randomUUID } from "node:crypto";
 import { constants, type BigIntStats } from "node:fs";
-import { lstat, open, type FileHandle } from "node:fs/promises";
+import { link, lstat, open, unlink, type FileHandle } from "node:fs/promises";
 import path from "node:path";
 import { syncDirectory } from "@agentplaneorg/core/fs";
 
@@ -244,4 +245,38 @@ export async function writeNewStableRegularFileNoFollow(
   } finally {
     await handle.close();
   }
+}
+
+export async function publishNewStableRegularFileNoFollow(
+  filePath: string,
+  contents: string | Buffer,
+  label: string,
+): Promise<boolean> {
+  const directory = path.dirname(filePath);
+  const temporaryPath = path.join(
+    directory,
+    `.${path.basename(filePath)}.${process.pid}.${randomUUID()}.tmp`,
+  );
+  await writeNewStableRegularFileNoFollow(temporaryPath, contents, `${label} staging file`);
+  let published = false;
+  let cleanupError: Error | null = null;
+  try {
+    try {
+      await link(temporaryPath, filePath);
+      published = true;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+    }
+  } finally {
+    try {
+      await unlink(temporaryPath);
+    } catch (error) {
+      if (!published && (error as NodeJS.ErrnoException | null)?.code !== "ENOENT") {
+        cleanupError = error instanceof Error ? error : new Error(String(error));
+      }
+    }
+    await syncDirectory(directory);
+  }
+  if (cleanupError) throw cleanupError;
+  return published;
 }

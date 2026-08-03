@@ -17,12 +17,17 @@ import {
 import {
   applyForwardedRunnerEffectIdempotencyKey,
   buildFreshRunnerEffectOperation,
+  runnerEffectClaimedError,
   runnerEffectOperationMatchesIdentity,
   runnerEffectRuntimeError,
 } from "./effect-operation-contract.js";
 export { RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV } from "./effect-operation-contract.js";
 import { ensureStableRunnerArtifactDirectoryChain } from "./run-directory-boundary.js";
-import { readStableRegularTextNoFollow, writeNewStableRegularFileNoFollow } from "./stable-file.js";
+import {
+  isStableFileReadCollision,
+  publishNewStableRegularFileNoFollow,
+  readStableRegularTextNoFollow,
+} from "./stable-file.js";
 import { assertSafeRunnerRunId } from "./task-run-paths.js";
 import type {
   RunnerContextBundle,
@@ -140,18 +145,22 @@ async function readOptional<T>(opts: {
   label: string;
   parse: (value: unknown) => T;
 }): Promise<T | null> {
-  try {
-    return opts.parse(
-      JSON.parse(
-        await readStableRegularTextNoFollow(opts.file_path, opts.label, {
-          max_bytes: EFFECT_ARTIFACT_MAX_BYTES,
-        }),
-      ),
-    );
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
-    throw error;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return opts.parse(
+        JSON.parse(
+          await readStableRegularTextNoFollow(opts.file_path, opts.label, {
+            max_bytes: EFFECT_ARTIFACT_MAX_BYTES,
+          }),
+        ),
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+      if (attempt < 2 && isStableFileReadCollision(error, opts.label)) continue;
+      throw error;
+    }
   }
+  return null;
 }
 
 async function readRunnerEffectOperation(filePath: string): Promise<RunnerEffectOperation | null> {
@@ -204,17 +213,11 @@ async function writeImmutableJson(opts: {
   label: string;
   value: unknown;
 }): Promise<boolean> {
-  try {
-    await writeNewStableRegularFileNoFollow(
-      opts.file_path,
-      `${JSON.stringify(opts.value, null, 2)}\n`,
-      opts.label,
-    );
-    return true;
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("Refusing pre-existing")) return false;
-    throw error;
-  }
+  return await publishNewStableRegularFileNoFollow(
+    opts.file_path,
+    `${JSON.stringify(opts.value, null, 2)}\n`,
+    opts.label,
+  );
 }
 
 async function writeJournal(opts: {
@@ -492,6 +495,10 @@ export async function startRunnerEffectOperation(opts: {
   resolved_not_applied_source?: boolean;
 }): Promise<StartedRunnerEffectOperation> {
   const prepared = await prepareRunnerEffectOperation(opts);
+  const existingClaim = await readRunnerEffectClaim(prepared.paths.claim_path);
+  if (existingClaim) {
+    throw runnerEffectClaimedError(prepared.operation, existingClaim.digest);
+  }
   if (prepared.journal.phase !== "prepared") {
     throw runnerEffectRuntimeError(
       "Runner refuses a second adapter spawn for an existing effect operation.",
@@ -511,15 +518,7 @@ export async function startRunnerEffectOperation(opts: {
   });
   const observedClaim = await readRunnerEffectClaim(prepared.paths.claim_path);
   if (observedClaim?.digest !== claim.digest || !won) {
-    throw runnerEffectRuntimeError(
-      "Runner effect start authority is already claimed by another supervisor.",
-      {
-        reason: "runner_effect_operation_claimed",
-        operation_key: prepared.operation.operation_key,
-        claim_generation: prepared.operation.claim_generation,
-        observed_claim_digest: observedClaim?.digest ?? null,
-      },
-    );
+    throw runnerEffectClaimedError(prepared.operation, observedClaim?.digest ?? null);
   }
   const started = createRunnerEffectJournal({
     operation: prepared.operation,

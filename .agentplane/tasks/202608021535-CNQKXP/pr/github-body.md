@@ -53,13 +53,15 @@ Introduce a machine-readable compatibility-adapter manifest with introduced_in, 
  .../workflow-operation-projection.registry.test.ts |   5 +-
  .../shared/workflow-operation-projection.ts        |   5 +-
  .../shared/workflow-step-projections.test.ts       |   5 +-
- .../agentplane/src/runner/effect-operation.test.ts |  27 +-
- packages/agentplane/src/runner/effect-operation.ts |  14 +-
+ .../src/runner/effect-operation-contract.ts        |  15 +
+ .../agentplane/src/runner/effect-operation.test.ts |  40 ++-
+ packages/agentplane/src/runner/effect-operation.ts |  77 ++--
+ packages/agentplane/src/shared/stable-file.ts      |  37 +-
  .../baselines/v0.7-compatibility-candidate.json    | 125 ++++++-
  .../check-compatibility-contract-baseline.mjs      |  63 +++-
  scripts/lib/package-tarball-policy.mjs             |   1 +
  .../release/check-local-tarball-install-smoke.mjs  |  16 +
- 32 files changed, 1504 insertions(+), 92 deletions(-)
+ 34 files changed, 1596 insertions(+), 128 deletions(-)
 ```
 
 </details>

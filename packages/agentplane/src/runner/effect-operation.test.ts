@@ -177,7 +177,7 @@ describe("runner effect operation journal", () => {
         invocation: first,
         state_fingerprint: fingerprint,
       }),
-    ).rejects.toMatchObject({ context: { reason: "runner_effect_operation_not_spawnable" } });
+    ).rejects.toMatchObject({ context: { reason: "runner_effect_operation_claimed" } });
   });
 
   it("elects one adapter spawn across independent supervisor processes", async () => {
@@ -206,7 +206,7 @@ describe("runner effect operation journal", () => {
         `const fingerprint = buildStateFingerprint({ task_id: taskId, task_revision: 1, git_head: "0123456789abcdef0123456789abcdef01234567", worktree: "/workspace", components: { task: { state: "present", source: "test", value: { revision: 1 } }, git: { state: "present", source: "test", value: { head: "01234567" } }, backend_projection: { state: "present", source: "test", value: { revision: 1 } }, policy: { state: "present", source: "test", value: { version: 1 } }, blueprint: { state: "present", source: "test", value: { id: "code.branch_pr" } }, knowledge: { state: "present", source: "test", value: { refs: [] } }, provider: { state: "present", source: "test", value: { state: "local" } }, authority: { state: "present", source: "test", value: { scope: "task" } } } });\n` +
         `const state = { schema_version: 1, kind: "runner_state_fingerprint_record", outcome: "prepared", precondition_fingerprint: fingerprint, precondition_policy: { required_components: [], provider: { required: false, unavailable: "allow_if_unchanged" } }, state_before: null, state_after: null, precondition: null, effect_applied: null, post_state_reason_code: null };\n` +
         `const invocation = { adapter_id: "custom", run_id: runId, work_order_id: "work-order-effect-operation", repository_root: root, artifact_root: root, run_dir: runDir, bundle_path: path.join(runDir, "bundle.json"), state_path: path.join(runDir, "run-state.json"), events_path: path.join(runDir, "events.jsonl"), result_path: path.join(runDir, "result.json"), receipt_path: path.join(runDir, "execution-receipt.json"), trace_path: path.join(runDir, "agent-trace.jsonl"), stderr_path: path.join(runDir, "stderr.log"), trace_policy: { mode: "off", max_tail_bytes: 0, capture_stderr: false }, timeout_policy: { wall_clock_ms: 0, idle_ms: 0, terminate_grace_ms: 0 }, argv: ["custom-runner", "--task", taskId], env: {}, dry_run: false };\n` +
-        `try { const started = await startRunnerEffectOperation({ bundle: { target: { kind: "task", task_id: taskId }, task: { task_id: taskId } }, invocation, state_fingerprint: state }); await writeFile(path.join(barrier, "adapter-spawns.jsonl"), JSON.stringify({ runId, operation_key: started.operation.operation_key }) + "\\n", { flag: "a" }); console.log(JSON.stringify({ status: "winner", operation_key: started.operation.operation_key })); } catch (error) { console.log(JSON.stringify({ status: "loser", reason: error instanceof Error ? error.message : String(error) })); }\n`,
+        `try { const started = await startRunnerEffectOperation({ bundle: { target: { kind: "task", task_id: taskId }, task: { task_id: taskId } }, invocation, state_fingerprint: state }); await writeFile(path.join(barrier, "adapter-spawns.jsonl"), JSON.stringify({ runId, operation_key: started.operation.operation_key }) + "\\n", { flag: "a" }); console.log(JSON.stringify({ status: "winner", operation_key: started.operation.operation_key })); } catch (error) { const context = error && typeof error === "object" && "context" in error && error.context && typeof error.context === "object" ? error.context : null; console.log(JSON.stringify({ status: "loser", reason: error instanceof Error ? error.message : String(error), reason_code: context && "reason" in context ? context.reason : null })); }\n`,
       "utf8",
     );
     const runIds = Array.from({ length: 8 }, (_, index) => `run-${index + 1}`);
@@ -221,17 +221,24 @@ describe("runner effect operation journal", () => {
     const workerResults = await Promise.all(workers);
     const outcomes = workerResults.map(
       ({ stdout }) =>
-        JSON.parse(stdout.trim()) as { status: string; operation_key?: string; reason?: string },
+        JSON.parse(stdout.trim()) as {
+          status: string;
+          operation_key?: string;
+          reason?: string;
+          reason_code?: string | null;
+        },
     );
     const outcomeSummary = JSON.stringify(outcomes);
     expect(
       outcomes.filter((outcome) => outcome.status === "winner"),
       outcomeSummary,
     ).toHaveLength(1);
+    const losers = outcomes.filter((outcome) => outcome.status === "loser");
+    expect(losers, outcomeSummary).toHaveLength(runIds.length - 1);
     expect(
-      outcomes.filter((outcome) => outcome.status === "loser"),
+      losers.map((outcome) => outcome.reason_code),
       outcomeSummary,
-    ).toHaveLength(runIds.length - 1);
+    ).toEqual(Array.from({ length: runIds.length - 1 }, () => "runner_effect_operation_claimed"));
     const spawnLog = await readFile(path.join(barrier, "adapter-spawns.jsonl"), "utf8");
     const spawns = spawnLog
       .trim()
