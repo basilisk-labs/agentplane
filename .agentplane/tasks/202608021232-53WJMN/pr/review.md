@@ -6,14 +6,14 @@ Created: 2026-08-03T12:39:16.407Z
 
 - Task: `202608021232-53WJMN`
 - Title: Audit GitHub issues and pull requests for v0.7.1
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021232-53WJMN/audit-github-issues-and-pull-requests-for-v0-7-1`
 - Canonical task record: `.agentplane/tasks/202608021232-53WJMN/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass.
+- Note: Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit dispositions against implementation f7110ff04842.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

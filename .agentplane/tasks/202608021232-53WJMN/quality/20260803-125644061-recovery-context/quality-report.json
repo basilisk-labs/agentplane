@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021232-53WJMN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T12:56:44.734Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "f7110ff0484280df559cde44cc307cdac2e5ec20",
+  "blueprint_digest": "eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92",
+  "findings": [
+    "Hosted truth is reduced to two confirmed issues and one deferred dependency PR, with current-main reproductions and passing focused regression evidence.",
+    "The audit correctly adds the mixed task-artifact quality-target defect discovered during verification and keeps TypeScript 7 outside the v0.7.1 scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
