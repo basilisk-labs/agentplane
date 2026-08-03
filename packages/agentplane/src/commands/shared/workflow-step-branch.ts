@@ -80,6 +80,13 @@ function hostedCloseStep(state: WorkflowRouteState): WorkflowStep | null {
     state.prFlow?.closeTail.state === "merged" ||
     state.prFlow?.closeTail.state === "recorded_on_base"
   ) {
+    if (
+      (state.cleanupProbe.state === "already_clean" &&
+        state.cleanupProbe.baseSynchronized === true) ||
+      state.cleanupProbe.state === "blocked"
+    ) {
+      return null;
+    }
     const implementationBase = state.prFlow.pr.state === "not_found" ? null : state.prFlow.pr.base;
     const base =
       state.prFlow.closeTail.state === "recorded_on_base"

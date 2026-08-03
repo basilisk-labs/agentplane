@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { CliError } from "../../../shared/errors.js";
+
 const mocks = vi.hoisted(() => ({
   resolveDefaultGithubRepo: vi.fn(),
   runGhApiJson: vi.fn(),
@@ -10,7 +12,10 @@ vi.mock("./gh-api.js", () => ({
   runGhApiJson: mocks.runGhApiJson,
 }));
 
-import { checkGithubUnresolvedReviewThreads } from "./github-review-threads.js";
+import {
+  checkGithubUnresolvedReviewThreads,
+  throwIfGithubReviewThreadsUnresolved,
+} from "./github-review-threads.js";
 
 function thread(index: number) {
   return {
@@ -109,5 +114,31 @@ describe("GitHub review thread checks", () => {
     expect(mocks.runGhApiJson).toHaveBeenCalledTimes(2);
     const secondArgs = mocks.runGhApiJson.mock.calls[1]?.[1] as string[] | undefined;
     expect(secondArgs).toContain("cursor=cursor-100");
+  });
+
+  it("classifies unresolved threads as a retryable pre-merge gate", () => {
+    let caught: unknown;
+    try {
+      throwIfGithubReviewThreadsUnresolved({
+        prNumber: 123,
+        unresolved: [
+          {
+            path: "src/file.ts",
+            line: 7,
+            url: "https://github.com/example/repo/pull/123#discussion-1",
+          },
+        ],
+      });
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBeInstanceOf(CliError);
+    const error = caught as CliError;
+    expect(error.code).toBe("E_VALIDATION");
+    expect(error.context).toMatchObject({
+      reason_code: "github_review_threads_unresolved",
+      pr_number: 123,
+      unresolved_review_threads: 1,
+    });
   });
 });

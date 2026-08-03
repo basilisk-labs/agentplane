@@ -834,4 +834,47 @@ describe("integrate queue claim publication guard", () => {
     expect(queueEntry?.status).toBe("handoff");
     expect(queueEntry?.reason).toContain("terminal queue state could not be persisted");
   });
+
+  it("requeues an unresolved review gate instead of requiring manual handoff release", async () => {
+    const reviewGate = new CliError({
+      code: "E_VALIDATION",
+      message: "GitHub PR #101 has 1 unresolved review thread(s).",
+      context: { reason_code: "github_review_threads_unresolved" },
+    });
+    mocks.cmdIntegrate.mockRejectedValue(reviewGate);
+    const handler = makeRunIntegrateQueueRunNextHandler(commandContext);
+
+    await expect(
+      handler({ cwd: "/repo", rootOverride: null } as never, runNextParsed()),
+    ).rejects.toBe(reviewGate);
+
+    expect(
+      (mocks.queueState as { entries: { status: string; reason?: string }[] }).entries[0],
+    ).toMatchObject({
+      status: "queued",
+      reason: reviewGate.message,
+    });
+  });
+
+  it("waits and retries an unresolved review gate without manual queue release", async () => {
+    const reviewGate = new CliError({
+      code: "E_VALIDATION",
+      message: "GitHub PR #101 has 1 unresolved review thread(s).",
+      context: { reason_code: "github_review_threads_unresolved" },
+    });
+    mocks.cmdIntegrate.mockRejectedValueOnce(reviewGate).mockResolvedValueOnce(0);
+    const handler = makeRunIntegrateQueueRunNextHandler(commandContext);
+
+    await expect(
+      handler(
+        { cwd: "/repo", rootOverride: null } as never,
+        runNextParsed({ wait: true, pollIntervalMs: 1, timeoutMs: 1000 }),
+      ),
+    ).resolves.toBe(0);
+
+    expect(mocks.cmdIntegrate).toHaveBeenCalledTimes(2);
+    expect((mocks.queueState as { entries: { status: string }[] }).entries[0]).toMatchObject({
+      status: "done",
+    });
+  });
 });

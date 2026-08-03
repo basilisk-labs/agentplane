@@ -13,6 +13,14 @@ import {
 } from "./pr/integrate/queue-state.js";
 import { isExternalStateUnavailableError } from "./shared/external-unavailability.js";
 
+export function isRetryableIntegrationGateError(error: unknown): boolean {
+  return (
+    error instanceof CliError &&
+    error.code === "E_VALIDATION" &&
+    error.context?.reason_code === "github_review_threads_unresolved"
+  );
+}
+
 function queueEntryMatchesClaimIdentity(
   current: IntegrationQueueEntry | undefined,
   expected: IntegrationQueueEntry,
@@ -191,12 +199,13 @@ export async function runReservedIntegrationCriticalSection(opts: {
     try {
       result = await opts.run();
     } catch (err) {
+      const retryableGate = isRetryableIntegrationGateError(err);
       await writeIntegrationQueue(
         opts.gitRoot,
         markQueueEntry(
           queue,
           opts.entry.task_id,
-          "handoff",
+          retryableGate ? "queued" : "handoff",
           err instanceof Error ? err.message : String(err),
         ),
       ).catch(() => null);

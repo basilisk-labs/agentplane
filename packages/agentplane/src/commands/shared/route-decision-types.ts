@@ -11,7 +11,7 @@ export type RouteNextAction = RouteBatchNextAction;
 export type RouteCleanupProbe =
   | { state: "not_requested" }
   | { state: "unavailable"; reason: string }
-  | { state: "already_clean" }
+  | { state: "already_clean"; baseSynchronized?: boolean }
   | { state: "candidate"; count: number }
   | { state: "blocked"; reasons: string[] };
 

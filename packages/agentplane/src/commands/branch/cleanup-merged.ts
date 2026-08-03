@@ -16,6 +16,7 @@ import {
 } from "../shared/merged-branch-cleanup.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { normalizeTerminalQueueEntries } from "../integrate-queue-lane.js";
 
 import { archivePrArtifacts } from "./internal/archive-pr.js";
 import {
@@ -71,6 +72,24 @@ function normalizeRequestedTaskIds(taskIds: readonly string[] | undefined): stri
       (taskIds ?? []).map((taskId) => taskId.trim()).filter((taskId) => taskId.length > 0),
     ),
   ].toSorted((a, b) => a.localeCompare(b));
+}
+
+async function normalizeQueueAfterFinalize(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  gitRoot: string;
+  finalize: boolean;
+  quiet: boolean;
+}): Promise<void> {
+  if (!opts.finalize) return;
+  await normalizeTerminalQueueEntries({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    gitRoot: opts.gitRoot,
+    quiet: opts.quiet,
+  });
 }
 
 async function worktreeIsDirty(worktreePath: string): Promise<boolean> {
@@ -225,6 +244,14 @@ export async function cmdCleanupMerged(opts: {
         report: opts.report,
         rows: reportRows,
       });
+      await normalizeQueueAfterFinalize({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        gitRoot: resolved.gitRoot,
+        finalize: opts.finalize === true,
+        quiet: opts.quiet,
+      });
       if (!opts.quiet) {
         output.line(
           targeted ? `already clean: task=${requestedTaskIds.join(",")}` : "no candidates",
@@ -366,6 +393,15 @@ export async function cmdCleanupMerged(opts: {
         env: gitEnv(),
       });
     }
+
+    await normalizeQueueAfterFinalize({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      gitRoot: resolved.gitRoot,
+      finalize: opts.finalize === true,
+      quiet: opts.quiet,
+    });
 
     if (!opts.quiet) {
       const remoteDetail = opts.deleteRemoteBranches

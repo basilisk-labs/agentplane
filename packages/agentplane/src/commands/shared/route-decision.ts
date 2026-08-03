@@ -9,8 +9,7 @@ import {
   type ConflictReworkPreparation,
 } from "../pr/conflict-rework.js";
 import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
-import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
-import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
+import { buildTaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
 import {
   addTaskWorktreeCleanlinessBlocker,
@@ -29,11 +28,7 @@ import {
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
 import { reduceRouteState } from "./workflow-step-reducer.js";
-import {
-  taskSummary,
-  type RouteCleanupProbe,
-  type TaskRouteDecision,
-} from "./route-decision-types.js";
+import { taskSummary, type TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteAmbiguities, deriveRouteRepairPlan } from "./route-decision-repair.js";
 import {
   deriveRouteCheckoutRole,
@@ -48,6 +43,7 @@ import {
   type CommandContext,
 } from "./task-backend.js";
 import { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
+import { resolveDoneCleanupProbe } from "./route-cleanup-probe.js";
 import {
   tracePolicyAuthorityDecision,
   traceRemoteProviderState,
@@ -283,53 +279,6 @@ async function resolveLocalTaskBranchFlow(opts: {
     handoff: { present: false },
     nextAction: `agentplane pr open ${opts.task.id} --author <ROLE>`,
   };
-}
-
-async function resolveDoneCleanupProbe(opts: {
-  ctx: CommandContext;
-  resume: TaskResumeContext;
-  task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
-  remoteEnabled: boolean;
-  onDiagnostic?: (message: string) => void;
-}): Promise<RouteCleanupProbe> {
-  if (
-    opts.ctx.config.workflow_mode !== "branch_pr" ||
-    String(opts.task.status).toUpperCase() !== "DONE"
-  ) {
-    return { state: "not_requested" };
-  }
-  if (!opts.remoteEnabled) {
-    return { state: "unavailable", reason: "remote cleanup proof was not requested" };
-  }
-  const baseBranch = opts.resume.base_branch?.trim() ?? "";
-  if (!baseBranch) return { state: "unavailable", reason: "base branch is unavailable" };
-  try {
-    const resolution = await resolveCleanupPlan({
-      ctx: opts.ctx,
-      gitRoot: opts.ctx.resolvedProject.gitRoot,
-      workflowDir: opts.ctx.config.paths.workflow_dir,
-      baseBranch,
-      taskIds: [opts.task.id],
-    });
-    if (resolution.blocked.length > 0) {
-      return {
-        state: "blocked",
-        reasons: resolution.blocked.map((item) => `branch=${item.branch}: ${item.reason}`),
-      };
-    }
-    if (resolution.candidates.length > 0) {
-      return { state: "candidate", count: resolution.candidates.length };
-    }
-    if (!resolution.matchedTaskIds.has(opts.task.id)) return { state: "already_clean" };
-    return {
-      state: "unavailable",
-      reason: "cleanup proof returned a matched task without a candidate or blocker",
-    };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    opts.onDiagnostic?.(`cleanup candidate probe failed: ${message}`);
-    return { state: "unavailable", reason: message };
-  }
 }
 
 export async function buildTaskRouteDecision(opts: {
