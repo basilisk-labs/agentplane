@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun x vitest run token/status focused suites\nResult: pass\nEvidence: 30 tests passed for bf22bcd37c3af022c8cadcfc542934549f5a0358\nScope: token projection, supervisor provenance, reconciliation, status and brief surfaces\n\nCommand: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: typecheck and lint passed; Knip 539/539; policy routing OK\nScope: static, unused-code, and policy compliance at bf22bcd37c3af022c8cadcfc542934549f5a0358\n\nCommand: bun run framework:dev:bootstrap && bun run ci:contract\nResult: pass\nEvidence: RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170\nScope: full v0.7 contract and efficiency replay at bf22bcd37c3af022c8cadcfc542934549f5a0358\n\nCommand: bun run test:critical\nResult: pass\nEvidence: all 12 critical chunks passed\nScope: critical CLI regression suite at bf22bcd37c3af022c8cadcfc542934549f5a0358",
+  "digest": "sha256:83485e138230a9966f5e7a7978e96c39bd2a1e8549630e311163afa51a98d757",
+  "implementation_sha": "bf22bcd37c3af022c8cadcfc542934549f5a0358",
+  "kind": "task_verification_record",
+  "note": "Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.",
+  "recorded_at": "2026-08-03T12:07:03.445Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused managed-run fixtures with multiple executor and evaluator episodes carrying known Codex provider usage. Expected: the completed task persists exact input, output, reasoning, and total tokens from supervisor-owned evidence; each episode is counted once; README, task status/brief human output, machine JSON, and ACR expose the same aggregate and provenance/completeness state.\n2. Run external-advance, manual/direct, legacy task, adapter-without-usage, malformed-usage, and partial-usage fixtures. Expected: AgentPlane never treats agent-reported metrics as observed provider usage, never fabricates zero for unavailable usage, and preserves an explicit unavailable or partial state without blocking otherwise valid completion.\n3. Run branch_pr rework, retry, stale fingerprint, crash recovery, reconcile, repeated finish, GitHub rebase merge, hosted close, and cleanup fixtures. Expected: token aggregates survive state transitions and task-artifact commits, remain bound to the correct task/run, and cannot be lost or double-counted by replay or idempotent closure.\n4. Validate schema compatibility and historical task reads, then run the v0.7 supervisor, lifecycle, and recovery suites, bun run test:critical, bun run schemas:check, bun run typecheck, bun run lint:core, bun run knip:check, node .agentplane/policy/check-routing.mjs, and bun run ci:contract. Expected: all gates pass without baseline growth, and an independent EVALUATOR accepts the exact implementation SHA.",
+  "scope_digest": "sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e",
+  "task_id": "202608021231-BPMM04",
+  "verification_command": "agentplane verify 202608021231-BPMM04 --ok --by TESTER",
+  "verifier": "TESTER"
+}

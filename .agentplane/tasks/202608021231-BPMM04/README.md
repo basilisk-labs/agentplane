@@ -4,7 +4,7 @@ title: "Record token usage on every completed task"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T11:54:22.757Z"
+  updated_at: "2026-08-03T12:07:03.445Z"
   updated_by: "TESTER"
-  note: "Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered."
+  note: "Verified bf22bcd37: completed-task token usage is consistent and all required gates pass."
   attempts: 0
 quality_review:
   state: "rework"
@@ -103,8 +103,26 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered."
+  -
+    type: "verify"
+    at: "2026-08-03T12:04:45.225Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified bf22bcd37: 30 focused token/status tests, typecheck, lint, Knip 539/539, policy routing, full ci:contract with RF-04 50/50 and test:critical all 12 chunks passed."
+  -
+    type: "verify"
+    at: "2026-08-03T12:06:18.833Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified bf22bcd37: completed-task token usage is consistent and all required gates pass."
+  -
+    type: "verify"
+    at: "2026-08-03T12:07:03.445Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified bf22bcd37: completed-task token usage is consistent and all required gates pass."
 doc_version: 3
-doc_updated_at: "2026-08-03T11:54:24.053Z"
+doc_updated_at: "2026-08-03T12:07:04.644Z"
 doc_updated_by: "CODER"
 description: "Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage."
 sections:
@@ -308,6 +326,136 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T12:04:45.225Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified bf22bcd37: 30 focused token/status tests, typecheck, lint, Knip 539/539, policy routing, full ci:contract with RF-04 50/50 and test:critical all 12 chunks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T11:54:24.053Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+    - old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T12:06:18.833Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:04:46.557Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+    Details:
+
+    Command: bun x vitest run token/status focused suites
+    Result: pass (30 tests)
+    Evidence: implementation commit bf22bcd37c3af022c8cadcfc542934549f5a0358
+    Scope: token projection, supervisor provenance, reconciliation, status and brief surfaces
+
+    Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+    Result: pass (Knip 539/539; policy routing OK)
+    Evidence: TESTER verification session for bf22bcd37c3af022c8cadcfc542934549f5a0358
+    Scope: static, unused-code, and policy compliance
+
+    Command: bun run framework:dev:bootstrap && bun run ci:contract
+    Result: pass (RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170)
+    Evidence: TESTER verification session for bf22bcd37c3af022c8cadcfc542934549f5a0358
+    Scope: full v0.7 contract and efficiency replay
+
+    Command: bun run test:critical
+    Result: pass (12/12 chunks)
+    Evidence: TESTER verification session for bf22bcd37c3af022c8cadcfc542934549f5a0358
+    Scope: critical CLI regression suite
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+    - old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T12:07:03.445Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:06:19.963Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+    Details:
+
+    Command: bun x vitest run token/status focused suites
+    Result: pass
+    Evidence: 30 tests passed for bf22bcd37c3af022c8cadcfc542934549f5a0358
+    Scope: token projection, supervisor provenance, reconciliation, status and brief surfaces
+
+    Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: typecheck and lint passed; Knip 539/539; policy routing OK
+    Scope: static, unused-code, and policy compliance at bf22bcd37c3af022c8cadcfc542934549f5a0358
+
+    Command: bun run framework:dev:bootstrap && bun run ci:contract
+    Result: pass
+    Evidence: RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170
+    Scope: full v0.7 contract and efficiency replay at bf22bcd37c3af022c8cadcfc542934549f5a0358
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical chunks passed
+    Scope: critical CLI regression suite at bf22bcd37c3af022c8cadcfc542934549f5a0358
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+    - old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -316,6 +464,10 @@ sections:
     - Observation: The expanded supervisor/lifecycle/recovery selection passed 262/264 assertions; the two failures reproduce unchanged on clean main and both rely on approving a generated placeholder plan that v0.7 intentionally rejects.
       Impact: These failures do not originate from token accounting and do not invalidate the implementation, but they leave two obsolete lifecycle fixtures red until repaired.
       Resolution: Track the two fixture repairs as a separate mandatory pre-release task that installs an explicit semantic plan before approval; rerun the expanded selection before publishing v0.7.1.
+
+    - Observation: Completed task token usage is consistent across task status, task brief, and both JSON projections; partial telemetry remains explicit.
+      Impact: Operators and agents can inspect completion cost without reconstructing supervisor journals or accepting fabricated zero values.
+      Resolution: Shared compact renderer and route summary projection added with end-to-end CLI regression coverage.
 extensions:
   workflow_route_baseline:
     start_head_sha: "a447a78e85d0d520b7bb16074d6720ae3c3bc152"
@@ -532,6 +684,136 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T12:04:45.225Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified bf22bcd37: 30 focused token/status tests, typecheck, lint, Knip 539/539, policy routing, full ci:contract with RF-04 50/50 and test:critical all 12 chunks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T11:54:24.053Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+- old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T12:06:18.833Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:04:46.557Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+Details:
+
+Command: bun x vitest run token/status focused suites
+Result: pass (30 tests)
+Evidence: implementation commit bf22bcd37c3af022c8cadcfc542934549f5a0358
+Scope: token projection, supervisor provenance, reconciliation, status and brief surfaces
+
+Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+Result: pass (Knip 539/539; policy routing OK)
+Evidence: TESTER verification session for bf22bcd37c3af022c8cadcfc542934549f5a0358
+Scope: static, unused-code, and policy compliance
+
+Command: bun run framework:dev:bootstrap && bun run ci:contract
+Result: pass (RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170)
+Evidence: TESTER verification session for bf22bcd37c3af022c8cadcfc542934549f5a0358
+Scope: full v0.7 contract and efficiency replay
+
+Command: bun run test:critical
+Result: pass (12/12 chunks)
+Evidence: TESTER verification session for bf22bcd37c3af022c8cadcfc542934549f5a0358
+Scope: critical CLI regression suite
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+- old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T12:07:03.445Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:06:19.963Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+Details:
+
+Command: bun x vitest run token/status focused suites
+Result: pass
+Evidence: 30 tests passed for bf22bcd37c3af022c8cadcfc542934549f5a0358
+Scope: token projection, supervisor provenance, reconciliation, status and brief surfaces
+
+Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: typecheck and lint passed; Knip 539/539; policy routing OK
+Scope: static, unused-code, and policy compliance at bf22bcd37c3af022c8cadcfc542934549f5a0358
+
+Command: bun run framework:dev:bootstrap && bun run ci:contract
+Result: pass
+Evidence: RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170
+Scope: full v0.7 contract and efficiency replay at bf22bcd37c3af022c8cadcfc542934549f5a0358
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical chunks passed
+Scope: critical CLI regression suite at bf22bcd37c3af022c8cadcfc542934549f5a0358
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+- old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -544,3 +826,7 @@ DecisionContextRef:
 - Observation: The expanded supervisor/lifecycle/recovery selection passed 262/264 assertions; the two failures reproduce unchanged on clean main and both rely on approving a generated placeholder plan that v0.7 intentionally rejects.
   Impact: These failures do not originate from token accounting and do not invalidate the implementation, but they leave two obsolete lifecycle fixtures red until repaired.
   Resolution: Track the two fixture repairs as a separate mandatory pre-release task that installs an explicit semantic plan before approval; rerun the expanded selection before publishing v0.7.1.
+
+- Observation: Completed task token usage is consistent across task status, task brief, and both JSON projections; partial telemetry remains explicit.
+  Impact: Operators and agents can inspect completion cost without reconstructing supervisor journals or accepting fabricated zero values.
+  Resolution: Shared compact renderer and route summary projection added with end-to-end CLI regression coverage.
