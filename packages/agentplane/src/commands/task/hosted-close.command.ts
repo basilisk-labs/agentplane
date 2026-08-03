@@ -303,6 +303,7 @@ async function closeHostedTask(opts: {
     loadedTasks: tasksNeedingClose,
     taskCommitInfo,
     author: "INTEGRATOR",
+    required: true,
   });
   const collectedIncidents = await collectTaskIncidents({
     ctx: opts.ctx,

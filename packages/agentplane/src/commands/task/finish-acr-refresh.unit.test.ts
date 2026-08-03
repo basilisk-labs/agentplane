@@ -117,4 +117,31 @@ describe("refreshAcrArtifactsForFinishedTasks", () => {
     expect(mocks.writeAcrFile).toHaveBeenCalledTimes(1);
     expect(invalidateStatus).toHaveBeenCalled();
   });
+
+  it("keeps ordinary finish refresh best-effort but fails closed when the caller requires ACRs", async () => {
+    const { ctx } = mkCtx();
+    ctx.config.acr.enabled = true;
+    mocks.generateAcr.mockRejectedValue(new Error("invalid ACR extension"));
+    const input = {
+      ctx,
+      cwd: "/repo",
+      loadedTasks: [
+        {
+          taskId: "T-CODE",
+          task: {
+            id: "T-CODE",
+            task_kind: "standard",
+            commit: { hash: "code-hash", message: "code" },
+          },
+        },
+      ] as Parameters<typeof refreshAcrArtifactsForFinishedTasks>[0]["loadedTasks"],
+      taskCommitInfo: null,
+      author: "CODER",
+    };
+
+    await expect(refreshAcrArtifactsForFinishedTasks(input)).resolves.toEqual([]);
+    await expect(refreshAcrArtifactsForFinishedTasks({ ...input, required: true })).rejects.toThrow(
+      "Required ACR refresh failed for task T-CODE: invalid ACR extension",
+    );
+  });
 });
