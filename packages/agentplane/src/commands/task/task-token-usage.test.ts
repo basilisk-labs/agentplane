@@ -144,12 +144,77 @@ describe("completed task token usage projection", () => {
     expect(projectTaskTokenUsage({ journal: mixed })).toMatchObject({
       state: "partial",
       input_tokens: 10,
-      output_tokens: 4,
-      reasoning_tokens: 3,
+      output_tokens: null,
+      reasoning_tokens: null,
       total_tokens: 17,
       agent_runs: 2,
       observed_agent_runs: 1,
       unavailable_reason: "some_agent_runs_lack_provider_token_telemetry",
+    });
+  });
+
+  it("marks primary telemetry without an observed output breakdown partial", () => {
+    const primaryOnly = completeAgent({
+      journal: journal(),
+      role: "EXECUTOR",
+      fingerprint: fingerprintA,
+      usage: {
+        input_tokens: 10,
+        output_tokens: 7,
+        total_tokens: 17,
+      },
+    });
+
+    expect(projectTaskTokenUsage({ journal: primaryOnly })).toMatchObject({
+      state: "partial",
+      input_tokens: 10,
+      output_tokens: null,
+      reasoning_tokens: null,
+      total_tokens: 17,
+      agent_runs: 1,
+      observed_agent_runs: 1,
+      unavailable_reason: "some_agent_runs_lack_output_reasoning_breakdown",
+    });
+  });
+
+  it("does not fabricate breakdown totals when an evaluator receipt omits them", () => {
+    const executor = completeAgent({
+      journal: journal(),
+      role: "EXECUTOR",
+      fingerprint: fingerprintA,
+      usage: {
+        input_tokens: 10,
+        output_tokens: 7,
+        visible_output_tokens: 4,
+        reasoning_tokens: 3,
+        total_tokens: 17,
+      },
+    });
+    const advanced = advanceSupervisorExecutionEpisodeState({
+      journal: executor,
+      state_fingerprint_digest: fingerprintB,
+      route_observation: { state: "evaluator" },
+    });
+    const mixedBreakdown = completeAgent({
+      journal: advanced,
+      role: "EVALUATOR",
+      fingerprint: fingerprintB,
+      usage: {
+        input_tokens: 5,
+        output_tokens: 6,
+        total_tokens: 11,
+      },
+    });
+
+    expect(projectTaskTokenUsage({ journal: mixedBreakdown })).toMatchObject({
+      state: "partial",
+      input_tokens: 15,
+      output_tokens: null,
+      reasoning_tokens: null,
+      total_tokens: 28,
+      agent_runs: 2,
+      observed_agent_runs: 2,
+      unavailable_reason: "some_agent_runs_lack_output_reasoning_breakdown",
     });
   });
 

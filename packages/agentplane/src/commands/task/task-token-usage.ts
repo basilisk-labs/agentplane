@@ -57,15 +57,18 @@ export function projectTaskTokenUsage(opts: {
     });
   }
 
-  const hasBreakdown =
-    usage.visible_output_tokens !== undefined && usage.reasoning_tokens !== undefined;
-  const fullyObserved = observedAgentRuns === usage.agent_runs && hasBreakdown;
+  const breakdownObservedAgentRuns = usage.output_breakdown_observed_agent_runs ?? 0;
+  const hasCompleteBreakdown =
+    breakdownObservedAgentRuns === usage.agent_runs &&
+    usage.visible_output_tokens !== undefined &&
+    usage.reasoning_tokens !== undefined;
+  const fullyObserved = observedAgentRuns === usage.agent_runs && hasCompleteBreakdown;
   return {
     schema_version: 1,
     state: fullyObserved ? "observed" : "partial",
     input_tokens: usage.input_tokens,
-    output_tokens: hasBreakdown ? (usage.visible_output_tokens ?? null) : null,
-    reasoning_tokens: hasBreakdown ? (usage.reasoning_tokens ?? null) : null,
+    output_tokens: hasCompleteBreakdown ? (usage.visible_output_tokens ?? null) : null,
+    reasoning_tokens: hasCompleteBreakdown ? (usage.reasoning_tokens ?? null) : null,
     total_tokens: usage.total_tokens,
     agent_runs: usage.agent_runs,
     observed_agent_runs: observedAgentRuns,
@@ -74,9 +77,11 @@ export function projectTaskTokenUsage(opts: {
     journal_digest: journal.digest,
     unavailable_reason: fullyObserved
       ? null
-      : hasBreakdown
-        ? "some_agent_runs_lack_provider_token_telemetry"
-        : "legacy_journal_lacks_output_reasoning_breakdown",
+      : observedAgentRuns === usage.agent_runs
+        ? usage.output_breakdown_observed_agent_runs === undefined
+          ? "legacy_journal_lacks_output_reasoning_breakdown_provenance"
+          : "some_agent_runs_lack_output_reasoning_breakdown"
+        : "some_agent_runs_lack_provider_token_telemetry",
     updated_at: updatedAt,
   };
 }
