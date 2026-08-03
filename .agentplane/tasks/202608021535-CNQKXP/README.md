@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T19:29:13.122Z"
+  updated_at: "2026-08-03T19:54:10.980Z"
   updated_by: "TESTER"
-  note: "PASS at 7b5ee7a8e: evaluator findings RCI-001 and RCI-002 resolved with complete check evidence."
+  note: "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf."
   attempts: 0
 quality_review:
   state: "pass"
@@ -134,8 +134,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-03T19:54:10.980Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf."
 doc_version: 3
-doc_updated_at: "2026-08-03T19:31:07.988Z"
+doc_updated_at: "2026-08-03T19:54:12.219Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:
@@ -305,6 +311,44 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608021535-CNQKXP
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T19:54:10.980Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T19:31:07.988Z, excerpt_hash=sha256:d18bd9c61c280e2386e9923416e2bb2a66f1e09a6114e13f536b58c38cb675ad
+
+    Details:
+
+    Command: focused runner effect-operation stress (20 cycles x 8 independent Bun processes), focused doctor legacy suite, typecheck, lint:core, build, ci:contract, test:critical, test:fast, package:tarball:check, package:install-smoke, policy routing, git diff --check.
+
+    Result: PASS. Concurrent journal test produced exactly one winner per cycle across 160 starts; focused runner file 10/10; critical suite 12/12 chunks; fast suite 536/536 files and 3786/3786 tests; tarball inventories core=103 recipes=21 agentplane=59; clean-install migration matrix 8/8.
+
+    Evidence: implementation 1cb422dd89bf6f38993264b6f0fe3efb369a235e; compatibility digest unchanged; dependency, clone, Knip, coverage, hotspot, trust-boundary and routing ratchets passed.
+
+    Scope: compatibility retirement manifest, doctor legacy and recovery surface, plus the hosted-check concurrency regression in initial runner effect journal publication. Independent evaluator and hosted checks remain separate quality gates.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+    - old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -500,6 +544,44 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608021535-CNQKXP
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T19:54:10.980Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T19:31:07.988Z, excerpt_hash=sha256:d18bd9c61c280e2386e9923416e2bb2a66f1e09a6114e13f536b58c38cb675ad
+
+Details:
+
+Command: focused runner effect-operation stress (20 cycles x 8 independent Bun processes), focused doctor legacy suite, typecheck, lint:core, build, ci:contract, test:critical, test:fast, package:tarball:check, package:install-smoke, policy routing, git diff --check.
+
+Result: PASS. Concurrent journal test produced exactly one winner per cycle across 160 starts; focused runner file 10/10; critical suite 12/12 chunks; fast suite 536/536 files and 3786/3786 tests; tarball inventories core=103 recipes=21 agentplane=59; clean-install migration matrix 8/8.
+
+Evidence: implementation 1cb422dd89bf6f38993264b6f0fe3efb369a235e; compatibility digest unchanged; dependency, clone, Knip, coverage, hotspot, trust-boundary and routing ratchets passed.
+
+Scope: compatibility retirement manifest, doctor legacy and recovery surface, plus the hosted-check concurrency regression in initial runner effect journal publication. Independent evaluator and hosted checks remain separate quality gates.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+- old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

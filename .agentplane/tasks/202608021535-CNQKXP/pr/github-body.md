@@ -16,7 +16,7 @@ Introduce a machine-readable compatibility-adapter manifest with introduced_in, 
 ## Verification
 
 - State: ok
-- Note: PASS at 7b5ee7a8e: evaluator findings RCI-001 and RCI-002 resolved with complete check evidence.
+- Note: PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.
 - Canonical workflow state lives in the task README.
 
 <details>
