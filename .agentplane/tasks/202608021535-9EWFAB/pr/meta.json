@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608021535-9EWFAB/compact-and-deduplicate-v0-7-1-task-evidence",
   "created_at": "2026-08-03T16:19:36.596Z",
-  "diffstat_sha256": "sha256:6723ae7a1146dff92a7106e3c50a21b5f58db20982a4936ed859a91edb6a75e8",
+  "diffstat_sha256": "sha256:31cdb732a4f7493413540b09fbd75e74e7756785c7e013bab2ed16156c88f45d",
   "last_verified_at": "2026-08-03T16:55:26.894Z",
   "last_verified_diffstat_sha256": "sha256:6723ae7a1146dff92a7106e3c50a21b5f58db20982a4936ed859a91edb6a75e8",
   "pr_number": 4759,
