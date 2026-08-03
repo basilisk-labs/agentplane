@@ -395,19 +395,27 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const issued = validateSupervisorExecutionEpisodeJournal(await store.read());
     const operation = issued.operations.at(-1);
     if (!operation) throw new Error("expected issued external-agent operation");
-    const completed = completeSupervisorExecutionEpisode({
-      journal: issued,
-      operation_key: operation.operation_key,
-      result: { work_order_id: exchange.work_order_id, result_digest: resultDigest },
-      progress: decision.workflowStep.preconditionFingerprint,
-    });
-    await store.write(
+    const completedJournal = (workOrderId: string) =>
       advanceSupervisorExecutionEpisodeState({
-        journal: completed,
+        journal: completeSupervisorExecutionEpisode({
+          journal: issued,
+          operation_key: operation.operation_key,
+          result: {
+            work_order_id: workOrderId,
+            semantic_status: "completed",
+            result_digest: resultDigest,
+          },
+          progress: decision.workflowStep.preconditionFingerprint,
+        }),
         state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
         route_observation: { step_id: decision.workflowStep.id, surface: "test crash recovery" },
-      }),
-    );
+      });
+    await store.write(completedJournal("mismatched-work-order"));
+    const mismatched = await returnAgentResult(root, taskId, resultPath);
+    expect(mismatched.code).not.toBe(0);
+    expect(mismatched.stderr).toContain("does not match the accepted semantic result");
+    expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({ status: "accepted" });
+    await store.write(completedJournal(exchange.work_order_id));
     const readmeBeforeRecovery = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
       "utf8",

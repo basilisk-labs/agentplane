@@ -2,6 +2,7 @@ import path from "node:path";
 
 import {
   advanceSupervisorExecutionEpisodeState,
+  digestSupervisorEpisodeValue,
   validateSupervisorExecutionEpisodeJournal,
   type AgentWorkOrderV2,
   type SupervisorExecutionEpisodeJournal,
@@ -128,8 +129,22 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
   paths: ExternalAgentExchangePaths;
   postcondition_fingerprint: string;
   route_step_id: string;
+  work_order_id: string;
+  semantic_status: string;
+  result_digest: string;
 }): Promise<boolean> {
   if (opts.intent.state !== "completed_pending_exchange") return false;
+  const expectedCompletionDigest = digestSupervisorEpisodeValue({
+    work_order_id: opts.work_order_id,
+    semantic_status: opts.semantic_status,
+    result_digest: opts.result_digest,
+  });
+  if (opts.intent.operation.result_digest !== expectedCompletionDigest) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Completed external-agent operation does not match the accepted semantic result.",
+    });
+  }
   let journal = opts.intent.journal;
   if (journal.cursor.phase === "completed") {
     const advanced = advanceSupervisorExecutionEpisodeState({

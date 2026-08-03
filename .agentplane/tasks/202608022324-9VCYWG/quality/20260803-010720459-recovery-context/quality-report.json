@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022324-9VCYWG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T01:08:01.189Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "3c778153fe757a64eabda7db140593dca5012f17",
+  "blueprint_digest": "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84",
+  "findings": [
+    "Completed-journal recovery can consume an accepted exchange without proving that the completed supervisor operation recorded the same result digest and work-order identity."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-010720459-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Add a completed-journal recovery test where the operation result contains a different result_digest or work_order_id from the accepted exchange; recovery must fail closed and leave the exchange unconsumed."
+  ],
+  "hidden_assumptions": [
+    "A completed operation in the task's journal is assumed to correspond to the accepted exchange solely because its intent metadata matches, even though its persisted completion result is not checked."
+  ],
+  "residual_risks": [
+    "Before allowing completed-journal recovery to consume an accepted exchange, validate that the completed operation result is structurally present and exactly matches the exchange work_order_id and accepted result_digest; add negative fault-injection coverage for both mismatches."
+  ]
+}
