@@ -1,0 +1,15 @@
+{
+  "details": "Command: env AGENTPLANE_FAST_CHANGED_FILES=<task scope> bun run ci:local:fast\nResult: pass\nEvidence: format, schemas, policy routing, release parity, build, TypeScript bundles, CLI cold-start baseline, hotspot threshold, 532 unit-test files with 3762 tests, and 12 critical CLI E2E chunks with 79 tests\nScope: full fast local CI at implementation commit 632033f8efcedf146aac5e263d85175087a3c7f3\n\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane <7 focused context suites>\nResult: pass (7 files, 72 tests)\nEvidence: live supervisor observation, exact route, persisted/tampered receipt rejection, formal verification, and execution receipt runtime\nScope: changed context orchestration and trust boundary\n\nCommand: bun run guards:check\nResult: pass (shared guards OK; trust-boundary ratchet 0)\nEvidence: local TESTER run\nScope: security and trust boundary regression gates\n\nCommand: bunx eslint <12 touched files>; bun run typecheck; git diff --check origin/main...HEAD\nResult: pass\nEvidence: local TESTER run\nScope: lint, TypeScript, and patch integrity\n\nCommand: focused native-Codex route and live-supervisor Git-observation fixtures\nResult: pass within the 72-test focused matrix\nEvidence: generic context run emits exactly one safe supervisor action; live supervisor completes verification without receipt rewriting\nScope: isolated built-in runner-to-supervisor path",
+  "digest": "sha256:206a623470d5c7b52431ba24554fd35b83728cff7455b9f6dfce8de447e6dc02",
+  "implementation_sha": "632033f8efcedf146aac5e263d85175087a3c7f3",
+  "kind": "task_verification_record",
+  "note": "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass.",
+  "recorded_at": "2026-08-03T14:06:29.432Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: default built-in execution reaches a live authenticated verification result, while standalone persisted and tampered receipts still fail closed.\n2. Run the focused context supervise-task, verify-task, execution-receipt, and task-run suites selected from touched modules. Expected: live observation is required and no path/hash/self-claim becomes trusted authentication.\n3. Run bun run guards:check and the trust-boundary ratchet. Expected: zero new reviewed trust-boundary violations.\n4. Run targeted ESLint, TypeScript checking, and git diff --check for touched files. Expected: all pass.\n5. Execute one isolated end-to-end built-in runner fixture. Expected: the CLI emits one deterministic next action and the completed run can be verified without manual receipt rewriting or hidden operator knowledge.",
+  "scope_digest": "sha256:88001c3d8830dbfb525f42256184304dfc60342a64ef4613d6f9c871a3f168b2",
+  "task_id": "202608031321-5GK3DD",
+  "verification_command": "agentplane verify 202608031321-5GK3DD --ok --by TESTER",
+  "verifier": "TESTER"
+}
