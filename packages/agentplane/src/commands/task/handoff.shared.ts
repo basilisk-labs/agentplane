@@ -1,4 +1,4 @@
-import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import { gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -50,6 +50,8 @@ export async function buildTaskResumeContext(opts: {
   task_id: string;
   run_id?: string;
   include_runner_state?: boolean;
+  preobserved_branch?: string | null;
+  fresh_head?: boolean;
 }): Promise<TaskResumeContext> {
   const ctx =
     opts.ctx ??
@@ -65,11 +67,18 @@ export async function buildTaskResumeContext(opts: {
     task_id: opts.task_id,
   });
   const [branch, latest_handoff, prMeta] = await Promise.all([
-    currentGitBranch(ctx.resolvedProject.gitRoot),
+    Object.hasOwn(opts, "preobserved_branch")
+      ? Promise.resolve(opts.preobserved_branch ?? null)
+      : currentGitBranch(ctx.resolvedProject.gitRoot),
     readTaskHandoffLatest(handoffPaths),
     readTaskPrMetaSummary({ ctx, task_id: opts.task_id }),
   ]);
-  const head_sha = await ctx.git.headCommit().catch(() => null);
+  // A route refresh can follow a mutation performed through a separate command
+  // context. Those callers require a direct observation; read-only preparation
+  // may reuse the command-scoped HEAD promise.
+  const head_sha = await (
+    opts.fresh_head ? gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD"]) : ctx.git.headCommit()
+  ).catch(() => null);
   const base_branch =
     prMeta.base ??
     (await resolveBaseBranch({

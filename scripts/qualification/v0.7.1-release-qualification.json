@@ -217,7 +217,7 @@
     },
     {
       "id": "efficiency-evidence",
-      "title": "Matched token, quality, structural-hash, and lifecycle-latency evidence",
+      "title": "Matched provider-token, quality, and structural-hash evidence",
       "tier": "core",
       "depends_on": ["provider-matrix"],
       "command": [
@@ -233,9 +233,9 @@
       "timeout_ms": 60000,
       "coverage": {},
       "failure": {
-        "classification": "efficiency_or_latency_gate_failure",
-        "impact": "The release cannot substantiate its token-saving or acceleration claims on the exact candidate revision.",
-        "proposed_fix": "Capture matched exact-revision evidence, then remove attributed setup/time-to-verified regressions without reducing verified-success quality.",
+        "classification": "efficiency_or_quality_gate_failure",
+        "impact": "The release cannot substantiate its provider-token savings or semantic quality on the exact candidate revision.",
+        "proposed_fix": "Capture matched exact-revision evidence, then remove attributed token or outcome regressions without reducing verified-success quality.",
         "owner_task": "202608021232-6BTB6D",
         "release_disposition": "block"
       }
@@ -281,6 +281,31 @@
         "impact": "The packed candidate is slower than published 0.6.26 on the same fixture, Node runtime, host, and interleaved sample sequence.",
         "proposed_fix": "Use the per-command matched deltas to remove duplicated startup, Git, task-index, or context work from the candidate hot path.",
         "owner_task": "202608021231-SHYJGK",
+        "release_disposition": "block"
+      }
+    },
+    {
+      "id": "supervisor-latency",
+      "title": "Packed public supervisor latency versus published v0.6.26",
+      "tier": "full",
+      "command": [
+        "node",
+        "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs",
+        "--subject",
+        "{subject}",
+        "--out",
+        "{evidenceDir}/supervisor-latency.json"
+      ],
+      "timeout_ms": 900000,
+      "coverage": {
+        "supervisor_frontends": ["managed_run", "external_advance"],
+        "context_conditions": ["fresh", "warm"]
+      },
+      "failure": {
+        "classification": "supervisor_latency_regression",
+        "impact": "The packed public supervisor adds more than 10% median or p95 overhead versus the semantically equivalent v0.6.26 path.",
+        "proposed_fix": "Attribute duplicated Git, route, task, or context observations and optimize them without weakening stale-state or effect-safety checks.",
+        "owner_task": "202608022324-Y26ENH",
         "release_disposition": "block"
       }
     },

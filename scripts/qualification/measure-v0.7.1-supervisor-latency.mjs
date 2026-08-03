@@ -1,5 +1,4 @@
-import { createHash } from "node:crypto";
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import {
   chmodSync,
   cpSync,
@@ -15,7 +14,12 @@ import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 
 import { roundMs, summarizeDurations } from "../lib/cli-benchmark-shared.mjs";
-import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+import {
+  createQualificationCommandRunner,
+  installPackedWorkspace,
+  installPublishedAgentplane,
+} from "../lib/qualification-packed-runtime.mjs";
+import { isDirectRun, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 import { readQualificationSubjectIdentity } from "./release-qualification.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -60,63 +64,7 @@ function parseArgs(argv) {
   };
 }
 
-function run(command, args, options = {}) {
-  return execFileSync(command, args, {
-    cwd: options.cwd ?? repoRoot,
-    encoding: "utf8",
-    env: { ...process.env, AGENTPLANE_NO_UPDATE_CHECK: "1", ...(options.env ?? {}) },
-    maxBuffer: 128 * 1024 * 1024,
-    stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
-  });
-}
-
-function npmPack(packageDirectory, packDirectory, cacheDirectory) {
-  const output = run("npm", ["pack", "--json", "--pack-destination", packDirectory], {
-    cwd: packageDirectory,
-    env: { NPM_CONFIG_CACHE: cacheDirectory },
-  });
-  const match = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(output);
-  if (!match) throw new Error(`npm pack did not return JSON for ${packageDirectory}`);
-  const entry = JSON.parse(match[2])[0];
-  const tarballPath = path.join(packDirectory, entry.filename);
-  return {
-    name: entry.name,
-    path: tarballPath,
-    sha256: `sha256:${createHash("sha256").update(readFileSync(tarballPath)).digest("hex")}`,
-    version: entry.version,
-  };
-}
-
-function installedCli(prefix) {
-  return path.join(prefix, "node_modules", "agentplane", "bin", "agentplane.js");
-}
-
-function installBaseline(prefix, cacheDirectory) {
-  run(
-    "npm",
-    ["install", "--ignore-scripts", "--no-audit", "--no-fund", `agentplane@${BASELINE_VERSION}`],
-    { cwd: prefix, env: { NPM_CONFIG_CACHE: cacheDirectory } },
-  );
-  return installedCli(prefix);
-}
-
-function installCandidate(prefix, packDirectory, cacheDirectory) {
-  const packages = PACKAGES.map((name) =>
-    npmPack(path.join(repoRoot, "packages", name), packDirectory, cacheDirectory),
-  );
-  run(
-    "npm",
-    [
-      "install",
-      "--ignore-scripts",
-      "--no-audit",
-      "--no-fund",
-      ...packages.map((item) => item.path),
-    ],
-    { cwd: prefix, env: { NPM_CONFIG_CACHE: cacheDirectory } },
-  );
-  return { cli: installedCli(prefix), packages };
-}
+const run = createQualificationCommandRunner(repoRoot);
 
 function invoke(cliPath, argv, cwd, options = {}) {
   return spawnSync(process.execPath, [cliPath, ...argv], {
@@ -235,7 +183,7 @@ function createGitProbe(root) {
   const probe = path.join(bin, "git");
   writeFileSync(
     probe,
-    "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$AGENTPLANE_BENCH_PROCESS_LOG\"\nexec /usr/bin/git \"$@\"\n",
+    '#!/bin/sh\nprintf \'%s\\n\' "$*" >> "$AGENTPLANE_BENCH_PROCESS_LOG"\nexec /usr/bin/git "$@"\n',
     "utf8",
   );
   chmodSync(probe, 0o755);
@@ -269,9 +217,7 @@ function preparedContextBytes(surfaceId, outputs) {
     return {
       packet_bytes: Buffer.byteLength(outputs.at(-1), "utf8"),
       prepared_context_bytes:
-        workOrderPath === null
-          ? 0
-          : Buffer.byteLength(readFileSync(workOrderPath, "utf8"), "utf8"),
+        workOrderPath === null ? 0 : Buffer.byteLength(readFileSync(workOrderPath, "utf8"), "utf8"),
     };
   }
   if (surfaceId === "managed_run_preparation") {
@@ -353,8 +299,7 @@ function confidenceInterval95(values) {
   const variance =
     values.length < 2
       ? 0
-      : values.reduce((total, value) => total + (value - average) ** 2, 0) /
-        (values.length - 1);
+      : values.reduce((total, value) => total + (value - average) ** 2, 0) / (values.length - 1);
   const margin = 1.96 * Math.sqrt(variance / values.length);
   return { low_ms: roundMs(average - margin), high_ms: roundMs(average + margin) };
 }
@@ -489,10 +434,7 @@ function measurePhase({
 }
 
 export function validateSupervisorLatencyReport(report) {
-  if (
-    report?.schema_version !== 1 ||
-    report.kind !== "agentplane.v0.7.1_supervisor_latency"
-  ) {
+  if (report?.schema_version !== 1 || report.kind !== "agentplane.v0.7.1_supervisor_latency") {
     throw new Error("supervisor latency report must use the v1 contract");
   }
   for (const phaseName of ["cold", "warm"]) {
@@ -512,7 +454,7 @@ export function validateSupervisorLatencyReport(report) {
   return report;
 }
 
-function main(argv = process.argv.slice(2)) {
+async function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-supervisor-latency-"));
@@ -524,8 +466,20 @@ function main(argv = process.argv.slice(2)) {
     for (const directory of [baselinePrefix, candidatePrefix, packDirectory]) {
       mkdirSync(directory, { recursive: true });
     }
-    const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
-    const candidate = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
+    const baselineCli = installPublishedAgentplane({
+      run,
+      prefix: baselinePrefix,
+      cacheDirectory,
+      version: BASELINE_VERSION,
+    });
+    const candidate = installPackedWorkspace({
+      run,
+      prefix: candidatePrefix,
+      packDirectory,
+      cacheDirectory,
+      repoRoot,
+      packageNames: PACKAGES,
+    });
     const candidateCli = candidate.cli;
     const seeds = { baseline: {}, candidate: {} };
     for (const kind of ["baseline", "candidate"]) {
@@ -630,11 +584,4 @@ function main(argv = process.argv.slice(2)) {
   }
 }
 
-if (isDirectRun(import.meta.url)) {
-  try {
-    main();
-  } catch (error) {
-    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-    process.exitCode = 1;
-  }
-}
+if (isDirectRun(import.meta.url)) runScriptMain(main);

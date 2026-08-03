@@ -1,6 +1,5 @@
-import { createHash } from "node:crypto";
-import { execFileSync, spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
@@ -13,7 +12,12 @@ import {
   roundMs,
   summarizeDurations,
 } from "../lib/cli-benchmark-shared.mjs";
-import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+import {
+  createQualificationCommandRunner,
+  installPackedWorkspace,
+  installPublishedAgentplane,
+} from "../lib/qualification-packed-runtime.mjs";
+import { isDirectRun, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 import { readQualificationSubjectIdentity } from "./release-qualification.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -46,70 +50,7 @@ function parseArgs(argv) {
   return { outputPath: path.resolve(flags.out), runs, subject: flags.subject, warmups };
 }
 
-function run(command, args, options = {}) {
-  return execFileSync(command, args, {
-    cwd: options.cwd ?? repoRoot,
-    encoding: "utf8",
-    env: {
-      ...process.env,
-      AGENTPLANE_NO_UPDATE_CHECK: "1",
-      ...(options.env ?? {}),
-    },
-    maxBuffer: 128 * 1024 * 1024,
-    stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
-  });
-}
-
-function npmPack(packageDirectory, packDirectory, cacheDirectory) {
-  const output = run("npm", ["pack", "--json", "--pack-destination", packDirectory], {
-    cwd: packageDirectory,
-    env: { NPM_CONFIG_CACHE: cacheDirectory },
-  });
-  const match = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(output);
-  if (!match) throw new Error(`npm pack did not return JSON for ${packageDirectory}`);
-  const entry = JSON.parse(match[2])[0];
-  const tarballPath = path.join(packDirectory, entry.filename);
-  return {
-    name: entry.name,
-    path: tarballPath,
-    sha256: `sha256:${createHash("sha256").update(readFileSync(tarballPath)).digest("hex")}`,
-    version: entry.version,
-  };
-}
-
-function installedCli(prefix) {
-  return path.join(prefix, "node_modules", "agentplane", "bin", "agentplane.js");
-}
-
-function installBaseline(prefix, cacheDirectory) {
-  run(
-    "npm",
-    ["install", "--ignore-scripts", "--no-audit", "--no-fund", `agentplane@${BASELINE_VERSION}`],
-    { cwd: prefix, env: { NPM_CONFIG_CACHE: cacheDirectory } },
-  );
-  return installedCli(prefix);
-}
-
-function installCandidate(prefix, packDirectory, cacheDirectory) {
-  const packages = PACKAGES.map((name) =>
-    npmPack(path.join(repoRoot, "packages", name), packDirectory, cacheDirectory),
-  );
-  run(
-    "npm",
-    [
-      "install",
-      "--ignore-scripts",
-      "--no-audit",
-      "--no-fund",
-      ...packages.map((item) => item.path),
-    ],
-    {
-      cwd: prefix,
-      env: { NPM_CONFIG_CACHE: cacheDirectory },
-    },
-  );
-  return { cli: installedCli(prefix), packages };
-}
+const run = createQualificationCommandRunner(repoRoot);
 
 function initializeFixture(root, baselineCli) {
   run("git", ["init", "-q", "-b", "main"], { cwd: root });
@@ -355,7 +296,7 @@ export function validateMatchedLatencyReport(report) {
   return report;
 }
 
-function main(argv = process.argv.slice(2)) {
+async function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-matched-cli-latency-"));
@@ -377,8 +318,20 @@ function main(argv = process.argv.slice(2)) {
     ]) {
       mkdirSync(directory, { recursive: true });
     }
-    const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
-    const candidate = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
+    const baselineCli = installPublishedAgentplane({
+      run,
+      prefix: baselinePrefix,
+      cacheDirectory,
+      version: BASELINE_VERSION,
+    });
+    const candidate = installPackedWorkspace({
+      run,
+      prefix: candidatePrefix,
+      packDirectory,
+      cacheDirectory,
+      repoRoot,
+      packageNames: PACKAGES,
+    });
     const candidateCli = candidate.cli;
     initializeFixture(fixtureSeed, baselineCli);
     fixtureCopy(fixtureSeed, baselineWarmFixture);
@@ -465,11 +418,4 @@ function main(argv = process.argv.slice(2)) {
   }
 }
 
-if (isDirectRun(import.meta.url)) {
-  try {
-    main();
-  } catch (error) {
-    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-    process.exitCode = 1;
-  }
-}
+if (isDirectRun(import.meta.url)) runScriptMain(main);

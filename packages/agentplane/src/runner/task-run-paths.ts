@@ -110,9 +110,13 @@ export async function resolveSupervisorTaskRunnerPaths(opts: {
   workflow_dir: string;
   task_id: string;
   run_id: string;
+  common_git_dir?: string;
 }): Promise<TaskRunnerPaths> {
-  const rawCommonGitDir = await gitRevParse(opts.git_root, ["--git-common-dir"]);
-  const commonGitDir = await realpath(resolveGitPath(opts.git_root, rawCommonGitDir));
+  const commonGitDir = opts.common_git_dir
+    ? await realpath(path.resolve(opts.common_git_dir))
+    : await realpath(
+        resolveGitPath(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"])),
+      );
   return resolveTaskRunnerPaths({
     ...opts,
     artifact_root: commonGitDir,

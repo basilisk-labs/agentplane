@@ -30,12 +30,13 @@ export function makeRunTaskAdvanceHandler(deps: {
 }) {
   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
-    const decide = async (): Promise<TaskRouteDecision> =>
+    const decide = async (freshHead = false): Promise<TaskRouteDecision> =>
       await buildTaskRouteDecision({
         ctx: command,
         cwd: ctx.cwd,
         rootOverride: ctx.rootOverride ?? null,
         includeRemote: parsed.remote,
+        freshHead,
         taskId: parsed.taskId,
       });
     let current: TaskRouteDecision;
@@ -71,6 +72,7 @@ export function makeRunTaskAdvanceHandler(deps: {
             cwd: checkout,
             rootOverride: null,
             includeRemote: parsed.remote,
+            freshHead: true,
             taskId: parsed.taskId,
           });
         current = await executeExternalAgentVerification({
@@ -108,6 +110,7 @@ export function makeRunTaskAdvanceHandler(deps: {
             cwd: checkout,
             rootOverride: null,
             includeRemote: parsed.remote,
+            freshHead: true,
             taskId: parsed.taskId,
           });
         const finalized = await recordDirectTaskFormalOperation({
@@ -138,7 +141,7 @@ export function makeRunTaskAdvanceHandler(deps: {
         task_revision: null,
         execute: async ({ operation }) =>
           await executeBranchWorkflowOperation({ decision: current, operation }),
-        refresh: decide,
+        refresh: async () => await decide(true),
       });
       const execution = persisted.execution;
       if (!execution.executable || execution.stop_reason !== null) {
@@ -199,6 +202,7 @@ export function makeRunTaskAdvanceHandler(deps: {
         task_id: parsed.taskId,
         ...(parsed.remote ? { include_remote: true } : {}),
         runner_command: "task advance",
+        prepared_route_decision: current,
       }),
     );
     const exchange = await issueExternalAgentExchange({

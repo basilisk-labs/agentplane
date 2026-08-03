@@ -118,28 +118,6 @@ export function requirePreparedAgentWorkOrder(
   });
 }
 
-export function requireAgentWorkOrderInvocationReadiness(
-  readiness: AgentWorkOrderInvocationReadiness,
-): StateFingerprint {
-  if (readiness.status === "ready") return readiness.current_state_fingerprint;
-  const precondition = readiness.rejection.precondition;
-  const detail = precondition
-    ? ` (${precondition.reason_code}: ${
-        [
-          ...precondition.changed_components.map((entry) => entry.component),
-          ...precondition.unavailable_required_components,
-        ].join(", ") || "provider"
-      })`
-    : "";
-  throw new CliError({
-    code: "E_VALIDATION",
-    message: `${readiness.rejection.message}${detail}`,
-    context: {
-      work_order_preparation: readiness.rejection,
-    },
-  });
-}
-
 export async function prepareAgentWorkOrder(opts: {
   command_ctx: CommandContext;
   cwd: string;
@@ -152,6 +130,7 @@ export async function prepareAgentWorkOrder(opts: {
   execution_context?: ReadOnlyExecutionContext;
   execution_profile?: ResolvedExecutionProfileRuntime;
   semantic_selector?: SemanticRetrievalSelector;
+  prepared_route_decision?: TaskRouteDecision;
 }): Promise<AgentWorkOrderPreparationResult> {
   const includeRunnerState = opts.include_runner_state;
   const executionContext =
@@ -249,14 +228,6 @@ export async function prepareAgentWorkOrder(opts: {
         },
       };
     }
-    const routeDecision = await buildTaskRouteDecision({
-      ctx: executionContext.command,
-      cwd: opts.cwd,
-      rootOverride: opts.root_override ?? null,
-      includeRemote: remotePreparation.include_remote,
-      includeRunnerState,
-      taskId: opts.task_id,
-    });
     const sourceManifest = buildAgentWorkOrderSourceManifest({
       prepared: {
         task_envelope: taskEnvelope,
@@ -312,6 +283,23 @@ export async function prepareAgentWorkOrder(opts: {
         output: (projection) => projection,
       }),
     ]);
+    const routeDecision =
+      opts.prepared_route_decision ??
+      (await buildTaskRouteDecision({
+        ctx: executionContext.command,
+        cwd: opts.cwd,
+        rootOverride: opts.root_override ?? null,
+        includeRemote: remotePreparation.include_remote,
+        includeRunnerState,
+        preobservedBranch: taskEnvelope.repository.branch,
+        taskId: opts.task_id,
+      }));
+    if (routeDecision.task.id !== opts.task_id) {
+      throw new AgentWorkOrderPreparationError({
+        code: "invalid_work_order",
+        message: "Prepared route belongs to another task.",
+      });
+    }
     const canonicalWorkOrder = buildCanonicalAgentWorkOrder({
       prepared: {
         task_envelope: taskEnvelope,

@@ -120,8 +120,14 @@ describe("resolveTaskRunnerPaths", () => {
       ...inputs,
       git_root: linkedWorktree,
     });
+    const memoizedPaths = await resolveSupervisorTaskRunnerPaths({
+      ...inputs,
+      git_root: linkedWorktree,
+      common_git_dir: basePaths.artifact_root,
+    });
 
     expect(linkedPaths).toEqual(basePaths);
+    expect(memoizedPaths).toEqual(basePaths);
     expect(basePaths.artifact_root).toBe(await realpath(path.join(root, ".git")));
     await mkdir(basePaths.run_dir, { recursive: true });
     await writeFile(basePaths.bundle_path, "durable evidence\n", "utf8");

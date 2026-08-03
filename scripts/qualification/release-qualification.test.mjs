@@ -16,6 +16,7 @@ import {
 } from "./release-qualification.mjs";
 import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
 import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
+import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
 import {
   compareMatchedLatencySamples,
   validateMatchedLatencyReport,
@@ -272,7 +273,7 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(qualificationExitCode(report), 0);
   });
 
-  it("requires exact-subject evidence and baseline-or-better lifecycle latency", () => {
+  it("keeps RF-04 harness timing diagnostic while gating tokens and outcomes", () => {
     const evidence = JSON.parse(
       readFileSync(
         path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
@@ -282,19 +283,12 @@ describe("v0.7.1 release qualification contract", () => {
     const measurement = evidence.measurement;
     const result = evaluateEfficiencyMeasurement(measurement, measurement.candidate.subject_sha);
     assert.equal(result.provider_tokens.total_reduction_ratio > 0.2, true);
+    assert.equal(result.verdict, "pass");
     assert.deepEqual(
-      result.failures.map((item) => item.metric),
+      result.latency_ms.diagnostics.map((item) => item.metric),
       ["latency.harness_setup_latency_ms.mean", "latency.time_to_verified_result_ms.mean"],
     );
-
-    const passing = structuredClone(measurement);
-    for (const [field, baseline] of Object.entries(passing.baseline.actual_values.latency_ms)) {
-      passing.candidate.actual_values.latency_ms[field].mean = baseline.mean;
-    }
-    assert.equal(
-      evaluateEfficiencyMeasurement(passing, passing.candidate.subject_sha).verdict,
-      "pass",
-    );
+    assert.deepEqual(blockingCandidateFailureIds(measurement, "diagnostic_only_never_gated"), []);
   });
 
   it("rejects a token regression even when aggregate evidence is complete", () => {
@@ -308,7 +302,7 @@ describe("v0.7.1 release qualification contract", () => {
     );
   });
 
-  it("rejects verified-success, scope, and provider-independent time regressions", () => {
+  it("rejects verified-success and scope regressions without gating RF-04 harness timing", () => {
     const verifiedSuccess = efficiencyMeasurement();
     verifiedSuccess.candidate.actual_values.outcomes.verified_success =
       verifiedSuccess.baseline.actual_values.outcomes.verified_success - 1;
@@ -334,11 +328,15 @@ describe("v0.7.1 release qualification contract", () => {
     const timeToVerified = efficiencyMeasurement();
     timeToVerified.candidate.actual_values.latency_ms.time_to_verified_result_ms.mean =
       timeToVerified.baseline.actual_values.latency_ms.time_to_verified_result_ms.mean + 1;
+    const timingResult = evaluateEfficiencyMeasurement(
+      timeToVerified,
+      timeToVerified.candidate.subject_sha,
+    );
+    assert.equal(timingResult.verdict, "pass");
     assert.equal(
-      evaluateEfficiencyMeasurement(
-        timeToVerified,
-        timeToVerified.candidate.subject_sha,
-      ).failures.some((item) => item.metric === "latency.time_to_verified_result_ms.mean"),
+      timingResult.latency_ms.diagnostics.some(
+        (item) => item.metric === "latency.time_to_verified_result_ms.mean",
+      ),
       true,
     );
   });

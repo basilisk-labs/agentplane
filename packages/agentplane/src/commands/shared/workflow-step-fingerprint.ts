@@ -8,7 +8,11 @@ import {
   type StateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
 
-import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
+import {
+  captureGitSnapshot,
+  projectGitSnapshot,
+  type GitSnapshot,
+} from "../../runner/observation/git-snapshot.js";
 import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
 import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
@@ -16,6 +20,7 @@ import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import type { CommandContext } from "./task-backend.js";
 import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
 import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
+import { workflowFingerprintPolicyPaths } from "./workflow-step-fingerprint-policy-paths.js";
 import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
 import {
   observeWorkflowPolicyScope,
@@ -225,37 +230,6 @@ function semanticTaskComponent(state: WorkflowRouteStateInput): StateFingerprint
   return presentComponent("workflow_route_task", task);
 }
 
-function uniqueSorted(values: readonly string[]): string[] {
-  return [...new Set(values)].toSorted();
-}
-
-function workflowPolicyPaths(
-  workflowMode: string,
-  blueprintPolicyModules: readonly string[],
-  changedPaths: readonly string[],
-): string[] {
-  const policyMutation = changedPaths.some(
-    (changedPath) => changedPath === "AGENTS.md" || changedPath.startsWith(".agentplane/policy/"),
-  );
-  return uniqueSorted([
-    "AGENTS.md",
-    ".agentplane/WORKFLOW.md",
-    workflowMode === "branch_pr"
-      ? ".agentplane/policy/workflow.branch_pr.md"
-      : ".agentplane/policy/workflow.direct.md",
-    ...blueprintPolicyModules,
-    ...(changedPaths.some((changedPath) => changedPath.startsWith(".agentplane/.upgrade/"))
-      ? [".agentplane/policy/workflow.upgrade.md"]
-      : []),
-    ...(policyMutation
-      ? [".agentplane/policy/dod.docs.md", ".agentplane/policy/governance.md"]
-      : []),
-    ...(changedPaths.includes(".agentplane/policy/incidents.md")
-      ? [".agentplane/policy/incidents.md"]
-      : []),
-  ]);
-}
-
 async function observeWorkflowPolicy(opts: {
   ctx: CommandContext;
   repositoryRoot: string;
@@ -425,6 +399,7 @@ export async function captureWorkflowStepFingerprint(opts: {
   state: WorkflowRouteStateInput;
   step: WorkflowStep;
   paths: WorkflowFingerprintPaths;
+  onGitSnapshot?: (snapshot: GitSnapshot | null) => void;
 }): Promise<StateFingerprint> {
   const fingerprintCheckout = workflowStepFingerprintCheckout(opts.step);
   const authoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
@@ -495,7 +470,7 @@ export async function captureWorkflowStepFingerprint(opts: {
         reason: "authoritative_checkout_unavailable",
         evidence: { checkout: fingerprintCheckout },
       };
-  const selectedPolicyPaths = workflowPolicyPaths(
+  const selectedPolicyPaths = workflowFingerprintPolicyPaths(
     opts.ctx.config.workflow_mode,
     blueprintObservation.policyModules,
     policyScope.state === "present" ? policyScope.changedPaths : [],
@@ -529,7 +504,7 @@ export async function captureWorkflowStepFingerprint(opts: {
         unavailableComponent("workflow_route_policy", "authoritative_checkout_unavailable"),
         unavailableComponent("task_backend_runtime", "authoritative_checkout_unavailable"),
       ];
-  const git = repositoryRoot
+  const rawGit = repositoryRoot
     ? await measurePreparationNode({
         recorder: opts.ctx.preparationTrace,
         node: "git_snapshot",
@@ -541,11 +516,8 @@ export async function captureWorkflowStepFingerprint(opts: {
         operation: async () =>
           await captureGitSnapshot({
             repository_root: repositoryRoot,
-            excluded_roots: semanticGitExclusions({
-              ctx: opts.ctx,
-              taskId: opts.state.task.id,
-              policyPaths: selectedPolicyPaths,
-            }),
+            trusted_repository_root: true,
+            preobserved_head_commit: opts.state.resume.head_sha,
           }),
         fingerprintInputs: (snapshot) => ({
           repository_root: repositoryRoot,
@@ -553,6 +525,17 @@ export async function captureWorkflowStepFingerprint(opts: {
         }),
         output: (snapshot) => snapshot,
       })
+    : null;
+  opts.onGitSnapshot?.(rawGit);
+  const git = rawGit
+    ? projectGitSnapshot(
+        rawGit,
+        semanticGitExclusions({
+          ctx: opts.ctx,
+          taskId: opts.state.task.id,
+          policyPaths: selectedPolicyPaths,
+        }),
+      )
     : null;
   const gitComponent =
     git?.state === "available"

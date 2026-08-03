@@ -1,4 +1,9 @@
-import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import {
+  loadCommandContext,
+  resolveCommandGitCommonDir,
+  type CommandContext,
+} from "../../commands/shared/task-backend.js";
+import { readTaskRouteGitSnapshot } from "../../commands/shared/route-decision.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import {
@@ -43,10 +48,6 @@ import {
   assertRunnerBlueprintPolicyModuleBudget,
   writeTaskBlueprintSnapshot,
 } from "./task-run-blueprint-plan.js";
-import {
-  evaluatePreparedAgentWorkOrderReadiness,
-  requireAgentWorkOrderInvocationReadiness,
-} from "./agent-work-order.js";
 import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
 import { collectTaskRunnerFrameworkExplainBehaviorInputs } from "./task-run-framework-explain.js";
@@ -115,10 +116,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const [preparationGitSnapshot, executionContext] = await Promise.all([
-    captureRunnerPreparationGitSnapshot({ ctx: command }),
-    makeReadOnlyExecutionContext(command),
-  ]);
+  const executionContext = await makeReadOnlyExecutionContext(command);
   const target = opts.target ?? { kind: "task", task_id: opts.task_id };
   void executionContext.policy.evaluate({
     action: target.kind === "recipe_scenario" ? "scenario_execute" : "task_run",
@@ -157,6 +155,7 @@ export async function prepareTaskRunnerExecution(opts: {
     workflow_dir: taskEnvelope.repository.workflow_dir,
     task_id: opts.task_id,
     run_id,
+    common_git_dir: await resolveCommandGitCommonDir(command),
   });
   const sandbox_policy = resolveRunnerSandboxPolicy({
     task: taskEnvelope.source_task,
@@ -231,6 +230,11 @@ export async function prepareTaskRunnerExecution(opts: {
     authoritative_checkout_path: route_decision.executionPacket.authoritativeCheckoutPath,
     mutation_path_hint: route_decision.executionPacket.mutationPathHint,
   });
+  const routeGitSnapshot = readTaskRouteGitSnapshot(route_decision);
+  const preparationGitSnapshot =
+    routeGitSnapshot?.repository_root === command.resolvedProject.gitRoot
+      ? routeGitSnapshot
+      : await captureRunnerPreparationGitSnapshot({ ctx: command });
   const precondition_fingerprint = await capturePreparedRunnerStateFingerprint({
     ctx: command,
     bundle,
@@ -239,14 +243,6 @@ export async function prepareTaskRunnerExecution(opts: {
   const precondition_policy = resolveRunnerStateFingerprintPolicy(command);
   bundle.state_fingerprint = precondition_fingerprint;
   bundle.state_fingerprint_policy = precondition_policy;
-  requireAgentWorkOrderInvocationReadiness(
-    await evaluatePreparedAgentWorkOrderReadiness({
-      command_ctx: command,
-      cwd: opts.cwd,
-      root_override: opts.rootOverride ?? null,
-      prepared: preparedWorkOrder,
-    }),
-  );
   const repository = RunnerRunRepository.fromBundle(bundle);
   await repository.createFreshDirectory({
     run_id: bundle.execution.run_id,

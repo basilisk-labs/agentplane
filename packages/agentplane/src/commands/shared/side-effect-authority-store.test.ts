@@ -95,8 +95,14 @@ describe("side-effect authority store", () => {
 
       expect(await git(integration, ["rev-parse", "HEAD"])).toBe(before);
       expect(await git(integration, ["status", "--porcelain"])).toBe("");
+      const commonGitDir = await git(root, [
+        "rev-parse",
+        "--path-format=absolute",
+        "--git-common-dir",
+      ]);
       const loaded = await loadSideEffectAuthorityState({
-        gitRoot: root,
+        gitRoot: path.join(root, "not-a-repository"),
+        commonGitDir,
         taskId,
         task: { extensions: {} },
       });

@@ -1,4 +1,4 @@
-export { captureGitSnapshot } from "./git-snapshot/capture.js";
+export { captureGitSnapshot, projectGitSnapshot } from "./git-snapshot/capture.js";
 export { compareGitSnapshots } from "./git-snapshot/compare.js";
 export {
   type GitSnapshot,

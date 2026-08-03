@@ -1,4 +1,5 @@
-import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
+import { gitRevParse } from "@agentplaneorg/core/git";
+import type { GitSnapshot } from "../../runner/observation/git-snapshot.js";
 import { CliError } from "../../shared/errors.js";
 import { readTaskPrMetaArtifact } from "../pr/internal/pr-paths.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
@@ -35,8 +36,14 @@ import {
 } from "./route-decision-types.js";
 import { deriveRouteAmbiguities, deriveRouteRepairPlan } from "./route-decision-repair.js";
 import {
+  deriveRouteCheckoutRole,
+  findRouteWorktreePath,
+  inferTaskRouteBranch,
+} from "./route-decision-workspace.js";
+import {
   loadBackendTask,
   loadCommandContext,
+  resolveCommandGitCommonDir,
   resolveTaskBranchFromContext,
   type CommandContext,
 } from "./task-backend.js";
@@ -54,32 +61,14 @@ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerpr
 import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
 export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
+const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
+
+export function readTaskRouteGitSnapshot(decision: TaskRouteDecision): GitSnapshot | null {
+  return routeGitSnapshots.get(decision) ?? null;
+}
+
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
-}
-
-function deriveCheckoutRole(
-  resume: TaskResumeContext,
-): TaskRouteDecision["workspace"]["checkoutRole"] {
-  if (!resume.branch || !resume.base_branch) return "unknown";
-  return resume.branch === resume.base_branch ? "base" : "task_worktree";
-}
-
-async function findWorktreePath(cwd: string, branch: string | null): Promise<string | null> {
-  if (!branch) return null;
-  return findWorktreeForBranch(cwd, branch).catch(() => null);
-}
-
-function inferredTaskBranch(
-  resume: TaskResumeContext,
-  prFlow: PrFlowStatusReport | null,
-): string | null {
-  if (prFlow?.branch.name) return prFlow.branch.name;
-  if (resume.pr_branch) return resume.pr_branch;
-  if (resume.branch && resume.base_branch && resume.branch !== resume.base_branch) {
-    return resume.branch;
-  }
-  return null;
 }
 
 function deriveApprovalContract(
@@ -350,6 +339,8 @@ export async function buildTaskRouteDecision(opts: {
   rootOverride?: string | null;
   runnerRunId?: string;
   includeRunnerState?: boolean;
+  preobservedBranch?: string | null;
+  freshHead?: boolean;
   taskId: string;
 }): Promise<TaskRouteDecision> {
   const ctx =
@@ -366,6 +357,7 @@ export async function buildTaskRouteDecision(opts: {
     gitRoot: ctx.resolvedProject.gitRoot,
     taskId: opts.taskId,
     task: loadedTask,
+    commonGitDir: await resolveCommandGitCommonDir(ctx),
   });
   const resume = await buildTaskResumeContext({
     ctx,
@@ -374,8 +366,15 @@ export async function buildTaskRouteDecision(opts: {
     task_id: opts.taskId,
     run_id: opts.runnerRunId,
     include_runner_state: opts.includeRunnerState,
+    fresh_head: opts.freshHead,
+    ...(Object.hasOwn(opts, "preobservedBranch")
+      ? { preobserved_branch: opts.preobservedBranch ?? null }
+      : {}),
   });
-  const baseCheckoutPath = await findWorktreePath(ctx.resolvedProject.gitRoot, resume.base_branch);
+  const baseCheckoutPath = await findRouteWorktreePath(
+    ctx.resolvedProject.gitRoot,
+    resume.base_branch,
+  );
   const localDiagnostics: string[] = [];
   const recordLocalDiagnostic = (message: string): void => {
     localDiagnostics.push(message);
@@ -419,7 +418,7 @@ export async function buildTaskRouteDecision(opts: {
     ctx.config.workflow_mode === "branch_pr"
       ? await resolveBatchOwnership({ ctx, task })
       : { role: "none" as const };
-  const inferredBranch = inferredTaskBranch(resume, prFlow);
+  const inferredBranch = inferTaskRouteBranch(resume, prFlow);
   const taskWorktreeBranch =
     batchOwnership.role === "included" ? batchOwnership.branch : inferredBranch;
   const { taskWorktreeCleanliness, foreignTaskReadmeReplicaRepair } =
@@ -518,6 +517,7 @@ export async function buildTaskRouteDecision(opts: {
       batchOwnership.role === "included" ? taskWorktreeCleanliness.worktreePath : taskWorktreePath,
     currentCheckoutPath: resume.workspace_root,
   };
+  let latestGitSnapshot: GitSnapshot | null = null;
   const workflowStep = await tracePolicyAuthorityDecision({
     recorder: ctx.preparationTrace,
     taskId: opts.taskId,
@@ -533,6 +533,9 @@ export async function buildTaskRouteDecision(opts: {
             state: finalRouteStateInput,
             step,
             paths: fingerprintPaths,
+            onGitSnapshot: (snapshot) => {
+              latestGitSnapshot = snapshot;
+            },
           }),
       }),
   });
@@ -556,7 +559,7 @@ export async function buildTaskRouteDecision(opts: {
       baseBranch: resume.base_branch,
       headSha: resume.head_sha,
       prBranch: resume.pr_branch,
-      checkoutRole: deriveCheckoutRole(resume),
+      checkoutRole: deriveRouteCheckoutRole(resume),
       baseCheckoutPath,
       taskWorktreePath,
     },
@@ -581,7 +584,7 @@ export async function buildTaskRouteDecision(opts: {
     ...partial,
     ambiguities: deriveRouteAmbiguities({ decision: partial }),
   };
-  return {
+  const decision: TaskRouteDecision = {
     ...withAmbiguities,
     repairPlan: deriveRepairPlan(withAmbiguities),
     sourceConfidence: buildRouteSourceConfidence({
@@ -590,4 +593,6 @@ export async function buildTaskRouteDecision(opts: {
       localDiagnostics,
     }),
   };
+  if (latestGitSnapshot) routeGitSnapshots.set(decision, latestGitSnapshot);
+  return decision;
 }

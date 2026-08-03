@@ -60,6 +60,10 @@ export type GitSnapshot = {
 export type CaptureGitSnapshotInput = {
   repository_root: string;
   excluded_roots?: readonly string[];
+  /** The caller already resolved this path as the exact Git worktree root. */
+  trusted_repository_root?: boolean;
+  /** HEAD already observed by the enclosing route-state read. */
+  preobserved_head_commit?: string | null;
 };
 
 export type GitCommitPathChange = {
