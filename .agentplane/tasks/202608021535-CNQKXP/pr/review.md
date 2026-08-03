@@ -6,14 +6,14 @@ Created: 2026-08-03T18:26:18.371Z
 
 - Task: `202608021535-CNQKXP`
 - Title: Add compatibility retirement inventory and doctor legacy
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021535-CNQKXP/add-compatibility-retirement-inventory-and-docto`
 - Canonical task record: `.agentplane/tasks/202608021535-CNQKXP/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS at bc76eb0c6: compatibility retirement inventory, doctor legacy, advanced repair migration, package contract, and legacy alias compatibility verified.
+- Note: PASS at 7b5ee7a8e: evaluator findings RCI-001 and RCI-002 resolved with complete check evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -44,8 +44,8 @@ Created: 2026-08-03T18:26:18.371Z
  .../src/cli/run-cli/command-loaders/project.ts     |  12 +
  .../agentplane/src/commands/doctor-legacy.run.ts   |  32 ++
  .../agentplane/src/commands/doctor-legacy.spec.ts  |  18 +
- .../src/commands/doctor/legacy-manifest.ts         | 141 ++++++++
- .../src/commands/doctor/legacy-probes.test.ts      | 259 ++++++++++++++
+ .../src/commands/doctor/legacy-manifest.ts         | 144 ++++++++
+ .../src/commands/doctor/legacy-probes.test.ts      | 321 +++++++++++++++++
  .../src/commands/doctor/legacy-probes.ts           | 395 +++++++++++++++++++++
  .../src/commands/integrate-queue.command.ts        |   3 +-
  .../src/commands/integrate-queue.spec.ts           |   3 +-
@@ -59,7 +59,7 @@ Created: 2026-08-03T18:26:18.371Z
  .../check-compatibility-contract-baseline.mjs      |  63 +++-
  scripts/lib/package-tarball-policy.mjs             |   1 +
  .../release/check-local-tarball-install-smoke.mjs  |  16 +
- 30 files changed, 1417 insertions(+), 73 deletions(-)
+ 30 files changed, 1482 insertions(+), 73 deletions(-)
 ```
 
 </details>

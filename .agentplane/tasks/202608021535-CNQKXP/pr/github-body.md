@@ -16,12 +16,7 @@ Introduce a machine-readable compatibility-adapter manifest with introduced_in, 
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-PASS at bc76eb0c6: compatibility retirement inventory, doctor legacy, advanced repair migration,
-package contract, and legacy alias compatibility verified.
-```
+- Note: PASS at 7b5ee7a8e: evaluator findings RCI-001 and RCI-002 resolved with complete check evidence.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -47,8 +42,8 @@ package contract, and legacy alias compatibility verified.
  .../src/cli/run-cli/command-loaders/project.ts     |  12 +
  .../agentplane/src/commands/doctor-legacy.run.ts   |  32 ++
  .../agentplane/src/commands/doctor-legacy.spec.ts  |  18 +
- .../src/commands/doctor/legacy-manifest.ts         | 141 ++++++++
- .../src/commands/doctor/legacy-probes.test.ts      | 259 ++++++++++++++
+ .../src/commands/doctor/legacy-manifest.ts         | 144 ++++++++
+ .../src/commands/doctor/legacy-probes.test.ts      | 321 +++++++++++++++++
  .../src/commands/doctor/legacy-probes.ts           | 395 +++++++++++++++++++++
  .../src/commands/integrate-queue.command.ts        |   3 +-
  .../src/commands/integrate-queue.spec.ts           |   3 +-
@@ -62,7 +57,7 @@ package contract, and legacy alias compatibility verified.
  .../check-compatibility-contract-baseline.mjs      |  63 +++-
  scripts/lib/package-tarball-policy.mjs             |   1 +
  .../release/check-local-tarball-install-smoke.mjs  |  16 +
- 30 files changed, 1417 insertions(+), 73 deletions(-)
+ 30 files changed, 1482 insertions(+), 73 deletions(-)
 ```
 
 </details>

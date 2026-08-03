@@ -13,8 +13,8 @@
  .../src/cli/run-cli/command-loaders/project.ts     |  12 +
  .../agentplane/src/commands/doctor-legacy.run.ts   |  32 ++
  .../agentplane/src/commands/doctor-legacy.spec.ts  |  18 +
- .../src/commands/doctor/legacy-manifest.ts         | 141 ++++++++
- .../src/commands/doctor/legacy-probes.test.ts      | 259 ++++++++++++++
+ .../src/commands/doctor/legacy-manifest.ts         | 144 ++++++++
+ .../src/commands/doctor/legacy-probes.test.ts      | 321 +++++++++++++++++
  .../src/commands/doctor/legacy-probes.ts           | 395 +++++++++++++++++++++
  .../src/commands/integrate-queue.command.ts        |   3 +-
  .../src/commands/integrate-queue.spec.ts           |   3 +-
@@ -28,4 +28,4 @@
  .../check-compatibility-contract-baseline.mjs      |  63 +++-
  scripts/lib/package-tarball-policy.mjs             |   1 +
  .../release/check-local-tarball-install-smoke.mjs  |  16 +
- 30 files changed, 1417 insertions(+), 73 deletions(-)
+ 30 files changed, 1482 insertions(+), 73 deletions(-)
