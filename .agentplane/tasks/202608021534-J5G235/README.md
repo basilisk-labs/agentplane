@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -56,21 +56,21 @@ quality_review:
   findings:
     - "The frozen diff satisfies the approved dead-code ratchet while restoring the dynamically launched critical CLI runner and narrowly classifying it in Knip."
 token_usage:
-  agent_runs: 1
-  input_tokens: 268211
-  journal_digest: "sha256:426cf4accdbe720153689c3d26fe3622f406f99c3e3a61fd666e70b709b6c8b8"
-  observed_agent_runs: 1
+  agent_runs: 2
+  input_tokens: 426408
+  journal_digest: "sha256:35776ed0965725eecdf56e42fa10b702f3374d77810260f9e7d4fc6732df69c0"
+  observed_agent_runs: 2
   observed_by: "agentplane"
-  output_tokens: 2237
-  reasoning_tokens: 459
+  output_tokens: 3795
+  reasoning_tokens: 751
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 270907
+  total_tokens: 430954
   unavailable_reason: null
-  updated_at: "2026-08-03T15:47:04.492Z"
+  updated_at: "2026-08-03T16:06:09.025Z"
 commit:
-  hash: "73eea8a5719ac3af87ccbe2ca962580018bcbc6a"
+  hash: "3cf756513473ad7ac1fcf717a988101b13c1e43e"
   message: "🔎 J5G235 task: refresh task artifacts after commit"
 comments:
   -
@@ -82,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -192,8 +195,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified hosted CI rework with structured check evidence."
+  -
+    type: "status"
+    at: "2026-08-03T16:06:09.025Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T16:05:08.757Z"
+doc_updated_at: "2026-08-03T16:06:09.051Z"
 doc_updated_by: "CODER"
 description: "Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and unnecessary internal barrel re-exports, reduce the CLI-package Knip baseline by 60-80 percent where evidence permits, preserve @agentplaneorg/core compatibility, and ratchet against future growth."
 sections:
@@ -495,8 +505,8 @@ sections:
       Resolution: Restored the runner byte-for-byte, classified its file issue explicitly in Knip, and reran the critical, contract, and full regression suites.
 extensions:
   implementation_commit:
-    hash: "c76ac407e7e16aa697a1d029df6cde3538329d85"
-    message: "♻️ J5G235 task: remove dead CLI surface"
+    hash: "e17bf07a15f422f6a8b7259ac3447f31ec59dfb1"
+    message: "🐛 J5G235 task: restore critical CLI runner"
   workflow_route_baseline:
     start_head_sha: "f44bc0c51c13652b21d61b5e314ca1d4f624c465"
     version: 1
@@ -815,12 +825,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `1/1` agent runs
-- Input tokens: `268211`
-- Output tokens: `2237`
-- Reasoning tokens: `459`
-- Total tokens: `270907`
+- Completeness: `2/2` agent runs
+- Input tokens: `426408`
+- Output tokens: `3795`
+- Reasoning tokens: `751`
+- Total tokens: `430954`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:426cf4accdbe720153689c3d26fe3622f406f99c3e3a61fd666e70b709b6c8b8`
+- Journal digest: `sha256:35776ed0965725eecdf56e42fa10b702f3374d77810260f9e7d4fc6732df69c0`
 - Unavailable reason: `none`
-- Updated at: `2026-08-03T15:47:04.492Z`
+- Updated at: `2026-08-03T16:06:09.025Z`

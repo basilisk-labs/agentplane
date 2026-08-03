@@ -8,10 +8,10 @@
   "pr_number": 4758,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4758",
   "pre_merge_closure": {
-    "basis_commit": "73eea8a5719ac3af87ccbe2ca962580018bcbc6a",
+    "basis_commit": "3cf756513473ad7ac1fcf717a988101b13c1e43e",
     "branch": "task/202608021534-J5G235/reduce-the-v0-7-1-cli-dead-code-and-barrel-basel",
     "pr_number": 4758,
-    "recorded_at": "2026-08-03T15:47:04.554Z",
+    "recorded_at": "2026-08-03T16:06:09.088Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
