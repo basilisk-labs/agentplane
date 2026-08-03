@@ -91,18 +91,40 @@ export function assertQualificationSubjectIdentity({ subject, head, tree, status
   return { commit: head, tree, clean: true };
 }
 
-export function readQualificationSubjectIdentity(repoRoot, subject) {
+export function qualificationEvidenceStatusPathspec(repoRoot, evidenceDirectory) {
+  if (!evidenceDirectory) return null;
+  const relative = path.relative(repoRoot, path.resolve(repoRoot, evidenceDirectory));
+  if (
+    relative === "" ||
+    relative === ".." ||
+    relative.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relative)
+  ) {
+    throw new Error(
+      "qualification evidence directory must be nested inside the candidate repository",
+    );
+  }
+  return `:(top,exclude)${relative.split(path.sep).join("/")}/**`;
+}
+
+export function readQualificationSubjectIdentity(repoRoot, subject, options = {}) {
   const git = (...args) =>
     execFileSync("git", args, {
       cwd: repoRoot,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
     }).trim();
+  const evidencePathspec = qualificationEvidenceStatusPathspec(
+    repoRoot,
+    options.evidenceDirectory ?? process.env.AGENTPLANE_QUALIFICATION_EVIDENCE_DIR,
+  );
+  const statusArgs = ["status", "--porcelain=v1", "--untracked-files=all"];
+  if (evidencePathspec) statusArgs.push("--", ".", evidencePathspec);
   return assertQualificationSubjectIdentity({
     subject,
     head: git("rev-parse", "HEAD"),
     tree: git("rev-parse", "HEAD^{tree}"),
-    statusPorcelain: git("status", "--porcelain=v1", "--untracked-files=all"),
+    statusPorcelain: git(...statusArgs),
   });
 }
 
