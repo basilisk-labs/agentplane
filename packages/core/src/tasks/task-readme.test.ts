@@ -52,6 +52,129 @@ Hello world.
     expect(parseTaskReadme(updated).frontmatter.title).toBe("New title");
   });
 
+  it.each([
+    {
+      state: "observed" as const,
+      input_tokens: 100,
+      output_tokens: 20,
+      reasoning_tokens: 5,
+      total_tokens: 125,
+      agent_runs: 2,
+      observed_agent_runs: 2,
+      source: "supervisor_journal" as const,
+      journal_digest: `sha256:${"a".repeat(64)}`,
+      unavailable_reason: null,
+    },
+    {
+      state: "partial" as const,
+      input_tokens: 100,
+      output_tokens: null,
+      reasoning_tokens: null,
+      total_tokens: 125,
+      agent_runs: 2,
+      observed_agent_runs: 1,
+      source: "supervisor_journal" as const,
+      journal_digest: `sha256:${"b".repeat(64)}`,
+      unavailable_reason: "some_agent_runs_lack_provider_token_telemetry",
+    },
+    {
+      state: "unavailable" as const,
+      input_tokens: null,
+      output_tokens: null,
+      reasoning_tokens: null,
+      total_tokens: null,
+      agent_runs: 0,
+      observed_agent_runs: 0,
+      source: "unavailable" as const,
+      journal_digest: null,
+      unavailable_reason: "supervisor_journal_missing",
+    },
+  ])("renders $state completed-task token usage in the README body", (usage) => {
+    const parsed = parseTaskReadme(sample);
+    const rendered = renderTaskReadme(
+      {
+        ...parsed.frontmatter,
+        token_usage: {
+          schema_version: 1,
+          observed_by: "agentplane",
+          updated_at: "2026-08-03T12:00:00.000Z",
+          ...usage,
+        },
+      },
+      parsed.body,
+    );
+
+    const body = parseTaskReadme(rendered).body;
+    expect(body).toContain("## Token Usage");
+    expect(body).toContain(`- State: \`${usage.state}\``);
+    expect(body).toContain(
+      `- Completeness: \`${usage.observed_agent_runs}/${usage.agent_runs}\` agent runs`,
+    );
+    expect(body).toContain(`- Input tokens: \`${usage.input_tokens ?? "unavailable"}\``);
+    expect(body).toContain(`- Output tokens: \`${usage.output_tokens ?? "unavailable"}\``);
+    expect(body).toContain(`- Reasoning tokens: \`${usage.reasoning_tokens ?? "unavailable"}\``);
+    expect(body).toContain(`- Total tokens: \`${usage.total_tokens ?? "unavailable"}\``);
+    expect(body).toContain(`- Provenance: \`${usage.source}/agentplane\``);
+    expect(body).toContain(`- Unavailable reason: \`${usage.unavailable_reason ?? "none"}\``);
+  });
+
+  it("updates the managed Token Usage body section without duplicating it", () => {
+    const parsed = parseTaskReadme(sample);
+    const first = renderTaskReadme(
+      {
+        ...parsed.frontmatter,
+        token_usage: {
+          schema_version: 1,
+          state: "unavailable",
+          input_tokens: null,
+          output_tokens: null,
+          reasoning_tokens: null,
+          total_tokens: null,
+          agent_runs: 0,
+          observed_agent_runs: 0,
+          source: "unavailable",
+          observed_by: "agentplane",
+          journal_digest: null,
+          unavailable_reason: "supervisor_journal_missing",
+          updated_at: "2026-08-03T12:00:00.000Z",
+        },
+      },
+      parsed.body,
+    );
+    const reparsed = parseTaskReadme(first);
+    const updated = renderTaskReadme(
+      {
+        ...reparsed.frontmatter,
+        token_usage: {
+          schema_version: 1,
+          state: "observed",
+          input_tokens: 10,
+          output_tokens: 5,
+          reasoning_tokens: 1,
+          total_tokens: 16,
+          agent_runs: 1,
+          observed_agent_runs: 1,
+          source: "supervisor_journal",
+          observed_by: "agentplane",
+          journal_digest: `sha256:${"c".repeat(64)}`,
+          unavailable_reason: null,
+          updated_at: "2026-08-03T12:01:00.000Z",
+        },
+      },
+      reparsed.body,
+    );
+
+    expect(updated.match(/^## Token Usage$/gmu)).toHaveLength(1);
+    expect(updated).toContain("- State: `observed`");
+    expect(updated).toContain("- Total tokens: `16`");
+    expect(updated).not.toContain("supervisor_journal_missing");
+  });
+
+  it("leaves historical tasks without token usage byte-stable", () => {
+    const parsed = parseTaskReadme(sample);
+    expect(renderTaskReadme(parsed.frontmatter, parsed.body)).toBe(sample);
+  });
+
   it("rejects markdown without frontmatter", () => {
     expect(() => parseTaskReadme("# hello\n")).toThrow(/frontmatter/i);
   });

@@ -1,3 +1,4 @@
+import { formatTaskTokenUsageSummary } from "@agentplaneorg/core/tasks";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -6,7 +7,6 @@ import {
   deriveRouteOperatorGuidance,
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
-import { formatTaskTokenUsageSummary } from "./token-usage-format.js";
 
 export type TaskStatusParsed = {
   taskId: string;

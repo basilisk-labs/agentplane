@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021231-BPMM04-d57ba3a3c686190e2afa6241",
+  "task_id": "202608021231-BPMM04",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add a deterministic human-readable Token Usage section to completed task README bodies, preserve backward compatibility for historical tasks without token_usage, and verify observed, partial, and unavailable renderings without changing the authoritative supervisor-journal projection.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Completed-task token usage is serialized only in README frontmatter; the required human-readable README body projection is absent.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:98add8a1b5296c8c3ba4c62e7c8d568654eb44d81cdcc2fb760113c03d9d6a8e",
+          "line": 136,
+          "lines": "Plan step 3 requires rendering the final aggregate in task README frontmatter/body.",
+          "section": "Plan"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-120732198-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:358dfa6afac87b8b283db3ffc214b197c1f870414e6d20eeb5464694a73ffc97",
+          "line": 2314,
+          "lines": "The task-readme.ts change only adds token_usage to the ordered frontmatter keys; no README body renderer is added.",
+          "section": "packages/core/src/tasks/task-readme.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-120732198-recovery-context/evaluator-result.json"
+}

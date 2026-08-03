@@ -1,0 +1,2922 @@
+diff --git a/README.md b/README.md
+index 147cc137e..f00264266 100644
+--- a/README.md
++++ b/README.md
+@@ -118,6 +118,10 @@ agentplane task advance <task-id> --agent-json
+ agentplane task run <task-id>
+ ```
+ 
++When the task reaches `DONE`, Agentplane records the supervisor-observed input, visible output,
++reasoning, and total token aggregate in the task README and ACR. If provider telemetry was not
++observable, the record says `partial` or `unavailable` instead of inventing a zero.
++
+ ## Agentplane is not
+ 
+ - a model provider;
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index 20d32fc64..e1c810f84 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -204,7 +204,10 @@ agentplane acr schema --version 0.1
+ These commands derive `.agentplane/tasks/<task-id>/acr.json` from existing
+ task lifecycle evidence. `finish` refreshes the task-local ACR automatically when
+ `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
+-derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
++derived projection, not a second source of truth. Completed tasks expose provider token usage as
++`token_usage` in the task README, task JSON/brief projections, and
++`extensions["agentplane.token_usage"]` in the ACR. The state is `observed`, `partial`, or
++`unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
+ shape; `acr check --mode ci` enforces merge-ready semantics. See
+ [Agent Change Records](../reference/acr).
+ 
+diff --git a/docs/user/task-lifecycle.mdx b/docs/user/task-lifecycle.mdx
+index d07eb4662..8c4e2852f 100644
+--- a/docs/user/task-lifecycle.mdx
++++ b/docs/user/task-lifecycle.mdx
+@@ -35,6 +35,11 @@ outputs, prepared knowledge evidence, verification intent, and stop rules. The a
+ semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
+ An agent-reported check is not accepted as an observed check without supervisor evidence.
+ 
++On completion, the same trust boundary produces a task-level token aggregate. Managed provider
++episodes contribute observed input, visible output, reasoning, and total tokens exactly once.
++External, malformed, legacy, or partially observed episodes remain explicitly `partial` or
++`unavailable`; the CLI does not accept agent-supplied usage and does not fabricate zeroes.
++
+ ## Canonical branch_pr lifecycle
+ 
+ After task creation and semantic plan approval, the default managed path is one command:
+diff --git a/packages/agentplane/src/backends/task-backend/shared/export.ts b/packages/agentplane/src/backends/task-backend/shared/export.ts
+index 36c01ee60..84c23091e 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/export.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/export.ts
+@@ -8,7 +8,11 @@ import { validateTasksExportSnapshot } from "@agentplaneorg/core/schemas";
+ 
+ import { DEFAULT_DOC_UPDATED_BY } from "./constants.js";
+ import { normalizeDocVersion, resolveDocUpdatedByFromTask } from "./doc.js";
+-import { normalizeTaskOrigin, normalizeTaskRunnerOutcome } from "./normalize.js";
++import {
++  normalizeTaskOrigin,
++  normalizeTaskRunnerOutcome,
++  normalizeTaskTokenUsage,
++} from "./normalize.js";
+ import { toStringArray } from "./strings.js";
+ import type { TaskData, TaskEvent } from "./types.js";
+ 
+@@ -68,6 +72,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
+         : undefined,
+     origin: normalizeTaskOrigin(task.origin) ?? undefined,
+     runner: normalizeTaskRunnerOutcome(task.runner) ?? undefined,
++    token_usage: normalizeTaskTokenUsage(task.token_usage) ?? undefined,
+     depends_on: toStringArray(task.depends_on),
+     tags: toStringArray(task.tags),
+     verify: toStringArray(task.verify),
+diff --git a/packages/agentplane/src/backends/task-backend/shared/normalize.ts b/packages/agentplane/src/backends/task-backend/shared/normalize.ts
+index 020da2ca0..150da7d37 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/normalize.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/normalize.ts
+@@ -10,10 +10,98 @@ import type {
+   TaskRunnerHistoryEntry,
+   TaskRunnerOutcome,
+   TaskRunnerTarget,
++  TaskTokenUsage,
+   QualityReviewResult,
+   VerificationResult,
+ } from "./types.js";
+ 
++function nonNegativeInteger(value: unknown): number | null {
++  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
++}
++
++function nullableNonNegativeInteger(value: unknown): number | null | undefined {
++  if (value === null) return null;
++  const normalized = nonNegativeInteger(value);
++  return normalized ?? undefined;
++}
++
++export function normalizeTaskTokenUsage(value: unknown): TaskTokenUsage | null {
++  if (!isRecord(value) || value.schema_version !== 1) return null;
++  const state =
++    value.state === "observed" || value.state === "partial" || value.state === "unavailable"
++      ? value.state
++      : null;
++  const source =
++    value.source === "supervisor_journal" || value.source === "unavailable" ? value.source : null;
++  const inputTokens = nullableNonNegativeInteger(value.input_tokens);
++  const outputTokens = nullableNonNegativeInteger(value.output_tokens);
++  const reasoningTokens = nullableNonNegativeInteger(value.reasoning_tokens);
++  const totalTokens = nullableNonNegativeInteger(value.total_tokens);
++  const agentRuns = nonNegativeInteger(value.agent_runs);
++  const observedAgentRuns = nonNegativeInteger(value.observed_agent_runs);
++  const journalDigest =
++    value.journal_digest === null ||
++    (typeof value.journal_digest === "string" &&
++      /^sha256:[0-9a-f]{64}$/u.test(value.journal_digest))
++      ? value.journal_digest
++      : undefined;
++  const unavailableReason =
++    value.unavailable_reason === null ||
++    (typeof value.unavailable_reason === "string" && value.unavailable_reason.trim())
++      ? value.unavailable_reason
++      : undefined;
++  if (
++    !state ||
++    !source ||
++    value.observed_by !== "agentplane" ||
++    typeof value.updated_at !== "string" ||
++    Number.isNaN(Date.parse(value.updated_at)) ||
++    inputTokens === undefined ||
++    outputTokens === undefined ||
++    reasoningTokens === undefined ||
++    totalTokens === undefined ||
++    agentRuns === null ||
++    observedAgentRuns === null ||
++    observedAgentRuns > agentRuns ||
++    journalDigest === undefined ||
++    unavailableReason === undefined
++  ) {
++    return null;
++  }
++  const tokenFields = [inputTokens, outputTokens, reasoningTokens, totalTokens];
++  if (
++    (state === "observed" &&
++      (agentRuns === 0 ||
++        observedAgentRuns !== agentRuns ||
++        tokenFields.includes(null) ||
++        source !== "supervisor_journal" ||
++        unavailableReason !== null)) ||
++    (state === "partial" &&
++      (observedAgentRuns === 0 || source !== "supervisor_journal" || unavailableReason === null)) ||
++    (state === "unavailable" &&
++      (observedAgentRuns !== 0 ||
++        tokenFields.some((entry) => entry !== null) ||
++        unavailableReason === null))
++  ) {
++    return null;
++  }
++  return {
++    schema_version: 1,
++    state,
++    input_tokens: inputTokens,
++    output_tokens: outputTokens,
++    reasoning_tokens: reasoningTokens,
++    total_tokens: totalTokens,
++    agent_runs: agentRuns,
++    observed_agent_runs: observedAgentRuns,
++    source,
++    observed_by: "agentplane",
++    journal_digest: journalDigest,
++    unavailable_reason: unavailableReason,
++    updated_at: value.updated_at,
++  };
++}
++
+ export function normalizeDependsOn(value: unknown): string[] {
+   if (Array.isArray(value)) {
+     return value.filter((v): v is string => typeof v === "string" && v.trim() !== "[]");
+diff --git a/packages/agentplane/src/backends/task-backend/shared/record.ts b/packages/agentplane/src/backends/task-backend/shared/record.ts
+index 03d2c10b3..abbdce6d0 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/record.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/record.ts
+@@ -16,6 +16,7 @@ import {
+   normalizeQualityReviewResult,
+   normalizeTaskOrigin,
+   normalizeTaskRunnerOutcome,
++  normalizeTaskTokenUsage,
+   normalizeVerificationResult,
+ } from "./normalize.js";
+ import { toStringArray } from "./strings.js";
+@@ -92,6 +93,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
+   const qualityReview = normalizeQualityReviewResult(fm.quality_review);
+   const origin = normalizeTaskOrigin(fm.origin);
+   const runner = normalizeTaskRunnerOutcome(fm.runner);
++  const tokenUsage = normalizeTaskTokenUsage(fm.token_usage);
+   const sections = mergeTaskDocSections({
+     frontmatterSections: normalizeCanonicalSections(fm.sections),
+     body: record.body,
+@@ -134,6 +136,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
+     verification: verification ?? undefined,
+     quality_review: qualityReview ?? undefined,
+     runner: runner ?? undefined,
++    token_usage: tokenUsage ?? undefined,
+     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
+     commit,
+     comments,
+diff --git a/packages/agentplane/src/backends/task-backend/shared/types.ts b/packages/agentplane/src/backends/task-backend/shared/types.ts
+index 8f158e4af..5aefbbc51 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/types.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/types.ts
+@@ -5,6 +5,7 @@ import type {
+   TaskEvent,
+   TaskOrigin,
+   TaskRunnerOutcome,
++  TaskTokenUsage,
+   TaskSyncEnvelope,
+   QualityReviewResult,
+   VerificationResult,
+@@ -22,6 +23,7 @@ export {
+   TaskRunnerOutcome,
+   TaskRunnerOutcomeStatus,
+   TaskRunnerTarget,
++  TaskTokenUsage,
+   QualityReviewResult,
+   VerificationState,
+   VerificationResult,
+@@ -70,6 +72,7 @@ export type TaskData = {
+   verification?: VerificationResult;
+   quality_review?: QualityReviewResult;
+   runner?: TaskRunnerOutcome;
++  token_usage?: TaskTokenUsage;
+   sync?: TaskSyncEnvelope;
+   commit?: { hash: string; message: string } | null;
+   comments?: { author: string; body: string }[];
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts b/packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts
+new file mode 100644
+index 000000000..adfac0ecc
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts
+@@ -0,0 +1,89 @@
++import { describe } from "vitest";
++
++import {
++  captureStdIO,
++  defaultConfig,
++  expect,
++  it,
++  mkGitRepoRootWithBranch,
++  runCli,
++  runCliSilent,
++  seedTaskQueryFixture,
++  useRunCliIntegrationHarness,
++  writeConfig,
++} from "@agentplane/testkit/cli-core-tasks-query";
++
++useRunCliIntegrationHarness();
++
++const taskId = "202608030102-T0KENS";
++const tokenUsage = {
++  schema_version: 1 as const,
++  state: "partial" as const,
++  input_tokens: 120,
++  output_tokens: null,
++  reasoning_tokens: null,
++  total_tokens: 150,
++  agent_runs: 2,
++  observed_agent_runs: 1,
++  source: "supervisor_journal" as const,
++  observed_by: "agentplane" as const,
++  journal_digest: `sha256:${"a".repeat(64)}`,
++  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry",
++  updated_at: "2026-08-03T12:00:00.000Z",
++};
++
++async function captureCli(args: string[]): Promise<string> {
++  const io = captureStdIO();
++  try {
++    expect(await runCli(args)).toBe(0);
++    return io.stdout;
++  } finally {
++    io.restore();
++  }
++}
++
++describe("runCli completed task token usage", () => {
++  it("keeps status, brief, and machine projections consistent", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await seedTaskQueryFixture(root, [
++      {
++        id: taskId,
++        title: "Completed token projection",
++        description: "Expose exact completed-task token usage on every query surface.",
++        status: "DONE",
++        priority: "med",
++        owner: "CODER",
++        depends_on: [],
++        tags: ["workflow"],
++        verify: [],
++        token_usage: tokenUsage,
++      },
++    ]);
++    await writeConfig(root, config);
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++    const expectedSummary =
++      "state=partial completeness=1/2 input=120 output=unavailable " +
++      "reasoning=unavailable total=150 provenance=supervisor_journal/agentplane " +
++      "reason=some_agent_runs_lack_provider_token_telemetry";
++
++    const statusText = await captureCli(["task", "status", taskId, "--root", root]);
++    expect(statusText).toContain(expectedSummary);
++
++    const briefText = await captureCli(["task", "brief", taskId, "--root", root]);
++    expect(briefText).toContain(expectedSummary);
++
++    const statusJson = JSON.parse(
++      await captureCli(["task", "status", taskId, "--json", "--root", root]),
++    ) as { token_usage: typeof tokenUsage };
++    expect(statusJson.token_usage).toEqual(tokenUsage);
++
++    const briefJson = JSON.parse(
++      await captureCli(["task", "brief", taskId, "--json", "--root", root]),
++    ) as { task: { token_usage: typeof tokenUsage } };
++    expect(briefJson.task.token_usage).toEqual(tokenUsage);
++    expect(statusJson.token_usage).toEqual(briefJson.task.token_usage);
++  });
++});
+diff --git a/packages/agentplane/src/commands/acr/generate.ts b/packages/agentplane/src/commands/acr/generate.ts
+index 95b3818c1..c206e0b94 100644
+--- a/packages/agentplane/src/commands/acr/generate.ts
++++ b/packages/agentplane/src/commands/acr/generate.ts
+@@ -165,6 +165,7 @@ export async function generateAcr(opts: {
+   const mergeReady = residualRisks.length === 0;
+   const extensions = {
+     "agentplane.blueprint": blueprint,
++    ...(task.token_usage ? { "agentplane.token_usage": task.token_usage } : {}),
+     ...buildAcrContextExtension(task),
+   };
+   if (trust) Object.assign(extensions, trust);
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index 6ba0ffb78..f81ff83ee 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -79,7 +79,10 @@ function assertPersistedEvaluatorReceipt(opts: {
+       usage !== null &&
+       isNonNegativeInteger(usage.input_tokens) &&
+       isNonNegativeInteger(usage.output_tokens) &&
+-      isNonNegativeInteger(usage.total_tokens));
++      isNonNegativeInteger(usage.total_tokens) &&
++      (usage.visible_output_tokens === undefined ||
++        isNonNegativeInteger(usage.visible_output_tokens)) &&
++      (usage.reasoning_tokens === undefined || isNonNegativeInteger(usage.reasoning_tokens)));
+   if (
+     value.schema_version !== 1 ||
+     value.kind !== "evaluator_episode_receipt" ||
+@@ -155,6 +158,8 @@ function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
+   input_tokens?: number;
+   output_tokens?: number;
+   total_tokens?: number;
++  visible_output_tokens?: number;
++  reasoning_tokens?: number;
+   wall_time_ms: number;
+   changed_files: number;
+ } {
+diff --git a/packages/agentplane/src/commands/release/tasks-reconcile.command.ts b/packages/agentplane/src/commands/release/tasks-reconcile.command.ts
+index 74c86df22..a312d79d2 100644
+--- a/packages/agentplane/src/commands/release/tasks-reconcile.command.ts
++++ b/packages/agentplane/src/commands/release/tasks-reconcile.command.ts
+@@ -16,6 +16,7 @@ import {
+   resolveLocalMergedPrMeta,
+ } from "../task/hosted-merge-sync/pr-meta.js";
+ import type { LocalBranchPrSyncCandidate } from "../task/hosted-merge-sync/model.js";
++import { resolveReconciliationTaskTokenUsage } from "../task/task-token-usage.js";
+ 
+ export type ReleaseTasksReconcileParsed = {
+   taskIds: string[];
+@@ -199,8 +200,14 @@ async function reconcileIncludedBatchTasks(opts: {
+             meta: null,
+             taskStatus: normalizeTaskStatus(task.status),
+           };
++          const at = new Date().toISOString();
++          const tokenUsage = await resolveReconciliationTaskTokenUsage({
++            task,
++            git_root: cwd,
++            updated_at: at,
++          });
+           synced += 1;
+-          return buildLocallySyncedTask({ task, candidate });
++          return buildLocallySyncedTask({ task, candidate, tokenUsage, at });
+         }),
+       );
+       return {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-types.test.ts b/packages/agentplane/src/commands/shared/route-decision-types.test.ts
+index 03dc15d37..55f250c9c 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-types.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-types.test.ts
+@@ -15,4 +15,31 @@ describe("task route summary", () => {
+ 
+     expect(taskSummary(task).commit).toBe("a".repeat(40));
+   });
++
++  it("projects completed-task token usage without changing its provenance", () => {
++    const tokenUsage = {
++      schema_version: 1 as const,
++      state: "partial" as const,
++      input_tokens: 120,
++      output_tokens: null,
++      reasoning_tokens: null,
++      total_tokens: 150,
++      agent_runs: 2,
++      observed_agent_runs: 1,
++      source: "supervisor_journal" as const,
++      observed_by: "agentplane" as const,
++      journal_digest: `sha256:${"a".repeat(64)}`,
++      unavailable_reason: "some_agent_runs_lack_provider_token_telemetry",
++      updated_at: "2026-08-03T12:00:00.000Z",
++    };
++    const task = {
++      id: "202608030101-T0KENS",
++      title: "Token projection",
++      status: "DONE",
++      owner: "CODER",
++      token_usage: tokenUsage,
++    } as TaskData;
++
++    expect(taskSummary(task).token_usage).toEqual(tokenUsage);
++  });
+ });
+diff --git a/packages/agentplane/src/commands/shared/route-decision-types.ts b/packages/agentplane/src/commands/shared/route-decision-types.ts
+index aaf4a59ae..31d2f42f1 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-types.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-types.ts
+@@ -37,6 +37,7 @@ export type TaskRouteDecision = {
+     planApproval: string | null;
+     verification: string | null;
+     commit: string | null;
++    token_usage?: TaskData["token_usage"];
+   };
+   workflowMode: string;
+   workspace: {
+@@ -92,5 +93,6 @@ export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
+     planApproval: task.plan_approval?.state ?? null,
+     verification: task.verification?.state ?? null,
+     commit: commitHash || null,
++    token_usage: task.token_usage,
+   };
+ }
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 6fab9f976..56b79c0b1 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -327,9 +327,19 @@ function observedRunnerUsage(opts: {
+   const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
+   const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
+   const missing: string[] = [];
+-  for (const field of ["input_tokens", "output_tokens", "total_tokens"] as const) {
++  for (const field of [
++    "input_tokens",
++    "output_tokens",
++    "total_tokens",
++    "visible_output_tokens",
++    "reasoning_tokens",
++  ] as const) {
+     if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
+-    else if (opts.budget[`max_${field}`] !== null) missing.push(`${field}_telemetry`);
++    else if (
++      (field === "input_tokens" || field === "output_tokens" || field === "total_tokens") &&
++      opts.budget[`max_${field}`] !== null
++    )
++      missing.push(`${field}_telemetry`);
+   }
+   if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
+   else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index a55113608..f78e2c570 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -118,6 +118,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
+     verification,
+     quality_review: task.quality_review ?? undefined,
+     runner: task.runner ?? undefined,
++    token_usage: task.token_usage ?? undefined,
+     commit: task.commit ?? null,
+     comments: task.comments ?? [],
+     events: task.events ?? [],
+diff --git a/packages/agentplane/src/commands/task/brief-model.ts b/packages/agentplane/src/commands/task/brief-model.ts
+index d6455a7b0..cd8d083e3 100644
+--- a/packages/agentplane/src/commands/task/brief-model.ts
++++ b/packages/agentplane/src/commands/task/brief-model.ts
+@@ -6,6 +6,7 @@ import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
+ import type { WorkflowStep } from "../shared/workflow-step.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import type { TaskTokenUsage } from "@agentplaneorg/core/tasks";
+ import {
+   prepareAgentWorkOrder,
+   requirePreparedAgentWorkOrder,
+@@ -84,6 +85,7 @@ type TaskBriefLegacyProjection = {
+     owner: string;
+     plan: string | null;
+     verification: string | null;
++    token_usage: TaskTokenUsage | undefined;
+   };
+   workflow: {
+     mode: string;
+@@ -276,6 +278,7 @@ export function projectTaskBriefFromPreparedWorkOrder(
+       owner: task.owner,
+       plan: task.plan_approval?.state ?? null,
+       verification: task.verification?.state ?? null,
++      token_usage: task.token_usage,
+     },
+     workflow: {
+       mode: route.workflowMode,
+diff --git a/packages/agentplane/src/commands/task/brief-render.ts b/packages/agentplane/src/commands/task/brief-render.ts
+index c0b89d81b..8491f8b5a 100644
+--- a/packages/agentplane/src/commands/task/brief-render.ts
++++ b/packages/agentplane/src/commands/task/brief-render.ts
+@@ -2,6 +2,7 @@ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import { routeRunnerContextIsRelevant } from "../shared/route-guidance.js";
+ import { renderCliArgv } from "../shared/workflow-operation-projection.js";
+ import type { TaskBriefWithWorkflowStep } from "./brief-model.js";
++import { formatTaskTokenUsageSummary } from "./token-usage-format.js";
+ 
+ function splitNonEmptyLines(text: string): string[] {
+   return text
+@@ -29,6 +30,14 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
+       { label: "task", value: `${brief.task.id} ${brief.task.status}` },
+       { label: "title", value: brief.task.title },
+       { label: "owner", value: brief.task.owner },
++      ...(brief.task.token_usage
++        ? [
++            {
++              label: "token_usage",
++              value: formatTaskTokenUsageSummary(brief.task.token_usage),
++            },
++          ]
++        : []),
+       { label: "workflow", value: brief.workflow.mode },
+       { label: "phase", value: brief.route.phase },
+       { label: "step_kind", value: brief.workflow_step.kind },
+diff --git a/packages/agentplane/src/commands/task/close-shared.ts b/packages/agentplane/src/commands/task/close-shared.ts
+index 4e73b2811..7ed276fbf 100644
+--- a/packages/agentplane/src/commands/task/close-shared.ts
++++ b/packages/agentplane/src/commands/task/close-shared.ts
+@@ -12,6 +12,7 @@ import {
+   type CommandContext,
+ } from "../shared/task-backend.js";
+ import { applyTaskStatusTransitionCommand, nowIso, requireStructuredComment } from "./shared.js";
++import { resolveTaskTokenUsageOnFinish } from "./task-token-usage.js";
+ 
+ export async function ensureLocalTaskReadmeHydrated(opts: {
+   ctx: CommandContext;
+@@ -71,6 +72,11 @@ export async function recordVerifiedNoopClosure(opts: {
+   requireStructuredComment(opts.body, verifiedCfg.prefix, verifiedCfg.min_chars);
+ 
+   const at = nowIso();
++  const tokenUsage = await resolveTaskTokenUsageOnFinish({
++    git_root: opts.ctx.resolvedProject.gitRoot,
++    task_id: opts.taskId,
++    updated_at: at,
++  });
+   await applyTaskStatusTransitionCommand({
+     ctx: opts.ctx,
+     taskId: opts.taskId,
+@@ -96,6 +102,7 @@ export async function recordVerifiedNoopClosure(opts: {
+           result_summary: opts.resultSummary,
+           risk_level: "low",
+           breaking: false,
++          token_usage: tokenUsage,
+         },
+         force: true,
+         dependencyPolicy: { kind: "none" },
+diff --git a/packages/agentplane/src/commands/task/close-shared.unit.test.ts b/packages/agentplane/src/commands/task/close-shared.unit.test.ts
+index b641629c8..1d5b724e0 100644
+--- a/packages/agentplane/src/commands/task/close-shared.unit.test.ts
++++ b/packages/agentplane/src/commands/task/close-shared.unit.test.ts
+@@ -92,6 +92,21 @@ describe("task close-shared helper (unit)", () => {
+         result_summary: "No-op verified",
+         risk_level: "low",
+         breaking: false,
++        token_usage: {
++          schema_version: 1,
++          state: "unavailable",
++          input_tokens: null,
++          output_tokens: null,
++          reasoning_tokens: null,
++          total_tokens: null,
++          agent_runs: 0,
++          observed_agent_runs: 0,
++          source: "unavailable",
++          observed_by: "agentplane",
++          journal_digest: null,
++          unavailable_reason: "supervisor_journal_unreadable_or_invalid",
++          updated_at: "2026-03-13T16:10:00.000Z",
++        },
+         comments: [
+           {
+             author: "CODER",
+diff --git a/packages/agentplane/src/commands/task/finish-shared.ts b/packages/agentplane/src/commands/task/finish-shared.ts
+index eb754424b..8d09b1831 100644
+--- a/packages/agentplane/src/commands/task/finish-shared.ts
++++ b/packages/agentplane/src/commands/task/finish-shared.ts
+@@ -20,6 +20,7 @@ import {
+   resolvePrimaryTag,
+   toStringArray,
+ } from "./shared.js";
++import { resolveTaskTokenUsageOnFinish } from "./task-token-usage.js";
+ 
+ export type ResolvedCommitInfo = {
+   hash: string;
+@@ -220,6 +221,11 @@ export async function writeFinishedTasks(opts: {
+   for (const loaded of opts.loadedTasks) {
+     const { taskId, task } = loaded;
+     const at = nowIso();
++    const tokenUsage = await resolveTaskTokenUsageOnFinish({
++      git_root: opts.ctx.resolvedProject.gitRoot,
++      task_id: taskId,
++      updated_at: at,
++    });
+     const applyTransition = async (currentTask: TaskData) => {
+       assertTaskCanFinish({
+         task: currentTask,
+@@ -260,6 +266,7 @@ export async function writeFinishedTasks(opts: {
+           ? { hash: opts.taskCommitInfo.hash, message: opts.taskCommitInfo.message }
+           : undefined,
+         extraFields: {
++          token_usage: tokenUsage,
+           ...(taskId === opts.metaTaskId && opts.resultSummary
+             ? { result_summary: opts.resultSummary }
+             : {}),
+diff --git a/packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts b/packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts
+new file mode 100644
+index 000000000..58c51d4f3
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts
+@@ -0,0 +1,330 @@
++import { afterEach, describe, expect, it } from "vitest";
++import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { syncHostedMergedTasks, syncLocallyShippedBranchPrTasks } from "./hosted-merge-sync.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
++
++const roots: string[] = [];
++const fingerprintA = `sha256:${"a".repeat(64)}`;
++const fingerprintB = `sha256:${"b".repeat(64)}`;
++const at = "2026-08-03T00:00:00.000Z";
++
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map(async (root) => await rm(root, { recursive: true })));
++});
++
++async function createRepo(): Promise<{ root: string; commit: string }> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-reconcile-tokens-"));
++  roots.push(root);
++  await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: root, env: process.env });
++  await execFileAsync("git", ["commit", "--allow-empty", "-m", "seed"], {
++    cwd: root,
++    env: {
++      ...process.env,
++      GIT_AUTHOR_NAME: "AgentPlane Test",
++      GIT_AUTHOR_EMAIL: "agentplane@example.invalid",
++      GIT_COMMITTER_NAME: "AgentPlane Test",
++      GIT_COMMITTER_EMAIL: "agentplane@example.invalid",
++    },
++  });
++  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++    cwd: root,
++    env: process.env,
++  });
++  return { root, commit: stdout.trim() };
++}
++
++function commandContext(root: string): CommandContext {
++  return {
++    backendId: "local",
++    backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++    resolvedProject: { gitRoot: root },
++    config: {
++      workflow_mode: "branch_pr",
++      paths: { workflow_dir: ".agentplane/tasks" },
++      branch: { task_prefix: "task" },
++    },
++    taskBackend: {
++      capabilities: {
++        canonical_source: "local",
++        writes_task_readmes: true,
++      },
++    },
++    git: {},
++    memo: {},
++  } as unknown as CommandContext;
++}
++
++function task(taskId: string, commit: string): TaskData {
++  return {
++    id: taskId,
++    title: "Reconcile observed token usage",
++    status: "DOING",
++    priority: "high",
++    owner: "CODER",
++    revision: 1,
++    verification: {
++      state: "ok",
++      updated_at: at,
++      updated_by: "TESTER",
++      note: "verified",
++    },
++    commit: { hash: commit, message: "implementation" },
++    comments: [],
++    events: [],
++  } as TaskData;
++}
++
++async function writePrMeta(opts: {
++  root: string;
++  taskId: string;
++  branch: string;
++  commit: string;
++  merged: boolean;
++}): Promise<void> {
++  const directory = path.join(opts.root, ".agentplane/tasks", opts.taskId, "pr");
++  await mkdir(directory, { recursive: true });
++  await writeFile(
++    path.join(directory, "meta.json"),
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        task_id: opts.taskId,
++        branch: opts.branch,
++        base: "main",
++        created_at: at,
++        updated_at: at,
++        ...(opts.merged
++          ? {
++              status: "MERGED",
++              merged_at: at,
++              merge_commit: opts.commit,
++            }
++          : {}),
++        head_sha: opts.commit,
++        last_verified_sha: opts.commit,
++        last_verified_at: at,
++        verify: { status: "pass" },
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++}
++
++async function installFakeGh(opts: { root: string; output: unknown }): Promise<() => void> {
++  const bin = path.join(opts.root, "bin");
++  const executable = path.join(bin, "gh");
++  await mkdir(bin, { recursive: true });
++  await writeFile(
++    executable,
++    `#!/bin/sh\nprintf '%s\\n' '${JSON.stringify(opts.output)}'\n`,
++    "utf8",
++  );
++  await chmod(executable, 0o755);
++  const previousPath = process.env.PATH;
++  process.env.PATH = previousPath ? `${bin}:${previousPath}` : bin;
++  return () => {
++    if (previousPath === undefined) delete process.env.PATH;
++    else process.env.PATH = previousPath;
++  };
++}
++
++function completeAgent(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  role: "EXECUTOR" | "EVALUATOR";
++  fingerprint: string;
++  usage: {
++    input_tokens: number;
++    output_tokens: number;
++    visible_output_tokens: number;
++    reasoning_tokens: number;
++    total_tokens: number;
++  };
++}): SupervisorExecutionEpisodeJournal {
++  const started = startSupervisorExecutionEpisode({
++    journal: opts.journal,
++    role: opts.role,
++    kind: opts.role === "EVALUATOR" ? "evaluator_episode" : "agent_episode",
++    operation_identity: { role: opts.role },
++    precondition_fingerprint_digest: opts.fingerprint,
++    now: at,
++  });
++  if (started.status !== "started") throw new Error("fixture episode did not start");
++  return completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { status: "completed" },
++    usage: opts.usage,
++    now: at,
++  });
++}
++
++async function writeObservedJournal(opts: {
++  root: string;
++  taskId: string;
++}): Promise<SupervisorExecutionEpisodeJournal> {
++  const initial = createSupervisorExecutionEpisodeJournal({
++    task_id: opts.taskId,
++    task_revision: 1,
++    state_fingerprint_digest: fingerprintA,
++    budget: {
++      max_episodes: 10,
++      max_agent_runs: 10,
++      max_input_tokens: 1_000_000,
++      max_output_tokens: 1_000_000,
++      max_total_tokens: 2_000_000,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++    now: at,
++  });
++  const executor = completeAgent({
++    journal: initial,
++    role: "EXECUTOR",
++    fingerprint: fingerprintA,
++    usage: {
++      input_tokens: 10,
++      output_tokens: 7,
++      visible_output_tokens: 4,
++      reasoning_tokens: 3,
++      total_tokens: 17,
++    },
++  });
++  const advanced = advanceSupervisorExecutionEpisodeState({
++    journal: executor,
++    state_fingerprint_digest: fingerprintB,
++    route_observation: { state: "evaluator" },
++    now: at,
++  });
++  const journal = completeAgent({
++    journal: advanced,
++    role: "EVALUATOR",
++    fingerprint: fingerprintB,
++    usage: {
++      input_tokens: 5,
++      output_tokens: 6,
++      visible_output_tokens: 2,
++      reasoning_tokens: 4,
++      total_tokens: 11,
++    },
++  });
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: opts.root,
++    task_id: opts.taskId,
++  });
++  await createSupervisorEpisodeStore(journalPath).write(journal);
++  return journal;
++}
++
++function expectObservedAggregate(task: TaskData, journal: SupervisorExecutionEpisodeJournal): void {
++  expect(task.token_usage).toMatchObject({
++    schema_version: 1,
++    state: "observed",
++    input_tokens: 15,
++    output_tokens: 6,
++    reasoning_tokens: 7,
++    total_tokens: 28,
++    agent_runs: 2,
++    observed_agent_runs: 2,
++    source: "supervisor_journal",
++    observed_by: "agentplane",
++    journal_digest: journal.digest,
++    unavailable_reason: null,
++  });
++  expect(task.token_usage?.updated_at).toMatch(/^2026-08-03T/u);
++}
++
++describe("merge reconciliation token usage", () => {
++  it("projects hosted merge usage from the supervisor journal and keeps replay stable", async () => {
++    const { root, commit } = await createRepo();
++    const taskId = "202608030001-HOSTED";
++    const branch = `task/${taskId}/hosted`;
++    await writePrMeta({ root, taskId, branch, commit, merged: false });
++    const journal = await writeObservedJournal({ root, taskId });
++    const restorePath = await installFakeGh({
++      root,
++      output: [
++        {
++          number: 42,
++          title: "Hosted merge",
++          mergedAt: at,
++          baseRefName: "main",
++          headRefName: branch,
++          headRefOid: commit,
++          mergeCommit: { oid: commit },
++        },
++      ],
++    });
++
++    const first = await syncHostedMergedTasks({
++      ctx: commandContext(root),
++      tasks: [task(taskId, commit)],
++    }).finally(restorePath);
++    expect(first.synced).toBe(1);
++    expectObservedAggregate(first.tasks[0]!, journal);
++
++    const second = await syncHostedMergedTasks({
++      ctx: commandContext(root),
++      tasks: first.tasks,
++    });
++    expect(second.synced).toBe(0);
++    expect(second.tasks[0]?.token_usage).toEqual(first.tasks[0]?.token_usage);
++  });
++
++  it("projects local merged-metadata usage from the supervisor journal", async () => {
++    const { root, commit } = await createRepo();
++    const taskId = "202608030002-LOCALM";
++    const branch = `task/${taskId}/local-merged`;
++    await writePrMeta({ root, taskId, branch, commit, merged: true });
++    const journal = await writeObservedJournal({ root, taskId });
++
++    const result = await syncHostedMergedTasks({
++      ctx: commandContext(root),
++      tasks: [task(taskId, commit)],
++    });
++    expect(result.synced).toBe(1);
++    expectObservedAggregate(result.tasks[0]!, journal);
++  });
++
++  it("projects locally shipped usage from the supervisor journal", async () => {
++    const { root, commit } = await createRepo();
++    const taskId = "202608030003-SHIPPED";
++    const branch = `task/${taskId}/shipped`;
++    await writePrMeta({ root, taskId, branch, commit, merged: false });
++    const journal = await writeObservedJournal({ root, taskId });
++
++    const result = await syncLocallyShippedBranchPrTasks({
++      ctx: commandContext(root),
++      tasks: [task(taskId, commit)],
++    });
++    expect(result.synced).toBe(1);
++    expectObservedAggregate(result.tasks[0]!, journal);
++
++    const replay = await syncLocallyShippedBranchPrTasks({
++      ctx: commandContext(root),
++      tasks: result.tasks,
++    });
++    expect(replay.synced).toBe(0);
++    expect(replay.tasks[0]?.token_usage).toEqual(result.tasks[0]?.token_usage);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/hosted-merge-sync.ts b/packages/agentplane/src/commands/task/hosted-merge-sync.ts
+index 26c911a34..c177e8bf2 100644
+--- a/packages/agentplane/src/commands/task/hosted-merge-sync.ts
++++ b/packages/agentplane/src/commands/task/hosted-merge-sync.ts
+@@ -16,6 +16,7 @@ import { resolveHostedMergedPr } from "./hosted-merge-sync/github.js";
+ import { findLocallyShippedBranchPrTasks } from "./hosted-merge-sync/local-branch.js";
+ import { readPrMetaIfPresent, resolveLocalMergedPrMeta } from "./hosted-merge-sync/pr-meta.js";
+ import type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/model.js";
++import { resolveReconciliationTaskTokenUsage } from "./task-token-usage.js";
+ 
+ export type {
+   HostedMergedPr,
+@@ -87,11 +88,21 @@ export async function syncHostedMergedTask(opts: {
+     branch: opts.target.branch,
+   });
+   await writeJsonStableIfChanged(prMetaRecord.metaPath, nextMeta);
++  const at = opts.target.mergedPr.mergedAt ?? new Date().toISOString();
++  const tokenUsage = await resolveReconciliationTaskTokenUsage({
++    task,
++    git_root: opts.ctx.resolvedProject.gitRoot,
++    updated_at: at,
++  });
+ 
+   return {
+     tasks: opts.tasks.map((entry) =>
+       entry.id === opts.target.taskId
+-        ? buildSyncedTask({ task: entry, mergedPr: opts.target.mergedPr })
++        ? buildSyncedTask({
++            task: entry,
++            mergedPr: opts.target.mergedPr,
++            tokenUsage,
++          })
+         : entry,
+     ),
+     synced: 1,
+@@ -114,11 +125,20 @@ export async function syncLocallyShippedBranchPrTasks(opts: {
+   }
+   const byTaskId = new Map(matches.map((entry) => [entry.taskId, entry]));
+   return {
+-    tasks: opts.tasks.map((task) => {
+-      const candidate = byTaskId.get(task.id);
+-      if (!candidate) return task;
+-      return candidate.taskStatus === "DONE" ? task : buildLocallySyncedTask({ task, candidate });
+-    }),
++    tasks: await Promise.all(
++      opts.tasks.map(async (task) => {
++        const candidate = byTaskId.get(task.id);
++        if (!candidate) return task;
++        if (candidate.taskStatus === "DONE" && task.token_usage) return task;
++        const at = new Date().toISOString();
++        const tokenUsage = await resolveReconciliationTaskTokenUsage({
++          task,
++          git_root: opts.ctx.resolvedProject.gitRoot,
++          updated_at: at,
++        });
++        return buildLocallySyncedTask({ task, candidate, tokenUsage, at });
++      }),
++    ),
+     synced: matches.length,
+   };
+ }
+@@ -150,8 +170,18 @@ export async function syncHostedMergedTasks(opts: {
+     const localMergedMeta = resolveLocalMergedPrMeta(prMetaRecord.meta);
+     if (localMergedMeta) {
+       const needsSync = needsHostedMergeSyncFromLocalMeta({ task, meta: localMergedMeta });
++      const at = localMergedMeta.mergedAt ?? new Date().toISOString();
++      const tokenUsage = needsSync
++        ? await resolveReconciliationTaskTokenUsage({
++            task,
++            git_root: opts.ctx.resolvedProject.gitRoot,
++            updated_at: at,
++          })
++        : null;
+       nextTasks.push(
+-        needsSync ? buildLocallyMergedSyncedTask({ task, meta: localMergedMeta }) : task,
++        needsSync && tokenUsage
++          ? buildLocallyMergedSyncedTask({ task, meta: localMergedMeta, tokenUsage })
++          : task,
+       );
+       if (needsSync) synced += 1;
+       continue;
+diff --git a/packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts b/packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts
+index 2f594884d..dda227b1a 100644
+--- a/packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts
++++ b/packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts
+@@ -5,6 +5,8 @@ import type { TaskData } from "../../../backends/task-backend.js";
+ import { appendTaskEvent } from "../shared.js";
+ import type { HostedMergedPr, LocalBranchPrSyncCandidate, LocalMergedPrMeta } from "./model.js";
+ 
++type ReconciliationTokenUsage = NonNullable<TaskData["token_usage"]>;
++
+ export function buildSyncedPrMeta(opts: {
+   meta: TaskPrMeta;
+   mergedPr: HostedMergedPr;
+@@ -24,7 +26,11 @@ export function buildSyncedPrMeta(opts: {
+   };
+ }
+ 
+-export function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr }): TaskData {
++export function buildSyncedTask(opts: {
++  task: TaskData;
++  mergedPr: HostedMergedPr;
++  tokenUsage: ReconciliationTokenUsage;
++}): TaskData {
+   const at = opts.mergedPr.mergedAt ?? new Date().toISOString();
+   const currentStatus = normalizeTaskStatus(opts.task.status);
+   const note =
+@@ -35,6 +41,7 @@ export function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr
+   return {
+     ...opts.task,
+     status: "DONE",
++    token_usage: opts.tokenUsage,
+     result_summary: opts.task.result_summary ?? `Merged via PR #${opts.mergedPr.number}.`,
+     commit: opts.task.commit?.hash?.trim()
+       ? opts.task.commit
+@@ -67,12 +74,14 @@ export function needsHostedMergeSyncFromLocalMeta(opts: {
+   const currentStatus = normalizeTaskStatus(opts.task.status);
+   if (currentStatus !== "DONE") return true;
+   if ((opts.task.commit?.hash ?? "") !== opts.meta.mergeCommit) return true;
++  if (!opts.task.token_usage) return true;
+   return false;
+ }
+ 
+ export function buildLocallyMergedSyncedTask(opts: {
+   task: TaskData;
+   meta: LocalMergedPrMeta;
++  tokenUsage: ReconciliationTokenUsage;
+ }): TaskData {
+   const at = opts.meta.mergedAt ?? new Date().toISOString();
+   const currentStatus = normalizeTaskStatus(opts.task.status);
+@@ -82,6 +91,7 @@ export function buildLocallyMergedSyncedTask(opts: {
+   return {
+     ...opts.task,
+     status: "DONE",
++    token_usage: opts.tokenUsage,
+     result_summary: opts.task.result_summary ?? "Merged and reconciled from local PR metadata.",
+     commit: opts.task.commit?.hash?.trim()
+       ? opts.task.commit
+@@ -106,8 +116,10 @@ export function buildLocallyMergedSyncedTask(opts: {
+ export function buildLocallySyncedTask(opts: {
+   task: TaskData;
+   candidate: LocalBranchPrSyncCandidate;
++  tokenUsage: ReconciliationTokenUsage;
++  at?: string;
+ }): TaskData {
+-  const at = new Date().toISOString();
++  const at = opts.at ?? new Date().toISOString();
+   const currentStatus = normalizeTaskStatus(opts.task.status);
+   const note =
+     `Local branch_pr reconciliation detected task commit ${opts.candidate.commitHash.slice(0, 12)} ` +
+@@ -115,6 +127,7 @@ export function buildLocallySyncedTask(opts: {
+   return {
+     ...opts.task,
+     status: "DONE",
++    token_usage: opts.tokenUsage,
+     result_summary:
+       opts.task.result_summary ??
+       `Shipped on ${opts.candidate.base} and reconciled from local branch_pr state.`,
+@@ -172,5 +185,6 @@ export function needsHostedMergeSync(opts: {
+   if ((opts.meta.branch ?? "") !== opts.branch) return true;
+   if ((opts.meta.base ?? "") !== expectedBase) return true;
+   if (opts.meta.head_sha?.trim() !== expectedHeadSha) return true;
++  if (!opts.task.token_usage) return true;
+   return false;
+ }
+diff --git a/packages/agentplane/src/commands/task/status.command.ts b/packages/agentplane/src/commands/task/status.command.ts
+index ae12c4be5..e9e5fe5a8 100644
+--- a/packages/agentplane/src/commands/task/status.command.ts
++++ b/packages/agentplane/src/commands/task/status.command.ts
+@@ -6,6 +6,7 @@ import {
+   deriveRouteOperatorGuidance,
+   routeRunnerContextIsRelevant,
+ } from "../shared/route-guidance.js";
++import { formatTaskTokenUsageSummary } from "./token-usage-format.js";
+ 
+ export type TaskStatusParsed = {
+   taskId: string;
+@@ -86,6 +87,14 @@ export function makeRunTaskStatusHandler(session: {
+       { label: "task", value: `${decision.task.id} ${decision.task.status}` },
+       { label: "title", value: decision.task.title },
+       { label: "owner", value: decision.task.owner },
++      ...(decision.task.token_usage
++        ? [
++            {
++              label: "token_usage",
++              value: formatTaskTokenUsageSummary(decision.task.token_usage),
++            },
++          ]
++        : []),
+       { label: "plan", value: decision.task.planApproval ?? "pending" },
+       { label: "verification", value: decision.task.verification ?? "pending" },
+       { label: "workflow", value: decision.workflowMode },
+diff --git a/packages/agentplane/src/commands/task/task-token-usage.test.ts b/packages/agentplane/src/commands/task/task-token-usage.test.ts
+new file mode 100644
+index 000000000..aa4f6ad39
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/task-token-usage.test.ts
+@@ -0,0 +1,239 @@
++import { describe, expect, it } from "vitest";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++import { projectTaskTokenUsage } from "./task-token-usage.js";
++
++const fingerprintA = `sha256:${"a".repeat(64)}`;
++const fingerprintB = `sha256:${"b".repeat(64)}`;
++
++function journal(): SupervisorExecutionEpisodeJournal {
++  return createSupervisorExecutionEpisodeJournal({
++    task_id: "202608030000-TOKENS",
++    task_revision: 1,
++    state_fingerprint_digest: fingerprintA,
++    budget: {
++      max_episodes: 10,
++      max_agent_runs: 10,
++      max_input_tokens: 1_000_000,
++      max_output_tokens: 1_000_000,
++      max_total_tokens: 2_000_000,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++    now: "2026-08-03T00:00:00.000Z",
++  });
++}
++
++function completeAgent(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  role: "EXECUTOR" | "EVALUATOR";
++  fingerprint: string;
++  usage?: {
++    input_tokens: number;
++    output_tokens: number;
++    visible_output_tokens?: number;
++    reasoning_tokens?: number;
++    total_tokens: number;
++  };
++}): SupervisorExecutionEpisodeJournal {
++  const started = startSupervisorExecutionEpisode({
++    journal: opts.journal,
++    role: opts.role,
++    kind: opts.role === "EVALUATOR" ? "evaluator_episode" : "agent_episode",
++    operation_identity: { role: opts.role },
++    precondition_fingerprint_digest: opts.fingerprint,
++    now: "2026-08-03T00:00:01.000Z",
++  });
++  if (started.status !== "started") throw new Error("fixture episode did not start");
++  return completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { status: "completed" },
++    usage: opts.usage,
++    now: "2026-08-03T00:00:02.000Z",
++  });
++}
++
++describe("completed task token usage projection", () => {
++  it("aggregates executor and evaluator provider telemetry exactly once", () => {
++    const executor = completeAgent({
++      journal: journal(),
++      role: "EXECUTOR",
++      fingerprint: fingerprintA,
++      usage: {
++        input_tokens: 10,
++        output_tokens: 7,
++        visible_output_tokens: 4,
++        reasoning_tokens: 3,
++        total_tokens: 17,
++      },
++    });
++    const advanced = advanceSupervisorExecutionEpisodeState({
++      journal: executor,
++      state_fingerprint_digest: fingerprintB,
++      route_observation: { state: "evaluator" },
++      now: "2026-08-03T00:00:03.000Z",
++    });
++    const evaluator = completeAgent({
++      journal: advanced,
++      role: "EVALUATOR",
++      fingerprint: fingerprintB,
++      usage: {
++        input_tokens: 5,
++        output_tokens: 6,
++        visible_output_tokens: 2,
++        reasoning_tokens: 4,
++        total_tokens: 11,
++      },
++    });
++
++    expect(
++      projectTaskTokenUsage({
++        journal: evaluator,
++        updated_at: "2026-08-03T00:00:04.000Z",
++      }),
++    ).toEqual({
++      schema_version: 1,
++      state: "observed",
++      input_tokens: 15,
++      output_tokens: 6,
++      reasoning_tokens: 7,
++      total_tokens: 28,
++      agent_runs: 2,
++      observed_agent_runs: 2,
++      source: "supervisor_journal",
++      observed_by: "agentplane",
++      journal_digest: evaluator.digest,
++      unavailable_reason: null,
++      updated_at: "2026-08-03T00:00:04.000Z",
++    });
++  });
++
++  it("marks mixed observed and external episodes partial", () => {
++    const observed = completeAgent({
++      journal: journal(),
++      role: "EXECUTOR",
++      fingerprint: fingerprintA,
++      usage: {
++        input_tokens: 10,
++        output_tokens: 7,
++        visible_output_tokens: 4,
++        reasoning_tokens: 3,
++        total_tokens: 17,
++      },
++    });
++    const advanced = advanceSupervisorExecutionEpisodeState({
++      journal: observed,
++      state_fingerprint_digest: fingerprintB,
++      route_observation: { state: "external" },
++    });
++    const mixed = completeAgent({
++      journal: advanced,
++      role: "EVALUATOR",
++      fingerprint: fingerprintB,
++    });
++
++    expect(projectTaskTokenUsage({ journal: mixed })).toMatchObject({
++      state: "partial",
++      input_tokens: 10,
++      output_tokens: null,
++      reasoning_tokens: null,
++      total_tokens: 17,
++      agent_runs: 2,
++      observed_agent_runs: 1,
++      unavailable_reason: "some_agent_runs_lack_provider_token_telemetry",
++    });
++  });
++
++  it("marks primary telemetry without an observed output breakdown partial", () => {
++    const primaryOnly = completeAgent({
++      journal: journal(),
++      role: "EXECUTOR",
++      fingerprint: fingerprintA,
++      usage: {
++        input_tokens: 10,
++        output_tokens: 7,
++        total_tokens: 17,
++      },
++    });
++
++    expect(projectTaskTokenUsage({ journal: primaryOnly })).toMatchObject({
++      state: "partial",
++      input_tokens: 10,
++      output_tokens: null,
++      reasoning_tokens: null,
++      total_tokens: 17,
++      agent_runs: 1,
++      observed_agent_runs: 1,
++      unavailable_reason: "some_agent_runs_lack_output_reasoning_breakdown",
++    });
++  });
++
++  it("does not fabricate breakdown totals when an evaluator receipt omits them", () => {
++    const executor = completeAgent({
++      journal: journal(),
++      role: "EXECUTOR",
++      fingerprint: fingerprintA,
++      usage: {
++        input_tokens: 10,
++        output_tokens: 7,
++        visible_output_tokens: 4,
++        reasoning_tokens: 3,
++        total_tokens: 17,
++      },
++    });
++    const advanced = advanceSupervisorExecutionEpisodeState({
++      journal: executor,
++      state_fingerprint_digest: fingerprintB,
++      route_observation: { state: "evaluator" },
++    });
++    const mixedBreakdown = completeAgent({
++      journal: advanced,
++      role: "EVALUATOR",
++      fingerprint: fingerprintB,
++      usage: {
++        input_tokens: 5,
++        output_tokens: 6,
++        total_tokens: 11,
++      },
++    });
++
++    expect(projectTaskTokenUsage({ journal: mixedBreakdown })).toMatchObject({
++      state: "partial",
++      input_tokens: 15,
++      output_tokens: null,
++      reasoning_tokens: null,
++      total_tokens: 28,
++      agent_runs: 2,
++      observed_agent_runs: 2,
++      unavailable_reason: "some_agent_runs_lack_output_reasoning_breakdown",
++    });
++  });
++
++  it("never turns an unobserved external episode into zero token usage", () => {
++    const external = completeAgent({
++      journal: journal(),
++      role: "EXECUTOR",
++      fingerprint: fingerprintA,
++    });
++
++    expect(projectTaskTokenUsage({ journal: external })).toMatchObject({
++      state: "unavailable",
++      input_tokens: null,
++      output_tokens: null,
++      reasoning_tokens: null,
++      total_tokens: null,
++      agent_runs: 1,
++      observed_agent_runs: 0,
++      unavailable_reason: "provider_token_telemetry_unavailable",
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/task-token-usage.ts b/packages/agentplane/src/commands/task/task-token-usage.ts
+new file mode 100644
+index 000000000..029e713e5
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/task-token-usage.ts
+@@ -0,0 +1,132 @@
++import {
++  validateSupervisorExecutionEpisodeJournal,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import type { TaskTokenUsage } from "@agentplaneorg/core/tasks";
++
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
++
++function unavailableTaskTokenUsage(opts: {
++  reason: string;
++  updated_at: string;
++  journal?: SupervisorExecutionEpisodeJournal;
++}): TaskTokenUsage {
++  return {
++    schema_version: 1,
++    state: "unavailable",
++    input_tokens: null,
++    output_tokens: null,
++    reasoning_tokens: null,
++    total_tokens: null,
++    agent_runs: opts.journal?.usage.agent_runs ?? 0,
++    observed_agent_runs: 0,
++    source: opts.journal ? "supervisor_journal" : "unavailable",
++    observed_by: "agentplane",
++    journal_digest: opts.journal?.digest ?? null,
++    unavailable_reason: opts.reason,
++    updated_at: opts.updated_at,
++  };
++}
++
++export function projectTaskTokenUsage(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  updated_at?: string;
++}): TaskTokenUsage {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const usage = journal.usage;
++  const updatedAt = opts.updated_at ?? new Date().toISOString();
++  if (usage.agent_runs === 0) {
++    return unavailableTaskTokenUsage({
++      reason: "no_supervised_agent_runs",
++      updated_at: updatedAt,
++      journal,
++    });
++  }
++
++  const observedAgentRuns =
++    usage.token_observed_agent_runs ??
++    (usage.input_tokens > 0 || usage.output_tokens > 0 || usage.total_tokens > 0 ? 1 : 0);
++  if (observedAgentRuns === 0) {
++    return unavailableTaskTokenUsage({
++      reason: "provider_token_telemetry_unavailable",
++      updated_at: updatedAt,
++      journal,
++    });
++  }
++
++  const breakdownObservedAgentRuns = usage.output_breakdown_observed_agent_runs ?? 0;
++  const hasCompleteBreakdown =
++    breakdownObservedAgentRuns === usage.agent_runs &&
++    usage.visible_output_tokens !== undefined &&
++    usage.reasoning_tokens !== undefined;
++  const fullyObserved = observedAgentRuns === usage.agent_runs && hasCompleteBreakdown;
++  return {
++    schema_version: 1,
++    state: fullyObserved ? "observed" : "partial",
++    input_tokens: usage.input_tokens,
++    output_tokens: hasCompleteBreakdown ? (usage.visible_output_tokens ?? null) : null,
++    reasoning_tokens: hasCompleteBreakdown ? (usage.reasoning_tokens ?? null) : null,
++    total_tokens: usage.total_tokens,
++    agent_runs: usage.agent_runs,
++    observed_agent_runs: observedAgentRuns,
++    source: "supervisor_journal",
++    observed_by: "agentplane",
++    journal_digest: journal.digest,
++    unavailable_reason: fullyObserved
++      ? null
++      : observedAgentRuns === usage.agent_runs
++        ? usage.output_breakdown_observed_agent_runs === undefined
++          ? "legacy_journal_lacks_output_reasoning_breakdown_provenance"
++          : "some_agent_runs_lack_output_reasoning_breakdown"
++        : "some_agent_runs_lack_provider_token_telemetry",
++    updated_at: updatedAt,
++  };
++}
++
++export async function resolveTaskTokenUsageOnFinish(opts: {
++  git_root: string;
++  task_id: string;
++  updated_at?: string;
++}): Promise<TaskTokenUsage> {
++  const updatedAt = opts.updated_at ?? new Date().toISOString();
++  try {
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: opts.git_root,
++      task_id: opts.task_id,
++    });
++    const input = await createSupervisorEpisodeStore(journalPath).read();
++    if (input === null) {
++      return unavailableTaskTokenUsage({
++        reason: "supervisor_journal_missing",
++        updated_at: updatedAt,
++      });
++    }
++    return projectTaskTokenUsage({
++      journal: validateSupervisorExecutionEpisodeJournal(input),
++      updated_at: updatedAt,
++    });
++  } catch {
++    return unavailableTaskTokenUsage({
++      reason: "supervisor_journal_unreadable_or_invalid",
++      updated_at: updatedAt,
++    });
++  }
++}
++
++export async function resolveReconciliationTaskTokenUsage(opts: {
++  task: { id: string; token_usage?: TaskTokenUsage };
++  git_root: string;
++  updated_at: string;
++}): Promise<TaskTokenUsage> {
++  return (
++    opts.task.token_usage ??
++    (await resolveTaskTokenUsageOnFinish({
++      git_root: opts.git_root,
++      task_id: opts.task.id,
++      updated_at: opts.updated_at,
++    }))
++  );
++}
+diff --git a/packages/agentplane/src/commands/task/token-usage-format.ts b/packages/agentplane/src/commands/task/token-usage-format.ts
+new file mode 100644
+index 000000000..609140902
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/token-usage-format.ts
+@@ -0,0 +1,17 @@
++import type { TaskTokenUsage } from "@agentplaneorg/core/tasks";
++
++function displayTokenCount(value: number | null): string {
++  return value === null ? "unavailable" : String(value);
++}
++
++export function formatTaskTokenUsageSummary(usage: TaskTokenUsage): string {
++  const summary =
++    `state=${usage.state} ` +
++    `completeness=${usage.observed_agent_runs}/${usage.agent_runs} ` +
++    `input=${displayTokenCount(usage.input_tokens)} ` +
++    `output=${displayTokenCount(usage.output_tokens)} ` +
++    `reasoning=${displayTokenCount(usage.reasoning_tokens)} ` +
++    `total=${displayTokenCount(usage.total_tokens)} ` +
++    `provenance=${usage.source}/${usage.observed_by}`;
++  return usage.unavailable_reason ? `${summary} reason=${usage.unavailable_reason}` : summary;
++}
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts
+index a013617f3..8931fe3c8 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.test.ts
+@@ -175,6 +175,8 @@ describe("Codex supervisor semantic result transport", () => {
+       input_tokens: 100,
+       output_tokens: 50,
+       total_tokens: 150,
++      visible_output_tokens: 30,
++      reasoning_tokens: 20,
+     });
+   });
+ 
+diff --git a/packages/agentplane/src/runner/adapters/codex-result-transport.ts b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+index f18c2ba0b..3e70d680c 100644
+--- a/packages/agentplane/src/runner/adapters/codex-result-transport.ts
++++ b/packages/agentplane/src/runner/adapters/codex-result-transport.ts
+@@ -240,8 +240,11 @@ export type CodexResultEventCollector = {
+ 
+ export type CodexProviderUsage = {
+   input_tokens: number;
++  /** Budget-charged output, including reasoning tokens. */
+   output_tokens: number;
+   total_tokens: number;
++  visible_output_tokens?: number;
++  reasoning_tokens?: number;
+ };
+ 
+ // Provider usage is process-local supervisor evidence. It deliberately stays
+@@ -292,6 +295,8 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
+     input_tokens: input,
+     output_tokens: chargedOutput,
+     total_tokens: reportedTotal ?? minimumTotal,
++    visible_output_tokens: output,
++    reasoning_tokens: reasoning,
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/runner/adapters/codex.test.ts b/packages/agentplane/src/runner/adapters/codex.test.ts
+index a2282f2ff..fabf84bfb 100644
+--- a/packages/agentplane/src/runner/adapters/codex.test.ts
++++ b/packages/agentplane/src/runner/adapters/codex.test.ts
+@@ -294,6 +294,8 @@ describe("CodexRunnerAdapter", () => {
+       input_tokens: 100,
+       output_tokens: 50,
+       total_tokens: 150,
++      visible_output_tokens: 30,
++      reasoning_tokens: 20,
+     });
+     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
+       status: string;
+diff --git a/packages/core/schemas/task-readme-frontmatter.schema.json b/packages/core/schemas/task-readme-frontmatter.schema.json
+index 4411ae5fe..f39a06ee4 100644
+--- a/packages/core/schemas/task-readme-frontmatter.schema.json
++++ b/packages/core/schemas/task-readme-frontmatter.schema.json
+@@ -704,6 +704,128 @@
+       "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+       "additionalProperties": {}
+     },
++    "token_usage": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "state": {
++          "type": "string",
++          "enum": ["observed", "partial", "unavailable"]
++        },
++        "input_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "output_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "reasoning_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "total_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "agent_runs": {
++          "type": "integer",
++          "minimum": 0,
++          "maximum": 9007199254740991
++        },
++        "observed_agent_runs": {
++          "type": "integer",
++          "minimum": 0,
++          "maximum": 9007199254740991
++        },
++        "source": {
++          "type": "string",
++          "enum": ["supervisor_journal", "unavailable"]
++        },
++        "observed_by": {
++          "type": "string",
++          "const": "agentplane"
++        },
++        "journal_digest": {
++          "anyOf": [
++            {
++              "type": "string",
++              "pattern": "^sha256:[0-9a-f]{64}$"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "unavailable_reason": {
++          "anyOf": [
++            {
++              "type": "string",
++              "minLength": 1
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "updated_at": {
++          "type": "string",
++          "format": "date-time",
++          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++        }
++      },
++      "required": [
++        "schema_version",
++        "state",
++        "input_tokens",
++        "output_tokens",
++        "reasoning_tokens",
++        "total_tokens",
++        "agent_runs",
++        "observed_agent_runs",
++        "source",
++        "observed_by",
++        "journal_digest",
++        "unavailable_reason",
++        "updated_at"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+diff --git a/packages/core/schemas/tasks-export.schema.json b/packages/core/schemas/tasks-export.schema.json
+index 870360653..bfd567cf4 100644
+--- a/packages/core/schemas/tasks-export.schema.json
++++ b/packages/core/schemas/tasks-export.schema.json
+@@ -480,6 +480,128 @@
+             ],
+             "additionalProperties": {}
+           },
++          "token_usage": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "state": {
++                "type": "string",
++                "enum": ["observed", "partial", "unavailable"]
++              },
++              "input_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "output_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "reasoning_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "total_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "agent_runs": {
++                "type": "integer",
++                "minimum": 0,
++                "maximum": 9007199254740991
++              },
++              "observed_agent_runs": {
++                "type": "integer",
++                "minimum": 0,
++                "maximum": 9007199254740991
++              },
++              "source": {
++                "type": "string",
++                "enum": ["supervisor_journal", "unavailable"]
++              },
++              "observed_by": {
++                "type": "string",
++                "const": "agentplane"
++              },
++              "journal_digest": {
++                "anyOf": [
++                  {
++                    "type": "string",
++                    "pattern": "^sha256:[0-9a-f]{64}$"
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "unavailable_reason": {
++                "anyOf": [
++                  {
++                    "type": "string",
++                    "minLength": 1
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "updated_at": {
++                "type": "string",
++                "format": "date-time",
++                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++              }
++            },
++            "required": [
++              "schema_version",
++              "state",
++              "input_tokens",
++              "output_tokens",
++              "reasoning_tokens",
++              "total_tokens",
++              "agent_runs",
++              "observed_agent_runs",
++              "source",
++              "observed_by",
++              "journal_digest",
++              "unavailable_reason",
++              "updated_at"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index f29e79ff2..ba94abdd2 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -397,6 +397,8 @@ export {
+   type TaskRunnerOutcome,
+   type TaskRunnerOutcomeStatus,
+   type TaskRunnerTarget,
++  type TaskTokenUsage,
++  type TaskTokenUsageState,
+   type TaskSyncConflict,
+   type TaskSyncConflictPolicy,
+   type TaskSyncEnvelope,
+diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
+index d9f94d1e4..d04231c4b 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
+@@ -132,6 +132,53 @@ describe("SupervisorExecutionEpisodeJournal", () => {
+     });
+   });
+ 
++  it("tracks output-breakdown provenance independently from primary token telemetry", () => {
++    const primaryOnly = start({ journal: journal() });
++    if (primaryOnly.status !== "started") throw new Error("expected primary-only episode");
++    const firstCompleted = completeSupervisorExecutionEpisode({
++      journal: primaryOnly.journal,
++      operation_key: primaryOnly.operation_key,
++      result: { status: "ok" },
++      usage: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
++      now: "2026-07-28T00:00:01.000Z",
++    });
++    expect(firstCompleted.usage).toMatchObject({
++      token_observed_agent_runs: 1,
++      output_breakdown_observed_agent_runs: 0,
++      visible_output_tokens: 0,
++      reasoning_tokens: 0,
++    });
++
++    const advanced = advanceSupervisorExecutionEpisodeState({
++      journal: firstCompleted,
++      state_fingerprint_digest: FINGERPRINT,
++      route_observation: { phase: "evaluator" },
++      now: "2026-07-28T00:00:02.000Z",
++    });
++    const evaluator = start({ journal: advanced, kind: "evaluator_episode" });
++    if (evaluator.status !== "started") throw new Error("expected evaluator episode");
++    const completed = completeSupervisorExecutionEpisode({
++      journal: evaluator.journal,
++      operation_key: evaluator.operation_key,
++      result: { status: "ok" },
++      usage: {
++        input_tokens: 8,
++        output_tokens: 4,
++        visible_output_tokens: 3,
++        reasoning_tokens: 1,
++        total_tokens: 12,
++      },
++      now: "2026-07-28T00:00:03.000Z",
++    });
++
++    expect(completed.usage).toMatchObject({
++      token_observed_agent_runs: 2,
++      output_breakdown_observed_agent_runs: 1,
++      visible_output_tokens: 3,
++      reasoning_tokens: 1,
++    });
++  });
++
+   it("charges wall-time budget only from observed execution, not inactive journal age", () => {
+     const first = start({ journal: journal({ max_wall_time_ms: 10 }) });
+     if (first.status !== "started") throw new Error("expected first agent episode");
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index b3a70f568..f3abba386 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -71,12 +71,65 @@ export const SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA = z
+     input_tokens: NON_NEGATIVE_INTEGER,
+     output_tokens: NON_NEGATIVE_INTEGER,
+     total_tokens: NON_NEGATIVE_INTEGER,
++    visible_output_tokens: NON_NEGATIVE_INTEGER.optional(),
++    reasoning_tokens: NON_NEGATIVE_INTEGER.optional(),
++    token_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
++    output_breakdown_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
+     wall_time_ms: NON_NEGATIVE_INTEGER,
+     changed_files: NON_NEGATIVE_INTEGER,
+     diff_lines: NON_NEGATIVE_INTEGER,
+     no_progress_episodes: NON_NEGATIVE_INTEGER,
+   })
+-  .strict();
++  .strict()
++  .superRefine((usage, ctx) => {
++    if (
++      usage.token_observed_agent_runs !== undefined &&
++      usage.token_observed_agent_runs > usage.agent_runs
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Observed token-usage runs cannot exceed supervisor agent runs.",
++      });
++    }
++    if (
++      usage.output_breakdown_observed_agent_runs !== undefined &&
++      usage.output_breakdown_observed_agent_runs > usage.agent_runs
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Observed output-breakdown runs cannot exceed supervisor agent runs.",
++      });
++    }
++    if (
++      usage.output_breakdown_observed_agent_runs !== undefined &&
++      usage.token_observed_agent_runs !== undefined &&
++      usage.output_breakdown_observed_agent_runs > usage.token_observed_agent_runs
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Observed output-breakdown runs cannot exceed observed token-usage runs.",
++      });
++    }
++    if (
++      (usage.output_breakdown_observed_agent_runs ?? 0) > 0 &&
++      (usage.visible_output_tokens === undefined || usage.reasoning_tokens === undefined)
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Observed output-breakdown runs require visible and reasoning token totals.",
++      });
++    }
++    if (
++      usage.visible_output_tokens !== undefined &&
++      usage.reasoning_tokens !== undefined &&
++      usage.visible_output_tokens + usage.reasoning_tokens > usage.output_tokens
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Visible and reasoning output cannot exceed charged output tokens.",
++      });
++    }
++  });
+ 
+ const SUPERVISOR_EPISODE_CURSOR_ZOD_SCHEMA = z
+   .object({
+@@ -172,6 +225,10 @@ const ZERO_USAGE: SupervisorExecutionUsage = {
+   input_tokens: 0,
+   output_tokens: 0,
+   total_tokens: 0,
++  visible_output_tokens: 0,
++  reasoning_tokens: 0,
++  token_observed_agent_runs: 0,
++  output_breakdown_observed_agent_runs: 0,
+   wall_time_ms: 0,
+   changed_files: 0,
+   diff_lines: 0,
+@@ -532,6 +589,20 @@ export function completeSupervisorExecutionEpisode(opts: {
+     throw new Error("Supervisor episode completion requires the latest operation intent.");
+   }
+   const usageInput = opts.usage ?? {};
++  const tokenUsageObserved =
++    isAgentOperation(last.kind) &&
++    Number.isSafeInteger(usageInput.input_tokens) &&
++    Number.isSafeInteger(usageInput.output_tokens) &&
++    Number.isSafeInteger(usageInput.total_tokens) &&
++    Number(usageInput.input_tokens) >= 0 &&
++    Number(usageInput.output_tokens) >= 0 &&
++    Number(usageInput.total_tokens) >= 0;
++  const outputBreakdownObserved =
++    tokenUsageObserved &&
++    Number.isSafeInteger(usageInput.visible_output_tokens) &&
++    Number.isSafeInteger(usageInput.reasoning_tokens) &&
++    Number(usageInput.visible_output_tokens) >= 0 &&
++    Number(usageInput.reasoning_tokens) >= 0;
+   const previousProgress = journal.operations.findLast(
+     (operation) => operation.progress_digest !== null,
+   )?.progress_digest;
+@@ -549,6 +620,15 @@ export function completeSupervisorExecutionEpisode(opts: {
+     input_tokens: journal.usage.input_tokens + Math.max(0, usageInput.input_tokens ?? 0),
+     output_tokens: journal.usage.output_tokens + Math.max(0, usageInput.output_tokens ?? 0),
+     total_tokens: journal.usage.total_tokens + Math.max(0, usageInput.total_tokens ?? 0),
++    visible_output_tokens:
++      (journal.usage.visible_output_tokens ?? 0) +
++      Math.max(0, usageInput.visible_output_tokens ?? 0),
++    reasoning_tokens:
++      (journal.usage.reasoning_tokens ?? 0) + Math.max(0, usageInput.reasoning_tokens ?? 0),
++    token_observed_agent_runs:
++      (journal.usage.token_observed_agent_runs ?? 0) + (tokenUsageObserved ? 1 : 0),
++    output_breakdown_observed_agent_runs:
++      (journal.usage.output_breakdown_observed_agent_runs ?? 0) + (outputBreakdownObserved ? 1 : 0),
+     wall_time_ms: journal.usage.wall_time_ms + Math.max(0, usageInput.wall_time_ms ?? 0),
+     changed_files: Math.max(
+       journal.usage.changed_files,
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index ec50d711b..ae3ee2c8e 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -118,6 +118,8 @@ export {
+   type TaskRunnerOutcome,
+   type TaskRunnerOutcomeStatus,
+   type TaskRunnerTarget,
++  type TaskTokenUsage,
++  type TaskTokenUsageState,
+   type TaskSyncConflict,
+   type TaskSyncConflictPolicy,
+   type TaskSyncEnvelope,
+diff --git a/packages/core/src/tasks/task-artifact-schema.task.ts b/packages/core/src/tasks/task-artifact-schema.task.ts
+index a86e39e4d..098511e27 100644
+--- a/packages/core/src/tasks/task-artifact-schema.task.ts
++++ b/packages/core/src/tasks/task-artifact-schema.task.ts
+@@ -190,6 +190,75 @@ const RUNNER_OUTCOME_SCHEMA = RUNNER_HISTORY_ENTRY_SCHEMA.extend({
+   history: z.array(RUNNER_HISTORY_ENTRY_SCHEMA).optional(),
+ });
+ 
++const TASK_TOKEN_USAGE_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    state: z.enum(["observed", "partial", "unavailable"]),
++    input_tokens: z.number().int().min(0).nullable(),
++    output_tokens: z.number().int().min(0).nullable(),
++    reasoning_tokens: z.number().int().min(0).nullable(),
++    total_tokens: z.number().int().min(0).nullable(),
++    agent_runs: z.number().int().min(0),
++    observed_agent_runs: z.number().int().min(0),
++    source: z.enum(["supervisor_journal", "unavailable"]),
++    observed_by: z.literal("agentplane"),
++    journal_digest: z
++      .string()
++      .regex(/^sha256:[0-9a-f]{64}$/u)
++      .nullable(),
++    unavailable_reason: z.string().min(1).nullable(),
++    updated_at: ISO_UTC_TIMESTAMP,
++  })
++  .strict()
++  .superRefine((usage, ctx) => {
++    if (usage.observed_agent_runs > usage.agent_runs) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Observed token-usage runs cannot exceed total agent runs.",
++      });
++    }
++    const tokenFields = [
++      usage.input_tokens,
++      usage.output_tokens,
++      usage.reasoning_tokens,
++      usage.total_tokens,
++    ];
++    if (usage.state === "observed") {
++      if (
++        usage.agent_runs === 0 ||
++        usage.observed_agent_runs !== usage.agent_runs ||
++        tokenFields.includes(null) ||
++        usage.source !== "supervisor_journal" ||
++        usage.unavailable_reason !== null
++      ) {
++        ctx.addIssue({
++          code: "custom",
++          message: "Observed token usage requires complete supervisor-observed telemetry.",
++        });
++      }
++    } else if (usage.state === "partial") {
++      if (
++        usage.observed_agent_runs === 0 ||
++        usage.source !== "supervisor_journal" ||
++        usage.unavailable_reason === null
++      ) {
++        ctx.addIssue({
++          code: "custom",
++          message: "Partial token usage requires some observed telemetry and a gap reason.",
++        });
++      }
++    } else if (
++      usage.observed_agent_runs !== 0 ||
++      tokenFields.some((value) => value !== null) ||
++      usage.unavailable_reason === null
++    ) {
++      ctx.addIssue({
++        code: "custom",
++        message: "Unavailable token usage must not fabricate token counts.",
++      });
++    }
++  });
++
+ const TASK_SYNC_EXTERNAL_REF_SCHEMA = z
+   .object({
+     provider: NON_EMPTY_STRING,
+@@ -276,6 +345,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
+     verification: TASK_VERIFICATION_SCHEMA,
+     quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
+     runner: RUNNER_OUTCOME_SCHEMA.optional(),
++    token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
+     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
+     commit: TASK_COMMIT_SCHEMA.optional(),
+     comments: z.array(TASK_COMMENT_SCHEMA),
+@@ -304,6 +374,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
+     revision: z.number().int().min(1).optional(),
+     origin: TASK_ORIGIN_SCHEMA.optional(),
+     runner: RUNNER_OUTCOME_SCHEMA.optional(),
++    token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
+     depends_on: z.array(NON_EMPTY_STRING),
+     tags: z.array(NON_EMPTY_STRING),
+     task_kind: TASK_KIND_SCHEMA.optional(),
+diff --git a/packages/core/src/tasks/task-artifact-schema.test.ts b/packages/core/src/tasks/task-artifact-schema.test.ts
+index 9cbf4c5c4..f213e68b8 100644
+--- a/packages/core/src/tasks/task-artifact-schema.test.ts
++++ b/packages/core/src/tasks/task-artifact-schema.test.ts
+@@ -748,6 +748,59 @@ describe("task-artifact-schema", () => {
+     ).not.toThrow();
+   });
+ 
++  it("accepts observed task token usage and rejects fabricated unavailable zeroes", () => {
++    const frontmatter = withTaskReadmeFrontmatterDefaults({
++      id: "202608030000-TOKENS",
++      title: "Completed task token usage fixture",
++      status: "DONE",
++      priority: "high",
++      owner: "CODER",
++      depends_on: [],
++      tags: ["tokens"],
++      verify: ["bun run typecheck"],
++      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
++      verification: { state: "ok", attempts: 1, updated_at: null, updated_by: null, note: null },
++      token_usage: {
++        schema_version: 1,
++        state: "observed",
++        input_tokens: 100,
++        output_tokens: 30,
++        reasoning_tokens: 20,
++        total_tokens: 150,
++        agent_runs: 1,
++        observed_agent_runs: 1,
++        source: "supervisor_journal",
++        observed_by: "agentplane",
++        journal_digest: `sha256:${"a".repeat(64)}`,
++        unavailable_reason: null,
++        updated_at: "2026-08-03T00:00:00.000Z",
++      },
++      comments: [],
++      events: [],
++      doc_version: 3,
++      doc_updated_at: "2026-08-03T00:00:00.000Z",
++      doc_updated_by: "CODER",
++      description: "Fixture",
++      id_source: "generated",
++    });
++
++    expect(() => validateTaskReadmeFrontmatter(frontmatter)).not.toThrow();
++    const fabricated = structuredClone(frontmatter);
++    fabricated.token_usage = {
++      ...fabricated.token_usage,
++      state: "unavailable",
++      input_tokens: 0,
++      output_tokens: 0,
++      reasoning_tokens: 0,
++      total_tokens: 0,
++      observed_agent_runs: 0,
++      unavailable_reason: "provider_token_telemetry_unavailable",
++    };
++    expect(() => validateTaskReadmeFrontmatter(fabricated)).toThrow(
++      /Unavailable token usage must not fabricate token counts/u,
++    );
++  });
++
+   it("accepts specialized blueprint requests in task artifact schemas", () => {
+     const task = withTaskReadmeFrontmatterDefaults({
+       id: "202603251535-DPZ4NN",
+diff --git a/packages/core/src/tasks/task-provider-safe-projection.test.ts b/packages/core/src/tasks/task-provider-safe-projection.test.ts
+index 845f0a411..63791712c 100644
+--- a/packages/core/src/tasks/task-provider-safe-projection.test.ts
++++ b/packages/core/src/tasks/task-provider-safe-projection.test.ts
+@@ -123,6 +123,29 @@ describe("buildProviderSafeTaskProjection", () => {
+     expect(JSON.stringify(projection)).not.toContain("private/log.txt");
+   });
+ 
++  it("projects the CLI-observed completed-task token aggregate", () => {
++    const tokenUsage = {
++      schema_version: 1 as const,
++      state: "observed" as const,
++      input_tokens: 100,
++      output_tokens: 30,
++      reasoning_tokens: 20,
++      total_tokens: 150,
++      agent_runs: 1,
++      observed_agent_runs: 1,
++      source: "supervisor_journal" as const,
++      observed_by: "agentplane" as const,
++      journal_digest: `sha256:${"a".repeat(64)}`,
++      unavailable_reason: null,
++      updated_at: "2026-08-03T00:00:00.000Z",
++    };
++
++    const projection = buildProviderSafeTaskProjection(task({ token_usage: tokenUsage }));
++
++    expect(projection.token_usage).toEqual(tokenUsage);
++    expect(projection.token_usage).not.toBe(tokenUsage);
++  });
++
+   it("marks stale ACR metadata and handles missing sections conservatively", () => {
+     const projection = buildProviderSafeTaskProjection(
+       task({
+diff --git a/packages/core/src/tasks/task-provider-safe-projection.ts b/packages/core/src/tasks/task-provider-safe-projection.ts
+index 4f416250b..747f9b116 100644
+--- a/packages/core/src/tasks/task-provider-safe-projection.ts
++++ b/packages/core/src/tasks/task-provider-safe-projection.ts
+@@ -5,6 +5,7 @@ import type {
+   QualityReviewState,
+   TaskFrontmatter,
+   TaskRunnerOutcomeStatus,
++  TaskTokenUsage,
+   VerificationState,
+ } from "./task-store.js";
+ 
+@@ -38,6 +39,7 @@ export type ProviderSafeTaskProjection = {
+   verification_attempts: number;
+   quality_review_state?: QualityReviewState;
+   runner_status?: TaskRunnerOutcomeStatus;
++  token_usage?: TaskTokenUsage;
+   commit_hash?: string;
+   doc_version?: TaskDocVersion;
+   doc_updated_at?: string;
+@@ -83,6 +85,7 @@ export type ProviderSafeTaskProjectionInput = Pick<
+   | "verification"
+   | "quality_review"
+   | "runner"
++  | "token_usage"
+   | "sync"
+   | "sections"
+   | "doc_version"
+@@ -131,6 +134,7 @@ export function buildProviderSafeTaskProjection(
+     verification_attempts: task.verification?.attempts ?? 0,
+     ...(task.quality_review?.state ? { quality_review_state: task.quality_review.state } : {}),
+     ...(task.runner?.status ? { runner_status: task.runner.status } : {}),
++    ...(task.token_usage ? { token_usage: structuredClone(task.token_usage) } : {}),
+     ...(task.commit?.hash ? { commit_hash: task.commit.hash } : {}),
+     ...(task.doc_version ? { doc_version: task.doc_version } : {}),
+     ...(task.doc_updated_at ? { doc_updated_at: task.doc_updated_at } : {}),
+diff --git a/packages/core/src/tasks/task-readme.ts b/packages/core/src/tasks/task-readme.ts
+index fe4def4de..9813321e1 100644
+--- a/packages/core/src/tasks/task-readme.ts
++++ b/packages/core/src/tasks/task-readme.ts
+@@ -279,6 +279,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
+     "verification",
+     "quality_review",
+     "runner",
++    "token_usage",
+     "commit",
+     "comments",
+     "events",
+diff --git a/packages/core/src/tasks/task-store.ts b/packages/core/src/tasks/task-store.ts
+index 269df4549..2ff731d18 100644
+--- a/packages/core/src/tasks/task-store.ts
++++ b/packages/core/src/tasks/task-store.ts
+@@ -149,6 +149,24 @@ export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {
+   history?: TaskRunnerHistoryEntry[];
+ };
+ 
++export type TaskTokenUsageState = "observed" | "partial" | "unavailable";
++
++export type TaskTokenUsage = {
++  schema_version: 1;
++  state: TaskTokenUsageState;
++  input_tokens: number | null;
++  output_tokens: number | null;
++  reasoning_tokens: number | null;
++  total_tokens: number | null;
++  agent_runs: number;
++  observed_agent_runs: number;
++  source: "supervisor_journal" | "unavailable";
++  observed_by: "agentplane";
++  journal_digest: string | null;
++  unavailable_reason: string | null;
++  updated_at: string;
++};
++
+ export type TaskSyncExternalRef = {
+   provider: string;
+   connector_kind?: string;
+@@ -229,6 +247,7 @@ export type TaskFrontmatter = {
+   verification?: VerificationResult;
+   quality_review?: QualityReviewResult;
+   runner?: TaskRunnerOutcome;
++  token_usage?: TaskTokenUsage;
+   sync?: TaskSyncEnvelope;
+   comments: { author: string; body: string }[];
+   events?: TaskEvent[];
+diff --git a/packages/core/src/tasks/tasks-export.ts b/packages/core/src/tasks/tasks-export.ts
+index 269b1ff32..24d1fe8d7 100644
+--- a/packages/core/src/tasks/tasks-export.ts
++++ b/packages/core/src/tasks/tasks-export.ts
+@@ -13,6 +13,7 @@ import {
+   type TaskRunnerHistoryEntry,
+   type TaskRunnerOutcome,
+   type TaskRunnerTarget,
++  type TaskTokenUsage,
+   type TaskSyncEnvelope,
+ } from "./task-store.js";
+ 
+@@ -483,6 +484,7 @@ export type TasksExportTask = {
+     note: string | null;
+   };
+   runner?: TaskRunnerOutcome;
++  token_usage?: TaskTokenUsage;
+   sync?: TaskSyncEnvelope;
+   depends_on: string[];
+   tags: string[];
+@@ -634,6 +636,7 @@ export async function buildTasksExportSnapshot(opts: {
+           : { state: "pending", updated_at: null, updated_by: null, note: null },
+       verification: normalizeTaskVerification(fm.verification),
+       runner: normalizeTaskRunnerOutcome(fm.runner),
++      token_usage: t.frontmatter.token_usage,
+       sync: normalizeTaskSyncEnvelope(fm.sync),
+       depends_on: dependsOn,
+       tags,
+diff --git a/packages/spec/schemas/task-readme-frontmatter.schema.json b/packages/spec/schemas/task-readme-frontmatter.schema.json
+index 4411ae5fe..f39a06ee4 100644
+--- a/packages/spec/schemas/task-readme-frontmatter.schema.json
++++ b/packages/spec/schemas/task-readme-frontmatter.schema.json
+@@ -704,6 +704,128 @@
+       "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+       "additionalProperties": {}
+     },
++    "token_usage": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "state": {
++          "type": "string",
++          "enum": ["observed", "partial", "unavailable"]
++        },
++        "input_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "output_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "reasoning_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "total_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "agent_runs": {
++          "type": "integer",
++          "minimum": 0,
++          "maximum": 9007199254740991
++        },
++        "observed_agent_runs": {
++          "type": "integer",
++          "minimum": 0,
++          "maximum": 9007199254740991
++        },
++        "source": {
++          "type": "string",
++          "enum": ["supervisor_journal", "unavailable"]
++        },
++        "observed_by": {
++          "type": "string",
++          "const": "agentplane"
++        },
++        "journal_digest": {
++          "anyOf": [
++            {
++              "type": "string",
++              "pattern": "^sha256:[0-9a-f]{64}$"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "unavailable_reason": {
++          "anyOf": [
++            {
++              "type": "string",
++              "minLength": 1
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "updated_at": {
++          "type": "string",
++          "format": "date-time",
++          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++        }
++      },
++      "required": [
++        "schema_version",
++        "state",
++        "input_tokens",
++        "output_tokens",
++        "reasoning_tokens",
++        "total_tokens",
++        "agent_runs",
++        "observed_agent_runs",
++        "source",
++        "observed_by",
++        "journal_digest",
++        "unavailable_reason",
++        "updated_at"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+diff --git a/packages/spec/schemas/tasks-export.schema.json b/packages/spec/schemas/tasks-export.schema.json
+index 870360653..bfd567cf4 100644
+--- a/packages/spec/schemas/tasks-export.schema.json
++++ b/packages/spec/schemas/tasks-export.schema.json
+@@ -480,6 +480,128 @@
+             ],
+             "additionalProperties": {}
+           },
++          "token_usage": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "state": {
++                "type": "string",
++                "enum": ["observed", "partial", "unavailable"]
++              },
++              "input_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "output_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "reasoning_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "total_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "agent_runs": {
++                "type": "integer",
++                "minimum": 0,
++                "maximum": 9007199254740991
++              },
++              "observed_agent_runs": {
++                "type": "integer",
++                "minimum": 0,
++                "maximum": 9007199254740991
++              },
++              "source": {
++                "type": "string",
++                "enum": ["supervisor_journal", "unavailable"]
++              },
++              "observed_by": {
++                "type": "string",
++                "const": "agentplane"
++              },
++              "journal_digest": {
++                "anyOf": [
++                  {
++                    "type": "string",
++                    "pattern": "^sha256:[0-9a-f]{64}$"
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "unavailable_reason": {
++                "anyOf": [
++                  {
++                    "type": "string",
++                    "minLength": 1
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "updated_at": {
++                "type": "string",
++                "format": "date-time",
++                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++              }
++            },
++            "required": [
++              "schema_version",
++              "state",
++              "input_tokens",
++              "output_tokens",
++              "reasoning_tokens",
++              "total_tokens",
++              "agent_runs",
++              "observed_agent_runs",
++              "source",
++              "observed_by",
++              "journal_digest",
++              "unavailable_reason",
++              "updated_at"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {
+diff --git a/schemas/task-readme-frontmatter.schema.json b/schemas/task-readme-frontmatter.schema.json
+index 4411ae5fe..f39a06ee4 100644
+--- a/schemas/task-readme-frontmatter.schema.json
++++ b/schemas/task-readme-frontmatter.schema.json
+@@ -704,6 +704,128 @@
+       "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+       "additionalProperties": {}
+     },
++    "token_usage": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "state": {
++          "type": "string",
++          "enum": ["observed", "partial", "unavailable"]
++        },
++        "input_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "output_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "reasoning_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "total_tokens": {
++          "anyOf": [
++            {
++              "type": "integer",
++              "minimum": 0,
++              "maximum": 9007199254740991
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "agent_runs": {
++          "type": "integer",
++          "minimum": 0,
++          "maximum": 9007199254740991
++        },
++        "observed_agent_runs": {
++          "type": "integer",
++          "minimum": 0,
++          "maximum": 9007199254740991
++        },
++        "source": {
++          "type": "string",
++          "enum": ["supervisor_journal", "unavailable"]
++        },
++        "observed_by": {
++          "type": "string",
++          "const": "agentplane"
++        },
++        "journal_digest": {
++          "anyOf": [
++            {
++              "type": "string",
++              "pattern": "^sha256:[0-9a-f]{64}$"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "unavailable_reason": {
++          "anyOf": [
++            {
++              "type": "string",
++              "minLength": 1
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "updated_at": {
++          "type": "string",
++          "format": "date-time",
++          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++        }
++      },
++      "required": [
++        "schema_version",
++        "state",
++        "input_tokens",
++        "output_tokens",
++        "reasoning_tokens",
++        "total_tokens",
++        "agent_runs",
++        "observed_agent_runs",
++        "source",
++        "observed_by",
++        "journal_digest",
++        "unavailable_reason",
++        "updated_at"
++      ],
++      "additionalProperties": false
++    },
+     "sync": {
+       "type": "object",
+       "properties": {
+diff --git a/schemas/tasks-export.schema.json b/schemas/tasks-export.schema.json
+index 870360653..bfd567cf4 100644
+--- a/schemas/tasks-export.schema.json
++++ b/schemas/tasks-export.schema.json
+@@ -480,6 +480,128 @@
+             ],
+             "additionalProperties": {}
+           },
++          "token_usage": {
++            "type": "object",
++            "properties": {
++              "schema_version": {
++                "type": "number",
++                "const": 1
++              },
++              "state": {
++                "type": "string",
++                "enum": ["observed", "partial", "unavailable"]
++              },
++              "input_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "output_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "reasoning_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "total_tokens": {
++                "anyOf": [
++                  {
++                    "type": "integer",
++                    "minimum": 0,
++                    "maximum": 9007199254740991
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "agent_runs": {
++                "type": "integer",
++                "minimum": 0,
++                "maximum": 9007199254740991
++              },
++              "observed_agent_runs": {
++                "type": "integer",
++                "minimum": 0,
++                "maximum": 9007199254740991
++              },
++              "source": {
++                "type": "string",
++                "enum": ["supervisor_journal", "unavailable"]
++              },
++              "observed_by": {
++                "type": "string",
++                "const": "agentplane"
++              },
++              "journal_digest": {
++                "anyOf": [
++                  {
++                    "type": "string",
++                    "pattern": "^sha256:[0-9a-f]{64}$"
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "unavailable_reason": {
++                "anyOf": [
++                  {
++                    "type": "string",
++                    "minLength": 1
++                  },
++                  {
++                    "type": "null"
++                  }
++                ]
++              },
++              "updated_at": {
++                "type": "string",
++                "format": "date-time",
++                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++              }
++            },
++            "required": [
++              "schema_version",
++              "state",
++              "input_tokens",
++              "output_tokens",
++              "reasoning_tokens",
++              "total_tokens",
++              "agent_runs",
++              "observed_agent_runs",
++              "source",
++              "observed_by",
++              "journal_digest",
++              "unavailable_reason",
++              "updated_at"
++            ],
++            "additionalProperties": false
++          },
+           "depends_on": {
+             "type": "array",
+             "items": {

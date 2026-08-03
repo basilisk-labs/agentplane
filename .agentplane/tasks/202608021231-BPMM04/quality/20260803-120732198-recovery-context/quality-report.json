@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T12:08:32.152Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "bf22bcd37c3af022c8cadcfc542934549f5a0358",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "findings": [
+    "Completed-task token usage is serialized only in README frontmatter; the required human-readable README body projection is absent."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-BPMM04/README.md",
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-120732198-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Add a completed-task README rendering test that asserts token counts, state, provenance, completeness, and unavailable reason appear in a human-readable body section, independently of YAML frontmatter."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes YAML frontmatter alone satisfies the contract's separate README body and human-readable output requirement."
+  ],
+  "residual_risks": [
+    "Add a deterministic human-readable Token Usage section to completed task README bodies, preserve backward compatibility for historical tasks without token_usage, and verify observed, partial, and unavailable renderings without changing the authoritative supervisor-journal projection."
+  ]
+}

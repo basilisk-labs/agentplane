@@ -371,6 +371,13 @@ export {
 } from "./tasks/task-provider-safe-projection.js";
 
 export {
+  formatTaskTokenUsageSummary,
+  isTaskTokenUsageRenderInput,
+  renderTaskTokenUsageBody,
+  type TaskTokenUsageRenderInput,
+} from "./tasks/task-token-usage-render.js";
+
+export {
   createTask,
   getTasksDir,
   listTasks,
