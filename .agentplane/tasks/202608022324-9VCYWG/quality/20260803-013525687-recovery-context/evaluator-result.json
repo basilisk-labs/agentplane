@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The frozen diff and verification evidence cover state-bound result ingestion, stale and tampered result rejection, replay refusal, crash recovery, direct and branch_pr convergence, packet-size constraints, and the generated CLI contract repair.",
+      "broken_invariant": "No invariant is presently broken; the implementation and recorded checks satisfy the approved semantic-result round-trip and fail-closed recovery contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-013525687-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2eb8de32b82f1be3602b03cb40a5383228c9dd04c3928323a723dceaddc654db"
+        },
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-013525687-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f5cc188e9fa230a54ac76330b913d9755c530cd310c3589fc90dc695e9c839c5",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/verification/20260803013437697-d11dbdf29b487a3f.json",
+          "sha256": "sha256:f3968071487c9c68ebac5c9c84ddf11b96bcf2f8140a632edff9979a30002c44",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022324-9VCYWG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T01:36:02.886Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "f14009b3e4ddd76ca14f6ec33a1a80cf132ac307",
+  "blueprint_digest": "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84",
+  "findings": [
+    "The frozen diff and verification evidence cover state-bound result ingestion, stale and tampered result rejection, replay refusal, crash recovery, direct and branch_pr convergence, packet-size constraints, and the generated CLI contract repair."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-013525687-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-013525687-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202608022324-9VCYWG/verification/20260803013437697-d11dbdf29b487a3f.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
