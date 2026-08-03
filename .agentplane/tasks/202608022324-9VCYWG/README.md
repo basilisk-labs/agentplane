@@ -4,7 +4,7 @@ title: "Complete the task advance semantic-result round trip"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -57,8 +57,8 @@ quality_review:
   findings:
     - "A crash after the supervisor journal is completed but before the exchange is marked consumed leaves the accepted result permanently unrecoverable."
 commit:
-  hash: "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c"
-  message: "🚧 9VCYWG task: complete semantic result round trip"
+  hash: "3c778153fe757a64eabda7db140593dca5012f17"
+  message: "🚧 9VCYWG task: recover completed external result"
 comments:
   -
     author: "CODER"
@@ -66,6 +66,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: completed the typed external-agent SemanticResult round trip with CLI-owned verification, evaluator routing, crash recovery, and fail-closed exchange binding."
+  -
+    author: "CODER"
+    body: "Implementation rework: recovered the completed-journal and accepted-exchange crash window without reapplying semantic effects."
 events:
   -
     type: "status"
@@ -93,8 +96,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the external-agent SemanticResult round trip and fail-closed recovery contract."
+  -
+    type: "status"
+    at: "2026-08-03T01:05:37.583Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: recovered the completed-journal and accepted-exchange crash window without reapplying semantic effects."
 doc_version: 3
-doc_updated_at: "2026-08-03T00:56:23.715Z"
+doc_updated_at: "2026-08-03T01:05:37.583Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
