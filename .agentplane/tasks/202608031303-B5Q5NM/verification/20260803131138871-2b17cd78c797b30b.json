@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts\nResult: pass\nEvidence: 1 file passed, 29 tests passed; fresh init assertions include .agentplane/tmp.\nScope: Fresh init and gitignore-agent variants.\n\nCommand: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.upgrade.test.ts\nResult: pass\nEvidence: 1 file passed, 14 tests passed; upgrade restores .agentplane/tmp once and preserves custom-user-rule.\nScope: Existing repository upgrade and canonical runtime ignore repair.\n\nCommand: bunx eslint packages/agentplane/src/runtime/shared/runtime-artifacts.ts packages/agentplane/src/commands/upgrade.ts packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.upgrade.test.ts\nResult: pass\nEvidence: ESLint exited 0 with no findings.\nScope: All touched implementation and test files.\n\nCommand: git diff --check\nResult: pass\nEvidence: No whitespace errors.\nScope: Current task worktree diff.\n\nCommand: isolated init and git check-ignore -v .agentplane/tmp/probe\nResult: pass\nEvidence: Probe resolved to .gitignore line .agentplane/tmp and git status contained no tmp path.\nScope: End-to-end installed init behavior in a temporary repository.",
+  "digest": "sha256:2b17cd78c797b30be86f659f66afb5d4db3a357a4358c1e31af7cd8d85b99a10",
+  "implementation_sha": "1f789618ad7113dd3d9888d85c5b038cbfd25b68",
+  "kind": "task_verification_record",
+  "note": "Verified implementation 1f789618ad71: init 29/29, upgrade 14/14, targeted lint, diff check, and isolated tmp-ignore smoke all pass.",
+  "recorded_at": "2026-08-03T13:11:38.871Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts. Expected: fresh and repeated init pass and .agentplane/tmp is asserted in .gitignore.\n2. Run the focused runtime-artifact and upgrade tests selected from the touched modules. Expected: user-authored ignore lines remain intact and canonical entries are idempotent.\n3. Run git diff --check and the targeted TypeScript or lint check for touched files. Expected: no formatting, type, or lint regression.\n4. Inspect a temporary initialized repository. Expected: git status does not report files under .agentplane/tmp after AgentPlane creates runtime scratch data.",
+  "scope_digest": "sha256:02cfc6217d8530d88a0272ea1912f718f78b6bd2f7b2be5a1ee8ac5af7f90b0a",
+  "task_id": "202608031303-B5Q5NM",
+  "verification_command": "agentplane verify 202608031303-B5Q5NM --ok --by TESTER",
+  "verifier": "TESTER"
+}

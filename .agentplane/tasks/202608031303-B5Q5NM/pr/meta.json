@@ -3,14 +3,22 @@
   "branch": "task/202608031303-B5Q5NM/ignore-agentplane-runtime-tmp-artifacts",
   "created_at": "2026-08-03T13:04:59.802Z",
   "diffstat_sha256": "sha256:9eb553edf7dbc0e43d35053b357f471f531b32257277a22c772e4943f0e15b44",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-03T13:11:38.871Z",
+  "last_verified_diffstat_sha256": "sha256:9eb553edf7dbc0e43d35053b357f471f531b32257277a22c772e4943f0e15b44",
   "pr_number": 4755,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4755",
+  "pre_merge_closure": {
+    "basis_commit": "1f789618ad7113dd3d9888d85c5b038cbfd25b68",
+    "branch": "task/202608031303-B5Q5NM/ignore-agentplane-runtime-tmp-artifacts",
+    "pr_number": 4755,
+    "recorded_at": "2026-08-03T13:12:50.003Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608031303-B5Q5NM",
   "updated_at": "2026-08-03T13:05:24.489Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

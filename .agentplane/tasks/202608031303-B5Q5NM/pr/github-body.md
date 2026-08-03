@@ -15,8 +15,13 @@ Fix GitHub issue #4663 by adding .agentplane/tmp to the canonical runtime gitign
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified implementation 1f789618ad71: init 29/29, upgrade 14/14, targeted lint, diff check, and
+isolated tmp-ignore smoke all pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
