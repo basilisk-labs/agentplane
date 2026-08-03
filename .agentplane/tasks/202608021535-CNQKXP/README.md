@@ -2,10 +2,10 @@
 id: "202608021535-CNQKXP"
 title: "Add compatibility retirement inventory and doctor legacy"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -58,22 +58,22 @@ quality_review:
   findings:
     - "No contract-breaking divergence was found; the frozen verification record covers the compatibility inventory, read-only diagnostics, hidden alias behavior, package artifact, negative validation cases, and independent-supervisor contention at the evaluated SHA."
 token_usage:
-  agent_runs: 2
-  input_tokens: 314134
-  journal_digest: "sha256:c36876c723ac2328ca23c3af20944acb340ffcdee8f6d0fbc59f16683619ad70"
-  observed_agent_runs: 2
+  agent_runs: 7
+  input_tokens: 1307728
+  journal_digest: "sha256:0ec99c20f41c5c63af56637ab566b94b4e536029f9853b83ec813d5d09920527"
+  observed_agent_runs: 7
   observed_by: "agentplane"
-  output_tokens: 4499
-  reasoning_tokens: 907
+  output_tokens: 15843
+  reasoning_tokens: 3307
   schema_version: 1
   source: "supervisor_journal"
   state: "observed"
-  total_tokens: 319540
+  total_tokens: 1326878
   unavailable_reason: null
-  updated_at: "2026-08-03T19:31:07.977Z"
+  updated_at: "2026-08-03T20:24:43.867Z"
 commit:
-  hash: "76c2607a560e5110f88abbce99930002e228761d"
-  message: "🩹 CNQKXP code: publish effect authority atomically"
+  hash: "2724dbfa1e93e177ff52c02aab8c3bea4bbc51d1"
+  message: "🩹 CNQKXP task: seal quality evidence bundle"
 comments:
   -
     author: "CODER"
@@ -90,6 +90,9 @@ comments:
   -
     author: "CODER"
     body: "Rework committed: atomically publish immutable effect records, retry the bounded hard-link metadata collision, normalize claimed authority, and require seven typed authority losers."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -180,8 +183,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: all seven Verify Steps, routing, evidence bundle, and full clean worktree state recorded at 76c2607a560e."
+  -
+    type: "status"
+    at: "2026-08-03T20:24:43.867Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:23:36.732Z"
+doc_updated_at: "2026-08-03T20:24:43.894Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:
@@ -662,6 +672,9 @@ sections:
       Impact: Compatibility retirement inventory is operator-actionable and malformed or stale manifest entries now fail before release.
       Resolution: Require non-empty migration_command in schema and validate malformed semver windows, probe kinds, and file-backed source paths.
 extensions:
+  implementation_commit:
+    hash: "76c2607a560e5110f88abbce99930002e228761d"
+    message: "🩹 CNQKXP code: publish effect authority atomically"
   workflow_route_baseline:
     start_head_sha: "503e1a531103ef41ff3ef404fd55fbe442220e26"
     version: 1
@@ -1160,12 +1173,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `observed`
-- Completeness: `2/2` agent runs
-- Input tokens: `314134`
-- Output tokens: `4499`
-- Reasoning tokens: `907`
-- Total tokens: `319540`
+- Completeness: `7/7` agent runs
+- Input tokens: `1307728`
+- Output tokens: `15843`
+- Reasoning tokens: `3307`
+- Total tokens: `1326878`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:c36876c723ac2328ca23c3af20944acb340ffcdee8f6d0fbc59f16683619ad70`
+- Journal digest: `sha256:0ec99c20f41c5c63af56637ab566b94b4e536029f9853b83ec813d5d09920527`
 - Unavailable reason: `none`
-- Updated at: `2026-08-03T19:31:07.977Z`
+- Updated at: `2026-08-03T20:24:43.867Z`
