@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Run matched warm and cold supervisor benchmarks with confidence intervals and require setup latency and time-to-verified to be no worse than the approved baseline tolerance.",
+    "Run task advance/run parity, stale-state, recovery, test:critical, typecheck, lint:core, Knip, and policy gates."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T03:39:01.022Z",
+    "updated_by": "TESTER",
+    "note": "Verified fa975c224d25: exact clean supervisor benchmark passed 10 cold/30 warm for external advance and managed run; all contract and regression suites passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608022324-Y26ENH/verification/20260803033901022-57b52e4e985e2fe3.json",
+      "sha256": "sha256:568a6fbf80e9a34c3ab824f963460706a30b6e7a4c947b30d27e27efca770231"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

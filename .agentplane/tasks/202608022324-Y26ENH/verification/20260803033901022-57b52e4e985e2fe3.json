@@ -1,0 +1,15 @@
+{
+  "details": "Command: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --output .agentplane/cache/y26-supervisor-latency-final.json\nResult: pass\nEvidence: .agentplane/cache/y26-supervisor-latency-final.json; all four candidate median and p95 comparisons stayed within the +10% v0.6.26 gate\nScope: matched packed-runtime supervisor benchmark, 10 cold and 30 warm repetitions for external task advance and managed task run\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: formatting, schema, release parity, TypeScript 7 native typecheck, lint, architecture, clone, Knip, hotspot, and coverage gates passed at fa975c224d25\nScope: repository contract and maintainability gates without baseline growth\n\nCommand: node scripts/checks/run-vitest-suite.mjs v0.7-supervisor && node scripts/checks/run-vitest-suite.mjs v0.7-recovery && node scripts/checks/run-vitest-suite.mjs v0.7-lifecycle && bun run test:critical\nResult: pass\nEvidence: supervisor 151/151, recovery 86/86, lifecycle 118/118, critical CLI 79/79\nScope: end-to-end lifecycle, stale-state invalidation, crash recovery, concurrent execution, effect-in-doubt, and critical CLI regression coverage",
+  "digest": "sha256:57b52e4e985e2fe340bbe463b4449d5982665ab9b16edbfadeb972defa5f3679",
+  "implementation_sha": "fa975c224d25dceb689f89fe2fcdf21b34d4d4f7",
+  "kind": "task_verification_record",
+  "note": "Verified fa975c224d25: exact clean supervisor benchmark passed 10 cold/30 warm for external advance and managed run; all contract and regression suites passed.",
+  "recorded_at": "2026-08-03T03:39:01.022Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the matched deterministic latency harness against v0.6.26 and the candidate for at least 10 cold and 30 warm repetitions per task advance and task run preparation path. Expected: report median, p95, confidence interval, subprocess count, repository scans, prepared-context bytes, and cache hit/miss state; candidate median setup latency is no worse than 10% above v0.6.26 and shows a material improvement over the current v0.7.0 baseline. 2. Run matched end-to-end verified-task fixtures. Expected: time-to-verified returns within 10% of v0.6.26 while verified success, scope violations, golden-output mismatch, rework, and token metrics do not regress beyond the v0.7 qualification thresholds. 3. Run stale task/Git/policy/approval/provider, crash recovery, concurrent execution, and effect-in-doubt fixtures. Expected: every changed fingerprint invalidates reused preparation and no protected effect is replayed. 4. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without baseline growth.",
+  "scope_digest": "sha256:c2e8daf0e5512ec64ec9a9e007f475a1e61adb4dc2759b4d9cc7c3f5b0813aa4",
+  "task_id": "202608022324-Y26ENH",
+  "verification_command": "agentplane verify 202608022324-Y26ENH --ok --by TESTER",
+  "verifier": "TESTER"
+}

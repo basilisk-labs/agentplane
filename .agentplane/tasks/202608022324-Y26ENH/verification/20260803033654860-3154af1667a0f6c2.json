@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:3154af1667a0f6c23683ca598ebc69d54d2af748d2f941511c979255bf3699d2",
+  "implementation_sha": "fa975c224d25dceb689f89fe2fcdf21b34d4d4f7",
+  "kind": "task_verification_record",
+  "note": "Verified fa975c224d25: exact clean supervisor benchmark passed 10 cold/30 warm for external advance and managed run; ci:contract passed without baseline growth; v0.7 supervisor 151/151, recovery 86/86, lifecycle 118/118, and critical CLI 79/79 passed.",
+  "recorded_at": "2026-08-03T03:36:54.860Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the matched deterministic latency harness against v0.6.26 and the candidate for at least 10 cold and 30 warm repetitions per task advance and task run preparation path. Expected: report median, p95, confidence interval, subprocess count, repository scans, prepared-context bytes, and cache hit/miss state; candidate median setup latency is no worse than 10% above v0.6.26 and shows a material improvement over the current v0.7.0 baseline. 2. Run matched end-to-end verified-task fixtures. Expected: time-to-verified returns within 10% of v0.6.26 while verified success, scope violations, golden-output mismatch, rework, and token metrics do not regress beyond the v0.7 qualification thresholds. 3. Run stale task/Git/policy/approval/provider, crash recovery, concurrent execution, and effect-in-doubt fixtures. Expected: every changed fingerprint invalidates reused preparation and no protected effect is replayed. 4. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without baseline growth.",
+  "scope_digest": "sha256:c2e8daf0e5512ec64ec9a9e007f475a1e61adb4dc2759b4d9cc7c3f5b0813aa4",
+  "task_id": "202608022324-Y26ENH",
+  "verification_command": "agentplane verify 202608022324-Y26ENH --ok --by TESTER",
+  "verifier": "TESTER"
+}

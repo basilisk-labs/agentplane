@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608022324-Y26ENH-7906cd301870573fb83dd44f",
+  "prepared_at": "2026-08-03T03:39:58.433Z",
+  "task": {
+    "id": "202608022324-Y26ENH",
+    "revision": 8,
+    "objective": "Restore supervisor orchestration latency to the v0.6 baseline\n\nProfile the canonical task advance and task run preparation paths, remove redundant repository scans, CLI bootstraps, context preparation, and route recomputation where state fingerprints permit safe reuse, and establish release gates that prevent setup latency or time-to-verified regressions relative to the matched v0.6 baseline without weakening correctness or evidence.",
+    "acceptance_criteria": [
+      "Run matched warm and cold supervisor benchmarks with confidence intervals and require setup latency and time-to-verified to be no worse than the approved baseline tolerance.",
+      "Run task advance/run parity, stale-state, recovery, test:critical, typecheck, lint:core, Knip, and policy gates.",
+      "- In scope: Profile the canonical task advance and task run preparation paths, remove redundant repository scans, CLI bootstraps, context preparation, and route recomputation where state fingerprints permit safe reuse, and establish release gates that prevent setup latency or time-to-verified regressions relative to the matched v0.6 baseline without weakening correctness or evidence.\n- Out of scope: unrelated refactors not required for \"Restore supervisor orchestration latency to the v0.6 baseline\".",
+      "1. Establish matched v0.6.26 and current-main cold/warm profiles for task creation, task advance preparation, task run dry-run, and end-to-end verified completion; separate process startup, repository scans, context preparation, route computation, checks, and provider wait. 2. Remove redundant work only at deterministic boundaries: share immutable per-process repository/config/catalog state, reuse content-addressed preparation artifacts while fingerprints match, avoid duplicate remote/local route probes, and preserve invalidation on every state-changing input. 3. Add benchmark gates and regression fixtures proving caches cannot hide stale task, Git, policy, approval, or provider state and cannot replay side effects. 4. Require median setup latency and time-to-verified to return within the approved v0.6.26 tolerance while preserving the v0.7 token, verified-success, scope, and golden-output gains. 5. Run focused performance/recovery suites plus critical/static/size/policy gates and record the exact before/after distributions for final qualification.",
+      "1. Run the matched deterministic latency harness against v0.6.26 and the candidate for at least 10 cold and 30 warm repetitions per task advance and task run preparation path. Expected: report median, p95, confidence interval, subprocess count, repository scans, prepared-context bytes, and cache hit/miss state; candidate median setup latency is no worse than 10% above v0.6.26 and shows a material improvement over the current v0.7.0 baseline. 2. Run matched end-to-end verified-task fixtures. Expected: time-to-verified returns within 10% of v0.6.26 while verified success, scope violations, golden-output mismatch, rework, and token metrics do not regress beyond the v0.7 qualification thresholds. 3. Run stale task/Git/policy/approval/provider, crash recovery, concurrent execution, and effect-in-doubt fixtures. Expected: every changed fingerprint invalidates reused preparation and no protected effect is replayed. 4. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without baseline growth."
+    ]
+  },
+  "evaluated_sha": "fa975c224d25dceb689f89fe2fcdf21b34d4d4f7",
+  "diff_base_sha": "f073d4b9fbe13ab18db54ad14741651f0403b0a7",
+  "blueprint_digest": "3ffc20fd7d0794490bc007e5259da9413aee68dc16ac2e62a557eaca3d70ce2c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608022324-Y26ENH/README.md",
+      "sha256": "sha256:8a0a1be8962f1d55bfceb909576e9926df13cb0fbe4b7be79d4defcf4631f2dc",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:18d84c4d6c4532b0784358a19747bb42ab150d4df9f3b6bb9ccdaf4040f93c09",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:7096b81f66c6779cade7f23c1ed008fc4cc71064afcb60a659f270b9aa5cb9d7",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608022324-Y26ENH/verification/20260803033901022-57b52e4e985e2fe3.json",
+      "sha256": "sha256:568a6fbf80e9a34c3ab824f963460706a30b6e7a4c947b30d27e27efca770231",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:721be44e07ae439f9d9c45dfb0666cca29cbd5fde3a98a119bfde92f27bbc484",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
