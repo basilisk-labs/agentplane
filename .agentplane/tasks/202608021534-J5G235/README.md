@@ -4,7 +4,7 @@ title: "Reduce the v0.7.1 CLI dead-code and barrel baseline"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,16 +24,21 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-03T15:42:00.703Z"
+  updated_by: "TESTER"
+  note: "Verified CLI dead-code ratchet and compatibility preservation."
   attempts: 0
-commit: null
+commit:
+  hash: "c76ac407e7e16aa697a1d029df6cde3538329d85"
+  message: "♻️ J5G235 task: remove dead CLI surface"
 comments:
   -
     author: "CODER"
     body: "Start: reduce internal AgentPlane CLI dead-code and barrel exports against the approved 60 percent ratchet."
+  -
+    author: "CODER"
+    body: "Implementation committed: reduced AgentPlane CLI Knip debt from 517 symbols plus one unused file to zero while preserving compatibility contracts; full contract and 3768-test suite pass."
 events:
   -
     type: "status"
@@ -42,8 +47,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reduce internal AgentPlane CLI dead-code and barrel exports against the approved 60 percent ratchet."
+  -
+    type: "status"
+    at: "2026-08-03T15:41:40.322Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: reduced AgentPlane CLI Knip debt from 517 symbols plus one unused file to zero while preserving compatibility contracts; full contract and 3768-test suite pass."
+  -
+    type: "verify"
+    at: "2026-08-03T15:42:00.703Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified CLI dead-code ratchet and compatibility preservation."
 doc_version: 3
-doc_updated_at: "2026-08-03T15:40:12.129Z"
+doc_updated_at: "2026-08-03T15:42:01.555Z"
 doc_updated_by: "CODER"
 description: "Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and unnecessary internal barrel re-exports, reduce the CLI-package Knip baseline by 60-80 percent where evidence permits, preserve @agentplaneorg/core compatibility, and ratchet against future growth."
 sections:
@@ -68,6 +86,46 @@ sections:
     5. Inspect the final diff and `git diff --check`. Expected: changes are limited to declaration-only export removal, proven unreachable declarations/imports, the single unused file deletion, the Knip ratchet, and task evidence.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-03T15:42:00.703Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified CLI dead-code ratchet and compatibility preservation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T15:41:40.322Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+    Details:
+
+    Evidence:
+    - bun run knip:check: PASS; AgentPlane CLI files=0/0 and total=0/0; core compatibility total=21/21.
+    - bun run ci:contract: PASS; compatibility, agent-efficiency replay, TypeScript 7, trust-boundary, architecture, clone, Knip, and coverage guards passed.
+    - bun run test:fast: PASS; 533 test files and 3768 tests passed across agentplane, core, recipes, and testkit.
+    - bun --filter agentplane typecheck: PASS.
+    - bun run lint:core: PASS.
+    - git diff --check: PASS.
+    - Compatibility comparison against f44bc0c51c13652b21d61b5e314ca1d4f624c465: CLI topology, machine output, workflow schema, package manifests, and agent-facing contracts preserved.
+    Result: 517 CLI unused symbols plus one unused file reduced to zero; repository total reduced from 539 to 21 reviewed core compatibility findings.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+    - old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021534-J5G235
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -79,6 +137,10 @@ sections:
     - Two bootstrap constants are retained with the explicit `@dynamic` tag because the docs bootstrap checker imports them dynamically.
     - Removed `packages/agentplane/src/cli/critical/cli-runner.ts` after registries, builds, full tests, and compatibility checks proved it unreachable.
     - No remaining functional or compatibility blocker was observed.
+
+    - Observation: Knip initially classified exports in the byte-frozen agent-facing SGR contract and dynamic bootstrap module as unused.
+      Impact: Removing those exports would preserve compilation but drift the compatibility digest or break the docs bootstrap dynamic import.
+      Resolution: Restored the byte-identical SGR contract, added a file-exact Knip compatibility exception, and tagged only the two dynamically imported bootstrap constants; compatibility and bootstrap checks now pass.
 extensions:
   workflow_route_baseline:
     start_head_sha: "f44bc0c51c13652b21d61b5e314ca1d4f624c465"
@@ -115,6 +177,46 @@ Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and un
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-03T15:42:00.703Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified CLI dead-code ratchet and compatibility preservation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T15:41:40.322Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+Details:
+
+Evidence:
+- bun run knip:check: PASS; AgentPlane CLI files=0/0 and total=0/0; core compatibility total=21/21.
+- bun run ci:contract: PASS; compatibility, agent-efficiency replay, TypeScript 7, trust-boundary, architecture, clone, Knip, and coverage guards passed.
+- bun run test:fast: PASS; 533 test files and 3768 tests passed across agentplane, core, recipes, and testkit.
+- bun --filter agentplane typecheck: PASS.
+- bun run lint:core: PASS.
+- git diff --check: PASS.
+- Compatibility comparison against f44bc0c51c13652b21d61b5e314ca1d4f624c465: CLI topology, machine output, workflow schema, package manifests, and agent-facing contracts preserved.
+Result: 517 CLI unused symbols plus one unused file reduced to zero; repository total reduced from 539 to 21 reviewed core compatibility findings.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+- old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021534-J5G235
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -130,3 +232,7 @@ Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and un
 - Two bootstrap constants are retained with the explicit `@dynamic` tag because the docs bootstrap checker imports them dynamically.
 - Removed `packages/agentplane/src/cli/critical/cli-runner.ts` after registries, builds, full tests, and compatibility checks proved it unreachable.
 - No remaining functional or compatibility blocker was observed.
+
+- Observation: Knip initially classified exports in the byte-frozen agent-facing SGR contract and dynamic bootstrap module as unused.
+  Impact: Removing those exports would preserve compilation but drift the compatibility digest or break the docs bootstrap dynamic import.
+  Resolution: Restored the byte-identical SGR contract, added a file-exact Knip compatibility exception, and tagged only the two dynamically imported bootstrap constants; compatibility and bootstrap checks now pass.
