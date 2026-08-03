@@ -12,8 +12,8 @@ Created: 2026-08-03T15:09:30.904Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified CLI dead-code ratchet and compatibility preservation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-03T15:09:30.904Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T15:09:30.904Z
+- Updated: 2026-08-03T15:41:17.182Z
 - Branch: task/202608021534-J5G235/reduce-the-v0-7-1-cli-dead-code-and-barrel-basel
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
