@@ -13,99 +13,16 @@ import {
 import type { EvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 
 import {
+  assertFrozenEvaluatorArtifactsCurrent,
   assertResultEvidenceIsFrozen,
   validateStrictEvaluatorResult,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 
 const EVALUATOR_EPISODE_RECEIPT_FILE = "evaluator-episode.json";
-const EVALUATOR_RESULT_SCHEMA_FILE = "evaluator-result.schema.json";
 const MAX_PROVIDER_STDOUT_BYTES = 16 * 1024 * 1024;
 const MAX_PROVIDER_STDERR_BYTES = 1024 * 1024;
 const CODEX_EVALUATOR_TIMEOUT_MS = 2 * 60 * 1000;
-
-const NON_EMPTY_STRING_SCHEMA = { type: "string", minLength: 1 } as const;
-const NULLABLE_NON_EMPTY_STRING_SCHEMA = {
-  type: ["string", "null"],
-  minLength: 1,
-} as const;
-const NULLABLE_SHA256_SCHEMA = {
-  type: ["string", "null"],
-  pattern: "^sha256:[a-f0-9]{64}$",
-} as const;
-const NULLABLE_POSITIVE_INTEGER_SCHEMA = {
-  type: ["integer", "null"],
-  minimum: 1,
-} as const;
-
-const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
-  $schema: "http://json-schema.org/draft-07/schema#",
-  title: "AgentPlane EvaluatorSgrResult",
-  description:
-    "Read-only EVALUATOR output. AgentPlane validates frozen evidence and owns all persistence.",
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    schema_version: { type: "integer", enum: [1] },
-    kind: { type: "string", enum: ["evaluator_result"] },
-    evaluator_id: NON_EMPTY_STRING_SCHEMA,
-    verdict: { type: "string", enum: ["pass", "rework", "blocked", "human_review"] },
-    findings: {
-      type: "array",
-      minItems: 1,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          id: NON_EMPTY_STRING_SCHEMA,
-          severity: { type: "string", enum: ["low", "medium", "high"] },
-          summary: NON_EMPTY_STRING_SCHEMA,
-          broken_invariant: NON_EMPTY_STRING_SCHEMA,
-          evidence_refs: {
-            type: "array",
-            minItems: 1,
-            items: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                path: NON_EMPTY_STRING_SCHEMA,
-                sha256: NULLABLE_SHA256_SCHEMA,
-                line: NULLABLE_POSITIVE_INTEGER_SCHEMA,
-                lines: NULLABLE_NON_EMPTY_STRING_SCHEMA,
-                section: NULLABLE_NON_EMPTY_STRING_SCHEMA,
-              },
-              // Codex structured output requires every declared property to
-              // appear in `required`. Source-reference metadata remains
-              // semantically optional by using null, which is normalized by
-              // the evaluator result validator before its typed SGR handoff.
-              required: ["path", "sha256", "line", "lines", "section"],
-            },
-          },
-        },
-        required: ["id", "severity", "summary", "broken_invariant", "evidence_refs"],
-      },
-    },
-    missing_tests: { type: "array", items: { type: "string" } },
-    hidden_assumptions: { type: "array", items: { type: "string" } },
-    recovery_context: NULLABLE_NON_EMPTY_STRING_SCHEMA,
-    recovery_reason: { type: ["string", "null"], enum: ["deterministic_evidence_gap", null] },
-  },
-  required: [
-    "schema_version",
-    "kind",
-    "evaluator_id",
-    "verdict",
-    "findings",
-    "missing_tests",
-    "hidden_assumptions",
-    "recovery_context",
-    "recovery_reason",
-  ],
-} as const;
-
-function renderEvaluatorResultOutputSchemaJson(): string {
-  return `${JSON.stringify(EVALUATOR_RESULT_OUTPUT_SCHEMA, null, 2)}\n`;
-}
 
 type EvaluatorEpisodeInvocation = {
   provider: "codex";
@@ -253,9 +170,7 @@ async function prepareEvaluatorEpisodeInvocation(opts: {
   prepared: PreparedEvaluatorReview;
 }): Promise<EvaluatorEpisodeInvocation> {
   const repositoryRoot = opts.ctx.resolvedProject.gitRoot;
-  const reviewDir = path.dirname(opts.prepared.work_order_path);
-  const outputSchemaPath = path.join(reviewDir, EVALUATOR_RESULT_SCHEMA_FILE);
-  await writeFile(outputSchemaPath, renderEvaluatorResultOutputSchemaJson(), "utf8");
+  const outputSchemaPath = opts.prepared.output_schema_path;
   const prompt = await readFile(opts.prepared.prompt_path, "utf8");
   return {
     provider: "codex",
@@ -407,6 +322,10 @@ export async function executePreparedEvaluatorEpisode(opts: {
   prepared: PreparedEvaluatorReview;
   executor?: EvaluatorEpisodeProvider;
 }): Promise<{ result: EvaluatorSgrResult; receipt: EvaluatorEpisodeReceipt }> {
+  await assertFrozenEvaluatorArtifactsCurrent({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workOrder: opts.prepared.work_order,
+  });
   const invocation = await prepareEvaluatorEpisodeInvocation({
     ctx: opts.ctx,
     prepared: opts.prepared,

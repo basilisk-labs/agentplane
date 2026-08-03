@@ -49,6 +49,7 @@ export async function commitPath(
 export async function prepareTypedReview(
   root: string,
   taskId: string,
+  opts?: { at?: string },
 ): Promise<{
   command: Awaited<ReturnType<typeof loadCommandContext>>;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
@@ -67,6 +68,7 @@ export async function prepareTypedReview(
       task,
       evaluator,
       provenance: "evaluator_supplied",
+      ...(opts?.at ? { at: opts.at } : {}),
     }),
   };
 }

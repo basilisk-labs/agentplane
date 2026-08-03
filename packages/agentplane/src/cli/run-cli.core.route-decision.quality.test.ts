@@ -319,7 +319,8 @@ describe("runCli quality route decisions", () => {
     await execFileAsync("git", ["commit", "-m", "task: evaluator rework artifacts"], { cwd: root });
 
     const qualityRoot = path.join(root, ".agentplane", "tasks", taskId, "quality");
-    const [reviewDir] = await readdir(qualityRoot);
+    const qualityEntries = await readdir(qualityRoot);
+    const reviewDir = qualityEntries.find((entry) => entry !== "objects");
     expect(reviewDir).toBeTruthy();
     const reportPath = path.join(qualityRoot, reviewDir!, "quality-report.json");
     const reportBeforeRoute = await readFile(reportPath, "utf8");

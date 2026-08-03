@@ -34,6 +34,26 @@ agentplane evidence verify .agentplane/tasks/<task-id>/evidence/manifest.json
 Verification fails when a referenced file is missing, its SHA-256 hash changed, the manifest digest
 does not match, or `--strict` is used and the bundle has no ACR artifact.
 
+## Evaluator packets
+
+New evaluator preparations keep repeated immutable inputs in a task-local content-addressed store:
+
+```text
+.agentplane/tasks/<task-id>/quality/objects/sha256/<digest>.<extension>
+```
+
+Each review directory contains a compact `evaluator-evidence-manifest.json` plus the work order.
+The manifest maps the logical diff, observed checks, blueprint, prompt, and result schema to exact
+object paths, SHA-256 hashes, media types, and byte sizes. Repeated preparation reuses an existing
+object only after its bytes match the digest; a collision or modified object is rejected. The work
+order points directly to these readable repository files, so evaluator execution and offline review
+do not require a restore or materialization step. Legacy review directories with raw packet files
+remain readable.
+
+Task evidence bundles include both the compact evaluator manifests and their referenced task-local
+objects. Git suppresses rendered diffs for the immutable object blobs to keep pull-request review
+focused, while the files, hashes, and bundle verification remain available locally.
+
 ## ACR trust metadata
 
 When a task-local evidence manifest already exists, `agentplane acr generate <task-id> --write

@@ -40,6 +40,9 @@ function isGeneratedTaskArtifact(filePath: string, workflowDir: string, taskId: 
   if (relative === "blueprint/resolved-snapshot.json") return true;
   if (!relative.startsWith("quality/")) return false;
   return (
+    relative.includes("/objects/sha256/") ||
+    relative.endsWith("/evaluator-evidence-manifest.json") ||
+    relative.endsWith("/evaluator-work-order.json") ||
     relative.endsWith("/quality-report.json") ||
     relative.endsWith("/evaluator-prompt.md") ||
     relative.endsWith("/evaluator-opinion.md")
