@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Completed-journal recovery can consume an accepted exchange without proving that the completed supervisor operation recorded the same result digest and work-order identity.",
+      "broken_invariant": "Recovery must remain fail-closed and bind the consumed result to the exact persisted supervisor completion. `assertExternalAgentSupervisorIntent` recognizes `completed_pending_exchange` from operation and exchange statuses, while `finalizeCompletedExternalAgentExchange` advances and consumes the exchange without comparing the completed operation result's `result_digest` and `work_order_id` with the accepted exchange. A mismatched or drifted completion can therefore be finalized as if it represented the returned semantic result.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-010720459-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:81a596ee7c2107cc47e9b9c402a0348bc505b6e8eaa87bb357b89e40f92a87c3",
+          "lines": "The completed_pending_exchange branch checks operation.status, exchange.status, and journal phase but does not validate operation.result against exchange.result_digest/work_order_id; finalizeCompletedExternalAgentExchange then marks the exchange consumed."
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a completed-journal recovery test where the operation result contains a different result_digest or work_order_id from the accepted exchange; recovery must fail closed and leave the exchange unconsumed."
+  ],
+  "hidden_assumptions": [
+    "A completed operation in the task's journal is assumed to correspond to the accepted exchange solely because its intent metadata matches, even though its persisted completion result is not checked."
+  ],
+  "recovery_context": "Before allowing completed-journal recovery to consume an accepted exchange, validate that the completed operation result is structurally present and exactly matches the exchange work_order_id and accepted result_digest; add negative fault-injection coverage for both mismatches."
+}

@@ -493,6 +493,9 @@ export async function acceptExternalAgentResult(opts: {
         paths,
         postcondition_fingerprint: current.workflowStep.preconditionFingerprint.digest,
         route_step_id: current.workflowStep.id,
+        work_order_id: exchange.work_order_id,
+        semantic_status: envelope.result.status,
+        result_digest: resultDigest,
       })
     ) {
       return current;

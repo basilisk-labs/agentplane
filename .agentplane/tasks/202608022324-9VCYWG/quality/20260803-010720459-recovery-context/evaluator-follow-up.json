@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608022324-9VCYWG-eaadf2898baff78d5c4e0afc",
+  "task_id": "202608022324-9VCYWG",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Before allowing completed-journal recovery to consume an accepted exchange, validate that the completed operation result is structurally present and exactly matches the exchange work_order_id and accepted result_digest; add negative fault-injection coverage for both mismatches.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Completed-journal recovery can consume an accepted exchange without proving that the completed supervisor operation recorded the same result digest and work-order identity.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-010720459-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:81a596ee7c2107cc47e9b9c402a0348bc505b6e8eaa87bb357b89e40f92a87c3",
+          "lines": "The completed_pending_exchange branch checks operation.status, exchange.status, and journal phase but does not validate operation.result against exchange.result_digest/work_order_id; finalizeCompletedExternalAgentExchange then marks the exchange consumed."
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-010720459-recovery-context/evaluator-result.json"
+}
