@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021535-CNQKXP-66b4d97fb4a777590ecdd6dc",
+  "prepared_at": "2026-08-03T19:56:37.918Z",
+  "task": {
+    "id": "202608021535-CNQKXP",
+    "revision": 15,
+    "objective": "Add compatibility retirement inventory and doctor legacy\n\nIntroduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations.\n- Out of scope: unrelated refactors not required for \"Add compatibility retirement inventory and doctor legacy\".",
+      "1. Inventory every production compatibility and migration adapter in AgentPlane and core, assign a stable identifier, owner surface, introduced_in, deprecated_in, remove_in, migration_command, and deterministic usage_probe, and classify entries that cannot yet have a removal version.\n2. Add a packaged machine-readable manifest plus schema and validation so missing fields, duplicate identifiers, invalid semver windows, stale file references, and unknown probes fail deterministic checks.\n3. Add agentplane doctor legacy --json and human rendering that executes the registered probes, reports used, unused, unknown, or blocked status with exact evidence, and never deletes or migrates state.\n4. Move legacy protected-conflict adoption discovery under the advanced repair namespace while retaining the old command only as a hidden compatibility alias with deprecation guidance and unchanged authority/evidence behavior.\n5. Document the retirement policy and migration window, add current/legacy/malformed/probe-failure/package-smoke fixtures, then run compatibility, help-surface, critical, full fast, and repository contract gates before independent evaluation.",
+      "1. Run the compatibility-manifest schema and inventory tests. Expected: every registered production adapter has one unique manifest entry; semver windows, source paths, migration commands, and usage probes validate; malformed or stale entries fail closed.\n2. Run focused doctor legacy fixtures in human and JSON modes. Expected: current, used legacy, unused legacy, unavailable probe, and mixed states produce stable typed output without mutation; every finding names evidence and a migration command.\n3. Run command catalog/help and legacy conflict recovery tests. Expected: the default 11-operation help remains unchanged, repair exposes the advanced legacy-adoption path, the old command is hidden/deprecated, and authority plus recovery receipts remain byte-compatible.\n4. Build and inspect the publishable AgentPlane package. Expected: the manifest and required runtime files are shipped and doctor legacy works from the packed CLI fixture.\n5. Run bun run typecheck, bun run ci:contract, bun run test:critical, bun run test:fast, bun run knip:check, bun run hotspots:check, and node .agentplane/policy/check-routing.mjs. Expected: all maintained gates pass with no compatibility-baseline or trust-boundary growth.\n6. Generate and verify task evidence, then obtain an independent EVALUATOR pass against the exact implementation SHA."
+    ]
+  },
+  "evaluated_sha": "1cb422dd89bf6f38993264b6f0fe3efb369a235e",
+  "diff_base_sha": "503e1a531103ef41ff3ef404fd55fbe442220e26",
+  "blueprint_digest": "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:03fbaee27c1b17bb5a878960725900d14933949413393276345d6f70709f3a62",
+    "prompt_path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/61da022983301af2a906f0485f867ecc868a5012415b4e66607323fe6f333343.md",
+    "result_schema_path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+      "sha256": "sha256:1d6d051e75591c48f1b6cb9c5489c11eab3f95c4c8ab0e243d892ed7b40f3618",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch",
+      "sha256": "sha256:384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2d98f0cd9f0c9cc6ace5696de9f7a7c21f28ad368738c7476d707b91e6e4b1e0.json",
+      "sha256": "sha256:2d98f0cd9f0c9cc6ace5696de9f7a7c21f28ad368738c7476d707b91e6e4b1e0",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195610048-b665404c451bab66.json",
+      "sha256": "sha256:c76ce7f5bbc37ea27a02f26c848ff565beba172d77a934c3635f83fd2582cbf1",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/a678349924d6de7236f3762033ddde35c1bf310b5d2d2fb99c386bbd378fe344.json",
+      "sha256": "sha256:a678349924d6de7236f3762033ddde35c1bf310b5d2d2fb99c386bbd378fe344",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
