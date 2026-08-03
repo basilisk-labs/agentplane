@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T11:55:46.253Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "9a9f6a1a3bc3e8f202518ab196ebd1813938502a",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "findings": [
+    "Completed-task token usage is exposed by task brief but not by task status, so one required human-readable completion surface remains incomplete."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-BPMM04/README.md",
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "A completed-task CLI regression asserting that `task status <task-id>` human output renders token state, input, visible output, reasoning, total, and provenance/completeness consistently with task brief and machine JSON."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that human-readable task brief output alone satisfies the separately named task status/brief output requirement."
+  ],
+  "residual_risks": [
+    "Add the completed-task token projection to human-readable task status output and cover it with a deterministic status-command regression that compares its aggregate and completeness state with brief and JSON projections."
+  ]
+}

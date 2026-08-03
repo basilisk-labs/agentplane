@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "medium",
+      "summary": "Completed-task token usage is exposed by task brief but not by task status, so one required human-readable completion surface remains incomplete.",
+      "broken_invariant": "The approved contract requires the same aggregate and provenance/completeness state in both human task status and brief output. The diff adds token_usage only to brief-model.ts and brief-render.ts; status.command.ts is unchanged by the frozen patch.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:879dbee4721950285e247a82499206e9c1ac820e26cb06322d671a4f50536574",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:7954d770772dab1c8dc9de256a3df35a9dc1f1639aaecfb0015825d2e269d195",
+          "line": 335,
+          "lines": "335-386",
+          "section": "brief-model.ts and brief-render.ts changes"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A completed-task CLI regression asserting that `task status <task-id>` human output renders token state, input, visible output, reasoning, total, and provenance/completeness consistently with task brief and machine JSON."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that human-readable task brief output alone satisfies the separately named task status/brief output requirement."
+  ],
+  "recovery_context": "Add the completed-task token projection to human-readable task status output and cover it with a deterministic status-command regression that compares its aggregate and completeness state with brief and JSON projections."
+}

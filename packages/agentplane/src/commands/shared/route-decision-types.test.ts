@@ -15,4 +15,31 @@ describe("task route summary", () => {
 
     expect(taskSummary(task).commit).toBe("a".repeat(40));
   });
+
+  it("projects completed-task token usage without changing its provenance", () => {
+    const tokenUsage = {
+      schema_version: 1 as const,
+      state: "partial" as const,
+      input_tokens: 120,
+      output_tokens: null,
+      reasoning_tokens: null,
+      total_tokens: 150,
+      agent_runs: 2,
+      observed_agent_runs: 1,
+      source: "supervisor_journal" as const,
+      observed_by: "agentplane" as const,
+      journal_digest: `sha256:${"a".repeat(64)}`,
+      unavailable_reason: "some_agent_runs_lack_provider_token_telemetry",
+      updated_at: "2026-08-03T12:00:00.000Z",
+    };
+    const task = {
+      id: "202608030101-T0KENS",
+      title: "Token projection",
+      status: "DONE",
+      owner: "CODER",
+      token_usage: tokenUsage,
+    } as TaskData;
+
+    expect(taskSummary(task).token_usage).toEqual(tokenUsage);
+  });
 });

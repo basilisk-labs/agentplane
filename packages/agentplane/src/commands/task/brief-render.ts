@@ -2,6 +2,7 @@ import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { routeRunnerContextIsRelevant } from "../shared/route-guidance.js";
 import { renderCliArgv } from "../shared/workflow-operation-projection.js";
 import type { TaskBriefWithWorkflowStep } from "./brief-model.js";
+import { formatTaskTokenUsageSummary } from "./token-usage-format.js";
 
 function splitNonEmptyLines(text: string): string[] {
   return text
@@ -33,12 +34,7 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
         ? [
             {
               label: "token_usage",
-              value:
-                `state=${brief.task.token_usage.state} ` +
-                `input=${brief.task.token_usage.input_tokens ?? "unavailable"} ` +
-                `output=${brief.task.token_usage.output_tokens ?? "unavailable"} ` +
-                `reasoning=${brief.task.token_usage.reasoning_tokens ?? "unavailable"} ` +
-                `total=${brief.task.token_usage.total_tokens ?? "unavailable"}`,
+              value: formatTaskTokenUsageSummary(brief.task.token_usage),
             },
           ]
         : []),

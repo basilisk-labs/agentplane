@@ -4,7 +4,7 @@ title: "Record token usage on every completed task"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -24,36 +24,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T11:44:13.577Z"
+  updated_at: "2026-08-03T11:54:22.757Z"
   updated_by: "TESTER"
-  note: "Verified EVALUATOR rework at exact SHA e92e7b4b1ea4fe9cca60d2ebb5a305f3e65fba42: every reconciliation completion path now projects authoritative supervisor token usage and preserves stable replay."
+  note: "Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T11:45:31.314Z"
+  updated_at: "2026-08-03T11:55:46.253Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "e92e7b4b1ea4fe9cca60d2ebb5a305f3e65fba42"
+  evaluated_sha: "9a9f6a1a3bc3e8f202518ab196ebd1813938502a"
   blueprint_digest: "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183"
   evidence_refs:
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202608021231-BPMM04/README.md"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608021231-BPMM04/verification/20260803114413577-18da78feb6a5f42d.json"
-    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021231-BPMM04/verification/20260803115422757-3be513e44409f5a7.json"
+    - ".agentplane/tasks/202608021231-BPMM04/quality/20260803-115436481-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "A completed task can be marked with fully observed token usage even when output/reasoning breakdown telemetry was absent from one or more agent runs."
+    - "Completed-task token usage is exposed by task brief but not by task status, so one required human-readable completion surface remains incomplete."
 commit:
   hash: "613cd8095f4cebf234dafaa8348f87f173495d9e"
   message: "🪙 BPMM04 task: record completed-task token usage"
@@ -97,8 +97,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified EVALUATOR rework at exact SHA e92e7b4b1ea4fe9cca60d2ebb5a305f3e65fba42: every reconciliation completion path now projects authoritative supervisor token usage and preserves stable replay."
+  -
+    type: "verify"
+    at: "2026-08-03T11:54:22.757Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered."
 doc_version: 3
-doc_updated_at: "2026-08-03T11:44:14.797Z"
+doc_updated_at: "2026-08-03T11:54:24.053Z"
 doc_updated_by: "CODER"
 description: "Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage."
 sections:
@@ -232,6 +238,56 @@ sections:
     Result: pass
     Evidence: All 12 critical CLI chunks passed after rework.
     Scope: Critical efficiency, CLI, provider at-most-once, protected-path, scope, symlink, and trust-boundary regressions.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+    - old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T11:54:22.757Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T11:44:14.797Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+    Details:
+
+    Command: bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts
+    Result: pass
+    Evidence: 6 files and 50 tests passed at SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a, including primary-only telemetry, mixed executor/evaluator missing breakdown, exact hosted/local reconciliation, and replay stability.
+    Scope: EVALUATOR breakdown-provenance rework, supervisor aggregation invariants, and completed-task projection.
+
+    Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: TypeScript and ESLint exited 0; Knip remained exactly 539/539; policy routing passed.
+    Scope: Type safety, static hygiene, unused-code baseline, and policy graph.
+
+    Command: bun run framework:dev:bootstrap && bun run ci:contract
+    Result: pass
+    Evidence: Full contract exited 0 after final provenance fix; RF04 stayed 50/50, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells; architecture zero violations and coverage thresholds passed.
+    Scope: Full repository contract on final rework.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: All 12 critical CLI chunks passed on final rework.
+    Scope: Critical efficiency, provider, CLI, scope, filesystem, and trust-boundary regressions.
 
     BlueprintSnapshotRef:
     - state: current
@@ -406,6 +462,56 @@ Command: bun run test:critical
 Result: pass
 Evidence: All 12 critical CLI chunks passed after rework.
 Scope: Critical efficiency, CLI, provider at-most-once, protected-path, scope, symlink, and trust-boundary regressions.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+- old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-BPMM04
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T11:54:22.757Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T11:44:14.797Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+Details:
+
+Command: bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts
+Result: pass
+Evidence: 6 files and 50 tests passed at SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a, including primary-only telemetry, mixed executor/evaluator missing breakdown, exact hosted/local reconciliation, and replay stability.
+Scope: EVALUATOR breakdown-provenance rework, supervisor aggregation invariants, and completed-task projection.
+
+Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: TypeScript and ESLint exited 0; Knip remained exactly 539/539; policy routing passed.
+Scope: Type safety, static hygiene, unused-code baseline, and policy graph.
+
+Command: bun run framework:dev:bootstrap && bun run ci:contract
+Result: pass
+Evidence: Full contract exited 0 after final provenance fix; RF04 stayed 50/50, 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells; architecture zero violations and coverage thresholds passed.
+Scope: Full repository contract on final rework.
+
+Command: bun run test:critical
+Result: pass
+Evidence: All 12 critical CLI chunks passed on final rework.
+Scope: Critical efficiency, provider, CLI, scope, filesystem, and trust-boundary regressions.
 
 BlueprintSnapshotRef:
 - state: current
