@@ -16,7 +16,7 @@ Extend the compact external-agent protocol so task advance accepts a typed Seman
 ## Verification
 
 - State: ok
-- Note: Verified implementation rework for the completed-journal crash window.
+- Note: Verified exact completion-result binding during accepted exchange recovery.
 - Canonical workflow state lives in the task README.
 
 <details>
