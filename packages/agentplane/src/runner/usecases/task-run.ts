@@ -115,10 +115,10 @@ export async function prepareTaskRunnerExecution(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const preparationGitSnapshot = await captureRunnerPreparationGitSnapshot({
-    ctx: command,
-  });
-  const executionContext = await makeReadOnlyExecutionContext(command);
+  const [preparationGitSnapshot, executionContext] = await Promise.all([
+    captureRunnerPreparationGitSnapshot({ ctx: command }),
+    makeReadOnlyExecutionContext(command),
+  ]);
   const target = opts.target ?? { kind: "task", task_id: opts.task_id };
   void executionContext.policy.evaluate({
     action: target.kind === "recipe_scenario" ? "scenario_execute" : "task_run",

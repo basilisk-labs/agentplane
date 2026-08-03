@@ -231,4 +231,49 @@ describe("compact agent action packet", () => {
     });
     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
   });
+
+  it("does not mistake mechanical exchange paths inside a Git worktree for agent choreography", () => {
+    const workflowStep = step({
+      kind: "agent_episode",
+      episode: {
+        purpose: "implementation",
+        role: "CODER",
+        taskId: TASK_ID,
+        objective: "Implement the task",
+      },
+    });
+    const packet = buildAgentActionPacket({
+      decision: decision(workflowStep),
+      work_order: workOrder(),
+      exchange: {
+        directory: `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current`,
+        work_order_ref: "work-order.json",
+        result_schema_ref: "result-schema.json",
+        result_ref: "result.json",
+        return_invocation:
+          "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
+      },
+    });
+
+    expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
+  });
+
+  it("still rejects lifecycle choreography in the semantic instruction", () => {
+    const packet = packetFor(
+      step({
+        kind: "agent_episode",
+        episode: {
+          purpose: "implementation",
+          role: "CODER",
+          taskId: TASK_ID,
+          objective: "Implement the task",
+        },
+      }),
+    );
+    packet.action.instruction = "Run git status and finish the task.";
+
+    expect(() => assertAgentActionPacketHasNoChoreography(packet)).toThrow(
+      "Agent action packet leaked formal lifecycle choreography.",
+    );
+  });
 });

@@ -265,51 +265,53 @@ export async function prepareAgentWorkOrder(opts: {
         execution_context: executionContext,
       },
     });
-    const knowledgeRetrieval = await measurePreparationNode({
-      recorder: executionContext.command.preparationTrace,
-      node: "knowledge_retrieval",
-      scope: traceScope,
-      dependencies: ["task_context_assembly", "blueprint_resolution"],
-      cacheability: "exact",
-      cachePolicyReason:
-        "Knowledge references are digest-bound to the task, blueprint, and manifest inputs.",
-      operation: async () =>
-        await prepareTaskKnowledgeRetrieval({
-          command_ctx: executionContext.command,
-          task_envelope: taskEnvelope,
+    const [knowledgeRetrieval, briefProjection] = await Promise.all([
+      measurePreparationNode({
+        recorder: executionContext.command.preparationTrace,
+        node: "knowledge_retrieval",
+        scope: traceScope,
+        dependencies: ["task_context_assembly", "blueprint_resolution"],
+        cacheability: "exact",
+        cachePolicyReason:
+          "Knowledge references are digest-bound to the task, blueprint, and manifest inputs.",
+        operation: async () =>
+          await prepareTaskKnowledgeRetrieval({
+            command_ctx: executionContext.command,
+            task_envelope: taskEnvelope,
+            blueprint,
+            repository_root: executionContext.repo.git_root,
+            semantic_selector: opts.semantic_selector,
+          }),
+        fingerprintInputs: (retrieval) => ({
+          task: taskEnvelope.task,
           blueprint,
-          repository_root: executionContext.repo.git_root,
-          semantic_selector: opts.semantic_selector,
+          retrieval_receipt: retrieval.receipt,
+          knowledge_refs: retrieval.knowledge_refs,
         }),
-      fingerprintInputs: (retrieval) => ({
-        task: taskEnvelope.task,
-        blueprint,
-        retrieval_receipt: retrieval.receipt,
-        knowledge_refs: retrieval.knowledge_refs,
+        output: (retrieval) => retrieval,
       }),
-      output: (retrieval) => retrieval,
-    });
-    const briefProjection = await measurePreparationNode({
-      recorder: executionContext.command.preparationTrace,
-      node: "rendering",
-      scope: traceScope,
-      dependencies: ["task_context_assembly", "blueprint_resolution"],
-      cacheability: "exact",
-      cachePolicyReason:
-        "The compatibility projection is a deterministic rendering of typed inputs.",
-      operation: async () =>
-        await buildAgentWorkOrderLegacyBriefProjection({
-          command_ctx: executionContext.command,
-          task_envelope: taskEnvelope,
+      measurePreparationNode({
+        recorder: executionContext.command.preparationTrace,
+        node: "rendering",
+        scope: traceScope,
+        dependencies: ["task_context_assembly", "blueprint_resolution"],
+        cacheability: "exact",
+        cachePolicyReason:
+          "The compatibility projection is a deterministic rendering of typed inputs.",
+        operation: async () =>
+          await buildAgentWorkOrderLegacyBriefProjection({
+            command_ctx: executionContext.command,
+            task_envelope: taskEnvelope,
+            blueprint,
+          }),
+        fingerprintInputs: (projection) => ({
+          task: taskEnvelope.task,
           blueprint,
+          rendered_projection: projection,
         }),
-      fingerprintInputs: (projection) => ({
-        task: taskEnvelope.task,
-        blueprint,
-        rendered_projection: projection,
+        output: (projection) => projection,
       }),
-      output: (projection) => projection,
-    });
+    ]);
     const canonicalWorkOrder = buildCanonicalAgentWorkOrder({
       prepared: {
         task_envelope: taskEnvelope,
