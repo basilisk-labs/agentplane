@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3249ce64f2ddcd910cafa6a08fe000517504528baa8c2118eecb425973b98813",
   "pr_number": 4753,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4753",
+  "pre_merge_closure": {
+    "basis_commit": "f0b20929c7bfb657c371374f450c63d9c50a05f7",
+    "branch": "task/202608021231-BPMM04/record-token-usage-on-every-completed-task",
+    "pr_number": 4753,
+    "recorded_at": "2026-08-03T12:28:29.642Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608021231-BPMM04",
