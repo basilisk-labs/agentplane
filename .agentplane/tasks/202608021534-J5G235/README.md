@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -26,38 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T16:00:47.967Z"
+  updated_at: "2026-08-03T16:03:44.976Z"
   updated_by: "TESTER"
-  note: |-
-    Command: bun run test:critical
-    Result: PASS
-    Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
-    Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
-
-    Command: bun run knip:check
-    Result: PASS
-    Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
-    Scope: exact Knip files exception covers only the dynamic critical CLI runner.
-
-    Command: bun run ci:contract
-    Result: PASS
-    Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
-    Scope: complete repository contract barrier after restoring the runner.
-
-    Command: bun run test:fast
-    Result: PASS
-    Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
-    Scope: AgentPlane, core, recipes, and testkit regression suite.
-
-    Command: bun run bench:compatibility:check
-    Result: PASS
-    Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
-    Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
-
-    Command: git diff --check
-    Result: PASS
-    Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
-    Scope: hosted CI rework for PR #4758.
+  note: "Verified hosted CI rework with structured check evidence."
   attempts: 0
 quality_review:
   state: "pass"
@@ -180,8 +151,49 @@ events:
       Result: PASS
       Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
       Scope: hosted CI rework for PR #4758.
+  -
+    type: "verify"
+    at: "2026-08-03T16:02:58.632Z"
+    author: "TESTER"
+    state: "ok"
+    note: |-
+      Command: bun run test:critical
+      Result: PASS
+      Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
+      Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
+
+      Command: bun run knip:check
+      Result: PASS
+      Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
+      Scope: exact Knip files exception covers only the dynamic critical CLI runner.
+
+      Command: bun run ci:contract
+      Result: PASS
+      Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
+      Scope: complete repository contract barrier after restoring the runner.
+
+      Command: bun run test:fast
+      Result: PASS
+      Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
+      Scope: AgentPlane, core, recipes, and testkit regression suite.
+
+      Command: bun run bench:compatibility:check
+      Result: PASS
+      Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
+      Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
+
+      Command: git diff --check
+      Result: PASS
+      Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
+      Scope: hosted CI rework for PR #4758.
+  -
+    type: "verify"
+    at: "2026-08-03T16:03:44.976Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified hosted CI rework with structured check evidence."
 doc_version: 3
-doc_updated_at: "2026-08-03T16:00:49.235Z"
+doc_updated_at: "2026-08-03T16:03:46.210Z"
 doc_updated_by: "CODER"
 description: "Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and unnecessary internal barrel re-exports, reduce the CLI-package Knip baseline by 60-80 percent where evidence permits, preserve @agentplaneorg/core compatibility, and ratchet against future growth."
 sections:
@@ -336,6 +348,124 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T16:02:58.632Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Command: bun run test:critical
+    Result: PASS
+    Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
+    Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
+
+    Command: bun run knip:check
+    Result: PASS
+    Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
+    Scope: exact Knip files exception covers only the dynamic critical CLI runner.
+
+    Command: bun run ci:contract
+    Result: PASS
+    Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
+    Scope: complete repository contract barrier after restoring the runner.
+
+    Command: bun run test:fast
+    Result: PASS
+    Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
+    Scope: AgentPlane, core, recipes, and testkit regression suite.
+
+    Command: bun run bench:compatibility:check
+    Result: PASS
+    Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
+    Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
+
+    Command: git diff --check
+    Result: PASS
+    Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
+    Scope: hosted CI rework for PR #4758.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T16:00:49.235Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+    - old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T16:03:44.976Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified hosted CI rework with structured check evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T16:02:59.800Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+    Details:
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
+    Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
+    Scope: exact Knip files exception covers only the dynamic critical CLI runner.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
+    Scope: complete repository contract barrier after restoring the runner.
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
+    Scope: AgentPlane, core, recipes, and testkit regression suite.
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
+    Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
+    Scope: hosted CI rework for PR #4758.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+    - old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -355,6 +485,10 @@ sections:
     - Observation: The first verification note contained complete evidence but not the CLI-required structured check grammar.
       Impact: The route correctly rejected it as non-durable evidence and withheld quality-review progression.
       Resolution: Re-recorded every executed check with explicit Command, Result, Evidence, and Scope fields so verification can be validated deterministically.
+
+    - Observation: Hosted verify-cli-critical proved that critical/cli-runner.ts is a dynamic executable target even though Knip cannot discover the string-built path.
+      Impact: Deleting the runner broke every shared critical runCli invocation and blocked the release gate.
+      Resolution: Restored the runner byte-for-byte, classified its file issue explicitly in Knip, and reran the critical, contract, and full regression suites.
 
     - Observation: Hosted verify-cli-critical proved that critical/cli-runner.ts is a dynamic executable target even though Knip cannot discover the string-built path.
       Impact: Deleting the runner broke every shared critical runCli invocation and blocked the release gate.
@@ -528,6 +662,124 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T16:02:58.632Z — VERIFY — ok
+
+By: TESTER
+
+Note: Command: bun run test:critical
+Result: PASS
+Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
+Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
+
+Command: bun run knip:check
+Result: PASS
+Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
+Scope: exact Knip files exception covers only the dynamic critical CLI runner.
+
+Command: bun run ci:contract
+Result: PASS
+Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
+Scope: complete repository contract barrier after restoring the runner.
+
+Command: bun run test:fast
+Result: PASS
+Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
+Scope: AgentPlane, core, recipes, and testkit regression suite.
+
+Command: bun run bench:compatibility:check
+Result: PASS
+Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
+Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
+
+Command: git diff --check
+Result: PASS
+Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
+Scope: hosted CI rework for PR #4758.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T16:00:49.235Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+- old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T16:03:44.976Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified hosted CI rework with structured check evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T16:02:59.800Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+Details:
+
+Command: bun run test:critical
+Result: pass
+Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
+Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
+
+Command: bun run knip:check
+Result: pass
+Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
+Scope: exact Knip files exception covers only the dynamic critical CLI runner.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
+Scope: complete repository contract barrier after restoring the runner.
+
+Command: bun run test:fast
+Result: pass
+Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
+Scope: AgentPlane, core, recipes, and testkit regression suite.
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
+Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
+Scope: hosted CI rework for PR #4758.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+- old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -551,6 +803,10 @@ DecisionContextRef:
 - Observation: The first verification note contained complete evidence but not the CLI-required structured check grammar.
   Impact: The route correctly rejected it as non-durable evidence and withheld quality-review progression.
   Resolution: Re-recorded every executed check with explicit Command, Result, Evidence, and Scope fields so verification can be validated deterministically.
+
+- Observation: Hosted verify-cli-critical proved that critical/cli-runner.ts is a dynamic executable target even though Knip cannot discover the string-built path.
+  Impact: Deleting the runner broke every shared critical runCli invocation and blocked the release gate.
+  Resolution: Restored the runner byte-for-byte, classified its file issue explicitly in Knip, and reran the critical, contract, and full regression suites.
 
 - Observation: Hosted verify-cli-critical proved that critical/cli-runner.ts is a dynamic executable target even though Knip cannot discover the string-built path.
   Impact: Deleting the runner broke every shared critical runCli invocation and blocked the release gate.

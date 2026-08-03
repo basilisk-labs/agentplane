@@ -16,35 +16,7 @@ Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and un
 ## Verification
 
 - State: ok
-- Note: Command: bun run test:critical
-Result: PASS
-Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
-Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
-
-Command: bun run knip:check
-Result: PASS
-Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
-Scope: exact Knip files exception covers only the dynamic critical CLI runner.
-
-Command: bun run ci:contract
-Result: PASS
-Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
-Scope: complete repository contract barrier after restoring the runner.
-
-Command: bun run test:fast
-Result: PASS
-Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
-Scope: AgentPlane, core, recipes, and testkit regression suite.
-
-Command: bun run bench:compatibility:check
-Result: PASS
-Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
-Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
-
-Command: git diff --check
-Result: PASS
-Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
-Scope: hosted CI rework for PR #4758.
+- Note: Verified hosted CI rework with structured check evidence.
 - Canonical workflow state lives in the task README.
 
 <details>
