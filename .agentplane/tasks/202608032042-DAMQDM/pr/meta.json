@@ -8,10 +8,10 @@
   "pr_number": 4762,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4762",
   "pre_merge_closure": {
-    "basis_commit": "f36b025abe35e1b789325ce54f6d1d9e2816b6d5",
+    "basis_commit": "af83d6a370fe3f8021e0c22155273a9a26f1f2a8",
     "branch": "task/202608032042-DAMQDM/skip-provider-dependent-qualification-checks-bef",
     "pr_number": 4762,
-    "recorded_at": "2026-08-03T20:49:58.759Z",
+    "recorded_at": "2026-08-03T20:57:18.167Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
