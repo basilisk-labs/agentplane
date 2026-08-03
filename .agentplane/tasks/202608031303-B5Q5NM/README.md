@@ -4,7 +4,7 @@ title: "Ignore AgentPlane runtime tmp artifacts by default"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -42,7 +42,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-03T13:04:59.683Z"
+doc_updated_at: "2026-08-03T13:10:06.695Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4663 by adding .agentplane/tmp to the canonical runtime gitignore contract without overwriting user rules, and add init plus migration regression coverage proving the entry is idempotent."
 sections:
@@ -65,7 +65,10 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Fresh init used the canonical runtime ignore set, but upgrade repaired only the SQLite subset through ensureRuntimeSqliteGitignore.
+      Impact: Adding .agentplane/tmp only to the canonical set would leave existing repositories unfixed after upgrade.
+      Resolution: Upgrade now calls ensureRuntimeGitignore, preserving user rules while idempotently restoring every missing canonical runtime line; focused upgrade coverage proves the behavior.
 extensions:
   workflow_route_baseline:
     start_head_sha: "cad13d5568828c967497a5610fd7a4daeda7528e"
@@ -105,3 +108,7 @@ Add .agentplane/tmp to the single canonical runtime gitignore line set; preserve
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Fresh init used the canonical runtime ignore set, but upgrade repaired only the SQLite subset through ensureRuntimeSqliteGitignore.
+  Impact: Adding .agentplane/tmp only to the canonical set would leave existing repositories unfixed after upgrade.
+  Resolution: Upgrade now calls ensureRuntimeGitignore, preserving user rules while idempotently restoring every missing canonical runtime line; focused upgrade coverage proves the behavior.

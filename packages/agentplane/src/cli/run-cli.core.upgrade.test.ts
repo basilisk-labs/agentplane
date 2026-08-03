@@ -157,7 +157,7 @@ describe("runCli", () => {
   });
 
   it(
-    "upgrade includes runtime .gitignore cache lines in the upgrade commit",
+    "upgrade includes missing runtime .gitignore lines in the upgrade commit",
     { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
@@ -176,12 +176,13 @@ describe("runCli", () => {
         .split(/\r?\n/u)
         .filter(
           (line) =>
+            line !== ".agentplane/tmp" &&
             line !== ".agentplane/cache.sqlite" &&
             line !== ".agentplane/cache.sqlite-wal" &&
             line !== ".agentplane/cache.sqlite-shm",
         )
         .join("\n");
-      await writeFile(gitignorePath, `${staleGitignore.trimEnd()}\n`, "utf8");
+      await writeFile(gitignorePath, `${staleGitignore.trimEnd()}\ncustom-user-rule\n`, "utf8");
       await commitAll(root, "fixture: stale runtime gitignore");
 
       io = captureStdIO();
@@ -193,9 +194,12 @@ describe("runCli", () => {
       }
 
       const gitignoreText = await readFile(gitignorePath, "utf8");
+      expect(gitignoreText).toContain(".agentplane/tmp");
+      expect(gitignoreText.match(/^\.agentplane\/tmp$/gmu)).toHaveLength(1);
       expect(gitignoreText).toContain(".agentplane/cache.sqlite");
       expect(gitignoreText).toContain(".agentplane/cache.sqlite-wal");
       expect(gitignoreText).toContain(".agentplane/cache.sqlite-shm");
+      expect(gitignoreText).toContain("custom-user-rule");
 
       const execFileAsync = promisify(execFile);
       const { stdout: statusOut } = await execFileAsync(

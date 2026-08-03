@@ -2,6 +2,7 @@ export const RUNTIME_GITIGNORE_LINES = [
   "# agentplane: ignore runtime/transient workspace artifacts",
   ".env",
   ".agentplane/worktrees",
+  ".agentplane/tmp",
   ".agentplane/local-backups",
   ".agentplane/cache",
   ".agentplane/cache.sqlite",

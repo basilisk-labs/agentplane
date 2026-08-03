@@ -1,0 +1,5 @@
+ packages/agentplane/src/cli/run-cli.core.init.test.ts       | 2 ++
+ packages/agentplane/src/cli/run-cli.core.upgrade.test.ts    | 8 ++++++--
+ packages/agentplane/src/commands/upgrade.ts                 | 4 ++--
+ packages/agentplane/src/runtime/shared/runtime-artifacts.ts | 1 +
+ 4 files changed, 11 insertions(+), 4 deletions(-)

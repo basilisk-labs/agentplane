@@ -22,12 +22,16 @@ Fix GitHub issue #4663 by adding .agentplane/tmp to the canonical runtime gitign
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T13:04:59.802Z
+- Updated: 2026-08-03T13:05:24.489Z
 - Branch: task/202608031303-B5Q5NM/ignore-agentplane-runtime-tmp-artifacts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ packages/agentplane/src/cli/run-cli.core.init.test.ts       | 2 ++
+ packages/agentplane/src/cli/run-cli.core.upgrade.test.ts    | 8 ++++++--
+ packages/agentplane/src/commands/upgrade.ts                 | 4 ++--
+ packages/agentplane/src/runtime/shared/runtime-artifacts.ts | 1 +
+ 4 files changed, 11 insertions(+), 4 deletions(-)
 ```
 
 </details>

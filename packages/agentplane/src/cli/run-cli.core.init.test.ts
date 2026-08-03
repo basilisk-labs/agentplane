@@ -281,6 +281,7 @@ describe("runCli", () => {
     const gitignore = await readFile(gitignorePath, "utf8");
     expect(gitignore).toContain(".env");
     expect(gitignore).toContain(".agentplane/worktrees");
+    expect(gitignore).toContain(".agentplane/tmp");
     expect(gitignore).toContain(".agentplane/local-backups");
     expect(gitignore).toContain(".agentplane/cache");
     expect(gitignore).toContain(".agentplane/cache.sqlite");
@@ -358,6 +359,7 @@ describe("runCli", () => {
     const gitignorePath = path.join(root, ".gitignore");
     const gitignore = await readFile(gitignorePath, "utf8");
     expect(gitignore).toContain(".env");
+    expect(gitignore).toContain(".agentplane/tmp");
     expect(gitignore).toContain(".agentplane/local-backups");
     expect(gitignore).toContain(".agentplane/.upgrade");
     expect(gitignore).toContain(".agentplane/.release");
