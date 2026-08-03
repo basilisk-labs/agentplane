@@ -49,10 +49,12 @@ Created: 2026-08-03T16:19:36.596Z
  .../commands/evaluator/evaluator-test-helpers.ts   |   2 +
  .../src/commands/evaluator/evaluator-work-order.ts | 135 +++++++
  .../src/commands/hooks/run.pre-commit.ts           |   3 +
+ .../route-decision-blockers.quality-review.test.ts |  52 ++-
+ .../src/commands/shared/route-decision-blockers.ts |  23 +-
  .../runner/supervisor-execution-episode.test.ts    |  41 +-
  .../src/runner/supervisor-execution-episode.ts     |  49 ++-
  packages/core/src/schemas/index.ts                 |   1 +
- 23 files changed, 1800 insertions(+), 288 deletions(-)
+ 25 files changed, 1873 insertions(+), 290 deletions(-)
 ```
 
 </details>
