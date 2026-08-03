@@ -19,8 +19,8 @@ Fix GitHub issue #4641 by ensuring the default built-in runner completes through
 - Note:
 
 ```text
-Verified: the default context path is deterministic, live-observed, fail-closed for persisted
-receipts, and formally records task verification.
+Verified: live context supervision, fail-closed receipt handling, formal task verification,
+module-size guard, and the full local CI matrix all pass.
 ```
 - Canonical workflow state lives in the task README.
 

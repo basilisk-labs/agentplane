@@ -13,7 +13,7 @@ Created: 2026-08-03T13:22:52.236Z
 ## Verification
 
 - State: ok
-- Note: Verified: the default context path is deterministic, live-observed, fail-closed for persisted receipts, and formally records task verification.
+- Note: Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
