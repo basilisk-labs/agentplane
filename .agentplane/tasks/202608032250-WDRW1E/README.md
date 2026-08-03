@@ -1,10 +1,11 @@
 ---
 id: "202608032250-WDRW1E"
 title: "Stabilize supervisor latency p95 qualification sampling"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T22:58:09.824Z"
+  updated_at: "2026-08-03T23:00:43.118Z"
   updated_by: "TESTER"
-  note: "Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate."
+  note: "Current implementation target passes the complete local verification contract; hosted checks remain enforced independently by integration."
   attempts: 0
 quality_review:
   state: "pass"
@@ -49,13 +50,30 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No blocking issue: the 10 percent median and p95 thresholds are unchanged, while both public supervisor frontends now require 20 cold and 30 warm observations."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T23:01:11.683Z"
 commit:
-  hash: "6a7485ce21995a1114899d406946b4ebcb65f69b"
-  message: "🧪 WDRW1E task: stabilize supervisor latency sampling"
+  hash: "f6a7348dbe9955b0b95e29b211c704871cc6fc08"
+  message: "🧪 WDRW1E task: refresh published verification state"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -82,8 +100,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate."
+  -
+    type: "verify"
+    at: "2026-08-03T23:00:43.118Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Current implementation target passes the complete local verification contract; hosted checks remain enforced independently by integration."
+  -
+    type: "status"
+    at: "2026-08-03T23:01:11.683Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T22:58:11.417Z"
+doc_updated_at: "2026-08-03T23:01:11.694Z"
 doc_updated_by: "CODER"
 description: "Increase the mandatory cold supervisor latency sample from 10 to 20 while preserving the existing 10 percent regression budget, so release qualification uses a meaningful p95 estimate instead of treating one maximum outlier as p95."
 sections:
@@ -197,12 +228,65 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T23:00:43.118Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Current implementation target passes the complete local verification contract; hosted checks remain enforced independently by integration.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:58:11.417Z, excerpt_hash=sha256:083a50ba9a0fe6bb72254d980cf12f5ddbc27880b7e6124f1dfa4c86beca88f0
+
+    Details:
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: 19 of 19 release qualification contract tests passed at the current branch head
+    Scope: release qualification contract
+
+    Command: validateSupervisorLatencyReport(.agentplane/tasks/202608032250-WDRW1E/evidence/supervisor-latency-9aa94fdec.json)
+    Result: pass
+    Evidence: exact implementation target uses 20 cold and 30 warm samples for both public frontends with failure_ids empty
+    Scope: supervisor latency comparison against published 0.6.26
+
+    Command: bun run typecheck; bunx eslint touched qualification files; bunx prettier --check touched qualification files
+    Result: pass
+    Evidence: type checking, linting, and formatting completed without findings
+    Scope: touched qualification files and repository TypeScript build
+
+    Command: ap doctor; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: doctor errors zero and routing policy OK; historical warnings are outside task scope
+    Scope: repository policy and workspace health
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032250-WDRW1E-stabilize-supervisor-latency-p95-qualification-s/.agentplane/tasks/202608032250-WDRW1E/blueprint/resolved-snapshot.json
+    - old_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+    - current_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032250-WDRW1E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608032250-WDRW1E
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "6a7485ce21995a1114899d406946b4ebcb65f69b"
+    message: "🧪 WDRW1E task: stabilize supervisor latency sampling"
   workflow_route_baseline:
     start_head_sha: "0b15f5b7ad169169dec9c46ba02d4e59307d8553"
     version: 1
@@ -328,6 +412,56 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T23:00:43.118Z — VERIFY — ok
+
+By: TESTER
+
+Note: Current implementation target passes the complete local verification contract; hosted checks remain enforced independently by integration.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:58:11.417Z, excerpt_hash=sha256:083a50ba9a0fe6bb72254d980cf12f5ddbc27880b7e6124f1dfa4c86beca88f0
+
+Details:
+
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: 19 of 19 release qualification contract tests passed at the current branch head
+Scope: release qualification contract
+
+Command: validateSupervisorLatencyReport(.agentplane/tasks/202608032250-WDRW1E/evidence/supervisor-latency-9aa94fdec.json)
+Result: pass
+Evidence: exact implementation target uses 20 cold and 30 warm samples for both public frontends with failure_ids empty
+Scope: supervisor latency comparison against published 0.6.26
+
+Command: bun run typecheck; bunx eslint touched qualification files; bunx prettier --check touched qualification files
+Result: pass
+Evidence: type checking, linting, and formatting completed without findings
+Scope: touched qualification files and repository TypeScript build
+
+Command: ap doctor; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: doctor errors zero and routing policy OK; historical warnings are outside task scope
+Scope: repository policy and workspace health
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032250-WDRW1E-stabilize-supervisor-latency-p95-qualification-s/.agentplane/tasks/202608032250-WDRW1E/blueprint/resolved-snapshot.json
+- old_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+- current_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032250-WDRW1E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608032250-WDRW1E
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -336,3 +470,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T23:01:11.683Z`

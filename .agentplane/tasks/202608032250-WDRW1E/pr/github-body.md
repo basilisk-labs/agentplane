@@ -19,8 +19,8 @@ Increase the mandatory cold supervisor latency sample from 10 to 20 while preser
 - Note:
 
 ```text
-Current implementation target remains verified after PR publication; hosted checks are tracked
-separately by the integration gate.
+Current implementation target passes the complete local verification contract; hosted checks remain
+enforced independently by integration.
 ```
 - Canonical workflow state lives in the task README.
 
