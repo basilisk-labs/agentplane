@@ -4,7 +4,7 @@ title: "Complete the task advance semantic-result round trip"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-03T00:54:15.784Z"
+  updated_by: "TESTER"
+  note: "Verified external-agent round trip: 12 task-advance E2E tests and 97 focused contract/supervisor tests passed; typecheck, lint:core, knip:check (539 baseline, no growth), hotspots:check, schema sync, compatibility contract, policy routing, formatting, and all 12 critical chunks passed."
   attempts: 0
 commit:
   hash: "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c"
@@ -55,8 +55,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation: completed the typed external-agent SemanticResult round trip with CLI-owned verification, evaluator routing, crash recovery, and fail-closed exchange binding."
+  -
+    type: "verify"
+    at: "2026-08-03T00:54:15.784Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified external-agent round trip: 12 task-advance E2E tests and 97 focused contract/supervisor tests passed; typecheck, lint:core, knip:check (539 baseline, no growth), hotspots:check, schema sync, compatibility contract, policy routing, formatting, and all 12 critical chunks passed."
 doc_version: 3
-doc_updated_at: "2026-08-03T00:53:34.301Z"
+doc_updated_at: "2026-08-03T00:54:16.717Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
@@ -71,11 +77,44 @@ sections:
   Verify Steps: "1. Run focused task advance packet, result-ingestion, AgentSemanticResult validation, supervisor episode, stale-fingerprint, replay, and recovery tests. Expected: a valid result advances the same state machine as task run; malformed, stale, mismatched, or replayed results fail closed without duplicate effects. 2. Run direct and branch_pr external-agent E2E fixtures from task creation through terminal state. Expected: after task creation the external agent uses only task advance plus semantic-result files; Agentplane owns all Git, worktree, PR, verification, evaluator, integration, and cleanup transitions; every emitted packet is at most 2048 bytes and has one representation per field. 3. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without Knip or hotspot baseline growth."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-03T00:54:15.784Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified external-agent round trip: 12 task-advance E2E tests and 97 focused contract/supervisor tests passed; typecheck, lint:core, knip:check (539 baseline, no growth), hotspots:check, schema sync, compatibility contract, policy routing, formatting, and all 12 critical chunks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T00:53:34.301Z, excerpt_hash=sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/blueprint/resolved-snapshot.json
+    - old_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+    - current_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022324-9VCYWG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608022324-9VCYWG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Issued exchange and WorkOrder are digest-bound to supervisor intent; stale, mismatched, tampered, replayed, and crash-recovery paths fail closed without duplicate effects.
+      Impact: The external agent needs only task advance plus one typed SemanticResult while Agentplane owns lifecycle, Git, checks, evaluator routing, and closeout mechanics.
+      Resolution: Added direct and branch_pr round-trip coverage, accepted-effect recovery, immutable exchange binding, and compatibility ratchets; no residual blocker in task scope.
 extensions:
   workflow_route_baseline:
     start_head_sha: "d7b766b9c4f7c8df771e06f3c8a1a60129035087"
@@ -104,6 +143,36 @@ Extend the compact external-agent protocol so task advance accepts a typed Seman
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-03T00:54:15.784Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified external-agent round trip: 12 task-advance E2E tests and 97 focused contract/supervisor tests passed; typecheck, lint:core, knip:check (539 baseline, no growth), hotspots:check, schema sync, compatibility contract, policy routing, formatting, and all 12 critical chunks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T00:53:34.301Z, excerpt_hash=sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/blueprint/resolved-snapshot.json
+- old_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+- current_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022324-9VCYWG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608022324-9VCYWG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -112,3 +181,7 @@ Extend the compact external-agent protocol so task advance accepts a typed Seman
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Issued exchange and WorkOrder are digest-bound to supervisor intent; stale, mismatched, tampered, replayed, and crash-recovery paths fail closed without duplicate effects.
+  Impact: The external agent needs only task advance plus one typed SemanticResult while Agentplane owns lifecycle, Git, checks, evaluator routing, and closeout mechanics.
+  Resolution: Added direct and branch_pr round-trip coverage, accepted-effect recovery, immutable exchange binding, and compatibility ratchets; no residual blocker in task scope.

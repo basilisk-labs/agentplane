@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:29eccbf39094dde4902737ef4d6cbce733cf7f1ee787af445d79678c8f199d09",
+  "implementation_sha": "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c",
+  "kind": "task_verification_record",
+  "note": "Verified external-agent round trip: 12 task-advance E2E tests and 97 focused contract/supervisor tests passed; typecheck, lint:core, knip:check (539 baseline, no growth), hotspots:check, schema sync, compatibility contract, policy routing, formatting, and all 12 critical chunks passed.",
+  "recorded_at": "2026-08-03T00:54:15.784Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused task advance packet, result-ingestion, AgentSemanticResult validation, supervisor episode, stale-fingerprint, replay, and recovery tests. Expected: a valid result advances the same state machine as task run; malformed, stale, mismatched, or replayed results fail closed without duplicate effects. 2. Run direct and branch_pr external-agent E2E fixtures from task creation through terminal state. Expected: after task creation the external agent uses only task advance plus semantic-result files; Agentplane owns all Git, worktree, PR, verification, evaluator, integration, and cleanup transitions; every emitted packet is at most 2048 bytes and has one representation per field. 3. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without Knip or hotspot baseline growth.",
+  "scope_digest": "sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378",
+  "task_id": "202608022324-9VCYWG",
+  "verification_command": "agentplane verify 202608022324-9VCYWG --ok --by TESTER",
+  "verifier": "TESTER"
+}
