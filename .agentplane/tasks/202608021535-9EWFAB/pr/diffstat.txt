@@ -8,10 +8,12 @@
  .../evaluator/evaluator-evidence-store.test.ts     | 438 +++++++++++++++++++++
  .../commands/evaluator/evaluator-evidence-store.ts | 316 +++++++++++++++
  .../evaluator/evaluator-prepare.command.test.ts    |   2 +-
+ .../evaluator/evaluator-quality-artifacts.ts       |   1 +
  .../commands/evaluator/evaluator-result-schema.ts  |  82 ++++
  .../commands/evaluator/evaluator-review-apply.ts   |  11 +-
  .../commands/evaluator/evaluator-review-usecase.ts | 348 ++++++++--------
+ .../evaluator/evaluator-run.command.test.ts        |   1 +
  .../commands/evaluator/evaluator-test-helpers.ts   |   2 +
  .../src/commands/evaluator/evaluator-work-order.ts | 135 +++++++
  .../src/commands/hooks/run.pre-commit.ts           |   3 +
- 16 files changed, 1705 insertions(+), 268 deletions(-)
+ 18 files changed, 1707 insertions(+), 268 deletions(-)

@@ -11,12 +11,14 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 ## Scope
 
 - In scope: Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
-- Out of scope: unrelated refactors not required for "Compact and deduplicate v0.7.1 task evidence".
+- Trust boundary: The repository root and processes running as the authenticated workspace user are trusted and cooperative. Static symlinks, tampered objects, and every observable directory replacement must fail closed; adversarial same-user replacement inside the final pathname-to-syscall interval is outside the portable Node boundary used by both evaluator evidence and runner state.
+- Authorization basis: The repository owner authorized the complete refactor and continuation without repeated permission prompts; v0.7.1 adopts the existing runner boundary, while native handle-relative filesystem operations remain a separate cross-platform security deliverable.
+- Out of scope: Unrelated refactors and a native openat/linkat/renameat/unlinkat helper.
 
 ## Verification
 
 - State: ok
-- Note: Symlink-escape rework passed focused security coverage and the repository release contract.
+- Note: Directory-swap hardening passed deterministic adversarial coverage and all repository release gates.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -37,13 +39,15 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
  .../evaluator/evaluator-evidence-store.test.ts     | 438 +++++++++++++++++++++
  .../commands/evaluator/evaluator-evidence-store.ts | 316 +++++++++++++++
  .../evaluator/evaluator-prepare.command.test.ts    |   2 +-
+ .../evaluator/evaluator-quality-artifacts.ts       |   1 +
  .../commands/evaluator/evaluator-result-schema.ts  |  82 ++++
  .../commands/evaluator/evaluator-review-apply.ts   |  11 +-
  .../commands/evaluator/evaluator-review-usecase.ts | 348 ++++++++--------
+ .../evaluator/evaluator-run.command.test.ts        |   1 +
  .../commands/evaluator/evaluator-test-helpers.ts   |   2 +
  .../src/commands/evaluator/evaluator-work-order.ts | 135 +++++++
  .../src/commands/hooks/run.pre-commit.ts           |   3 +
- 16 files changed, 1705 insertions(+), 268 deletions(-)
+ 18 files changed, 1707 insertions(+), 268 deletions(-)
 ```
 
 </details>

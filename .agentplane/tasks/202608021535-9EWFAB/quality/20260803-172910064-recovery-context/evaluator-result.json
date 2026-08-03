@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Directory identity checks do not close the directory-swap race because each pathname-based open, link, rename, or unlink still occurs after the final check. A concurrent replacement in that interval can redirect the operation outside the repository; detecting the replacement afterward does not undo the external mutation.",
+      "broken_invariant": "Evidence-store operations must remain confined to the repository under concurrent directory replacement, and validation must prevent—not merely detect after the fact—writes, replacements, or removals outside that boundary.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/e7f7f44eae484ec631d94304c3807331e8a0a454352a02483b08496721607575.patch",
+          "sha256": "sha256:e7f7f44eae484ec631d94304c3807331e8a0a454352a02483b08496721607575",
+          "section": "evaluator-evidence-boundary.ts: checkpoint followed by pathname-based open/link/rename/unlink operations"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/verification/20260803172855264-fe8f6a516038c0b9.json",
+          "sha256": "sha256:12cdee165c81a67173e0143f7f7b6ca9955f0849f3c0752ccdf3482d666501f7",
+          "section": "Deterministic directory-swap test coverage"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An adversarial concurrency test that replaces a validated parent after the last assertStable call but before the pathname-based open, link, rename, or unlink syscall, and asserts that no external file is created, replaced, or removed."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes a directory cannot be replaced between the final pathname identity check and the following pathname-based filesystem operation.",
+    "The deterministic boundary hooks are assumed to model the complete race window, but they run before assertStable and cannot interpose in the remaining check-to-syscall interval."
+  ],
+  "recovery_context": "The previous directory-swap finding remains unresolved at evaluated SHA 95f214a6f8233c268e71749d17ef896cbbb3be0c: surrounding path-based operations with identity checks still leaves a TOCTOU window. Recovery must use operations anchored to verified directory handles (or a platform helper providing equivalent openat/linkat/renameat/unlinkat semantics), or explicitly narrow the trust model and obtain human approval for the residual external-mutation risk."
+}
