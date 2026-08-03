@@ -13,7 +13,7 @@ Created: 2026-08-03T16:19:36.596Z
 ## Verification
 
 - State: ok
-- Note: Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9.
+- Note: Final code and evidence rework verification passed at 812ccf994d14.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
