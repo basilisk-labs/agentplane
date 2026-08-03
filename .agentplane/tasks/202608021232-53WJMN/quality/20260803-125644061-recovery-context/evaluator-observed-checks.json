@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "gh issue list --state open --limit 200",
+    "gh pr list --state open --limit 200"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T12:56:16.023Z",
+    "updated_by": "TESTER",
+    "note": "Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit dispositions against implementation f7110ff04842."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021232-53WJMN/verification/20260803125616023-5631ebbad869432d.json",
+      "sha256": "sha256:e0a4cf99c93baa39329c57c9e683b129fc84cf2dfc9818443fbe92becfea1092"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

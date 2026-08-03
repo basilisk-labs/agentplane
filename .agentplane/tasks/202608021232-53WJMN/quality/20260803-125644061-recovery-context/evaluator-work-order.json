@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021232-53WJMN-dae0957b356165f8876e26be",
+  "prepared_at": "2026-08-03T12:56:44.061Z",
+  "task": {
+    "id": "202608021232-53WJMN",
+    "revision": 20,
+    "objective": "Audit GitHub issues and pull requests for v0.7.1\n\nTriage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision.",
+    "acceptance_criteria": [
+      "gh issue list --state open --limit 200",
+      "gh pr list --state open --limit 200",
+      "- In scope: Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision.\n- Out of scope: unrelated refactors not required for \"Audit GitHub issues and pull requests for v0.7.1\".",
+      "Audit GitHub truth against current main acf9af541: reproduce issues #4663 and #4641 with isolated fixtures and focused current-main tests; classify every open PR by hosted state, unique commits, conflict/check status, release relevance, and whether main already supersedes it; close or disposition only items with direct evidence; create bounded code follow-up tasks for confirmed release-relevant defects instead of editing implementation in this REVIEWER task; record all commands, results, residual risks, and release recommendations in the task artifact; finish only when the open issue/PR inventory is refreshed and every item has an explicit disposition.",
+      "1. Run gh issue list --state open --limit 200. Expected: only confirmed release issues #4663 and #4641 remain open.\n2. Run gh pr list --state open --limit 200. Expected: the external backlog contains only deferred dependency PR #4752; the active audit task PR #4754 may also be open until integration.\n3. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts. Expected: 29 current-main init tests pass while the audit records the missing .agentplane/tmp assertion as the #4663 gap.\n4. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: 4 current-main integration tests pass, including the reproduced unauthenticated-receipt behavior for #4641.\n5. Run the focused provider, receipt, foreign-artifact, branch-snapshot, and active-task suites plus bun run guards:check and bun run release:incidents:check. Expected: current main passes and supports closure of superseded task PRs.\n6. Review Findings. Expected: each original open issue and PR has one explicit disposition, release blockers are bounded, and TypeScript 7 is excluded from v0.7.1."
+    ]
+  },
+  "evaluated_sha": "f7110ff0484280df559cde44cc307cdac2e5ec20",
+  "diff_base_sha": "acf9af541b44c6b7af8dd8c680927b1b0b736382",
+  "blueprint_digest": "eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021232-53WJMN/README.md",
+      "sha256": "sha256:4f0137d1adc99e92caff661914bb7a1bde2da726b96226786ac55290c7ffc46b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:59c6b623c4dd4a0426bbd9381a8ec4baed108d590bb7ab35a607ea7be6937868",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608021232-53WJMN/verification/20260803125616023-5631ebbad869432d.json",
+      "sha256": "sha256:e0a4cf99c93baa39329c57c9e683b129fc84cf2dfc9818443fbe92becfea1092",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:52430e58e31443e627a1ee5cb8886374556bc23e12f25477744dc6748b39ed27",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:94a0fcabe77fef35ff6f32edea35ce0da7754a9f7c740a148c3d24a1b96dfa8d",
+      "required": true
+    }
+  ]
+}

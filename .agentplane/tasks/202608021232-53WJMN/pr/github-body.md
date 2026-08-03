@@ -19,9 +19,8 @@ Triage all open GitHub issues and pull requests against the exact main candidate
 - Note:
 
 ```text
-Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain,
-plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards,
-trust ratchet, and release incident gate all pass.
+Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit
+dispositions against implementation f7110ff04842.
 ```
 - Canonical workflow state lives in the task README.
 

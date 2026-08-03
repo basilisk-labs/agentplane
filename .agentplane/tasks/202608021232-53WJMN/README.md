@@ -1,10 +1,11 @@
 ---
 id: "202608021232-53WJMN"
 title: "Audit GitHub issues and pull requests for v0.7.1"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "REVIEWER"
-revision: 18
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -27,13 +28,53 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T12:53:06.415Z"
+  updated_at: "2026-08-03T12:56:16.023Z"
   updated_by: "TESTER"
-  note: "Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass."
+  note: "Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit dispositions against implementation f7110ff04842."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-03T12:56:44.734Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "f7110ff0484280df559cde44cc307cdac2e5ec20"
+  blueprint_digest: "eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92"
+  evidence_refs:
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021232-53WJMN/README.md"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021232-53WJMN/verification/20260803125616023-5631ebbad869432d.json"
+    - ".agentplane/tasks/202608021232-53WJMN/quality/20260803-125644061-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "Hosted truth is reduced to two confirmed issues and one deferred dependency PR, with current-main reproductions and passing focused regression evidence."
+    - "The audit correctly adds the mixed task-artifact quality-target defect discovered during verification and keeps TypeScript 7 outside the v0.7.1 scope."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T12:57:16.610Z"
 commit:
-  hash: "eae94f01fba02cebe9bbe146519fdf14aad7f104"
-  message: "🚧 53WJMN task: align hosted inventory verification"
+  hash: "f7110ff0484280df559cde44cc307cdac2e5ec20"
+  message: "🚧 53WJMN task: capture verification target defect"
 comments:
   -
     author: "REVIEWER"
@@ -44,6 +85,12 @@ comments:
   -
     author: "CODER"
     body: "Rework: adjusted hosted PR acceptance to distinguish the external backlog from the active audit task PR."
+  -
+    author: "CODER"
+    body: "Rework: separated and recorded the semantic audit finding so verification can bind to an explicit implementation SHA; documented the mixed-artifact quality-target defect."
+  -
+    author: "REVIEWER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -78,9 +125,29 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass."
+  -
+    type: "status"
+    at: "2026-08-03T12:55:56.547Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: separated and recorded the semantic audit finding so verification can bind to an explicit implementation SHA; documented the mixed-artifact quality-target defect."
+  -
+    type: "verify"
+    at: "2026-08-03T12:56:16.023Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit dispositions against implementation f7110ff04842."
+  -
+    type: "status"
+    at: "2026-08-03T12:57:16.610Z"
+    author: "REVIEWER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T12:55:35.428Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-03T12:57:16.620Z"
+doc_updated_by: "REVIEWER"
 description: "Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision."
 sections:
   Summary: |-
@@ -154,6 +221,76 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T12:56:16.023Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit dispositions against implementation f7110ff04842.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:55:56.547Z, excerpt_hash=sha256:8ec800e5aa8c013d8458b917a878d87c4d6064e913707af9d8d9c38e463e4012
+
+    Details:
+
+    Command: gh issue list --state open --limit 200
+    Result: pass
+    Evidence: Only #4663 and #4641 remain open.
+    Scope: Hosted issue inventory.
+
+    Command: gh pr list --state open --limit 200
+    Result: pass
+    Evidence: External backlog contains only #4752; #4754 is the active audit task PR.
+    Scope: Hosted pull request inventory.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts
+    Result: pass
+    Evidence: 1 file passed, 29 tests passed.
+    Scope: Current init behavior and #4663 reproduction surface.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane focused audit suite
+    Result: pass
+    Evidence: 8 files passed, 86 tests passed, including task-run-context and provider or task-lifecycle evidence.
+    Scope: #4641 reproduction plus superseded PR behavior.
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts
+    Result: pass
+    Evidence: 1 file passed, 5 tests passed.
+    Scope: Active-task CLI behavior used in stale PR disposition.
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: Shared guards and trust-boundary ratchet passed.
+    Scope: Repository policy and trust-boundary enforcement.
+
+    Command: bun run release:incidents:check
+    Result: pass
+    Evidence: Release incident gate passed with no active incidents.
+    Scope: Release readiness incident gate.
+
+    Command: review task Findings
+    Result: pass
+    Evidence: Every original issue and PR has an explicit disposition; four release-blocking framework defects and the deferred TypeScript 7 decision are recorded.
+    Scope: Audit completeness and release follow-up boundary.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-53WJMN-audit-github-issues-and-pull-requests-for-v0-7-1/.agentplane/tasks/202608021232-53WJMN/blueprint/resolved-snapshot.json
+    - old_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+    - current_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-53WJMN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021232-53WJMN
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -293,6 +430,76 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T12:56:16.023Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified hosted inventory, reproductions, focused regression suites, release guards, and explicit dispositions against implementation f7110ff04842.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:55:56.547Z, excerpt_hash=sha256:8ec800e5aa8c013d8458b917a878d87c4d6064e913707af9d8d9c38e463e4012
+
+Details:
+
+Command: gh issue list --state open --limit 200
+Result: pass
+Evidence: Only #4663 and #4641 remain open.
+Scope: Hosted issue inventory.
+
+Command: gh pr list --state open --limit 200
+Result: pass
+Evidence: External backlog contains only #4752; #4754 is the active audit task PR.
+Scope: Hosted pull request inventory.
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts
+Result: pass
+Evidence: 1 file passed, 29 tests passed.
+Scope: Current init behavior and #4663 reproduction surface.
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane focused audit suite
+Result: pass
+Evidence: 8 files passed, 86 tests passed, including task-run-context and provider or task-lifecycle evidence.
+Scope: #4641 reproduction plus superseded PR behavior.
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts
+Result: pass
+Evidence: 1 file passed, 5 tests passed.
+Scope: Active-task CLI behavior used in stale PR disposition.
+
+Command: bun run guards:check
+Result: pass
+Evidence: Shared guards and trust-boundary ratchet passed.
+Scope: Repository policy and trust-boundary enforcement.
+
+Command: bun run release:incidents:check
+Result: pass
+Evidence: Release incident gate passed with no active incidents.
+Scope: Release readiness incident gate.
+
+Command: review task Findings
+Result: pass
+Evidence: Every original issue and PR has an explicit disposition; four release-blocking framework defects and the deferred TypeScript 7 decision are recorded.
+Scope: Audit completeness and release follow-up boundary.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-53WJMN-audit-github-issues-and-pull-requests-for-v0-7-1/.agentplane/tasks/202608021232-53WJMN/blueprint/resolved-snapshot.json
+- old_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+- current_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-53WJMN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021232-53WJMN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -337,3 +544,16 @@ DecisionContextRef:
 - Observation: A branch_pr task whose semantic result lives in README produced implementation_sha=null when README and derived PR or verification artifacts were committed together; task next-action then rejected a passing verification as not covering HEAD.
   Impact: Documentation, audit, and policy tasks can enter an impossible verification loop even after correct evidence is recorded.
   Resolution: Create a release-blocking code task that preserves the latest semantic task-artifact commit as the quality target when a commit also contains derived artifacts, with route and verification-record regression coverage.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T12:57:16.610Z`
