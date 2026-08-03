@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "No contract-breaking divergence was found; the frozen verification record covers the compatibility inventory, read-only diagnostics, hidden alias behavior, package artifact, negative validation cases, and independent-supervisor contention at the evaluated SHA.",
+      "broken_invariant": "None; the approved contract and relevant recovery-context invariants are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:eecfbd9f8c139b5fb7c0b53151c1cd8a2e91f384730e9b4fcfee3bf25a7bcdcd",
+          "section": "Scope, Plan, Verify Steps, and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/431630dedd34fd5dbb94e4aeecba22a07bc75f3c822fa3171d034b4d2914d929.patch",
+          "sha256": "sha256:431630dedd34fd5dbb94e4aeecba22a07bc75f3c822fa3171d034b4d2914d929",
+          "section": "Compatibility manifest, doctor legacy, repair alias, and runner effect publication changes"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803202046804-82f7be8a9e03fe01.json",
+          "sha256": "sha256:b3361e6d8390608d2f03384d77cc4621aab9e8f6ba53d3fe4e5df10b0ff84140",
+          "section": "Recorded checks and evidence at implementation SHA 76c2607a560e5110f88abbce99930002e228761d"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and verification evidence contract"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Core completion and final repository-state requirements"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Inventory completeness depends on the maintained compatibility baseline and registered production-adapter classifications remaining authoritative as new adapters are introduced.",
+    "The hard-link create-only publication guarantee assumes the supported filesystems provide atomic same-filesystem link creation with EEXIST identifying the losing publisher."
+  ]
+}
