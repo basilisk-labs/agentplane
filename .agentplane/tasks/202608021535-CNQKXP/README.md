@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -32,31 +32,32 @@ verification:
   note: "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T19:30:20.960Z"
+  updated_at: "2026-08-03T19:57:35.113Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "7b5ee7a8eff4d7d4e2a946bc807053324af0d5c9"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "1cb422dd89bf6f38993264b6f0fe3efb369a235e"
   blueprint_digest: "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a"
   evidence_refs:
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-192929937-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-192929937-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/79b8259ed3a4f37c908d2c17f63af4c5a79ab1cd8b13e2d35cd47abb44f1f0ec.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-192929937-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-192929937-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-192929937-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/61da022983301af2a906f0485f867ecc868a5012415b4e66607323fe6f333343.md"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608021535-CNQKXP/README.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/7d4d97532bbf8e82cc9587cebfb89417d9cc75410871d5171d303a3999c12e6c.patch"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/934420cb6a91e66b643b199de18e020370b4a51157d6d6857f7d430bb23c6789.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/verification/20260803192913122-7e7fd31e2d69023f.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2d98f0cd9f0c9cc6ace5696de9f7a7c21f28ad368738c7476d707b91e6e4b1e0.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195610048-b665404c451bab66.json"
     - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/a678349924d6de7236f3762033ddde35c1bf310b5d2d2fb99c386bbd378fe344.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No remaining contract divergence was found: the rework requires non-empty migration commands, adds deterministic malformed-manifest and stale-source failures, preserves the hidden legacy alias, and retains read-only probe behavior."
+    - "The evaluated patch includes an unapproved concurrency change to runner effect-journal publication that is outside the compatibility-retirement and doctor-legacy scope."
 token_usage:
   agent_runs: 2
   input_tokens: 314134
@@ -147,7 +148,7 @@ events:
     state: "ok"
     note: "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf."
 doc_version: 3
-doc_updated_at: "2026-08-03T19:56:11.207Z"
+doc_updated_at: "2026-08-03T19:57:35.136Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:

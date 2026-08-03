@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-CNQKXP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T19:57:35.113Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "1cb422dd89bf6f38993264b6f0fe3efb369a235e",
+  "blueprint_digest": "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a",
+  "findings": [
+    "The evaluated patch includes an unapproved concurrency change to runner effect-journal publication that is outside the compatibility-retirement and doctor-legacy scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch",
+    ".agentplane/tasks/202608021535-CNQKXP/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A hosted-check concurrency regression may be folded into this task without updating and re-approving its declared scope."
+  ],
+  "residual_risks": [
+    "Separate the runner effect-journal concurrency fix from this task, or explicitly expand and re-approve the task scope before presenting a new frozen evaluation packet."
+  ]
+}

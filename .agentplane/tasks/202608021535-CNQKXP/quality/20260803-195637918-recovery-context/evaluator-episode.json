@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608021535-CNQKXP-66b4d97fb4a777590ecdd6dc",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-08-03T19:56:38.371Z",
+  "ended_at": "2026-08-03T19:57:34.731Z",
+  "stdout_bytes": 112680,
+  "stderr_bytes": 938,
+  "provider_usage": {
+    "input_tokens": 247299,
+    "output_tokens": 3352,
+    "total_tokens": 250651,
+    "visible_output_tokens": 2680,
+    "reasoning_tokens": 672
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:3d61531a098889768d3b0af1aed98c564991bf5925fdc7479e3aa9ea0465310d"
+}

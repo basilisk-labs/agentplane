@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The evaluated patch includes an unapproved concurrency change to runner effect-journal publication that is outside the compatibility-retirement and doctor-legacy scope.",
+      "broken_invariant": "DoD core requires material drift to be explicitly re-approved when files outside the approved scope are modified; the approved plan does not include changing runner effect-operation concurrency semantics.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch",
+          "sha256": "sha256:384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9",
+          "section": "packages/agentplane/src/runner/effect-operation.ts and effect-operation.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:1d6d051e75591c48f1b6cb9c5489c11eab3f95c4c8ab0e243d892ed7b40f3618",
+          "section": "Scope and Plan"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A hosted-check concurrency regression may be folded into this task without updating and re-approving its declared scope."
+  ],
+  "recovery_context": "Separate the runner effect-journal concurrency fix from this task, or explicitly expand and re-approve the task scope before presenting a new frozen evaluation packet."
+}
