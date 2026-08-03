@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen packet contains only a self-reported verification note; it contains no verification records, runner history, or runtime evidence from which the declared passing checks can be independently established.",
+      "broken_invariant": "Required verification must provide deterministic evidence covering the positive, negative, and concurrency-sensitive paths before the evaluator can issue pass.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d946facef84fffa336989bea5ebe47a2e785438264f4f6ae830d4dc11ebc6398",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608031426-0BY4B4/README.md",
+          "sha256": "sha256:cb06f305d641c8842621d47b84590d6ed9746023f379122dcd7fec2c80de521f",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Provide deterministic results for the focused queue and route reconciliation test files, including handoff recovery after review resolution and repeated cleanup idempotence.",
+    "Provide deterministic negative-case results proving failed hosted checks and unavailable or ambiguous remote state cannot auto-complete or trigger unsafe replay.",
+    "Provide deterministic evidence for the merged PR plus hosted-close plus cleanup fixture reaching queue done and terminal.done without manual queue release."
+  ],
+  "hidden_assumptions": [
+    "The CODER verification summary accurately represents the commands executed and their results despite the frozen packet containing no underlying check records.",
+    "Existing tests outside the visible patch cover failed hosted checks, ambiguous remote state, and idempotent repeated cleanup.",
+    "Reclassifying the unresolved-review gate from handoff to queued remains safe under concurrent workers and reservation retries."
+  ],
+  "recovery_context": "Attach frozen deterministic check evidence for the focused reconciliation suite and required negative cases, including command identity, exit status, and relevant assertions, then repeat semantic evaluation against the same implementation SHA.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
