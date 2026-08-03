@@ -19,15 +19,15 @@ Increase the mandatory cold supervisor latency sample from 10 to 20 while preser
 - Note:
 
 ```text
-Focused contracts, static checks, policy checks, and exact-commit supervisor latency evidence pass
-with unchanged regression budgets.
+Current implementation target remains verified after PR publication; hosted checks are tracked
+separately by the integration gate.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T22:51:23.070Z
+- Updated: 2026-08-03T22:57:03.052Z
 - Branch: task/202608032250-WDRW1E/stabilize-supervisor-latency-p95-qualification-s
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

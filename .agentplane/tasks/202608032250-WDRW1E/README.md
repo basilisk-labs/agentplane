@@ -4,7 +4,7 @@ title: "Stabilize supervisor latency p95 qualification sampling"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T22:56:31.111Z"
-  updated_by: "REVIEWER"
-  note: "Focused contracts, static checks, policy checks, and exact-commit supervisor latency evidence pass with unchanged regression budgets."
+  updated_at: "2026-08-03T22:58:09.824Z"
+  updated_by: "TESTER"
+  note: "Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate."
   attempts: 0
 quality_review:
   state: "pass"
@@ -76,8 +76,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused contracts, static checks, policy checks, and exact-commit supervisor latency evidence pass with unchanged regression budgets."
+  -
+    type: "verify"
+    at: "2026-08-03T22:58:09.824Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate."
 doc_version: 3
-doc_updated_at: "2026-08-03T22:56:32.238Z"
+doc_updated_at: "2026-08-03T22:58:11.417Z"
 doc_updated_by: "CODER"
 description: "Increase the mandatory cold supervisor latency sample from 10 to 20 while preserving the existing 10 percent regression budget, so release qualification uses a meaningful p95 estimate instead of treating one maximum outlier as p95."
 sections:
@@ -140,6 +146,51 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T22:58:09.824Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:56:32.238Z, excerpt_hash=sha256:083a50ba9a0fe6bb72254d980cf12f5ddbc27880b7e6124f1dfa4c86beca88f0
+
+    Details:
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass (19/19)
+    Evidence: current branch contract suite passes
+    Scope: release qualification contract
+
+    Command: validateSupervisorLatencyReport(.agentplane/tasks/202608032250-WDRW1E/evidence/supervisor-latency-9aa94fdec.json)
+    Result: pass
+    Evidence: exact implementation commit 9aa94fdec57505e39ae2f3f7333305911f260ff2, 20 cold and 30 warm samples, failure_ids=[]
+    Scope: supervisor latency comparison against published 0.6.26
+
+    Command: GitHub PR #4766 hosted checks
+    Result: pending
+    Evidence: hosted checks started automatically and remain an integration gate
+    Scope: hosted CI and review
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032250-WDRW1E-stabilize-supervisor-latency-p95-qualification-s/.agentplane/tasks/202608032250-WDRW1E/blueprint/resolved-snapshot.json
+    - old_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+    - current_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032250-WDRW1E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608032250-WDRW1E
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -226,6 +277,51 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T22:58:09.824Z — VERIFY — ok
+
+By: TESTER
+
+Note: Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:56:32.238Z, excerpt_hash=sha256:083a50ba9a0fe6bb72254d980cf12f5ddbc27880b7e6124f1dfa4c86beca88f0
+
+Details:
+
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass (19/19)
+Evidence: current branch contract suite passes
+Scope: release qualification contract
+
+Command: validateSupervisorLatencyReport(.agentplane/tasks/202608032250-WDRW1E/evidence/supervisor-latency-9aa94fdec.json)
+Result: pass
+Evidence: exact implementation commit 9aa94fdec57505e39ae2f3f7333305911f260ff2, 20 cold and 30 warm samples, failure_ids=[]
+Scope: supervisor latency comparison against published 0.6.26
+
+Command: GitHub PR #4766 hosted checks
+Result: pending
+Evidence: hosted checks started automatically and remain an integration gate
+Scope: hosted CI and review
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032250-WDRW1E-stabilize-supervisor-latency-p95-qualification-s/.agentplane/tasks/202608032250-WDRW1E/blueprint/resolved-snapshot.json
+- old_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+- current_digest: e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032250-WDRW1E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608032250-WDRW1E
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
