@@ -173,5 +173,10 @@ export function throwIfGithubReviewThreadsUnresolved(opts: {
       `GitHub PR #${opts.prNumber} has ${opts.unresolved.length} unresolved review thread(s).\n` +
       `${examples}\n` +
       "Resolve or address review threads before merge/integration.",
+    context: {
+      reason_code: "github_review_threads_unresolved",
+      pr_number: opts.prNumber,
+      unresolved_review_threads: opts.unresolved.length,
+    },
   });
 }

@@ -33,6 +33,7 @@ import {
 import {
   assertIntegrationReservationStillFresh,
   completeIntegrationReservation,
+  isRetryableIntegrationGateError,
   reserveClaimedEntryForIntegration,
   runReservedIntegrationCriticalSection,
   validateClaimedEntryPublication,
@@ -436,11 +437,13 @@ export function makeRunIntegrateQueueRunNextHandler(
     const gitRoot = commandCtx.resolvedProject.gitRoot;
     let lastResult = 0;
     let ranEntry = false;
+    let retryAfterGate = false;
     const startedAt = Date.now();
     const pollIntervalMs = p.pollIntervalMs ?? DEFAULT_QUEUE_POLL_INTERVAL_MS;
     const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
 
     do {
+      retryAfterGate = false;
       const claimed = await claimFreshIntegrationQueueEntry({
         gitRoot,
         worker: p.worker ?? defaultIntegrationQueueWorker(),
@@ -483,6 +486,7 @@ export function makeRunIntegrateQueueRunNextHandler(
               `integration queue waiting: lane=${lane} retry_in_ms=${pollIntervalMs}`,
             );
           }
+          retryAfterGate = true;
           await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - elapsedMs)));
           continue;
         }
@@ -535,7 +539,19 @@ export function makeRunIntegrateQueueRunNextHandler(
             }),
         });
       } catch (err) {
-        if (criticalSectionStarted) throw err;
+        if (criticalSectionStarted) {
+          if (!p.wait || !isRetryableIntegrationGateError(err)) throw err;
+          const elapsedMs = Date.now() - startedAt;
+          if (elapsedMs >= timeoutMs) throw err;
+          if (!p.quiet) {
+            createCliEmitter().line(
+              `integration queue waiting: task=${integrationEntry.task_id} gate=review_threads retry_in_ms=${pollIntervalMs}`,
+            );
+          }
+          retryAfterGate = true;
+          await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - elapsedMs)));
+          continue;
+        }
         const handoff =
           (err instanceof CliError && err.code === "E_HANDOFF") ||
           isExternalStateUnavailableError(err);
@@ -547,7 +563,7 @@ export function makeRunIntegrateQueueRunNextHandler(
         });
         throw err;
       }
-    } while (p.drain && !p.dryRun);
+    } while (retryAfterGate || (p.drain && !p.dryRun));
 
     return ranEntry ? lastResult : 0;
   };
