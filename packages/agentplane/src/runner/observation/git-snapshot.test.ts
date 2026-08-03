@@ -10,6 +10,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   captureGitSnapshot,
   compareGitSnapshots,
+  projectGitSnapshot,
   type GitSnapshotDelta,
   type GitSnapshotDeltaEntry,
 } from "./git-snapshot.js";
@@ -256,6 +257,42 @@ describe("Git execution snapshot observation", () => {
     expect(delta.sha256).toBe(repeatedDelta.sha256);
     expect(delta.changed_paths).not.toContain(".agentplane/tasks/T-1/runs/R-1/trace.jsonl");
     expectSha256(delta.sha256);
+  });
+
+  it("projects one complete observation into independently excluded semantic views", async () => {
+    const root = await createRepository();
+    await writeRepoFile(root, ".agentplane/tasks/T-1/README.md", "task state\n");
+    await writeRepoFile(root, "source.ts", "export {};\n");
+
+    const complete = await captureGitSnapshot({
+      repository_root: root,
+      trusted_repository_root: true,
+    });
+    const taskExcluded = projectGitSnapshot(complete, [".agentplane/tasks/T-1"]);
+    const sourceExcluded = projectGitSnapshot(complete, ["source.ts"]);
+
+    expect(complete.dirty_paths).toEqual([".agentplane/tasks/T-1/README.md", "source.ts"]);
+    expect(taskExcluded.dirty_paths).toEqual(["source.ts"]);
+    expect(sourceExcluded.dirty_paths).toEqual([".agentplane/tasks/T-1/README.md"]);
+    expect(taskExcluded.head_commit).toBe(complete.head_commit);
+    expect(taskExcluded.captured_at).toBe(complete.captured_at);
+    expect(taskExcluded.snapshot_sha256).not.toBe(complete.snapshot_sha256);
+    expect(sourceExcluded.snapshot_sha256).not.toBe(taskExcluded.snapshot_sha256);
+  });
+
+  it("accepts a route-preobserved HEAD without changing the snapshot contract", async () => {
+    const root = await createRepository();
+    const head = await git(root, ["rev-parse", "HEAD"]);
+
+    const snapshot = await captureGitSnapshot({
+      repository_root: root,
+      trusted_repository_root: true,
+      preobserved_head_commit: head,
+    });
+
+    expect(snapshot.state).toBe("available");
+    expect(snapshot.head_commit).toBe(head);
+    expectSha256(snapshot.snapshot_sha256);
   });
 
   it("returns unavailable evidence instead of throwing outside a Git repository", async () => {

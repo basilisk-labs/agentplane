@@ -1,4 +1,5 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
@@ -18,7 +19,7 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { GitContext } from "@agentplaneorg/core/git";
+import { GitContext, gitRevParse } from "@agentplaneorg/core/git";
 import { loadTaskFromBranchSnapshot } from "./task-backend-branch-snapshot.js";
 
 export {
@@ -35,6 +36,7 @@ export type CommandMemo = {
   }>;
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
+  gitCommonDir?: Promise<string>;
   agentIds?: Promise<string[]>;
   harness?: Promise<ResolvedHarnessContract>;
 };
@@ -50,6 +52,14 @@ export type CommandContext = {
 
   memo: CommandMemo;
 };
+
+export function resolveCommandGitCommonDir(ctx: CommandContext): Promise<string> {
+  ctx.memo.gitCommonDir ??= gitRevParse(ctx.resolvedProject.gitRoot, [
+    "--path-format=absolute",
+    "--git-common-dir",
+  ]).then(async (commonDir) => await realpath(path.resolve(commonDir)));
+  return ctx.memo.gitCommonDir;
+}
 
 function normalizeDocUpdatedBy(value?: string): string {
   const trimmed = value?.trim() ?? "";

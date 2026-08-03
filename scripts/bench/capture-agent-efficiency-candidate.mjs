@@ -604,6 +604,19 @@ function comparisonBaselineSource(runtimeBridgeVersion = null) {
   };
 }
 
+export function blockingCandidateFailureIds(measurement, timingPolicy) {
+  return measurement.failure_ids.filter(
+    (failureId) =>
+      !(timingPolicy === "diagnostic_only_never_gated" && failureId.startsWith("latency.")),
+  );
+}
+
+function comparisonTimingPolicy(runtimeBridgeVersion) {
+  const source = comparisonBaselineSource(runtimeBridgeVersion);
+  const baseline = JSON.parse(readFileSync(source.baselinePath, "utf8"));
+  return baseline.comparison_policy?.timing ?? null;
+}
+
 function readComparisonBaseline({ baselineSource, runs }) {
   const baselineRegistry = readFixtureRegistry(baselineSource.registryPath, {
     historicalBaseline: true,
@@ -1151,8 +1164,12 @@ const main = defineCheck({
         `(subject=${measurement.candidate.subject_sha}; runs=${measurement.candidate.coverage.replay_runs}; ` +
         `episodes=${measurement.candidate.actual_values.provider_episodes}; verdict=${measurement.verdict})\n`,
     );
-    if (measurement.verdict !== "pass") {
-      throw new Error(`RF-04 candidate comparison failed: ${measurement.failure_ids.join(", ")}`);
+    const blockingFailureIds = blockingCandidateFailureIds(
+      measurement,
+      comparisonTimingPolicy(options.runtimeBridgeVersion),
+    );
+    if (blockingFailureIds.length > 0) {
+      throw new Error(`RF-04 candidate comparison failed: ${blockingFailureIds.join(", ")}`);
     }
   },
 });

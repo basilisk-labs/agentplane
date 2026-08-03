@@ -33,9 +33,15 @@ function assertSafeTaskId(taskId: string): void {
   }
 }
 
-async function authorityStorePath(opts: { gitRoot: string; taskId: string }): Promise<string> {
+async function authorityStorePath(opts: {
+  gitRoot: string;
+  taskId: string;
+  commonGitDir?: string;
+}): Promise<string> {
   assertSafeTaskId(opts.taskId);
-  const commonDir = await gitRevParse(opts.gitRoot, ["--path-format=absolute", "--git-common-dir"]);
+  const commonDir =
+    opts.commonGitDir ??
+    (await gitRevParse(opts.gitRoot, ["--path-format=absolute", "--git-common-dir"]));
   return path.join(commonDir, ...AUTHORITY_STORE_DIR, `${opts.taskId}.json`);
 }
 
@@ -59,6 +65,7 @@ function parseStoredAuthorityEnvelope(
 async function readStoredAuthorityState(opts: {
   gitRoot: string;
   taskId: string;
+  commonGitDir?: string;
 }): Promise<{ state: SideEffectAuthorityState | null; exists: boolean }> {
   const target = await authorityStorePath(opts);
   let raw: string;
@@ -89,8 +96,13 @@ export async function loadSideEffectAuthorityState(opts: {
   gitRoot: string;
   taskId: string;
   task: { extensions?: Record<string, unknown> };
+  commonGitDir?: string;
 }): Promise<SideEffectAuthorityStateLoadResult> {
-  const stored = await readStoredAuthorityState({ gitRoot: opts.gitRoot, taskId: opts.taskId });
+  const stored = await readStoredAuthorityState({
+    gitRoot: opts.gitRoot,
+    taskId: opts.taskId,
+    ...(opts.commonGitDir ? { commonGitDir: opts.commonGitDir } : {}),
+  });
   if (stored.exists) {
     return stored.state
       ? { state: stored.state, source: "git_common_dir" }
@@ -106,6 +118,7 @@ export async function hydrateTaskSideEffectAuthority(opts: {
   gitRoot: string;
   taskId: string;
   task: TaskData;
+  commonGitDir?: string;
 }): Promise<TaskData> {
   const authority = await loadSideEffectAuthorityState(opts);
   if (authority.state) {

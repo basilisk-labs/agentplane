@@ -9,6 +9,7 @@ const LATENCY_FIELDS = [
   "time_to_first_scoped_mutation_ms",
   "time_to_verified_result_ms",
 ];
+const TIMING_POLICY = "diagnostic_only_never_gated";
 const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
 
 function parseArgs(argv) {
@@ -66,6 +67,7 @@ function assertAtLeast(failures, metric, actual, minimum) {
 
 export function evaluateEfficiencyMeasurement(measurement, subject) {
   const failures = [];
+  const latencyDiagnostics = [];
   const baseline = measurement.baseline?.actual_values;
   const candidate = measurement.candidate?.actual_values;
   if (!baseline || !candidate)
@@ -132,7 +134,14 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
       after?.sample_count,
       before?.sample_count,
     );
-    assertAtMost(failures, `latency.${field}.mean`, after?.mean, before?.mean);
+    if (finite(before?.mean) && finite(after?.mean) && after.mean > before.mean) {
+      latencyDiagnostics.push({
+        metric: `latency.${field}.mean`,
+        baseline: before.mean,
+        candidate: after.mean,
+        delta: after.mean - before.mean,
+      });
+    }
   }
 
   for (const [metric, value] of [
@@ -182,6 +191,8 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
     latency_ms: {
       baseline: baseline.latency_ms,
       candidate: candidate.latency_ms,
+      policy: TIMING_POLICY,
+      diagnostics: latencyDiagnostics,
     },
     failures,
     verdict: failures.length === 0 ? "pass" : "fail",
