@@ -315,6 +315,9 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       const acrPath = path.join(root, ".agentplane", "tasks", taskId, "acr.json");
       const acrRaw = await readFile(acrPath, "utf8");
       expect(acrRaw).toContain(`"task_id": "${taskId}"`);
+      const acr = JSON.parse(acrRaw) as { extensions?: Record<string, unknown> };
+      expect(acr.extensions?.["agentplane.token-usage"]).toBeDefined();
+      expect(acr.extensions?.["agentplane.token_usage"]).toBeUndefined();
       const { stdout: trackedAcrStdout } = await execFileAsync(
         "git",
         ["ls-files", "--", path.relative(root, acrPath)],

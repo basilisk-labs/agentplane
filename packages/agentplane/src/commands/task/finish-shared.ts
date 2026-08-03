@@ -311,6 +311,7 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
   taskCommitInfo: ResolvedCommitInfo | null;
   author: string;
   noWriteAcr?: boolean;
+  required?: boolean;
 }): Promise<string[]> {
   if (opts.noWriteAcr === true) return [];
   if (opts.ctx.config.acr.write_on_finish !== true) {
@@ -325,7 +326,12 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
   const writtenPaths: string[] = [];
   for (const { taskId, task } of refreshTasks) {
     const workCommit = opts.taskCommitInfo?.hash ?? existingCommitInfo(task)?.hash;
-    if (!workCommit) continue;
+    if (!workCommit) {
+      if (opts.required === true) {
+        throw new Error(`ACR refresh requires a work commit for task ${taskId}`);
+      }
+      continue;
+    }
     try {
       const generated = await generateAcr({
         ctx: opts.ctx,
@@ -338,7 +344,12 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
         write: true,
         refresh: true,
       });
-      if (!generated.acrPath) continue;
+      if (!generated.acrPath) {
+        if (opts.required === true) {
+          throw new Error(`ACR refresh did not resolve an output path for task ${taskId}`);
+        }
+        continue;
+      }
       await writeAcrFile({ acrPath: generated.acrPath, record: generated.record, refresh: true });
       writtenPaths.push(generated.acrPath);
     } catch (err) {
@@ -350,6 +361,12 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
           error: err instanceof Error ? err.message : String(err),
         },
       });
+      if (opts.required === true) {
+        throw new Error(
+          `Required ACR refresh failed for task ${taskId}: ${err instanceof Error ? err.message : String(err)}`,
+          { cause: err },
+        );
+      }
     }
   }
 
