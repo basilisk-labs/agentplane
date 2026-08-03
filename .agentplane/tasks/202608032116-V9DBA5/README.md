@@ -4,7 +4,7 @@ title: "Restore ACR generation in hosted close qualification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,7 +25,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T21:42:26.895Z"
+  updated_at: "2026-08-03T21:45:05.220Z"
   updated_by: "TESTER"
   note: "PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics."
   attempts: 0
@@ -60,8 +60,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics."
+  -
+    type: "verify"
+    at: "2026-08-03T21:45:05.220Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics."
 doc_version: 3
-doc_updated_at: "2026-08-03T21:42:27.856Z"
+doc_updated_at: "2026-08-03T21:45:06.191Z"
 doc_updated_by: "CODER"
 description: "Reproduce why task hosted-close reports success but silently omits acr.json, make hosted close either persist the required ACR or fail with actionable evidence, and preserve idempotent hosted closure."
 sections:
@@ -109,6 +115,56 @@ sections:
     Command: bun run test:critical
     Result: pass (12 chunks, 79 tests)
     Evidence: all critical CLI, efficiency, boundary, and exit-code suites passed
+    Scope: critical CLI regression surface
+
+    Command: bun run typecheck; targeted ESLint; targeted Prettier check
+    Result: pass
+    Evidence: zero type, lint, or formatting failures on the implementation and documentation paths
+    Scope: changed TypeScript, tests, and docs
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032116-V9DBA5-restore-acr-generation-in-hosted-close-qualifica/.agentplane/tasks/202608032116-V9DBA5/blueprint/resolved-snapshot.json
+    - old_digest: b8707b52cb7be455acd640340f711a41d7480e6ad6863202b910043564c95141
+    - current_digest: b8707b52cb7be455acd640340f711a41d7480e6ad6863202b910043564c95141
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032116-V9DBA5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608032116-V9DBA5
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T21:45:05.220Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T21:42:27.856Z, excerpt_hash=sha256:d72c6903b66ae700da158ba0161dd5c0a467c89ea9afc69c4aad3cd9a9e7ca8d
+
+    Details:
+
+    Command: bun x vitest --config vitest.workspace.ts run packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts --project agentplane
+    Result: pass
+    Evidence: 1 file and 3 tests passed; best-effort ordinary refresh and required fail-closed behavior are both asserted
+    Scope: refreshAcrArtifactsForFinishedTasks error contract
+
+    Command: node scripts/checks/run-vitest-suite.mjs v0.7-hosted
+    Result: pass
+    Evidence: 7 files and 29 tests passed across 2 chunks; hosted-close creates and tracks acr.json, serializes extensions["agentplane.token-usage"], and reruns idempotently
+    Scope: hosted close, protected integration, and release recovery
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 chunks and 79 critical CLI, efficiency, boundary, and exit-code tests passed
     Scope: critical CLI regression surface
 
     Command: bun run typecheck; targeted ESLint; targeted Prettier check
@@ -199,6 +255,56 @@ Scope: hosted close, protected integration, and release recovery
 Command: bun run test:critical
 Result: pass (12 chunks, 79 tests)
 Evidence: all critical CLI, efficiency, boundary, and exit-code suites passed
+Scope: critical CLI regression surface
+
+Command: bun run typecheck; targeted ESLint; targeted Prettier check
+Result: pass
+Evidence: zero type, lint, or formatting failures on the implementation and documentation paths
+Scope: changed TypeScript, tests, and docs
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032116-V9DBA5-restore-acr-generation-in-hosted-close-qualifica/.agentplane/tasks/202608032116-V9DBA5/blueprint/resolved-snapshot.json
+- old_digest: b8707b52cb7be455acd640340f711a41d7480e6ad6863202b910043564c95141
+- current_digest: b8707b52cb7be455acd640340f711a41d7480e6ad6863202b910043564c95141
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032116-V9DBA5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608032116-V9DBA5
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T21:45:05.220Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T21:42:27.856Z, excerpt_hash=sha256:d72c6903b66ae700da158ba0161dd5c0a467c89ea9afc69c4aad3cd9a9e7ca8d
+
+Details:
+
+Command: bun x vitest --config vitest.workspace.ts run packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts --project agentplane
+Result: pass
+Evidence: 1 file and 3 tests passed; best-effort ordinary refresh and required fail-closed behavior are both asserted
+Scope: refreshAcrArtifactsForFinishedTasks error contract
+
+Command: node scripts/checks/run-vitest-suite.mjs v0.7-hosted
+Result: pass
+Evidence: 7 files and 29 tests passed across 2 chunks; hosted-close creates and tracks acr.json, serializes extensions["agentplane.token-usage"], and reruns idempotently
+Scope: hosted close, protected integration, and release recovery
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 chunks and 79 critical CLI, efficiency, boundary, and exit-code tests passed
 Scope: critical CLI regression surface
 
 Command: bun run typecheck; targeted ESLint; targeted Prettier check
