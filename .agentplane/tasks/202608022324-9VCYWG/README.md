@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -57,8 +57,8 @@ quality_review:
   findings:
     - "The frozen diff and verification evidence cover state-bound result ingestion, stale and tampered result rejection, replay refusal, crash recovery, direct and branch_pr convergence, packet-size constraints, and the generated CLI contract repair."
 commit:
-  hash: "0822d0984d1c29cb4899acf14de57f2c4f2c5331"
-  message: "🚧 9VCYWG task: record budget recovery verification"
+  hash: "5a8108d2518aac96fc03a28170950552043324a5"
+  message: "🚧 9VCYWG task: record CLI contract quality pass"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -147,8 +150,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the CI contract repair: generated CLI reference now covers task advance --result and all contract checks pass."
+  -
+    type: "status"
+    at: "2026-08-03T01:37:07.889Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T01:34:39.174Z"
+doc_updated_at: "2026-08-03T01:37:07.890Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
@@ -477,8 +487,8 @@ sections:
       Resolution: Added direct and branch_pr round-trip coverage, accepted-effect recovery, immutable exchange binding, and compatibility ratchets; no residual blocker in task scope.
 extensions:
   implementation_commit:
-    hash: "403ff7151a155fe9d3fbc3c017cd7ac6bac2ec56"
-    message: "🚧 9VCYWG task: bind budget-stopped recovery"
+    hash: "f14009b3e4ddd76ca14f6ec33a1a80cf132ac307"
+    message: "🚧 9VCYWG task: refresh CLI reference"
   workflow_route_baseline:
     start_head_sha: "d7b766b9c4f7c8df771e06f3c8a1a60129035087"
     version: 1
