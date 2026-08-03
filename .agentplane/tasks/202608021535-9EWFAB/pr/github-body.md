@@ -18,7 +18,12 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 ## Verification
 
 - State: ok
-- Note: Directory-swap hardening passed deterministic adversarial coverage and all repository release gates.
+- Note:
+
+```text
+Portable trust-boundary rework passed focused evaluator coverage and every repository release gate
+at 8b77ddcf2.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
