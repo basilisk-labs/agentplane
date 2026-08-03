@@ -130,14 +130,24 @@ describe("v0.7.1 release qualification contract", () => {
       return "0.146.0-alpha.3.1";
     };
     const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
+    const localScenarios = [{ id: "typecheck", tier: "full" }];
+    const providerScenarios = [{ id: "provider-matrix", tier: "provider" }];
 
-    assert.equal(preflightQualificationProviderRuntime(base, verify), null);
+    assert.equal(preflightQualificationProviderRuntime(base, localScenarios, verify), null);
     assert.equal(
-      preflightQualificationProviderRuntime({ ...base, dryRun: true, provider: true }, verify),
+      preflightQualificationProviderRuntime(
+        { ...base, dryRun: true, provider: true },
+        providerScenarios,
+        verify,
+      ),
       null,
     );
     assert.equal(
-      preflightQualificationProviderRuntime({ ...base, provider: true }, verify),
+      preflightQualificationProviderRuntime({ ...base, provider: true }, localScenarios, verify),
+      null,
+    );
+    assert.equal(
+      preflightQualificationProviderRuntime({ ...base, provider: true }, providerScenarios, verify),
       "0.146.0-alpha.3.1",
     );
     assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
@@ -147,9 +157,13 @@ describe("v0.7.1 release qualification contract", () => {
     });
     assert.throws(
       () =>
-        preflightQualificationProviderRuntime({ ...base, provider: true }, () => {
-          throw mismatch;
-        }),
+        preflightQualificationProviderRuntime(
+          { ...base, provider: true },
+          providerScenarios,
+          () => {
+            throw mismatch;
+          },
+        ),
       (error) => error === mismatch,
     );
   });

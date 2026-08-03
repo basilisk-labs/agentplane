@@ -2,10 +2,10 @@
 id: "202608032336-A9H6WR"
 title: "Preflight the provider binary before release qualification"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-03T23:42:26.420Z"
-  updated_by: "TESTER"
-  note: "Local verification passed for the provider-runtime fail-fast change; evaluator and hosted checks remain separate downstream gates."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-03T23:51:53.477Z"
+  updated_by: "REVIEWER"
+  note: "Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -65,9 +65,7 @@ token_usage:
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
   updated_at: "2026-08-03T23:43:50.108Z"
-commit:
-  hash: "a1ddd5ad94771832f1ffc59593113ac64b19b21a"
-  message: "🧩 A9H6WR task: record implementation handoff"
+commit: null
 comments:
   -
     author: "CODER"
@@ -112,8 +110,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-03T23:51:53.477Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set."
 doc_version: 3
-doc_updated_at: "2026-08-03T23:43:50.118Z"
+doc_updated_at: "2026-08-03T23:51:54.822Z"
 doc_updated_by: "CODER"
 description: "Fail provider-enabled v0.7.1 qualification before running local scenarios when the exact requested Codex version does not match the trusted ChatGPT.app replay binary, preventing wasted deterministic work and zero-episode gate failures."
 sections:
@@ -211,6 +215,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608032336-A9H6WR
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T23:51:53.477Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T23:43:50.118Z, excerpt_hash=sha256:db777fef3e6c2c1ad78f686d5452ddccccc20617511be19de3bd369db49d9d60
+
+    Details:
+
+    Command: GitHub Codex review on PR #4767 at commit 785e24f8b8c3fc66a3002e8778522cfaf60b374f
+    Result: fail
+    Evidence: unresolved review thread PRRT_kwDORCLmJM6WJ2A2 on scripts/qualification/run-v0.7.1-release-qualification.mjs:247
+    Scope: audit mode with --provider plus an explicit local-only --scenario
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032336-A9H6WR-preflight-the-provider-binary-before-release-qua/.agentplane/tasks/202608032336-A9H6WR/blueprint/resolved-snapshot.json
+    - old_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+    - current_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032336-A9H6WR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -338,6 +377,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608032336-A9H6WR
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T23:51:53.477Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T23:43:50.118Z, excerpt_hash=sha256:db777fef3e6c2c1ad78f686d5452ddccccc20617511be19de3bd369db49d9d60
+
+Details:
+
+Command: GitHub Codex review on PR #4767 at commit 785e24f8b8c3fc66a3002e8778522cfaf60b374f
+Result: fail
+Evidence: unresolved review thread PRRT_kwDORCLmJM6WJ2A2 on scripts/qualification/run-v0.7.1-release-qualification.mjs:247
+Scope: audit mode with --provider plus an explicit local-only --scenario
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032336-A9H6WR-preflight-the-provider-binary-before-release-qua/.agentplane/tasks/202608032336-A9H6WR/blueprint/resolved-snapshot.json
+- old_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+- current_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032336-A9H6WR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

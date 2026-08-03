@@ -15,12 +15,12 @@ Fail provider-enabled v0.7.1 qualification before running local scenarios when t
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Local verification passed for the provider-runtime fail-fast change; evaluator and hosted checks
-remain separate downstream gates.
+Codex review found that --provider with an explicit local-only --scenario still invoked the trusted
+binary preflight; gate the check on the selected provider scenario set.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,9 +32,9 @@ remain separate downstream gates.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../qualification/release-qualification.test.mjs   | 37 +++++++++++++++++++++-
- .../run-v0.7.1-release-qualification.mjs           | 11 +++++++
- 2 files changed, 47 insertions(+), 1 deletion(-)
+ .../qualification/release-qualification.test.mjs   | 51 +++++++++++++++++++++-
+ .../run-v0.7.1-release-qualification.mjs           | 15 +++++++
+ 2 files changed, 65 insertions(+), 1 deletion(-)
 ```
 
 </details>
