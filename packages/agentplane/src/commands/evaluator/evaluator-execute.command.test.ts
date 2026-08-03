@@ -838,7 +838,7 @@ describe("evaluator execute supervisor episode", () => {
     const failed = validateSupervisorExecutionEpisodeJournal(failedJournal);
     const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
       journal: failed,
-      state_fingerprint_digest: failed.state_fingerprint_digest,
+      state_fingerprint_digest: `sha256:${"f".repeat(64)}`,
     });
     expect(await store.compareAndSwap(failed.digest, reserved)).toBe(true);
     const reservedJournal = await store.read();

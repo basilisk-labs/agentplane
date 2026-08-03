@@ -814,6 +814,39 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
 }
 
 /**
+ * Refresh only the route fingerprint of an explicitly reserved replacement
+ * before its successor intent is recorded. The exact failed-operation binding
+ * remains unchanged, so a route transition cannot become an unbound retry.
+ */
+export function refreshPendingReplacementSupervisorExecutionEpisode(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "running" ||
+    journal.cursor.phase !== "ready" ||
+    !journal.cursor.replacement_of_operation_key ||
+    last?.status !== "failed" ||
+    last.operation_key !== journal.cursor.replacement_of_operation_key
+  ) {
+    throw new Error(
+      "Supervisor episode replacement refresh requires a pending exact-key replacement after a failed latest operation.",
+    );
+  }
+  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+    ...journal,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    updated_at: now,
+    previous_digest: journal.digest,
+  };
+  return createJournal(next);
+}
+
+/**
  * Open a distinct, explicitly authorized operation after a known operation failure.
  * The failed operation remains in the journal and the next start binds its
  * replacement to that operation key. The successor may have a different role
