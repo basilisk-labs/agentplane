@@ -29,9 +29,9 @@ Created: 2026-08-03T20:44:49.628Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/qualification/release-qualification.mjs    | 33 ++++++++++++++++++----
+ scripts/qualification/release-qualification.mjs    | 31 ++++++++++++++++++----
  .../qualification/release-qualification.test.mjs   | 22 ++++++++++++---
- 2 files changed, 45 insertions(+), 10 deletions(-)
+ 2 files changed, 44 insertions(+), 9 deletions(-)
 ```
 
 </details>
