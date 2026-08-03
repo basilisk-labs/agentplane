@@ -1,7 +1,11 @@
 import { parse as parseYaml } from "yaml";
 import { isRecord, isStringArray } from "../types/guards.js";
 import { getTaskDocContract, TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
-import { parseDocSections, renderTaskDocFromSections } from "./task-doc.js";
+import { parseDocSections, renderTaskDocFromSections, setMarkdownSection } from "./task-doc.js";
+import {
+  isTaskTokenUsageRenderInput,
+  renderTaskTokenUsageBody,
+} from "./task-token-usage-render.js";
 
 function normalizeCanonicalSections(
   value: unknown,
@@ -438,5 +442,13 @@ function renderContextualBody(frontmatter: Record<string, unknown>, body: string
 
 export function renderTaskReadme(frontmatter: Record<string, unknown>, body: string): string {
   const renderedFrontmatter = frontmatterForRender(frontmatter);
-  return `${renderTaskFrontmatter(renderedFrontmatter)}${renderContextualBody(frontmatter, body)}`;
+  const contextualBody = renderContextualBody(frontmatter, body);
+  const tokenUsage = frontmatter.token_usage;
+  const renderedBody =
+    frontmatter.status === "DONE" && isTaskTokenUsageRenderInput(tokenUsage)
+      ? setMarkdownSection(contextualBody, "Token Usage", renderTaskTokenUsageBody(tokenUsage))
+          .replace(/^\n+/u, "")
+          .trimEnd()
+      : contextualBody;
+  return `${renderTaskFrontmatter(renderedFrontmatter)}${renderedBody}`;
 }

@@ -85,6 +85,13 @@ export {
 } from "./task-readme.js";
 
 export {
+  formatTaskTokenUsageSummary,
+  isTaskTokenUsageRenderInput,
+  renderTaskTokenUsageBody,
+  type TaskTokenUsageRenderInput,
+} from "./task-token-usage-render.js";
+
+export {
   buildProviderSafeTaskProjection,
   type ProviderSafeAcrProjection,
   type ProviderSafeTaskProjection,
