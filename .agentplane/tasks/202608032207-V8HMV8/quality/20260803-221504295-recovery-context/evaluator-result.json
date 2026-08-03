@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The runner resolves and validates the explicit nested output directory before source identity capture, passes only that directory to the existing Git pathspec exclusion, and exposes an import-safe boundary for isolated regression coverage.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/b74f294b807a0a286a16be75b4f2bcedd501995ac4b3c96eb18aac25839ef409.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -15,8 +15,8 @@ Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness c
 
 ## Verification
 
-- State: needs_rework
-- Note: Regression test must not depend on the cleanliness of the developer checkout.
+- State: ok
+- Note: Isolated qualification rerun regression and static checks pass.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,9 @@ Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../qualification/release-qualification.test.mjs   | 47 +++++++++++++++++++++-
- .../run-v0.7.1-release-qualification.mjs           |  8 ++--
- 2 files changed, 51 insertions(+), 4 deletions(-)
+ .../qualification/release-qualification.test.mjs   | 27 +++++++++++++-----
+ .../run-v0.7.1-release-qualification.mjs           | 32 +++++++++++++++-------
+ 2 files changed, 42 insertions(+), 17 deletions(-)
 ```
 
 </details>

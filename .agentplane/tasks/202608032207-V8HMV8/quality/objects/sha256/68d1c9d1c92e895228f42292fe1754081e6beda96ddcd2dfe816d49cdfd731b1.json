@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T22:14:45.752Z",
+    "updated_by": "TESTER",
+    "note": "Isolated qualification rerun regression and static checks pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608032207-V8HMV8/verification/20260803221445752-ba13a07622260bf4.json",
+      "sha256": "sha256:4a3ac60541305bae2c46706af9069b3e47c78dac6b4b1d026510cc92fe931c8c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

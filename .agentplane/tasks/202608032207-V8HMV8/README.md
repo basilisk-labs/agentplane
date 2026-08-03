@@ -1,10 +1,11 @@
 ---
 id: "202608032207-V8HMV8"
 title: "Make qualification reruns ignore their active evidence directory"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -17,12 +18,54 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-03T22:13:17.566Z"
+  state: "ok"
+  updated_at: "2026-08-03T22:14:45.752Z"
   updated_by: "TESTER"
-  note: "Regression test must not depend on the cleanliness of the developer checkout."
-  attempts: 1
-commit: null
+  note: "Isolated qualification rerun regression and static checks pass."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-03T22:15:04.532Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "13f3d8101d2b31224497089325b4a1c2a0bbb239"
+  blueprint_digest: "8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b"
+  evidence_refs:
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/20260803-221504295-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/20260803-221504295-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/8488a7cc33aae29a931039a1de7f8ab89189a7e0a85b2d0cfee2f935c8a5a011.md"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/20260803-221504295-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/20260803-221504295-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/20260803-221504295-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608032207-V8HMV8/README.md"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/b74f294b807a0a286a16be75b4f2bcedd501995ac4b3c96eb18aac25839ef409.patch"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/68d1c9d1c92e895228f42292fe1754081e6beda96ddcd2dfe816d49cdfd731b1.json"
+    - ".agentplane/tasks/202608032207-V8HMV8/verification/20260803221445752-ba13a07622260bf4.json"
+    - ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/36721cc7e9f0ca58821114f51ebf0f87fdac49b5557462688b63b3b59071c03c.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The runner resolves and validates the explicit nested output directory before source identity capture, passes only that directory to the existing Git pathspec exclusion, and exposes an import-safe boundary for isolated regression coverage."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T22:15:30.934Z"
+commit:
+  hash: "13f3d8101d2b31224497089325b4a1c2a0bbb239"
+  message: "🧪 V8HMV8 task: isolate qualification rerun regression"
 comments:
   -
     author: "CODER"
@@ -30,6 +73,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation: qualification runner now excludes only its resolved nested evidence directory during the initial exact-subject check; focused regression, typecheck, lint, and formatting passed."
+  -
+    author: "CODER"
+    body: "Implementation rework: regression coverage now imports an execution-boundary helper and uses an isolated temporary Git repository, avoiding dependency on developer checkout cleanliness."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -65,8 +114,28 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Regression test must not depend on the cleanliness of the developer checkout."
+  -
+    type: "status"
+    at: "2026-08-03T22:14:24.406Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: regression coverage now imports an execution-boundary helper and uses an isolated temporary Git repository, avoiding dependency on developer checkout cleanliness."
+  -
+    type: "verify"
+    at: "2026-08-03T22:14:45.752Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Isolated qualification rerun regression and static checks pass."
+  -
+    type: "status"
+    at: "2026-08-03T22:15:30.934Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T22:13:18.457Z"
+doc_updated_at: "2026-08-03T22:15:30.943Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness check excludes only the explicitly selected nested evidence directory, allowing audit-to-gate reruns without hiding unrelated repository changes."
 sections:
@@ -182,6 +251,56 @@ sections:
     Result: fail
     Evidence: the new runner regression spawns against the real repository and can reject unrelated in-progress developer changes
     Scope: deterministic local verification ergonomics
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032207-V8HMV8-qualification-evidence-rerun/.agentplane/tasks/202608032207-V8HMV8/blueprint/resolved-snapshot.json
+    - old_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+    - current_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032207-V8HMV8
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T22:14:45.752Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Isolated qualification rerun regression and static checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:14:24.406Z, excerpt_hash=sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00
+
+    Details:
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: 19 tests passed against an isolated temporary Git repository, including active evidence and unrelated/root/outside guards
+    Scope: qualification runner and exact-subject evidence exclusion
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed with exit code 0
+    Scope: repository type safety
+
+    Command: bunx eslint scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: focused lint completed with exit code 0
+    Scope: touched qualification files
+
+    Command: bunx prettier --check scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: all matched files use Prettier code style
+    Scope: touched qualification files
 
     BlueprintSnapshotRef:
     - state: current
@@ -362,6 +481,56 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T22:14:45.752Z — VERIFY — ok
+
+By: TESTER
+
+Note: Isolated qualification rerun regression and static checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:14:24.406Z, excerpt_hash=sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00
+
+Details:
+
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: 19 tests passed against an isolated temporary Git repository, including active evidence and unrelated/root/outside guards
+Scope: qualification runner and exact-subject evidence exclusion
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed with exit code 0
+Scope: repository type safety
+
+Command: bunx eslint scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: focused lint completed with exit code 0
+Scope: touched qualification files
+
+Command: bunx prettier --check scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: all matched files use Prettier code style
+Scope: touched qualification files
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032207-V8HMV8-qualification-evidence-rerun/.agentplane/tasks/202608032207-V8HMV8/blueprint/resolved-snapshot.json
+- old_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+- current_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032207-V8HMV8
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -378,3 +547,16 @@ DecisionContextRef:
 - Observation: The integration-style regression binds its source identity check to the current development checkout.
   Impact: The focused unit suite can produce a false failure before changes are committed, reducing trust in local verification.
   Resolution: Expose the runner source-identity boundary as an import-safe helper and exercise it against an isolated temporary Git repository.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T22:15:30.934Z`
