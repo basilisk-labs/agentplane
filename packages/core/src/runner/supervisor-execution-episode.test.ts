@@ -450,7 +450,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     }
   });
 
-  it("opens an explicit replacement after a known failure without changing its history", () => {
+  it("opens an explicitly bound successor after a known failure without changing its history", () => {
     const first = start({ journal: journal(), kind: "evaluator_episode" });
     if (first.status !== "started") throw new Error("expected started episode");
     const failed = completeSupervisorExecutionEpisode({
@@ -492,13 +492,19 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(() => startReplacement({ replacement_of_operation_key: NEXT_FINGERPRINT })).toThrow(
       "requires the exact pending failed operation",
     );
-    expect(() =>
-      startReplacement({
-        replacement_of_operation_key: failedOperation.operation_key,
-        role: "EXECUTOR",
-        kind: "agent_episode",
-      }),
-    ).toThrow("requires the exact pending failed operation");
+    const crossRouteSuccessor = startReplacement({
+      replacement_of_operation_key: failedOperation.operation_key,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+    });
+    if (crossRouteSuccessor.status !== "started") {
+      throw new Error("expected a successor for the recomputed route");
+    }
+    expect(crossRouteSuccessor.journal.operations.at(-1)).toMatchObject({
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      replacement_of_operation_key: failedOperation.operation_key,
+    });
     const next = startSupervisorExecutionEpisode({
       journal: replacement,
       role: "EVALUATOR",

@@ -11,6 +11,7 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 ## Scope
 
 - In scope: Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
+- Required control-plane correction: An explicitly authorized successor after a known operation_failed stop may follow the recomputed route with a different role or operation kind, while remaining bound to the exact failed operation key. effect_in_doubt, exhausted budgets, and mismatched keys remain terminal.
 - Trust boundary: The repository root and processes running as the authenticated workspace user are trusted and cooperative. Static symlinks, tampered objects, and every observable directory replacement must fail closed; adversarial same-user replacement inside the final pathname-to-syscall interval is outside the portable Node boundary used by both evaluator evidence and runner state.
 - Authorization basis: The repository owner authorized the complete refactor and continuation without repeated permission prompts; v0.7.1 adopts the existing runner boundary, while native handle-relative filesystem operations remain a separate cross-platform security deliverable.
 - Out of scope: Unrelated refactors and a native openat/linkat/renameat/unlinkat helper.
@@ -47,7 +48,9 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
  .../commands/evaluator/evaluator-test-helpers.ts   |   2 +
  .../src/commands/evaluator/evaluator-work-order.ts | 135 +++++++
  .../src/commands/hooks/run.pre-commit.ts           |   3 +
- 18 files changed, 1707 insertions(+), 268 deletions(-)
+ .../runner/supervisor-execution-episode.test.ts    |  22 +-
+ .../src/runner/supervisor-execution-episode.ts     |  16 +-
+ 20 files changed, 1727 insertions(+), 286 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework commit: explicit portable trust boundary and evaluator escalation contract."
+  -
+    author: "CODER"
+    body: "Rework: repair shared supervisor continuation so an explicit exact-key replacement can follow a recomputed EXECUTOR-to-EVALUATOR route after operation_failed without permitting retries of effect_in_doubt."
 events:
   -
     type: "status"
@@ -166,8 +169,13 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run test:critical"
+  -
+    type: "comment"
+    at: "2026-08-03T17:48:54.344Z"
+    author: "CODER"
+    body: "Rework: repair shared supervisor continuation so an explicit exact-key replacement can follow a recomputed EXECUTOR-to-EVALUATOR route after operation_failed without permitting retries of effect_in_doubt."
 doc_version: 3
-doc_updated_at: "2026-08-03T17:45:51.028Z"
+doc_updated_at: "2026-08-03T17:48:54.344Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -177,6 +185,7 @@ sections:
     Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
   Scope: |-
     - In scope: Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
+    - Required control-plane correction: An explicitly authorized successor after a known operation_failed stop may follow the recomputed route with a different role or operation kind, while remaining bound to the exact failed operation key. effect_in_doubt, exhausted budgets, and mismatched keys remain terminal.
     - Trust boundary: The repository root and processes running as the authenticated workspace user are trusted and cooperative. Static symlinks, tampered objects, and every observable directory replacement must fail closed; adversarial same-user replacement inside the final pathname-to-syscall interval is outside the portable Node boundary used by both evaluator evidence and runner state.
     - Authorization basis: The repository owner authorized the complete refactor and continuation without repeated permission prompts; v0.7.1 adopts the existing runner boundary, while native handle-relative filesystem operations remain a separate cross-platform security deliverable.
     - Out of scope: Unrelated refactors and a native openat/linkat/renameat/unlinkat helper.
@@ -587,6 +596,7 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 ## Scope
 
 - In scope: Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects.
+- Required control-plane correction: An explicitly authorized successor after a known operation_failed stop may follow the recomputed route with a different role or operation kind, while remaining bound to the exact failed operation key. effect_in_doubt, exhausted budgets, and mismatched keys remain terminal.
 - Trust boundary: The repository root and processes running as the authenticated workspace user are trusted and cooperative. Static symlinks, tampered objects, and every observable directory replacement must fail closed; adversarial same-user replacement inside the final pathname-to-syscall interval is outside the portable Node boundary used by both evaluator evidence and runner state.
 - Authorization basis: The repository owner authorized the complete refactor and continuation without repeated permission prompts; v0.7.1 adopts the existing runner boundary, while native handle-relative filesystem operations remain a separate cross-platform security deliverable.
 - Out of scope: Unrelated refactors and a native openat/linkat/renameat/unlinkat helper.
