@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "needs_rework",
+    "attempts": 1,
+    "updated_at": "2026-08-03T17:45:49.900Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Rework: Declared check failed: bun run test:critical"
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021535-9EWFAB/verification/20260803174549900-2a44174e228ddd38.json",
+      "sha256": "sha256:a2d6c7fe9e91231a0f0a9e7a203e78c2d899396e5a87287effed36f0b02d3f22"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

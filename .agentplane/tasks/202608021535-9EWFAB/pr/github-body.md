@@ -17,13 +17,8 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Portable trust-boundary rework passed focused evaluator coverage and every repository release gate
-at 8b77ddcf2.
-```
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run test:critical
 - Canonical workflow state lives in the task README.
 
 <details>
