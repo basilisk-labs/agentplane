@@ -16,7 +16,7 @@ Persist provider and evaluator token usage through task execution and closeout, 
 ## Verification
 
 - State: ok
-- Note: Verified 822d48168: completed task README body renders deterministic token usage and all required gates pass.
+- Note: Verified 71b53fd7a1: no-usage managed runs complete with unavailable token projection; all required gates pass.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,7 +40,8 @@ Persist provider and evaluator token usage through task execution and closeout, 
  .../commands/release/tasks-reconcile.command.ts    |   9 +-
  .../commands/shared/route-decision-types.test.ts   |  27 ++
  .../src/commands/shared/route-decision-types.ts    |   2 +
- .../shared/supervisor-execution-episode.ts         |  14 +-
+ .../shared/supervisor-execution-episode.test.ts    |  95 +++++-
+ .../shared/supervisor-execution-episode.ts         |  13 +-
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../agentplane/src/commands/task/brief-model.ts    |   3 +
  .../agentplane/src/commands/task/brief-render.ts   |   9 +
@@ -75,7 +76,7 @@ Persist provider and evaluator token usage through task execution and closeout, 
  packages/spec/schemas/tasks-export.schema.json     | 122 ++++++++
  schemas/task-readme-frontmatter.schema.json        | 122 ++++++++
  schemas/tasks-export.schema.json                   | 122 ++++++++
- 48 files changed, 2335 insertions(+), 18 deletions(-)
+ 49 files changed, 2423 insertions(+), 24 deletions(-)
 ```
 
 </details>
