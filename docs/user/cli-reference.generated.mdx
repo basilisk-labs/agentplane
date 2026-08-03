@@ -467,11 +467,13 @@ Options:
 
 - `--agent-json`: Emit the stable compact external-agent protocol. (default=false)
 - `--remote`: Include hosted state while preparing the shared supervisor decision. (default=false)
+- `--result <path>`: Accept one state-bound external-agent result and return the next action.
 
 Notes:
 
 - The command prepares the same canonical work order and route decision used by the managed task runner.
 - It executes only registered deterministic transitions, then stops before semantic work, approval, human input, external wait, or terminal attention.
+- A result is single-use and must match the issued task, transition, role, state fingerprint, work-order id, and result_ref.
 - --agent-json changes only rendering; any formal transition is journaled, fingerprint-checked, and supervisor-owned.
 
 Examples:
@@ -481,6 +483,12 @@ agentplane task advance 202602030608-F1Q8AB --agent-json
 ```
 
 - Obtain one bounded action without reconstructing lifecycle state.
+
+```sh
+agentplane task advance 202602030608-F1Q8AB --result <result-ref> --agent-json
+```
+
+- Return the typed result through the same persisted supervisor.
 
 ### task answer
 
