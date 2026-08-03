@@ -3,7 +3,7 @@
   "branch": "task/202608021534-J5G235/reduce-the-v0-7-1-cli-dead-code-and-barrel-basel",
   "created_at": "2026-08-03T15:09:30.904Z",
   "diffstat_sha256": "sha256:8849fa6ea637646b524e9f1c85e44e09bd9bde939611666e53e0cf381c42991f",
-  "last_verified_at": "2026-08-03T15:42:00.703Z",
+  "last_verified_at": "2026-08-03T15:43:42.831Z",
   "last_verified_diffstat_sha256": "sha256:8849fa6ea637646b524e9f1c85e44e09bd9bde939611666e53e0cf381c42991f",
   "pr_number": 4758,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4758",
