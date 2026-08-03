@@ -6,7 +6,7 @@ Created: 2026-08-03T18:26:18.371Z
 
 - Task: `202608021535-CNQKXP`
 - Title: Add compatibility retirement inventory and doctor legacy
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021535-CNQKXP/add-compatibility-retirement-inventory-and-docto`
 - Canonical task record: `.agentplane/tasks/202608021535-CNQKXP/README.md`
 
