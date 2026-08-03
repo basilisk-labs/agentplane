@@ -15,8 +15,13 @@ Allow qualification subprocesses to exclude only the active in-repository eviden
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS. Qualification subprocesses keep the frozen subject strict while allowing only their active
+evidence directory; matched CLI and supervisor latency both executed and passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

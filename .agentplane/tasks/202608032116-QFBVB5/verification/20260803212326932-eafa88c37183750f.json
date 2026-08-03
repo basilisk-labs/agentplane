@@ -1,0 +1,15 @@
+{
+  "details": "Command: node --test scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: 19 tests passed, including a temporary Git repository proving active evidence is ignored and unrelated dirt remains blocking.\nScope: Frozen-subject cleanliness contract.\n\nCommand: bunx eslint scripts/qualification/release-qualification.mjs scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: ESLint completed with zero errors.\nScope: Changed qualification implementation and tests.\n\nCommand: bun run e2e:v0.7.1:check\nResult: pass\nEvidence: Qualification contract and deterministic full dry-run passed.\nScope: Release qualification entrypoint selection.\n\nCommand: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --scenario matched-cli-latency,supervisor-latency --subject 3e51eeac9196a048955c7e56633bacd76fe317bb --out-dir .agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression\nResult: pass\nEvidence: Both scenarios executed; 2/2 passed with zero defects. matched-cli-latency took 107957ms and supervisor-latency 80753ms instead of failing cleanliness in under 300ms.\nScope: Original self-dirty release-blocker reproduction.",
+  "digest": "sha256:eafa88c37183750f70aefcdec58f7f2aed0a0bed150526285767e36e0791b565",
+  "implementation_sha": "3e51eeac9196a048955c7e56633bacd76fe317bb",
+  "kind": "task_verification_record",
+  "note": "PASS. Qualification subprocesses keep the frozen subject strict while allowing only their active evidence directory; matched CLI and supervisor latency both executed and passed.",
+  "recorded_at": "2026-08-03T21:23:26.932Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Keep frozen qualification subject clean while writing evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Keep frozen qualification subject clean while writing evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:2e64d5580f9638878b47d4450f41142f03931bc02f298c97061c79393cf79faa",
+  "task_id": "202608032116-QFBVB5",
+  "verification_command": "agentplane verify 202608032116-QFBVB5 --ok --by TESTER",
+  "verifier": "TESTER"
+}

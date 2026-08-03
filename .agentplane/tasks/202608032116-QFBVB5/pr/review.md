@@ -12,8 +12,8 @@ Created: 2026-08-03T21:17:30.470Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS. Qualification subprocesses keep the frozen subject strict while allowing only their active evidence directory; matched CLI and supervisor latency both executed and passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
