@@ -12,8 +12,8 @@ Created: 2026-08-03T21:35:42.405Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
