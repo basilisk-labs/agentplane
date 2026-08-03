@@ -335,12 +335,11 @@ function observedRunnerUsage(opts: {
     "reasoning_tokens",
   ] as const) {
     if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
-    else if (
-      (field === "input_tokens" || field === "output_tokens" || field === "total_tokens") &&
-      opts.budget[`max_${field}`] !== null
-    )
-      missing.push(`${field}_telemetry`);
   }
+  // Provider token telemetry is completion-cost evidence, not execution
+  // authority. Missing usage degrades the completed task projection to
+  // `unavailable`; it must not turn an otherwise successful adapter result
+  // into human review. Observed values still charge and enforce token budgets.
   if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
   else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
   if (isNonNegativeInteger(evidence?.files_changed_count)) {

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608021231-BPMM04-8a581d9ad13f4f8dde322c0d",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/quality/20260803-121757601-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-08-03T12:17:57.994Z",
+  "ended_at": "2026-08-03T12:18:59.648Z",
+  "stdout_bytes": 122641,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 247410,
+    "output_tokens": 3324,
+    "total_tokens": 250734,
+    "visible_output_tokens": 2663,
+    "reasoning_tokens": 661
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:942e0e75f28dc3548de6c694d05b35735a3b1de464bc4827b09c1514f962cf6d"
+}

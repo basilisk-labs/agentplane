@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021231-BPMM04-8a581d9ad13f4f8dde322c0d",
+  "task_id": "202608021231-BPMM04",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Separate token-telemetry completeness from supervisor budget telemetry enforcement: a successful provider result without usage must remain completable and project unavailable usage, then rerun the managed no-usage lifecycle and completion-surface regression coverage at the exact implementation SHA.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "A successful managed agent episode without provider token telemetry still stops the supervisor for human review, so unavailable usage can block otherwise valid completion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-121757601-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:17017ed6a69e7d7fc5dc1a981322c2bf77e0eeaa8dddd56b28bb6b4f7a79f275",
+          "section": "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:636553cad4b5711b7df86097e0a17ac11b4376f1d4c9a3060f4c8d2fa0075c7e",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-121757601-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:da4629833484291dc5cfa716e4f8dc5c96ed3bbe20195795049629f6dd4ecb39",
+          "section": "runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-121757601-recovery-context/evaluator-result.json"
+}
