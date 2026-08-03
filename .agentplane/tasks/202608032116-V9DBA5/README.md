@@ -4,7 +4,7 @@ title: "Restore ACR generation in hosted close qualification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,38 @@ verification:
   updated_by: "TESTER"
   note: "PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-03T21:45:35.887Z"
+  updated_by: "HUMAN"
+  note: "The fix removes the schema-invalid token usage extension and makes hosted closure reject missing mandatory ACR artifacts while preserving the established best-effort contract for ordinary finish."
+  evaluated_sha: "e1c509e38ff5719b1178274a50834e35b3f9b818"
+  blueprint_digest: "b8707b52cb7be455acd640340f711a41d7480e6ad6863202b910043564c95141"
+  evidence_refs:
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/20260803-214535497-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/20260803-214535497-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/objects/sha256/700bda96c27fc0eccf09e5bc51b0e450a0536b4f9bc433f4cf1f785ea4c32914.md"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/20260803-214535497-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/20260803-214535497-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608032116-V9DBA5/README.md"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/objects/sha256/35267e5cc80c96e948a78c74264a79f9d4a03b5cf55a46d19f4da6b1cbd0f40d.patch"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/objects/sha256/6e082b2d9ff01b7a88cb12d17343978332d75de8500b66d06e80d619a91c6875.json"
+    - ".agentplane/tasks/202608032116-V9DBA5/verification/20260803214505220-43bbd446b8abb6e6.json"
+    - ".agentplane/tasks/202608032116-V9DBA5/quality/objects/sha256/fe0cd6fb171ca168b821a086124caab96e87e1b4b206936dc4cbfe0635f78911.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/acr/generate.ts"
+    - "packages/agentplane/src/commands/task/finish-shared.ts"
+    - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+    - "packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
+  findings:
+    - "PASS: agentplane.token-usage satisfies the ACR extension-key schema and the hosted integration test proves the completed task token usage is serialized in the resulting valid ACR."
+    - "PASS: required behavior is opt-in at the hosted-close caller; ordinary finish and other existing callers retain best-effort refresh semantics."
+    - "PASS: hosted-close now returns a contextual non-zero failure containing the task ID and root ACR error instead of committing a successful close tail without acr.json."
 commit:
   hash: "e1c509e38ff5719b1178274a50834e35b3f9b818"
   message: "🐛 V9DBA5 task: restore hosted close ACRs"

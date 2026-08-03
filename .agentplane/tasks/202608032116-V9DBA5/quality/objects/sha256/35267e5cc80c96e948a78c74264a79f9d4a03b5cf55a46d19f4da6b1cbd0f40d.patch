@@ -1,0 +1,141 @@
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index 4387a0ac5..3105145b8 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -219,7 +219,7 @@ task lifecycle evidence. `finish` refreshes the task-local ACR automatically whe
+ `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
+ derived projection, not a second source of truth. Completed tasks expose provider token usage as
+ `token_usage` in the task README, task JSON/brief projections, and
+-`extensions["agentplane.token_usage"]` in the ACR. The state is `observed`, `partial`, or
++`extensions["agentplane.token-usage"]` in the ACR. The state is `observed`, `partial`, or
+ `unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
+ shape; `acr check --mode ci` enforces merge-ready semantics. See
+ [Agent Change Records](../reference/acr).
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts b/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts
+index 58c619a32..6cd877caa 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts
+@@ -315,6 +315,9 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
+       const acrPath = path.join(root, ".agentplane", "tasks", taskId, "acr.json");
+       const acrRaw = await readFile(acrPath, "utf8");
+       expect(acrRaw).toContain(`"task_id": "${taskId}"`);
++      const acr = JSON.parse(acrRaw) as { extensions?: Record<string, unknown> };
++      expect(acr.extensions?.["agentplane.token-usage"]).toBeDefined();
++      expect(acr.extensions?.["agentplane.token_usage"]).toBeUndefined();
+       const { stdout: trackedAcrStdout } = await execFileAsync(
+         "git",
+         ["ls-files", "--", path.relative(root, acrPath)],
+diff --git a/packages/agentplane/src/commands/acr/generate.ts b/packages/agentplane/src/commands/acr/generate.ts
+index c206e0b94..772ad2d5f 100644
+--- a/packages/agentplane/src/commands/acr/generate.ts
++++ b/packages/agentplane/src/commands/acr/generate.ts
+@@ -165,7 +165,7 @@ export async function generateAcr(opts: {
+   const mergeReady = residualRisks.length === 0;
+   const extensions = {
+     "agentplane.blueprint": blueprint,
+-    ...(task.token_usage ? { "agentplane.token_usage": task.token_usage } : {}),
++    ...(task.token_usage ? { "agentplane.token-usage": task.token_usage } : {}),
+     ...buildAcrContextExtension(task),
+   };
+   if (trust) Object.assign(extensions, trust);
+diff --git a/packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts b/packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts
+index ad72ab3d3..8a3574c1e 100644
+--- a/packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts
+@@ -117,4 +117,31 @@ describe("refreshAcrArtifactsForFinishedTasks", () => {
+     expect(mocks.writeAcrFile).toHaveBeenCalledTimes(1);
+     expect(invalidateStatus).toHaveBeenCalled();
+   });
++
++  it("keeps ordinary finish refresh best-effort but fails closed when the caller requires ACRs", async () => {
++    const { ctx } = mkCtx();
++    ctx.config.acr.enabled = true;
++    mocks.generateAcr.mockRejectedValue(new Error("invalid ACR extension"));
++    const input = {
++      ctx,
++      cwd: "/repo",
++      loadedTasks: [
++        {
++          taskId: "T-CODE",
++          task: {
++            id: "T-CODE",
++            task_kind: "standard",
++            commit: { hash: "code-hash", message: "code" },
++          },
++        },
++      ] as Parameters<typeof refreshAcrArtifactsForFinishedTasks>[0]["loadedTasks"],
++      taskCommitInfo: null,
++      author: "CODER",
++    };
++
++    await expect(refreshAcrArtifactsForFinishedTasks(input)).resolves.toEqual([]);
++    await expect(refreshAcrArtifactsForFinishedTasks({ ...input, required: true })).rejects.toThrow(
++      "Required ACR refresh failed for task T-CODE: invalid ACR extension",
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/finish-shared.ts b/packages/agentplane/src/commands/task/finish-shared.ts
+index d0687ba1a..b7a26156e 100644
+--- a/packages/agentplane/src/commands/task/finish-shared.ts
++++ b/packages/agentplane/src/commands/task/finish-shared.ts
+@@ -311,6 +311,7 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
+   taskCommitInfo: ResolvedCommitInfo | null;
+   author: string;
+   noWriteAcr?: boolean;
++  required?: boolean;
+ }): Promise<string[]> {
+   if (opts.noWriteAcr === true) return [];
+   if (opts.ctx.config.acr.write_on_finish !== true) {
+@@ -325,7 +326,12 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
+   const writtenPaths: string[] = [];
+   for (const { taskId, task } of refreshTasks) {
+     const workCommit = opts.taskCommitInfo?.hash ?? existingCommitInfo(task)?.hash;
+-    if (!workCommit) continue;
++    if (!workCommit) {
++      if (opts.required === true) {
++        throw new Error(`ACR refresh requires a work commit for task ${taskId}`);
++      }
++      continue;
++    }
+     try {
+       const generated = await generateAcr({
+         ctx: opts.ctx,
+@@ -338,7 +344,12 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
+         write: true,
+         refresh: true,
+       });
+-      if (!generated.acrPath) continue;
++      if (!generated.acrPath) {
++        if (opts.required === true) {
++          throw new Error(`ACR refresh did not resolve an output path for task ${taskId}`);
++        }
++        continue;
++      }
+       await writeAcrFile({ acrPath: generated.acrPath, record: generated.record, refresh: true });
+       writtenPaths.push(generated.acrPath);
+     } catch (err) {
+@@ -350,6 +361,12 @@ export async function refreshAcrArtifactsForFinishedTasks(opts: {
+           error: err instanceof Error ? err.message : String(err),
+         },
+       });
++      if (opts.required === true) {
++        throw new Error(
++          `Required ACR refresh failed for task ${taskId}: ${err instanceof Error ? err.message : String(err)}`,
++          { cause: err },
++        );
++      }
+     }
+   }
+ 
+diff --git a/packages/agentplane/src/commands/task/hosted-close.command.ts b/packages/agentplane/src/commands/task/hosted-close.command.ts
+index c36328865..e8e1c4066 100644
+--- a/packages/agentplane/src/commands/task/hosted-close.command.ts
++++ b/packages/agentplane/src/commands/task/hosted-close.command.ts
+@@ -303,6 +303,7 @@ async function closeHostedTask(opts: {
+     loadedTasks: tasksNeedingClose,
+     taskCommitInfo,
+     author: "INTEGRATOR",
++    required: true,
+   });
+   const collectedIncidents = await collectTaskIncidents({
+     ctx: opts.ctx,
