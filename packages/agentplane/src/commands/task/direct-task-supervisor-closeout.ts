@@ -88,6 +88,15 @@ function directCompletionEligibleRoute(decision: TaskRouteDecision): boolean {
   );
 }
 
+function directEvaluationEligibleRoute(decision: TaskRouteDecision): boolean {
+  return (
+    directCompletionEligibleRoute(decision) ||
+    (decision.workflowStep.kind === "agent_episode" &&
+      decision.workflowStep.id === "agent.direct_quality_review" &&
+      decision.workflowStep.episode.purpose === "quality_review")
+  );
+}
+
 function staleRouteStop(opts: {
   decision: TaskRouteDecision;
   reason: string;
@@ -269,7 +278,7 @@ export async function verifyDirectTask(opts: {
     };
   }
   opts.on_lifecycle_operation?.();
-  if (!directCompletionEligibleRoute(verified.decision)) {
+  if (!directEvaluationEligibleRoute(verified.decision)) {
     return {
       journal: verified.journal,
       journal_path: verified.journal_path,

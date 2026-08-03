@@ -437,8 +437,8 @@ async function executeBranchVerificationEpisode(opts: {
           cwd: checkout,
           task_id: opts.input.task_id,
           message: passed
-            ? `✅ ${opts.input.task_id} supervisor: record branch verification`
-            : `🧪 ${opts.input.task_id} supervisor: record verification rework`,
+            ? `✅ ${opts.input.task_id.split("-").at(-1)} supervisor: record branch verification`
+            : `🧪 ${opts.input.task_id.split("-").at(-1)} supervisor: record verification rework`,
         });
         return {
           verification: passed ? "ok" : "needs_rework",
@@ -469,7 +469,7 @@ async function executeBranchVerificationEpisode(opts: {
       code: "verification_failed",
       reason:
         "The CLI could not complete and commit the branch verification operation " +
-        `(${error instanceof Error ? error.name : "unknown_error"}).`,
+        `(${error instanceof Error ? `${error.name}: ${error.message}` : "unknown_error"}).`,
     });
   }
 }

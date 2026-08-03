@@ -27,7 +27,8 @@
     "202607221852-ECBY56",
     "202608021231-PZGG3V",
     "202608021231-SHYJGK",
-    "202608021534-YN84E1"
+    "202608021534-YN84E1",
+    "202608022324-9VCYWG"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -36,9 +37,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "9d63ed1ec8fdd66ce6edf66c3f1e77c1bb08e94816bd25bd736c19904d32ff4f",
+    "surface_sha256": "0c933ab071ec74c75d25ac6d3466ecf9555eb9737623ed574c2b5063a2c03206",
     "section_digests": {
-      "cli_topology": "ccefd47db2b599df843389724770507cf9cd2ce65f14c8006a26c05b633f7081",
+      "cli_topology": "c0f84f6ab60f3f82f964d8a4072f0b41544ac9f19accb23c9a5382018b8e4797",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -81,7 +82,7 @@
     "section": "package_manifests",
     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
     "to_sha256": "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
-    "surface_sha256": "dc99c14dd9a186313e0698783d9d93741ccee0d5d6cefd58966ffd64f562163a",
+    "surface_sha256": "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@agentplaneorg/core",
       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -425,16 +426,17 @@
         "202607302125-Y61ZHN",
         "202607221852-ECBY56",
         "202608021231-PZGG3V",
-        "202608021534-YN84E1"
+        "202608021534-YN84E1",
+        "202608022324-9VCYWG"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "ccefd47db2b599df843389724770507cf9cd2ce65f14c8006a26c05b633f7081",
+      "to_sha256": "c0f84f6ab60f3f82f964d8a4072f0b41544ac9f19accb23c9a5382018b8e4797",
       "classification": "additive_with_visibility_simplification",
       "summary": "Adds the compact external task advance packet, promotes the managed task runner, and demotes legacy manual lifecycle choreography to compatibility help without removing commands or options.",
       "evidence": {
         "command_count": { "from": 243, "to": 256 },
         "positional_count": { "from": 165, "to": 177 },
-        "option_count": { "from": 767, "to": 825 },
+        "option_count": { "from": 767, "to": 826 },
         "added_commands": [
           "context supervise-task",
           "evaluator apply",
@@ -659,6 +661,11 @@
                 "kind": "boolean",
                 "valueHint": null,
                 "default": false
+              },
+              {
+                "name": "result",
+                "kind": "string",
+                "valueHint": "<path>"
               }
             ]
           },
@@ -1208,6 +1215,12 @@
             "default": false
           },
           {
+            "command": "task advance",
+            "name": "result",
+            "kind": "string",
+            "valueHint": "<path>"
+          },
+          {
             "command": "task authority grant",
             "name": "by",
             "kind": "string",
@@ -1671,6 +1684,12 @@
             "command": "task advance",
             "name": "remote",
             "source_task": "202608021231-PZGG3V"
+          },
+          {
+            "kind": "option",
+            "command": "task advance",
+            "name": "result",
+            "source_task": "202608022324-9VCYWG"
           },
           {
             "kind": "option",

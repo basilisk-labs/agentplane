@@ -227,4 +227,45 @@ describe("AgentWorkOrder v2 contract", () => {
     ).toThrow(/work_order_id/u);
     expect(AGENT_WORK_ORDER_SEMANTIC_RESULT_SCHEMA).toBe("agentplane.agent_semantic_result.v2");
   });
+
+  it("requires typed semantic review only for EVALUATOR work orders", () => {
+    const semanticResult = buildAgentSemanticResultV2ValidFixtures(
+      AGENT_WORK_ORDER_V2_VALID_FIXTURE.work_order_id,
+    ).completed;
+    const evaluatorWorkOrder = {
+      ...AGENT_WORK_ORDER_V2_VALID_FIXTURE,
+      role: "EVALUATOR" as const,
+      prepared_evidence: AGENT_WORK_ORDER_V2_VALID_FIXTURE.prepared_evidence.map((receipt) => ({
+        ...receipt,
+        role: "EVALUATOR" as const,
+      })),
+    };
+    expect(() =>
+      validateAgentSemanticResultForWorkOrder({
+        work_order: evaluatorWorkOrder,
+        semantic_result: semanticResult,
+      }),
+    ).toThrow(/typed review verdict/u);
+    const reviewed = {
+      ...semanticResult,
+      review: {
+        verdict: "pass" as const,
+        missing_tests: [],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    };
+    expect(
+      validateAgentSemanticResultForWorkOrder({
+        work_order: evaluatorWorkOrder,
+        semantic_result: reviewed,
+      }),
+    ).toEqual(reviewed);
+    expect(() =>
+      validateAgentSemanticResultForWorkOrder({
+        work_order: AGENT_WORK_ORDER_V2_VALID_FIXTURE,
+        semantic_result: reviewed,
+      }),
+    ).toThrow(/Only EVALUATOR/u);
+  });
 });

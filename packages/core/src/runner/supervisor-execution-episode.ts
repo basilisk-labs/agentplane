@@ -5,7 +5,12 @@ import { z } from "zod";
 export const SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION = 1 as const;
 export const SUPERVISOR_EXECUTION_EPISODE_KIND = "supervisor_execution_episode" as const;
 
-export const SUPERVISOR_EPISODE_ROLE_VALUES = ["EXECUTOR", "CURATOR", "EVALUATOR"] as const;
+export const SUPERVISOR_EPISODE_ROLE_VALUES = [
+  "PLANNER",
+  "EXECUTOR",
+  "CURATOR",
+  "EVALUATOR",
+] as const;
 export const SUPERVISOR_EPISODE_OPERATION_KIND_VALUES = [
   "agent_episode",
   "cli_operation",

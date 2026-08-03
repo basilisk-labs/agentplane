@@ -37,6 +37,13 @@ export type AgentActionPacket = {
     reference: string | null;
   };
   context_refs: AgentContextRef[];
+  exchange?: {
+    directory: string;
+    work_order_ref: string;
+    result_schema_ref: string;
+    result_ref: string;
+    return_invocation: string;
+  };
   recovery?: {
     reason:
       | "effect_in_doubt"
@@ -202,6 +209,7 @@ export function agentTransitionId(stepId: string): string {
 export function buildAgentActionPacket(opts: {
   decision: TaskRouteDecision;
   work_order: AgentWorkOrderV2;
+  exchange?: AgentActionPacket["exchange"];
   recovery?: AgentActionPacket["recovery"];
 }): AgentActionPacket {
   const projected = opts.recovery
@@ -234,6 +242,9 @@ export function buildAgentActionPacket(opts: {
           : null,
     },
     context_refs: compactContextRefs(opts.work_order),
+    ...(projected.action.kind === "agent_episode" && opts.exchange
+      ? { exchange: opts.exchange }
+      : {}),
     ...(opts.recovery ? { recovery: opts.recovery } : {}),
   };
 
