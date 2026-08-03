@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "No blocking issue: the 10 percent median and p95 thresholds are unchanged, while both public supervisor frontends now require 20 cold and 30 warm observations.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608032250-WDRW1E/quality/objects/sha256/6a1a52e67c03572d455ab8a7c0f772fb700cb38290c80e2cfab3cc21fc6a55c3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

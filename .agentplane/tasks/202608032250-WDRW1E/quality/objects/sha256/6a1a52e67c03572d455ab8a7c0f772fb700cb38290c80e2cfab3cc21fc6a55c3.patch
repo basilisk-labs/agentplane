@@ -1,0 +1,41 @@
+diff --git a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+index 15039df5a..002f2d3c3 100644
+--- a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
++++ b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+@@ -26,7 +26,7 @@ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+ const BASELINE_VERSION = "0.6.26";
+ const PACKAGES = ["core", "recipes", "agentplane"];
+-const DEFAULT_COLD_RUNS = 10;
++const DEFAULT_COLD_RUNS = 20;
+ const DEFAULT_WARM_RUNS = 30;
+ const DEFAULT_WARMUPS = 2;
+ const REPOSITORY_SCAN_PATTERN =
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 9631e1c54..5837e34db 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -517,14 +517,21 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.equal(failing.delta_ms, 4);
+   });
+ 
+-  it("requires 10 cold and 30 warm supervisor samples for both public frontends", () => {
++  it("requires 20 cold and 30 warm supervisor samples for both public frontends", () => {
+     const report = {
+       schema_version: 1,
+       kind: "agentplane.v0.7.1_supervisor_latency",
+-      phases: { cold: supervisorLatencySurfaces(10), warm: supervisorLatencySurfaces(30) },
++      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
+     };
+ 
+     assert.equal(validateSupervisorLatencyReport(report), report);
++    const insufficientCold = structuredClone(report);
++    insufficientCold.phases.cold[0].candidate.sample_count = 10;
++    insufficientCold.phases.cold[0].candidate.samples = Array.from({ length: 10 }, () => 100);
++    assert.throws(
++      () => validateSupervisorLatencyReport(insufficientCold),
++      /cold\.external_advance\.candidate requires 20 samples/u,
++    );
+     const insufficient = structuredClone(report);
+     insufficient.phases.warm[0].candidate.sample_count = 29;
+     assert.throws(
