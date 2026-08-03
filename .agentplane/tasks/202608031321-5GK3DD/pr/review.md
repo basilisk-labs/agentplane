@@ -6,7 +6,7 @@ Created: 2026-08-03T13:22:52.236Z
 
 - Task: `202608031321-5GK3DD`
 - Title: Make built-in task run context-verifiable
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608031321-5GK3DD/make-built-in-task-run-context-verifiable`
 - Canonical task record: `.agentplane/tasks/202608031321-5GK3DD/README.md`
 
