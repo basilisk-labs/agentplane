@@ -1,0 +1,15 @@
+{
+  "details": "Command: node --test scripts/qualification/release-qualification.test.mjs\nResult: pass (19/19)\nEvidence: current branch contract suite passes\nScope: release qualification contract\n\nCommand: validateSupervisorLatencyReport(.agentplane/tasks/202608032250-WDRW1E/evidence/supervisor-latency-9aa94fdec.json)\nResult: pass\nEvidence: exact implementation commit 9aa94fdec57505e39ae2f3f7333305911f260ff2, 20 cold and 30 warm samples, failure_ids=[]\nScope: supervisor latency comparison against published 0.6.26\n\nCommand: GitHub PR #4766 hosted checks\nResult: pending\nEvidence: hosted checks started automatically and remain an integration gate\nScope: hosted CI and review",
+  "digest": "sha256:5b771681bdf1e1fe4633829c68159766488971ff60668b818cb65c4378d021df",
+  "implementation_sha": "6a7485ce21995a1114899d406946b4ebcb65f69b",
+  "kind": "task_verification_record",
+  "note": "Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate.",
+  "recorded_at": "2026-08-03T22:58:09.824Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused release qualification contract tests. Expected: reports with 20 cold and 30 warm samples for both public frontends validate; a report with only 10 cold samples is rejected.\n2. Run TypeScript type checking, ESLint, and Prettier checks for the touched qualification files. Expected: all pass without unrelated changes.\n3. Run the supervisor latency benchmark against the exact task commit. Expected: both managed-run and external-advance cold and warm surfaces satisfy the unchanged 10 percent median and p95 budgets with the new 20/30 sample contract.\n4. Complete independent evaluator review and hosted PR verification. Expected: no blocking findings and all required checks pass.",
+  "scope_digest": "sha256:083a50ba9a0fe6bb72254d980cf12f5ddbc27880b7e6124f1dfa4c86beca88f0",
+  "task_id": "202608032250-WDRW1E",
+  "verification_command": "agentplane verify 202608032250-WDRW1E --ok --by TESTER",
+  "verifier": "TESTER"
+}
