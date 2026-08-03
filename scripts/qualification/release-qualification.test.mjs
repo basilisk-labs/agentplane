@@ -190,11 +190,25 @@ describe("v0.7.1 release qualification contract", () => {
       profile: "full",
       provider: true,
     });
-    assert.equal(
-      local.some((scenario) => scenario.tier === "provider"),
-      false,
-    );
+    const localIds = local.map((scenario) => scenario.id);
+    const providerIds = provider.map((scenario) => scenario.id);
+    assert.equal(localIds.includes("provider-matrix"), false);
+    assert.equal(localIds.includes("efficiency-evidence"), false);
     assert.equal(provider.filter((scenario) => scenario.tier === "provider").length, 1);
+    assert.ok(providerIds.indexOf("provider-matrix") < providerIds.indexOf("efficiency-evidence"));
+  });
+
+  it("fails closed when an explicit scenario omits its dependency", () => {
+    const manifest = readQualificationManifest(manifestPath);
+    assert.throws(
+      () =>
+        selectQualificationScenarios(manifest, {
+          profile: "full",
+          provider: false,
+          scenarioIds: ["efficiency-evidence"],
+        }),
+      /efficiency-evidence -> provider-matrix.*include each dependency with --scenario/u,
+    );
   });
 
   it("fails closed when a command variable is absent", () => {

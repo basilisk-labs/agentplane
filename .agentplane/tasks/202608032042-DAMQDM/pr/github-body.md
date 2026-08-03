@@ -22,12 +22,14 @@ Make the v0.7.1 qualification selector exclude scenarios whose dependencies are 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T20:44:49.628Z
+- Updated: 2026-08-03T20:45:10.320Z
 - Branch: task/202608032042-DAMQDM/skip-provider-dependent-qualification-checks-bef
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ scripts/qualification/release-qualification.mjs    | 33 ++++++++++++++++++----
+ .../qualification/release-qualification.test.mjs   | 22 ++++++++++++---
+ 2 files changed, 45 insertions(+), 10 deletions(-)
 ```
 
 </details>
