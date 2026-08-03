@@ -1,0 +1,27 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run knip:check"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T16:03:44.976Z",
+    "updated_by": "TESTER",
+    "note": "Verified hosted CI rework with structured check evidence."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021534-J5G235/verification/20260803160344976-6d322e911b99150f.json",
+      "sha256": "sha256:bbf19a15aa5f8ad36dc3bd48efc71629e03334bb76f7a450a387a6830a46a5a3"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
