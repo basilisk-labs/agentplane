@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Path normalization happens before namespace classification; .agentplane/reports/<run> and .agentplane/tasks/<task-id>/evidence remain rerunnable, while root, outside-repository, traversal-normalized, and source directories are rejected before Git cleanliness evaluation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/352a72283782d21d8d90c65d3162be69843f0f927e71251749fcd1f8daaa3436.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

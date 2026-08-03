@@ -15,8 +15,8 @@ Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness c
 
 ## Verification
 
-- State: needs_rework
-- Note: GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate.
+- State: ok
+- Note: Evidence rerun path restriction and static checks pass.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,9 +27,9 @@ Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../qualification/release-qualification.test.mjs   | 27 +++++++++++++-----
- .../run-v0.7.1-release-qualification.mjs           | 32 +++++++++++++++-------
- 2 files changed, 42 insertions(+), 17 deletions(-)
+ .../qualification/release-qualification.test.mjs   | 55 ++++++++++++++++++----
+ .../run-v0.7.1-release-qualification.mjs           | 45 ++++++++++++++----
+ 2 files changed, 82 insertions(+), 18 deletions(-)
 ```
 
 </details>

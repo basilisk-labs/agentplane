@@ -1,0 +1,15 @@
+{
+  "details": "Command: node --test scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: 19 tests passed; dedicated reports and task evidence paths are accepted, unrelated/root/outside/source paths are rejected\nScope: qualification exact-subject trust boundary\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed with exit code 0\nScope: repository type safety\n\nCommand: bunx eslint scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: focused lint completed with exit code 0\nScope: touched qualification files\n\nCommand: bunx prettier --check scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: all matched files use Prettier code style\nScope: touched qualification files",
+  "digest": "sha256:21ac1bfc3fdc580ee27e854e2910750d6d952d5b46b231e69e7bba5f483b93b3",
+  "implementation_sha": "be24b434ccc3fcbdce64f00dacb0f870afc7e28a",
+  "kind": "task_verification_record",
+  "note": "Evidence rerun path restriction and static checks pass.",
+  "recorded_at": "2026-08-03T22:21:16.897Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "- A rerun using an existing nested --out-dir reaches scenario execution/dry-run when HEAD and all non-evidence paths are clean.\n- An unrelated tracked or untracked change still fails the exact-subject cleanliness gate.\n- Root-level and outside-repository evidence directories remain rejected.\n- node --test scripts/qualification/release-qualification.test.mjs passes.\n- bun run typecheck, focused lint/format checks, semantic evaluator, and all hosted PR checks pass.",
+  "scope_digest": "sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00",
+  "task_id": "202608032207-V8HMV8",
+  "verification_command": "agentplane verify 202608032207-V8HMV8 --ok --by TESTER",
+  "verifier": "TESTER"
+}

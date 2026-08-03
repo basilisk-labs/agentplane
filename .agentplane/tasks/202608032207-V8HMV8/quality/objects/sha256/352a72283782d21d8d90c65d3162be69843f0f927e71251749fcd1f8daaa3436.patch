@@ -1,0 +1,181 @@
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 6a7ea2493..9631e1c54 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -26,6 +26,7 @@ import {
+   validateMatchedLatencyReport,
+ } from "./measure-v0.7.1-matched-cli-latency.mjs";
+ import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
++import { readQualificationRunSubjectIdentity } from "./run-v0.7.1-release-qualification.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -174,7 +175,7 @@ describe("v0.7.1 release qualification contract", () => {
+     );
+   });
+ 
+-  it("ignores only the active nested qualification evidence directory", () => {
++  it("lets the qualification runner ignore only its active nested evidence directory", () => {
+     const root = mkdtempSync(path.join(tmpdir(), "agentplane-qualification-clean-"));
+     const git = (...args) =>
+       execFileSync("git", args, {
+@@ -184,8 +185,11 @@ describe("v0.7.1 release qualification contract", () => {
+       }).trim();
+     try {
+       git("init", "--quiet");
++      const sourceDirectory = path.join(root, "packages", "agentplane", "src");
++      mkdirSync(sourceDirectory, { recursive: true });
+       writeFileSync(path.join(root, "candidate.txt"), "candidate\n", "utf8");
+-      git("add", "candidate.txt");
++      writeFileSync(path.join(sourceDirectory, "index.ts"), "export {};\n", "utf8");
++      git("add", "candidate.txt", "packages/agentplane/src/index.ts");
+       git(
+         "-c",
+         "user.name=AgentPlane",
+@@ -201,16 +205,43 @@ describe("v0.7.1 release qualification contract", () => {
+       mkdirSync(evidenceDirectory, { recursive: true });
+       writeFileSync(path.join(evidenceDirectory, "scenario.log"), "evidence\n", "utf8");
+ 
+-      assert.deepEqual(readQualificationSubjectIdentity(root, subject, { evidenceDirectory }), {
+-        commit: subject,
+-        tree: git("rev-parse", "HEAD^{tree}"),
+-        clean: true,
+-      });
++      const expected = { commit: subject, tree: git("rev-parse", "HEAD^{tree}"), clean: true };
++      assert.deepEqual(
++        readQualificationSubjectIdentity(root, subject, { evidenceDirectory }),
++        expected,
++      );
++      assert.deepEqual(
++        readQualificationRunSubjectIdentity(root, subject, evidenceDirectory),
++        expected,
++      );
+       writeFileSync(path.join(root, "unrelated.txt"), "dirty\n", "utf8");
+       assert.throws(
+-        () => readQualificationSubjectIdentity(root, subject, { evidenceDirectory }),
++        () => readQualificationRunSubjectIdentity(root, subject, evidenceDirectory),
+         /candidate repository must be clean/u,
+       );
++      rmSync(path.join(root, "unrelated.txt"), { force: true });
++      rmSync(evidenceDirectory, { recursive: true, force: true });
++
++      const taskEvidenceDirectory = path.join(
++        root,
++        ".agentplane",
++        "tasks",
++        "202608032207-V8HMV8",
++        "evidence",
++      );
++      mkdirSync(taskEvidenceDirectory, { recursive: true });
++      writeFileSync(path.join(taskEvidenceDirectory, "scenario.log"), "evidence\n", "utf8");
++      assert.deepEqual(
++        readQualificationRunSubjectIdentity(root, subject, taskEvidenceDirectory),
++        expected,
++      );
++      rmSync(taskEvidenceDirectory, { recursive: true, force: true });
++
++      writeFileSync(path.join(sourceDirectory, "index.ts"), "export const dirty = true;\n", "utf8");
++      assert.throws(
++        () => readQualificationRunSubjectIdentity(root, subject, sourceDirectory),
++        /out-dir must use \.agentplane\/reports/u,
++      );
+       assert.throws(
+         () => qualificationEvidenceStatusPathspec(root, root),
+         /evidence directory must be nested/u,
+@@ -219,6 +250,14 @@ describe("v0.7.1 release qualification contract", () => {
+         () => qualificationEvidenceStatusPathspec(root, path.dirname(root)),
+         /evidence directory must be nested/u,
+       );
++      assert.throws(
++        () => readQualificationRunSubjectIdentity(root, subject, root),
++        /out-dir must be nested/u,
++      );
++      assert.throws(
++        () => readQualificationRunSubjectIdentity(root, subject, path.dirname(root)),
++        /out-dir must be nested/u,
++      );
+     } finally {
+       rmSync(root, { recursive: true, force: true });
+     }
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index 4b0ab905e..ef493035f 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -12,7 +12,7 @@ import {
+   selectQualificationScenarios,
+   substituteQualificationCommand,
+ } from "./release-qualification.mjs";
+-import { parseScriptArgs } from "../lib/script-runtime.mjs";
++import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -110,11 +110,31 @@ function parseArgs(argv) {
+   };
+ }
+ 
+-function assertOutputInsideRepository(outputDirectory) {
+-  const relative = path.relative(repoRoot, outputDirectory);
++function assertOutputInsideRepository(runRepoRoot, outputDirectory) {
++  const relative = path.relative(runRepoRoot, outputDirectory);
+   if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`)) {
+     throw new Error("qualification --out-dir must be nested inside the repository");
+   }
++  const segments = relative.split(path.sep);
++  const isReportsEvidence =
++    segments[0] === ".agentplane" && segments[1] === "reports" && segments.length >= 3;
++  const isTaskEvidence =
++    segments[0] === ".agentplane" &&
++    segments[1] === "tasks" &&
++    segments.length >= 4 &&
++    segments[3] === "evidence";
++  if (!isReportsEvidence && !isTaskEvidence) {
++    throw new Error(
++      "qualification --out-dir must use .agentplane/reports/<run> or .agentplane/tasks/<task-id>/evidence",
++    );
++  }
++}
++
++export function readQualificationRunSubjectIdentity(runRepoRoot, subject, outputDirectory) {
++  assertOutputInsideRepository(runRepoRoot, outputDirectory);
++  return readQualificationSubjectIdentity(runRepoRoot, subject, {
++    evidenceDirectory: outputDirectory,
++  });
+ }
+ 
+ function defaultOutputDirectory() {
+@@ -189,14 +209,17 @@ async function main(argv = process.argv.slice(2)) {
+     return;
+   }
+   const manifest = readQualificationManifest(options.manifestPath);
+-  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
++  const outputDirectory = options.outputDirectory ?? defaultOutputDirectory();
++  const sourceIdentity = readQualificationRunSubjectIdentity(
++    repoRoot,
++    options.subject,
++    outputDirectory,
++  );
+   const scenarios = selectQualificationScenarios(manifest, {
+     profile: options.profile,
+     provider: options.provider,
+     scenarioIds: options.scenarioIds,
+   });
+-  const outputDirectory = options.outputDirectory ?? defaultOutputDirectory();
+-  assertOutputInsideRepository(outputDirectory);
+   const relativeOutputDirectory = path.relative(repoRoot, outputDirectory);
+   const variables = {
+     candidateEvidence: options.provider
+@@ -241,7 +264,9 @@ async function main(argv = process.argv.slice(2)) {
+   process.exitCode = qualificationExitCode(report);
+ }
+ 
+-main().catch((error) => {
+-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
+-  process.exitCode = 1;
+-});
++if (isDirectRun(import.meta.url)) {
++  main().catch((error) => {
++    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
++    process.exitCode = 1;
++  });
++}
