@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Hosted merge reconciliation completes tasks without projecting available supervisor token usage.",
+      "broken_invariant": "Every completion path must persist the authoritative supervisor-owned aggregate when provider evidence exists. The reconciliation builders only preserve an existing task.token_usage value; otherwise they manufacture an unavailable record without reading the task's supervisor journal. A task completed directly through hosted or local merge reconciliation can therefore lose available executor and evaluator usage.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-113239286-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0b1f52682508119b9b5597a40e446ea58363d50ebee385c8fd0ac59b855b2495",
+          "section": "packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:44b1676730b2a46316b368e739c7b040731e183c75329899e1cd06f1a2c40838",
+          "section": "Verify Steps 3"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A hosted-merge reconciliation test where the task has no preexisting token_usage but its supervisor journal contains observed executor and evaluator usage; the completed task must persist that exact aggregate rather than an unavailable state.",
+    "Equivalent journal-present coverage for local merged and locally shipped reconciliation paths."
+  ],
+  "hidden_assumptions": [
+    "Hosted reconciliation is assumed to encounter only tasks whose token usage was already projected by a prior finish path, but the builders themselves transition unfinished tasks to DONE.",
+    "Marking usage unavailable during reconciliation is assumed acceptable even when authoritative supervisor evidence may still exist."
+  ],
+  "recovery_context": "Route all hosted and local reconciliation completion paths through the same supervisor-journal projection used by finish/no-op closure, while preserving an existing stable projection for idempotent replay; add journal-present reconciliation tests for exact aggregation and repeated sync."
+}

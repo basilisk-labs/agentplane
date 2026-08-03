@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T11:33:45.365Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "613cd8095f4cebf234dafaa8348f87f173495d9e",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "findings": [
+    "Hosted merge reconciliation completes tasks without projecting available supervisor token usage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-113239286-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-BPMM04/README.md"
+  ],
+  "missing_tests": [
+    "A hosted-merge reconciliation test where the task has no preexisting token_usage but its supervisor journal contains observed executor and evaluator usage; the completed task must persist that exact aggregate rather than an unavailable state.",
+    "Equivalent journal-present coverage for local merged and locally shipped reconciliation paths."
+  ],
+  "hidden_assumptions": [
+    "Hosted reconciliation is assumed to encounter only tasks whose token usage was already projected by a prior finish path, but the builders themselves transition unfinished tasks to DONE.",
+    "Marking usage unavailable during reconciliation is assumed acceptable even when authoritative supervisor evidence may still exist."
+  ],
+  "residual_risks": [
+    "Route all hosted and local reconciliation completion paths through the same supervisor-journal projection used by finish/no-op closure, while preserving an existing stable projection for idempotent replay; add journal-present reconciliation tests for exact aggregation and repeated sync."
+  ]
+}

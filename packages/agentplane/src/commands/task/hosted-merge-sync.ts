@@ -16,6 +16,7 @@ import { resolveHostedMergedPr } from "./hosted-merge-sync/github.js";
 import { findLocallyShippedBranchPrTasks } from "./hosted-merge-sync/local-branch.js";
 import { readPrMetaIfPresent, resolveLocalMergedPrMeta } from "./hosted-merge-sync/pr-meta.js";
 import type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/model.js";
+import { resolveReconciliationTaskTokenUsage } from "./task-token-usage.js";
 
 export type {
   HostedMergedPr,
@@ -87,11 +88,21 @@ export async function syncHostedMergedTask(opts: {
     branch: opts.target.branch,
   });
   await writeJsonStableIfChanged(prMetaRecord.metaPath, nextMeta);
+  const at = opts.target.mergedPr.mergedAt ?? new Date().toISOString();
+  const tokenUsage = await resolveReconciliationTaskTokenUsage({
+    task,
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    updated_at: at,
+  });
 
   return {
     tasks: opts.tasks.map((entry) =>
       entry.id === opts.target.taskId
-        ? buildSyncedTask({ task: entry, mergedPr: opts.target.mergedPr })
+        ? buildSyncedTask({
+            task: entry,
+            mergedPr: opts.target.mergedPr,
+            tokenUsage,
+          })
         : entry,
     ),
     synced: 1,
@@ -114,11 +125,20 @@ export async function syncLocallyShippedBranchPrTasks(opts: {
   }
   const byTaskId = new Map(matches.map((entry) => [entry.taskId, entry]));
   return {
-    tasks: opts.tasks.map((task) => {
-      const candidate = byTaskId.get(task.id);
-      if (!candidate) return task;
-      return candidate.taskStatus === "DONE" ? task : buildLocallySyncedTask({ task, candidate });
-    }),
+    tasks: await Promise.all(
+      opts.tasks.map(async (task) => {
+        const candidate = byTaskId.get(task.id);
+        if (!candidate) return task;
+        if (candidate.taskStatus === "DONE" && task.token_usage) return task;
+        const at = new Date().toISOString();
+        const tokenUsage = await resolveReconciliationTaskTokenUsage({
+          task,
+          git_root: opts.ctx.resolvedProject.gitRoot,
+          updated_at: at,
+        });
+        return buildLocallySyncedTask({ task, candidate, tokenUsage, at });
+      }),
+    ),
     synced: matches.length,
   };
 }
@@ -150,8 +170,18 @@ export async function syncHostedMergedTasks(opts: {
     const localMergedMeta = resolveLocalMergedPrMeta(prMetaRecord.meta);
     if (localMergedMeta) {
       const needsSync = needsHostedMergeSyncFromLocalMeta({ task, meta: localMergedMeta });
+      const at = localMergedMeta.mergedAt ?? new Date().toISOString();
+      const tokenUsage = needsSync
+        ? await resolveReconciliationTaskTokenUsage({
+            task,
+            git_root: opts.ctx.resolvedProject.gitRoot,
+            updated_at: at,
+          })
+        : null;
       nextTasks.push(
-        needsSync ? buildLocallyMergedSyncedTask({ task, meta: localMergedMeta }) : task,
+        needsSync && tokenUsage
+          ? buildLocallyMergedSyncedTask({ task, meta: localMergedMeta, tokenUsage })
+          : task,
       );
       if (needsSync) synced += 1;
       continue;

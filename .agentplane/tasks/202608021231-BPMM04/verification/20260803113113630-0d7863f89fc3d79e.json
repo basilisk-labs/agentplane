@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:0d7863f89fc3d79e39956c607d17ecaffa698660e92b6a48931fa79639d69aa3",
+  "implementation_sha": "613cd8095f4cebf234dafaa8348f87f173495d9e",
+  "kind": "task_verification_record",
+  "note": "Verified implementation commit 613cd8095f4cebf234dafaa8348f87f173495d9e. Focused token-accounting, schema, export, brief, finish, hosted-close, ACR, provider, supervisor, and idempotency coverage passed (169 focused assertions across the recorded groups). bun run typecheck, bun run lint:core, bun run knip:check (539 baseline), node .agentplane/policy/check-routing.mjs, bun run ci:contract, and bun run test:critical all passed. Exact RF04 replay remained 50/50 with 70/70 outcomes, 27/27 token cells, and 170/170 scalar cells.",
+  "recorded_at": "2026-08-03T11:31:13.630Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused managed-run fixtures with multiple executor and evaluator episodes carrying known Codex provider usage. Expected: the completed task persists exact input, output, reasoning, and total tokens from supervisor-owned evidence; each episode is counted once; README, task status/brief human output, machine JSON, and ACR expose the same aggregate and provenance/completeness state.\n2. Run external-advance, manual/direct, legacy task, adapter-without-usage, malformed-usage, and partial-usage fixtures. Expected: AgentPlane never treats agent-reported metrics as observed provider usage, never fabricates zero for unavailable usage, and preserves an explicit unavailable or partial state without blocking otherwise valid completion.\n3. Run branch_pr rework, retry, stale fingerprint, crash recovery, reconcile, repeated finish, GitHub rebase merge, hosted close, and cleanup fixtures. Expected: token aggregates survive state transitions and task-artifact commits, remain bound to the correct task/run, and cannot be lost or double-counted by replay or idempotent closure.\n4. Validate schema compatibility and historical task reads, then run the v0.7 supervisor, lifecycle, and recovery suites, bun run test:critical, bun run schemas:check, bun run typecheck, bun run lint:core, bun run knip:check, node .agentplane/policy/check-routing.mjs, and bun run ci:contract. Expected: all gates pass without baseline growth, and an independent EVALUATOR accepts the exact implementation SHA.",
+  "scope_digest": "sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e",
+  "task_id": "202608021231-BPMM04",
+  "verification_command": "agentplane verify 202608021231-BPMM04 --ok --by TESTER",
+  "verifier": "TESTER"
+}
