@@ -16,7 +16,7 @@ Introduce a machine-readable compatibility-adapter manifest with introduced_in, 
 ## Verification
 
 - State: ok
-- Note: PASS: all mandatory gates and typed eight-process contention outcomes recorded explicitly at 76c2607a560e.
+- Note: PASS: all seven Verify Steps, routing, evidence bundle, and full clean worktree state recorded at 76c2607a560e.
 - Canonical workflow state lives in the task README.
 
 <details>
