@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021535-9EWFAB-89ae05f7beb15abac683405f",
+  "task_id": "202608021535-9EWFAB",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace check-then-use pathname operations with a mechanism that binds reads, publication, rename, and cleanup to verified directory handles or otherwise makes containment atomic; then add deterministic directory-swap race coverage and rerun the focused security and repository contract suites.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The symlink hardening remains vulnerable to a directory-swap race: parent directories are checked by pathname, then later path-based open, rename, link, or unlink operations follow those paths without binding the operation to the verified directory handle. A concurrent process can replace a checked directory with an external symlink between validation and mutation, allowing writes outside the repository.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/f8387e823a299bd00fd12e1f11ff156021c37ef89c6fc208bb458af3c33e4179.patch",
+          "sha256": "sha256:f8387e823a299bd00fd12e1f11ff156021c37ef89c6fc208bb458af3c33e4179",
+          "line": 722,
+          "lines": "The implementation validates parent paths at lines 722–729 before a later path-based open; manifest rename follows a directory check at lines 775–780; object publication checks directories at lines 839–848 and then calls path-based link at line 849.",
+          "section": "evaluator-evidence-store.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-171115230-recovery-context/evaluator-result.json"
+}

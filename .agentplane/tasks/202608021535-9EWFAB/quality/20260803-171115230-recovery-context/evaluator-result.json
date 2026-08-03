@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The symlink hardening remains vulnerable to a directory-swap race: parent directories are checked by pathname, then later path-based open, rename, link, or unlink operations follow those paths without binding the operation to the verified directory handle. A concurrent process can replace a checked directory with an external symlink between validation and mutation, allowing writes outside the repository.",
+      "broken_invariant": "Evidence-store reads and writes must remain inside the repository under concurrent filesystem changes; pre-operation pathname checks alone do not enforce that trust boundary atomically.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/f8387e823a299bd00fd12e1f11ff156021c37ef89c6fc208bb458af3c33e4179.patch",
+          "sha256": "sha256:f8387e823a299bd00fd12e1f11ff156021c37ef89c6fc208bb458af3c33e4179",
+          "line": 722,
+          "lines": "The implementation validates parent paths at lines 722–729 before a later path-based open; manifest rename follows a directory check at lines 775–780; object publication checks directories at lines 839–848 and then calls path-based link at line 849.",
+          "section": "evaluator-evidence-store.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a deterministic adversarial race test that replaces each checked parent directory with an external symlink after validation but before open, rename, link, and cleanup, and assert that no file is read, created, replaced, or removed outside the repository."
+  ],
+  "hidden_assumptions": [
+    "No concurrent process can rename or replace a validated parent directory between the pathname-based check and the subsequent filesystem operation."
+  ],
+  "recovery_context": "Replace check-then-use pathname operations with a mechanism that binds reads, publication, rename, and cleanup to verified directory handles or otherwise makes containment atomic; then add deterministic directory-swap race coverage and rerun the focused security and repository contract suites."
+}
