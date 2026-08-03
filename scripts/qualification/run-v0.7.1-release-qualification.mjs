@@ -206,8 +206,12 @@ function printDryRun(scenarios, variables) {
   }
 }
 
-export function preflightQualificationProviderRuntime(options, verify = assertCodexBinary) {
-  if (!options.provider || options.dryRun) return null;
+export function preflightQualificationProviderRuntime(
+  options,
+  scenarios,
+  verify = assertCodexBinary,
+) {
+  if (options.dryRun || !scenarios.some((scenario) => scenario.tier === "provider")) return null;
   return verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
 }
 
@@ -244,7 +248,7 @@ async function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  preflightQualificationProviderRuntime(options);
+  preflightQualificationProviderRuntime(options, scenarios);
 
   mkdirSync(outputDirectory, { recursive: true });
   const startedAt = new Date().toISOString();

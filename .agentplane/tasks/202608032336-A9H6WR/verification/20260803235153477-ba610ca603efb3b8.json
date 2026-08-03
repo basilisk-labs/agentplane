@@ -1,0 +1,15 @@
+{
+  "details": "Command: GitHub Codex review on PR #4767 at commit 785e24f8b8c3fc66a3002e8778522cfaf60b374f\nResult: fail\nEvidence: unresolved review thread PRRT_kwDORCLmJM6WJ2A2 on scripts/qualification/run-v0.7.1-release-qualification.mjs:247\nScope: audit mode with --provider plus an explicit local-only --scenario",
+  "digest": "sha256:ba610ca603efb3b87b0b11d0f79df880bd168913dc54c62676f4d701c89b74dc",
+  "implementation_sha": "ede5a60b4c83a76c667a68524849c8644202ecc4",
+  "kind": "task_verification_record",
+  "note": "Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set.",
+  "recorded_at": "2026-08-03T23:51:53.477Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run the focused release qualification contract tests. Expected: provider execution invokes the exact-binary preflight before scenario work; non-provider and dry-run paths do not invoke it; a version mismatch fails without starting a scenario.\n2. Run TypeScript type checking, ESLint, and Prettier checks for the touched qualification files. Expected: all pass.\n3. Run a no-provider dry-run and a provider preflight probe with the actual bundled version. Expected: dry-run remains side-effect free; the matching bundled version passes; a deliberately wrong version fails before any qualification scenario log is created.\n4. Complete independent evaluator review and hosted PR verification. Expected: no blocking findings and all required checks pass.",
+  "scope_digest": "sha256:db777fef3e6c2c1ad78f686d5452ddccccc20617511be19de3bd369db49d9d60",
+  "task_id": "202608032336-A9H6WR",
+  "verification_command": "agentplane verify 202608032336-A9H6WR --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

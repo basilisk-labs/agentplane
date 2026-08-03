@@ -1,3 +1,3 @@
- .../qualification/release-qualification.test.mjs   | 37 +++++++++++++++++++++-
- .../run-v0.7.1-release-qualification.mjs           | 11 +++++++
- 2 files changed, 47 insertions(+), 1 deletion(-)
+ .../qualification/release-qualification.test.mjs   | 51 +++++++++++++++++++++-
+ .../run-v0.7.1-release-qualification.mjs           | 15 +++++++
+ 2 files changed, 65 insertions(+), 1 deletion(-)

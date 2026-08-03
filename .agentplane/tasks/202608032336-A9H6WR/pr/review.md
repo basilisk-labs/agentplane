@@ -6,14 +6,14 @@ Created: 2026-08-03T23:37:55.605Z
 
 - Task: `202608032336-A9H6WR`
 - Title: Preflight the provider binary before release qualification
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua`
 - Canonical task record: `.agentplane/tasks/202608032336-A9H6WR/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Local verification passed for the provider-runtime fail-fast change; evaluator and hosted checks remain separate downstream gates.
+- State: needs_rework
+- Note: Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,9 @@ Created: 2026-08-03T23:37:55.605Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../qualification/release-qualification.test.mjs   | 37 +++++++++++++++++++++-
- .../run-v0.7.1-release-qualification.mjs           | 11 +++++++
- 2 files changed, 47 insertions(+), 1 deletion(-)
+ .../qualification/release-qualification.test.mjs   | 51 +++++++++++++++++++++-
+ .../run-v0.7.1-release-qualification.mjs           | 15 +++++++
+ 2 files changed, 65 insertions(+), 1 deletion(-)
 ```
 
 </details>
