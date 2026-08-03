@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { describe, it } from "node:test";
@@ -221,6 +221,51 @@ describe("v0.7.1 release qualification contract", () => {
       );
     } finally {
       rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("allows the qualification runner to reuse its active evidence directory", () => {
+    const evidenceDirectory = path.join(
+      repoRoot,
+      ".agentplane",
+      "reports",
+      `qualification-rerun-${process.pid}`,
+    );
+    const runnerPath = path.join(
+      repoRoot,
+      "scripts",
+      "qualification",
+      "run-v0.7.1-release-qualification.mjs",
+    );
+    const subject = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    }).trim();
+    try {
+      mkdirSync(evidenceDirectory, { recursive: true });
+      writeFileSync(path.join(evidenceDirectory, "existing.log"), "evidence\n", "utf8");
+      const result = spawnSync(
+        process.execPath,
+        [
+          runnerPath,
+          "--mode",
+          "audit",
+          "--profile",
+          "core",
+          "--scenario",
+          "qualification-contract",
+          "--subject",
+          subject,
+          "--out-dir",
+          evidenceDirectory,
+          "--dry-run",
+        ],
+        { cwd: repoRoot, encoding: "utf8" },
+      );
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(result.stdout, /qualification-contract \[core\]/u);
+    } finally {
+      rmSync(evidenceDirectory, { recursive: true, force: true });
     }
   });
 

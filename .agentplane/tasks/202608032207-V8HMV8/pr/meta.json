@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608032207-V8HMV8/qualification-evidence-rerun",
+  "created_at": "2026-08-03T22:08:23.232Z",
+  "diffstat_sha256": "sha256:55cc692cc2e1976ce7c6d38e0695f8d41166a9d3c0d6e6a5dd62d3230721f608",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608032207-V8HMV8",
+  "updated_at": "2026-08-03T22:08:23.232Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
