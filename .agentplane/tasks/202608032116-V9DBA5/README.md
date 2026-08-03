@@ -1,10 +1,11 @@
 ---
 id: "202608032116-V9DBA5"
 title: "Restore ACR generation in hosted close qualification"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +62,23 @@ quality_review:
     - "PASS: agentplane.token-usage satisfies the ACR extension-key schema and the hosted integration test proves the completed task token usage is serialized in the resulting valid ACR."
     - "PASS: required behavior is opt-in at the hosted-close caller; ordinary finish and other existing callers retain best-effort refresh semantics."
     - "PASS: hosted-close now returns a contextual non-zero failure containing the task ID and root ACR error instead of committing a successful close tail without acr.json."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T21:46:10.871Z"
 commit:
-  hash: "e1c509e38ff5719b1178274a50834e35b3f9b818"
-  message: "🐛 V9DBA5 task: restore hosted close ACRs"
+  hash: "f5e77432f2803f0a3fff79eab5f2dfcd70a3cc9c"
+  message: "🔍 V9DBA5 task: record quality review"
 comments:
   -
     author: "CODER"
@@ -71,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: corrected the ACR token-usage extension key, made hosted-close require successful ACR refresh, preserved best-effort ordinary finish behavior, and added unit plus hosted regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -98,8 +116,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics."
+  -
+    type: "status"
+    at: "2026-08-03T21:46:10.871Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T21:45:06.191Z"
+doc_updated_at: "2026-08-03T21:46:10.881Z"
 doc_updated_by: "CODER"
 description: "Reproduce why task hosted-close reports success but silently omits acr.json, make hosted close either persist the required ACR or fail with actionable evidence, and preserve idempotent hosted closure."
 sections:
@@ -229,6 +254,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "e1c509e38ff5719b1178274a50834e35b3f9b818"
+    message: "🐛 V9DBA5 task: restore hosted close ACRs"
   workflow_route_baseline:
     start_head_sha: "aa93de810c57ada6039cfb942818ab3eae45a92d"
     version: 1
@@ -371,3 +399,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T21:46:10.871Z`
