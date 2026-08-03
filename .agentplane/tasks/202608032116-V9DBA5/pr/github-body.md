@@ -15,8 +15,13 @@ Reproduce why task hosted-close reports success but silently omits acr.json, mak
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR
+refresh errors without changing ordinary finish fallback semantics.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

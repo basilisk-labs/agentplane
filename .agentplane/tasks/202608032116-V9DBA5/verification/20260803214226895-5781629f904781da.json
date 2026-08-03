@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun x vitest --config vitest.workspace.ts run packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts --project agentplane\nResult: pass (1 file, 3 tests)\nEvidence: best-effort ordinary refresh and required fail-closed behavior are both asserted\nScope: refreshAcrArtifactsForFinishedTasks error contract\n\nCommand: node scripts/checks/run-vitest-suite.mjs v0.7-hosted\nResult: pass (7 files, 29 tests across 2 chunks)\nEvidence: hosted-close creates and tracks acr.json, serializes extensions[\"agentplane.token-usage\"], and reruns idempotently\nScope: hosted close, protected integration, and release recovery\n\nCommand: bun run test:critical\nResult: pass (12 chunks, 79 tests)\nEvidence: all critical CLI, efficiency, boundary, and exit-code suites passed\nScope: critical CLI regression surface\n\nCommand: bun run typecheck; targeted ESLint; targeted Prettier check\nResult: pass\nEvidence: zero type, lint, or formatting failures on the implementation and documentation paths\nScope: changed TypeScript, tests, and docs",
+  "digest": "sha256:5781629f904781da4ba0cf3ec744caeda422c58c7eae42eb3903e6b796422cc9",
+  "implementation_sha": "e1c509e38ff5719b1178274a50834e35b3f9b818",
+  "kind": "task_verification_record",
+  "note": "PASS: hosted close now writes a valid tracked ACR with token usage and fails closed on required ACR refresh errors without changing ordinary finish fallback semantics.",
+  "recorded_at": "2026-08-03T21:42:26.895Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Restore ACR generation in hosted close qualification\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore ACR generation in hosted close qualification\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:d72c6903b66ae700da158ba0161dd5c0a467c89ea9afc69c4aad3cd9a9e7ca8d",
+  "task_id": "202608032116-V9DBA5",
+  "verification_command": "agentplane verify 202608032116-V9DBA5 --ok --by TESTER",
+  "verifier": "TESTER"
+}
