@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608022324-9VCYWG-ed38a53b026677a9e01e6ac1",
+  "task_id": "202608022324-9VCYWG",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make accepted-result recovery recognize and finalize the journal-completed/exchange-accepted state, preserving digest binding and proving that retry neither reapplies the semantic effect nor remains blocked.",
+  "findings": [
+    {
+      "id": "recovery-context-001",
+      "summary": "A crash after the supervisor journal is completed but before the exchange is marked consumed leaves the accepted result permanently unrecoverable.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2c24a1e8134bf1aec4a1040a8e64dddefe2e2cd05b001539950aca8b78d7b0a7",
+          "section": "external-agent-exchange-authority.ts and external-agent-supervisor.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-result.json"
+}
