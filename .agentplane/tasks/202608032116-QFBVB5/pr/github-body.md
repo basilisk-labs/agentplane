@@ -22,12 +22,14 @@ Allow qualification subprocesses to exclude only the active in-repository eviden
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T21:17:30.470Z
+- Updated: 2026-08-03T21:17:50.559Z
 - Branch: task/202608032116-QFBVB5/keep-frozen-qualification-subject-clean-while-wr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ scripts/qualification/release-qualification.mjs    | 26 +++++++++-
+ .../qualification/release-qualification.test.mjs   | 56 +++++++++++++++++++++-
+ 2 files changed, 79 insertions(+), 3 deletions(-)
 ```
 
 </details>

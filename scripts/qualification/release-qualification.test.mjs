@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { describe, it } from "node:test";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,7 +10,9 @@ import {
   assertQualificationSubjectIdentity,
   buildQualificationReport,
   qualificationExitCode,
+  qualificationEvidenceStatusPathspec,
   readQualificationManifest,
+  readQualificationSubjectIdentity,
   selectQualificationScenarios,
   substituteQualificationCommand,
   validateQualificationManifest,
@@ -168,6 +172,56 @@ describe("v0.7.1 release qualification contract", () => {
         }),
       /candidate repository must be clean/u,
     );
+  });
+
+  it("ignores only the active nested qualification evidence directory", () => {
+    const root = mkdtempSync(path.join(tmpdir(), "agentplane-qualification-clean-"));
+    const git = (...args) =>
+      execFileSync("git", args, {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      }).trim();
+    try {
+      git("init", "--quiet");
+      writeFileSync(path.join(root, "candidate.txt"), "candidate\n", "utf8");
+      git("add", "candidate.txt");
+      git(
+        "-c",
+        "user.name=AgentPlane",
+        "-c",
+        "user.email=agentplane@example.invalid",
+        "commit",
+        "--quiet",
+        "-m",
+        "candidate",
+      );
+      const subject = git("rev-parse", "HEAD");
+      const evidenceDirectory = path.join(root, ".agentplane", "reports", "qualification");
+      mkdirSync(evidenceDirectory, { recursive: true });
+      writeFileSync(path.join(evidenceDirectory, "scenario.log"), "evidence\n", "utf8");
+
+      assert.deepEqual(readQualificationSubjectIdentity(root, subject, { evidenceDirectory }), {
+        commit: subject,
+        tree: git("rev-parse", "HEAD^{tree}"),
+        clean: true,
+      });
+      writeFileSync(path.join(root, "unrelated.txt"), "dirty\n", "utf8");
+      assert.throws(
+        () => readQualificationSubjectIdentity(root, subject, { evidenceDirectory }),
+        /candidate repository must be clean/u,
+      );
+      assert.throws(
+        () => qualificationEvidenceStatusPathspec(root, root),
+        /evidence directory must be nested/u,
+      );
+      assert.throws(
+        () => qualificationEvidenceStatusPathspec(root, path.dirname(root)),
+        /evidence directory must be nested/u,
+      );
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("rejects an uncovered requirement", () => {
