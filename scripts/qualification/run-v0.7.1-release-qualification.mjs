@@ -115,6 +115,19 @@ function assertOutputInsideRepository(runRepoRoot, outputDirectory) {
   if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`)) {
     throw new Error("qualification --out-dir must be nested inside the repository");
   }
+  const segments = relative.split(path.sep);
+  const isReportsEvidence =
+    segments[0] === ".agentplane" && segments[1] === "reports" && segments.length >= 3;
+  const isTaskEvidence =
+    segments[0] === ".agentplane" &&
+    segments[1] === "tasks" &&
+    segments.length >= 4 &&
+    segments[3] === "evidence";
+  if (!isReportsEvidence && !isTaskEvidence) {
+    throw new Error(
+      "qualification --out-dir must use .agentplane/reports/<run> or .agentplane/tasks/<task-id>/evidence",
+    );
+  }
 }
 
 export function readQualificationRunSubjectIdentity(runRepoRoot, subject, outputDirectory) {

@@ -2,10 +2,10 @@
 id: "202608032207-V8HMV8"
 title: "Make qualification reruns ignore their active evidence directory"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -18,11 +18,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-03T22:14:45.752Z"
+  state: "needs_rework"
+  updated_at: "2026-08-03T22:19:50.651Z"
   updated_by: "TESTER"
-  note: "Isolated qualification rerun regression and static checks pass."
-  attempts: 0
+  note: "GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -63,9 +63,7 @@ token_usage:
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
   updated_at: "2026-08-03T22:15:30.934Z"
-commit:
-  hash: "13f3d8101d2b31224497089325b4a1c2a0bbb239"
-  message: "🧪 V8HMV8 task: isolate qualification rerun regression"
+commit: null
 comments:
   -
     author: "CODER"
@@ -134,8 +132,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-03T22:19:50.651Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate."
 doc_version: 3
-doc_updated_at: "2026-08-03T22:15:30.943Z"
+doc_updated_at: "2026-08-03T22:19:51.683Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness check excludes only the explicitly selected nested evidence directory, allowing audit-to-gate reruns without hiding unrelated repository changes."
 sections:
@@ -321,6 +325,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T22:19:50.651Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:15:30.943Z, excerpt_hash=sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00
+
+    Details:
+
+    Command: GitHub PR #4765 review thread PRRT_kwDORCLmJM6WIyeH
+    Result: fail
+    Evidence: --out-dir packages/agentplane/src is currently accepted and excluded from git status
+    Scope: exact-candidate qualification trust boundary
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032207-V8HMV8-qualification-evidence-rerun/.agentplane/tasks/202608032207-V8HMV8/blueprint/resolved-snapshot.json
+    - old_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+    - current_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032207-V8HMV8
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -333,6 +372,10 @@ sections:
     - Observation: The integration-style regression binds its source identity check to the current development checkout.
       Impact: The focused unit suite can produce a false failure before changes are committed, reducing trust in local verification.
       Resolution: Expose the runner source-identity boundary as an import-safe helper and exercise it against an isolated temporary Git repository.
+
+    - Observation: The runner accepts any repository-nested output directory as an evidence exclusion.
+      Impact: A caller can hide tracked source modifications by selecting a source directory as --out-dir while recording sourceIdentity.clean=true.
+      Resolution: Allow rerun exclusions only under dedicated .agentplane reports or task evidence namespaces and add source-directory rejection coverage.
 extensions:
   workflow_route_baseline:
     start_head_sha: "15c0d5808aa64bb6ad3f15666ccac58b1648cec1"
@@ -531,6 +574,41 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T22:19:50.651Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T22:15:30.943Z, excerpt_hash=sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00
+
+Details:
+
+Command: GitHub PR #4765 review thread PRRT_kwDORCLmJM6WIyeH
+Result: fail
+Evidence: --out-dir packages/agentplane/src is currently accepted and excluded from git status
+Scope: exact-candidate qualification trust boundary
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032207-V8HMV8-qualification-evidence-rerun/.agentplane/tasks/202608032207-V8HMV8/blueprint/resolved-snapshot.json
+- old_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+- current_digest: 8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032207-V8HMV8
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -547,6 +625,10 @@ DecisionContextRef:
 - Observation: The integration-style regression binds its source identity check to the current development checkout.
   Impact: The focused unit suite can produce a false failure before changes are committed, reducing trust in local verification.
   Resolution: Expose the runner source-identity boundary as an import-safe helper and exercise it against an isolated temporary Git repository.
+
+- Observation: The runner accepts any repository-nested output directory as an evidence exclusion.
+  Impact: A caller can hide tracked source modifications by selecting a source directory as --out-dir while recording sourceIdentity.clean=true.
+  Resolution: Allow rerun exclusions only under dedicated .agentplane reports or task evidence namespaces and add source-directory rejection coverage.
 
 ## Token Usage
 

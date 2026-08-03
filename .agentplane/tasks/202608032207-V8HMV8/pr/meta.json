@@ -3,22 +3,15 @@
   "branch": "task/202608032207-V8HMV8/qualification-evidence-rerun",
   "created_at": "2026-08-03T22:08:23.232Z",
   "diffstat_sha256": "sha256:8379781756982c9557c14cdf00f9df3c91d09aaa15bd6e95ce4f4934b4d14aab",
-  "last_verified_at": "2026-08-03T22:14:45.752Z",
+  "last_verified_at": "2026-08-03T22:19:50.651Z",
   "last_verified_diffstat_sha256": "sha256:8379781756982c9557c14cdf00f9df3c91d09aaa15bd6e95ce4f4934b4d14aab",
   "pr_number": 4765,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4765",
-  "pre_merge_closure": {
-    "basis_commit": "13f3d8101d2b31224497089325b4a1c2a0bbb239",
-    "branch": "task/202608032207-V8HMV8/qualification-evidence-rerun",
-    "pr_number": 4765,
-    "recorded_at": "2026-08-03T22:15:30.997Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608032207-V8HMV8",
   "updated_at": "2026-08-03T22:10:16.335Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
