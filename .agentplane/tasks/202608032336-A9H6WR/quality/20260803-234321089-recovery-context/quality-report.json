@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608032336-A9H6WR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T23:43:21.495Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "ede5a60b4c83a76c667a68524849c8644202ecc4",
+  "blueprint_digest": "1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0",
+  "findings": [
+    "The runner delegates exact-version validation to the existing trusted ChatGPT Codex binary assertion, skips non-provider and dry-run paths, and invokes the check before evidence creation or scenario execution; focused tests and the recorded mismatch probe cover the relevant positive and negative paths."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/e6e57ad2cefb45e821ebe4fcd2e93d9c9beed5a68ccc5398299c0b9fb0ccc14d.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

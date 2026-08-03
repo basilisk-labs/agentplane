@@ -1,0 +1,91 @@
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 5837e34db..4969e6ce0 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -26,7 +26,11 @@ import {
+   validateMatchedLatencyReport,
+ } from "./measure-v0.7.1-matched-cli-latency.mjs";
+ import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
+-import { readQualificationRunSubjectIdentity } from "./run-v0.7.1-release-qualification.mjs";
++import {
++  preflightQualificationProviderRuntime,
++  readQualificationRunSubjectIdentity,
++} from "./run-v0.7.1-release-qualification.mjs";
++import { CODEX_REPLAY_CLI_VERSION_ENV } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -119,6 +123,37 @@ function supervisorLatencySurfaces(count) {
+ }
+ 
+ describe("v0.7.1 release qualification contract", () => {
++  it("preflights the exact provider runtime only before provider execution", () => {
++    const calls = [];
++    const verify = (source) => {
++      calls.push(source);
++      return "0.146.0-alpha.3.1";
++    };
++    const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
++
++    assert.equal(preflightQualificationProviderRuntime(base, verify), null);
++    assert.equal(
++      preflightQualificationProviderRuntime({ ...base, dryRun: true, provider: true }, verify),
++      null,
++    );
++    assert.equal(
++      preflightQualificationProviderRuntime({ ...base, provider: true }, verify),
++      "0.146.0-alpha.3.1",
++    );
++    assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
++
++    const mismatch = Object.assign(new Error("CODEX_VERSION_MISMATCH"), {
++      code: "CODEX_VERSION_MISMATCH",
++    });
++    assert.throws(
++      () =>
++        preflightQualificationProviderRuntime({ ...base, provider: true }, () => {
++          throw mismatch;
++        }),
++      (error) => error === mismatch,
++    );
++  });
++
+   it("maps every required dimension to an executable scenario", () => {
+     const manifest = readQualificationManifest(manifestPath);
+     assert.equal(validateQualificationManifest(manifest, { repoRoot }), manifest);
+diff --git a/scripts/qualification/run-v0.7.1-release-qualification.mjs b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+index ef493035f..fd6d933b2 100644
+--- a/scripts/qualification/run-v0.7.1-release-qualification.mjs
++++ b/scripts/qualification/run-v0.7.1-release-qualification.mjs
+@@ -12,6 +12,10 @@ import {
+   selectQualificationScenarios,
+   substituteQualificationCommand,
+ } from "./release-qualification.mjs";
++import {
++  assertCodexBinary,
++  CODEX_REPLAY_CLI_VERSION_ENV,
++} from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+ import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -202,6 +206,11 @@ function printDryRun(scenarios, variables) {
+   }
+ }
+ 
++export function preflightQualificationProviderRuntime(options, verify = assertCodexBinary) {
++  if (!options.provider || options.dryRun) return null;
++  return verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
++}
++
+ async function main(argv = process.argv.slice(2)) {
+   const options = parseArgs(argv);
+   if (options.help) {
+@@ -235,6 +244,8 @@ async function main(argv = process.argv.slice(2)) {
+     return;
+   }
+ 
++  preflightQualificationProviderRuntime(options);
++
+   mkdirSync(outputDirectory, { recursive: true });
+   const startedAt = new Date().toISOString();
+   const results = scenarios.map((scenario) => runScenario(scenario, variables, outputDirectory));

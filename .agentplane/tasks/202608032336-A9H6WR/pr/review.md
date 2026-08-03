@@ -6,14 +6,14 @@ Created: 2026-08-03T23:37:55.605Z
 
 - Task: `202608032336-A9H6WR`
 - Title: Preflight the provider binary before release qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua`
 - Canonical task record: `.agentplane/tasks/202608032336-A9H6WR/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Local verification passed for the provider-runtime fail-fast change; evaluator and hosted checks remain separate downstream gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
