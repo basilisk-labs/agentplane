@@ -4,7 +4,7 @@ title: "Make built-in task run context-verifiable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,7 +26,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T14:06:29.432Z"
+  updated_at: "2026-08-03T14:07:49.715Z"
   updated_by: "TESTER"
   note: "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass."
   attempts: 0
@@ -77,8 +77,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass."
+  -
+    type: "verify"
+    at: "2026-08-03T14:07:49.715Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass."
 doc_version: 3
-doc_updated_at: "2026-08-03T14:06:30.601Z"
+doc_updated_at: "2026-08-03T14:07:50.839Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4641 by ensuring the default built-in runner completes through a live authenticated context-verification boundary or stops with an executable supervisor route; never accept persisted receipt bytes, path hashes, or self-claims as authentication."
 sections:
@@ -187,6 +193,61 @@ sections:
     Command: focused native-Codex route and live-supervisor Git-observation fixtures
     Result: pass within the 72-test focused matrix
     Evidence: generic context run emits exactly one safe supervisor action; live supervisor completes verification without receipt rewriting
+    Scope: isolated built-in runner-to-supervisor path
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608031321-5GK3DD-make-built-in-task-run-context-verifiable/.agentplane/tasks/202608031321-5GK3DD/blueprint/resolved-snapshot.json
+    - old_digest: 64352f9d629976866e671e93239d37f10dbcc44c58d015a01537c75801a88001
+    - current_digest: 64352f9d629976866e671e93239d37f10dbcc44c58d015a01537c75801a88001
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608031321-5GK3DD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608031321-5GK3DD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T14:07:49.715Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T14:06:30.601Z, excerpt_hash=sha256:88001c3d8830dbfb525f42256184304dfc60342a64ef4613d6f9c871a3f168b2
+
+    Details:
+
+    Command: env AGENTPLANE_FAST_CHANGED_FILES=<task scope> bun run ci:local:fast
+    Result: pass
+    Evidence: format, schemas, policy routing, release parity, build, TypeScript bundles, CLI cold-start baseline, hotspot threshold, 532 unit-test files with 3762 tests, and 12 critical CLI E2E chunks with 79 tests
+    Scope: full fast local CI at implementation commit 632033f8efcedf146aac5e263d85175087a3c7f3
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane <7 focused context suites>
+    Result: pass
+    Evidence: 7 files and 72 tests covering live supervisor observation, exact route, persisted and tampered receipt rejection, formal verification, and execution receipt runtime
+    Scope: changed context orchestration and trust boundary
+
+    Command: bun run guards:check
+    Result: pass
+    Evidence: shared guards OK and trust-boundary ratchet 0
+    Scope: security and trust boundary regression gates
+
+    Command: bunx eslint <12 touched files>; bun run typecheck; git diff --check origin/main...HEAD
+    Result: pass
+    Evidence: targeted ESLint, TypeScript build, and patch-integrity checks completed with exit code 0
+    Scope: lint, TypeScript, and patch integrity
+
+    Command: focused native-Codex route and live-supervisor Git-observation fixtures
+    Result: pass
+    Evidence: generic context run emitted exactly one safe supervisor action and the live supervisor completed verification without receipt rewriting
     Scope: isolated built-in runner-to-supervisor path
 
     BlueprintSnapshotRef:
@@ -339,6 +400,61 @@ Scope: lint, TypeScript, and patch integrity
 Command: focused native-Codex route and live-supervisor Git-observation fixtures
 Result: pass within the 72-test focused matrix
 Evidence: generic context run emits exactly one safe supervisor action; live supervisor completes verification without receipt rewriting
+Scope: isolated built-in runner-to-supervisor path
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608031321-5GK3DD-make-built-in-task-run-context-verifiable/.agentplane/tasks/202608031321-5GK3DD/blueprint/resolved-snapshot.json
+- old_digest: 64352f9d629976866e671e93239d37f10dbcc44c58d015a01537c75801a88001
+- current_digest: 64352f9d629976866e671e93239d37f10dbcc44c58d015a01537c75801a88001
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608031321-5GK3DD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608031321-5GK3DD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T14:07:49.715Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T14:06:30.601Z, excerpt_hash=sha256:88001c3d8830dbfb525f42256184304dfc60342a64ef4613d6f9c871a3f168b2
+
+Details:
+
+Command: env AGENTPLANE_FAST_CHANGED_FILES=<task scope> bun run ci:local:fast
+Result: pass
+Evidence: format, schemas, policy routing, release parity, build, TypeScript bundles, CLI cold-start baseline, hotspot threshold, 532 unit-test files with 3762 tests, and 12 critical CLI E2E chunks with 79 tests
+Scope: full fast local CI at implementation commit 632033f8efcedf146aac5e263d85175087a3c7f3
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane <7 focused context suites>
+Result: pass
+Evidence: 7 files and 72 tests covering live supervisor observation, exact route, persisted and tampered receipt rejection, formal verification, and execution receipt runtime
+Scope: changed context orchestration and trust boundary
+
+Command: bun run guards:check
+Result: pass
+Evidence: shared guards OK and trust-boundary ratchet 0
+Scope: security and trust boundary regression gates
+
+Command: bunx eslint <12 touched files>; bun run typecheck; git diff --check origin/main...HEAD
+Result: pass
+Evidence: targeted ESLint, TypeScript build, and patch-integrity checks completed with exit code 0
+Scope: lint, TypeScript, and patch integrity
+
+Command: focused native-Codex route and live-supervisor Git-observation fixtures
+Result: pass
+Evidence: generic context run emitted exactly one safe supervisor action and the live supervisor completed verification without receipt rewriting
 Scope: isolated built-in runner-to-supervisor path
 
 BlueprintSnapshotRef:
