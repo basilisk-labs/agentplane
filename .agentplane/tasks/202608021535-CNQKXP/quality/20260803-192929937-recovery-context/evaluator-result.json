@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-003",
+      "severity": "low",
+      "summary": "No remaining contract divergence was found: the rework requires non-empty migration commands, adds deterministic malformed-manifest and stale-source failures, preserves the hidden legacy alias, and retains read-only probe behavior.",
+      "broken_invariant": "No invariant is broken; the previously recorded RCI-001 and RCI-002 gaps are resolved at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/7d4d97532bbf8e82cc9587cebfb89417d9cc75410871d5171d303a3999c12e6c.patch",
+          "sha256": "sha256:7d4d97532bbf8e82cc9587cebfb89417d9cc75410871d5171d303a3999c12e6c"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803192913122-7e7fd31e2d69023f.json",
+          "sha256": "sha256:0c61a70327cc81aadafce1a84edca248604ab89aeb3b82085e5ba968d94a35e4"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The verification record's repository-contract and fast-suite results are accepted as covering the compatibility inventory, help-surface, authority/evidence compatibility, and concurrency-sensitive regression paths described by the approved Verify Steps."
+  ]
+}

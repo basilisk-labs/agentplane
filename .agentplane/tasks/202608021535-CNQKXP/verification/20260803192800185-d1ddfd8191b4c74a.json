@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:d1ddfd8191b4c74a6e8f9ebadcace9fe150bb8be1f8f5cd2bbe64707f2ea37e4",
+  "implementation_sha": "7b5ee7a8eff4d7d4e2a946bc807053324af0d5c9",
+  "kind": "task_verification_record",
+  "note": "PASS at 7b5ee7a8e: evaluator findings RCI-001 and RCI-002 resolved; all compatibility adapters expose exact migration commands and deterministic negative fixtures cover manifest and source-path failures.",
+  "recorded_at": "2026-08-03T19:28:00.185Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the compatibility-manifest schema and inventory tests. Expected: every registered production adapter has one unique manifest entry; semver windows, source paths, migration commands, and usage probes validate; malformed or stale entries fail closed.\n2. Run focused doctor legacy fixtures in human and JSON modes. Expected: current, used legacy, unused legacy, unavailable probe, and mixed states produce stable typed output without mutation; every finding names evidence and a migration command.\n3. Run command catalog/help and legacy conflict recovery tests. Expected: the default 11-operation help remains unchanged, repair exposes the advanced legacy-adoption path, the old command is hidden/deprecated, and authority plus recovery receipts remain byte-compatible.\n4. Build and inspect the publishable AgentPlane package. Expected: the manifest and required runtime files are shipped and doctor legacy works from the packed CLI fixture.\n5. Run bun run typecheck, bun run ci:contract, bun run test:critical, bun run test:fast, bun run knip:check, bun run hotspots:check, and node .agentplane/policy/check-routing.mjs. Expected: all maintained gates pass with no compatibility-baseline or trust-boundary growth.\n6. Generate and verify task evidence, then obtain an independent EVALUATOR pass against the exact implementation SHA.",
+  "scope_digest": "sha256:d18bd9c61c280e2386e9923416e2bb2a66f1e09a6114e13f536b58c38cb675ad",
+  "task_id": "202608021535-CNQKXP",
+  "verification_command": "agentplane verify 202608021535-CNQKXP --ok --by TESTER",
+  "verifier": "TESTER"
+}
