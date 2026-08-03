@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608021231-BPMM04-0585191960b9ab934eece3f6",
+  "prepared_at": "2026-08-03T12:26:42.148Z",
+  "task": {
+    "id": "202608021231-BPMM04",
+    "revision": 21,
+    "objective": "Record token usage on every completed task\n\nPersist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.\n- Out of scope: unrelated refactors not required for \"Record token usage on every completed task\".",
+      "1. Trace the canonical supervisor episode journal, provider adapter usage collectors, execution receipts, task projections, ACR generation, and every DONE/finish/hosted-close path to identify the one authoritative token source and all completion surfaces. 2. Define a backward-compatible observed token-usage projection that preserves input, output, reasoning, and total counts when provider evidence exists, marks unavailable or partial usage explicitly, never trusts agent-reported metrics as observed facts, and aggregates executor plus evaluator episodes exactly once. 3. Persist the final aggregate on completed TaskData and render it in task README frontmatter/body, human task status/brief output, machine JSON, and ACR without rewriting historical tasks or fabricating zero usage. 4. Update managed-run, external-advance, direct, branch_pr, rework, recovery, hosted-close, legacy/no-provider, and idempotent-replay fixtures so completion records stable totals and duplicate close/reconcile operations cannot double-count. 5. Add focused schema/projection/closure tests and run v0.7 supervisor, lifecycle, recovery, critical CLI, schema, typecheck, Knip, policy routing, and ci:contract gates; independently verify the exact implementation SHA before integration.",
+      "1. Run focused managed-run fixtures with multiple executor and evaluator episodes carrying known Codex provider usage. Expected: the completed task persists exact input, output, reasoning, and total tokens from supervisor-owned evidence; each episode is counted once; README, task status/brief human output, machine JSON, and ACR expose the same aggregate and provenance/completeness state.\n2. Run external-advance, manual/direct, legacy task, adapter-without-usage, malformed-usage, and partial-usage fixtures. Expected: AgentPlane never treats agent-reported metrics as observed provider usage, never fabricates zero for unavailable usage, and preserves an explicit unavailable or partial state without blocking otherwise valid completion.\n3. Run branch_pr rework, retry, stale fingerprint, crash recovery, reconcile, repeated finish, GitHub rebase merge, hosted close, and cleanup fixtures. Expected: token aggregates survive state transitions and task-artifact commits, remain bound to the correct task/run, and cannot be lost or double-counted by replay or idempotent closure.\n4. Validate schema compatibility and historical task reads, then run the v0.7 supervisor, lifecycle, and recovery suites, bun run test:critical, bun run schemas:check, bun run typecheck, bun run lint:core, bun run knip:check, node .agentplane/policy/check-routing.mjs, and bun run ci:contract. Expected: all gates pass without baseline growth, and an independent EVALUATOR accepts the exact implementation SHA."
+    ]
+  },
+  "evaluated_sha": "71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f",
+  "diff_base_sha": "a447a78e85d0d520b7bb16074d6720ae3c3bc152",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+      "sha256": "sha256:fc8773c9fcbd060d0cdd9d9b9483f2b3abe08feaddc918826157df9d05d90eaa",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-122642148-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d09b5847a93f0a2e1938d3a4cee1227f7e793590ca231de943b96444f0480a52",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-122642148-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:07367ac5413ef34632309f4156cfe22ce5c2902455744d7020dcca3300e969b1",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608021231-BPMM04/verification/20260803122624209-58bf1b821f847a27.json",
+      "sha256": "sha256:635055bb59c29bcb8e030848252c16e419e0e47dda11f72a9e278dd9244361b2",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-122642148-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:e9232eee8184e07da850a5f1cd3c328915a01b5b4b266086149aeeb68e1b8d16",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

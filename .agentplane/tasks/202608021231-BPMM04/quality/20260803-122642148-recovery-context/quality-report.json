@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T12:27:43.357Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "findings": [
+    "No contract-breaking defect remains in the frozen implementation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-122642148-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-BPMM04/verification/20260803122624209-58bf1b821f847a27.json",
+    ".agentplane/tasks/202608021231-BPMM04/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

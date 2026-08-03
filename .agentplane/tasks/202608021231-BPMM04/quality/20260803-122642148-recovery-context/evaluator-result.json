@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "No contract-breaking defect remains in the frozen implementation.",
+      "broken_invariant": "None observed: the implementation now permits successful managed execution without provider token telemetry, projects unavailable usage without fabricated counts, preserves observed/partial provenance, covers completion surfaces and reconciliation paths, and has deterministic verification at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-122642148-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d09b5847a93f0a2e1938d3a4cee1227f7e793590ca231de943b96444f0480a52",
+          "section": "Managed no-usage execution, token projection, completion surfaces, and reconciliation coverage"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/verification/20260803122624209-58bf1b821f847a27.json",
+          "sha256": "sha256:635055bb59c29bcb8e030848252c16e419e0e47dda11f72a9e278dd9244361b2",
+          "section": "Exact-SHA focused, static, contract, and critical verification"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:fc8773c9fcbd060d0cdd9d9b9483f2b3abe08feaddc918826157df9d05d90eaa",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
