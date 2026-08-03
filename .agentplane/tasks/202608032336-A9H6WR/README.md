@@ -4,7 +4,7 @@ title: "Preflight the provider binary before release qualification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "ede5a60b4c83a76c667a68524849c8644202ecc4"
+  message: "🛡️ A9H6WR task: fail fast on provider runtime drift"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: exact trusted Codex binary preflight now runs before provider qualification scenarios; non-provider and dry-run paths remain unchanged."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T23:40:33.374Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: exact trusted Codex binary preflight now runs before provider qualification scenarios; non-provider and dry-run paths remain unchanged."
 doc_version: 3
-doc_updated_at: "2026-08-03T23:37:55.508Z"
+doc_updated_at: "2026-08-03T23:40:33.374Z"
 doc_updated_by: "CODER"
 description: "Fail provider-enabled v0.7.1 qualification before running local scenarios when the exact requested Codex version does not match the trusted ChatGPT.app replay binary, preventing wasted deterministic work and zero-episode gate failures."
 sections:
