@@ -16,7 +16,12 @@ Make the v0.7.1 qualification selector exclude scenarios whose dependencies are 
 ## Verification
 
 - State: ok
-- Note: PASS. Dependency-aware selection and both dry-run routes match the approved scope.
+- Note:
+
+```text
+PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both
+dry-run contracts.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

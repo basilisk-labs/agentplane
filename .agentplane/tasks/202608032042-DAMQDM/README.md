@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T20:48:51.383Z"
+  updated_at: "2026-08-03T20:55:49.676Z"
   updated_by: "TESTER"
-  note: "PASS. Dependency-aware selection and both dry-run routes match the approved scope."
+  note: "PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts."
   attempts: 0
 quality_review:
   state: "pass"
@@ -119,8 +119,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-03T20:55:49.676Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:49:58.707Z"
+doc_updated_at: "2026-08-03T20:55:50.892Z"
 doc_updated_by: "CODER"
 description: "Make the v0.7.1 qualification selector exclude scenarios whose dependencies are not selected, and fail closed for explicit orphan scenario selection, so a deterministic no-provider audit can complete before the one allowed provider generation."
 sections:
@@ -214,6 +220,56 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608032042-DAMQDM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T20:55:49.676Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:49:58.707Z, excerpt_hash=sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6
+
+    Details:
+
+    Command: bunx eslint scripts/qualification/release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: ESLint completed with zero errors after removing the useless empty collection fallback.
+    Scope: Hosted verify-static failure reproducer and fix.
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: 18 tests passed, 0 failed.
+    Scope: Qualification selector unit contract after rework.
+
+    Command: bun run e2e:v0.7.1:check
+    Result: pass
+    Evidence: Contract suite passed and no-provider dry-run omitted provider-matrix plus efficiency-evidence.
+    Scope: Default deterministic qualification entrypoint after rework.
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --provider --codex-version 0.146.0 --subject 469f523984e3a6e06978b9b227b30dc39d81e4a0 --dry-run
+    Result: pass
+    Evidence: provider-matrix was emitted immediately before efficiency-evidence for the exact rework head.
+    Scope: Provider dependency ordering without provider execution.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032042-DAMQDM-skip-provider-dependent-qualification-checks-bef/.agentplane/tasks/202608032042-DAMQDM/blueprint/resolved-snapshot.json
+    - old_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+    - current_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032042-DAMQDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -331,6 +387,56 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608032042-DAMQDM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T20:55:49.676Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:49:58.707Z, excerpt_hash=sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6
+
+Details:
+
+Command: bunx eslint scripts/qualification/release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: ESLint completed with zero errors after removing the useless empty collection fallback.
+Scope: Hosted verify-static failure reproducer and fix.
+
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: 18 tests passed, 0 failed.
+Scope: Qualification selector unit contract after rework.
+
+Command: bun run e2e:v0.7.1:check
+Result: pass
+Evidence: Contract suite passed and no-provider dry-run omitted provider-matrix plus efficiency-evidence.
+Scope: Default deterministic qualification entrypoint after rework.
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --provider --codex-version 0.146.0 --subject 469f523984e3a6e06978b9b227b30dc39d81e4a0 --dry-run
+Result: pass
+Evidence: provider-matrix was emitted immediately before efficiency-evidence for the exact rework head.
+Scope: Provider dependency ordering without provider execution.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032042-DAMQDM-skip-provider-dependent-qualification-checks-bef/.agentplane/tasks/202608032042-DAMQDM/blueprint/resolved-snapshot.json
+- old_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+- current_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032042-DAMQDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

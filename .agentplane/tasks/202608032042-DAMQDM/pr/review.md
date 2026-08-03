@@ -13,7 +13,7 @@ Created: 2026-08-03T20:44:49.628Z
 ## Verification
 
 - State: ok
-- Note: PASS. Dependency-aware selection and both dry-run routes match the approved scope.
+- Note: PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
