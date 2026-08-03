@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608032336-A9H6WR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T23:54:08.955Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "5acfd380510dda719cb7b53058eeb2f300095b6c",
+  "blueprint_digest": "1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0",
+  "findings": [
+    "The runner now derives preflight necessity from the actual selected scenarios, so --provider with an explicit local-only scenario remains portable while provider-matrix execution still validates the trusted ChatGPT Codex binary before evidence creation or scenario output; the focused regression test covers both branches and mismatch propagation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/704d2ad9384ec938311c52a2aef8b75ead58ec69f9187299a0cd04831249f5bd.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

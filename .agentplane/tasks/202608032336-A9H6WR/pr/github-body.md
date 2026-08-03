@@ -15,12 +15,12 @@ Fail provider-enabled v0.7.1 qualification before running local scenarios when t
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Codex review found that --provider with an explicit local-only --scenario still invoked the trusted
-binary preflight; gate the check on the selected provider scenario set.
+Review rework verified: exact provider selection still fails fast on runtime mismatch, while
+--provider combined with a selected local-only scenario skips the Codex binary preflight.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -6,14 +6,14 @@ Created: 2026-08-03T23:37:55.605Z
 
 - Task: `202608032336-A9H6WR`
 - Title: Preflight the provider binary before release qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua`
 - Canonical task record: `.agentplane/tasks/202608032336-A9H6WR/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set.
+- State: ok
+- Note: Review rework verified: exact provider selection still fails fast on runtime mismatch, while --provider combined with a selected local-only scenario skips the Codex binary preflight.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
