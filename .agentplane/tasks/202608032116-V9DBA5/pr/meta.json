@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f9fe8bd979769ba24ad75a85d6ac6a947895b987ce6db7163982533a030a4a7b",
   "pr_number": 4764,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4764",
+  "pre_merge_closure": {
+    "basis_commit": "f5e77432f2803f0a3fff79eab5f2dfcd70a3cc9c",
+    "branch": "task/202608032116-V9DBA5/restore-acr-generation-in-hosted-close-qualifica",
+    "pr_number": 4764,
+    "recorded_at": "2026-08-03T21:46:10.926Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608032116-V9DBA5",
