@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -71,10 +71,10 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-03T20:49:58.695Z"
+  updated_at: "2026-08-03T20:57:18.103Z"
 commit:
-  hash: "f36b025abe35e1b789325ce54f6d1d9e2816b6d5"
-  message: "🧪 DAMQDM task: fix qualification dependency selection"
+  hash: "af83d6a370fe3f8021e0c22155273a9a26f1f2a8"
+  message: "🔍 DAMQDM task: record final quality review"
 comments:
   -
     author: "CODER"
@@ -85,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -125,8 +128,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts."
+  -
+    type: "status"
+    at: "2026-08-03T20:57:18.103Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:56:28.611Z"
+doc_updated_at: "2026-08-03T20:57:18.128Z"
 doc_updated_by: "CODER"
 description: "Make the v0.7.1 qualification selector exclude scenarios whose dependencies are not selected, and fail closed for explicit orphan scenario selection, so a deterministic no-provider audit can complete before the one allowed provider generation."
 sections:
@@ -282,6 +292,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "469f523984e3a6e06978b9b227b30dc39d81e4a0"
+    message: "🧹 DAMQDM task: satisfy qualification lint"
   workflow_route_baseline:
     start_head_sha: "c0a1a703a165740ef01e1c5524fcc5bd69020ecf"
     version: 1
@@ -463,4 +476,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-03T20:49:58.695Z`
+- Updated at: `2026-08-03T20:57:18.103Z`
