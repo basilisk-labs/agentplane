@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   completeSupervisorExecutionEpisode,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+  refreshPendingReplacementSupervisorExecutionEpisode,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
@@ -271,7 +272,24 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
         journal.cursor.phase === "ready" &&
         journal.cursor.replacement_of_operation_key
       ) {
-        replacementOfOperationKey = journal.cursor.replacement_of_operation_key;
+        if (
+          journal.state_fingerprint_digest !== decision.workflowStep.preconditionFingerprint.digest
+        ) {
+          const refreshed = refreshPendingReplacementSupervisorExecutionEpisode({
+            journal,
+            state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+          });
+          if (!(await opened.store.compareAndSwap(journal.digest, refreshed))) {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message:
+                "Evaluator replacement route changed concurrently; no provider episode was started.",
+            });
+          }
+          journal = refreshed;
+        }
+        replacementOfOperationKey = journal.cursor.replacement_of_operation_key ?? null;
       } else {
         try {
           const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({

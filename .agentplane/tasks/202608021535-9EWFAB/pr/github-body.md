@@ -39,6 +39,8 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
  .../evaluator-evidence-compaction.test.ts          |  74 ++++
  .../evaluator/evaluator-evidence-store.test.ts     | 438 +++++++++++++++++++++
  .../commands/evaluator/evaluator-evidence-store.ts | 316 +++++++++++++++
+ .../evaluator/evaluator-execute-supervisor.ts      |  20 +-
+ .../evaluator/evaluator-execute.command.test.ts    |   2 +-
  .../evaluator/evaluator-prepare.command.test.ts    |   2 +-
  .../evaluator/evaluator-quality-artifacts.ts       |   1 +
  .../commands/evaluator/evaluator-result-schema.ts  |  82 ++++
@@ -48,9 +50,10 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
  .../commands/evaluator/evaluator-test-helpers.ts   |   2 +
  .../src/commands/evaluator/evaluator-work-order.ts | 135 +++++++
  .../src/commands/hooks/run.pre-commit.ts           |   3 +
- .../runner/supervisor-execution-episode.test.ts    |  22 +-
- .../src/runner/supervisor-execution-episode.ts     |  16 +-
- 20 files changed, 1727 insertions(+), 286 deletions(-)
+ .../runner/supervisor-execution-episode.test.ts    |  41 +-
+ .../src/runner/supervisor-execution-episode.ts     |  49 ++-
+ packages/core/src/schemas/index.ts                 |   1 +
+ 23 files changed, 1800 insertions(+), 288 deletions(-)
 ```
 
 </details>

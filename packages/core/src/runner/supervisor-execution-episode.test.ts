@@ -5,6 +5,7 @@ import {
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+  refreshPendingReplacementSupervisorExecutionEpisode,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   retryFailedSupervisorExecutionEpisode,
@@ -17,6 +18,7 @@ import { migrateSupervisorExecutionEpisodeJournal } from "./supervisor-execution
 
 const FINGERPRINT = `sha256:${"a".repeat(64)}`;
 const NEXT_FINGERPRINT = `sha256:${"b".repeat(64)}`;
+const FINAL_FINGERPRINT = `sha256:${"c".repeat(64)}`;
 const NOW = "2026-07-28T00:00:00.000Z";
 
 function budget(overrides: Partial<SupervisorExecutionBudget> = {}): SupervisorExecutionBudget {
@@ -468,6 +470,23 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       state_fingerprint_digest: NEXT_FINGERPRINT,
       now: "2026-07-28T00:00:02.000Z",
     });
+    const refreshedReplacement = refreshPendingReplacementSupervisorExecutionEpisode({
+      journal: replacement,
+      state_fingerprint_digest: FINAL_FINGERPRINT,
+      now: "2026-07-28T00:00:02.500Z",
+    });
+    expect(refreshedReplacement).toMatchObject({
+      state_fingerprint_digest: FINAL_FINGERPRINT,
+      cursor: { replacement_of_operation_key: failedOperation.operation_key },
+      operations: [failedOperation],
+      previous_digest: replacement.digest,
+    });
+    expect(() =>
+      refreshPendingReplacementSupervisorExecutionEpisode({
+        journal: failed,
+        state_fingerprint_digest: FINAL_FINGERPRINT,
+      }),
+    ).toThrow("requires a pending exact-key replacement");
     const startReplacement = (
       opts: {
         replacement_of_operation_key?: string;
