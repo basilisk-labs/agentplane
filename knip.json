@@ -25,6 +25,7 @@
     "packages/agentplane/bin/*.d.ts"
   ],
   "ignoreIssues": {
+    "packages/agentplane/src/cli/critical/cli-runner.ts": ["files"],
     "packages/agentplane/src/runtime/sgr/contract-types.ts": ["exports", "types"]
   },
   "tags": ["-dynamic"],
