@@ -1,10 +1,11 @@
 ---
 id: "202608032042-DAMQDM"
 title: "Skip provider-dependent qualification checks before provider capture"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,16 +25,66 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-03T20:48:51.383Z"
+  updated_by: "TESTER"
+  note: "PASS. Dependency-aware selection and both dry-run routes match the approved scope."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-03T20:49:31.206Z"
+  updated_by: "HUMAN"
+  note: "The selector now treats dependencies as executable preconditions: automatic profiles prune unavailable dependency chains, explicit partial selections fail closed, and topological ordering remains deterministic."
+  evaluated_sha: "f36b025abe35e1b789325ce54f6d1d9e2816b6d5"
+  blueprint_digest: "eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9"
+  evidence_refs:
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/7e294a639a960f27e117bc378e5d466142bb1fd11f1146152b015d1923ba9bed.md"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/README.md"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/805923e3aac400050dfba524a7f866ae472a596bc5bd8211420f9317d2de9262.patch"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/75423555db49e9cbec311705ef2d86fb630bc6bd9670a39f5661ef22d26da9f8.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/verification/20260803204851383-6a54955e6a950444.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/e39df725cdbe9686ca1eb629f6b2dbb0783cc326d860648bcd6de7114e8f83e9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "scripts/qualification/release-qualification.mjs"
+    - "scripts/qualification/release-qualification.test.mjs"
+  findings:
+    - "The fixed-point pruning is bounded by the number of selected scenarios and correctly removes efficiency-evidence when provider-matrix is absent, including future transitive dependents."
+    - "Explicit selection reports the exact missing edge instead of silently executing against stale fallback evidence."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T20:49:58.695Z"
+commit:
+  hash: "f36b025abe35e1b789325ce54f6d1d9e2816b6d5"
+  message: "🧪 DAMQDM task: fix qualification dependency selection"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: qualification selection now prunes unavailable dependency chains for automatic profiles and rejects explicit orphan selections; focused tests and both dry-run routes pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -42,8 +93,34 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T20:47:26.394Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: qualification selection now prunes unavailable dependency chains for automatic profiles and rejects explicit orphan selections; focused tests and both dry-run routes pass."
+  -
+    type: "verify"
+    at: "2026-08-03T20:47:49.653Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS. node --test scripts/qualification/release-qualification.test.mjs: 18/18 passed, including no-provider dependency pruning, provider-before-evidence order, and explicit orphan rejection. bun run e2e:v0.7.1:check: passed and dry-run excluded provider-matrix plus efficiency-evidence. Provider dry-run with Codex 0.146.0 ordered provider-matrix before efficiency-evidence. Prettier check passed for both touched files."
+  -
+    type: "verify"
+    at: "2026-08-03T20:48:51.383Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS. Dependency-aware selection and both dry-run routes match the approved scope."
+  -
+    type: "status"
+    at: "2026-08-03T20:49:58.695Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:44:49.526Z"
+doc_updated_at: "2026-08-03T20:49:58.707Z"
 doc_updated_by: "CODER"
 description: "Make the v0.7.1 qualification selector exclude scenarios whose dependencies are not selected, and fail closed for explicit orphan scenario selection, so a deterministic no-provider audit can complete before the one allowed provider generation."
 sections:
@@ -63,6 +140,86 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-03T20:47:49.653Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS. node --test scripts/qualification/release-qualification.test.mjs: 18/18 passed, including no-provider dependency pruning, provider-before-evidence order, and explicit orphan rejection. bun run e2e:v0.7.1:check: passed and dry-run excluded provider-matrix plus efficiency-evidence. Provider dry-run with Codex 0.146.0 ordered provider-matrix before efficiency-evidence. Prettier check passed for both touched files.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:47:26.394Z, excerpt_hash=sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032042-DAMQDM-skip-provider-dependent-qualification-checks-bef/.agentplane/tasks/202608032042-DAMQDM/blueprint/resolved-snapshot.json
+    - old_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+    - current_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032042-DAMQDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608032042-DAMQDM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T20:48:51.383Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS. Dependency-aware selection and both dry-run routes match the approved scope.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:47:50.489Z, excerpt_hash=sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6
+
+    Details:
+
+    Command: node --test scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: 18 tests passed, 0 failed; focused cases cover local pruning, provider ordering, and explicit orphan rejection.
+    Scope: Qualification selector unit contract.
+
+    Command: bun run e2e:v0.7.1:check
+    Result: pass
+    Evidence: Contract suite passed and no-provider dry-run omitted provider-matrix plus efficiency-evidence.
+    Scope: Default deterministic qualification entrypoint.
+
+    Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --provider --codex-version 0.146.0 --subject f36b025abe35e1b789325ce54f6d1d9e2816b6d5 --dry-run
+    Result: pass
+    Evidence: provider-matrix was emitted immediately before efficiency-evidence with exact candidate evidence substitution.
+    Scope: Provider dependency ordering without provider execution.
+
+    Command: bunx prettier --check scripts/qualification/release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: Both touched files use Prettier code style.
+    Scope: Formatting of the implementation diff.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032042-DAMQDM-skip-provider-dependent-qualification-checks-bef/.agentplane/tasks/202608032042-DAMQDM/blueprint/resolved-snapshot.json
+    - old_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+    - current_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032042-DAMQDM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608032042-DAMQDM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -100,6 +257,86 @@ PLANNER fallback scaffold for "Skip provider-dependent qualification checks befo
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-03T20:47:49.653Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS. node --test scripts/qualification/release-qualification.test.mjs: 18/18 passed, including no-provider dependency pruning, provider-before-evidence order, and explicit orphan rejection. bun run e2e:v0.7.1:check: passed and dry-run excluded provider-matrix plus efficiency-evidence. Provider dry-run with Codex 0.146.0 ordered provider-matrix before efficiency-evidence. Prettier check passed for both touched files.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:47:26.394Z, excerpt_hash=sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032042-DAMQDM-skip-provider-dependent-qualification-checks-bef/.agentplane/tasks/202608032042-DAMQDM/blueprint/resolved-snapshot.json
+- old_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+- current_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032042-DAMQDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608032042-DAMQDM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T20:48:51.383Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS. Dependency-aware selection and both dry-run routes match the approved scope.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:47:50.489Z, excerpt_hash=sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6
+
+Details:
+
+Command: node --test scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: 18 tests passed, 0 failed; focused cases cover local pruning, provider ordering, and explicit orphan rejection.
+Scope: Qualification selector unit contract.
+
+Command: bun run e2e:v0.7.1:check
+Result: pass
+Evidence: Contract suite passed and no-provider dry-run omitted provider-matrix plus efficiency-evidence.
+Scope: Default deterministic qualification entrypoint.
+
+Command: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --provider --codex-version 0.146.0 --subject f36b025abe35e1b789325ce54f6d1d9e2816b6d5 --dry-run
+Result: pass
+Evidence: provider-matrix was emitted immediately before efficiency-evidence with exact candidate evidence substitution.
+Scope: Provider dependency ordering without provider execution.
+
+Command: bunx prettier --check scripts/qualification/release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: Both touched files use Prettier code style.
+Scope: Formatting of the implementation diff.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032042-DAMQDM-skip-provider-dependent-qualification-checks-bef/.agentplane/tasks/202608032042-DAMQDM/blueprint/resolved-snapshot.json
+- old_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+- current_digest: eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032042-DAMQDM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608032042-DAMQDM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -108,3 +345,16 @@ PLANNER fallback scaffold for "Skip provider-dependent qualification checks befo
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T20:49:58.695Z`

@@ -6,14 +6,14 @@ Created: 2026-08-03T20:44:49.628Z
 
 - Task: `202608032042-DAMQDM`
 - Title: Skip provider-dependent qualification checks before provider capture
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608032042-DAMQDM/skip-provider-dependent-qualification-checks-bef`
 - Canonical task record: `.agentplane/tasks/202608032042-DAMQDM/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS. Dependency-aware selection and both dry-run routes match the approved scope.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

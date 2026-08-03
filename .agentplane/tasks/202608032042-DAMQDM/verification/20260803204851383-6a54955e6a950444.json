@@ -1,0 +1,15 @@
+{
+  "details": "Command: node --test scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: 18 tests passed, 0 failed; focused cases cover local pruning, provider ordering, and explicit orphan rejection.\nScope: Qualification selector unit contract.\n\nCommand: bun run e2e:v0.7.1:check\nResult: pass\nEvidence: Contract suite passed and no-provider dry-run omitted provider-matrix plus efficiency-evidence.\nScope: Default deterministic qualification entrypoint.\n\nCommand: node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --provider --codex-version 0.146.0 --subject f36b025abe35e1b789325ce54f6d1d9e2816b6d5 --dry-run\nResult: pass\nEvidence: provider-matrix was emitted immediately before efficiency-evidence with exact candidate evidence substitution.\nScope: Provider dependency ordering without provider execution.\n\nCommand: bunx prettier --check scripts/qualification/release-qualification.mjs scripts/qualification/release-qualification.test.mjs\nResult: pass\nEvidence: Both touched files use Prettier code style.\nScope: Formatting of the implementation diff.",
+  "digest": "sha256:6a54955e6a950444127f13911bbf09c0000ccc9395cfb7cfc9ec8861020d4306",
+  "implementation_sha": "f36b025abe35e1b789325ce54f6d1d9e2816b6d5",
+  "kind": "task_verification_record",
+  "note": "PASS. Dependency-aware selection and both dry-run routes match the approved scope.",
+  "recorded_at": "2026-08-03T20:48:51.383Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Skip provider-dependent qualification checks before provider capture\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Skip provider-dependent qualification checks before provider capture\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8ff2b3fb1796781f6aaf32d6f1fa642b8ea663225e69aed0065f11861b8ad1f6",
+  "task_id": "202608032042-DAMQDM",
+  "verification_command": "agentplane verify 202608032042-DAMQDM --ok --by TESTER",
+  "verifier": "TESTER"
+}

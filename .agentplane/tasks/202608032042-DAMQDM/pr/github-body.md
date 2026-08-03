@@ -15,8 +15,8 @@ Make the v0.7.1 qualification selector exclude scenarios whose dependencies are 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS. Dependency-aware selection and both dry-run routes match the approved scope.
 - Canonical workflow state lives in the task README.
 
 <details>
