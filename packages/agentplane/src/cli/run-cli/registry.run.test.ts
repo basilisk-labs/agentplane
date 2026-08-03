@@ -657,17 +657,22 @@ describe("runtime registry session selection", () => {
 
     expect(await readFile(readmePath, "utf8")).toBe(readmeBefore);
     const qualityRoot = path.join(root, ".agentplane", "tasks", taskId, "quality");
-    const reviewDirectories = await readdir(qualityRoot);
+    const qualityEntries = await readdir(qualityRoot);
+    const reviewDirectories = qualityEntries.filter((entry) => entry !== "objects");
     expect(reviewDirectories).toHaveLength(1);
     const packetFiles = await readdir(path.join(qualityRoot, reviewDirectories[0] ?? ""));
     expect(packetFiles).toEqual(
+      expect.arrayContaining(["evaluator-evidence-manifest.json", "evaluator-work-order.json"]),
+    );
+    expect(packetFiles).not.toEqual(
       expect.arrayContaining([
         "evaluator-diff.patch",
         "evaluator-observed-checks.json",
         "evaluator-prompt.md",
-        "evaluator-work-order.json",
+        "evaluator-result.schema.json",
       ]),
     );
+    expect(await readdir(path.join(qualityRoot, "objects", "sha256"))).toHaveLength(5);
     expect(traces).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

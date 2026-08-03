@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -44,7 +44,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-03T16:19:36.480Z"
+doc_updated_at: "2026-08-03T16:48:56.171Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -62,18 +62,21 @@ sections:
     4. Add idempotence, collision/tamper, repeated-preparation deduplication, manifest verification, and compatibility tests; suppress noisy Git diffs for immutable object blobs without hiding their hashes or contents.
     5. Prove that repeated preparation creates one object per digest and reduces duplicated tracked bytes for immutable inputs by at least 80% in the acceptance fixture; then run typecheck, focused evaluator/evidence/critical suites, ci:contract, test:fast, diff/hotspot/Knip checks, and independent evaluator review.
   Verify Steps: |-
-    PLANNER fallback scaffold for "Compact and deduplicate v0.7.1 task evidence". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Compact and deduplicate v0.7.1 task evidence". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts`. Expected: immutable objects are reused by SHA-256, tamper/collision is rejected, current and legacy work orders remain readable, and evaluator execution consumes the referenced prompt/schema.
+    2. Inspect the repeated-preparation acceptance test. Expected: two review directories retain only compact manifests/work orders, unchanged diff/checks/blueprint/schema resolve to one object each, and newly stored immutable-input bytes are reduced by at least 80%.
+    3. Run `bun run typecheck`, `bun run ci:contract`, `bun run test:critical`, and `bun run test:fast`. Expected: all checks pass without evaluator, evidence-bundle, task-routing, hook, or lifecycle regressions.
+    4. Run `bun run format:changed`, `bun run lint`, `bun run knip:check`, and the changed-file hotspot check. Expected: formatting, lint, dead-code, and size budgets pass or record a task-scoped exemption.
+    5. Generate and verify the task evidence bundle, then run an independent evaluator against the committed implementation. Expected: the bundle includes compact manifests and task-local content objects, hashes verify offline, the evaluator cites frozen object paths, and the verdict is pass with no unresolved high-severity finding.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The main-branch evaluator quality history contains 5,440 files and 88,984,550 bytes; exact duplicate content accounts for 18,243,269 bytes across 261 digest groups, led by repeated evaluator diffs.
+      Impact: Per-review raw packet copies inflate repository checkout size and PR review noise even though evaluators need only immutable, hash-addressable inputs plus small outcome artifacts.
+      Resolution: Store new diff, observed-check, blueprint, prompt, and result-schema inputs once per task under quality/objects/sha256; keep compact per-review manifests and work orders, verify bytes before provider execution, retain legacy raw work-order compatibility, and suppress rendered Git diffs only for immutable object blobs.
 extensions:
   workflow_route_baseline:
     start_head_sha: "42d25ee59e3cf08909f91dd4dce761250029bf23"
@@ -101,11 +104,11 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Compact and deduplicate v0.7.1 task evidence". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Compact and deduplicate v0.7.1 task evidence". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts`. Expected: immutable objects are reused by SHA-256, tamper/collision is rejected, current and legacy work orders remain readable, and evaluator execution consumes the referenced prompt/schema.
+2. Inspect the repeated-preparation acceptance test. Expected: two review directories retain only compact manifests/work orders, unchanged diff/checks/blueprint/schema resolve to one object each, and newly stored immutable-input bytes are reduced by at least 80%.
+3. Run `bun run typecheck`, `bun run ci:contract`, `bun run test:critical`, and `bun run test:fast`. Expected: all checks pass without evaluator, evidence-bundle, task-routing, hook, or lifecycle regressions.
+4. Run `bun run format:changed`, `bun run lint`, `bun run knip:check`, and the changed-file hotspot check. Expected: formatting, lint, dead-code, and size budgets pass or record a task-scoped exemption.
+5. Generate and verify the task evidence bundle, then run an independent evaluator against the committed implementation. Expected: the bundle includes compact manifests and task-local content objects, hashes verify offline, the evaluator cites frozen object paths, and the verdict is pass with no unresolved high-severity finding.
 
 ## Verification
 
@@ -118,3 +121,7 @@ PLANNER fallback scaffold for "Compact and deduplicate v0.7.1 task evidence". Re
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The main-branch evaluator quality history contains 5,440 files and 88,984,550 bytes; exact duplicate content accounts for 18,243,269 bytes across 261 digest groups, led by repeated evaluator diffs.
+  Impact: Per-review raw packet copies inflate repository checkout size and PR review noise even though evaluators need only immutable, hash-addressable inputs plus small outcome artifacts.
+  Resolution: Store new diff, observed-check, blueprint, prompt, and result-schema inputs once per task under quality/objects/sha256; keep compact per-review manifests and work orders, verify bytes before provider execution, retain legacy raw work-order compatibility, and suppress rendered Git diffs only for immutable object blobs.

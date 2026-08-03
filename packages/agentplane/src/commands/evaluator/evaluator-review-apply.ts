@@ -22,6 +22,7 @@ import {
   readWorkOrder,
   relative,
   reportPaths,
+  resolveEvaluatorPromptPath,
   uniqueStrings,
   validateStrictEvaluatorResult,
   type EvaluatorWorkOrder,
@@ -44,6 +45,11 @@ async function persistReview(opts: {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const reviewDir = path.dirname(opts.workOrderPath);
   const paths = reportPaths(reviewDir);
+  const promptPath = resolveEvaluatorPromptPath({
+    gitRoot,
+    reviewDir,
+    workOrder: opts.workOrder,
+  });
   if (!isWithinRoot(gitRoot, reviewDir)) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -73,10 +79,11 @@ async function persistReview(opts: {
   const evidenceRefs = uniqueStrings([
     relative(gitRoot, opts.workOrderPath),
     relative(gitRoot, paths.report_path),
-    relative(gitRoot, paths.prompt_path),
+    relative(gitRoot, promptPath),
     relative(gitRoot, paths.opinion_path),
     ...(opts.resultPayload === null ? [] : [relative(gitRoot, paths.result_path)]),
     ...(followUp === null ? [] : [relative(gitRoot, followUpPath)]),
+    ...(opts.workOrder.packet ? [opts.workOrder.packet.manifest_path] : []),
     ...opts.workOrder.evidence.map((entry) => entry.path),
     ...opts.report.evidence_refs,
     ...(contextReportPath ? [contextReportPath] : []),
@@ -121,7 +128,7 @@ async function persistReview(opts: {
   });
   return {
     report_path: relative(gitRoot, paths.report_path),
-    prompt_path: relative(gitRoot, paths.prompt_path),
+    prompt_path: relative(gitRoot, promptPath),
     opinion_path: relative(gitRoot, paths.opinion_path),
     result_path: opts.resultPayload === null ? null : relative(gitRoot, paths.result_path),
   };

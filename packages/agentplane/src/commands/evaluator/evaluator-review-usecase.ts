@@ -1,6 +1,4 @@
-import { createHash } from "node:crypto";
 import path from "node:path";
-import { z } from "zod";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
@@ -28,7 +26,15 @@ import {
   readDirectSupervisionEvidence,
   readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
+  type EvaluatorEvidenceKind,
+  type FrozenEvaluatorEvidence,
 } from "./evaluator-review-artifacts.js";
+import {
+  assertEvaluatorPacketCurrent,
+  putEvaluatorEvidenceObject,
+  writeEvaluatorPacketManifest,
+  type EvaluatorPacketArtifact,
+} from "./evaluator-evidence-store.js";
 import { resolveEvaluatorReviewTarget } from "./evaluator-qualification-review.js";
 import {
   verificationRecordPaths,
@@ -50,6 +56,13 @@ import {
   uniqueStrings,
 } from "./evaluator-review-shared.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
+import { renderEvaluatorResultOutputSchemaJson } from "./evaluator-result-schema.js";
+import {
+  EVALUATOR_ALLOWED_TOOL_CLASSES,
+  EVALUATOR_WORK_ORDER_SCHEMA,
+  evaluatorWorkOrderId,
+  type EvaluatorWorkOrder,
+} from "./evaluator-work-order.js";
 
 export {
   isWithinRoot,
@@ -58,92 +71,22 @@ export {
   type HumanEvaluatorReviewInput,
 } from "./evaluator-review-shared.js";
 export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
+export { assertResultEvidenceIsFrozen, readWorkOrder } from "./evaluator-work-order.js";
+export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
 
 const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
 const EVALUATOR_RESULT_FILE = "evaluator-result.json";
-const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
-const EVALUATOR_OBSERVED_CHECKS_FILE = "evaluator-observed-checks.json";
-const EVALUATOR_BLUEPRINT_FILE = "evaluator-blueprint.json";
-const EVALUATOR_ALLOWED_TOOL_CLASSES = [
-  "repository_read",
-  "git_read",
-  "run_checks",
-  "knowledge_request",
-  "report_result",
-] as const;
-
-const EVALUATOR_WORK_ORDER_SCHEMA = z
-  .object({
-    schema_version: z.literal(1),
-    kind: z.literal("evaluator_work_order"),
-    work_order_id: z.string().trim().min(1),
-    prepared_at: z.string().datetime({ offset: true }),
-    task: z
-      .object({
-        id: z.string().trim().min(1),
-        revision: z.number().int().positive().nullable(),
-        objective: z.string().trim().min(1),
-        acceptance_criteria: z.array(z.string().trim().min(1)).min(1),
-      })
-      .strict(),
-    evaluated_sha: z.string().trim().min(1).nullable(),
-    diff_base_sha: z.string().trim().min(1).nullable().optional(),
-    blueprint_digest: z.string().trim().min(1).nullable(),
-    evaluator: z
-      .object({
-        id: z.string().trim().min(1),
-        profile: z.string().trim().min(1),
-        prompt_module_path: z.string().trim().min(1),
-      })
-      .strict(),
-    authority: z
-      .object({
-        sandbox: z.literal("read-only"),
-        writable_roots: z.array(z.string()).length(0),
-        allowed_tool_classes: z.array(z.enum(EVALUATOR_ALLOWED_TOOL_CLASSES)),
-        external_side_effects: z.array(z.string()).length(0),
-      })
-      .strict(),
-    result_contract: z.literal("sgr.evaluator_result.v1"),
-    evidence: z
-      .array(
-        z
-          .object({
-            id: z.string().trim().min(1),
-            kind: z.enum([
-              "task_document",
-              "actual_diff",
-              "observed_checks",
-              "verification_log",
-              "blueprint",
-              "policy_module",
-              "knowledge_ref",
-              "runtime_evidence",
-              "qualification_packet",
-            ]),
-            path: z.string().trim().min(1),
-            sha256: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
-            required: z.boolean(),
-          })
-          .strict(),
-      )
-      .min(3),
-  })
-  .strict();
-
-export type EvaluatorWorkOrder = z.infer<typeof EVALUATOR_WORK_ORDER_SCHEMA>;
+const EVALUATOR_PACKET_MANIFEST_FILE = "evaluator-evidence-manifest.json";
 export type PreparedEvaluatorReview = {
   work_order: EvaluatorWorkOrder;
   work_order_path: string;
   report_path: string;
   prompt_path: string;
+  output_schema_path: string;
+  packet_manifest_path: string;
   opinion_path: string;
   result_path: string;
 };
-
-function sha256(value: string | Buffer): `sha256:${string}` {
-  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
-}
 
 async function assertTaskReviewWorkspaceClean(opts: {
   ctx: CommandContext;
@@ -166,27 +109,22 @@ async function assertTaskReviewWorkspaceClean(opts: {
   });
 }
 
-function workOrderId(opts: {
-  taskId: string;
-  revision: number | null;
-  evaluatedSha: string | null;
-  diffBaseSha: string | null;
-  evidence: EvaluatorWorkOrder["evidence"];
-}): string {
-  const digest = sha256(
-    JSON.stringify({
-      task_id: opts.taskId,
-      revision: opts.revision,
-      evaluated_sha: opts.evaluatedSha,
-      diff_base_sha: opts.diffBaseSha,
-      evidence: opts.evidence.map((entry) => [entry.id, entry.sha256]),
-    }),
-  ).slice("sha256:".length, "sha256:".length + 24);
-  const task = opts.taskId.replaceAll(/[^A-Za-z0-9_.-]/gu, "-").slice(0, 96) || "task";
-  return `evaluator-work-order-${task}-${digest}`;
+function frozenObjectEvidence(opts: {
+  id: string;
+  kind: EvaluatorEvidenceKind;
+  artifact: EvaluatorPacketArtifact;
+  required: boolean;
+}): FrozenEvaluatorEvidence {
+  return {
+    id: opts.id,
+    kind: opts.kind,
+    path: opts.artifact.path,
+    sha256: opts.artifact.sha256 as `sha256:${string}`,
+    required: opts.required,
+  };
 }
 
-export function reportPaths(reviewDir: string): Omit<PreparedEvaluatorReview, "work_order"> {
+export function reportPaths(reviewDir: string) {
   return {
     work_order_path: path.join(reviewDir, EVALUATOR_WORK_ORDER_FILE),
     report_path: path.join(reviewDir, QUALITY_REPORT_FILE),
@@ -194,6 +132,16 @@ export function reportPaths(reviewDir: string): Omit<PreparedEvaluatorReview, "w
     opinion_path: path.join(reviewDir, EVALUATOR_OPINION_FILE),
     result_path: path.join(reviewDir, EVALUATOR_RESULT_FILE),
   };
+}
+
+export function resolveEvaluatorPromptPath(opts: {
+  gitRoot: string;
+  reviewDir: string;
+  workOrder: EvaluatorWorkOrder;
+}): string {
+  return opts.workOrder.packet
+    ? path.resolve(opts.gitRoot, opts.workOrder.packet.prompt_path)
+    : reportPaths(opts.reviewDir).prompt_path;
 }
 
 export async function prepareEvaluatorReview(opts: {
@@ -300,23 +248,41 @@ export async function prepareEvaluatorReview(opts: {
         }
       : { state: "not_required", reason: "not a milestone qualification task" },
   };
-  await writeEvaluatorArtifact({
-    filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
-    contents: await renderActualDiff(
+  const taskQualityRoot = path.join(taskRoot, "quality");
+  const [diffArtifact, observedChecksArtifact, blueprintArtifact] = await Promise.all([
+    putEvaluatorEvidenceObject({
       gitRoot,
-      evaluatedSha,
-      diffBaseSha,
-      path.join(opts.ctx.config.paths.workflow_dir, opts.task.id),
-    ),
-  });
-  await writeEvaluatorArtifact({
-    filePath: path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
-    contents: `${JSON.stringify(observedChecks, null, 2)}\n`,
-  });
-  await writeEvaluatorArtifact({
-    filePath: path.join(reviewDir, EVALUATOR_BLUEPRINT_FILE),
-    contents: `${JSON.stringify(blueprint, null, 2)}\n`,
-  });
+      taskQualityRoot,
+      logicalName: "evaluator-diff",
+      kind: "actual_diff",
+      extension: ".patch",
+      mediaType: "text/x-diff",
+      contents: await renderActualDiff(
+        gitRoot,
+        evaluatedSha,
+        diffBaseSha,
+        path.join(opts.ctx.config.paths.workflow_dir, opts.task.id),
+      ),
+    }),
+    putEvaluatorEvidenceObject({
+      gitRoot,
+      taskQualityRoot,
+      logicalName: "evaluator-observed-checks",
+      kind: "observed_checks",
+      extension: ".json",
+      mediaType: "application/json",
+      contents: `${JSON.stringify(observedChecks, null, 2)}\n`,
+    }),
+    putEvaluatorEvidenceObject({
+      gitRoot,
+      taskQualityRoot,
+      logicalName: "evaluator-blueprint",
+      kind: "blueprint",
+      extension: ".json",
+      mediaType: "application/json",
+      contents: `${JSON.stringify(blueprint, null, 2)}\n`,
+    }),
+  ]);
 
   const evidence: EvaluatorWorkOrder["evidence"] = [
     await freezeEvaluatorFile({
@@ -326,18 +292,16 @@ export async function prepareEvaluatorReview(opts: {
       filePath: taskReadmePath,
       required: true,
     }),
-    await freezeEvaluatorFile({
-      gitRoot,
+    frozenObjectEvidence({
       id: "actual-diff",
       kind: "actual_diff",
-      filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
+      artifact: diffArtifact,
       required: true,
     }),
-    await freezeEvaluatorFile({
-      gitRoot,
+    frozenObjectEvidence({
       id: "observed-checks",
       kind: "observed_checks",
-      filePath: path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
+      artifact: observedChecksArtifact,
       required: true,
     }),
     ...verificationRecords,
@@ -353,11 +317,10 @@ export async function prepareEvaluatorReview(opts: {
           }),
         ]
       : []),
-    await freezeEvaluatorFile({
-      gitRoot,
+    frozenObjectEvidence({
       id: "blueprint",
       kind: "blueprint",
-      filePath: path.join(reviewDir, EVALUATOR_BLUEPRINT_FILE),
+      artifact: blueprintArtifact,
       required: true,
     }),
   ];
@@ -383,16 +346,62 @@ export async function prepareEvaluatorReview(opts: {
     }
   }
 
+  const nextWorkOrderId = evaluatorWorkOrderId({
+    taskId: opts.task.id,
+    revision: opts.task.revision ?? null,
+    evaluatedSha,
+    diffBaseSha,
+    evidence,
+  });
+  const promptContents = renderEvaluatorPrompt({
+    evaluator: opts.evaluator,
+    taskId: opts.task.id,
+    taskReadmePath: relative(gitRoot, taskReadmePath),
+    workOrderPath: relative(gitRoot, paths.work_order_path),
+    resultPath: relative(gitRoot, paths.result_path),
+    reportPath: relative(gitRoot, paths.report_path),
+    provenance: opts.provenance,
+  });
+  const [promptArtifact, resultSchemaArtifact] = await Promise.all([
+    putEvaluatorEvidenceObject({
+      gitRoot,
+      taskQualityRoot,
+      logicalName: "evaluator-prompt",
+      kind: "prompt",
+      extension: ".md",
+      mediaType: "text/markdown",
+      contents: promptContents,
+    }),
+    putEvaluatorEvidenceObject({
+      gitRoot,
+      taskQualityRoot,
+      logicalName: "evaluator-result-schema",
+      kind: "result_schema",
+      extension: ".json",
+      mediaType: "application/schema+json",
+      contents: renderEvaluatorResultOutputSchemaJson(),
+    }),
+  ]);
+  const packetManifestPath = path.join(reviewDir, EVALUATOR_PACKET_MANIFEST_FILE);
+  const packet = await writeEvaluatorPacketManifest({
+    gitRoot,
+    taskId: opts.task.id,
+    workOrderId: nextWorkOrderId,
+    createdAt: at,
+    taskQualityRoot,
+    manifestPath: packetManifestPath,
+    artifacts: [
+      diffArtifact,
+      observedChecksArtifact,
+      blueprintArtifact,
+      promptArtifact,
+      resultSchemaArtifact,
+    ],
+  });
   const workOrder = EVALUATOR_WORK_ORDER_SCHEMA.parse({
     schema_version: 1,
     kind: "evaluator_work_order",
-    work_order_id: workOrderId({
-      taskId: opts.task.id,
-      revision: opts.task.revision ?? null,
-      evaluatedSha,
-      diffBaseSha,
-      evidence,
-    }),
+    work_order_id: nextWorkOrderId,
     prepared_at: at,
     task: {
       id: opts.task.id,
@@ -415,25 +424,25 @@ export async function prepareEvaluatorReview(opts: {
       external_side_effects: [],
     },
     result_contract: "sgr.evaluator_result.v1",
+    packet: {
+      manifest_path: relative(gitRoot, packetManifestPath),
+      manifest_sha256: packet.sha256,
+      prompt_path: promptArtifact.path,
+      result_schema_path: resultSchemaArtifact.path,
+    },
     evidence,
   });
   await writeEvaluatorArtifact({
     filePath: paths.work_order_path,
     contents: `${JSON.stringify(workOrder, null, 2)}\n`,
   });
-  await writeEvaluatorArtifact({
-    filePath: paths.prompt_path,
-    contents: renderEvaluatorPrompt({
-      evaluator: opts.evaluator,
-      taskId: opts.task.id,
-      taskReadmePath: relative(gitRoot, taskReadmePath),
-      workOrderPath: relative(gitRoot, paths.work_order_path),
-      resultPath: relative(gitRoot, paths.result_path),
-      reportPath: relative(gitRoot, paths.report_path),
-      provenance: opts.provenance,
-    }),
-  });
-  return { work_order: workOrder, ...paths };
+  return {
+    work_order: workOrder,
+    ...paths,
+    prompt_path: path.resolve(gitRoot, promptArtifact.path),
+    output_schema_path: path.resolve(gitRoot, resultSchemaArtifact.path),
+    packet_manifest_path: packetManifestPath,
+  };
 }
 
 function assertExactKeys(
@@ -521,30 +530,30 @@ export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult 
   return validateEvaluatorSgrResult(normalizeEvaluatorStructuredNulls(record));
 }
 
-export function readWorkOrder(raw: unknown): EvaluatorWorkOrder {
-  try {
-    return EVALUATOR_WORK_ORDER_SCHEMA.parse(raw);
-  } catch (error) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `Invalid EvaluatorWorkOrder: ${error instanceof Error ? error.message : String(error)}`,
+export async function assertFrozenEvaluatorArtifactsCurrent(opts: {
+  gitRoot: string;
+  workOrder: EvaluatorWorkOrder;
+}): Promise<void> {
+  if (opts.workOrder.packet) {
+    await assertEvaluatorPacketCurrent({
+      gitRoot: opts.gitRoot,
+      taskId: opts.workOrder.task.id,
+      manifestPath: opts.workOrder.packet.manifest_path,
+      manifestSha256: opts.workOrder.packet.manifest_sha256,
+      promptPath: opts.workOrder.packet.prompt_path,
+      resultSchemaPath: opts.workOrder.packet.result_schema_path,
     });
   }
-}
-
-export function assertResultEvidenceIsFrozen(opts: {
-  workOrder: EvaluatorWorkOrder;
-  result: EvaluatorSgrResult;
-}): void {
-  const allowed = new Set(opts.workOrder.evidence.map((entry) => entry.path));
-  for (const finding of opts.result.findings) {
-    for (const evidence of finding.evidence_refs) {
-      if (!allowed.has(evidence.path)) {
-        throw new CliError({
-          code: "E_VALIDATION",
-          message: `Evaluator finding ${finding.id} refers to evidence outside the frozen work order: ${evidence.path}`,
-        });
-      }
+  for (const evidence of opts.workOrder.evidence) {
+    const evidencePath = path.resolve(opts.gitRoot, evidence.path);
+    if (
+      !isWithinRoot(opts.gitRoot, evidencePath) ||
+      (await readEvaluatorFileDigest(evidencePath)) !== evidence.sha256
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Evaluator work order is stale because frozen evidence changed: ${evidence.path}`,
+      });
     }
   }
 }
@@ -580,16 +589,5 @@ export async function assertWorkOrderCurrent(opts: {
         "Evaluator work order is stale because the resolved blueprint changed after preparation.",
     });
   }
-  for (const evidence of opts.workOrder.evidence) {
-    const evidencePath = path.resolve(gitRoot, evidence.path);
-    if (
-      !isWithinRoot(gitRoot, evidencePath) ||
-      (await readEvaluatorFileDigest(evidencePath)) !== evidence.sha256
-    ) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: `Evaluator work order is stale because frozen evidence changed: ${evidence.path}`,
-      });
-    }
-  }
+  await assertFrozenEvaluatorArtifactsCurrent({ gitRoot, workOrder: opts.workOrder });
 }

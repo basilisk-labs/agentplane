@@ -49,7 +49,7 @@ describe("evaluator prepare command", () => {
         recorded: false,
       });
       expect(result.work_order).toMatch(/work-order\.json$/u);
-      expect(result.prompt).toMatch(/evaluator-prompt\.md$/u);
+      expect(result.prompt).toMatch(/quality\/objects\/sha256\/[a-f0-9]{64}\.md$/u);
       expect(io.stdout).toBe("");
       expect(io.stderr).toBe("");
 
