@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608031321-5GK3DD-39c1641db704a450bd476bbf",
+  "prepared_at": "2026-08-03T14:08:53.239Z",
+  "task": {
+    "id": "202608031321-5GK3DD",
+    "revision": 10,
+    "objective": "Make built-in task run context-verifiable\n\nFix GitHub issue #4641 by ensuring the default built-in runner completes through a live authenticated context-verification boundary or stops with an executable supervisor route; never accept persisted receipt bytes, path hashes, or self-claims as authentication.",
+    "acceptance_criteria": [
+      "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+      "- In scope: Fix GitHub issue #4641 by ensuring the default built-in runner completes through a live authenticated context-verification boundary or stops with an executable supervisor route; never accept persisted receipt bytes, path hashes, or self-claims as authentication.\n- Out of scope: unrelated refactors not required for \"Make built-in task run context-verifiable\".",
+      "Trace the built-in task run receipt and context verification paths; preserve the fail-closed rule for persisted receipts; make the default built-in execution path use the same live authenticated observation boundary as context supervise-task, or return the exact supervisor action before unsafe execution; update the integration contract so normal task run can complete verifiably while copied, stale, tampered, or standalone persisted receipts remain rejected; keep changes bounded to runner/context orchestration and focused security tests; close issue #4641 only after hosted merge evidence.",
+      "1. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: default built-in execution reaches a live authenticated verification result, while standalone persisted and tampered receipts still fail closed.\n2. Run the focused context supervise-task, verify-task, execution-receipt, and task-run suites selected from touched modules. Expected: live observation is required and no path/hash/self-claim becomes trusted authentication.\n3. Run bun run guards:check and the trust-boundary ratchet. Expected: zero new reviewed trust-boundary violations.\n4. Run targeted ESLint, TypeScript checking, and git diff --check for touched files. Expected: all pass.\n5. Execute one isolated end-to-end built-in runner fixture. Expected: the CLI emits one deterministic next action and the completed run can be verified without manual receipt rewriting or hidden operator knowledge."
+    ]
+  },
+  "evaluated_sha": "632033f8efcedf146aac5e263d85175087a3c7f3",
+  "diff_base_sha": "a86f55dae7b4f2b9903dba4fe6bc4b5405731962",
+  "blueprint_digest": "64352f9d629976866e671e93239d37f10dbcc44c58d015a01537c75801a88001",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608031321-5GK3DD/README.md",
+      "sha256": "sha256:e72c1e4d23501054a4ef3f4ac091bb55d86810c6972833f25a204aee294cab04",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:bd4afe2e40ad8b0271be16836f5e6492fe4dc00bdde253b7711d8c9b92268e3c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:4902b3165210a8ad35d675540ba79c2ce2f3312ce8e45aca8c39ad35b3faa654",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608031321-5GK3DD/verification/20260803140749715-06c516287b30ab36.json",
+      "sha256": "sha256:3e5d33b544f04515577a60412b5376811deeb55658f9dbef0ed082e9e00f39bf",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:f2854b6bf7db89c5de56ad79154bf786b8ac56d0ae13f6d3ad9a73032dca3beb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

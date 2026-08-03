@@ -1,0 +1,931 @@
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+index b7cd9ed15..95369e1d8 100644
+--- a/packages/agentplane/src/commands/context/assimilation-supervisor.ts
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+@@ -33,9 +33,12 @@ import { cmdContextGraphValidate } from "./graph.js";
+ import { writeContextSemanticReworkWorkOrder } from "./assimilation-rework.js";
+ import { cmdContextReindex } from "./reindex.js";
+ import { cmdContextSearch } from "./search.js";
+-import { cmdContextVerifyTask } from "./verify-task.js";
++import { verifyContextTaskFromSupervisor } from "./verify-task.js";
+ import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
+ import { cmdContextWikiReport } from "./wiki-reports.js";
++import { captureGitSnapshot, compareGitSnapshots } from "../../runner/observation/git-snapshot.js";
++
++import { recordContextSupervisorVerification } from "./assimilation-verification.js";
+ 
+ export const CONTEXT_ASSIMILATION_OPERATION_IDS = [
+   "semantic_result",
+@@ -73,6 +76,7 @@ export type ContextAssimilationSupervisorDependencies = {
+   checkAcr?: () => Promise<unknown>;
+   getEpisodeState?: () => Promise<EpisodeState>;
+   loadTask?: () => Promise<TaskData>;
++  recordVerification?: (changedPaths: string[]) => Promise<unknown>;
+   runEvaluator?: () => Promise<unknown>;
+   operations?: Partial<Record<ContextAssimilationOperationId, () => Promise<unknown>>>;
+ };
+@@ -175,10 +179,27 @@ export async function runContextAssimilationSupervisor(
+ ): Promise<ContextAssimilationSupervisorResult> {
+   const root = path.resolve(input.command.resolvedProject.gitRoot);
+   const semantic = await readSemanticResult(root, input.extractionFile);
++  const observationExcludedRoots = [path.join(root, ".agentplane/context/ingest-runs")];
++  const observationBefore = await captureGitSnapshot({
++    repository_root: root,
++    excluded_roots: observationExcludedRoots,
++    trusted_repository_root: true,
++  });
+   const getEpisodeState = dependencies.getEpisodeState ?? (() => defaultEpisodeState(input));
+   const loadTask =
+     dependencies.loadTask ??
+     (() => loadTaskFromContext({ ctx: input.command, taskId: input.taskId }));
++  const recordVerification =
++    dependencies.recordVerification ??
++    ((changedPaths: string[]) =>
++      recordContextSupervisorVerification({
++        changedPaths,
++        command: input.command,
++        cwd: input.ctx.cwd,
++        extractionFile: input.extractionFile,
++        root,
++        taskId: input.taskId,
++      }));
+   let reworkWorkOrder: string | null = null;
+ 
+   const operation = async (
+@@ -402,17 +423,39 @@ export async function runContextAssimilationSupervisor(
+     async () =>
+       await cmdContextGraphValidate({ cwd: input.ctx.cwd, rootOverride: root, parsed: {} }),
+   );
+-  await run(
+-    "task_verify",
+-    "cli_operation",
+-    "task_verified",
+-    async () =>
+-      await cmdContextVerifyTask({
+-        cwd: input.ctx.cwd,
+-        rootOverride: root,
+-        parsed: { taskId: input.taskId },
+-      }),
+-  );
++  await run("task_verify", "cli_operation", "task_verified", async () => {
++    const observationAfter = await captureGitSnapshot({
++      repository_root: root,
++      excluded_roots: observationExcludedRoots,
++      trusted_repository_root: true,
++    });
++    const delta = await compareGitSnapshots({
++      repository_root: root,
++      before: observationBefore,
++      after: observationAfter,
++      excluded_roots: observationExcludedRoots,
++    });
++    if (delta.state !== "available") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          `Context assimilation supervisor could not authenticate its live Git observation ` +
++          `before verifying task ${input.taskId}.`,
++        context: {
++          reason_code: "context_supervisor_observation_unavailable",
++          task_id: input.taskId,
++          observation_errors: delta.errors.map((error) => error.operation),
++        },
++      });
++    }
++    const verification = await verifyContextTaskFromSupervisor({
++      ctx: input.command,
++      taskId: input.taskId,
++      changedPaths: delta.changed_paths,
++    });
++    const record = await recordVerification(delta.changed_paths);
++    return { verification, record };
++  });
+   await run(
+     "doctor",
+     "cli_operation",
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+index df2a4ca49..4215002ee 100644
+--- a/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+@@ -263,6 +263,69 @@ describe("context assimilation supervisor", () => {
+     expect(calls).toEqual([]);
+   });
+ 
++  it("verifies deterministic context writes from its live Git observation", async () => {
++    const root = await fixtureRoot();
++    const calls: string[] = [];
++    const profileTask = {
++      ...task("pass"),
++      task_kind: "context" as const,
++      mutation_scope: "context" as const,
++      blueprint_request: "context.assimilation" as const,
++      extensions: {
++        "agentplane.context": {
++          task_type: "context_profile_switch",
++          allowed_outputs: ["context/wiki/profile.md"],
++        },
++      },
++    };
++    const operations = overriddenOperations(calls);
++    const recordVerification = vi.fn((changedPaths: string[]) => Promise.resolve({ changedPaths }));
++    delete operations.task_verify;
++    operations.apply = async () => {
++      calls.push("apply");
++      await mkdir(path.join(root, "context/wiki"), { recursive: true });
++      await writeFile(
++        path.join(root, "context/wiki/profile.md"),
++        [
++          "---",
++          "agentplane_context:",
++          '  no_source: "generated profile-switch fixture"',
++          "---",
++          "# Profile",
++          "",
++        ].join("\n"),
++        "utf8",
++      );
++      return { changed_paths: ["context/wiki/profile.md"] };
++    };
++    const command = {
++      ...input(root).command,
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { getTask: () => Promise.resolve(profileTask) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as CommandContext;
++
++    const result = await runContextAssimilationSupervisor(
++      { ...input(root), command },
++      {
++        operations,
++        getEpisodeState: fixedEpisodeState,
++        loadTask: () => Promise.resolve(profileTask),
++        recordVerification,
++        runEvaluator: () => Promise.resolve(),
++      },
++    );
++
++    expect(result.status).toBe("finalized");
++    expect(calls).not.toContain("task_verify");
++    expect(recordVerification).toHaveBeenCalledExactlyOnceWith(["context/wiki/profile.md"]);
++    expect(await readFile(path.join(root, "context/wiki/profile.md"), "utf8")).toContain(
++      "generated profile-switch fixture",
++    );
++  });
++
+   it("retries only the failed mechanical operation and preserves the CURATOR result", async () => {
+     const root = await fixtureRoot();
+     const calls: string[] = [];
+diff --git a/packages/agentplane/src/commands/context/assimilation-verification.ts b/packages/agentplane/src/commands/context/assimilation-verification.ts
+new file mode 100644
+index 000000000..c39691776
+--- /dev/null
++++ b/packages/agentplane/src/commands/context/assimilation-verification.ts
+@@ -0,0 +1,49 @@
++import type { CommandContext } from "../shared/task-backend.js";
++import { cmdVerifyParsed } from "../task/verify-record.js";
++import { findContextIngestRunForTask } from "../../context/ingest-run-journal.js";
++import { CliError } from "../../shared/errors.js";
++
++export async function recordContextSupervisorVerification(opts: {
++  changedPaths: string[];
++  command: CommandContext;
++  cwd: string;
++  extractionFile: string;
++  root: string;
++  taskId: string;
++}): Promise<{ changed_paths: string[]; evidence: string }> {
++  const ingestRun = await findContextIngestRunForTask(opts.root, opts.taskId);
++  if (ingestRun === null) {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: `Context ingest journal disappeared before recording verification for ${opts.taskId}.`,
++    });
++  }
++  const evidencePath = `.agentplane/context/ingest-runs/${ingestRun.run_id}.json#task_verified`;
++  const exitCode = await cmdVerifyParsed({
++    ctx: opts.command,
++    cwd: opts.cwd,
++    rootOverride: opts.root,
++    taskId: opts.taskId,
++    state: "ok",
++    by: "SUPERVISOR",
++    note: "Verified: the context assimilation supervisor observed the live Git delta and all task-bound artifact checks passed.",
++    details: [
++      `Command: agentplane context supervise-task ${opts.taskId} --extraction ${opts.extractionFile}`,
++      "Result: pass",
++      `Evidence: ${evidencePath}`,
++      `Scope: live context assimilation Git delta (${String(opts.changedPaths.length)} changed paths) and task-bound artifact validation`,
++    ].join("\n"),
++    localOnly: false,
++    repoFixable: false,
++    incidentTags: [],
++    incidentMatch: [],
++    quiet: true,
++  });
++  if (exitCode !== 0) {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: `Context supervisor could not record formal verification for task ${opts.taskId}.`,
++    });
++  }
++  return { changed_paths: opts.changedPaths, evidence: evidencePath };
++}
+diff --git a/packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts b/packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts
+index 48275ee55..b02bb1857 100644
+--- a/packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts
++++ b/packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts
+@@ -6,7 +6,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
+ import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
+-import { validateContextTaskArtifacts } from "../../context/verify-task.js";
++import {
++  validateContextTaskArtifacts,
++  verifyContextTaskFromSupervisor,
++} from "../../context/verify-task.js";
+ import { cmdContextVerifyTask } from "./verify-task.js";
+ 
+ let tempRoots: string[] = [];
+@@ -221,6 +224,38 @@ describe("maximum-assimilation task verification", () => {
+     ).rejects.toThrow(/compatibility_unverified: persisted execution receipt is unauthenticated/u);
+   });
+ 
++  it("accepts the same task only through a live context-supervisor observation", async () => {
++    const root = await tempRoot();
++    const task = receiptBindingTask("202605281326-CTXLIVE");
++    const ctx = contextForReceiptBinding(root, task);
++    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
++
++    await expect(
++      verifyContextTaskFromSupervisor({
++        ctx,
++        taskId: task.id,
++        changedPaths: [],
++      }),
++    ).resolves.toBe(0);
++
++    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
++      `context verify-task ${task.id}: ok`,
++    );
++  });
++
++  it("applies mutation policy to the live context-supervisor Git delta", async () => {
++    const root = await tempRoot();
++    const task = receiptBindingTask("202605281326-CTXSCOPE");
++
++    await expect(
++      verifyContextTaskFromSupervisor({
++        ctx: contextForReceiptBinding(root, task),
++        taskId: task.id,
++        changedPaths: ["context/raw/provider-mutated.md"],
++      }),
++    ).rejects.toThrow(/context\/raw\/provider-mutated\.md: raw mutation is forbidden/u);
++  });
++
+   it("does not read persisted receipt bytes after authentication fails", async () => {
+     const root = await tempRoot();
+     const task = receiptBindingTask("202605281326-CTXMISS");
+diff --git a/packages/agentplane/src/commands/context/verify-task.ts b/packages/agentplane/src/commands/context/verify-task.ts
+index 82f89fd6c..23d7cae69 100644
+--- a/packages/agentplane/src/commands/context/verify-task.ts
++++ b/packages/agentplane/src/commands/context/verify-task.ts
+@@ -1 +1,4 @@
+-export { cmdContextVerifyTask } from "../../context/verify-task.js";
++export {
++  cmdContextVerifyTask,
++  verifyContextTaskFromSupervisor,
++} from "../../context/verify-task.js";
+diff --git a/packages/agentplane/src/commands/shared/route-execution-packet.ts b/packages/agentplane/src/commands/shared/route-execution-packet.ts
+index faa852d7b..91d0a7299 100644
+--- a/packages/agentplane/src/commands/shared/route-execution-packet.ts
++++ b/packages/agentplane/src/commands/shared/route-execution-packet.ts
+@@ -8,6 +8,7 @@ export type RouteExecutionPacket = {
+   recommendedRole:
+     | "ORCHESTRATOR"
+     | "PLANNER"
++    | "CURATOR"
+     | "CODER"
+     | "TESTER"
+     | "INTEGRATOR"
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-factory.ts b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+index 5698a6820..302a7e67f 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-factory.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+@@ -218,6 +218,37 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
+         "task is already verified in direct workflow; close it with task complete instead of rerunning execution",
+     });
+   }
++  if (String(state.task.status).toUpperCase() === "DOING") {
++    const contextTask =
++      state.task.task_kind === "context" || state.task.mutation_scope === "context";
++    if (contextTask) {
++      const extractionPath = `.agentplane/tasks/${id}/semantic-results/context-extraction.json`;
++      const superviseCommand = `agentplane context supervise-task ${id} --extraction ${extractionPath}`;
++      return agentEpisodeStep({
++        state,
++        id: "agent.context_semantic_result",
++        code: "context_semantic_result_required",
++        phase: "context_semantic_result_required",
++        checkout: "current_checkout",
++        role: "CURATOR",
++        purpose: "implementation",
++        summary:
++          "produce one bounded context_extraction SGR, then return deterministic post-processing to the context supervisor",
++        objective:
++          `Write one schema-valid context_extraction SGR to ${extractionPath}; ` +
++          `do not materialize context outputs or mutate lifecycle state.`,
++        semanticMutationAllowed: true,
++        mustNot: [
++          "do not run the generic task runner for context work",
++          "do not apply context artifacts, rebuild indexes, verify, evaluate, or finalize the task",
++          "do not write outside the task-owned semantic-results directory",
++        ],
++        returnControlWhen: `after CURATOR writes ${extractionPath}; then run ${superviseCommand}`,
++        compatibilityCommand: superviseCommand,
++        selectedBlocker: null,
++      });
++    }
++  }
+   const externalImplementationRecorded = Boolean(state.task.commit?.hash);
+   if (externalImplementationRecorded || state.resume.runner.run_id || state.resume.runner.status) {
+     if (externalImplementationRecorded || state.resume.runner.next_action === "none") {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.test.ts b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+index 0aac2823f..65268208a 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+@@ -234,6 +234,90 @@ describe("typed WorkflowStep reducer", () => {
+     });
+   });
+ 
++  it("routes direct context work to one bounded CURATOR result and the dedicated supervisor", () => {
++    const contextTaskId = "202607250100-CTX001";
++    const step = reduceRouteState(
++      routeState({
++        workflowMode: "direct",
++        prFlow: null,
++        blockers: [],
++        taskWorktree: undefined,
++        task: {
++          ...task,
++          id: contextTaskId,
++          owner: "CURATOR",
++          task_kind: "context",
++          mutation_scope: "context",
++          blueprint_request: "context.maximum_assimilation",
++          tags: ["context", "assimilation"],
++        },
++        resume: {
++          ...resume,
++          task_id: contextTaskId,
++          runner: {
++            ...resume.runner,
++            run_id: null,
++            status: null,
++            next_action: "run",
++            next_command: `agentplane task run ${contextTaskId}`,
++          },
++        },
++      }),
++    );
++
++    const extractionPath = `.agentplane/tasks/${contextTaskId}/semantic-results/context-extraction.json`;
++    expect(step).toMatchObject({
++      kind: "agent_episode",
++      id: "agent.context_semantic_result",
++      phase: "context_semantic_result_required",
++      episode: { role: "CURATOR", purpose: "implementation", taskId: contextTaskId },
++      compatibility: {
++        code: "context_semantic_result_required",
++        command: `agentplane context supervise-task ${contextTaskId} --extraction ${extractionPath}`,
++      },
++      execution: {
++        actionKind: "stop",
++        semanticMutationAllowed: true,
++      },
++    });
++    expect(step.summary).not.toContain("task run");
++
++    const verified = reduceRouteState(
++      routeState({
++        workflowMode: "direct",
++        prFlow: null,
++        blockers: [],
++        taskWorktree: undefined,
++        task: {
++          ...task,
++          id: contextTaskId,
++          owner: "CURATOR",
++          task_kind: "context",
++          mutation_scope: "context",
++          blueprint_request: "context.maximum_assimilation",
++          tags: ["context", "assimilation"],
++          verification: { state: "ok" },
++          quality_review: {
++            state: "pass",
++            reviewed_by: "EVALUATOR",
++            reviewed_at: "2026-07-25T00:10:00.000Z",
++            summary: "Context output passed independent semantic review.",
++            evidence_refs: [".agentplane/context/ingest-runs/run.json#evaluated"],
++          },
++        },
++        resume: { ...resume, task_id: contextTaskId },
++      }),
++    );
++    expect(verified).toMatchObject({
++      kind: "terminal",
++      id: "task.complete.input",
++      phase: "direct_verified_pending_closeout",
++      compatibility: {
++        command: `agentplane task complete ${contextTaskId} --result "<result>" --commit <hash>`,
++      },
++    });
++  });
++
+   it("covers cli operation, agent episode, approval, human input, wait, and terminal variants", () => {
+     const cli = reduceRouteState(routeState());
+     const agent = reduceRouteState(
+diff --git a/packages/agentplane/src/context/ingest-task-prompt.ts b/packages/agentplane/src/context/ingest-task-prompt.ts
+index c3a0d22bf..54a24bf8b 100644
+--- a/packages/agentplane/src/context/ingest-task-prompt.ts
++++ b/packages/agentplane/src/context/ingest-task-prompt.ts
+@@ -66,7 +66,7 @@ export function buildContextAssimilationPromptModule(
+       "",
+       "## Output and stop rules",
+       "",
+-      "- Output: one schema-valid `context_extraction` SGR under the task-owned `semantic-results/` directory. Include all required entity-resolution evidence, source refs, topology/page decisions, graph relations, conflicts, open questions, and coverage rows.",
++      "- Output: one schema-valid `context_extraction` SGR at `semantic-results/context-extraction.json` under the task directory. Include all required entity-resolution evidence, source refs, topology/page decisions, graph relations, conflicts, open questions, and coverage rows.",
+       "- Evidence: preserve modality, validity, status, scope, supersession, confidence, visibility, and contradictions; never overwrite conflicting knowledge silently.",
+       "- Stop: do not apply artifacts, rebuild indexes, run checks, invoke evaluators, write ACR, or finalize. Those are CLI-owned mechanical operations.",
+       "- Budget: one CURATOR semantic result per work order. A semantic rework is a new bounded work order with only the relevant evaluator feedback.",
+diff --git a/packages/agentplane/src/context/verify-task.ts b/packages/agentplane/src/context/verify-task.ts
+index 28d6b217d..9c6f75ddf 100644
+--- a/packages/agentplane/src/context/verify-task.ts
++++ b/packages/agentplane/src/context/verify-task.ts
+@@ -145,34 +145,29 @@ export async function validateContextTaskArtifacts(opts: {
+   return 0;
+ }
+ 
+-export async function cmdContextVerifyTask(opts: {
+-  ctx?: CommandContext;
+-  cwd: string;
+-  rootOverride?: string;
+-  parsed: { taskId: string };
+-}): Promise<number> {
+-  const ctx =
+-    opts.ctx ??
+-    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+-  const task = await loadTaskFromContext({ ctx, taskId: opts.parsed.taskId });
++async function loadContextTaskForVerification(opts: {
++  ctx: CommandContext;
++  taskId: string;
++}): Promise<VerificationInput | null> {
++  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+   if (!task) {
+     throw new CliError({
+       exitCode: 3,
+       code: "E_VALIDATION",
+-      message: `Task not found: ${opts.parsed.taskId}`,
++      message: `Task not found: ${opts.taskId}`,
+     });
+   }
+   if (task.task_kind !== "context") {
+     process.stdout.write(
+-      `context verify-task ${opts.parsed.taskId}: skipped_not_applicable (task_kind=${task.task_kind ?? "unknown"}; expected context)\n`,
++      `context verify-task ${opts.taskId}: skipped_not_applicable (task_kind=${task.task_kind ?? "unknown"}; expected context)\n`,
+     );
+-    return 0;
++    return null;
+   }
+   if (task.mutation_scope !== "context") {
+     throw new CliError({
+       exitCode: 3,
+       code: "E_VALIDATION",
+-      message: `Task ${opts.parsed.taskId} has invalid mutation scope: ${task.mutation_scope ?? "unknown"}`,
++      message: `Task ${opts.taskId} has invalid mutation scope: ${task.mutation_scope ?? "unknown"}`,
+     });
+   }
+   if (
+@@ -182,11 +177,48 @@ export async function cmdContextVerifyTask(opts: {
+     throw new CliError({
+       exitCode: 3,
+       code: "E_VALIDATION",
+-      message: `Task ${opts.parsed.taskId} has unexpected blueprint request: ${task.blueprint_request ?? "unknown"}`,
++      message: `Task ${opts.taskId} has unexpected blueprint request: ${task.blueprint_request ?? "unknown"}`,
+     });
+   }
++  return task as VerificationInput;
++}
++
++/**
++ * Verify context artifacts from the still-live CLI supervisor observation.
++ *
++ * This boundary intentionally accepts changed paths only from the in-process
++ * context assimilation supervisor. The public command continues to reject a
++ * persisted receipt because a repository-local path and digest do not
++ * authenticate an observation against a detached same-UID process.
++ */
++export async function verifyContextTaskFromSupervisor(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  changedPaths: readonly string[];
++}): Promise<number> {
++  const task = await loadContextTaskForVerification({ ctx: opts.ctx, taskId: opts.taskId });
++  if (!task) return 0;
++  return await validateContextTaskArtifacts({
++    ctx: opts.ctx,
++    task,
++    changedPaths: opts.changedPaths,
++  });
++}
+ 
+-  const normalizedTask = task as VerificationInput;
++export async function cmdContextVerifyTask(opts: {
++  ctx?: CommandContext;
++  cwd: string;
++  rootOverride?: string;
++  parsed: { taskId: string };
++}): Promise<number> {
++  const ctx =
++    opts.ctx ??
++    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
++  const normalizedTask = await loadContextTaskForVerification({
++    ctx,
++    taskId: opts.parsed.taskId,
++  });
++  if (!normalizedTask) return 0;
+   const executionReceipt = rejectUnauthenticatedExecutionReceipt({
+     task: normalizedTask,
+   });
+diff --git a/packages/agentplane/src/runner/usecases/task-run-authority.ts b/packages/agentplane/src/runner/usecases/task-run-authority.ts
+index 2f73b21b5..0e5c6f4ff 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-authority.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-authority.ts
+@@ -156,12 +156,32 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
+   const task = bundle.task;
+   if (!task) return;
+   const status = normalizeTaskStatus(task.metadata.status);
+-  if (status === "DOING") return;
++  if (status !== "DOING") {
++    throw new CliError({
++      exitCode: 2,
++      code: "E_USAGE",
++      message:
++        `${task.metadata.task_id}: runner execution requires task status DOING ` +
++        `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.metadata.task_id} --author <ROLE> --body "Start: ..."\` first).`,
++    });
++  }
++  if (task.metadata.task_kind !== "context" && task.metadata.mutation_scope !== "context") return;
++  const extractionPath = `.agentplane/tasks/${task.metadata.task_id}/semantic-results/context-extraction.json`;
++  const superviseCommand = `agentplane context supervise-task ${task.metadata.task_id} --extraction ${extractionPath}`;
+   throw new CliError({
+     exitCode: 2,
+     code: "E_USAGE",
+     message:
+-      `${task.metadata.task_id}: runner execution requires task status DOING ` +
+-      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.metadata.task_id} --author <ROLE> --body "Start: ..."\` first).`,
++      `${task.metadata.task_id}: generic task run is not admitted for context work because ` +
++      `workspace-write execution cannot authenticate detached descendant mutations.\n` +
++      `Next semantic action: CURATOR writes one schema-valid context_extraction SGR to ${extractionPath}.\n` +
++      `Then run: ${superviseCommand}`,
++    context: {
++      reason_code: "context_requires_dedicated_supervisor",
++      task_id: task.metadata.task_id,
++      required_role: "CURATOR",
++      semantic_output_path: extractionPath,
++      safe_command: superviseCommand,
++    },
+   });
+ }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts b/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+index 9ee4879c3..22ecd470d 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+@@ -1,9 +1,7 @@
+-import { createHash } from "node:crypto";
+-import { readFile, writeFile } from "node:fs/promises";
++import { access } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { defaultConfig } from "@agentplaneorg/core/config";
+-import { EXECUTION_RECEIPT_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
+ import {
+   captureStdIO,
+   installRunCliIntegrationHarness,
+@@ -18,7 +16,7 @@ import { runCli } from "../../cli/run-cli.js";
+ import { cmdContextVerifyTask } from "../../commands/context/verify-task.js";
+ import { loadCommandContext } from "../../commands/shared/task-backend.js";
+ import type { TaskData } from "../../backends/task-backend.js";
+-import { resolveSupervisorExecutionReceiptLocator } from "../task-run-paths.js";
++import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
+ import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
+ import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
+ 
+@@ -191,258 +189,90 @@ async function configureFakeCodex(root: string): Promise<void> {
+   process.env.TEST_REPOSITORY_ROOT = root;
+ }
+ 
+-async function readPersistedReceipt(
+-  root: string,
+-  receiptPath: string,
+-): Promise<{
+-  observed_by?: string;
+-  success_policy?: { outcome?: string; reasons?: string[] };
+-  scope_evaluation?: {
+-    state?: string;
+-    mutation_scope?: string | null;
+-    writable_roots?: string[];
+-    violations?: unknown[];
+-  };
+-  checks?: { id?: string; required?: boolean; status?: string; details?: string }[];
+-  process?: {
+-    process_tree?: {
+-      containment_state?: string;
+-      containment_limitation?: string | null;
+-    };
+-  };
+-}> {
+-  const resolvedReceiptPath = receiptPath.startsWith("agentplane-run:")
+-    ? await resolveSupervisorExecutionReceiptLocator({
+-        git_root: root,
+-        workflow_dir: ".agentplane/tasks",
+-        locator: receiptPath,
+-      })
+-    : path.isAbsolute(receiptPath)
+-      ? receiptPath
+-      : path.join(root, receiptPath);
+-  return JSON.parse(await readFile(resolvedReceiptPath, "utf8")) as {
+-    observed_by?: string;
+-    success_policy?: { outcome?: string; reasons?: string[] };
+-    scope_evaluation?: {
+-      state?: string;
+-      mutation_scope?: string | null;
+-      writable_roots?: string[];
+-      violations?: unknown[];
+-    };
+-    checks?: { id?: string; required?: boolean; status?: string; details?: string }[];
+-    process?: {
+-      process_tree?: {
+-        containment_state?: string;
+-        containment_limitation?: string | null;
+-      };
+-    };
+-  };
+-}
+-
+ describe("context task runner integration", () => {
+-  it("keeps trust unverified when a custom adapter only carries workspace-write as advisory", async () => {
++  it("refuses a custom workspace-write adapter before context mutation", async () => {
+     const root = await mkGitRepoRoot();
+     const runId = "run-context-custom-advisory";
+     await configureCustomRunner(root);
+     const taskId = await createContextTask(root, "Custom context advisory receipt");
+     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+ 
+-    const executed = await executeTaskRunnerExecution({
+-      ctx,
+-      cwd: root,
+-      rootOverride: root,
+-      task_id: taskId,
+-      run_id: runId,
+-    });
+-
+-    expect(executed.bundle.execution.sandbox_policy).toMatchObject({
+-      requested: "workspace-write",
+-      source: "role_default",
+-      role: "CURATOR",
+-    });
+-    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
+-    expect(executed.bundle.execution.write_scope).toMatchObject({
+-      mutation_scope: "context",
+-      writable_roots: [".agentplane/context", "context"],
+-    });
+-    expect(executed.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
+-      requested: "workspace-write",
+-      status: "advisory",
+-      capability_level: "advisory",
+-      channel: "env",
+-    });
+-    expect(executed.result).toMatchObject({
+-      status: "success",
+-      exit_code: 0,
+-      execution_receipt: {
+-        verification_state: "unverified",
+-        observed_by: "agentplane",
++    await expect(
++      executeTaskRunnerExecution({
++        ctx,
++        cwd: root,
++        rootOverride: root,
++        task_id: taskId,
++        run_id: runId,
++      }),
++    ).rejects.toMatchObject({
++      code: "E_USAGE",
++      context: {
++        reason_code: "context_requires_dedicated_supervisor",
++        required_role: "CURATOR",
++        semantic_output_path: `.agentplane/tasks/${taskId}/semantic-results/context-extraction.json`,
+       },
+     });
+ 
+     const persistedTask = await ctx.taskBackend.getTask(taskId);
+-    expect(persistedTask?.runner).toMatchObject({
+-      run_id: runId,
+-      status: "success",
+-      execution_receipt: {
+-        verification_state: "unverified",
+-        observed_by: "agentplane",
+-      },
++    expect(persistedTask?.runner).toBeUndefined();
++    expect(persistedTask?.status).toBe("DOING");
++    await expect(access(path.join(root, "context/wiki/profile.md"))).rejects.toMatchObject({
++      code: "ENOENT",
+     });
+-    await expect(
+-      cmdContextVerifyTask({
+-        ctx,
+-        cwd: root,
+-        parsed: { taskId },
+-      }),
+-    ).rejects.toThrow(/persisted execution receipt is unauthenticated/u);
+   });
+ 
+-  it("keeps trust unverified when native Codex lacks bounded descendant lifetime", async () => {
++  it("returns the exact context supervisor path before native Codex starts", async () => {
+     const root = await mkGitRepoRoot();
+     const runId = "run-context-codex-unverified";
+     await configureFakeCodex(root);
+     const taskId = await createContextTask(root, "Native Codex context receipt");
+     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+ 
+-    const executed = await executeTaskRunnerExecution({
+-      ctx,
+-      cwd: root,
+-      rootOverride: root,
+-      task_id: taskId,
+-      run_id: runId,
+-    });
+-
+-    expect(executed.bundle.execution.sandbox_policy).toMatchObject({
+-      requested: "workspace-write",
+-      source: "role_default",
+-      role: "CURATOR",
+-    });
+-    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
+-    expect(executed.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
+-      requested: "workspace-write",
+-      effective: "workspace-write",
+-      status: "enforced",
+-      capability_level: "native",
+-      channel: "argv",
+-    });
+-    expect(executed.invocation.argv).toEqual(
+-      expect.arrayContaining(["--ignore-user-config", "--strict-config", "-s", "workspace-write"]),
+-    );
+-    expect(executed.result).toMatchObject({
+-      status: "success",
+-      exit_code: 0,
+-      execution_receipt: {
+-        verification_state: "unverified",
+-        observed_by: "agentplane",
+-      },
+-    });
+-
+-    const receiptRef = executed.result.execution_receipt;
+-    expect(receiptRef).toBeTruthy();
+-    const receipt = await readPersistedReceipt(root, receiptRef!.path);
+-    expect(receipt).toMatchObject({
+-      observed_by: "agentplane",
+-      success_policy: {
+-        outcome: "unverified",
+-      },
+-      scope_evaluation: {
+-        state: "passed",
+-        mutation_scope: "context",
+-        writable_roots: [".agentplane/context", "context"],
+-        violations: [],
+-      },
+-    });
+-    expect(receipt.success_policy?.reasons).toEqual(
+-      expect.arrayContaining([
+-        expect.stringContaining("cannot observe or terminate descendants"),
+-        "required observed check was not run: runner.process_containment",
+-      ]),
+-    );
+-    expect(receipt.process?.process_tree?.containment_state).toBe("limited");
+-    expect(receipt.process?.process_tree?.containment_limitation).toContain(
+-      "POSIX process-group cleanup cannot observe or terminate descendants",
+-    );
+-    expect(receipt.checks).toEqual(
+-      expect.arrayContaining([
+-        expect.objectContaining({
+-          id: "runner.sandbox.filesystem_effects_enforced",
+-          required: false,
+-          status: "not_run",
+-        }),
+-        expect.objectContaining({
+-          id: "runner.process_containment",
+-          required: true,
+-          status: "not_run",
+-        }),
+-      ]),
+-    );
+-
+-    const persistedTask = await ctx.taskBackend.getTask(taskId);
+-    expect(persistedTask?.runner).toMatchObject({
+-      run_id: runId,
+-      status: "success",
+-      execution_receipt: {
+-        path: receiptRef!.path,
+-        sha256: receiptRef!.sha256,
+-        verification_state: "unverified",
+-        observed_by: "agentplane",
+-      },
+-    });
++    const extractionPath = `.agentplane/tasks/${taskId}/semantic-results/context-extraction.json`;
+     await expect(
+-      cmdContextVerifyTask({
++      executeTaskRunnerExecution({
+         ctx,
+         cwd: root,
+-        parsed: { taskId },
++        rootOverride: root,
++        task_id: taskId,
++        run_id: runId,
+       }),
+-    ).rejects.toThrow(/persisted execution receipt is unauthenticated/u);
++    ).rejects.toThrow(
++      `Then run: agentplane context supervise-task ${taskId} --extraction ${extractionPath}`,
++    );
++
++    const persistedTask = await ctx.taskBackend.getTask(taskId);
++    expect(persistedTask?.runner).toBeUndefined();
++    await expect(access(path.join(root, "context/wiki/profile.md"))).rejects.toMatchObject({
++      code: "ENOENT",
++    });
+   });
+ 
+-  it("rejects a forged observed-success receipt and matching task reference", async () => {
++  it("still rejects a self-consistent persisted observed-success receipt", async () => {
+     const root = await mkGitRepoRoot();
+     const runId = "run-context-forged-receipt";
+-    await configureFakeCodex(root);
+     const taskId = await createContextTask(root, "Forged context receipt");
+     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+-
+-    const executed = await executeTaskRunnerExecution({
+-      ctx,
+-      cwd: root,
+-      rootOverride: root,
+-      task_id: taskId,
+-      run_id: runId,
+-    });
+-    expect(executed.result.execution_receipt?.verification_state).toBe("unverified");
+-
+-    const forgedReceipt = structuredClone(EXECUTION_RECEIPT_V2_VALID_FIXTURE);
+-    forgedReceipt.run_id = runId;
+-    forgedReceipt.work_order_id = runId;
+-    const forgedText = `${JSON.stringify(forgedReceipt, null, 2)}\n`;
+-    const receiptReference = executed.result.execution_receipt!.path;
+-    const receiptPath = receiptReference.startsWith("agentplane-run:")
+-      ? await resolveSupervisorExecutionReceiptLocator({
+-          git_root: root,
+-          workflow_dir: ".agentplane/tasks",
+-          locator: receiptReference,
+-        })
+-      : path.isAbsolute(receiptReference)
+-        ? receiptReference
+-        : path.resolve(root, ...receiptReference.split("/"));
+-    await writeFile(receiptPath, forgedText, "utf8");
+-
+     const task = await ctx.taskBackend.getTask(taskId);
+     expect(task).toBeTruthy();
++    await attachObservedExecutionReceiptFixture({
++      root,
++      task: task!,
++      changedPaths: [],
++      runId,
++    });
+     await ctx.taskBackend.writeTask({
+       ...task!,
+       runner: {
+-        ...task!.runner,
+         run_id: runId,
+-        execution_receipt: {
+-          path: executed.result.execution_receipt!.path,
+-          sha256: `sha256:${createHash("sha256").update(forgedText).digest("hex")}`,
+-          verification_state: "observed_success",
+-          observed_by: "agentplane",
+-        },
++        status: "success",
++        adapter_id: "codex",
++        mode: "execute",
++        updated_at: "2026-08-03T00:00:00.000Z",
++        exit_code: 0,
++        target: { kind: "task", task_id: taskId },
++        execution_receipt: task!.runner!.execution_receipt,
+       },
+     });
+ 
