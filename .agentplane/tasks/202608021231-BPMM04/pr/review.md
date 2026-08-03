@@ -13,7 +13,7 @@ Created: 2026-08-03T11:03:33.843Z
 ## Verification
 
 - State: ok
-- Note: Verified EVALUATOR rework at exact SHA e92e7b4b1ea4fe9cca60d2ebb5a305f3e65fba42: every reconciliation completion path now projects authoritative supervisor token usage and preserves stable replay.
+- Note: Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown observation provenance are independent, incomplete breakdown is partial with null counts, and all completion paths remain covered.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -49,15 +49,16 @@ Created: 2026-08-03T11:03:33.843Z
  .../task/hosted-merge-sync.token-usage.test.ts     | 330 +++++++++++++++++++++
  .../src/commands/task/hosted-merge-sync.ts         |  44 ++-
  .../commands/task/hosted-merge-sync/builders.ts    |  18 +-
- .../src/commands/task/task-token-usage.test.ts     | 174 +++++++++++
- .../src/commands/task/task-token-usage.ts          | 127 ++++++++
+ .../src/commands/task/task-token-usage.test.ts     | 239 +++++++++++++++
+ .../src/commands/task/task-token-usage.ts          | 132 +++++++++
  .../runner/adapters/codex-result-transport.test.ts |   2 +
  .../src/runner/adapters/codex-result-transport.ts  |   5 +
  .../agentplane/src/runner/adapters/codex.test.ts   |   2 +
  .../schemas/task-readme-frontmatter.schema.json    | 122 ++++++++
  packages/core/schemas/tasks-export.schema.json     | 122 ++++++++
  packages/core/src/index.ts                         |   2 +
- .../src/runner/supervisor-execution-episode.ts     |  44 ++-
+ .../runner/supervisor-execution-episode.test.ts    |  47 +++
+ .../src/runner/supervisor-execution-episode.ts     |  82 ++++-
  packages/core/src/tasks/index.ts                   |   2 +
  .../core/src/tasks/task-artifact-schema.task.ts    |  71 +++++
  .../core/src/tasks/task-artifact-schema.test.ts    |  53 ++++
@@ -70,7 +71,7 @@ Created: 2026-08-03T11:03:33.843Z
  packages/spec/schemas/tasks-export.schema.json     | 122 ++++++++
  schemas/task-readme-frontmatter.schema.json        | 122 ++++++++
  schemas/tasks-export.schema.json                   | 122 ++++++++
- 41 files changed, 1832 insertions(+), 16 deletions(-)
+ 42 files changed, 1987 insertions(+), 16 deletions(-)
 ```
 
 </details>

@@ -6,6 +6,7 @@ import {
   deriveRouteOperatorGuidance,
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
+import { formatTaskTokenUsageSummary } from "./token-usage-format.js";
 
 export type TaskStatusParsed = {
   taskId: string;
@@ -86,6 +87,14 @@ export function makeRunTaskStatusHandler(session: {
       { label: "task", value: `${decision.task.id} ${decision.task.status}` },
       { label: "title", value: decision.task.title },
       { label: "owner", value: decision.task.owner },
+      ...(decision.task.token_usage
+        ? [
+            {
+              label: "token_usage",
+              value: formatTaskTokenUsageSummary(decision.task.token_usage),
+            },
+          ]
+        : []),
       { label: "plan", value: decision.task.planApproval ?? "pending" },
       { label: "verification", value: decision.task.verification ?? "pending" },
       { label: "workflow", value: decision.workflowMode },
