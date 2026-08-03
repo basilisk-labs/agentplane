@@ -15,8 +15,8 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Content-addressed evaluator packets passed the task-specific and repository-wide verification contract.
 - Canonical workflow state lives in the task README.
 
 <details>

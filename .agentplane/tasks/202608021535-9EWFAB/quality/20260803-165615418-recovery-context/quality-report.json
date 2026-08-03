@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-9EWFAB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T16:57:15.449Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "2849b3045fc19132735399f9a5a867433af937ac",
+  "blueprint_digest": "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85",
+  "findings": [
+    "The content-addressed evidence store validates paths lexically but does not reject symlinked parent directories, allowing object writes or frozen-artifact reads to escape the repository."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/3f18f075a19d2a4c72f66a302849b36dcefe8a131bffc188d4ada68c7e669482.patch",
+    ".agentplane/policy/security.must.md"
+  ],
+  "missing_tests": [
+    "Add negative tests replacing quality/objects, quality/objects/sha256, and quality/objects/.staging with symlinks to an outside-repository directory; preparation and packet verification must reject them without reading or writing the target."
+  ],
+  "hidden_assumptions": [
+    "Task-local quality and object-store parent directories are assumed never to be symlinks or concurrently replaced by symlinks."
+  ],
+  "residual_risks": [
+    "Harden object-store creation and packet verification against symlinked ancestors using repository-boundary-aware real-path or descriptor-based checks, then rerun focused collision, concurrency, symlink-escape, critical, and contract suites."
+  ]
+}
