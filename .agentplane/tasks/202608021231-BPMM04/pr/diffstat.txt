@@ -11,7 +11,8 @@
  .../commands/release/tasks-reconcile.command.ts    |   9 +-
  .../commands/shared/route-decision-types.test.ts   |  27 ++
  .../src/commands/shared/route-decision-types.ts    |   2 +
- .../shared/supervisor-execution-episode.ts         |  14 +-
+ .../shared/supervisor-execution-episode.test.ts    |  95 +++++-
+ .../shared/supervisor-execution-episode.ts         |  13 +-
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../agentplane/src/commands/task/brief-model.ts    |   3 +
  .../agentplane/src/commands/task/brief-render.ts   |   9 +
@@ -46,4 +47,4 @@
  packages/spec/schemas/tasks-export.schema.json     | 122 ++++++++
  schemas/task-readme-frontmatter.schema.json        | 122 ++++++++
  schemas/tasks-export.schema.json                   | 122 ++++++++
- 48 files changed, 2335 insertions(+), 18 deletions(-)
+ 49 files changed, 2423 insertions(+), 24 deletions(-)

@@ -4,7 +4,7 @@ title: "Record token usage on every completed task"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T12:17:44.360Z"
+  updated_at: "2026-08-03T12:26:24.209Z"
   updated_by: "TESTER"
-  note: "Verified 822d48168: completed task README body renders deterministic token usage and all required gates pass."
+  note: "Verified 71b53fd7a1: no-usage managed runs complete with unavailable token projection; all required gates pass."
   attempts: 0
 quality_review:
   state: "rework"
@@ -133,8 +133,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified 822d48168: completed task README body renders deterministic token usage and all required gates pass."
+  -
+    type: "verify"
+    at: "2026-08-03T12:26:24.209Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified 71b53fd7a1: no-usage managed runs complete with unavailable token projection; all required gates pass."
 doc_version: 3
-doc_updated_at: "2026-08-03T12:17:45.408Z"
+doc_updated_at: "2026-08-03T12:26:25.592Z"
 doc_updated_by: "CODER"
 description: "Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage."
 sections:
@@ -562,6 +568,56 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T12:26:24.209Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified 71b53fd7a1: no-usage managed runs complete with unavailable token projection; all required gates pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:17:45.408Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+    Details:
+
+    Command: bun x vitest run managed no-usage and token suites
+    Result: pass
+    Evidence: 43 focused lifecycle and completion tests passed for 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+    Scope: managed run without provider usage, supervisor budget separation, completion projection, README and CLI surfaces
+
+    Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: typecheck and lint passed; Knip 539/539; policy routing OK
+    Scope: static, unused-code, and policy compliance at 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+
+    Command: bun run framework:dev:bootstrap && bun run ci:contract
+    Result: pass
+    Evidence: RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170
+    Scope: full v0.7 contract and efficiency replay at 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical chunks passed
+    Scope: critical CLI regression suite at 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+    - old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021231-BPMM04
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1020,6 +1076,56 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T12:26:24.209Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified 71b53fd7a1: no-usage managed runs complete with unavailable token projection; all required gates pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:17:45.408Z, excerpt_hash=sha256:a756b7e65aa3d1bdeb14f2b9a0e0e7d6005331876560c62eb05924e6e64b130e
+
+Details:
+
+Command: bun x vitest run managed no-usage and token suites
+Result: pass
+Evidence: 43 focused lifecycle and completion tests passed for 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+Scope: managed run without provider usage, supervisor budget separation, completion projection, README and CLI surfaces
+
+Command: bun run typecheck && bun run lint:core && bun run knip:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: typecheck and lint passed; Knip 539/539; policy routing OK
+Scope: static, unused-code, and policy compliance at 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+
+Command: bun run framework:dev:bootstrap && bun run ci:contract
+Result: pass
+Evidence: RF-04 50/50; outcomes 70/70; token cells 27/27; scalar cells 170/170
+Scope: full v0.7 contract and efficiency replay at 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical chunks passed
+Scope: critical CLI regression suite at 71b53fd7a140ba4e52dc325b46b4ee79f7f90c9f
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021231-BPMM04-record-token-usage-on-every-completed-task/.agentplane/tasks/202608021231-BPMM04/blueprint/resolved-snapshot.json
+- old_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- current_digest: d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021231-BPMM04
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021231-BPMM04
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
