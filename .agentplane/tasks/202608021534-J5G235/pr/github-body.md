@@ -16,7 +16,7 @@ Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and un
 ## Verification
 
 - State: ok
-- Note: Verified CLI dead-code ratchet and compatibility preservation.
+- Note: Verified CLI dead-code ratchet and compatibility preservation with structured check evidence.
 - Canonical workflow state lives in the task README.
 
 <details>

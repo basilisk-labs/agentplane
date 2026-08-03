@@ -4,7 +4,7 @@ title: "Reduce the v0.7.1 CLI dead-code and barrel baseline"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T15:42:00.703Z"
+  updated_at: "2026-08-03T15:43:42.831Z"
   updated_by: "TESTER"
-  note: "Verified CLI dead-code ratchet and compatibility preservation."
+  note: "Verified CLI dead-code ratchet and compatibility preservation with structured check evidence."
   attempts: 0
 commit:
   hash: "c76ac407e7e16aa697a1d029df6cde3538329d85"
@@ -60,8 +60,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified CLI dead-code ratchet and compatibility preservation."
+  -
+    type: "verify"
+    at: "2026-08-03T15:43:42.831Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified CLI dead-code ratchet and compatibility preservation with structured check evidence."
 doc_version: 3
-doc_updated_at: "2026-08-03T15:42:01.555Z"
+doc_updated_at: "2026-08-03T15:43:43.843Z"
 doc_updated_by: "CODER"
 description: "Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and unnecessary internal barrel re-exports, reduce the CLI-package Knip baseline by 60-80 percent where evidence permits, preserve @agentplaneorg/core compatibility, and ratchet against future growth."
 sections:
@@ -126,6 +132,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T15:43:42.831Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified CLI dead-code ratchet and compatibility preservation with structured check evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T15:42:01.555Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+    Details:
+
+    Command: bun run knip:check
+    Result: pass
+    Evidence: AgentPlane CLI files=0/0 total=0/0; reviewed core compatibility total=21/21.
+    Scope: unused files, exports, exported types, package budgets, and immutable baseline update guard.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, compatibility, agent-efficiency replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage guards passed.
+    Scope: repository contract and non-regression gates.
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 533 test files and 3768 tests passed across agentplane, core, recipes, and testkit.
+    Scope: full workspace behavioral regression suite.
+
+    Command: bun --filter agentplane typecheck && bun run lint:core
+    Result: pass
+    Evidence: AgentPlane typecheck and repository ESLint completed with zero errors.
+    Scope: static typing and lint correctness after declaration removal.
+
+    Command: node --input-type=module compatibility surface comparison against f44bc0c51c13652b21d61b5e314ca1d4f624c465
+    Result: pass
+    Evidence: CLI topology, machine output, workflow schema, package manifests, and agent-facing contracts are unchanged.
+    Scope: public and agent-facing compatibility boundaries.
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors; reviewed diff reduces 517 CLI symbols plus one unused file to zero and repository total from 539 to 21.
+    Scope: final task diff integrity and approved dead-code boundary.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+    - old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021534-J5G235
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -141,6 +207,10 @@ sections:
     - Observation: Knip initially classified exports in the byte-frozen agent-facing SGR contract and dynamic bootstrap module as unused.
       Impact: Removing those exports would preserve compilation but drift the compatibility digest or break the docs bootstrap dynamic import.
       Resolution: Restored the byte-identical SGR contract, added a file-exact Knip compatibility exception, and tagged only the two dynamically imported bootstrap constants; compatibility and bootstrap checks now pass.
+
+    - Observation: The first verification note contained complete evidence but not the CLI-required structured check grammar.
+      Impact: The route correctly rejected it as non-durable evidence and withheld quality-review progression.
+      Resolution: Re-recorded every executed check with explicit Command, Result, Evidence, and Scope fields so verification can be validated deterministically.
 extensions:
   workflow_route_baseline:
     start_head_sha: "f44bc0c51c13652b21d61b5e314ca1d4f624c465"
@@ -217,6 +287,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T15:43:42.831Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified CLI dead-code ratchet and compatibility preservation with structured check evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T15:42:01.555Z, excerpt_hash=sha256:07c220d036dbf595d07476ec334b7b547bc8e753321b4b0c5cbfacbd8193e4b6
+
+Details:
+
+Command: bun run knip:check
+Result: pass
+Evidence: AgentPlane CLI files=0/0 total=0/0; reviewed core compatibility total=21/21.
+Scope: unused files, exports, exported types, package budgets, and immutable baseline update guard.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, compatibility, agent-efficiency replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage guards passed.
+Scope: repository contract and non-regression gates.
+
+Command: bun run test:fast
+Result: pass
+Evidence: 533 test files and 3768 tests passed across agentplane, core, recipes, and testkit.
+Scope: full workspace behavioral regression suite.
+
+Command: bun --filter agentplane typecheck && bun run lint:core
+Result: pass
+Evidence: AgentPlane typecheck and repository ESLint completed with zero errors.
+Scope: static typing and lint correctness after declaration removal.
+
+Command: node --input-type=module compatibility surface comparison against f44bc0c51c13652b21d61b5e314ca1d4f624c465
+Result: pass
+Evidence: CLI topology, machine output, workflow schema, package manifests, and agent-facing contracts are unchanged.
+Scope: public and agent-facing compatibility boundaries.
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors; reviewed diff reduces 517 CLI symbols plus one unused file to zero and repository total from 539 to 21.
+Scope: final task diff integrity and approved dead-code boundary.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021534-J5G235-reduce-the-v0-7-1-cli-dead-code-and-barrel-basel/.agentplane/tasks/202608021534-J5G235/blueprint/resolved-snapshot.json
+- old_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- current_digest: 7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021534-J5G235
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021534-J5G235
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -236,3 +366,7 @@ DecisionContextRef:
 - Observation: Knip initially classified exports in the byte-frozen agent-facing SGR contract and dynamic bootstrap module as unused.
   Impact: Removing those exports would preserve compilation but drift the compatibility digest or break the docs bootstrap dynamic import.
   Resolution: Restored the byte-identical SGR contract, added a file-exact Knip compatibility exception, and tagged only the two dynamically imported bootstrap constants; compatibility and bootstrap checks now pass.
+
+- Observation: The first verification note contained complete evidence but not the CLI-required structured check grammar.
+  Impact: The route correctly rejected it as non-durable evidence and withheld quality-review progression.
+  Resolution: Re-recorded every executed check with explicit Command, Result, Evidence, and Scope fields so verification can be validated deterministically.

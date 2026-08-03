@@ -13,7 +13,7 @@ Created: 2026-08-03T15:09:30.904Z
 ## Verification
 
 - State: ok
-- Note: Verified CLI dead-code ratchet and compatibility preservation.
+- Note: Verified CLI dead-code ratchet and compatibility preservation with structured check evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
