@@ -13,7 +13,35 @@ Created: 2026-08-03T15:09:30.904Z
 ## Verification
 
 - State: ok
-- Note: Verified CLI dead-code ratchet and compatibility preservation with structured check evidence.
+- Note: Command: bun run test:critical
+Result: PASS
+Evidence: 12 of 12 critical CLI chunks passed, including both init exit-code scenarios that failed in GitHub Actions.
+Scope: restored packages/agentplane/src/cli/critical/cli-runner.ts as the dynamically launched critical-test target.
+
+Command: bun run knip:check
+Result: PASS
+Evidence: AgentPlane CLI remains at files=0 and total=0; repository total remains 21 and is limited to the reviewed core compatibility surface.
+Scope: exact Knip files exception covers only the dynamic critical CLI runner.
+
+Command: bun run ci:contract
+Result: PASS
+Evidence: formatting, schemas, policy routing, compatibility, RF-04 replay, TypeScript 7, trust boundary, architecture, clone, Knip, and coverage checks passed.
+Scope: complete repository contract barrier after restoring the runner.
+
+Command: bun run test:fast
+Result: PASS
+Evidence: 533 of 533 test files and 3768 of 3768 tests passed in 143.56 seconds.
+Scope: AgentPlane, core, recipes, and testkit regression suite.
+
+Command: bun run bench:compatibility:check
+Result: PASS
+Evidence: compatibility baseline accepted with unchanged CLI, machine-output, workflow, package, and agent-facing contracts.
+Scope: comparison remains anchored to the cumulative v0.7 compatibility contract.
+
+Command: git diff --check
+Result: PASS
+Evidence: no whitespace errors; the corrective implementation is limited to restoring the dynamic runner and its exact Knip classification.
+Scope: hosted CI rework for PR #4758.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +57,7 @@ Created: 2026-08-03T15:09:30.904Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- knip.json                                          |    4 +
+ knip.json                                          |    5 +
  packages/agentplane/src/backends/task-backend.ts   |   20 -
  .../agentplane/src/backends/task-backend/shared.ts |   20 -
  .../src/backends/task-backend/shared/constants.ts  |    1 -
@@ -47,7 +75,6 @@ Created: 2026-08-03T15:09:30.904Z
  packages/agentplane/src/cli/bootstrap-guide.ts     |    4 +-
  .../src/cli/check-knip-baseline-script.test.ts     |   20 +
  packages/agentplane/src/cli/command-invocations.ts |    2 +-
- packages/agentplane/src/cli/critical/cli-runner.ts |   14 -
  packages/agentplane/src/cli/critical/harness.ts    |    7 +-
  packages/agentplane/src/cli/error-map.ts           |    2 +-
  packages/agentplane/src/cli/output.ts              |    4 +-
@@ -173,7 +200,7 @@ Created: 2026-08-03T15:09:30.904Z
  .../src/workflow-runtime/validation-helpers.ts     |    2 +-
  scripts/baselines/knip-baseline.json               | 3313 +-------------------
  scripts/checks/check-knip-baseline.mjs             |   53 +-
- 144 files changed, 292 insertions(+), 4323 deletions(-)
+ 143 files changed, 293 insertions(+), 4309 deletions(-)
 ```
 
 </details>
