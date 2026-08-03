@@ -8,10 +8,10 @@
   "pr_number": 4760,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4760",
   "pre_merge_closure": {
-    "basis_commit": "7b5ee7a8eff4d7d4e2a946bc807053324af0d5c9",
+    "basis_commit": "2724dbfa1e93e177ff52c02aab8c3bea4bbc51d1",
     "branch": "task/202608021535-CNQKXP/add-compatibility-retirement-inventory-and-docto",
     "pr_number": 4760,
-    "recorded_at": "2026-08-03T19:31:08.047Z",
+    "recorded_at": "2026-08-03T20:24:43.934Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
