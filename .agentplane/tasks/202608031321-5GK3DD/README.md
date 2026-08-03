@@ -1,10 +1,11 @@
 ---
 id: "202608031321-5GK3DD"
 title: "Make built-in task run context-verifiable"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +58,23 @@ quality_review:
     - "The generic task runner rejects context work before any provider invocation and returns the exact semantic-result path plus dedicated supervisor command."
     - "The dedicated supervisor captures and validates its live Git delta, then records task verification; copied, stale, tampered, and standalone persisted receipts remain rejected."
     - "The verified route converges from one CURATOR artifact to deterministic CLI post-processing and then to task closeout instead of repeating task run."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T14:10:09.820Z"
 commit:
-  hash: "632033f8efcedf146aac5e263d85175087a3c7f3"
-  message: "♻️ 5GK3DD code: isolate context verification recording"
+  hash: "cc8b8fd28c39a11b70ef9d2e733d603489c9242d"
+  message: "🔎 5GK3DD task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -70,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: extracted formal context-verification recording into a bounded module so the supervisor remains under the enforced hotspot limit."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -110,8 +128,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass."
+  -
+    type: "status"
+    at: "2026-08-03T14:10:09.820Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T14:07:50.839Z"
+doc_updated_at: "2026-08-03T14:10:09.829Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4641 by ensuring the default built-in runner completes through a live authenticated context-verification boundary or stops with an executable supervisor route; never accept persisted receipt bytes, path hashes, or self-claims as authentication."
 sections:
@@ -307,6 +332,9 @@ sections:
       Promotion: incident-candidate
       Fixability: repo-fixable
 extensions:
+  implementation_commit:
+    hash: "632033f8efcedf146aac5e263d85175087a3c7f3"
+    message: "♻️ 5GK3DD code: isolate context verification recording"
   workflow_route_baseline:
     start_head_sha: "a86f55dae7b4f2b9903dba4fe6bc4b5405731962"
     version: 1
@@ -517,3 +545,16 @@ DecisionContextRef:
   Resolution: Context semantic work is now one bounded CURATOR result; the dedicated supervisor owns live Git observation, artifact validation, and formal verification while persisted receipts remain untrusted.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T14:10:09.820Z`
