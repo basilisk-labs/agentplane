@@ -4,7 +4,6 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import {
-  advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
@@ -28,6 +27,7 @@ import {
 } from "../commands/task/agent-action-packet.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
+import { readRoute, readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
 import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
@@ -187,60 +187,6 @@ async function returnAgentResult(
   }
 }
 
-async function readRouteFingerprint(root: string, taskId: string): Promise<string> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
-    expect(code, io.stderr).toBe(0);
-    const payload = JSON.parse(io.stdout) as {
-      workflow_step: { preconditionFingerprint: { digest: string } };
-    };
-    return payload.workflow_step.preconditionFingerprint.digest;
-  } finally {
-    io.restore();
-  }
-}
-
-async function readRoute(
-  root: string,
-  taskId: string,
-): Promise<{
-  workflow_step: {
-    kind: string;
-    preconditionFingerprint: { digest: string };
-    request?: {
-      type: string;
-      operationId: string;
-      operationDigest: string;
-      stateFingerprintDigest: string;
-      stateScopeDigest: string;
-    };
-  };
-  route_oracle: { phase: string; authoritativeCheckout: string };
-}> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
-    expect(code, io.stderr).toBe(0);
-    return JSON.parse(io.stdout) as {
-      workflow_step: {
-        kind: string;
-        preconditionFingerprint: { digest: string };
-        request?: {
-          type: string;
-          operationId: string;
-          operationDigest: string;
-          stateFingerprintDigest: string;
-          stateScopeDigest: string;
-        };
-      };
-      route_oracle: { phase: string; authoritativeCheckout: string };
-    };
-  } finally {
-    io.restore();
-  }
-}
-
 describe("runCli task advance", { timeout: 180_000 }, () => {
   it("returns one compact planning action without changing repository state", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -395,27 +341,49 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     const issued = validateSupervisorExecutionEpisodeJournal(await store.read());
     const operation = issued.operations.at(-1);
     if (!operation) throw new Error("expected issued external-agent operation");
-    const completedJournal = (workOrderId: string) =>
-      advanceSupervisorExecutionEpisodeState({
-        journal: completeSupervisorExecutionEpisode({
-          journal: issued,
-          operation_key: operation.operation_key,
-          result: {
-            work_order_id: workOrderId,
-            semantic_status: "completed",
-            result_digest: resultDigest,
-          },
-          progress: decision.workflowStep.preconditionFingerprint,
-        }),
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        route_observation: { step_id: decision.workflowStep.id, surface: "test crash recovery" },
+    const limited = createSupervisorExecutionEpisodeJournal({
+      task_id: issued.task_id,
+      task_revision: issued.task_revision,
+      state_fingerprint_digest: issued.state_fingerprint_digest,
+      budget: { ...issued.budget, max_episodes: 1, max_agent_runs: 1 },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: limited,
+      role: operation.role,
+      kind: operation.kind,
+      operation_identity: { test: "budget-exhausted recovery" },
+      precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+      authority_ref: operation.authority_ref,
+      authority_digest: operation.authority_digest,
+      work_order_ref: operation.work_order_ref,
+      effect_ref: operation.effect_ref,
+    });
+    if (started.status !== "started") throw new Error("expected limited supervisor intent");
+    const completedJournal = (workOrderId: string, progress: unknown) =>
+      completeSupervisorExecutionEpisode({
+        journal: started.journal,
+        operation_key: started.operation_key,
+        result: {
+          work_order_id: workOrderId,
+          semantic_status: "completed",
+          result_digest: resultDigest,
+        },
+        progress,
       });
-    await store.write(completedJournal("mismatched-work-order"));
+    await store.write(
+      completedJournal("mismatched-work-order", decision.workflowStep.preconditionFingerprint),
+    );
     const mismatched = await returnAgentResult(root, taskId, resultPath);
     expect(mismatched.code).not.toBe(0);
     expect(mismatched.stderr).toContain("does not match the accepted semantic result");
     expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({ status: "accepted" });
-    await store.write(completedJournal(exchange.work_order_id));
+    await store.write(completedJournal(exchange.work_order_id, { stale: true }));
+    const stale = await returnAgentResult(root, taskId, resultPath);
+    expect(stale.code).not.toBe(0);
+    expect(stale.stderr).toContain("no longer matches the current task state");
+    await store.write(
+      completedJournal(exchange.work_order_id, decision.workflowStep.preconditionFingerprint),
+    );
     const readmeBeforeRecovery = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
       "utf8",
@@ -431,6 +399,10 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(taskReadme).toContain(recoveredPlan);
     expect(taskReadme).toBe(readmeBeforeRecovery);
     expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({ status: "consumed" });
+    const finalized = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(finalized.operations.at(-1)?.postcondition_fingerprint_digest).toBe(
+      decision.workflowStep.preconditionFingerprint.digest,
+    );
   });
 
   it("rejects a stale planning result before applying semantic task state", async () => {

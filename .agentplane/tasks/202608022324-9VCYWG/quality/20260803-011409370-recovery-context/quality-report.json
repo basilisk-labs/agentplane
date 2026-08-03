@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022324-9VCYWG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T01:15:13.250Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "f48e6021df6f6cd6538d58191c1da10091d88085",
+  "blueprint_digest": "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84",
+  "findings": [
+    "Budget-exhausted recovery can consume an accepted result without binding the completed operation to the current postcondition fingerprint."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Add a crash-recovery test where completion exhausts the supervisor budget, the exchange remains accepted, and the current route fingerprint differs; recovery must reject the stale result and leave the exchange unconsumed.",
+    "Add the corresponding budget-exhausted recovery success case proving the stopped journal records and validates the matching postcondition before consumption."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes a completed external-agent operation cannot enter the budget_exhausted stopped phase before exchange consumption, although that phase is explicitly accepted by the recovery classifier."
+  ],
+  "residual_risks": [
+    "Update budget-exhausted completed-operation recovery to advance or otherwise validate the stopped journal's operation and journal postcondition fingerprints before marking the exchange consumed, then cover matching and stale fingerprints with focused tests."
+  ]
+}

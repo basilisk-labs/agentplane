@@ -491,6 +491,7 @@ export async function acceptExternalAgentResult(opts: {
         store,
         exchange,
         paths,
+        postcondition: current.workflowStep.preconditionFingerprint,
         postcondition_fingerprint: current.workflowStep.preconditionFingerprint.digest,
         route_step_id: current.workflowStep.id,
         work_order_id: exchange.work_order_id,
@@ -544,7 +545,12 @@ export async function acceptExternalAgentResult(opts: {
         message: "External-agent supervisor changed while completing the semantic operation.",
       });
     }
-    if (journal.status === "running" && journal.cursor.phase === "completed") {
+    if (
+      (journal.status === "running" && journal.cursor.phase === "completed") ||
+      (journal.status === "stopped" &&
+        journal.stop?.reason === "budget_exhausted" &&
+        journal.cursor.phase === "stopped")
+    ) {
       const completedDigest = journal.digest;
       journal = advanceSupervisorExecutionEpisodeState({
         journal,
