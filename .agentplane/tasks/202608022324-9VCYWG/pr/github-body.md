@@ -19,8 +19,8 @@ Extend the compact external-agent protocol so task advance accepts a typed Seman
 - Note:
 
 ```text
-Verified budget-exhausted accepted-result recovery against the current postcondition before exchange
-consumption.
+Verified the CI contract repair: generated CLI reference now covers task advance --result and all
+contract checks pass.
 ```
 - Canonical workflow state lives in the task README.
 
