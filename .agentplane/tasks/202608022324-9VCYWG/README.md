@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T01:25:47.342Z"
+  updated_at: "2026-08-03T01:34:37.697Z"
   updated_by: "TESTER"
-  note: "Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption."
+  note: "Verified the CI contract repair: generated CLI reference now covers task advance --result and all contract checks pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -141,8 +141,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-03T01:34:37.697Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified the CI contract repair: generated CLI reference now covers task advance --result and all contract checks pass."
 doc_version: 3
-doc_updated_at: "2026-08-03T01:27:59.159Z"
+doc_updated_at: "2026-08-03T01:34:39.174Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
@@ -401,6 +407,60 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608022324-9VCYWG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T01:34:37.697Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified the CI contract repair: generated CLI reference now covers task advance --result and all contract checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T01:27:59.159Z, excerpt_hash=sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378
+
+    Details:
+
+    Command: bun run docs:cli:generate and bun run docs:cli:check
+    Result: pass
+    Evidence: cli-reference.generated.mdx was regenerated; freshness check reports the canonical CLI reference is up to date
+    Scope: Generated user CLI reference for task advance --result and single-use result semantics
+    Links: docs/user/cli-reference.generated.mdx
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: Formatting, schema, examples, agent templates, policy routing, release parity, bootstrap/onboarding/docs IA, compatibility, RF-04 replay, hotspot, lifecycle, toolchain, lint, architecture, Knip, and coverage contract checks completed without a failing gate
+    Scope: Hosted verify-contract parity for current worktree content
+    Links: .github/workflows/ci.yml
+
+    Command: git diff 7ca1e1ff15a56fc0d4610f2d0c55e827c2f9bad6..f14009b3e4ddd76ca14f6ec33a1a80cf132ac307 --stat
+    Result: pass
+    Evidence: Current rework changes only docs/user/cli-reference.generated.mdx by eight generated lines; previously verified production and test files are unchanged
+    Scope: Regression-risk classification for the post-evaluator CI repair
+    Links: docs/user/cli-reference.generated.mdx
+
+    Command: bun run test:critical at implementation SHA 403ff7151a155fe9d3fbc3c017cd7ac6bac2ec56
+    Result: pass
+    Evidence: All 12 critical-cli chunks passed; no production or test code changed after that result
+    Scope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
+    Links: .agentplane/tasks/202608022324-9VCYWG/verification/20260803012547342-9cde180b3b2ac71d.json
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/blueprint/resolved-snapshot.json
+    - old_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+    - current_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022324-9VCYWG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -690,6 +750,60 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608022324-9VCYWG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T01:34:37.697Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified the CI contract repair: generated CLI reference now covers task advance --result and all contract checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T01:27:59.159Z, excerpt_hash=sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378
+
+Details:
+
+Command: bun run docs:cli:generate and bun run docs:cli:check
+Result: pass
+Evidence: cli-reference.generated.mdx was regenerated; freshness check reports the canonical CLI reference is up to date
+Scope: Generated user CLI reference for task advance --result and single-use result semantics
+Links: docs/user/cli-reference.generated.mdx
+
+Command: bun run ci:contract
+Result: pass
+Evidence: Formatting, schema, examples, agent templates, policy routing, release parity, bootstrap/onboarding/docs IA, compatibility, RF-04 replay, hotspot, lifecycle, toolchain, lint, architecture, Knip, and coverage contract checks completed without a failing gate
+Scope: Hosted verify-contract parity for current worktree content
+Links: .github/workflows/ci.yml
+
+Command: git diff 7ca1e1ff15a56fc0d4610f2d0c55e827c2f9bad6..f14009b3e4ddd76ca14f6ec33a1a80cf132ac307 --stat
+Result: pass
+Evidence: Current rework changes only docs/user/cli-reference.generated.mdx by eight generated lines; previously verified production and test files are unchanged
+Scope: Regression-risk classification for the post-evaluator CI repair
+Links: docs/user/cli-reference.generated.mdx
+
+Command: bun run test:critical at implementation SHA 403ff7151a155fe9d3fbc3c017cd7ac6bac2ec56
+Result: pass
+Evidence: All 12 critical-cli chunks passed; no production or test code changed after that result
+Scope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
+Links: .agentplane/tasks/202608022324-9VCYWG/verification/20260803012547342-9cde180b3b2ac71d.json
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/blueprint/resolved-snapshot.json
+- old_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+- current_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022324-9VCYWG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

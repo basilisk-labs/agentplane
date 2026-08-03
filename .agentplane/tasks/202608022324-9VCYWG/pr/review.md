@@ -13,7 +13,7 @@ Created: 2026-08-02T23:28:27.052Z
 ## Verification
 
 - State: ok
-- Note: Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption.
+- Note: Verified the CI contract repair: generated CLI reference now covers task advance --result and all contract checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
