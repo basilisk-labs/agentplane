@@ -16,4 +16,6 @@
  .../commands/evaluator/evaluator-test-helpers.ts   |   2 +
  .../src/commands/evaluator/evaluator-work-order.ts | 135 +++++++
  .../src/commands/hooks/run.pre-commit.ts           |   3 +
- 18 files changed, 1707 insertions(+), 268 deletions(-)
+ .../runner/supervisor-execution-episode.test.ts    |  22 +-
+ .../src/runner/supervisor-execution-episode.ts     |  16 +-
+ 20 files changed, 1727 insertions(+), 286 deletions(-)

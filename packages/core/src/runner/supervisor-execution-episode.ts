@@ -486,14 +486,9 @@ export function startSupervisorExecutionEpisode(opts: {
     };
   }
   if (pendingReplacement !== undefined) {
-    const predecessor = journal.operations.at(-1);
-    if (
-      replacementReference !== pendingReplacement ||
-      predecessor?.role !== opts.role ||
-      predecessor?.kind !== opts.kind
-    ) {
+    if (replacementReference !== pendingReplacement) {
       throw new Error(
-        "Supervisor episode replacement requires the exact pending failed operation with the same role and kind.",
+        "Supervisor episode replacement requires the exact pending failed operation.",
       );
     }
   } else if (replacementReference) {
@@ -819,10 +814,11 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
 }
 
 /**
- * Open a distinct, explicitly authorized operation after a provider failure.
+ * Open a distinct, explicitly authorized operation after a known operation failure.
  * The failed operation remains in the journal and the next start binds its
- * replacement to that operation key. This is deliberately narrower than a
- * retry: ambiguous effects and exhausted budgets stay terminal.
+ * replacement to that operation key. The successor may have a different role
+ * or kind when the recomputed route changed; this is deliberately narrower
+ * than a retry because ambiguous effects and exhausted budgets stay terminal.
  */
 export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
   journal: SupervisorExecutionEpisodeJournal;
