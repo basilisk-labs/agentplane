@@ -199,6 +199,26 @@ async function qualityReviewIsFreshForHead(opts: {
   return expectedSha === review.evaluated_sha;
 }
 
+function qualityReworkHasNewVerification(task: TaskData): boolean {
+  const reviewUpdatedAt = task.quality_review?.updated_at;
+  const verificationUpdatedAt = task.verification?.updated_at;
+  if (
+    task.quality_review?.state !== "rework" ||
+    task.verification?.state !== "ok" ||
+    !reviewUpdatedAt ||
+    !verificationUpdatedAt
+  ) {
+    return false;
+  }
+  const reviewTime = Date.parse(reviewUpdatedAt);
+  const verificationTime = Date.parse(verificationUpdatedAt);
+  return (
+    Number.isFinite(reviewTime) &&
+    Number.isFinite(verificationTime) &&
+    verificationTime > reviewTime
+  );
+}
+
 async function readTaskPrMeta(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -459,7 +479,8 @@ export async function deriveBlockers(opts: {
       !implementationReworkRequired &&
       taskIsDoing &&
       opts.task.verification?.state === "ok" &&
-      opts.task.quality_review?.state === "rework"
+      opts.task.quality_review?.state === "rework" &&
+      !qualityReworkHasNewVerification(opts.task)
     ) {
       implementationReworkRequired = await qualityReviewIsFreshForHead({
         ctx: opts.ctx,

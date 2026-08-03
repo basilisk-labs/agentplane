@@ -124,6 +124,7 @@ async function blockersFor(
   targetSha: string | null,
   batchOwnership?: RouteBatchOwnership,
   prFlow: PrFlowStatusReport = openPrFlow(),
+  task: TaskData = reviewedTask(),
 ) {
   mocks.readFile.mockResolvedValue("{}");
   mocks.parsePrMeta.mockReturnValue({});
@@ -135,7 +136,7 @@ async function blockersFor(
 
   return deriveBlockers({
     ctx,
-    task: reviewedTask(),
+    task,
     resume,
     workflowMode: "branch_pr",
     prFlow,
@@ -149,6 +150,55 @@ async function blockersFor(
     },
   });
 }
+
+function reworkTask(verificationUpdatedAt: string): TaskData {
+  const task = reviewedTask();
+  task.status = "DOING";
+  task.verification = {
+    state: "ok",
+    updated_at: verificationUpdatedAt,
+    updated_by: "TESTER",
+    note: "Rework verification",
+  };
+  task.quality_review = {
+    ...task.quality_review!,
+    state: "rework",
+    updated_at: "2026-07-24T00:00:00.000Z",
+    note: "Evidence rework required",
+  };
+  return task;
+}
+
+describe("DOING route quality rework", () => {
+  it("keeps fresh evaluator rework blocking until a newer verification exists", async () => {
+    const blockers = await blockersFor(
+      reviewedSha,
+      undefined,
+      openPrFlow(),
+      reworkTask("2026-07-23T23:59:59.000Z"),
+    );
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("returns newer verified evidence rework to the quality-review gate", async () => {
+    const blockers = await blockersFor(
+      reviewedSha,
+      undefined,
+      openPrFlow(),
+      reworkTask("2026-07-24T00:00:01.000Z"),
+    );
+
+    expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+    );
+  });
+});
 
 describe("DONE route quality-review target", () => {
   it("keeps a reviewed metadata target fresh across managed closure artifacts", async () => {
