@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -33,21 +33,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-03T20:49:31.206Z"
+  updated_at: "2026-08-03T20:56:28.590Z"
   updated_by: "HUMAN"
-  note: "The selector now treats dependencies as executable preconditions: automatic profiles prune unavailable dependency chains, explicit partial selections fail closed, and topological ordering remains deterministic."
-  evaluated_sha: "f36b025abe35e1b789325ce54f6d1d9e2816b6d5"
+  note: "The final implementation preserves dependency-aware qualification semantics and resolves the hosted lint failure without changing behavior or widening scope."
+  evaluated_sha: "469f523984e3a6e06978b9b227b30dc39d81e4a0"
   blueprint_digest: "eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9"
   evidence_refs:
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/7e294a639a960f27e117bc378e5d466142bb1fd11f1146152b015d1923ba9bed.md"
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-204930969-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-205628219-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-205628219-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/92474d78518bdaff5626b631122e301bceefe393d0d5872c3de6b2650e3678ad.md"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-205628219-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-205628219-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608032042-DAMQDM/README.md"
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/805923e3aac400050dfba524a7f866ae472a596bc5bd8211420f9317d2de9262.patch"
-    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/75423555db49e9cbec311705ef2d86fb630bc6bd9670a39f5661ef22d26da9f8.json"
-    - ".agentplane/tasks/202608032042-DAMQDM/verification/20260803204851383-6a54955e6a950444.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/548404436cf43d502874dd826c715434ee34348c466316ffe06dcf538848e116.patch"
+    - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/73bc43f950255406f2d78d3eeb0834535050a5a9cb0e77b7c55dc59b4b31160a.json"
+    - ".agentplane/tasks/202608032042-DAMQDM/verification/20260803205549676-722aff58c560deca.json"
     - ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/e39df725cdbe9686ca1eb629f6b2dbb0783cc326d860648bcd6de7114e8f83e9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
@@ -56,8 +56,8 @@ quality_review:
     - "scripts/qualification/release-qualification.mjs"
     - "scripts/qualification/release-qualification.test.mjs"
   findings:
-    - "The fixed-point pruning is bounded by the number of selected scenarios and correctly removes efficiency-evidence when provider-matrix is absent, including future transitive dependents."
-    - "Explicit selection reports the exact missing edge instead of silently executing against stale fallback evidence."
+    - "Automatic selection prunes unavailable dependency chains to a fixed point; explicit partial selections fail closed with the exact missing edge."
+    - "The lint rework only removes a redundant empty-array fallback because Set accepts undefined, so it does not alter selection behavior."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -126,7 +126,7 @@ events:
     state: "ok"
     note: "PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:55:50.892Z"
+doc_updated_at: "2026-08-03T20:56:28.611Z"
 doc_updated_by: "CODER"
 description: "Make the v0.7.1 qualification selector exclude scenarios whose dependencies are not selected, and fail closed for explicit orphan scenario selection, so a deterministic no-provider audit can complete before the one allowed provider generation."
 sections:

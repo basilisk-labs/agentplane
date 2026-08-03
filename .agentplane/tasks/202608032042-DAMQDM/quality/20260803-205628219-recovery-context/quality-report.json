@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608032042-DAMQDM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T20:56:28.590Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The final implementation preserves dependency-aware qualification semantics and resolves the hosted lint failure without changing behavior or widening scope.",
+  "evaluated_sha": "469f523984e3a6e06978b9b227b30dc39d81e4a0",
+  "blueprint_digest": "eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9",
+  "findings": [
+    "Automatic selection prunes unavailable dependency chains to a fixed point; explicit partial selections fail closed with the exact missing edge.",
+    "The lint rework only removes a redundant empty-array fallback because Set accepts undefined, so it does not alter selection behavior."
+  ],
+  "evidence_refs": [
+    "scripts/qualification/release-qualification.mjs",
+    "scripts/qualification/release-qualification.test.mjs",
+    ".agentplane/tasks/202608032042-DAMQDM/verification/20260803205549676-722aff58c560deca.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Release readiness remains intentionally incomplete until the single provider capture supplies current efficiency evidence."
+  ]
+}

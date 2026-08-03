@@ -1,0 +1,27 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run e2e:v0.7.1:check",
+    "node --test scripts/qualification/release-qualification.test.mjs"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T20:55:49.676Z",
+    "updated_by": "TESTER",
+    "note": "PASS after hosted lint rework. The exact 469f5239 implementation satisfies selector, lint, and both dry-run contracts."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608032042-DAMQDM/verification/20260803205549676-722aff58c560deca.json",
+      "sha256": "sha256:1ece9acfc0e341207ff6be9248c1d73933e529b54ccbbb8f2a9ae9fded1a58c9"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

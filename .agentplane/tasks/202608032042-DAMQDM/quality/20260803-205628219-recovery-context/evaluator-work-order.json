@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608032042-DAMQDM-aac770190512205714b348ab",
+  "prepared_at": "2026-08-03T20:56:28.219Z",
+  "task": {
+    "id": "202608032042-DAMQDM",
+    "revision": 10,
+    "objective": "Skip provider-dependent qualification checks before provider capture\n\nMake the v0.7.1 qualification selector exclude scenarios whose dependencies are not selected, and fail closed for explicit orphan scenario selection, so a deterministic no-provider audit can complete before the one allowed provider generation.",
+    "acceptance_criteria": [
+      "bun run e2e:v0.7.1:check",
+      "node --test scripts/qualification/release-qualification.test.mjs",
+      "- In scope: Make the v0.7.1 qualification selector exclude scenarios whose dependencies are not selected, and fail closed for explicit orphan scenario selection, so a deterministic no-provider audit can complete before the one allowed provider generation.\n- Out of scope: unrelated refactors not required for \"Skip provider-dependent qualification checks before provider capture\".",
+      "1. Restrict the qualification selector to scenarios whose declared dependencies are also selected, pruning provider-dependent checks from automatic no-provider profiles without changing the manifest. 2. Fail closed with an actionable dependency error when an explicitly requested scenario omits a required dependency. 3. Add focused selector tests for no-provider exclusion, provider ordering, and explicit orphan rejection. 4. Verify the unit contract and both dry-run routes: the default check must exclude provider-matrix and efficiency-evidence; the provider dry-run must order provider-matrix before efficiency-evidence. 5. Record verification, pass the evaluator and hosted checks, integrate through the guarded branch_pr workflow, then resume the frozen qualification task on updated main.",
+      "PLANNER fallback scaffold for \"Skip provider-dependent qualification checks before provider capture\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Skip provider-dependent qualification checks before provider capture\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "469f523984e3a6e06978b9b227b30dc39d81e4a0",
+  "diff_base_sha": "c0a1a703a165740ef01e1c5524fcc5bd69020ecf",
+  "blueprint_digest": "eb363b78206c3a50c2b85ef274e133e0a3e05c7a59cf3f3146351abd945495e9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608032042-DAMQDM/quality/20260803-205628219-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d4fb1217d11574599c9f371d27003b9b3331e71b90b8662be1c8bdb3d2e54a0d",
+    "prompt_path": ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/92474d78518bdaff5626b631122e301bceefe393d0d5872c3de6b2650e3678ad.md",
+    "result_schema_path": ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608032042-DAMQDM/README.md",
+      "sha256": "sha256:1330df9cffdf626d1706cbd1c34159972bfcd64f891b94281f2a8a3a6f275ba3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/548404436cf43d502874dd826c715434ee34348c466316ffe06dcf538848e116.patch",
+      "sha256": "sha256:548404436cf43d502874dd826c715434ee34348c466316ffe06dcf538848e116",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/73bc43f950255406f2d78d3eeb0834535050a5a9cb0e77b7c55dc59b4b31160a.json",
+      "sha256": "sha256:73bc43f950255406f2d78d3eeb0834535050a5a9cb0e77b7c55dc59b4b31160a",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608032042-DAMQDM/verification/20260803205549676-722aff58c560deca.json",
+      "sha256": "sha256:1ece9acfc0e341207ff6be9248c1d73933e529b54ccbbb8f2a9ae9fded1a58c9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608032042-DAMQDM/quality/objects/sha256/e39df725cdbe9686ca1eb629f6b2dbb0783cc326d860648bcd6de7114e8f83e9.json",
+      "sha256": "sha256:e39df725cdbe9686ca1eb629f6b2dbb0783cc326d860648bcd6de7114e8f83e9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
