@@ -7,6 +7,7 @@ import {
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
+import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
@@ -14,6 +15,7 @@ import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-l
 import { recordCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
+import { projectTaskTokenUsage } from "../task/task-token-usage.js";
 import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
@@ -486,7 +488,7 @@ describe("persisted supervisor execution episodes", () => {
     ]);
   });
 
-  it("stops for review when an active budget has no trusted telemetry", async () => {
+  it("completes a managed run without provider usage and projects unavailable task tokens", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     const outcome = await supervisePersistedWorkflowEpisode({
@@ -522,15 +524,96 @@ describe("persisted supervisor execution episodes", () => {
       },
     });
 
+    expect(outcome.execution).toMatchObject({
+      executable: true,
+      stop_reason: null,
+    });
+    expect(outcome.execution.refreshed_decision?.task.id).toBe(taskId);
+    expect(outcome.journal).toMatchObject({
+      status: "running",
+      cursor: { phase: "ready", operation_key: null },
+      usage: {
+        agent_runs: 1,
+        input_tokens: 0,
+        output_tokens: 0,
+        total_tokens: 0,
+        token_observed_agent_runs: 0,
+      },
+    });
+
+    const tokenUsage = projectTaskTokenUsage({
+      journal: outcome.journal,
+      updated_at: "2026-08-03T12:30:00.000Z",
+    });
+    expect(tokenUsage).toMatchObject({
+      state: "unavailable",
+      agent_runs: 1,
+      observed_agent_runs: 0,
+      source: "supervisor_journal",
+      unavailable_reason: "provider_token_telemetry_unavailable",
+    });
+    const completedReadme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Managed adapter without usage",
+        status: "DONE",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        token_usage: tokenUsage,
+      },
+      "## Summary\n\nSuccessful adapter result without provider token telemetry.\n",
+    );
+    expect(completedReadme).toContain("## Token Usage");
+    expect(completedReadme).toContain("- State: `unavailable`");
+    expect(completedReadme).toContain("- Completeness: `0/1` agent runs");
+    expect(completedReadme).toContain(
+      "- Unavailable reason: `provider_token_telemetry_unavailable`",
+    );
+  });
+
+  it("still stops for review when active non-token budgets lack trusted telemetry", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "fixture runner completed",
+          exit_code: 0,
+          operation_result: {
+            kind: "runner_lifecycle" as const,
+            value: executedLifecycle({
+              decision,
+              provider_usage: { input_tokens: 3, output_tokens: 5, total_tokens: 8 },
+            }),
+          },
+        }),
+      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+      budget: {
+        max_episodes: 2,
+        max_agent_runs: 2,
+        max_input_tokens: 10,
+        max_output_tokens: 10,
+        max_total_tokens: 20,
+        max_wall_time_ms: 1000,
+        max_changed_files: 10,
+        max_diff_lines: null,
+        max_no_progress_episodes: 2,
+      },
+    });
+
     expect(outcome.journal).toMatchObject({
       status: "stopped",
       stop: {
         reason: "human_review",
-        exhausted_dimensions: [
-          "input_tokens_telemetry",
-          "output_tokens_telemetry",
-          "total_tokens_telemetry",
-        ],
+        exhausted_dimensions: ["changed_files_telemetry", "wall_time_ms_telemetry"],
       },
     });
   });

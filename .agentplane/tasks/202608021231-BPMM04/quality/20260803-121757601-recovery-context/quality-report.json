@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T12:18:59.988Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "822d481682d90b8789e712be11df323b671fb552",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "findings": [
+    "A successful managed agent episode without provider token telemetry still stops the supervisor for human review, so unavailable usage can block otherwise valid completion."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-121757601-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-BPMM04/README.md",
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-121757601-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Add a managed task-run lifecycle test whose successful provider adapter result contains no token usage; assert execution continues to valid completion and the completed task records state=unavailable rather than stopping for human_review."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes every successful managed provider invocation supplies input, output, and total token telemetry, despite the approved contract explicitly requiring adapters without usage to remain compatible."
+  ],
+  "residual_risks": [
+    "Separate token-telemetry completeness from supervisor budget telemetry enforcement: a successful provider result without usage must remain completable and project unavailable usage, then rerun the managed no-usage lifecycle and completion-surface regression coverage at the exact implementation SHA."
+  ]
+}
