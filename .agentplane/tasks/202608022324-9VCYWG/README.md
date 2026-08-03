@@ -4,7 +4,7 @@ title: "Complete the task advance semantic-result round trip"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -57,8 +57,8 @@ quality_review:
   findings:
     - "Completed-journal recovery can consume an accepted exchange without proving that the completed supervisor operation recorded the same result digest and work-order identity."
 commit:
-  hash: "3c778153fe757a64eabda7db140593dca5012f17"
-  message: "🚧 9VCYWG task: recover completed external result"
+  hash: "f48e6021df6f6cd6538d58191c1da10091d88085"
+  message: "🚧 9VCYWG task: bind recovered completion result"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: recovered the completed-journal and accepted-exchange crash window without reapplying semantic effects."
+  -
+    author: "CODER"
+    body: "Implementation rework: bound completed supervisor result digest to the exact work order and accepted SemanticResult."
 events:
   -
     type: "status"
@@ -109,8 +112,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified implementation rework for the completed-journal crash window."
+  -
+    type: "status"
+    at: "2026-08-03T01:12:47.903Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: bound completed supervisor result digest to the exact work order and accepted SemanticResult."
 doc_version: 3
-doc_updated_at: "2026-08-03T01:06:37.974Z"
+doc_updated_at: "2026-08-03T01:12:47.903Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
