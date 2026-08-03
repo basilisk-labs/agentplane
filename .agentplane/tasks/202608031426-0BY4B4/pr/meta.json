@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202608031426-0BY4B4/make-integration-handoff-and-hosted-close-finali",
   "created_at": "2026-08-03T14:26:49.868Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:f6724944e608f2b7f05fc691fea35997d768dc48609f21214a4969c80238540b",
+  "last_verified_at": "2026-08-03T14:45:26.565Z",
+  "last_verified_diffstat_sha256": "sha256:f6724944e608f2b7f05fc691fea35997d768dc48609f21214a4969c80238540b",
   "schema_version": 1,
   "task_id": "202608031426-0BY4B4",
   "updated_at": "2026-08-03T14:26:49.868Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
