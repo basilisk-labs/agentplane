@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -7,6 +7,7 @@ import {
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 
 import {
@@ -30,6 +31,12 @@ import {
 } from "../commands/shared/supervisor-execution-episode.js";
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { buildObservedGithubPrMeta, buildOpenedPrMeta } from "../commands/shared/pr-meta.js";
+import {
+  externalAgentResultDigest,
+  type ExternalAgentExchange,
+  validateExternalAgentResultEnvelope,
+} from "../commands/task/external-agent-exchange.js";
 
 installRunCliIntegrationHarness();
 
@@ -53,11 +60,22 @@ type AgentPacket = {
     reference: string | null;
   };
   context_refs: { kind: string; ref: string; digest?: string }[];
+  exchange?: {
+    directory: string;
+    work_order_ref: string;
+    result_schema_ref: string;
+    result_ref: string;
+    return_invocation: string;
+  };
   recovery?: { reason: string; evidence_digest: string };
   stop: { reason: string; resume: string };
 };
 
-async function createTask(root: string, title: string): Promise<string> {
+async function createTask(
+  root: string,
+  title: string,
+  verify = "bun run test:critical",
+): Promise<string> {
   const io = captureStdIO();
   try {
     const code = await runCli([
@@ -74,7 +92,7 @@ async function createTask(root: string, title: string): Promise<string> {
       "--tag",
       "code",
       "--verify",
-      "bun run test:critical",
+      verify,
       "--root",
       root,
     ]);
@@ -94,6 +112,73 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
       MAX_AGENT_ACTION_PACKET_BYTES,
     );
     return JSON.parse(io.stdout) as AgentPacket;
+  } finally {
+    io.restore();
+  }
+}
+
+async function writeCompletedResult(
+  packet: AgentPacket,
+  summary: string,
+  review?: {
+    verdict: "pass" | "rework" | "blocked" | "human_review";
+    missing_tests: string[];
+    hidden_assumptions: string[];
+    residual_risks: string[];
+  },
+): Promise<string> {
+  if (!packet.exchange) throw new Error("expected an external-agent exchange");
+  const workOrder = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+  ) as { work_order_id: string; role: string };
+  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
+  await writeFile(
+    resultPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: packet.task_id,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: workOrder.role,
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary,
+          findings: review ? ["The frozen diff satisfies the approved task intent."] : [],
+          uncertainty: [],
+          ...(review ? { review } : {}),
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return resultPath;
+}
+
+async function returnAgentResult(
+  root: string,
+  taskId: string,
+  resultPath: string,
+): Promise<{ code: number; stdout: string; stderr: string }> {
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
+      "task",
+      "advance",
+      taskId,
+      "--result",
+      resultPath,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    return { code, stdout: io.stdout, stderr: io.stderr };
   } finally {
     io.restore();
   }
@@ -180,6 +265,11 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     });
     expect(first.state_fingerprint).toBe(await readRouteFingerprint(root, taskId));
     expect(first.context_refs.length).toBeGreaterThan(0);
+    expect(first.exchange).toMatchObject({
+      work_order_ref: "work-order.json",
+      result_schema_ref: "result-schema.json",
+      result_ref: "result.json",
+    });
     expect(JSON.stringify(first)).not.toMatch(
       /(?:\bgit\s|\bgh\s|worktree|pr open|\bverify\b|\bfinish\b|\bintegrate\b|\bcleanup\b)/iu,
     );
@@ -187,11 +277,157 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(taskAfter).toBe(taskBefore);
   });
 
+  it("accepts one bound planning result, advances to approval, and refuses replay", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Planning result round trip");
+    const issued = await readAgentPacket(root, taskId);
+    const plan = "1. Update the scoped implementation. 2. Run the declared verification.";
+    const resultPath = await writeCompletedResult(issued, plan);
+
+    const accepted = await returnAgentResult(root, taskId, resultPath);
+    expect(accepted.code, accepted.stderr).toBe(0);
+    const next = JSON.parse(accepted.stdout) as AgentPacket;
+    expect(next.action.kind).toBe("approval_required");
+    expect(next.stop.reason).toBe("authority_boundary");
+    expect(next.exchange).toBeUndefined();
+    expect(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    ).toContain(plan);
+
+    const replay = await returnAgentResult(root, taskId, resultPath);
+    expect(replay.code).not.toBe(0);
+    expect(replay.stderr).toContain("replay is refused");
+  });
+
+  it("rejects a tampered exchange checkout before applying semantic task state", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Tampered exchange boundary");
+    const packet = await readAgentPacket(root, taskId);
+    const resultPath = await writeCompletedResult(packet, "This plan must not be applied.");
+    if (!packet.exchange) throw new Error("expected external-agent exchange");
+    const exchangePath = path.join(packet.exchange.directory, "exchange.json");
+    const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+    await writeFile(
+      exchangePath,
+      `${JSON.stringify({ ...exchange, checkout: path.dirname(root) }, null, 2)}\n`,
+      "utf8",
+    );
+
+    const rejected = await returnAgentResult(root, taskId, resultPath);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("does not match the supervisor intent");
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).not.toContain("This plan must not be applied.");
+  });
+
+  it("finalizes a durably accepted planning result after its task effect was applied", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createTask(root, "Accepted external result recovery");
+    const packet = await readAgentPacket(root, taskId);
+    const recoveredPlan = "Use the recovered semantic plan.";
+    const resultPath = await writeCompletedResult(packet, recoveredPlan);
+    const packetExchange = packet.exchange;
+    if (!packetExchange) throw new Error("expected external-agent exchange");
+    const envelope = JSON.parse(await readFile(resultPath, "utf8")) as unknown;
+    const exchangePath = path.join(packetExchange.directory, "exchange.json");
+    const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+    const workOrder = JSON.parse(
+      await readFile(path.join(packetExchange.directory, packetExchange.work_order_ref), "utf8"),
+    ) as AgentWorkOrderV2;
+    const validatedEnvelope = validateExternalAgentResultEnvelope({
+      raw: envelope,
+      exchange,
+      work_order: workOrder,
+    });
+    await writeFile(
+      exchangePath,
+      `${JSON.stringify(
+        {
+          ...exchange,
+          status: "accepted",
+          result_digest: externalAgentResultDigest(validatedEnvelope),
+          result: validatedEnvelope,
+          updated_at: new Date().toISOString(),
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      recoveredPlan,
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+
+    const recovered = await returnAgentResult(root, taskId, resultPath);
+    expect(recovered.code, recovered.stderr).toBe(0);
+    expect((JSON.parse(recovered.stdout) as AgentPacket).action.kind).toBe("approval_required");
+    const taskReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(taskReadme).toContain(recoveredPlan);
+  });
+
+  it("rejects a stale planning result before applying semantic task state", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Stale planning result");
+    const issued = await readAgentPacket(root, taskId);
+    const resultPath = await writeCompletedResult(issued, "This stale plan must not be applied.");
+    await runCliSilent([
+      "task",
+      "comment",
+      taskId,
+      "--author",
+      "USER",
+      "--body",
+      "Concurrent scope clarification.",
+      "--root",
+      root,
+    ]);
+
+    const stale = await returnAgentResult(root, taskId, resultPath);
+    expect(stale.code).not.toBe(0);
+    expect(stale.stderr).toContain("stale");
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).not.toContain("This stale plan must not be applied.");
+  });
+
   it("projects the direct runner boundary as the same semantic agent episode", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      {
+        recursive: true,
+      },
+    );
     const taskId = await createTask(root, "Direct semantic packet");
     await runCliSilent([
       "task",
@@ -220,6 +456,246 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     );
     expect(taskReadme).toContain('status: "DOING"');
     expect(taskReadme).toContain("Start: continue direct-mode task in current checkout.");
+  });
+
+  it("converges a direct external-agent implementation and evaluator through CLI-owned closeout", async () => {
+    const root = await mkGitRepoRoot();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      {
+        recursive: true,
+      },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      "utf8",
+    );
+    const taskId = await createTask(root, "Direct external round trip", "bun run check");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Create one scoped implementation file and verify it.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed direct external task"], { cwd: root });
+
+    const implementationPacket = await readAgentPacket(root, taskId);
+    expect(implementationPacket.authority.role).toBe("EXECUTOR");
+    expect(implementationPacket.exchange).toBeDefined();
+    await writeFile(path.join(root, "external-result.txt"), "implemented\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the scoped external implementation file.",
+    );
+    const afterImplementation = await returnAgentResult(root, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    expect(evaluatorPacket.action.kind).toBe("agent_episode");
+    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+    expect(evaluatorPacket.exchange).toBeDefined();
+
+    const evaluatorResult = await writeCompletedResult(evaluatorPacket, "Quality review passed.", {
+      verdict: "pass",
+      missing_tests: [],
+      hidden_assumptions: [],
+      residual_risks: [],
+    });
+    const completed = await returnAgentResult(root, taskId, evaluatorResult);
+    expect(completed.code, completed.stderr).toBe(0);
+    const terminal = JSON.parse(completed.stdout) as AgentPacket;
+    expect(terminal.action.kind).toBe("terminal");
+    expect(terminal.stop).toEqual({ reason: "terminal", resume: "none" });
+    const taskReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(taskReadme).toContain('status: "DONE"');
+  });
+
+  it("recovers an accepted implementation after the CLI-owned commit was already created", async () => {
+    const root = await mkGitRepoRoot();
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      {
+        recursive: true,
+      },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      "utf8",
+    );
+    const taskId = await createTask(root, "Implementation commit recovery", "bun run check");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Create one scoped recovery file and verify it.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed implementation recovery"], {
+      cwd: root,
+    });
+
+    const packet = await readAgentPacket(root, taskId);
+    await writeFile(path.join(root, "recovered-result.txt"), "implemented\n", "utf8");
+    const resultPath = await writeCompletedResult(packet, "Created the recovery file.");
+    await execFileAsync("git", ["add", "recovered-result.txt"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `🚧 ${taskId.split("-").at(-1)} task: apply external agent result`],
+      { cwd: root },
+    );
+
+    const recovered = await returnAgentResult(root, taskId, resultPath);
+    expect(recovered.code, recovered.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(recovered.stdout) as AgentPacket;
+    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+    expect(evaluatorPacket.stop.reason).toBe("semantic_boundary");
+  });
+
+  it("converges branch implementation and evaluator to the protected publication boundary", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await cp(
+      path.join(process.cwd(), ".agentplane", "policy"),
+      path.join(root, ".agentplane", "policy"),
+      {
+        recursive: true,
+      },
+    );
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await writeFile(
+      path.join(root, "package.json"),
+      `${JSON.stringify({ scripts: { check: 'node -e "process.exit(0)"' } }, null, 2)}\n`,
+      "utf8",
+    );
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const taskId = await createTask(root, "Branch external round trip", "bun run check");
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Create one scoped branch implementation file and verify it.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed branch external task"], { cwd: root });
+
+    const branch = `task/${taskId}/external-round-trip`;
+    const taskWorktree = path.join(
+      root,
+      ".agentplane",
+      "worktrees",
+      `${taskId}-external-round-trip`,
+    );
+    await mkdir(path.dirname(taskWorktree), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
+    const at = new Date().toISOString();
+    const opened = buildOpenedPrMeta({
+      taskId,
+      branch,
+      at,
+      previousMeta: null,
+      base: "main",
+    });
+    const head = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree });
+    const observed = buildObservedGithubPrMeta({
+      meta: opened,
+      observed: {
+        prNumber: 1,
+        prUrl: "https://github.com/example/agentplane/pull/1",
+        status: "OPEN",
+        base: "main",
+        headSha: head.stdout.trim(),
+      },
+      at,
+    });
+    const metaPath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    await mkdir(path.dirname(metaPath), { recursive: true });
+    await writeFile(metaPath, `${JSON.stringify(observed, null, 2)}\n`, "utf8");
+
+    const route = await readRoute(taskWorktree, taskId);
+    const request = route.workflow_step.request;
+    if (request?.type === "side_effect") {
+      await runCliSilent([
+        "task",
+        "authority",
+        "grant",
+        taskId,
+        "--operation",
+        request.operationId,
+        "--operation-digest",
+        request.operationDigest,
+        "--state-fingerprint",
+        request.stateFingerprintDigest,
+        "--state-scope-digest",
+        request.stateScopeDigest,
+        "--by",
+        "USER",
+        "--root",
+        taskWorktree,
+      ]);
+    }
+    const implementationPacket = await readAgentPacket(taskWorktree, taskId);
+    expect(implementationPacket.authority.role).toBe("EXECUTOR");
+    await mkdir(path.join(taskWorktree, "src"), { recursive: true });
+    await writeFile(path.join(taskWorktree, "src", "branch-external.txt"), "implemented\n", "utf8");
+    const implementationResult = await writeCompletedResult(
+      implementationPacket,
+      "Created the scoped branch implementation file.",
+    );
+    const afterImplementation = await returnAgentResult(taskWorktree, taskId, implementationResult);
+    expect(afterImplementation.code, afterImplementation.stderr).toBe(0);
+    const evaluatorPacket = JSON.parse(afterImplementation.stdout) as AgentPacket;
+    expect(evaluatorPacket.authority.role).toBe("EVALUATOR");
+
+    const evaluatorResult = await writeCompletedResult(
+      evaluatorPacket,
+      "Branch quality review passed.",
+      {
+        verdict: "pass",
+        missing_tests: [],
+        hidden_assumptions: [],
+        residual_risks: [],
+      },
+    );
+    const protectedBoundary = await returnAgentResult(taskWorktree, taskId, evaluatorResult);
+    expect(protectedBoundary.code, protectedBoundary.stderr).toBe(0);
+    const packet = JSON.parse(protectedBoundary.stdout) as AgentPacket;
+    expect(["approval_required", "external_wait"]).toContain(packet.action.kind);
+    expect(packet.stop.reason).not.toBe("semantic_boundary");
   });
 
   it("matches the managed direct-run preview fingerprint and preserves task evidence", async () => {

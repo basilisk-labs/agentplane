@@ -443,6 +443,25 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
   if (semanticResult.work_order_id !== workOrder.work_order_id) {
     throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
   }
+  if (workOrder.role === "EVALUATOR") {
+    if (!semanticResult.review) {
+      throw new Error("EVALUATOR semantic results require a typed review verdict.");
+    }
+    if (
+      (semanticResult.review.verdict === "pass" || semanticResult.review.verdict === "rework") &&
+      semanticResult.findings.length === 0
+    ) {
+      throw new Error(`EVALUATOR ${semanticResult.review.verdict} requires at least one finding.`);
+    }
+    if (
+      semanticResult.review.verdict === "human_review" &&
+      !semanticResult.review.recovery_context
+    ) {
+      throw new Error("EVALUATOR human_review requires a bounded recovery_context question.");
+    }
+  } else if (semanticResult.review) {
+    throw new Error("Only EVALUATOR work orders may return a review verdict.");
+  }
   return semanticResult;
 }
 

@@ -337,6 +337,7 @@ function validateReviewedCandidate({
     "202607221852-ECBY56",
     "202608021231-PZGG3V",
     "202608021534-YN84E1",
+    "202608022324-9VCYWG",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -365,6 +366,7 @@ function validateReviewedCandidate({
     "202608021231-PZGG3V",
     "202608021231-SHYJGK",
     "202608021534-YN84E1",
+    "202608022324-9VCYWG",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -496,7 +498,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
-        surface_sha256: "dc99c14dd9a186313e0698783d9d93741ccee0d5d6cefd58966ffd64f562163a",
+        surface_sha256: "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -1316,6 +1318,7 @@ function validateReviewedCandidate({
       options: [
         { name: "agent-json", kind: "boolean", valueHint: null, default: false },
         { name: "remote", kind: "boolean", valueHint: null, default: false },
+        { name: "result", kind: "string", valueHint: "<path>" },
       ],
     },
     {
@@ -1556,6 +1559,12 @@ function validateReviewedCandidate({
       kind: "boolean",
       valueHint: null,
       default: false,
+    },
+    {
+      command: "task advance",
+      name: "result",
+      kind: "string",
+      valueHint: "<path>",
     },
     {
       command: "task authority grant",
@@ -1859,6 +1868,12 @@ function validateReviewedCandidate({
       command: "task advance",
       name: "remote",
       source_task: "202608021231-PZGG3V",
+    },
+    {
+      kind: "option",
+      command: "task advance",
+      name: "result",
+      source_task: "202608022324-9VCYWG",
     },
     {
       kind: "option",

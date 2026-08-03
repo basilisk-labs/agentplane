@@ -76,6 +76,14 @@ export type TaskRouteDecision = {
 
 export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
   const commit = task.commit as unknown;
+  const commitHash =
+    typeof commit === "string"
+      ? commit.trim()
+      : commit && typeof commit === "object" && !Array.isArray(commit)
+        ? typeof (commit as Record<string, unknown>).hash === "string"
+          ? (commit as Record<string, string>).hash.trim()
+          : ""
+        : "";
   return {
     id: task.id,
     title: task.title,
@@ -83,6 +91,6 @@ export function taskSummary(task: TaskData): TaskRouteDecision["task"] {
     owner: task.owner,
     planApproval: task.plan_approval?.state ?? null,
     verification: task.verification?.state ?? null,
-    commit: typeof commit === "string" && commit.trim() ? commit : null,
+    commit: commitHash || null,
   };
 }

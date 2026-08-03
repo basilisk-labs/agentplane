@@ -20,6 +20,12 @@ export const AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_STATUS_VALUES = [
   "failed",
   "not_run",
 ] as const;
+export const AGENT_SEMANTIC_RESULT_REVIEW_VERDICT_VALUES = [
+  "pass",
+  "rework",
+  "blocked",
+  "human_review",
+] as const;
 export const KNOWLEDGE_REQUEST_SCHEMA_VERSION = 1 as const;
 export const KNOWLEDGE_REQUEST_KIND = "knowledge_request" as const;
 export const KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES = [
@@ -59,6 +65,16 @@ const AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA = z
   })
   .strict();
 
+const AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA = z
+  .object({
+    verdict: z.enum(AGENT_SEMANTIC_RESULT_REVIEW_VERDICT_VALUES),
+    missing_tests: z.array(z.string()),
+    hidden_assumptions: z.array(z.string()),
+    residual_risks: z.array(z.string()),
+    recovery_context: NON_EMPTY_STRING.optional(),
+  })
+  .strict();
+
 const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   schema_version: z.literal(AGENT_SEMANTIC_RESULT_SCHEMA_VERSION),
   kind: z.literal(AGENT_SEMANTIC_RESULT_KIND),
@@ -67,6 +83,7 @@ const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   findings: z.array(z.string()),
   uncertainty: z.array(z.string()),
   claimed_checks: z.array(AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA).optional(),
+  review: AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA.optional(),
 } as const;
 
 export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z.discriminatedUnion("status", [
@@ -105,6 +122,7 @@ export type AgentSemanticResultKnowledgeRequest = z.infer<
 export type AgentSemanticResultClaimedCheck = z.infer<
   typeof AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA
 >;
+export type AgentSemanticResultReview = z.infer<typeof AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA>;
 
 const AGENT_SEMANTIC_RESULT_SCHEMA = buildJsonSchemaDocument(AGENT_SEMANTIC_RESULT_ZOD_SCHEMA, {
   $id: "https://agentplane.org/schemas/agent-semantic-result.schema.json",

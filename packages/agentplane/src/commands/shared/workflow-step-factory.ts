@@ -182,6 +182,29 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
     state.task.verification?.state === "ok" &&
     String(state.task.status).toUpperCase() === "DOING"
   ) {
+    if (state.task.quality_review?.state !== "pass") {
+      return agentEpisodeStep({
+        state,
+        id: "agent.direct_quality_review",
+        code: "direct_quality_review_required",
+        phase: "direct_quality_review_needed",
+        checkout: "current_checkout",
+        role: "EVALUATOR",
+        purpose: "quality_review",
+        summary:
+          "review the verified direct implementation against frozen evidence before closeout",
+        objective:
+          "Evaluate direct implementation quality from task intent, diff, and CLI-owned verification evidence.",
+        mustNot: [
+          "do not replace the semantic quality verdict with mechanical check status",
+          "do not mutate implementation, Git history, task lifecycle, or verification evidence",
+        ],
+        returnControlWhen:
+          "after EVALUATOR records a typed verdict; recompute the route before direct closeout",
+        evidenceMissing: ["evaluator_quality_review"],
+        selectedBlocker: null,
+      });
+    }
     return terminalStep({
       state,
       id: "task.complete.input",
@@ -195,8 +218,9 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
         "task is already verified in direct workflow; close it with task complete instead of rerunning execution",
     });
   }
-  if (state.resume.runner.run_id || state.resume.runner.status) {
-    if (state.resume.runner.next_action === "none") {
+  const externalImplementationRecorded = Boolean(state.task.commit?.hash);
+  if (externalImplementationRecorded || state.resume.runner.run_id || state.resume.runner.status) {
+    if (externalImplementationRecorded || state.resume.runner.next_action === "none") {
       return agentEpisodeStep({
         state,
         id: "agent.direct_verification",

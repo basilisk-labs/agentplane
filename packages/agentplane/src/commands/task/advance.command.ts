@@ -9,12 +9,20 @@ import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { loadCommandContext } from "../shared/task-backend.js";
 
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 import {
   assertAgentActionPacketHasNoChoreography,
   buildAgentActionPacket,
 } from "./agent-action-packet.js";
+import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
+import { finishDirectTask } from "./direct-task-finalization.js";
+import {
+  acceptExternalAgentResult,
+  issueExternalAgentExchange,
+} from "./external-agent-supervisor.js";
+import { executeExternalAgentVerification } from "./external-agent-verification.js";
 import type { TaskAdvanceParsed } from "./advance.spec.js";
 
 export function makeRunTaskAdvanceHandler(deps: {
@@ -30,10 +38,97 @@ export function makeRunTaskAdvanceHandler(deps: {
         includeRemote: parsed.remote,
         taskId: parsed.taskId,
       });
-    let current = await decide();
+    let current: TaskRouteDecision;
+    if (parsed.result) {
+      const accepted = await acceptExternalAgentResult({
+        ctx,
+        command,
+        task_id: parsed.taskId,
+        result_path: parsed.result,
+        include_remote: parsed.remote,
+      });
+      const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
+      const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+      current = await buildTaskRouteDecision({
+        ctx: refreshedCommand,
+        cwd: checkout,
+        rootOverride: null,
+        includeRemote: parsed.remote,
+        taskId: parsed.taskId,
+      });
+    } else {
+      current = await decide();
+    }
     let recovery: Parameters<typeof buildAgentActionPacket>[0]["recovery"];
     for (let operationCount = 0; operationCount < 32; operationCount += 1) {
       const step = current.workflowStep;
+      if (step.kind === "agent_episode" && step.episode.purpose === "verification") {
+        const checkout = current.executionPacket.mustRunFrom ?? current.workspace.root;
+        const verificationCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+        const verifyDecision = async () =>
+          await buildTaskRouteDecision({
+            ctx: verificationCommand,
+            cwd: checkout,
+            rootOverride: null,
+            includeRemote: parsed.remote,
+            taskId: parsed.taskId,
+          });
+        current = await executeExternalAgentVerification({
+          ctx: { cwd: checkout },
+          command: verificationCommand,
+          decision: current,
+          decide: verifyDecision,
+        });
+        continue;
+      }
+      if (
+        step.kind === "terminal" &&
+        current.workflowMode === "direct" &&
+        step.id === "task.complete.input"
+      ) {
+        if (current.task.verification !== "ok" || !current.task.commit) {
+          throw new CliError({
+            code: "E_RUNTIME",
+            message:
+              "Direct terminal route is missing verified implementation evidence " +
+              `(verification=${current.task.verification ?? "missing"}, ` +
+              `commit=${current.task.commit ?? "missing"}).`,
+            context: {
+              task_id: parsed.taskId,
+              verification: current.task.verification,
+              commit: current.task.commit,
+            },
+          });
+        }
+        const checkout = current.executionPacket.mustRunFrom ?? ctx.cwd;
+        const closeoutCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+        const closeoutDecision = async () =>
+          await buildTaskRouteDecision({
+            ctx: closeoutCommand,
+            cwd: checkout,
+            rootOverride: null,
+            includeRemote: parsed.remote,
+            taskId: parsed.taskId,
+          });
+        const finalized = await recordDirectTaskFormalOperation({
+          git_root: closeoutCommand.resolvedProject.gitRoot,
+          task_id: parsed.taskId,
+          id: "task_finish",
+          decision: closeoutDecision,
+          run: async () => {
+            const exitCode = await finishDirectTask({
+              ctx: { cwd: checkout },
+              command: closeoutCommand,
+              task_id: parsed.taskId,
+              implementation_commit: current.task.commit!,
+            });
+            if (exitCode !== 0) throw new Error(`Direct closeout exited with ${exitCode}.`);
+            return { implementation_commit: current.task.commit };
+          },
+        });
+        current = finalized.decision;
+        continue;
+      }
       if (step.kind !== "cli_operation") break;
       if (step.operation.id === "runner.follow" && step.operation.params.mode === "run") break;
       if (!current.executionPacket.safeToMutate) break;
@@ -106,9 +201,28 @@ export function makeRunTaskAdvanceHandler(deps: {
         runner_command: "task advance",
       }),
     );
-    const packet = buildAgentActionPacket({
+    const exchange = await issueExternalAgentExchange({
+      ctx,
+      command,
       decision: prepared.route_decision,
       work_order: prepared.work_order,
+    });
+    const packet = buildAgentActionPacket({
+      decision: prepared.route_decision,
+      work_order: exchange?.work_order ?? prepared.work_order,
+      ...(exchange
+        ? {
+            exchange: {
+              directory: exchange.paths.directory,
+              work_order_ref: "work-order.json",
+              result_schema_ref: "result-schema.json",
+              result_ref: "result.json",
+              return_invocation:
+                `agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json` +
+                (parsed.remote ? " --remote" : ""),
+            },
+          }
+        : {}),
       ...(recovery ? { recovery } : {}),
     });
     assertAgentActionPacketHasNoChoreography(packet);
@@ -127,6 +241,14 @@ export function makeRunTaskAdvanceHandler(deps: {
         { label: "role", value: packet.authority.role },
         { label: "mutation", value: packet.authority.mutation },
         { label: "stop", value: packet.stop.reason },
+        ...(packet.exchange
+          ? [
+              { label: "exchange_directory", value: packet.exchange.directory },
+              { label: "work_order_ref", value: packet.exchange.work_order_ref },
+              { label: "result_ref", value: packet.exchange.result_ref },
+              { label: "return_invocation", value: packet.exchange.return_invocation },
+            ]
+          : []),
         ...(packet.recovery ? [{ label: "recovery", value: packet.recovery.reason }] : []),
       ],
       { header: infoMessage(`task advance: ${parsed.taskId}`) },

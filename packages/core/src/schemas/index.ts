@@ -18,6 +18,7 @@ export {
 export {
   AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_STATUS_VALUES,
   AGENT_SEMANTIC_RESULT_KIND,
+  AGENT_SEMANTIC_RESULT_REVIEW_VERDICT_VALUES,
   AGENT_SEMANTIC_RESULT_SCHEMA_VERSION,
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
   AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
@@ -35,6 +36,7 @@ export {
   type AgentSemanticResultBlocker,
   type AgentSemanticResultClaimedCheck,
   type AgentSemanticResultKnowledgeRequest,
+  type AgentSemanticResultReview,
   type AgentSemanticResultStatus,
   KNOWLEDGE_REQUEST_DESIRED_KIND_VALUES,
   KNOWLEDGE_REQUEST_KIND,
