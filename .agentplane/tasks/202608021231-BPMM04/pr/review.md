@@ -13,7 +13,7 @@ Created: 2026-08-03T11:03:33.843Z
 ## Verification
 
 - State: ok
-- Note: Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.
+- Note: Verified 822d48168: completed task README body renders deterministic token usage and all required gates pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -55,28 +55,29 @@ Created: 2026-08-03T11:03:33.843Z
  .../agentplane/src/commands/task/status.command.ts |   9 +
  .../src/commands/task/task-token-usage.test.ts     | 239 +++++++++++++++
  .../src/commands/task/task-token-usage.ts          | 132 +++++++++
- .../src/commands/task/token-usage-format.ts        |  17 ++
  .../runner/adapters/codex-result-transport.test.ts |   2 +
  .../src/runner/adapters/codex-result-transport.ts  |   5 +
  .../agentplane/src/runner/adapters/codex.test.ts   |   2 +
  .../schemas/task-readme-frontmatter.schema.json    | 122 ++++++++
  packages/core/schemas/tasks-export.schema.json     | 122 ++++++++
- packages/core/src/index.ts                         |   2 +
+ packages/core/src/index.ts                         |   9 +
  .../runner/supervisor-execution-episode.test.ts    |  47 +++
  .../src/runner/supervisor-execution-episode.ts     |  82 ++++-
- packages/core/src/tasks/index.ts                   |   2 +
+ packages/core/src/tasks/index.ts                   |   9 +
  .../core/src/tasks/task-artifact-schema.task.ts    |  71 +++++
  .../core/src/tasks/task-artifact-schema.test.ts    |  53 ++++
  .../tasks/task-provider-safe-projection.test.ts    |  23 ++
  .../src/tasks/task-provider-safe-projection.ts     |   4 +
- packages/core/src/tasks/task-readme.ts             |   1 +
+ packages/core/src/tasks/task-readme.test.ts        | 123 ++++++++
+ packages/core/src/tasks/task-readme.ts             |  17 +-
  packages/core/src/tasks/task-store.ts              |  19 ++
+ packages/core/src/tasks/task-token-usage-render.ts |  74 +++++
  packages/core/src/tasks/tasks-export.ts            |   3 +
  .../schemas/task-readme-frontmatter.schema.json    | 122 ++++++++
  packages/spec/schemas/tasks-export.schema.json     | 122 ++++++++
  schemas/task-readme-frontmatter.schema.json        | 122 ++++++++
  schemas/tasks-export.schema.json                   | 122 ++++++++
- 47 files changed, 2127 insertions(+), 16 deletions(-)
+ 48 files changed, 2335 insertions(+), 18 deletions(-)
 ```
 
 </details>
