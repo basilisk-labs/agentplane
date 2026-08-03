@@ -4,7 +4,7 @@ title: "Complete the task advance semantic-result round trip"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T01:13:31.709Z"
+  updated_at: "2026-08-03T01:25:47.342Z"
   updated_by: "TESTER"
-  note: "Verified exact completion-result binding during accepted exchange recovery."
+  note: "Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption."
   attempts: 0
 quality_review:
   state: "rework"
@@ -125,8 +125,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified exact completion-result binding during accepted exchange recovery."
+  -
+    type: "verify"
+    at: "2026-08-03T01:25:47.342Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption."
 doc_version: 3
-doc_updated_at: "2026-08-03T01:13:33.172Z"
+doc_updated_at: "2026-08-03T01:25:48.555Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
@@ -315,6 +321,61 @@ sections:
     Command: bun run test:critical
     Result: pass
     Evidence: All 12 critical-cli chunks passed after exact completion binding rework
+    Scope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/blueprint/resolved-snapshot.json
+    - old_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+    - current_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608022324-9VCYWG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608022324-9VCYWG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T01:25:47.342Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T01:13:33.172Z, excerpt_hash=sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378
+
+    Details:
+
+    Command: bun x vitest run focused external-agent, WorkOrder, supervisor, route, direct, branch_pr, and task-advance suites
+    Result: pass
+    Evidence: 12 test files passed; 97 tests passed, including rejected mismatched work-order, rejected stale postcondition, and successful matching budget-stopped recovery
+    Scope: SemanticResult validation, packet size, stale and replay rejection, tamper resistance, direct and branch_pr convergence, and accepted-result crash windows
+
+    Command: bun run typecheck and bun run lint:core
+    Result: pass
+    Evidence: TypeScript build completed and ESLint exited cleanly after the production recovery change and test helper extraction
+    Scope: Changed core and CLI production paths
+
+    Command: bun run knip:check and bun run hotspots:check
+    Result: pass
+    Evidence: Knip baseline 539 of 539 with no growth; runtime and test size thresholds passed
+    Scope: Unused-code and module-size regressions
+
+    Command: bun run schemas:check, bun run bench:compatibility:check, node .agentplane/policy/check-routing.mjs, and bun run format:changed
+    Result: pass
+    Evidence: Schema sync, compatibility contract, policy routing, and changed-file formatting all passed
+    Scope: Generated contracts, public CLI surface, policy graph, and formatting
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: All 12 critical-cli chunks passed after budget-stopped postcondition binding
     Scope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
 
     BlueprintSnapshotRef:
@@ -546,6 +607,61 @@ Scope: Generated contracts, public CLI surface, policy graph, and formatting
 Command: bun run test:critical
 Result: pass
 Evidence: All 12 critical-cli chunks passed after exact completion binding rework
+Scope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/blueprint/resolved-snapshot.json
+- old_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+- current_digest: cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608022324-9VCYWG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608022324-9VCYWG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T01:25:47.342Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T01:13:33.172Z, excerpt_hash=sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378
+
+Details:
+
+Command: bun x vitest run focused external-agent, WorkOrder, supervisor, route, direct, branch_pr, and task-advance suites
+Result: pass
+Evidence: 12 test files passed; 97 tests passed, including rejected mismatched work-order, rejected stale postcondition, and successful matching budget-stopped recovery
+Scope: SemanticResult validation, packet size, stale and replay rejection, tamper resistance, direct and branch_pr convergence, and accepted-result crash windows
+
+Command: bun run typecheck and bun run lint:core
+Result: pass
+Evidence: TypeScript build completed and ESLint exited cleanly after the production recovery change and test helper extraction
+Scope: Changed core and CLI production paths
+
+Command: bun run knip:check and bun run hotspots:check
+Result: pass
+Evidence: Knip baseline 539 of 539 with no growth; runtime and test size thresholds passed
+Scope: Unused-code and module-size regressions
+
+Command: bun run schemas:check, bun run bench:compatibility:check, node .agentplane/policy/check-routing.mjs, and bun run format:changed
+Result: pass
+Evidence: Schema sync, compatibility contract, policy routing, and changed-file formatting all passed
+Scope: Generated contracts, public CLI surface, policy graph, and formatting
+
+Command: bun run test:critical
+Result: pass
+Evidence: All 12 critical-cli chunks passed after budget-stopped postcondition binding
 Scope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets
 
 BlueprintSnapshotRef:

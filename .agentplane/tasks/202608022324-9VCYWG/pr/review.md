@@ -13,7 +13,7 @@ Created: 2026-08-02T23:28:27.052Z
 ## Verification
 
 - State: ok
-- Note: Verified exact completion-result binding during accepted exchange recovery.
+- Note: Verified budget-exhausted accepted-result recovery against the current postcondition before exchange consumption.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

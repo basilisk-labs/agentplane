@@ -16,7 +16,12 @@ Extend the compact external-agent protocol so task advance accepts a typed Seman
 ## Verification
 
 - State: ok
-- Note: Verified exact completion-result binding during accepted exchange recovery.
+- Note:
+
+```text
+Verified budget-exhausted accepted-result recovery against the current postcondition before exchange
+consumption.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
