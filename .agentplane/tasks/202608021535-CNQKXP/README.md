@@ -2,10 +2,10 @@
 id: "202608021535-CNQKXP"
 title: "Add compatibility retirement inventory and doctor legacy"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: "Scope expanded under the user's standing release authorization to include the hosted-check runner concurrency defect discovered during verification."
 verification:
   state: "ok"
-  updated_at: "2026-08-03T19:59:42.162Z"
+  updated_at: "2026-08-03T20:16:12.666Z"
   updated_by: "TESTER"
-  note: "PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval."
+  note: "PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e."
   attempts: 0
 quality_review:
   state: "rework"
@@ -73,8 +73,8 @@ token_usage:
   unavailable_reason: null
   updated_at: "2026-08-03T19:31:07.977Z"
 commit:
-  hash: "7b5ee7a8eff4d7d4e2a946bc807053324af0d5c9"
-  message: "🩹 CNQKXP code: require legacy migration commands"
+  hash: "76c2607a560e5110f88abbce99930002e228761d"
+  message: "🩹 CNQKXP code: publish effect authority atomically"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework committed: atomically publish immutable effect records, retry the bounded hard-link metadata collision, normalize claimed authority, and require seven typed authority losers."
 events:
   -
     type: "status"
@@ -153,8 +156,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval."
+  -
+    type: "status"
+    at: "2026-08-03T20:15:59.926Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework committed: atomically publish immutable effect records, retry the bounded hard-link metadata collision, normalize claimed authority, and require seven typed authority losers."
+  -
+    type: "verify"
+    at: "2026-08-03T20:16:12.666Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:01:47.899Z"
+doc_updated_at: "2026-08-03T20:16:14.515Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:
@@ -435,6 +451,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T20:16:12.666Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:15:59.967Z, excerpt_hash=sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade
+
+    Details:
+
+    Command: 20-cycle eight-process contention stress; focused runner effect-operation; build; ci:contract; test:critical; test:fast; package:tarball:check; package:install-smoke; policy routing
+    Result: pass
+    Evidence: implementation 76c2607a560e5110f88abbce99930002e228761d; 160/160 concurrent starts produced exactly one winner and seven runner_effect_operation_claimed losers per cycle; focused 10/10; critical 12/12 chunks; fast 536/536 files and 3786/3786 tests; package inventories 103/21/59; migration matrix 8/8
+    Scope: re-approved compatibility-retirement and doctor-legacy implementation plus atomic create-only immutable effect publication, bounded stable-read collision retry, and typed authority-loss regression
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+    - old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021535-CNQKXP
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -741,6 +792,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T20:16:12.666Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T20:15:59.967Z, excerpt_hash=sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade
+
+Details:
+
+Command: 20-cycle eight-process contention stress; focused runner effect-operation; build; ci:contract; test:critical; test:fast; package:tarball:check; package:install-smoke; policy routing
+Result: pass
+Evidence: implementation 76c2607a560e5110f88abbce99930002e228761d; 160/160 concurrent starts produced exactly one winner and seven runner_effect_operation_claimed losers per cycle; focused 10/10; critical 12/12 chunks; fast 536/536 files and 3786/3786 tests; package inventories 103/21/59; migration matrix 8/8
+Scope: re-approved compatibility-retirement and doctor-legacy implementation plus atomic create-only immutable effect publication, bounded stable-read collision retry, and typed authority-loss regression
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+- old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021535-CNQKXP
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

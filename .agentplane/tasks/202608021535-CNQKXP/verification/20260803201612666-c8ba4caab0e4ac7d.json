@@ -1,0 +1,15 @@
+{
+  "details": "Command: 20-cycle eight-process contention stress; focused runner effect-operation; build; ci:contract; test:critical; test:fast; package:tarball:check; package:install-smoke; policy routing\nResult: pass\nEvidence: implementation 76c2607a560e5110f88abbce99930002e228761d; 160/160 concurrent starts produced exactly one winner and seven runner_effect_operation_claimed losers per cycle; focused 10/10; critical 12/12 chunks; fast 536/536 files and 3786/3786 tests; package inventories 103/21/59; migration matrix 8/8\nScope: re-approved compatibility-retirement and doctor-legacy implementation plus atomic create-only immutable effect publication, bounded stable-read collision retry, and typed authority-loss regression",
+  "digest": "sha256:c8ba4caab0e4ac7d0bb53e6a6d96f93f0e2f7b374a0c32143adaac5b19f4b221",
+  "implementation_sha": "76c2607a560e5110f88abbce99930002e228761d",
+  "kind": "task_verification_record",
+  "note": "PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e.",
+  "recorded_at": "2026-08-03T20:16:12.666Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the compatibility-manifest schema and inventory tests. Expected: every registered production adapter has one unique manifest entry; semver windows, source paths, migration commands, and usage probes validate; malformed or stale entries fail closed.\n2. Run focused doctor legacy fixtures in human and JSON modes. Expected: current, used legacy, unused legacy, unavailable probe, and mixed states produce stable typed output without mutation; every finding names evidence and a migration command.\n3. Run command catalog/help and legacy conflict recovery tests. Expected: the default 11-operation help remains unchanged, repair exposes the advanced legacy-adoption path, the old command is hidden/deprecated, and authority plus recovery receipts remain byte-compatible.\n4. Build and inspect the publishable AgentPlane package. Expected: the manifest and required runtime files are shipped and doctor legacy works from the packed CLI fixture.\n5. Run the runner effect-operation contention fixture repeatedly. Expected: eight independent supervisors produce exactly one adapter-start winner, seven authority losers, and no journal overwrite or zero-winner outcome.\n6. Run bun run typecheck, bun run ci:contract, bun run test:critical, bun run test:fast, bun run knip:check, bun run hotspots:check, and node .agentplane/policy/check-routing.mjs. Expected: all maintained gates pass with no compatibility-baseline or trust-boundary growth.\n7. Generate and verify task evidence, then obtain an independent EVALUATOR pass against the exact implementation SHA and the re-approved expanded scope.",
+  "scope_digest": "sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade",
+  "task_id": "202608021535-CNQKXP",
+  "verification_command": "agentplane verify 202608021535-CNQKXP --ok --by TESTER",
+  "verifier": "TESTER"
+}
