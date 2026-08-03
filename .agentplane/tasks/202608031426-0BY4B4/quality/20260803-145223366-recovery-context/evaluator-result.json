@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "recovery-context-001",
+      "severity": "low",
+      "summary": "The implementation matches the approved convergence contract: unresolved review gates remain non-terminal and retryable, ambiguous failures remain handoff fail-closed, finalized cleanup normalizes terminal queue entries, and hosted-close routing reaches terminal only after targeted cleanup is complete and the local base matches its remote-tracking branch.",
+      "broken_invariant": "No invariant is broken; positive, negative, idempotent, and queue-recovery behavior is covered by the frozen diff and structured verification record.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:e4e36172a6638d702c7a2037bb63f4515a021936576cf14961fcbab31af7bd18"
+        },
+        {
+          "path": ".agentplane/tasks/202608031426-0BY4B4/verification/20260803145137304-3c458177a907290f.json",
+          "sha256": "sha256:9599d60a1d493bbe71eef2a43a2abb7312ac51c2bb5c2884bd981552dc86b105"
+        },
+        {
+          "path": ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:8d896f590be2f69f72341565f88820143e222719840bc025d65724b07e749104"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

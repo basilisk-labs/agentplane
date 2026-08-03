@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Focused integration queue and route reconciliation tests pass.",
+    "Merged plus hosted-close plus cleanup converges to terminal done without manual queue release.",
+    "Open PR with unresolved review remains fail-closed and is not auto-finalized."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T14:51:37.304Z",
+    "updated_by": "CODER",
+    "note": "Verified with structured command evidence: focused route and queue suite, full local CI, and live PR 4756 terminal convergence all passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608031426-0BY4B4/verification/20260803145137304-3c458177a907290f.json",
+      "sha256": "sha256:9599d60a1d493bbe71eef2a43a2abb7312ac51c2bb5c2884bd981552dc86b105"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
