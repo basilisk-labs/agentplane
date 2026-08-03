@@ -1,0 +1,28 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T19:59:42.162Z",
+    "updated_by": "TESTER",
+    "note": "PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195942162-0265d7f3510db0b4.json",
+      "sha256": "sha256:447e54bbe71b13a9b32c85d89e19308931c09c40bb95848d3316ff5df084e8ac"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
