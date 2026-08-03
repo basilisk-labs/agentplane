@@ -4,7 +4,7 @@ title: "Stabilize supervisor latency p95 qualification sampling"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +24,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "6a7485ce21995a1114899d406946b4ebcb65f69b"
+  message: "🧪 WDRW1E task: stabilize supervisor latency sampling"
 comments:
   -
     author: "CODER"
@@ -37,8 +39,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T22:53:02.905Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
 doc_version: 3
-doc_updated_at: "2026-08-03T22:51:22.964Z"
+doc_updated_at: "2026-08-03T22:53:02.905Z"
 doc_updated_by: "CODER"
 description: "Increase the mandatory cold supervisor latency sample from 10 to 20 while preserving the existing 10 percent regression budget, so release qualification uses a meaningful p95 estimate instead of treating one maximum outlier as p95."
 sections:
