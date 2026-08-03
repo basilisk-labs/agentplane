@@ -13,7 +13,7 @@ Created: 2026-08-02T23:28:27.052Z
 ## Verification
 
 - State: ok
-- Note: Verified the external-agent SemanticResult round trip and fail-closed recovery contract.
+- Note: Verified implementation rework for the completed-journal crash window.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
