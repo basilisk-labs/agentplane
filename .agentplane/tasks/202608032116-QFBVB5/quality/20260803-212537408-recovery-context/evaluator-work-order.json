@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608032116-QFBVB5-df30229dd238d03c6ce227cb",
+  "prepared_at": "2026-08-03T21:25:37.408Z",
+  "task": {
+    "id": "202608032116-QFBVB5",
+    "revision": 6,
+    "objective": "Keep frozen qualification subject clean while writing evidence\n\nAllow qualification subprocesses to exclude only the active in-repository evidence output directory from frozen-subject cleanliness checks, while still failing on every other tracked or untracked change.",
+    "acceptance_criteria": [
+      "bun run e2e:v0.7.1:check",
+      "node --test scripts/qualification/release-qualification.test.mjs",
+      "node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full --scenario matched-cli-latency,supervisor-latency --subject <frozen-sha> --out-dir .agentplane/tasks/<task-id>/evidence/self-dirty-regression",
+      "- In scope: Allow qualification subprocesses to exclude only the active in-repository evidence output directory from frozen-subject cleanliness checks, while still failing on every other tracked or untracked change.\n- Out of scope: unrelated refactors not required for \"Keep frozen qualification subject clean while writing evidence\".",
+      "1. Extend frozen-subject identity checks so qualification subprocesses may exclude only AGENTPLANE_QUALIFICATION_EVIDENCE_DIR when it resolves to a nested path inside the same repository; preserve fail-closed behavior for repository root, outside paths, and every unrelated tracked or untracked change. 2. Add regression coverage using a temporary Git repository: generated files under the active evidence directory do not dirty the subject, while an unrelated file still does and the default path remains strict. 3. Run the qualification contract, lint/format checks, and e2e dry-run. 4. Execute a no-provider partial audit containing matched-cli-latency and supervisor-latency with an evidence directory under the task tree; both scenarios must run instead of failing the cleanliness precondition. 5. Record verification and evaluator evidence, pass hosted checks, integrate through branch_pr, then resume the frozen release qualification.",
+      "PLANNER fallback scaffold for \"Keep frozen qualification subject clean while writing evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Keep frozen qualification subject clean while writing evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "3e51eeac9196a048955c7e56633bacd76fe317bb",
+  "diff_base_sha": "50d6dcfd838dfad3268fb45b652e08f640955343",
+  "blueprint_digest": "19a2968207983ae5a07c5d9f450f91ee64635b2a108d4333c70d93086efaf5d9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608032116-QFBVB5/quality/20260803-212537408-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:12dd6cf2d38f512d0969b964046e9ccda2708db2212cb637861ae850dbeef5b2",
+    "prompt_path": ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/5dc558898e415d576ab3bd94e3ee6348fff205e75b8163d3351284248b1af7b4.md",
+    "result_schema_path": ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608032116-QFBVB5/README.md",
+      "sha256": "sha256:09bfbb887e47160f48f3040445b12aa2a31115e9304d415d01033231b841f496",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/55c87056643c1dea31814dd1a7b96c81a92b1419d7925859865b4866feec977e.patch",
+      "sha256": "sha256:55c87056643c1dea31814dd1a7b96c81a92b1419d7925859865b4866feec977e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/45025e434ee5f05de62e9ab1c015530e9a72d8327ef2f0b62eda8d52b8541781.json",
+      "sha256": "sha256:45025e434ee5f05de62e9ab1c015530e9a72d8327ef2f0b62eda8d52b8541781",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608032116-QFBVB5/verification/20260803212326932-eafa88c37183750f.json",
+      "sha256": "sha256:5efb80fd5e0977b3c37da18a89f20c20ca0fb495e059cb6ed3a49d3134d1187a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/fd70cb2be8b79ab946d76cec2f0a8d9eebccd3a284b8457afc5c1ea16c07b035.json",
+      "sha256": "sha256:fd70cb2be8b79ab946d76cec2f0a8d9eebccd3a284b8457afc5c1ea16c07b035",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

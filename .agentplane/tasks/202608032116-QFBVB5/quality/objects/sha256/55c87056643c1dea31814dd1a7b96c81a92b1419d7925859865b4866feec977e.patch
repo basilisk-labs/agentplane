@@ -1,0 +1,127 @@
+diff --git a/scripts/qualification/release-qualification.mjs b/scripts/qualification/release-qualification.mjs
+index c0de405f5..461c192cf 100644
+--- a/scripts/qualification/release-qualification.mjs
++++ b/scripts/qualification/release-qualification.mjs
+@@ -91,18 +91,40 @@ export function assertQualificationSubjectIdentity({ subject, head, tree, status
+   return { commit: head, tree, clean: true };
+ }
+ 
+-export function readQualificationSubjectIdentity(repoRoot, subject) {
++export function qualificationEvidenceStatusPathspec(repoRoot, evidenceDirectory) {
++  if (!evidenceDirectory) return null;
++  const relative = path.relative(repoRoot, path.resolve(repoRoot, evidenceDirectory));
++  if (
++    relative === "" ||
++    relative === ".." ||
++    relative.startsWith(`..${path.sep}`) ||
++    path.isAbsolute(relative)
++  ) {
++    throw new Error(
++      "qualification evidence directory must be nested inside the candidate repository",
++    );
++  }
++  return `:(top,exclude)${relative.split(path.sep).join("/")}/**`;
++}
++
++export function readQualificationSubjectIdentity(repoRoot, subject, options = {}) {
+   const git = (...args) =>
+     execFileSync("git", args, {
+       cwd: repoRoot,
+       encoding: "utf8",
+       stdio: ["ignore", "pipe", "pipe"],
+     }).trim();
++  const evidencePathspec = qualificationEvidenceStatusPathspec(
++    repoRoot,
++    options.evidenceDirectory ?? process.env.AGENTPLANE_QUALIFICATION_EVIDENCE_DIR,
++  );
++  const statusArgs = ["status", "--porcelain=v1", "--untracked-files=all"];
++  if (evidencePathspec) statusArgs.push("--", ".", evidencePathspec);
+   return assertQualificationSubjectIdentity({
+     subject,
+     head: git("rev-parse", "HEAD"),
+     tree: git("rev-parse", "HEAD^{tree}"),
+-    statusPorcelain: git("status", "--porcelain=v1", "--untracked-files=all"),
++    statusPorcelain: git(...statusArgs),
+   });
+ }
+ 
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 4ebaf94dd..6a7ea2493 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -1,5 +1,7 @@
+ import assert from "node:assert/strict";
+-import { readFileSync } from "node:fs";
++import { execFileSync } from "node:child_process";
++import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
+ import { describe, it } from "node:test";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+@@ -8,7 +10,9 @@ import {
+   assertQualificationSubjectIdentity,
+   buildQualificationReport,
+   qualificationExitCode,
++  qualificationEvidenceStatusPathspec,
+   readQualificationManifest,
++  readQualificationSubjectIdentity,
+   selectQualificationScenarios,
+   substituteQualificationCommand,
+   validateQualificationManifest,
+@@ -170,6 +174,56 @@ describe("v0.7.1 release qualification contract", () => {
+     );
+   });
+ 
++  it("ignores only the active nested qualification evidence directory", () => {
++    const root = mkdtempSync(path.join(tmpdir(), "agentplane-qualification-clean-"));
++    const git = (...args) =>
++      execFileSync("git", args, {
++        cwd: root,
++        encoding: "utf8",
++        stdio: ["ignore", "pipe", "pipe"],
++      }).trim();
++    try {
++      git("init", "--quiet");
++      writeFileSync(path.join(root, "candidate.txt"), "candidate\n", "utf8");
++      git("add", "candidate.txt");
++      git(
++        "-c",
++        "user.name=AgentPlane",
++        "-c",
++        "user.email=agentplane@example.invalid",
++        "commit",
++        "--quiet",
++        "-m",
++        "candidate",
++      );
++      const subject = git("rev-parse", "HEAD");
++      const evidenceDirectory = path.join(root, ".agentplane", "reports", "qualification");
++      mkdirSync(evidenceDirectory, { recursive: true });
++      writeFileSync(path.join(evidenceDirectory, "scenario.log"), "evidence\n", "utf8");
++
++      assert.deepEqual(readQualificationSubjectIdentity(root, subject, { evidenceDirectory }), {
++        commit: subject,
++        tree: git("rev-parse", "HEAD^{tree}"),
++        clean: true,
++      });
++      writeFileSync(path.join(root, "unrelated.txt"), "dirty\n", "utf8");
++      assert.throws(
++        () => readQualificationSubjectIdentity(root, subject, { evidenceDirectory }),
++        /candidate repository must be clean/u,
++      );
++      assert.throws(
++        () => qualificationEvidenceStatusPathspec(root, root),
++        /evidence directory must be nested/u,
++      );
++      assert.throws(
++        () => qualificationEvidenceStatusPathspec(root, path.dirname(root)),
++        /evidence directory must be nested/u,
++      );
++    } finally {
++      rmSync(root, { recursive: true, force: true });
++    }
++  });
++
+   it("rejects an uncovered requirement", () => {
+     const manifest = readQualificationManifest(manifestPath);
+     const invalid = structuredClone(manifest);

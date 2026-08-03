@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608032116-QFBVB5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T21:25:37.839Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The qualification harness now excludes only its active nested evidence directory from frozen-subject cleanliness checks while preserving strict detection of all unrelated changes.",
+  "evaluated_sha": "3e51eeac9196a048955c7e56633bacd76fe317bb",
+  "blueprint_digest": "19a2968207983ae5a07c5d9f450f91ee64635b2a108d4333c70d93086efaf5d9",
+  "findings": [
+    "PASS: the exclusion is derived from a validated repo-relative nested path and uses a top-level Git exclude pathspec, so it cannot widen beyond the selected evidence subtree.",
+    "PASS: the real Git repository test proves evidence writes are ignored, an unrelated untracked file still blocks qualification, and repository-root or outside paths are rejected.",
+    "PASS: matched CLI and supervisor latency scenarios both completed against the exact frozen implementation commit with 2/2 scenarios passing, demonstrating that qualification output no longer invalidates its own subject."
+  ],
+  "evidence_refs": [
+    "scripts/qualification/release-qualification.mjs",
+    "scripts/qualification/release-qualification.test.mjs",
+    ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/report.json",
+    ".agentplane/tasks/202608032116-QFBVB5/verification/20260803212326932-eafa88c37183750f.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The release qualification runner must continue to pass its output directory through AGENTPLANE_QUALIFICATION_EVIDENCE_DIR to child scenarios."
+  ],
+  "residual_risks": [
+    "Direct callers that write evidence inside the repository without passing evidenceDirectory or the environment variable remain intentionally subject to the strict clean-worktree failure."
+  ]
+}
