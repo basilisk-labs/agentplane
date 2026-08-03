@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -33,28 +33,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T15:45:09.723Z"
+  updated_at: "2026-08-03T16:05:08.736Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "c76ac407e7e16aa697a1d029df6cde3538329d85"
+  evaluated_sha: "e17bf07a15f422f6a8b7259ac3447f31ec59dfb1"
   blueprint_digest: "7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2"
   evidence_refs:
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608021534-J5G235/README.md"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608021534-J5G235/verification/20260803154342831-9da224d47163c6ce.json"
-    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021534-J5G235/verification/20260803160344976-6d322e911b99150f.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No contract divergence was found in the frozen implementation diff or verification evidence."
+    - "The frozen diff satisfies the approved dead-code ratchet while restoring the dynamically launched critical CLI runner and narrowly classifying it in Knip."
 token_usage:
   agent_runs: 1
   input_tokens: 268211
@@ -193,7 +193,7 @@ events:
     state: "ok"
     note: "Verified hosted CI rework with structured check evidence."
 doc_version: 3
-doc_updated_at: "2026-08-03T16:03:46.210Z"
+doc_updated_at: "2026-08-03T16:05:08.757Z"
 doc_updated_by: "CODER"
 description: "Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and unnecessary internal barrel re-exports, reduce the CLI-package Knip baseline by 60-80 percent where evidence permits, preserve @agentplaneorg/core compatibility, and ratchet against future growth."
 sections:

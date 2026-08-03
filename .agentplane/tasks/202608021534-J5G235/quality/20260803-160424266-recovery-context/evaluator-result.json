@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen diff satisfies the approved dead-code ratchet while restoring the dynamically launched critical CLI runner and narrowly classifying it in Knip.",
+      "broken_invariant": "No invariant is broken: CLI unused files and symbols remain at zero, the core compatibility budget remains at 21, and positive, negative, compatibility, and regression checks pass at the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-J5G235/quality/20260803-160424266-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2daad5f985e21ab7520c4d588fdb5e77b2ee8f183e68a5c6264edc61350090ab"
+        },
+        {
+          "path": ".agentplane/tasks/202608021534-J5G235/verification/20260803160344976-6d322e911b99150f.json",
+          "sha256": "sha256:bbf19a15aa5f8ad36dc3bd48efc71629e03334bb76f7a450a387a6830a46a5a3"
+        },
+        {
+          "path": ".agentplane/tasks/202608021534-J5G235/README.md",
+          "sha256": "sha256:ef6bcb920c25ab5af22eda0f48744f39c65f51a7b4946daac7c3161c9b2c146d",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
