@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-CNQKXP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T20:01:47.881Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "4ad2bc326f1060064f7ee11a5eb3d73f96dc7602",
+  "blueprint_digest": "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a",
+  "findings": [
+    "The eight-supervisor contention fixture counts every caught exception as an authority loser without asserting the authority-claim failure reason, so unrelated failures can satisfy the required seven-loser outcome."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch",
+    ".agentplane/tasks/202608021535-CNQKXP/README.md",
+    ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195942162-0265d7f3510db0b4.json"
+  ],
+  "missing_tests": [
+    "Assert that all seven losing supervisors fail with the structured runner_effect_operation_claimed authority reason, while retaining the one-winner, one-spawn, and no-overwrite assertions."
+  ],
+  "hidden_assumptions": [
+    "Any exception emitted by a losing worker is assumed to represent an authority-claim loss rather than an unrelated preparation, filesystem, parsing, or runtime failure."
+  ],
+  "residual_risks": [
+    "Strengthen the deterministic eight-supervisor fixture to validate the structured authority-loss reason for every loser, then rerun the focused contention stress and recorded verification at the evaluated SHA."
+  ]
+}

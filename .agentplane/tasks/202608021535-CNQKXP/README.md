@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -34,30 +34,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T19:57:35.113Z"
+  updated_at: "2026-08-03T20:01:47.881Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "1cb422dd89bf6f38993264b6f0fe3efb369a235e"
+  evaluated_sha: "4ad2bc326f1060064f7ee11a5eb3d73f96dc7602"
   blueprint_digest: "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a"
   evidence_refs:
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/61da022983301af2a906f0485f867ecc868a5012415b4e66607323fe6f333343.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-195637918-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/c4432601264f3ce3305f78b1cb5462de9c7fb30689af9b2e6718985d35f312f5.md"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608021535-CNQKXP/README.md"
     - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2d98f0cd9f0c9cc6ace5696de9f7a7c21f28ad368738c7476d707b91e6e4b1e0.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195610048-b665404c451bab66.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/22a14f9fe2f3291e491c5c9d863811f4dfd244b3131612b49a994157b22a3d50.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195942162-0265d7f3510db0b4.json"
     - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/a678349924d6de7236f3762033ddde35c1bf310b5d2d2fb99c386bbd378fe344.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated patch includes an unapproved concurrency change to runner effect-journal publication that is outside the compatibility-retirement and doctor-legacy scope."
+    - "The eight-supervisor contention fixture counts every caught exception as an authority loser without asserting the authority-claim failure reason, so unrelated failures can satisfy the required seven-loser outcome."
 token_usage:
   agent_runs: 2
   input_tokens: 314134
@@ -154,7 +154,7 @@ events:
     state: "ok"
     note: "PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval."
 doc_version: 3
-doc_updated_at: "2026-08-03T19:59:43.540Z"
+doc_updated_at: "2026-08-03T20:01:47.899Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:

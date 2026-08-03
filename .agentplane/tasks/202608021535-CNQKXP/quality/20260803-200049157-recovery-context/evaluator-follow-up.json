@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021535-CNQKXP-df22cbdc16868d43075d4d32",
+  "task_id": "202608021535-CNQKXP",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Strengthen the deterministic eight-supervisor fixture to validate the structured authority-loss reason for every loser, then rerun the focused contention stress and recorded verification at the evaluated SHA.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The eight-supervisor contention fixture counts every caught exception as an authority loser without asserting the authority-claim failure reason, so unrelated failures can satisfy the required seven-loser outcome.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9.patch",
+          "sha256": "sha256:384932dacd0094b94861eb0d5d704f93f1f97e92552e926f6137533f1f25d4c9",
+          "section": "packages/agentplane/src/runner/effect-operation.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:0efd34281bbd0bbc84b28f4e4319dcc4acd4cafbb6bad3e0b841d1a42510766d",
+          "section": "Verify Steps 5"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803195942162-0265d7f3510db0b4.json",
+          "sha256": "sha256:447e54bbe71b13a9b32c85d89e19308931c09c40bb95848d3316ff5df084e8ac",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-200049157-recovery-context/evaluator-result.json"
+}
