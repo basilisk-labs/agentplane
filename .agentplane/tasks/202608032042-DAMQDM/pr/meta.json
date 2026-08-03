@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202608032042-DAMQDM/skip-provider-dependent-qualification-checks-bef",
   "created_at": "2026-08-03T20:44:49.628Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:e088a94206d8b97048efa58ba4da942ae4f6de06ce67cd83e44964082f2f34a7",
   "last_verified_at": null,
+  "pr_number": 4762,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4762",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608032042-DAMQDM",
-  "updated_at": "2026-08-03T20:44:49.628Z",
+  "updated_at": "2026-08-03T20:45:10.320Z",
   "verify": {
     "status": "skipped"
   }

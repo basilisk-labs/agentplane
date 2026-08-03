@@ -206,26 +206,47 @@ export function selectQualificationScenarios(manifest, options) {
   if (!new Set(["core", "full"]).has(profile)) {
     throw new Error("qualification profile must be core or full");
   }
-  const requested = new Set(options.scenarioIds);
+  const requested = new Set(options.scenarioIds ?? []);
   const unknown = [...requested].filter(
     (id) => !manifest.scenarios.some((scenario) => scenario.id === id),
   );
   if (unknown.length > 0) throw new Error(`unknown qualification scenarios: ${unknown.join(", ")}`);
 
-  const selected = manifest.scenarios.filter((scenario) => {
+  let selected = manifest.scenarios.filter((scenario) => {
     if (requested.size > 0) return requested.has(scenario.id);
     if (scenario.tier === "provider") return options.provider === true;
     if (scenario.tier === "full") return profile === "full";
     return true;
   });
-  const selectedIds = new Set(selected.map((scenario) => scenario.id));
+
+  if (requested.size > 0) {
+    const missingDependencies = selected.flatMap((scenario) =>
+      (scenario.depends_on ?? [])
+        .filter((dependency) => !requested.has(dependency))
+        .map((dependency) => `${scenario.id} -> ${dependency}`),
+    );
+    if (missingDependencies.length > 0) {
+      throw new Error(
+        `explicit qualification scenarios omit required dependencies: ${missingDependencies.join(", ")}; include each dependency with --scenario`,
+      );
+    }
+  } else {
+    let previousSize;
+    do {
+      previousSize = selected.length;
+      const selectedIds = new Set(selected.map((scenario) => scenario.id));
+      selected = selected.filter((scenario) =>
+        (scenario.depends_on ?? []).every((dependency) => selectedIds.has(dependency)),
+      );
+    } while (selected.length !== previousSize);
+  }
+
   const pending = [...selected];
   const ordered = [];
   while (pending.length > 0) {
     const nextIndex = pending.findIndex((scenario) =>
-      (scenario.depends_on ?? []).every(
-        (dependency) =>
-          !selectedIds.has(dependency) || ordered.some((item) => item.id === dependency),
+      (scenario.depends_on ?? []).every((dependency) =>
+        ordered.some((item) => item.id === dependency),
       ),
     );
     if (nextIndex === -1) throw new Error("qualification scenario dependencies contain a cycle");
