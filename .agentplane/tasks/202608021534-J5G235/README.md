@@ -4,7 +4,7 @@ title: "Reduce the v0.7.1 CLI dead-code and barrel baseline"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,31 @@ verification:
   updated_by: "TESTER"
   note: "Verified CLI dead-code ratchet and compatibility preservation with structured check evidence."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-03T15:45:09.723Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "c76ac407e7e16aa697a1d029df6cde3538329d85"
+  blueprint_digest: "7c541d71caed0db53cbcb8224d444cdb78ce98237d0b02009f8e7e1b36c5d7b2"
+  evidence_refs:
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021534-J5G235/README.md"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608021534-J5G235/verification/20260803154342831-9da224d47163c6ce.json"
+    - ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "No contract divergence was found in the frozen implementation diff or verification evidence."
 commit:
   hash: "c76ac407e7e16aa697a1d029df6cde3538329d85"
   message: "♻️ J5G235 task: remove dead CLI surface"

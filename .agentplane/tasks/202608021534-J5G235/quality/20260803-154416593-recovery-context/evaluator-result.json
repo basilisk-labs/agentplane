@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "No contract divergence was found in the frozen implementation diff or verification evidence.",
+      "broken_invariant": "None; the implementation satisfies the approved dead-code reduction, compatibility preservation, ratchet, and verification contracts.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021534-J5G235/quality/20260803-154416593-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0dcc62c6f4aacee1ec63a07f6ea7a1f938d31d85865e0310925d93869af066d0"
+        },
+        {
+          "path": ".agentplane/tasks/202608021534-J5G235/verification/20260803154342831-9da224d47163c6ce.json",
+          "sha256": "sha256:9c21e85f3937143c70f8f1be2406033222678b22e122961948bd09208d620e8b"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The file-exact Knip exception for runtime/sgr/contract-types.ts remains limited to the separately enforced byte-compatible contract surface.",
+    "The two @dynamic bootstrap exports remain the complete set of AgentPlane exports intentionally loaded outside Knip's statically visible graph."
+  ]
+}
