@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022324-Y26ENH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T03:39:58.632Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "fa975c224d25dceb689f89fe2fcdf21b34d4d4f7",
+  "blueprint_digest": "3ffc20fd7d0794490bc007e5259da9413aee68dc16ac2e62a557eaca3d70ce2c",
+  "findings": [
+    "Command-context and route reuse are bounded by exact checkout identity and task identity; every CLI-owned mutation explicitly requests a fresh HEAD before the next protected operation.",
+    "The RF-04 timing signal remains visible as diagnostics while a separate full-tier packed supervisor benchmark blocks release on median or p95 regression above 10%; token, outcome, and structural failures remain blocking.",
+    "The exact clean commit passes the required cold/warm benchmark and the supervisor, recovery, lifecycle, critical CLI, type, lint, architecture, clone, Knip, hotspot, and coverage gates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The published v0.6.26 manual brief-plus-next-action preparation is the intended semantic latency baseline for both new supervisor frontends, as frozen by the benchmark contract."
+  ],
+  "residual_risks": []
+}

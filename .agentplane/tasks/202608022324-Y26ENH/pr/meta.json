@@ -2,15 +2,23 @@
   "base": "main",
   "branch": "task/202608022324-Y26ENH/restore-supervisor-orchestration-latency-to-the",
   "created_at": "2026-08-03T01:51:46.239Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:161eae2bc9a06ec8d3b8c74faabdd85dc5dcf71fe2ece18a809e0eff5a141501",
+  "last_verified_at": "2026-08-03T03:39:01.022Z",
+  "last_verified_diffstat_sha256": "sha256:161eae2bc9a06ec8d3b8c74faabdd85dc5dcf71fe2ece18a809e0eff5a141501",
   "pr_number": 4751,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4751",
+  "pre_merge_closure": {
+    "basis_commit": "fa975c224d25dceb689f89fe2fcdf21b34d4d4f7",
+    "branch": "task/202608022324-Y26ENH/restore-supervisor-orchestration-latency-to-the",
+    "pr_number": 4751,
+    "recorded_at": "2026-08-03T03:40:32.738Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608022324-Y26ENH",
   "updated_at": "2026-08-03T01:52:19.630Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

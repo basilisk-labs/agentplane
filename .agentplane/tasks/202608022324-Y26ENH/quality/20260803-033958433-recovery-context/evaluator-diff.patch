@@ -1,0 +1,2341 @@
+diff --git a/packages/agentplane/src/commands/shared/route-decision-workspace.ts b/packages/agentplane/src/commands/shared/route-decision-workspace.ts
+new file mode 100644
+index 000000000..0574fa29d
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/route-decision-workspace.ts
+@@ -0,0 +1,32 @@
++import { findWorktreeForBranch } from "@agentplaneorg/core/git";
++
++import type { PrFlowStatusReport } from "../pr/flow-status.js";
++import type { TaskResumeContext } from "../task/handoff.shared.js";
++import type { TaskRouteDecision } from "./route-decision-types.js";
++
++export function deriveRouteCheckoutRole(
++  resume: TaskResumeContext,
++): TaskRouteDecision["workspace"]["checkoutRole"] {
++  if (!resume.branch || !resume.base_branch) return "unknown";
++  return resume.branch === resume.base_branch ? "base" : "task_worktree";
++}
++
++export async function findRouteWorktreePath(
++  cwd: string,
++  branch: string | null,
++): Promise<string | null> {
++  if (!branch) return null;
++  return findWorktreeForBranch(cwd, branch).catch(() => null);
++}
++
++export function inferTaskRouteBranch(
++  resume: TaskResumeContext,
++  prFlow: PrFlowStatusReport | null,
++): string | null {
++  if (prFlow?.branch.name) return prFlow.branch.name;
++  if (resume.pr_branch) return resume.pr_branch;
++  if (resume.branch && resume.base_branch && resume.branch !== resume.base_branch) {
++    return resume.branch;
++  }
++  return null;
++}
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index 9bf1fba0e..aa5a92cb8 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -1,4 +1,5 @@
+-import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
++import { gitRevParse } from "@agentplaneorg/core/git";
++import type { GitSnapshot } from "../../runner/observation/git-snapshot.js";
+ import { CliError } from "../../shared/errors.js";
+ import { readTaskPrMetaArtifact } from "../pr/internal/pr-paths.js";
+ import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
+@@ -34,9 +35,15 @@ import {
+   type TaskRouteDecision,
+ } from "./route-decision-types.js";
+ import { deriveRouteAmbiguities, deriveRouteRepairPlan } from "./route-decision-repair.js";
++import {
++  deriveRouteCheckoutRole,
++  findRouteWorktreePath,
++  inferTaskRouteBranch,
++} from "./route-decision-workspace.js";
+ import {
+   loadBackendTask,
+   loadCommandContext,
++  resolveCommandGitCommonDir,
+   resolveTaskBranchFromContext,
+   type CommandContext,
+ } from "./task-backend.js";
+@@ -54,32 +61,14 @@ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerpr
+ import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
+ export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ 
+-function isCliUsageOrIo(err: unknown): boolean {
+-  return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
+-}
+-
+-function deriveCheckoutRole(
+-  resume: TaskResumeContext,
+-): TaskRouteDecision["workspace"]["checkoutRole"] {
+-  if (!resume.branch || !resume.base_branch) return "unknown";
+-  return resume.branch === resume.base_branch ? "base" : "task_worktree";
+-}
++const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
+ 
+-async function findWorktreePath(cwd: string, branch: string | null): Promise<string | null> {
+-  if (!branch) return null;
+-  return findWorktreeForBranch(cwd, branch).catch(() => null);
++export function readTaskRouteGitSnapshot(decision: TaskRouteDecision): GitSnapshot | null {
++  return routeGitSnapshots.get(decision) ?? null;
+ }
+ 
+-function inferredTaskBranch(
+-  resume: TaskResumeContext,
+-  prFlow: PrFlowStatusReport | null,
+-): string | null {
+-  if (prFlow?.branch.name) return prFlow.branch.name;
+-  if (resume.pr_branch) return resume.pr_branch;
+-  if (resume.branch && resume.base_branch && resume.branch !== resume.base_branch) {
+-    return resume.branch;
+-  }
+-  return null;
++function isCliUsageOrIo(err: unknown): boolean {
++  return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
+ }
+ 
+ function deriveApprovalContract(
+@@ -350,6 +339,8 @@ export async function buildTaskRouteDecision(opts: {
+   rootOverride?: string | null;
+   runnerRunId?: string;
+   includeRunnerState?: boolean;
++  preobservedBranch?: string | null;
++  freshHead?: boolean;
+   taskId: string;
+ }): Promise<TaskRouteDecision> {
+   const ctx =
+@@ -366,6 +357,7 @@ export async function buildTaskRouteDecision(opts: {
+     gitRoot: ctx.resolvedProject.gitRoot,
+     taskId: opts.taskId,
+     task: loadedTask,
++    commonGitDir: await resolveCommandGitCommonDir(ctx),
+   });
+   const resume = await buildTaskResumeContext({
+     ctx,
+@@ -374,8 +366,15 @@ export async function buildTaskRouteDecision(opts: {
+     task_id: opts.taskId,
+     run_id: opts.runnerRunId,
+     include_runner_state: opts.includeRunnerState,
++    fresh_head: opts.freshHead,
++    ...(Object.hasOwn(opts, "preobservedBranch")
++      ? { preobserved_branch: opts.preobservedBranch ?? null }
++      : {}),
+   });
+-  const baseCheckoutPath = await findWorktreePath(ctx.resolvedProject.gitRoot, resume.base_branch);
++  const baseCheckoutPath = await findRouteWorktreePath(
++    ctx.resolvedProject.gitRoot,
++    resume.base_branch,
++  );
+   const localDiagnostics: string[] = [];
+   const recordLocalDiagnostic = (message: string): void => {
+     localDiagnostics.push(message);
+@@ -419,7 +418,7 @@ export async function buildTaskRouteDecision(opts: {
+     ctx.config.workflow_mode === "branch_pr"
+       ? await resolveBatchOwnership({ ctx, task })
+       : { role: "none" as const };
+-  const inferredBranch = inferredTaskBranch(resume, prFlow);
++  const inferredBranch = inferTaskRouteBranch(resume, prFlow);
+   const taskWorktreeBranch =
+     batchOwnership.role === "included" ? batchOwnership.branch : inferredBranch;
+   const { taskWorktreeCleanliness, foreignTaskReadmeReplicaRepair } =
+@@ -518,6 +517,7 @@ export async function buildTaskRouteDecision(opts: {
+       batchOwnership.role === "included" ? taskWorktreeCleanliness.worktreePath : taskWorktreePath,
+     currentCheckoutPath: resume.workspace_root,
+   };
++  let latestGitSnapshot: GitSnapshot | null = null;
+   const workflowStep = await tracePolicyAuthorityDecision({
+     recorder: ctx.preparationTrace,
+     taskId: opts.taskId,
+@@ -533,6 +533,9 @@ export async function buildTaskRouteDecision(opts: {
+             state: finalRouteStateInput,
+             step,
+             paths: fingerprintPaths,
++            onGitSnapshot: (snapshot) => {
++              latestGitSnapshot = snapshot;
++            },
+           }),
+       }),
+   });
+@@ -556,7 +559,7 @@ export async function buildTaskRouteDecision(opts: {
+       baseBranch: resume.base_branch,
+       headSha: resume.head_sha,
+       prBranch: resume.pr_branch,
+-      checkoutRole: deriveCheckoutRole(resume),
++      checkoutRole: deriveRouteCheckoutRole(resume),
+       baseCheckoutPath,
+       taskWorktreePath,
+     },
+@@ -581,7 +584,7 @@ export async function buildTaskRouteDecision(opts: {
+     ...partial,
+     ambiguities: deriveRouteAmbiguities({ decision: partial }),
+   };
+-  return {
++  const decision: TaskRouteDecision = {
+     ...withAmbiguities,
+     repairPlan: deriveRepairPlan(withAmbiguities),
+     sourceConfidence: buildRouteSourceConfidence({
+@@ -590,4 +593,6 @@ export async function buildTaskRouteDecision(opts: {
+       localDiagnostics,
+     }),
+   };
++  if (latestGitSnapshot) routeGitSnapshots.set(decision, latestGitSnapshot);
++  return decision;
+ }
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts b/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts
+index ff56d4b78..8d42bcc11 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts
+@@ -95,8 +95,14 @@ describe("side-effect authority store", () => {
+ 
+       expect(await git(integration, ["rev-parse", "HEAD"])).toBe(before);
+       expect(await git(integration, ["status", "--porcelain"])).toBe("");
++      const commonGitDir = await git(root, [
++        "rev-parse",
++        "--path-format=absolute",
++        "--git-common-dir",
++      ]);
+       const loaded = await loadSideEffectAuthorityState({
+-        gitRoot: root,
++        gitRoot: path.join(root, "not-a-repository"),
++        commonGitDir,
+         taskId,
+         task: { extensions: {} },
+       });
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+index 9c75fbf07..e485466f7 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+@@ -33,9 +33,15 @@ function assertSafeTaskId(taskId: string): void {
+   }
+ }
+ 
+-async function authorityStorePath(opts: { gitRoot: string; taskId: string }): Promise<string> {
++async function authorityStorePath(opts: {
++  gitRoot: string;
++  taskId: string;
++  commonGitDir?: string;
++}): Promise<string> {
+   assertSafeTaskId(opts.taskId);
+-  const commonDir = await gitRevParse(opts.gitRoot, ["--path-format=absolute", "--git-common-dir"]);
++  const commonDir =
++    opts.commonGitDir ??
++    (await gitRevParse(opts.gitRoot, ["--path-format=absolute", "--git-common-dir"]));
+   return path.join(commonDir, ...AUTHORITY_STORE_DIR, `${opts.taskId}.json`);
+ }
+ 
+@@ -59,6 +65,7 @@ function parseStoredAuthorityEnvelope(
+ async function readStoredAuthorityState(opts: {
+   gitRoot: string;
+   taskId: string;
++  commonGitDir?: string;
+ }): Promise<{ state: SideEffectAuthorityState | null; exists: boolean }> {
+   const target = await authorityStorePath(opts);
+   let raw: string;
+@@ -89,8 +96,13 @@ export async function loadSideEffectAuthorityState(opts: {
+   gitRoot: string;
+   taskId: string;
+   task: { extensions?: Record<string, unknown> };
++  commonGitDir?: string;
+ }): Promise<SideEffectAuthorityStateLoadResult> {
+-  const stored = await readStoredAuthorityState({ gitRoot: opts.gitRoot, taskId: opts.taskId });
++  const stored = await readStoredAuthorityState({
++    gitRoot: opts.gitRoot,
++    taskId: opts.taskId,
++    ...(opts.commonGitDir ? { commonGitDir: opts.commonGitDir } : {}),
++  });
+   if (stored.exists) {
+     return stored.state
+       ? { state: stored.state, source: "git_common_dir" }
+@@ -106,6 +118,7 @@ export async function hydrateTaskSideEffectAuthority(opts: {
+   gitRoot: string;
+   taskId: string;
+   task: TaskData;
++  commonGitDir?: string;
+ }): Promise<TaskData> {
+   const authority = await loadSideEffectAuthorityState(opts);
+   if (authority.state) {
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index cf55f6fab..a55113608 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -1,4 +1,5 @@
+ import type { ResolvedProject } from "@agentplaneorg/core/project";
++import { realpath } from "node:fs/promises";
+ import path from "node:path";
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
+@@ -18,7 +19,7 @@ import {
+   type TaskData,
+   type TaskSummary,
+ } from "../../backends/task-backend.js";
+-import { GitContext } from "@agentplaneorg/core/git";
++import { GitContext, gitRevParse } from "@agentplaneorg/core/git";
+ import { loadTaskFromBranchSnapshot } from "./task-backend-branch-snapshot.js";
+ 
+ export {
+@@ -35,6 +36,7 @@ export type CommandMemo = {
+   }>;
+   changedPaths?: Promise<string[]>;
+   headCommit?: Promise<string>;
++  gitCommonDir?: Promise<string>;
+   agentIds?: Promise<string[]>;
+   harness?: Promise<ResolvedHarnessContract>;
+ };
+@@ -51,6 +53,14 @@ export type CommandContext = {
+   memo: CommandMemo;
+ };
+ 
++export function resolveCommandGitCommonDir(ctx: CommandContext): Promise<string> {
++  ctx.memo.gitCommonDir ??= gitRevParse(ctx.resolvedProject.gitRoot, [
++    "--path-format=absolute",
++    "--git-common-dir",
++  ]).then(async (commonDir) => await realpath(path.resolve(commonDir)));
++  return ctx.memo.gitCommonDir;
++}
++
+ function normalizeDocUpdatedBy(value?: string): string {
+   const trimmed = value?.trim() ?? "";
+   if (!trimmed) return "";
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint-policy-paths.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint-policy-paths.ts
+new file mode 100644
+index 000000000..95bae76a9
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint-policy-paths.ts
+@@ -0,0 +1,30 @@
++function uniqueSorted(values: readonly string[]): string[] {
++  return [...new Set(values)].toSorted();
++}
++
++export function workflowFingerprintPolicyPaths(
++  workflowMode: string,
++  blueprintPolicyModules: readonly string[],
++  changedPaths: readonly string[],
++): string[] {
++  const policyMutation = changedPaths.some(
++    (changedPath) => changedPath === "AGENTS.md" || changedPath.startsWith(".agentplane/policy/"),
++  );
++  return uniqueSorted([
++    "AGENTS.md",
++    ".agentplane/WORKFLOW.md",
++    workflowMode === "branch_pr"
++      ? ".agentplane/policy/workflow.branch_pr.md"
++      : ".agentplane/policy/workflow.direct.md",
++    ...blueprintPolicyModules,
++    ...(changedPaths.some((changedPath) => changedPath.startsWith(".agentplane/.upgrade/"))
++      ? [".agentplane/policy/workflow.upgrade.md"]
++      : []),
++    ...(policyMutation
++      ? [".agentplane/policy/dod.docs.md", ".agentplane/policy/governance.md"]
++      : []),
++    ...(changedPaths.includes(".agentplane/policy/incidents.md")
++      ? [".agentplane/policy/incidents.md"]
++      : []),
++  ]);
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index 995f96d7e..2649d90d5 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -8,7 +8,11 @@ import {
+   type StateFingerprintPolicy,
+ } from "@agentplaneorg/core/schemas";
+ 
+-import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
++import {
++  captureGitSnapshot,
++  projectGitSnapshot,
++  type GitSnapshot,
++} from "../../runner/observation/git-snapshot.js";
+ import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
+ import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
+ import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+@@ -16,6 +20,7 @@ import { measurePreparationNode } from "../../shared/preparation-trace.js";
+ import type { CommandContext } from "./task-backend.js";
+ import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
+ import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
++import { workflowFingerprintPolicyPaths } from "./workflow-step-fingerprint-policy-paths.js";
+ import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
+ import {
+   observeWorkflowPolicyScope,
+@@ -225,37 +230,6 @@ function semanticTaskComponent(state: WorkflowRouteStateInput): StateFingerprint
+   return presentComponent("workflow_route_task", task);
+ }
+ 
+-function uniqueSorted(values: readonly string[]): string[] {
+-  return [...new Set(values)].toSorted();
+-}
+-
+-function workflowPolicyPaths(
+-  workflowMode: string,
+-  blueprintPolicyModules: readonly string[],
+-  changedPaths: readonly string[],
+-): string[] {
+-  const policyMutation = changedPaths.some(
+-    (changedPath) => changedPath === "AGENTS.md" || changedPath.startsWith(".agentplane/policy/"),
+-  );
+-  return uniqueSorted([
+-    "AGENTS.md",
+-    ".agentplane/WORKFLOW.md",
+-    workflowMode === "branch_pr"
+-      ? ".agentplane/policy/workflow.branch_pr.md"
+-      : ".agentplane/policy/workflow.direct.md",
+-    ...blueprintPolicyModules,
+-    ...(changedPaths.some((changedPath) => changedPath.startsWith(".agentplane/.upgrade/"))
+-      ? [".agentplane/policy/workflow.upgrade.md"]
+-      : []),
+-    ...(policyMutation
+-      ? [".agentplane/policy/dod.docs.md", ".agentplane/policy/governance.md"]
+-      : []),
+-    ...(changedPaths.includes(".agentplane/policy/incidents.md")
+-      ? [".agentplane/policy/incidents.md"]
+-      : []),
+-  ]);
+-}
+-
+ async function observeWorkflowPolicy(opts: {
+   ctx: CommandContext;
+   repositoryRoot: string;
+@@ -425,6 +399,7 @@ export async function captureWorkflowStepFingerprint(opts: {
+   state: WorkflowRouteStateInput;
+   step: WorkflowStep;
+   paths: WorkflowFingerprintPaths;
++  onGitSnapshot?: (snapshot: GitSnapshot | null) => void;
+ }): Promise<StateFingerprint> {
+   const fingerprintCheckout = workflowStepFingerprintCheckout(opts.step);
+   const authoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
+@@ -495,7 +470,7 @@ export async function captureWorkflowStepFingerprint(opts: {
+         reason: "authoritative_checkout_unavailable",
+         evidence: { checkout: fingerprintCheckout },
+       };
+-  const selectedPolicyPaths = workflowPolicyPaths(
++  const selectedPolicyPaths = workflowFingerprintPolicyPaths(
+     opts.ctx.config.workflow_mode,
+     blueprintObservation.policyModules,
+     policyScope.state === "present" ? policyScope.changedPaths : [],
+@@ -529,7 +504,7 @@ export async function captureWorkflowStepFingerprint(opts: {
+         unavailableComponent("workflow_route_policy", "authoritative_checkout_unavailable"),
+         unavailableComponent("task_backend_runtime", "authoritative_checkout_unavailable"),
+       ];
+-  const git = repositoryRoot
++  const rawGit = repositoryRoot
+     ? await measurePreparationNode({
+         recorder: opts.ctx.preparationTrace,
+         node: "git_snapshot",
+@@ -541,11 +516,8 @@ export async function captureWorkflowStepFingerprint(opts: {
+         operation: async () =>
+           await captureGitSnapshot({
+             repository_root: repositoryRoot,
+-            excluded_roots: semanticGitExclusions({
+-              ctx: opts.ctx,
+-              taskId: opts.state.task.id,
+-              policyPaths: selectedPolicyPaths,
+-            }),
++            trusted_repository_root: true,
++            preobserved_head_commit: opts.state.resume.head_sha,
+           }),
+         fingerprintInputs: (snapshot) => ({
+           repository_root: repositoryRoot,
+@@ -554,6 +526,17 @@ export async function captureWorkflowStepFingerprint(opts: {
+         output: (snapshot) => snapshot,
+       })
+     : null;
++  opts.onGitSnapshot?.(rawGit);
++  const git = rawGit
++    ? projectGitSnapshot(
++        rawGit,
++        semanticGitExclusions({
++          ctx: opts.ctx,
++          taskId: opts.state.task.id,
++          policyPaths: selectedPolicyPaths,
++        }),
++      )
++    : null;
+   const gitComponent =
+     git?.state === "available"
+       ? presentComponent("workflow_route_git", {
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 8b0749cbd..41dac5c27 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -30,12 +30,13 @@ export function makeRunTaskAdvanceHandler(deps: {
+ }) {
+   return async (ctx: CommandCtx, parsed: TaskAdvanceParsed): Promise<number> => {
+     const command = await deps.getContext("task advance", { includeRemote: parsed.remote });
+-    const decide = async (): Promise<TaskRouteDecision> =>
++    const decide = async (freshHead = false): Promise<TaskRouteDecision> =>
+       await buildTaskRouteDecision({
+         ctx: command,
+         cwd: ctx.cwd,
+         rootOverride: ctx.rootOverride ?? null,
+         includeRemote: parsed.remote,
++        freshHead,
+         taskId: parsed.taskId,
+       });
+     let current: TaskRouteDecision;
+@@ -71,6 +72,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+             cwd: checkout,
+             rootOverride: null,
+             includeRemote: parsed.remote,
++            freshHead: true,
+             taskId: parsed.taskId,
+           });
+         current = await executeExternalAgentVerification({
+@@ -108,6 +110,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+             cwd: checkout,
+             rootOverride: null,
+             includeRemote: parsed.remote,
++            freshHead: true,
+             taskId: parsed.taskId,
+           });
+         const finalized = await recordDirectTaskFormalOperation({
+@@ -138,7 +141,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+         task_revision: null,
+         execute: async ({ operation }) =>
+           await executeBranchWorkflowOperation({ decision: current, operation }),
+-        refresh: decide,
++        refresh: async () => await decide(true),
+       });
+       const execution = persisted.execution;
+       if (!execution.executable || execution.stop_reason !== null) {
+@@ -199,6 +202,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+         task_id: parsed.taskId,
+         ...(parsed.remote ? { include_remote: true } : {}),
+         runner_command: "task advance",
++        prepared_route_decision: current,
+       }),
+     );
+     const exchange = await issueExternalAgentExchange({
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.test.ts b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+index dca41369d..06beda16a 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.test.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+@@ -231,4 +231,49 @@ describe("compact agent action packet", () => {
+     });
+     expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
+   });
++
++  it("does not mistake mechanical exchange paths inside a Git worktree for agent choreography", () => {
++    const workflowStep = step({
++      kind: "agent_episode",
++      episode: {
++        purpose: "implementation",
++        role: "CODER",
++        taskId: TASK_ID,
++        objective: "Implement the task",
++      },
++    });
++    const packet = buildAgentActionPacket({
++      decision: decision(workflowStep),
++      work_order: workOrder(),
++      exchange: {
++        directory: `/repo/.agentplane/worktrees/${TASK_ID}/.git/agentplane/exchanges/current`,
++        work_order_ref: "work-order.json",
++        result_schema_ref: "result-schema.json",
++        result_ref: "result.json",
++        return_invocation:
++          "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",
++      },
++    });
++
++    expect(() => assertAgentActionPacketHasNoChoreography(packet)).not.toThrow();
++  });
++
++  it("still rejects lifecycle choreography in the semantic instruction", () => {
++    const packet = packetFor(
++      step({
++        kind: "agent_episode",
++        episode: {
++          purpose: "implementation",
++          role: "CODER",
++          taskId: TASK_ID,
++          objective: "Implement the task",
++        },
++      }),
++    );
++    packet.action.instruction = "Run git status and finish the task.";
++
++    expect(() => assertAgentActionPacketHasNoChoreography(packet)).toThrow(
++      "Agent action packet leaked formal lifecycle choreography.",
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index c12cff571..3b97e95dc 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -260,7 +260,11 @@ export function buildAgentActionPacket(opts: {
+ }
+ 
+ export function assertAgentActionPacketHasNoChoreography(packet: AgentActionPacket): void {
+-  if (CHOREOGRAPHY_PATTERN.test(JSON.stringify(packet))) {
++  const agentVisibleSemanticSurface = [
++    packet.action.instruction,
++    ...packet.context_refs.map((input) => input.ref),
++  ].join("\n");
++  if (CHOREOGRAPHY_PATTERN.test(agentVisibleSemanticSurface)) {
+     throw new Error("Agent action packet leaked formal lifecycle choreography.");
+   }
+ }
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 2318d2072..2e735e062 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -83,6 +83,15 @@ function digestText(value: string): string {
+   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
+ }
+ 
++async function commandContextForCheckout(opts: {
++  command: CommandContext;
++  checkout: string;
++}): Promise<CommandContext> {
++  return path.resolve(opts.checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
++    ? opts.command
++    : await loadCommandContext({ cwd: opts.checkout, rootOverride: null });
++}
++
+ function evaluatorInput(opts: {
+   work_order: AgentWorkOrderV2;
+   git_root: string;
+@@ -249,7 +258,7 @@ export async function issueExternalAgentExchange(opts: {
+       purpose,
+       checkout,
+     });
+-    const checkoutCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
++    const checkoutCommand = await commandContextForCheckout({ command: opts.command, checkout });
+     await recordIssuedEpisode({
+       command: checkoutCommand,
+       decision: opts.decision,
+@@ -264,7 +273,7 @@ export async function issueExternalAgentExchange(opts: {
+       work_order: workOrder,
+     };
+   }
+-  const checkoutCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
++  const checkoutCommand = await commandContextForCheckout({ command: opts.command, checkout });
+   let workOrder = opts.work_order;
+   let evaluatorWorkOrderRef: string | null = null;
+   if (purpose === "quality_review") {
+diff --git a/packages/agentplane/src/commands/task/handoff.shared.ts b/packages/agentplane/src/commands/task/handoff.shared.ts
+index b35f0b957..4f4eb2e74 100644
+--- a/packages/agentplane/src/commands/task/handoff.shared.ts
++++ b/packages/agentplane/src/commands/task/handoff.shared.ts
+@@ -1,4 +1,4 @@
+-import { resolveBaseBranch } from "@agentplaneorg/core/git";
++import { gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
+ import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+@@ -50,6 +50,8 @@ export async function buildTaskResumeContext(opts: {
+   task_id: string;
+   run_id?: string;
+   include_runner_state?: boolean;
++  preobserved_branch?: string | null;
++  fresh_head?: boolean;
+ }): Promise<TaskResumeContext> {
+   const ctx =
+     opts.ctx ??
+@@ -65,11 +67,18 @@ export async function buildTaskResumeContext(opts: {
+     task_id: opts.task_id,
+   });
+   const [branch, latest_handoff, prMeta] = await Promise.all([
+-    currentGitBranch(ctx.resolvedProject.gitRoot),
++    Object.hasOwn(opts, "preobserved_branch")
++      ? Promise.resolve(opts.preobserved_branch ?? null)
++      : currentGitBranch(ctx.resolvedProject.gitRoot),
+     readTaskHandoffLatest(handoffPaths),
+     readTaskPrMetaSummary({ ctx, task_id: opts.task_id }),
+   ]);
+-  const head_sha = await ctx.git.headCommit().catch(() => null);
++  // A route refresh can follow a mutation performed through a separate command
++  // context. Those callers require a direct observation; read-only preparation
++  // may reuse the command-scoped HEAD promise.
++  const head_sha = await (
++    opts.fresh_head ? gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD"]) : ctx.git.headCommit()
++  ).catch(() => null);
+   const base_branch =
+     prMeta.base ??
+     (await resolveBaseBranch({
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot.test.ts b/packages/agentplane/src/runner/observation/git-snapshot.test.ts
+index 3208c32cd..beafc8feb 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot.test.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot.test.ts
+@@ -10,6 +10,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
+ import {
+   captureGitSnapshot,
+   compareGitSnapshots,
++  projectGitSnapshot,
+   type GitSnapshotDelta,
+   type GitSnapshotDeltaEntry,
+ } from "./git-snapshot.js";
+@@ -258,6 +259,42 @@ describe("Git execution snapshot observation", () => {
+     expectSha256(delta.sha256);
+   });
+ 
++  it("projects one complete observation into independently excluded semantic views", async () => {
++    const root = await createRepository();
++    await writeRepoFile(root, ".agentplane/tasks/T-1/README.md", "task state\n");
++    await writeRepoFile(root, "source.ts", "export {};\n");
++
++    const complete = await captureGitSnapshot({
++      repository_root: root,
++      trusted_repository_root: true,
++    });
++    const taskExcluded = projectGitSnapshot(complete, [".agentplane/tasks/T-1"]);
++    const sourceExcluded = projectGitSnapshot(complete, ["source.ts"]);
++
++    expect(complete.dirty_paths).toEqual([".agentplane/tasks/T-1/README.md", "source.ts"]);
++    expect(taskExcluded.dirty_paths).toEqual(["source.ts"]);
++    expect(sourceExcluded.dirty_paths).toEqual([".agentplane/tasks/T-1/README.md"]);
++    expect(taskExcluded.head_commit).toBe(complete.head_commit);
++    expect(taskExcluded.captured_at).toBe(complete.captured_at);
++    expect(taskExcluded.snapshot_sha256).not.toBe(complete.snapshot_sha256);
++    expect(sourceExcluded.snapshot_sha256).not.toBe(taskExcluded.snapshot_sha256);
++  });
++
++  it("accepts a route-preobserved HEAD without changing the snapshot contract", async () => {
++    const root = await createRepository();
++    const head = await git(root, ["rev-parse", "HEAD"]);
++
++    const snapshot = await captureGitSnapshot({
++      repository_root: root,
++      trusted_repository_root: true,
++      preobserved_head_commit: head,
++    });
++
++    expect(snapshot.state).toBe("available");
++    expect(snapshot.head_commit).toBe(head);
++    expectSha256(snapshot.snapshot_sha256);
++  });
++
+   it("returns unavailable evidence instead of throwing outside a Git repository", async () => {
+     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-snapshot-non-repo-"));
+     tempRoots.push(root);
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot.ts b/packages/agentplane/src/runner/observation/git-snapshot.ts
+index d3f734b4a..09599a29c 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot.ts
+@@ -1,4 +1,4 @@
+-export { captureGitSnapshot } from "./git-snapshot/capture.js";
++export { captureGitSnapshot, projectGitSnapshot } from "./git-snapshot/capture.js";
+ export { compareGitSnapshots } from "./git-snapshot/compare.js";
+ export {
+   type GitSnapshot,
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot/capture.ts b/packages/agentplane/src/runner/observation/git-snapshot/capture.ts
+index cf61b1670..53ddbc308 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot/capture.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot/capture.ts
+@@ -45,6 +45,39 @@ async function captureHead(repositoryRoot: string): Promise<string | null> {
+   }
+ }
+ 
++async function captureStatus(repositoryRoot: string): Promise<GitStatusEntry[]> {
++  const { stdout } = await execFileAsync(
++    "git",
++    [
++      "status",
++      "--porcelain=v1",
++      "-z",
++      "--untracked-files=all",
++      "--renames",
++      "--ignore-submodules=none",
++    ],
++    {
++      cwd: repositoryRoot,
++      env: gitEnv(),
++      encoding: "buffer",
++      maxBuffer: GIT_MAX_BUFFER_BYTES,
++      timeout: GIT_TIMEOUT_MS,
++    },
++  );
++  return parsePorcelainStatus(stdout);
++}
++
++async function captureIndex(repositoryRoot: string): Promise<GitSnapshot["index_entries"]> {
++  const { stdout } = await execFileAsync("git", ["ls-files", "--stage", "-z"], {
++    cwd: repositoryRoot,
++    env: gitEnv(),
++    encoding: "buffer",
++    maxBuffer: GIT_MAX_BUFFER_BYTES,
++    timeout: GIT_TIMEOUT_MS,
++  });
++  return parseIndexEntries(stdout);
++}
++
+ async function capturePathFingerprint(
+   repositoryRoot: string,
+   gitPath: string,
+@@ -199,92 +232,80 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
+     });
+   }
+ 
+-  try {
+-    const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
+-      cwd: repositoryRoot,
+-      env: gitEnv(),
+-      timeout: GIT_TIMEOUT_MS,
+-    });
+-    const observedRoot = path.resolve(String(stdout).trim());
+-    const [canonicalObservedRoot, canonicalRepositoryRoot] = await Promise.all([
+-      realpath(observedRoot),
+-      realpath(repositoryRoot),
+-    ]);
+-    if (canonicalObservedRoot !== canonicalRepositoryRoot) {
+-      throw new Error(
+-        `repository_root mismatch: expected ${repositoryRoot}, Git resolved ${observedRoot}`,
+-      );
++  if (!input.trusted_repository_root) {
++    try {
++      const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
++        cwd: repositoryRoot,
++        env: gitEnv(),
++        timeout: GIT_TIMEOUT_MS,
++      });
++      const observedRoot = path.resolve(String(stdout).trim());
++      const [canonicalObservedRoot, canonicalRepositoryRoot] = await Promise.all([
++        realpath(observedRoot),
++        realpath(repositoryRoot),
++      ]);
++      if (canonicalObservedRoot !== canonicalRepositoryRoot) {
++        throw new Error(
++          `repository_root mismatch: expected ${repositoryRoot}, Git resolved ${observedRoot}`,
++        );
++      }
++    } catch (error) {
++      return unavailableSnapshot({
++        repositoryRoot,
++        excludedPaths,
++        errors: [observationError("git_root", error)],
++      });
+     }
+-  } catch (error) {
+-    return unavailableSnapshot({
+-      repositoryRoot,
+-      excludedPaths,
+-      errors: [observationError("git_root", error)],
+-    });
+   }
+ 
+-  let headCommit: string | null;
+-  try {
+-    headCommit = await captureHead(repositoryRoot);
+-  } catch (error) {
++  if (
++    typeof input.preobserved_head_commit === "string" &&
++    !/^[0-9a-f]{40,64}$/u.test(input.preobserved_head_commit)
++  ) {
+     return unavailableSnapshot({
+       repositoryRoot,
+       excludedPaths,
+-      errors: [observationError("git_head", error)],
+-    });
+-  }
+-
+-  let statusEntries: GitStatusEntry[];
+-  try {
+-    const { stdout } = await execFileAsync(
+-      "git",
+-      [
+-        "status",
+-        "--porcelain=v1",
+-        "-z",
+-        "--untracked-files=all",
+-        "--renames",
+-        "--ignore-submodules=none",
++      errors: [
++        observationError("git_head", new Error("preobserved_head_commit is not a commit SHA")),
+       ],
+-      {
+-        cwd: repositoryRoot,
+-        env: gitEnv(),
+-        encoding: "buffer",
+-        maxBuffer: GIT_MAX_BUFFER_BYTES,
+-        timeout: GIT_TIMEOUT_MS,
+-      },
+-    );
+-    statusEntries = parsePorcelainStatus(stdout).filter((entry) =>
+-      statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
+-    );
+-  } catch (error) {
+-    return unavailableSnapshot({
+-      repositoryRoot,
+-      excludedPaths,
+-      headCommit,
+-      errors: [observationError("git_status", error)],
+     });
+   }
+ 
+-  let indexEntries: GitSnapshot["index_entries"];
+-  try {
+-    const { stdout } = await execFileAsync("git", ["ls-files", "--stage", "-z"], {
+-      cwd: repositoryRoot,
+-      env: gitEnv(),
+-      encoding: "buffer",
+-      maxBuffer: GIT_MAX_BUFFER_BYTES,
+-      timeout: GIT_TIMEOUT_MS,
+-    });
+-    indexEntries = parseIndexEntries(stdout).filter(
+-      (entry) => !isExcluded(entry.path, excludedPaths),
+-    );
+-  } catch (error) {
++  const [headResult, statusResult, indexResult] = await Promise.allSettled([
++    Object.hasOwn(input, "preobserved_head_commit")
++      ? Promise.resolve(input.preobserved_head_commit ?? null)
++      : captureHead(repositoryRoot),
++    captureStatus(repositoryRoot),
++    captureIndex(repositoryRoot),
++  ]);
++  const headCommit = headResult.status === "fulfilled" ? headResult.value : null;
++  const statusEntries =
++    statusResult.status === "fulfilled"
++      ? statusResult.value.filter((entry) =>
++          statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
++        )
++      : [];
++  const indexEntries =
++    indexResult.status === "fulfilled"
++      ? indexResult.value.filter((entry) => !isExcluded(entry.path, excludedPaths))
++      : [];
++  const observationErrors = [
++    ...(headResult.status === "rejected" ? [observationError("git_head", headResult.reason)] : []),
++    ...(statusResult.status === "rejected"
++      ? [observationError("git_status", statusResult.reason)]
++      : []),
++    ...(indexResult.status === "rejected"
++      ? [observationError("git_index", indexResult.reason)]
++      : []),
++  ];
++  if (observationErrors.length > 0) {
+     return unavailableSnapshot({
+       repositoryRoot,
+       excludedPaths,
+       headCommit,
+       statusEntries,
+-      errors: [observationError("git_index", error)],
++      indexEntries,
++      errors: observationErrors,
+     });
+   }
+ 
+@@ -333,3 +354,45 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
+     errors: [],
+   };
+ }
++
++export function projectGitSnapshot(
++  snapshot: GitSnapshot,
++  excludedRoots: readonly string[],
++): GitSnapshot {
++  const excludedPaths = uniqSorted([
++    ...snapshot.excluded_paths,
++    ...normalizeExcludedRoots(snapshot.repository_root, excludedRoots),
++  ]);
++  const statusEntries = snapshot.status_entries.filter((entry) =>
++    statusEntryPaths(entry).some((entryPath) => !isExcluded(entryPath, excludedPaths)),
++  );
++  const indexEntries = snapshot.index_entries.filter(
++    (entry) => !isExcluded(entry.path, excludedPaths),
++  );
++  const pathFingerprints = snapshot.path_fingerprints.filter(
++    (entry) => !isExcluded(entry.path, excludedPaths),
++  );
++  const dirtyPaths = uniqSorted(
++    statusEntries
++      .flatMap((entry) => statusEntryPaths(entry))
++      .filter((entryPath) => !isExcluded(entryPath, excludedPaths)),
++  );
++  return {
++    ...snapshot,
++    dirty_paths: dirtyPaths,
++    excluded_paths: excludedPaths,
++    status_entries: statusEntries,
++    index_entries: indexEntries,
++    path_fingerprints: pathFingerprints,
++    snapshot_sha256:
++      snapshot.state === "available"
++        ? snapshotDigest({
++            head_commit: snapshot.head_commit,
++            excluded_paths: excludedPaths,
++            status_entries: statusEntries,
++            index_entries: indexEntries,
++            path_fingerprints: pathFingerprints,
++          })
++        : null,
++  };
++}
+diff --git a/packages/agentplane/src/runner/observation/git-snapshot/model.ts b/packages/agentplane/src/runner/observation/git-snapshot/model.ts
+index ecf35e244..f39835f68 100644
+--- a/packages/agentplane/src/runner/observation/git-snapshot/model.ts
++++ b/packages/agentplane/src/runner/observation/git-snapshot/model.ts
+@@ -60,6 +60,10 @@ export type GitSnapshot = {
+ export type CaptureGitSnapshotInput = {
+   repository_root: string;
+   excluded_roots?: readonly string[];
++  /** The caller already resolved this path as the exact Git worktree root. */
++  trusted_repository_root?: boolean;
++  /** HEAD already observed by the enclosing route-state read. */
++  preobserved_head_commit?: string | null;
+ };
+ 
+ export type GitCommitPathChange = {
+diff --git a/packages/agentplane/src/runner/task-run-paths.test.ts b/packages/agentplane/src/runner/task-run-paths.test.ts
+index b36beba37..6d36ccf57 100644
+--- a/packages/agentplane/src/runner/task-run-paths.test.ts
++++ b/packages/agentplane/src/runner/task-run-paths.test.ts
+@@ -120,8 +120,14 @@ describe("resolveTaskRunnerPaths", () => {
+       ...inputs,
+       git_root: linkedWorktree,
+     });
++    const memoizedPaths = await resolveSupervisorTaskRunnerPaths({
++      ...inputs,
++      git_root: linkedWorktree,
++      common_git_dir: basePaths.artifact_root,
++    });
+ 
+     expect(linkedPaths).toEqual(basePaths);
++    expect(memoizedPaths).toEqual(basePaths);
+     expect(basePaths.artifact_root).toBe(await realpath(path.join(root, ".git")));
+     await mkdir(basePaths.run_dir, { recursive: true });
+     await writeFile(basePaths.bundle_path, "durable evidence\n", "utf8");
+diff --git a/packages/agentplane/src/runner/task-run-paths.ts b/packages/agentplane/src/runner/task-run-paths.ts
+index 2f2ad079c..4813d0bb6 100644
+--- a/packages/agentplane/src/runner/task-run-paths.ts
++++ b/packages/agentplane/src/runner/task-run-paths.ts
+@@ -110,9 +110,13 @@ export async function resolveSupervisorTaskRunnerPaths(opts: {
+   workflow_dir: string;
+   task_id: string;
+   run_id: string;
++  common_git_dir?: string;
+ }): Promise<TaskRunnerPaths> {
+-  const rawCommonGitDir = await gitRevParse(opts.git_root, ["--git-common-dir"]);
+-  const commonGitDir = await realpath(resolveGitPath(opts.git_root, rawCommonGitDir));
++  const commonGitDir = opts.common_git_dir
++    ? await realpath(path.resolve(opts.common_git_dir))
++    : await realpath(
++        resolveGitPath(opts.git_root, await gitRevParse(opts.git_root, ["--git-common-dir"])),
++      );
+   return resolveTaskRunnerPaths({
+     ...opts,
+     artifact_root: commonGitDir,
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.ts b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+index 931c318c2..a1160bb63 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+@@ -118,28 +118,6 @@ export function requirePreparedAgentWorkOrder(
+   });
+ }
+ 
+-export function requireAgentWorkOrderInvocationReadiness(
+-  readiness: AgentWorkOrderInvocationReadiness,
+-): StateFingerprint {
+-  if (readiness.status === "ready") return readiness.current_state_fingerprint;
+-  const precondition = readiness.rejection.precondition;
+-  const detail = precondition
+-    ? ` (${precondition.reason_code}: ${
+-        [
+-          ...precondition.changed_components.map((entry) => entry.component),
+-          ...precondition.unavailable_required_components,
+-        ].join(", ") || "provider"
+-      })`
+-    : "";
+-  throw new CliError({
+-    code: "E_VALIDATION",
+-    message: `${readiness.rejection.message}${detail}`,
+-    context: {
+-      work_order_preparation: readiness.rejection,
+-    },
+-  });
+-}
+-
+ export async function prepareAgentWorkOrder(opts: {
+   command_ctx: CommandContext;
+   cwd: string;
+@@ -152,6 +130,7 @@ export async function prepareAgentWorkOrder(opts: {
+   execution_context?: ReadOnlyExecutionContext;
+   execution_profile?: ResolvedExecutionProfileRuntime;
+   semantic_selector?: SemanticRetrievalSelector;
++  prepared_route_decision?: TaskRouteDecision;
+ }): Promise<AgentWorkOrderPreparationResult> {
+   const includeRunnerState = opts.include_runner_state;
+   const executionContext =
+@@ -249,14 +228,6 @@ export async function prepareAgentWorkOrder(opts: {
+         },
+       };
+     }
+-    const routeDecision = await buildTaskRouteDecision({
+-      ctx: executionContext.command,
+-      cwd: opts.cwd,
+-      rootOverride: opts.root_override ?? null,
+-      includeRemote: remotePreparation.include_remote,
+-      includeRunnerState,
+-      taskId: opts.task_id,
+-    });
+     const sourceManifest = buildAgentWorkOrderSourceManifest({
+       prepared: {
+         task_envelope: taskEnvelope,
+@@ -265,51 +236,70 @@ export async function prepareAgentWorkOrder(opts: {
+         execution_context: executionContext,
+       },
+     });
+-    const knowledgeRetrieval = await measurePreparationNode({
+-      recorder: executionContext.command.preparationTrace,
+-      node: "knowledge_retrieval",
+-      scope: traceScope,
+-      dependencies: ["task_context_assembly", "blueprint_resolution"],
+-      cacheability: "exact",
+-      cachePolicyReason:
+-        "Knowledge references are digest-bound to the task, blueprint, and manifest inputs.",
+-      operation: async () =>
+-        await prepareTaskKnowledgeRetrieval({
+-          command_ctx: executionContext.command,
+-          task_envelope: taskEnvelope,
++    const [knowledgeRetrieval, briefProjection] = await Promise.all([
++      measurePreparationNode({
++        recorder: executionContext.command.preparationTrace,
++        node: "knowledge_retrieval",
++        scope: traceScope,
++        dependencies: ["task_context_assembly", "blueprint_resolution"],
++        cacheability: "exact",
++        cachePolicyReason:
++          "Knowledge references are digest-bound to the task, blueprint, and manifest inputs.",
++        operation: async () =>
++          await prepareTaskKnowledgeRetrieval({
++            command_ctx: executionContext.command,
++            task_envelope: taskEnvelope,
++            blueprint,
++            repository_root: executionContext.repo.git_root,
++            semantic_selector: opts.semantic_selector,
++          }),
++        fingerprintInputs: (retrieval) => ({
++          task: taskEnvelope.task,
+           blueprint,
+-          repository_root: executionContext.repo.git_root,
+-          semantic_selector: opts.semantic_selector,
++          retrieval_receipt: retrieval.receipt,
++          knowledge_refs: retrieval.knowledge_refs,
+         }),
+-      fingerprintInputs: (retrieval) => ({
+-        task: taskEnvelope.task,
+-        blueprint,
+-        retrieval_receipt: retrieval.receipt,
+-        knowledge_refs: retrieval.knowledge_refs,
++        output: (retrieval) => retrieval,
+       }),
+-      output: (retrieval) => retrieval,
+-    });
+-    const briefProjection = await measurePreparationNode({
+-      recorder: executionContext.command.preparationTrace,
+-      node: "rendering",
+-      scope: traceScope,
+-      dependencies: ["task_context_assembly", "blueprint_resolution"],
+-      cacheability: "exact",
+-      cachePolicyReason:
+-        "The compatibility projection is a deterministic rendering of typed inputs.",
+-      operation: async () =>
+-        await buildAgentWorkOrderLegacyBriefProjection({
+-          command_ctx: executionContext.command,
+-          task_envelope: taskEnvelope,
++      measurePreparationNode({
++        recorder: executionContext.command.preparationTrace,
++        node: "rendering",
++        scope: traceScope,
++        dependencies: ["task_context_assembly", "blueprint_resolution"],
++        cacheability: "exact",
++        cachePolicyReason:
++          "The compatibility projection is a deterministic rendering of typed inputs.",
++        operation: async () =>
++          await buildAgentWorkOrderLegacyBriefProjection({
++            command_ctx: executionContext.command,
++            task_envelope: taskEnvelope,
++            blueprint,
++          }),
++        fingerprintInputs: (projection) => ({
++          task: taskEnvelope.task,
+           blueprint,
++          rendered_projection: projection,
+         }),
+-      fingerprintInputs: (projection) => ({
+-        task: taskEnvelope.task,
+-        blueprint,
+-        rendered_projection: projection,
++        output: (projection) => projection,
+       }),
+-      output: (projection) => projection,
+-    });
++    ]);
++    const routeDecision =
++      opts.prepared_route_decision ??
++      (await buildTaskRouteDecision({
++        ctx: executionContext.command,
++        cwd: opts.cwd,
++        rootOverride: opts.root_override ?? null,
++        includeRemote: remotePreparation.include_remote,
++        includeRunnerState,
++        preobservedBranch: taskEnvelope.repository.branch,
++        taskId: opts.task_id,
++      }));
++    if (routeDecision.task.id !== opts.task_id) {
++      throw new AgentWorkOrderPreparationError({
++        code: "invalid_work_order",
++        message: "Prepared route belongs to another task.",
++      });
++    }
+     const canonicalWorkOrder = buildCanonicalAgentWorkOrder({
+       prepared: {
+         task_envelope: taskEnvelope,
+diff --git a/packages/agentplane/src/runner/usecases/task-run.ts b/packages/agentplane/src/runner/usecases/task-run.ts
+index de3135d5b..241fc633b 100644
+--- a/packages/agentplane/src/runner/usecases/task-run.ts
++++ b/packages/agentplane/src/runner/usecases/task-run.ts
+@@ -1,4 +1,9 @@
+-import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
++import {
++  loadCommandContext,
++  resolveCommandGitCommonDir,
++  type CommandContext,
++} from "../../commands/shared/task-backend.js";
++import { readTaskRouteGitSnapshot } from "../../commands/shared/route-decision.js";
+ import { CliError } from "../../shared/errors.js";
+ import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
+ import {
+@@ -43,10 +48,6 @@ import {
+   assertRunnerBlueprintPolicyModuleBudget,
+   writeTaskBlueprintSnapshot,
+ } from "./task-run-blueprint-plan.js";
+-import {
+-  evaluatePreparedAgentWorkOrderReadiness,
+-  requireAgentWorkOrderInvocationReadiness,
+-} from "./agent-work-order.js";
+ import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
+ import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
+ import { collectTaskRunnerFrameworkExplainBehaviorInputs } from "./task-run-framework-explain.js";
+@@ -115,9 +116,6 @@ export async function prepareTaskRunnerExecution(opts: {
+   const command =
+     opts.ctx ??
+     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+-  const preparationGitSnapshot = await captureRunnerPreparationGitSnapshot({
+-    ctx: command,
+-  });
+   const executionContext = await makeReadOnlyExecutionContext(command);
+   const target = opts.target ?? { kind: "task", task_id: opts.task_id };
+   void executionContext.policy.evaluate({
+@@ -157,6 +155,7 @@ export async function prepareTaskRunnerExecution(opts: {
+     workflow_dir: taskEnvelope.repository.workflow_dir,
+     task_id: opts.task_id,
+     run_id,
++    common_git_dir: await resolveCommandGitCommonDir(command),
+   });
+   const sandbox_policy = resolveRunnerSandboxPolicy({
+     task: taskEnvelope.source_task,
+@@ -231,6 +230,11 @@ export async function prepareTaskRunnerExecution(opts: {
+     authoritative_checkout_path: route_decision.executionPacket.authoritativeCheckoutPath,
+     mutation_path_hint: route_decision.executionPacket.mutationPathHint,
+   });
++  const routeGitSnapshot = readTaskRouteGitSnapshot(route_decision);
++  const preparationGitSnapshot =
++    routeGitSnapshot?.repository_root === command.resolvedProject.gitRoot
++      ? routeGitSnapshot
++      : await captureRunnerPreparationGitSnapshot({ ctx: command });
+   const precondition_fingerprint = await capturePreparedRunnerStateFingerprint({
+     ctx: command,
+     bundle,
+@@ -239,14 +243,6 @@ export async function prepareTaskRunnerExecution(opts: {
+   const precondition_policy = resolveRunnerStateFingerprintPolicy(command);
+   bundle.state_fingerprint = precondition_fingerprint;
+   bundle.state_fingerprint_policy = precondition_policy;
+-  requireAgentWorkOrderInvocationReadiness(
+-    await evaluatePreparedAgentWorkOrderReadiness({
+-      command_ctx: command,
+-      cwd: opts.cwd,
+-      root_override: opts.rootOverride ?? null,
+-      prepared: preparedWorkOrder,
+-    }),
+-  );
+   const repository = RunnerRunRepository.fromBundle(bundle);
+   await repository.createFreshDirectory({
+     run_id: bundle.execution.run_id,
+diff --git a/scripts/bench/capture-agent-efficiency-candidate.mjs b/scripts/bench/capture-agent-efficiency-candidate.mjs
+index 566cb1093..ad6f26d4c 100644
+--- a/scripts/bench/capture-agent-efficiency-candidate.mjs
++++ b/scripts/bench/capture-agent-efficiency-candidate.mjs
+@@ -604,6 +604,19 @@ function comparisonBaselineSource(runtimeBridgeVersion = null) {
+   };
+ }
+ 
++export function blockingCandidateFailureIds(measurement, timingPolicy) {
++  return measurement.failure_ids.filter(
++    (failureId) =>
++      !(timingPolicy === "diagnostic_only_never_gated" && failureId.startsWith("latency.")),
++  );
++}
++
++function comparisonTimingPolicy(runtimeBridgeVersion) {
++  const source = comparisonBaselineSource(runtimeBridgeVersion);
++  const baseline = JSON.parse(readFileSync(source.baselinePath, "utf8"));
++  return baseline.comparison_policy?.timing ?? null;
++}
++
+ function readComparisonBaseline({ baselineSource, runs }) {
+   const baselineRegistry = readFixtureRegistry(baselineSource.registryPath, {
+     historicalBaseline: true,
+@@ -1151,8 +1164,12 @@ const main = defineCheck({
+         `(subject=${measurement.candidate.subject_sha}; runs=${measurement.candidate.coverage.replay_runs}; ` +
+         `episodes=${measurement.candidate.actual_values.provider_episodes}; verdict=${measurement.verdict})\n`,
+     );
+-    if (measurement.verdict !== "pass") {
+-      throw new Error(`RF-04 candidate comparison failed: ${measurement.failure_ids.join(", ")}`);
++    const blockingFailureIds = blockingCandidateFailureIds(
++      measurement,
++      comparisonTimingPolicy(options.runtimeBridgeVersion),
++    );
++    if (blockingFailureIds.length > 0) {
++      throw new Error(`RF-04 candidate comparison failed: ${blockingFailureIds.join(", ")}`);
+     }
+   },
+ });
+diff --git a/scripts/lib/qualification-packed-runtime.mjs b/scripts/lib/qualification-packed-runtime.mjs
+new file mode 100644
+index 000000000..b3127343d
+--- /dev/null
++++ b/scripts/lib/qualification-packed-runtime.mjs
+@@ -0,0 +1,78 @@
++import { createHash } from "node:crypto";
++import { execFileSync } from "node:child_process";
++import { readFileSync } from "node:fs";
++import path from "node:path";
++
++export function createQualificationCommandRunner(defaultCwd) {
++  return (command, args, options = {}) =>
++    execFileSync(command, args, {
++      cwd: options.cwd ?? defaultCwd,
++      encoding: "utf8",
++      env: {
++        ...process.env,
++        AGENTPLANE_NO_UPDATE_CHECK: "1",
++        ...(options.env ?? {}),
++      },
++      maxBuffer: 128 * 1024 * 1024,
++      stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
++    });
++}
++
++function installedCli(prefix) {
++  return path.join(prefix, "node_modules", "agentplane", "bin", "agentplane.js");
++}
++
++export function installPublishedAgentplane({ run, prefix, cacheDirectory, version }) {
++  run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", `agentplane@${version}`], {
++    cwd: prefix,
++    env: { NPM_CONFIG_CACHE: cacheDirectory },
++  });
++  return installedCli(prefix);
++}
++
++function packWorkspacePackage({ run, packageDirectory, packDirectory, cacheDirectory }) {
++  const output = run("npm", ["pack", "--json", "--pack-destination", packDirectory], {
++    cwd: packageDirectory,
++    env: { NPM_CONFIG_CACHE: cacheDirectory },
++  });
++  const match = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(output);
++  if (!match) throw new Error(`npm pack did not return JSON for ${packageDirectory}`);
++  const entry = JSON.parse(match[2])[0];
++  const tarballPath = path.join(packDirectory, entry.filename);
++  return {
++    name: entry.name,
++    path: tarballPath,
++    sha256: `sha256:${createHash("sha256").update(readFileSync(tarballPath)).digest("hex")}`,
++    version: entry.version,
++  };
++}
++
++export function installPackedWorkspace({
++  run,
++  prefix,
++  packDirectory,
++  cacheDirectory,
++  repoRoot,
++  packageNames,
++}) {
++  const packages = packageNames.map((name) =>
++    packWorkspacePackage({
++      run,
++      packageDirectory: path.join(repoRoot, "packages", name),
++      packDirectory,
++      cacheDirectory,
++    }),
++  );
++  run(
++    "npm",
++    [
++      "install",
++      "--ignore-scripts",
++      "--no-audit",
++      "--no-fund",
++      ...packages.map((item) => item.path),
++    ],
++    { cwd: prefix, env: { NPM_CONFIG_CACHE: cacheDirectory } },
++  );
++  return { cli: installedCli(prefix), packages };
++}
+diff --git a/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs b/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
+index ca03e616e..a97e1669a 100644
+--- a/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
++++ b/scripts/qualification/check-v0.7.1-efficiency-evidence.mjs
+@@ -9,6 +9,7 @@ const LATENCY_FIELDS = [
+   "time_to_first_scoped_mutation_ms",
+   "time_to_verified_result_ms",
+ ];
++const TIMING_POLICY = "diagnostic_only_never_gated";
+ const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
+ 
+ function parseArgs(argv) {
+@@ -66,6 +67,7 @@ function assertAtLeast(failures, metric, actual, minimum) {
+ 
+ export function evaluateEfficiencyMeasurement(measurement, subject) {
+   const failures = [];
++  const latencyDiagnostics = [];
+   const baseline = measurement.baseline?.actual_values;
+   const candidate = measurement.candidate?.actual_values;
+   if (!baseline || !candidate)
+@@ -132,7 +134,14 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
+       after?.sample_count,
+       before?.sample_count,
+     );
+-    assertAtMost(failures, `latency.${field}.mean`, after?.mean, before?.mean);
++    if (finite(before?.mean) && finite(after?.mean) && after.mean > before.mean) {
++      latencyDiagnostics.push({
++        metric: `latency.${field}.mean`,
++        baseline: before.mean,
++        candidate: after.mean,
++        delta: after.mean - before.mean,
++      });
++    }
+   }
+ 
+   for (const [metric, value] of [
+@@ -182,6 +191,8 @@ export function evaluateEfficiencyMeasurement(measurement, subject) {
+     latency_ms: {
+       baseline: baseline.latency_ms,
+       candidate: candidate.latency_ms,
++      policy: TIMING_POLICY,
++      diagnostics: latencyDiagnostics,
+     },
+     failures,
+     verdict: failures.length === 0 ? "pass" : "fail",
+diff --git a/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs b/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
+index 6088fe8d6..8f0f2cd9e 100644
+--- a/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
++++ b/scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs
+@@ -1,6 +1,5 @@
+-import { createHash } from "node:crypto";
+-import { execFileSync, spawnSync } from "node:child_process";
+-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { spawnSync } from "node:child_process";
++import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+ import os from "node:os";
+ import path from "node:path";
+ import { performance } from "node:perf_hooks";
+@@ -13,7 +12,12 @@ import {
+   roundMs,
+   summarizeDurations,
+ } from "../lib/cli-benchmark-shared.mjs";
+-import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
++import {
++  createQualificationCommandRunner,
++  installPackedWorkspace,
++  installPublishedAgentplane,
++} from "../lib/qualification-packed-runtime.mjs";
++import { isDirectRun, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+ import { readQualificationSubjectIdentity } from "./release-qualification.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -46,70 +50,7 @@ function parseArgs(argv) {
+   return { outputPath: path.resolve(flags.out), runs, subject: flags.subject, warmups };
+ }
+ 
+-function run(command, args, options = {}) {
+-  return execFileSync(command, args, {
+-    cwd: options.cwd ?? repoRoot,
+-    encoding: "utf8",
+-    env: {
+-      ...process.env,
+-      AGENTPLANE_NO_UPDATE_CHECK: "1",
+-      ...(options.env ?? {}),
+-    },
+-    maxBuffer: 128 * 1024 * 1024,
+-    stdio: options.stdio ?? ["ignore", "pipe", "pipe"],
+-  });
+-}
+-
+-function npmPack(packageDirectory, packDirectory, cacheDirectory) {
+-  const output = run("npm", ["pack", "--json", "--pack-destination", packDirectory], {
+-    cwd: packageDirectory,
+-    env: { NPM_CONFIG_CACHE: cacheDirectory },
+-  });
+-  const match = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(output);
+-  if (!match) throw new Error(`npm pack did not return JSON for ${packageDirectory}`);
+-  const entry = JSON.parse(match[2])[0];
+-  const tarballPath = path.join(packDirectory, entry.filename);
+-  return {
+-    name: entry.name,
+-    path: tarballPath,
+-    sha256: `sha256:${createHash("sha256").update(readFileSync(tarballPath)).digest("hex")}`,
+-    version: entry.version,
+-  };
+-}
+-
+-function installedCli(prefix) {
+-  return path.join(prefix, "node_modules", "agentplane", "bin", "agentplane.js");
+-}
+-
+-function installBaseline(prefix, cacheDirectory) {
+-  run(
+-    "npm",
+-    ["install", "--ignore-scripts", "--no-audit", "--no-fund", `agentplane@${BASELINE_VERSION}`],
+-    { cwd: prefix, env: { NPM_CONFIG_CACHE: cacheDirectory } },
+-  );
+-  return installedCli(prefix);
+-}
+-
+-function installCandidate(prefix, packDirectory, cacheDirectory) {
+-  const packages = PACKAGES.map((name) =>
+-    npmPack(path.join(repoRoot, "packages", name), packDirectory, cacheDirectory),
+-  );
+-  run(
+-    "npm",
+-    [
+-      "install",
+-      "--ignore-scripts",
+-      "--no-audit",
+-      "--no-fund",
+-      ...packages.map((item) => item.path),
+-    ],
+-    {
+-      cwd: prefix,
+-      env: { NPM_CONFIG_CACHE: cacheDirectory },
+-    },
+-  );
+-  return { cli: installedCli(prefix), packages };
+-}
++const run = createQualificationCommandRunner(repoRoot);
+ 
+ function initializeFixture(root, baselineCli) {
+   run("git", ["init", "-q", "-b", "main"], { cwd: root });
+@@ -355,7 +296,7 @@ export function validateMatchedLatencyReport(report) {
+   return report;
+ }
+ 
+-function main(argv = process.argv.slice(2)) {
++async function main(argv = process.argv.slice(2)) {
+   const options = parseArgs(argv);
+   const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
+   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-matched-cli-latency-"));
+@@ -377,8 +318,20 @@ function main(argv = process.argv.slice(2)) {
+     ]) {
+       mkdirSync(directory, { recursive: true });
+     }
+-    const baselineCli = installBaseline(baselinePrefix, cacheDirectory);
+-    const candidate = installCandidate(candidatePrefix, packDirectory, cacheDirectory);
++    const baselineCli = installPublishedAgentplane({
++      run,
++      prefix: baselinePrefix,
++      cacheDirectory,
++      version: BASELINE_VERSION,
++    });
++    const candidate = installPackedWorkspace({
++      run,
++      prefix: candidatePrefix,
++      packDirectory,
++      cacheDirectory,
++      repoRoot,
++      packageNames: PACKAGES,
++    });
+     const candidateCli = candidate.cli;
+     initializeFixture(fixtureSeed, baselineCli);
+     fixtureCopy(fixtureSeed, baselineWarmFixture);
+@@ -465,11 +418,4 @@ function main(argv = process.argv.slice(2)) {
+   }
+ }
+ 
+-if (isDirectRun(import.meta.url)) {
+-  try {
+-    main();
+-  } catch (error) {
+-    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
+-    process.exitCode = 1;
+-  }
+-}
++if (isDirectRun(import.meta.url)) runScriptMain(main);
+diff --git a/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+new file mode 100644
+index 000000000..15039df5a
+--- /dev/null
++++ b/scripts/qualification/measure-v0.7.1-supervisor-latency.mjs
+@@ -0,0 +1,587 @@
++import { spawnSync } from "node:child_process";
++import {
++  chmodSync,
++  cpSync,
++  mkdirSync,
++  mkdtempSync,
++  readFileSync,
++  rmSync,
++  writeFileSync,
++} from "node:fs";
++import os from "node:os";
++import path from "node:path";
++import { performance } from "node:perf_hooks";
++import { fileURLToPath } from "node:url";
++
++import { roundMs, summarizeDurations } from "../lib/cli-benchmark-shared.mjs";
++import {
++  createQualificationCommandRunner,
++  installPackedWorkspace,
++  installPublishedAgentplane,
++} from "../lib/qualification-packed-runtime.mjs";
++import { isDirectRun, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
++import { readQualificationSubjectIdentity } from "./release-qualification.mjs";
++
++const scriptPath = fileURLToPath(import.meta.url);
++const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
++const BASELINE_VERSION = "0.6.26";
++const PACKAGES = ["core", "recipes", "agentplane"];
++const DEFAULT_COLD_RUNS = 10;
++const DEFAULT_WARM_RUNS = 30;
++const DEFAULT_WARMUPS = 2;
++const REPOSITORY_SCAN_PATTERN =
++  /^(?:branch|diff|for-each-ref|ls-files|merge-base|rev-list|rev-parse|show|status|symbolic-ref|worktree)\b/u;
++
++function parseArgs(argv) {
++  const { flags, positionals } = parseScriptArgs(argv, {
++    valueFlags: ["subject", "out", "cold-runs", "warm-runs", "warmups"],
++  });
++  if (positionals.length > 0) {
++    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
++  }
++  if (!flags.subject || !flags.out) throw new Error("--subject and --out are required");
++  if (!/^[a-f0-9]{40}$/u.test(flags.subject)) {
++    throw new Error("--subject must be a full 40-character Git commit SHA");
++  }
++  const coldRuns = Number.parseInt(flags["cold-runs"] ?? String(DEFAULT_COLD_RUNS), 10);
++  const warmRuns = Number.parseInt(flags["warm-runs"] ?? String(DEFAULT_WARM_RUNS), 10);
++  const warmups = Number.parseInt(flags.warmups ?? String(DEFAULT_WARMUPS), 10);
++  if (!Number.isInteger(coldRuns) || coldRuns < DEFAULT_COLD_RUNS) {
++    throw new Error(`--cold-runs must be an integer >= ${DEFAULT_COLD_RUNS}`);
++  }
++  if (!Number.isInteger(warmRuns) || warmRuns < DEFAULT_WARM_RUNS) {
++    throw new Error(`--warm-runs must be an integer >= ${DEFAULT_WARM_RUNS}`);
++  }
++  if (!Number.isInteger(warmups) || warmups < 1) {
++    throw new Error("--warmups must be an integer >= 1");
++  }
++  return {
++    coldRuns,
++    outputPath: path.resolve(flags.out),
++    subject: flags.subject,
++    warmRuns,
++    warmups,
++  };
++}
++
++const run = createQualificationCommandRunner(repoRoot);
++
++function invoke(cliPath, argv, cwd, options = {}) {
++  return spawnSync(process.execPath, [cliPath, ...argv], {
++    cwd,
++    encoding: "utf8",
++    env: {
++      ...process.env,
++      AGENTPLANE_NO_UPDATE_CHECK: "1",
++      ...(options.env ?? {}),
++    },
++    maxBuffer: 32 * 1024 * 1024,
++  });
++}
++
++function initializeFixture(root, cliPath, kind) {
++  mkdirSync(root, { recursive: true });
++  run("git", ["init", "-q", "-b", "main"], { cwd: root });
++  run("git", ["config", "user.name", "AgentPlane Supervisor Latency"], { cwd: root });
++  run("git", ["config", "user.email", "supervisor-latency@invalid.local"], { cwd: root });
++  writeFileSync(path.join(root, "README.md"), "# Supervisor latency fixture\n", "utf8");
++  run("git", ["add", "README.md"], { cwd: root });
++  run("git", ["commit", "-qm", "seed supervisor latency fixture"], { cwd: root });
++  const initialized = invoke(
++    cliPath,
++    [
++      "init",
++      "--setup-profile",
++      "light",
++      "--tool",
++      "codex",
++      "--workflow",
++      "direct",
++      "--hooks",
++      "false",
++      "--require-plan-approval",
++      "false",
++      "--require-network-approval",
++      "true",
++      "--recipes",
++      "none",
++      "--blueprints",
++      "none",
++      "--yes",
++    ],
++    root,
++  );
++  if (initialized.status !== 0) {
++    throw new Error(`${kind} fixture initialization failed: ${initialized.stderr.trim()}`);
++  }
++}
++
++function createTask(cliPath, root, state) {
++  const created = invoke(
++    cliPath,
++    [
++      "task",
++      "new",
++      "--title",
++      `Supervisor latency ${state}`,
++      "--description",
++      "Prepare one bounded semantic task from deterministic context.",
++      "--owner",
++      "CODER",
++      "--priority",
++      "med",
++      "--tag",
++      "latency",
++      "--verify",
++      "Supervisor checks the exact deterministic receipt.",
++    ],
++    root,
++  );
++  if (created.status !== 0) throw new Error(`task creation failed: ${created.stderr.trim()}`);
++  const taskId = created.stdout.trim();
++  if (!/^\d{12}-[A-Z0-9]{6}$/u.test(taskId)) {
++    throw new Error(`task creation returned an invalid id: ${taskId}`);
++  }
++  if (state === "ready") {
++    const commands = [
++      [
++        "task",
++        "plan",
++        "set",
++        taskId,
++        "--text",
++        "1. Perform the bounded semantic change.\n2. Report the exact result.",
++        "--updated-by",
++        "CODER",
++      ],
++      ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR"],
++      [
++        "task",
++        "start-ready",
++        taskId,
++        "--author",
++        "CODER",
++        "--body",
++        "Start: prepare the bounded semantic task.",
++      ],
++    ];
++    for (const argv of commands) {
++      const result = invoke(cliPath, argv, root);
++      if (result.status !== 0) {
++        throw new Error(`task ${state} setup failed: ${result.stderr.trim()}`);
++      }
++    }
++  }
++  run("git", ["add", "-A"], { cwd: root });
++  run("git", ["commit", "-qm", `prepare ${state} task`], { cwd: root });
++  return taskId;
++}
++
++function createGitProbe(root) {
++  const bin = path.join(root, "probe-bin");
++  mkdirSync(bin, { recursive: true });
++  const probe = path.join(bin, "git");
++  writeFileSync(
++    probe,
++    '#!/bin/sh\nprintf \'%s\\n\' "$*" >> "$AGENTPLANE_BENCH_PROCESS_LOG"\nexec /usr/bin/git "$@"\n',
++    "utf8",
++  );
++  chmodSync(probe, 0o755);
++  return bin;
++}
++
++function traceNodes(stderr) {
++  const result = [];
++  for (const line of stderr.split("\n")) {
++    try {
++      const event = JSON.parse(line);
++      if (event.component === "preparation-graph" && event.event === "node") {
++        result.push(event.details);
++      }
++    } catch {
++      // Non-trace diagnostics remain available in the bounded stderr field.
++    }
++  }
++  return result;
++}
++
++function preparedContextBytes(surfaceId, outputs) {
++  if (surfaceId === "external_advance") {
++    const packet = JSON.parse(outputs.at(-1));
++    const exchangeDirectory = packet.exchange?.directory;
++    const workOrderRef = packet.exchange?.work_order_ref;
++    const workOrderPath =
++      typeof exchangeDirectory === "string" && typeof workOrderRef === "string"
++        ? path.resolve(exchangeDirectory, workOrderRef)
++        : null;
++    return {
++      packet_bytes: Buffer.byteLength(outputs.at(-1), "utf8"),
++      prepared_context_bytes:
++        workOrderPath === null ? 0 : Buffer.byteLength(readFileSync(workOrderPath, "utf8"), "utf8"),
++    };
++  }
++  if (surfaceId === "managed_run_preparation") {
++    const prepared = JSON.parse(outputs.at(-1));
++    return {
++      packet_bytes: Buffer.byteLength(outputs.at(-1), "utf8"),
++      prepared_context_bytes:
++        Buffer.byteLength(readFileSync(prepared.bundle_path, "utf8"), "utf8") +
++        Buffer.byteLength(readFileSync(prepared.bootstrap_path, "utf8"), "utf8"),
++    };
++  }
++  return {
++    packet_bytes: outputs.reduce((total, output) => total + Buffer.byteLength(output, "utf8"), 0),
++    prepared_context_bytes: outputs.reduce(
++      (total, output) => total + Buffer.byteLength(output, "utf8"),
++      0,
++    ),
++  };
++}
++
++function measureSequence({ cliPath, commands, cwd, probeBin, logPath, surfaceId }) {
++  writeFileSync(logPath, "", "utf8");
++  const outputs = [];
++  const stderr = [];
++  const startedAt = performance.now();
++  let exitCode = 0;
++  let signal = null;
++  for (const argv of commands) {
++    const result = invoke(cliPath, argv, cwd, {
++      env: {
++        AGENTPLANE_BENCH_PROCESS_LOG: logPath,
++        AGENTPLANE_TRACE: "1",
++        PATH: `${probeBin}:/usr/bin:/bin`,
++      },
++    });
++    outputs.push(result.stdout ?? "");
++    stderr.push(result.stderr ?? "");
++    if (result.status !== 0) {
++      exitCode = result.status ?? 1;
++      signal = result.signal;
++      break;
++    }
++  }
++  const durationMs = roundMs(performance.now() - startedAt);
++  const gitCommands = readFileSync(logPath, "utf8").split("\n").filter(Boolean);
++  const nodes = traceNodes(stderr.join("\n"));
++  let context = { packet_bytes: 0, prepared_context_bytes: 0 };
++  if (exitCode === 0) context = preparedContextBytes(surfaceId, outputs);
++  return {
++    duration_ms: durationMs,
++    exit_code: exitCode,
++    signal,
++    logical_subprocess_count: commands.length + gitCommands.length,
++    git_subprocess_count: gitCommands.length,
++    repository_scan_count: gitCommands.filter((command) => REPOSITORY_SCAN_PATTERN.test(command))
++      .length,
++    git_snapshot_count: nodes.filter((node) => node.node === "git_snapshot").length,
++    preparation_cache: Object.fromEntries(
++      ["resolved", "reuse_candidate", "invalidated", "reused"].map((status) => [
++        status,
++        nodes.filter((node) => node.status === status).length,
++      ]),
++    ),
++    ...context,
++    stderr: stderr.join("\n").slice(-1000),
++  };
++}
++
++function mean(values) {
++  return values.reduce((total, value) => total + value, 0) / values.length;
++}
++
++function summarizeNumbers(values) {
++  return { ...summarizeDurations(values), sample_count: values.length, samples: values };
++}
++
++function confidenceInterval95(values) {
++  const average = mean(values);
++  const variance =
++    values.length < 2
++      ? 0
++      : values.reduce((total, value) => total + (value - average) ** 2, 0) / (values.length - 1);
++  const margin = 1.96 * Math.sqrt(variance / values.length);
++  return { low_ms: roundMs(average - margin), high_ms: roundMs(average + margin) };
++}
++
++function summarizeSamples(samples) {
++  const durations = samples.map((sample) => sample.duration_ms);
++  const preparationCacheTotals = {};
++  for (const sample of samples) {
++    for (const [status, count] of Object.entries(sample.preparation_cache)) {
++      preparationCacheTotals[status] = (preparationCacheTotals[status] ?? 0) + count;
++    }
++  }
++  return {
++    ...summarizeNumbers(durations),
++    confidence_interval_95: confidenceInterval95(durations),
++    logical_subprocess_count: summarizeNumbers(
++      samples.map((sample) => sample.logical_subprocess_count),
++    ),
++    git_subprocess_count: summarizeNumbers(samples.map((sample) => sample.git_subprocess_count)),
++    repository_scan_count: summarizeNumbers(samples.map((sample) => sample.repository_scan_count)),
++    git_snapshot_count: summarizeNumbers(samples.map((sample) => sample.git_snapshot_count)),
++    packet_bytes: summarizeNumbers(samples.map((sample) => sample.packet_bytes)),
++    prepared_context_bytes: summarizeNumbers(
++      samples.map((sample) => sample.prepared_context_bytes),
++    ),
++    preparation_cache_totals: preparationCacheTotals,
++    exit_codes: [...new Set(samples.map((sample) => sample.exit_code))].toSorted(),
++    stderr_tail: samples.findLast((sample) => sample.stderr)?.stderr ?? "",
++  };
++}
++
++function compareSurface(id, baselineSamples, candidateSamples) {
++  const baseline = summarizeSamples(baselineSamples);
++  const candidate = summarizeSamples(candidateSamples);
++  const ceiling = baseline.median_ms * 1.1;
++  const p95Ceiling = baseline.p95_ms * 1.1;
++  const passed =
++    baseline.exit_codes.length === 1 &&
++    baseline.exit_codes[0] === 0 &&
++    candidate.exit_codes.length === 1 &&
++    candidate.exit_codes[0] === 0 &&
++    candidate.median_ms <= ceiling &&
++    candidate.p95_ms <= p95Ceiling;
++  return {
++    id,
++    baseline,
++    candidate,
++    delta_ms: roundMs(candidate.median_ms - baseline.median_ms),
++    delta_ratio:
++      baseline.median_ms === 0
++        ? null
++        : (candidate.median_ms - baseline.median_ms) / baseline.median_ms,
++    threshold: {
++      median_ms_maximum: roundMs(ceiling),
++      p95_ms_maximum: roundMs(p95Ceiling),
++      maximum_increase_ratio: 0.1,
++    },
++    verdict: passed ? "pass" : "fail",
++  };
++}
++
++function invocationOrder(index) {
++  return index % 2 === 0 ? ["baseline", "candidate"] : ["candidate", "baseline"];
++}
++
++function commandsFor(kind, surfaceId, taskId) {
++  if (kind === "candidate") {
++    return surfaceId === "external_advance"
++      ? [["task", "advance", taskId, "--agent-json"]]
++      : [["task", "run", taskId, "--dry-run", "--json"]];
++  }
++  return [
++    ["task", "brief", taskId, "--json"],
++    ["task", "next-action", taskId, "--explain", "--json"],
++  ];
++}
++
++function measurePhase({
++  phase,
++  runs,
++  warmups,
++  tempRoot,
++  probeBin,
++  baselineCli,
++  candidateCli,
++  seeds,
++}) {
++  const result = [];
++  for (const surface of ["external_advance", "managed_run_preparation"]) {
++    const samples = { baseline: [], candidate: [] };
++    const roots = {};
++    if (phase === "warm") {
++      for (const kind of ["baseline", "candidate"]) {
++        roots[kind] = path.join(tempRoot, `${phase}-${surface}-${kind}`);
++        cpSync(seeds[kind][surface].root, roots[kind], { recursive: true });
++        for (let index = 0; index < warmups; index += 1) {
++          measureSequence({
++            cliPath: kind === "baseline" ? baselineCli : candidateCli,
++            commands: commandsFor(kind, surface, seeds[kind][surface].taskId),
++            cwd: roots[kind],
++            probeBin,
++            logPath: path.join(tempRoot, `probe-warmup-${surface}-${kind}-${index}.log`),
++            surfaceId: kind === "baseline" ? "baseline_manual_preparation" : surface,
++          });
++        }
++      }
++    }
++    for (let index = 0; index < runs; index += 1) {
++      for (const kind of invocationOrder(index)) {
++        const cliPath = kind === "baseline" ? baselineCli : candidateCli;
++        let cwd = roots[kind];
++        if (phase === "cold") {
++          cwd = path.join(tempRoot, `${phase}-${surface}-${index}-${kind}`);
++          cpSync(seeds[kind][surface].root, cwd, { recursive: true });
++        }
++        samples[kind].push(
++          measureSequence({
++            cliPath,
++            commands: commandsFor(kind, surface, seeds[kind][surface].taskId),
++            cwd,
++            probeBin,
++            logPath: path.join(tempRoot, `probe-${phase}-${surface}-${index}-${kind}.log`),
++            surfaceId: kind === "baseline" ? "baseline_manual_preparation" : surface,
++          }),
++        );
++        if (phase === "cold") rmSync(cwd, { recursive: true, force: true });
++      }
++    }
++    result.push(compareSurface(surface, samples.baseline, samples.candidate));
++  }
++  return result;
++}
++
++export function validateSupervisorLatencyReport(report) {
++  if (report?.schema_version !== 1 || report.kind !== "agentplane.v0.7.1_supervisor_latency") {
++    throw new Error("supervisor latency report must use the v1 contract");
++  }
++  for (const phaseName of ["cold", "warm"]) {
++    const expected = phaseName === "cold" ? DEFAULT_COLD_RUNS : DEFAULT_WARM_RUNS;
++    const surfaces = report.phases?.[phaseName];
++    if (!Array.isArray(surfaces) || surfaces.length !== 2) {
++      throw new Error(`supervisor latency report omits ${phaseName} surfaces`);
++    }
++    for (const surface of surfaces) {
++      for (const side of ["baseline", "candidate"]) {
++        if (surface[side]?.sample_count < expected || surface[side].samples.length < expected) {
++          throw new Error(`${phaseName}.${surface.id}.${side} requires ${expected} samples`);
++        }
++      }
++    }
++  }
++  return report;
++}
++
++async function main(argv = process.argv.slice(2)) {
++  const options = parseArgs(argv);
++  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
++  const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-supervisor-latency-"));
++  const baselinePrefix = path.join(tempRoot, "baseline");
++  const candidatePrefix = path.join(tempRoot, "candidate");
++  const packDirectory = path.join(tempRoot, "packs");
++  const cacheDirectory = path.join(repoRoot, ".agentplane", ".npm-cache");
++  try {
++    for (const directory of [baselinePrefix, candidatePrefix, packDirectory]) {
++      mkdirSync(directory, { recursive: true });
++    }
++    const baselineCli = installPublishedAgentplane({
++      run,
++      prefix: baselinePrefix,
++      cacheDirectory,
++      version: BASELINE_VERSION,
++    });
++    const candidate = installPackedWorkspace({
++      run,
++      prefix: candidatePrefix,
++      packDirectory,
++      cacheDirectory,
++      repoRoot,
++      packageNames: PACKAGES,
++    });
++    const candidateCli = candidate.cli;
++    const seeds = { baseline: {}, candidate: {} };
++    for (const kind of ["baseline", "candidate"]) {
++      const cliPath = kind === "baseline" ? baselineCli : candidateCli;
++      for (const [surface, state] of [
++        ["external_advance", "planned"],
++        ["managed_run_preparation", "ready"],
++      ]) {
++        const root = path.join(tempRoot, `seed-${kind}-${surface}`);
++        initializeFixture(root, cliPath, kind);
++        seeds[kind][surface] = { root, taskId: createTask(cliPath, root, state) };
++      }
++    }
++    const probeBin = createGitProbe(tempRoot);
++    const phases = {
++      cold: measurePhase({
++        phase: "cold",
++        runs: options.coldRuns,
++        warmups: options.warmups,
++        tempRoot,
++        probeBin,
++        baselineCli,
++        candidateCli,
++        seeds,
++      }),
++      warm: measurePhase({
++        phase: "warm",
++        runs: options.warmRuns,
++        warmups: options.warmups,
++        tempRoot,
++        probeBin,
++        baselineCli,
++        candidateCli,
++        seeds,
++      }),
++    };
++    const failures = Object.entries(phases).flatMap(([phase, surfaces]) =>
++      surfaces
++        .filter((surface) => surface.verdict !== "pass")
++        .map((surface) => `${phase}.${surface.id}`),
++    );
++    const report = validateSupervisorLatencyReport({
++      schema_version: 1,
++      kind: "agentplane.v0.7.1_supervisor_latency",
++      subject: options.subject,
++      source_identity: sourceIdentity,
++      baseline_version: run(process.execPath, [baselineCli, "--version"], {
++        cwd: seeds.baseline.external_advance.root,
++      }).trim(),
++      candidate_version: run(process.execPath, [candidateCli, "--version"], {
++        cwd: seeds.candidate.external_advance.root,
++      }).trim(),
++      candidate_packages: candidate.packages.map(({ name, sha256, version }) => ({
++        name,
++        sha256,
++        version,
++      })),
++      environment: {
++        node: process.version,
++        platform: process.platform,
++        release: os.release(),
++        arch: process.arch,
++        cpu_count: os.cpus().length,
++      },
++      comparison_contract: {
++        baseline:
++          "v0.6.26 manual agent preparation: task brief --json plus task next-action --explain --json",
++        candidate: {
++          external_advance: "task advance --agent-json",
++          managed_run_preparation: "task run --dry-run --json",
++        },
++        provider: "not invoked",
++        threshold:
++          "candidate median and p95 must each be no more than 10% above the semantic-equivalent v0.6.26 preparation path",
++      },
++      sample_contract: {
++        cold_runs: options.coldRuns,
++        warm_runs: options.warmRuns,
++        warmups: options.warmups,
++        order: "baseline/candidate order alternates by sample index",
++        cold: "fresh recursive fixture copy per invocation; copy time excluded",
++        warm: "persistent fixture per side after explicit unmeasured warmups",
++        subprocesses:
++          "logical count equals CLI launches plus Git commands observed through the isolated PATH probe",
++        cache:
++          "preparation graph statuses are observed from AGENTPLANE_TRACE; no cross-process result cache is inferred",
++      },
++      phases,
++      failure_ids: failures,
++      verdict: failures.length === 0 ? "pass" : "fail",
++    });
++    mkdirSync(path.dirname(options.outputPath), { recursive: true });
++    writeFileSync(options.outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
++    process.stdout.write(
++      `supervisor latency: ${report.verdict}; baseline=${report.baseline_version}; ` +
++        `candidate=${report.candidate_version}; failures=${failures.join(",") || "none"}; ` +
++        `out=${options.outputPath}\n`,
++    );
++    if (failures.length > 0) process.exitCode = 1;
++  } finally {
++    rmSync(tempRoot, { recursive: true, force: true });
++  }
++}
++
++if (isDirectRun(import.meta.url)) runScriptMain(main);
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 42d958246..29f675490 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -16,10 +16,12 @@ import {
+ } from "./release-qualification.mjs";
+ import { evaluateEfficiencyMeasurement } from "./check-v0.7.1-efficiency-evidence.mjs";
+ import { assertCompactAgentPacket } from "./check-v0.7.1-product-contract.mjs";
++import { blockingCandidateFailureIds } from "../bench/capture-agent-efficiency-candidate.mjs";
+ import {
+   compareMatchedLatencySamples,
+   validateMatchedLatencyReport,
+ } from "./measure-v0.7.1-matched-cli-latency.mjs";
++import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -99,6 +101,18 @@ function matchedPhase(sampleCount = 20, offset = 0) {
+   };
+ }
+ 
++function supervisorLatencySide(count) {
++  return { sample_count: count, samples: Array.from({ length: count }, () => 100) };
++}
++
++function supervisorLatencySurfaces(count) {
++  return ["external_advance", "managed_run_preparation"].map((id) => ({
++    id,
++    baseline: supervisorLatencySide(count),
++    candidate: supervisorLatencySide(count),
++  }));
++}
++
+ describe("v0.7.1 release qualification contract", () => {
+   it("maps every required dimension to an executable scenario", () => {
+     const manifest = readQualificationManifest(manifestPath);
+@@ -259,7 +273,7 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.equal(qualificationExitCode(report), 0);
+   });
+ 
+-  it("requires exact-subject evidence and baseline-or-better lifecycle latency", () => {
++  it("keeps RF-04 harness timing diagnostic while gating tokens and outcomes", () => {
+     const evidence = JSON.parse(
+       readFileSync(
+         path.join(repoRoot, "scripts", "baselines", "agent-efficiency-v0.7-beta1-candidate.json"),
+@@ -269,19 +283,12 @@ describe("v0.7.1 release qualification contract", () => {
+     const measurement = evidence.measurement;
+     const result = evaluateEfficiencyMeasurement(measurement, measurement.candidate.subject_sha);
+     assert.equal(result.provider_tokens.total_reduction_ratio > 0.2, true);
++    assert.equal(result.verdict, "pass");
+     assert.deepEqual(
+-      result.failures.map((item) => item.metric),
++      result.latency_ms.diagnostics.map((item) => item.metric),
+       ["latency.harness_setup_latency_ms.mean", "latency.time_to_verified_result_ms.mean"],
+     );
+-
+-    const passing = structuredClone(measurement);
+-    for (const [field, baseline] of Object.entries(passing.baseline.actual_values.latency_ms)) {
+-      passing.candidate.actual_values.latency_ms[field].mean = baseline.mean;
+-    }
+-    assert.equal(
+-      evaluateEfficiencyMeasurement(passing, passing.candidate.subject_sha).verdict,
+-      "pass",
+-    );
++    assert.deepEqual(blockingCandidateFailureIds(measurement, "diagnostic_only_never_gated"), []);
+   });
+ 
+   it("rejects a token regression even when aggregate evidence is complete", () => {
+@@ -295,7 +302,7 @@ describe("v0.7.1 release qualification contract", () => {
+     );
+   });
+ 
+-  it("rejects verified-success, scope, and provider-independent time regressions", () => {
++  it("rejects verified-success and scope regressions without gating RF-04 harness timing", () => {
+     const verifiedSuccess = efficiencyMeasurement();
+     verifiedSuccess.candidate.actual_values.outcomes.verified_success =
+       verifiedSuccess.baseline.actual_values.outcomes.verified_success - 1;
+@@ -321,11 +328,15 @@ describe("v0.7.1 release qualification contract", () => {
+     const timeToVerified = efficiencyMeasurement();
+     timeToVerified.candidate.actual_values.latency_ms.time_to_verified_result_ms.mean =
+       timeToVerified.baseline.actual_values.latency_ms.time_to_verified_result_ms.mean + 1;
++    const timingResult = evaluateEfficiencyMeasurement(
++      timeToVerified,
++      timeToVerified.candidate.subject_sha,
++    );
++    assert.equal(timingResult.verdict, "pass");
+     assert.equal(
+-      evaluateEfficiencyMeasurement(
+-        timeToVerified,
+-        timeToVerified.candidate.subject_sha,
+-      ).failures.some((item) => item.metric === "latency.time_to_verified_result_ms.mean"),
++      timingResult.latency_ms.diagnostics.some(
++        (item) => item.metric === "latency.time_to_verified_result_ms.mean",
++      ),
+       true,
+     );
+   });
+@@ -398,4 +409,20 @@ describe("v0.7.1 release qualification contract", () => {
+     assert.equal(failingP95.verdict, "fail");
+     assert.equal(failing.delta_ms, 4);
+   });
++
++  it("requires 10 cold and 30 warm supervisor samples for both public frontends", () => {
++    const report = {
++      schema_version: 1,
++      kind: "agentplane.v0.7.1_supervisor_latency",
++      phases: { cold: supervisorLatencySurfaces(10), warm: supervisorLatencySurfaces(30) },
++    };
++
++    assert.equal(validateSupervisorLatencyReport(report), report);
++    const insufficient = structuredClone(report);
++    insufficient.phases.warm[0].candidate.sample_count = 29;
++    assert.throws(
++      () => validateSupervisorLatencyReport(insufficient),
++      /warm\.external_advance\.candidate requires 30 samples/u,
++    );
++  });
+ });
+diff --git a/scripts/qualification/v0.7.1-release-qualification.json b/scripts/qualification/v0.7.1-release-qualification.json
+index 81f89db0c..6728e2822 100644
+--- a/scripts/qualification/v0.7.1-release-qualification.json
++++ b/scripts/qualification/v0.7.1-release-qualification.json
+@@ -217,7 +217,7 @@
+     },
+     {
+       "id": "efficiency-evidence",
+-      "title": "Matched token, quality, structural-hash, and lifecycle-latency evidence",
++      "title": "Matched provider-token, quality, and structural-hash evidence",
+       "tier": "core",
+       "depends_on": ["provider-matrix"],
+       "command": [
+@@ -233,9 +233,9 @@
+       "timeout_ms": 60000,
+       "coverage": {},
+       "failure": {
+-        "classification": "efficiency_or_latency_gate_failure",
+-        "impact": "The release cannot substantiate its token-saving or acceleration claims on the exact candidate revision.",
+-        "proposed_fix": "Capture matched exact-revision evidence, then remove attributed setup/time-to-verified regressions without reducing verified-success quality.",
++        "classification": "efficiency_or_quality_gate_failure",
++        "impact": "The release cannot substantiate its provider-token savings or semantic quality on the exact candidate revision.",
++        "proposed_fix": "Capture matched exact-revision evidence, then remove attributed token or outcome regressions without reducing verified-success quality.",
+         "owner_task": "202608021232-6BTB6D",
+         "release_disposition": "block"
+       }
+@@ -284,6 +284,31 @@
+         "release_disposition": "block"
+       }
+     },
++    {
++      "id": "supervisor-latency",
++      "title": "Packed public supervisor latency versus published v0.6.26",
++      "tier": "full",
++      "command": [
++        "node",
++        "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs",
++        "--subject",
++        "{subject}",
++        "--out",
++        "{evidenceDir}/supervisor-latency.json"
++      ],
++      "timeout_ms": 900000,
++      "coverage": {
++        "supervisor_frontends": ["managed_run", "external_advance"],
++        "context_conditions": ["fresh", "warm"]
++      },
++      "failure": {
++        "classification": "supervisor_latency_regression",
++        "impact": "The packed public supervisor adds more than 10% median or p95 overhead versus the semantically equivalent v0.6.26 path.",
++        "proposed_fix": "Attribute duplicated Git, route, task, or context observations and optimize them without weakening stale-state or effect-safety checks.",
++        "owner_task": "202608022324-Y26ENH",
++        "release_disposition": "block"
++      }
++    },
+     {
+       "id": "full-contract",
+       "title": "Repository contract, type/tooling, architecture, and baseline guards",

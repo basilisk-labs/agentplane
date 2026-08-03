@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Command-context and route reuse are bounded by exact checkout identity and task identity; every CLI-owned mutation explicitly requests a fresh HEAD before the next protected operation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The RF-04 timing signal remains visible as diagnostics while a separate full-tier packed supervisor benchmark blocks release on median or p95 regression above 10%; token, outcome, and structural failures remain blocking.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The exact clean commit passes the required cold/warm benchmark and the supervisor, recovery, lifecycle, critical CLI, type, lint, architecture, clone, Knip, hotspot, and coverage gates.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-Y26ENH/quality/20260803-033958433-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The published v0.6.26 manual brief-plus-next-action preparation is the intended semantic latency baseline for both new supervisor frontends, as frozen by the benchmark contract."
+  ]
+}
