@@ -13,7 +13,7 @@ Created: 2026-08-02T23:28:27.052Z
 ## Verification
 
 - State: ok
-- Note: Verified implementation rework for the completed-journal crash window.
+- Note: Verified exact completion-result binding during accepted exchange recovery.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
