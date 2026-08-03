@@ -4,7 +4,7 @@ title: "Make built-in task run context-verifiable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "3c5b1044eafc2bb50de30d385af46f7054af3130"
+  message: "🐛 5GK3DD code: verify context through live supervisor"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: context tasks now stop before the generic runner, route one CURATOR semantic result to the dedicated supervisor, verify the supervisor's live Git delta, and record formal verification without trusting persisted receipt claims."
 events:
   -
     type: "status"
@@ -43,8 +48,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T13:54:08.581Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: context tasks now stop before the generic runner, route one CURATOR semantic result to the dedicated supervisor, verify the supervisor's live Git delta, and record formal verification without trusting persisted receipt claims."
 doc_version: 3
-doc_updated_at: "2026-08-03T13:22:52.115Z"
+doc_updated_at: "2026-08-03T13:54:08.581Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4641 by ensuring the default built-in runner completes through a live authenticated context-verification boundary or stops with an executable supervisor route; never accept persisted receipt bytes, path hashes, or self-claims as authentication."
 sections:
