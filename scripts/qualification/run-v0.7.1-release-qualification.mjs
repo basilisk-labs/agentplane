@@ -12,7 +12,7 @@ import {
   selectQualificationScenarios,
   substituteQualificationCommand,
 } from "./release-qualification.mjs";
-import { parseScriptArgs } from "../lib/script-runtime.mjs";
+import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -110,11 +110,18 @@ function parseArgs(argv) {
   };
 }
 
-function assertOutputInsideRepository(outputDirectory) {
-  const relative = path.relative(repoRoot, outputDirectory);
+function assertOutputInsideRepository(runRepoRoot, outputDirectory) {
+  const relative = path.relative(runRepoRoot, outputDirectory);
   if (relative === "" || relative === ".." || relative.startsWith(`..${path.sep}`)) {
     throw new Error("qualification --out-dir must be nested inside the repository");
   }
+}
+
+export function readQualificationRunSubjectIdentity(runRepoRoot, subject, outputDirectory) {
+  assertOutputInsideRepository(runRepoRoot, outputDirectory);
+  return readQualificationSubjectIdentity(runRepoRoot, subject, {
+    evidenceDirectory: outputDirectory,
+  });
 }
 
 function defaultOutputDirectory() {
@@ -190,10 +197,11 @@ async function main(argv = process.argv.slice(2)) {
   }
   const manifest = readQualificationManifest(options.manifestPath);
   const outputDirectory = options.outputDirectory ?? defaultOutputDirectory();
-  assertOutputInsideRepository(outputDirectory);
-  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject, {
-    evidenceDirectory: outputDirectory,
-  });
+  const sourceIdentity = readQualificationRunSubjectIdentity(
+    repoRoot,
+    options.subject,
+    outputDirectory,
+  );
   const scenarios = selectQualificationScenarios(manifest, {
     profile: options.profile,
     provider: options.provider,
@@ -243,7 +251,9 @@ async function main(argv = process.argv.slice(2)) {
   process.exitCode = qualificationExitCode(report);
 }
 
-main().catch((error) => {
-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
-});
+if (isDirectRun(import.meta.url)) {
+  main().catch((error) => {
+    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  });
+}

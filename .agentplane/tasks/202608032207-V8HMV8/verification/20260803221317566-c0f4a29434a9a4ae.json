@@ -1,0 +1,15 @@
+{
+  "details": "Command: node --test scripts/qualification/release-qualification.test.mjs\nResult: fail\nEvidence: the new runner regression spawns against the real repository and can reject unrelated in-progress developer changes\nScope: deterministic local verification ergonomics",
+  "digest": "sha256:c0f4a29434a9a4ae2d4c050e7f9c204f41beeba7179b3690c609b14e6c5125c1",
+  "implementation_sha": "ae1efdb11d7b7b10544cd486ade264d83da73f48",
+  "kind": "task_verification_record",
+  "note": "Regression test must not depend on the cleanliness of the developer checkout.",
+  "recorded_at": "2026-08-03T22:13:17.566Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- A rerun using an existing nested --out-dir reaches scenario execution/dry-run when HEAD and all non-evidence paths are clean.\n- An unrelated tracked or untracked change still fails the exact-subject cleanliness gate.\n- Root-level and outside-repository evidence directories remain rejected.\n- node --test scripts/qualification/release-qualification.test.mjs passes.\n- bun run typecheck, focused lint/format checks, semantic evaluator, and all hosted PR checks pass.",
+  "scope_digest": "sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00",
+  "task_id": "202608032207-V8HMV8",
+  "verification_command": "agentplane verify 202608032207-V8HMV8 --rework --by TESTER",
+  "verifier": "TESTER"
+}

@@ -15,14 +15,14 @@ Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness c
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Regression test must not depend on the cleanliness of the developer checkout.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T22:08:23.232Z
+- Updated: 2026-08-03T22:10:16.335Z
 - Branch: task/202608032207-V8HMV8/qualification-evidence-rerun
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
