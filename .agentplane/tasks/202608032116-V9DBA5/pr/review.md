@@ -6,7 +6,7 @@ Created: 2026-08-03T21:35:42.405Z
 
 - Task: `202608032116-V9DBA5`
 - Title: Restore ACR generation in hosted close qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608032116-V9DBA5/restore-acr-generation-in-hosted-close-qualifica`
 - Canonical task record: `.agentplane/tasks/202608032116-V9DBA5/README.md`
 
