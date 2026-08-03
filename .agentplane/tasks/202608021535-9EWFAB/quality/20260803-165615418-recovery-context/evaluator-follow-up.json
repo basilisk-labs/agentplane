@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021535-9EWFAB-0e38fe33f86284a4752ee4fb",
+  "task_id": "202608021535-9EWFAB",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Harden object-store creation and packet verification against symlinked ancestors using repository-boundary-aware real-path or descriptor-based checks, then rerun focused collision, concurrency, symlink-escape, critical, and contract suites.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The content-addressed evidence store validates paths lexically but does not reject symlinked parent directories, allowing object writes or frozen-artifact reads to escape the repository.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/3f18f075a19d2a4c72f66a302849b36dcefe8a131bffc188d4ada68c7e669482.patch",
+          "sha256": "sha256:3f18f075a19d2a4c72f66a302849b36dcefe8a131bffc188d4ada68c7e669482",
+          "line": 510,
+          "lines": "510-538, 582-590, 653-711",
+          "section": "evaluator-evidence-store.ts path resolution, object creation, and artifact verification"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "line": 6,
+          "lines": "6",
+          "section": "Security MUST Rules"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/evaluator-result.json"
+}

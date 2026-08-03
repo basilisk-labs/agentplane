@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -25,16 +25,48 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-03T16:55:26.894Z"
+  updated_by: "TESTER"
+  note: "Content-addressed evaluator packets passed the task-specific and repository-wide verification contract."
   attempts: 0
-commit: null
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-03T16:57:15.449Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "2849b3045fc19132735399f9a5a867433af937ac"
+  blueprint_digest: "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85"
+  evidence_refs:
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/110f221dca95afdf54c7c1cc5fa3824fee5449c7f33e02f959689fc904686856.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-165615418-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/README.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/3f18f075a19d2a4c72f66a302849b36dcefe8a131bffc188d4ada68c7e669482.patch"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/fe0e208e57482c738be6ecd3989033dbe2fe23b4c16611de9a8d2064a0e4dc6d.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803165526894-450a0a95c3b94c3a.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/1d10aae86985eacf7c0cd07bea467527500d74414682917460f3861f465afac2.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The content-addressed evidence store validates paths lexically but does not reject symlinked parent directories, allowing object writes or frozen-artifact reads to escape the repository."
+commit:
+  hash: "2849b3045fc19132735399f9a5a867433af937ac"
+  message: "🗜️ 9EWFAB evidence: deduplicate immutable inputs"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: content-addressed evaluator inputs, compact per-review manifests, pre-provider integrity validation, legacy work-order compatibility, and focused regression coverage."
 events:
   -
     type: "status"
@@ -43,8 +75,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T16:52:06.559Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: content-addressed evaluator inputs, compact per-review manifests, pre-provider integrity validation, legacy work-order compatibility, and focused regression coverage."
+  -
+    type: "verify"
+    at: "2026-08-03T16:55:26.894Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Content-addressed evaluator packets passed the task-specific and repository-wide verification contract."
 doc_version: 3
-doc_updated_at: "2026-08-03T16:48:56.171Z"
+doc_updated_at: "2026-08-03T16:55:27.822Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -69,6 +114,61 @@ sections:
     5. Generate and verify the task evidence bundle, then run an independent evaluator against the committed implementation. Expected: the bundle includes compact manifests and task-local content objects, hashes verify offline, the evaluator cites frozen object paths, and the verdict is pass with no unresolved high-severity finding.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-03T16:55:26.894Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Content-addressed evaluator packets passed the task-specific and repository-wide verification contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T16:52:06.559Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+    Result: pass
+    Evidence: 7 files and 48 tests passed; concurrent reuse, collision/tamper rejection, compact packet shape, legacy compatibility, provider prompt/schema use, and >=80% repeated-input byte reduction are covered.
+    Scope: evaluator packet preparation, object-store integrity, invocation, persistence, registry, and quality route.
+
+    Command: bun run test:fast
+    Result: pass
+    Evidence: 535 files and 3771 tests passed in 144.35s.
+    Scope: full AgentPlane, core, recipes, and testkit fast suite.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: all 12 critical-cli chunks passed, including agent-efficiency replay, protected paths, trust-boundary, symlink-root, and scope-leak suites.
+    Scope: critical CLI safety and RF-04 behavior.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: formatting, schemas, docs, RF-04 replay 50 runs, hotspots, lifecycle, trust ratchet, lint, architecture, clone baseline, Knip, and coverage passed.
+    Scope: repository contract and release guardrails.
+
+    Command: bun run typecheck && bun run format:changed && bun run knip:check
+    Result: pass
+    Evidence: TypeScript build passed; all changed files formatted; AgentPlane CLI unused-code baseline remained zero.
+    Scope: types, formatting, and dead-code regression.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -113,6 +213,61 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-03T16:55:26.894Z — VERIFY — ok
+
+By: TESTER
+
+Note: Content-addressed evaluator packets passed the task-specific and repository-wide verification contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T16:52:06.559Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+Result: pass
+Evidence: 7 files and 48 tests passed; concurrent reuse, collision/tamper rejection, compact packet shape, legacy compatibility, provider prompt/schema use, and >=80% repeated-input byte reduction are covered.
+Scope: evaluator packet preparation, object-store integrity, invocation, persistence, registry, and quality route.
+
+Command: bun run test:fast
+Result: pass
+Evidence: 535 files and 3771 tests passed in 144.35s.
+Scope: full AgentPlane, core, recipes, and testkit fast suite.
+
+Command: bun run test:critical
+Result: pass
+Evidence: all 12 critical-cli chunks passed, including agent-efficiency replay, protected paths, trust-boundary, symlink-root, and scope-leak suites.
+Scope: critical CLI safety and RF-04 behavior.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: formatting, schemas, docs, RF-04 replay 50 runs, hotspots, lifecycle, trust ratchet, lint, architecture, clone baseline, Knip, and coverage passed.
+Scope: repository contract and release guardrails.
+
+Command: bun run typecheck && bun run format:changed && bun run knip:check
+Result: pass
+Evidence: TypeScript build passed; all changed files formatted; AgentPlane CLI unused-code baseline remained zero.
+Scope: types, formatting, and dead-code regression.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

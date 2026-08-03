@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The content-addressed evidence store validates paths lexically but does not reject symlinked parent directories, allowing object writes or frozen-artifact reads to escape the repository.",
+      "broken_invariant": "Evaluator evidence preparation and execution must not access outside-repository files without explicit approval, including through symlink traversal.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/3f18f075a19d2a4c72f66a302849b36dcefe8a131bffc188d4ada68c7e669482.patch",
+          "sha256": "sha256:3f18f075a19d2a4c72f66a302849b36dcefe8a131bffc188d4ada68c7e669482",
+          "line": 510,
+          "lines": "510-538, 582-590, 653-711",
+          "section": "evaluator-evidence-store.ts path resolution, object creation, and artifact verification"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+          "line": 6,
+          "lines": "6",
+          "section": "Security MUST Rules"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add negative tests replacing quality/objects, quality/objects/sha256, and quality/objects/.staging with symlinks to an outside-repository directory; preparation and packet verification must reject them without reading or writing the target."
+  ],
+  "hidden_assumptions": [
+    "Task-local quality and object-store parent directories are assumed never to be symlinks or concurrently replaced by symlinks."
+  ],
+  "recovery_context": "Harden object-store creation and packet verification against symlinked ancestors using repository-boundary-aware real-path or descriptor-based checks, then rerun focused collision, concurrency, symlink-escape, critical, and contract suites."
+}
