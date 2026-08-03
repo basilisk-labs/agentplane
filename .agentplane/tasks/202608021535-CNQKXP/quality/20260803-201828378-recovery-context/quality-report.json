@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-CNQKXP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T20:19:20.023Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "76c2607a560e5110f88abbce99930002e228761d",
+  "blueprint_digest": "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a",
+  "findings": [
+    "Verification at the evaluated SHA still omits mandatory routing validation and final repository-state evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-CNQKXP/README.md",
+    ".agentplane/tasks/202608021535-CNQKXP/verification/20260803201808767-23301d903c1bf74c.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Record a passing node .agentplane/policy/check-routing.mjs execution at evaluated SHA 76c2607a560e5110f88abbce99930002e228761d.",
+    "Record git status --short --untracked-files=all at the evaluated SHA and classify any reported artifacts as intentional or unrelated drift."
+  ],
+  "hidden_assumptions": [
+    "The verification packet assumes routing validation and repository cleanliness observed before the final concurrency commit remain valid afterward."
+  ],
+  "residual_risks": [
+    "Re-run and record the omitted routing and full repository-status checks against 76c2607a560e5110f88abbce99930002e228761d, then regenerate frozen verification evidence for the same SHA."
+  ]
+}

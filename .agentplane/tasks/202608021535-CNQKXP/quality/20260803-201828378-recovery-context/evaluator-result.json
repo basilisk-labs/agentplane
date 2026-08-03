@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Verification at the evaluated SHA still omits mandatory routing validation and final repository-state evidence.",
+      "broken_invariant": "The approved Verify Steps require node .agentplane/policy/check-routing.mjs, while DoD core requires final evidence from git status --short --untracked-files=all; the verification record for 76c2607a560e5110f88abbce99930002e228761d records neither check. A passing record from an earlier implementation cannot establish these invariants for the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:8f17ebfe976acec508829abeb94768c3700796bb0bdaf2ba5c598e001496bc0f",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803201808767-23301d903c1bf74c.json",
+          "sha256": "sha256:cde1f34f2ce8825d8eb7b0c20e7b7994227539546d5fc732f03aaeb9c79352a9",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record a passing node .agentplane/policy/check-routing.mjs execution at evaluated SHA 76c2607a560e5110f88abbce99930002e228761d.",
+    "Record git status --short --untracked-files=all at the evaluated SHA and classify any reported artifacts as intentional or unrelated drift."
+  ],
+  "hidden_assumptions": [
+    "The verification packet assumes routing validation and repository cleanliness observed before the final concurrency commit remain valid afterward."
+  ],
+  "recovery_context": "Re-run and record the omitted routing and full repository-status checks against 76c2607a560e5110f88abbce99930002e228761d, then regenerate frozen verification evidence for the same SHA."
+}
