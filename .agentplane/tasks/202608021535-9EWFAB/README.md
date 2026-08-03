@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 26
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -25,39 +25,41 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-03T17:45:49.900Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run test:critical"
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-03T18:02:28.538Z"
+  updated_by: "TESTER"
+  note: "All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9."
+  attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T17:29:55.081Z"
+  updated_at: "2026-08-03T18:01:20.545Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "95f214a6f8233c268e71749d17ef896cbbb3be0c"
+  evaluated_sha: "0d1463b04bc9688d69b64847d0aa6be0de080246"
   blueprint_digest: "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85"
   evidence_refs:
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/edde30ec9070bfdad845a1b22e62614b2d0a900a3f49d33054a9d869a9a0386e.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-172910064-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/6a4ea8786beb06cdb8a4cd143820d4ca76cf2fd150bd4e4091c2ab8ed8dc3617.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608021535-9EWFAB/README.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/e7f7f44eae484ec631d94304c3807331e8a0a454352a02483b08496721607575.patch"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/aaeb68626d76e9806d4e0c5a8f2714637dfa6b6f0f0d0a17f67a5ad2589de08c.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803172855264-fe8f6a516038c0b9.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/aaa8c7677210e8ba7e81c1012e962195805b943790f24dfbaff56eb7f069f0ca.patch"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/a103e6f3e8cb50fe627f7329c856a7b477cb85ca9c45da630a03bfe0c19e2ae1.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803175944499-94b08a2360bed567.json"
     - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/1d10aae86985eacf7c0cd07bea467527500d74414682917460f3861f465afac2.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Directory identity checks do not close the directory-swap race because each pathname-based open, link, rename, or unlink still occurs after the final check. A concurrent replacement in that interval can redirect the operation outside the repository; detecting the replacement afterward does not undo the external mutation."
-commit: null
+    - "The final verification evidence does not show that the task evidence bundle was generated and verified offline."
+commit:
+  hash: "0d1463b04bc9688d69b64847d0aa6be0de080246"
+  message: "🔁 9EWFAB evidence: refresh replacement route"
 comments:
   -
     author: "CODER"
@@ -80,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: repair shared supervisor continuation so an explicit exact-key replacement can follow a recomputed EXECUTOR-to-EVALUATOR route after operation_failed without permitting retries of effect_in_doubt."
+  -
+    author: "CODER"
+    body: "Implementation complete: content-addressed evaluator evidence, declared trusted-workspace boundary, and resumable shared-supervisor replacement routing verified at 0d1463b04bc9."
 events:
   -
     type: "status"
@@ -174,8 +179,33 @@ events:
     at: "2026-08-03T17:48:54.344Z"
     author: "CODER"
     body: "Rework: repair shared supervisor continuation so an explicit exact-key replacement can follow a recomputed EXECUTOR-to-EVALUATOR route after operation_failed without permitting retries of effect_in_doubt."
+  -
+    type: "status"
+    at: "2026-08-03T17:58:54.879Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation complete: content-addressed evaluator evidence, declared trusted-workspace boundary, and resumable shared-supervisor replacement routing verified at 0d1463b04bc9."
+  -
+    type: "verify"
+    at: "2026-08-03T17:59:03.867Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final implementation verification passed at 0d1463b04bc9."
+  -
+    type: "verify"
+    at: "2026-08-03T17:59:44.499Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final implementation verification passed at 0d1463b04bc9."
+  -
+    type: "verify"
+    at: "2026-08-03T18:02:28.538Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9."
 doc_version: 3
-doc_updated_at: "2026-08-03T17:48:54.344Z"
+doc_updated_at: "2026-08-03T18:02:29.422Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -533,6 +563,113 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608021535-9EWFAB/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608021535-9EWFAB declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T17:59:03.867Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final implementation verification passed at 0d1463b04bc9.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:58:54.879Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: focused evaluator/object-store/supervisor suites; ci:contract; test:critical; test:fast; typecheck; format:check; lint:core; knip; hotspots. Result: pass. Evidence: evaluator focus 68 tests; supervisor focus 30 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3780 tests in 155.33s; TypeScript, formatting, lint, dead-code, architecture, clone and coverage gates passed. Scope: task 202608021535-9EWFAB at implementation commit 0d1463b04bc9.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T17:59:44.499Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final implementation verification passed at 0d1463b04bc9.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:59:04.845Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: focused evaluator/object-store/supervisor suites; ci:contract; test:critical; test:fast; typecheck; format:check; lint:core; knip; hotspots
+    Result: pass
+    Evidence: evaluator focus 68 tests; supervisor focus 30 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3780 tests in 155.33s; TypeScript, formatting, lint, dead-code, architecture, clone and coverage gates passed
+    Scope: task 202608021535-9EWFAB at implementation commit 0d1463b04bc9
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T18:02:28.538Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:59:45.598Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: focused evaluator/object-store/supervisor suites; bun run ci:contract; bun run test:critical; bun run test:fast; bun run typecheck; bun run format:check; bun run lint:core; bun run knip:check; hotspot checks
+    Result: pass
+    Evidence: evaluator focus 68 tests; supervisor focus 30 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3780 tests in 155.33s; TypeScript, formatting, lint, dead-code, architecture, clone and coverage gates passed
+    Scope: task 202608021535-9EWFAB implementation at 0d1463b04bc9688d69b64847d0aa6be0de080246
+
+    Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 202608021535-9EWFAB --json; inspect manifest quality object entries
+    Result: pass
+    Evidence: manifest sha256:4f185ea56b2456fd0a349be18f21456418466ac2d14d2f793ec88237c1746032 contains 65 files; offline verification returned ok=true and errors=[]; manifest includes the compact evaluator review files and every referenced quality/objects/sha256 content object
+    Scope: deterministic task evidence bundle and content-addressed evaluator inputs for task 202608021535-9EWFAB
 
     BlueprintSnapshotRef:
     - state: current
@@ -950,6 +1087,113 @@ Command: bun run test:critical
 Result: fail
 Evidence: .agentplane/tasks/202608021535-9EWFAB/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608021535-9EWFAB declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T17:59:03.867Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final implementation verification passed at 0d1463b04bc9.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:58:54.879Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: focused evaluator/object-store/supervisor suites; ci:contract; test:critical; test:fast; typecheck; format:check; lint:core; knip; hotspots. Result: pass. Evidence: evaluator focus 68 tests; supervisor focus 30 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3780 tests in 155.33s; TypeScript, formatting, lint, dead-code, architecture, clone and coverage gates passed. Scope: task 202608021535-9EWFAB at implementation commit 0d1463b04bc9.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T17:59:44.499Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final implementation verification passed at 0d1463b04bc9.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:59:04.845Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: focused evaluator/object-store/supervisor suites; ci:contract; test:critical; test:fast; typecheck; format:check; lint:core; knip; hotspots
+Result: pass
+Evidence: evaluator focus 68 tests; supervisor focus 30 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3780 tests in 155.33s; TypeScript, formatting, lint, dead-code, architecture, clone and coverage gates passed
+Scope: task 202608021535-9EWFAB at implementation commit 0d1463b04bc9
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T18:02:28.538Z — VERIFY — ok
+
+By: TESTER
+
+Note: All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:59:45.598Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: focused evaluator/object-store/supervisor suites; bun run ci:contract; bun run test:critical; bun run test:fast; bun run typecheck; bun run format:check; bun run lint:core; bun run knip:check; hotspot checks
+Result: pass
+Evidence: evaluator focus 68 tests; supervisor focus 30 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3780 tests in 155.33s; TypeScript, formatting, lint, dead-code, architecture, clone and coverage gates passed
+Scope: task 202608021535-9EWFAB implementation at 0d1463b04bc9688d69b64847d0aa6be0de080246
+
+Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 202608021535-9EWFAB --json; inspect manifest quality object entries
+Result: pass
+Evidence: manifest sha256:4f185ea56b2456fd0a349be18f21456418466ac2d14d2f793ec88237c1746032 contains 65 files; offline verification returned ok=true and errors=[]; manifest includes the compact evaluator review files and every referenced quality/objects/sha256 content object
+Scope: deterministic task evidence bundle and content-addressed evaluator inputs for task 202608021535-9EWFAB
 
 BlueprintSnapshotRef:
 - state: current

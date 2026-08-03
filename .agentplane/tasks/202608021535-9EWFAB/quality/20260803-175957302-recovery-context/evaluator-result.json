@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "The final verification evidence does not show that the task evidence bundle was generated and verified offline.",
+      "broken_invariant": "Verify Step 5 explicitly requires generating and verifying the task evidence bundle, including compact manifests and referenced task-local objects, but the final verification record lists focused tests and repository checks without a bundle-generation or bundle-verification command or result. The loaded DoD requires every Verify Step to be executed and recorded.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/README.md",
+          "sha256": "sha256:bdc1d3b2e3c72bb3cd424e5781918b438971afac62b1e5715b5da5a64d9009ef",
+          "line": 709,
+          "lines": "5. Generate and verify the task evidence bundle, then run an independent evaluator against the committed implementation.",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/verification/20260803175944499-94b08a2360bed567.json",
+          "sha256": "sha256:ffbe4288386b5e56f6bb5384aa5acfeaa399750f53b336633eac547ed1076080",
+          "line": 2,
+          "lines": "The recorded command and evidence summarize test, type, formatting, lint, dead-code, architecture, clone, and coverage checks, but contain no evidence-bundle generation or offline verification result.",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record the exact task-evidence bundle generation and verification commands at evaluated SHA 0d1463b04bc9688d69b64847d0aa6be0de080246, with evidence that compact evaluator manifests and every referenced task-local object are included and their hashes verify offline."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes existing evidence-bundle collection automatically discovers the new quality/objects references, but the frozen verification evidence does not demonstrate that behavior."
+  ],
+  "recovery_context": "Run and record the declared evidence-bundle generation and offline verification at the evaluated commit, proving that compact manifests and all referenced content-addressed objects are included; then repeat the independent evaluator review."
+}

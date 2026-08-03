@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-9EWFAB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T18:01:20.545Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "0d1463b04bc9688d69b64847d0aa6be0de080246",
+  "blueprint_digest": "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85",
+  "findings": [
+    "The final verification evidence does not show that the task evidence bundle was generated and verified offline."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-9EWFAB/README.md",
+    ".agentplane/tasks/202608021535-9EWFAB/verification/20260803175944499-94b08a2360bed567.json"
+  ],
+  "missing_tests": [
+    "Record the exact task-evidence bundle generation and verification commands at evaluated SHA 0d1463b04bc9688d69b64847d0aa6be0de080246, with evidence that compact evaluator manifests and every referenced task-local object are included and their hashes verify offline."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes existing evidence-bundle collection automatically discovers the new quality/objects references, but the frozen verification evidence does not demonstrate that behavior."
+  ],
+  "residual_risks": [
+    "Run and record the declared evidence-bundle generation and offline verification at the evaluated commit, proving that compact manifests and all referenced content-addressed objects are included; then repeat the independent evaluator review."
+  ]
+}
