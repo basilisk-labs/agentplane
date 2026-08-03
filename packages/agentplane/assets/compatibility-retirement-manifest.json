@@ -46,7 +46,7 @@
       "deprecated_in": "0.7.1",
       "remove_in": null,
       "removal_blocker": "Legacy v1 packets are caller-supplied and local workspace inspection cannot prove that external producers have stopped sending them.",
-      "migration_command": null,
+      "migration_command": "agentplane task advance <task-id> --agent-json",
       "usage_probe": { "kind": "runtime_input_unobservable" }
     },
     {
@@ -82,7 +82,7 @@
       "deprecated_in": "0.7.1",
       "remove_in": null,
       "removal_blocker": "Historical runner result artifacts are immutable evidence and need a retention-aware reader policy before removal.",
-      "migration_command": null,
+      "migration_command": "agentplane upgrade",
       "usage_probe": { "kind": "runner_result_manifest_v1" }
     },
     {
@@ -134,7 +134,7 @@
       "deprecated_in": null,
       "remove_in": null,
       "removal_blocker": "Repositories with refs/replace need explicit operator cleanup before replacement-ref compatibility can be removed.",
-      "migration_command": null,
+      "migration_command": "git replace -d <object>",
       "usage_probe": { "kind": "git_replacement_refs" }
     },
     {
@@ -145,7 +145,7 @@
       "deprecated_in": "0.7.1",
       "remove_in": null,
       "removal_blocker": "Historical commit subjects are immutable and the compatibility reader needs a bounded history policy before retirement.",
-      "migration_command": null,
+      "migration_command": "agentplane doctor legacy --json",
       "usage_probe": { "kind": "runtime_input_unobservable" }
     }
   ]

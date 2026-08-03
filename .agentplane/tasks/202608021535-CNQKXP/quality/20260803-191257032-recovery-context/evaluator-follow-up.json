@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021535-CNQKXP-bfaff662c62f86137ac0673a",
+  "task_id": "202608021535-CNQKXP",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Define a non-empty operator guidance command for every adapter or revise the approved acceptance criterion, then add deterministic malformed-semver, unknown-probe, and stale-source-path fixtures and record their verification.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Three registered adapters emit null migration_command values, so doctor legacy findings do not all name a migration command as required.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a.patch",
+          "sha256": "sha256:2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a",
+          "section": "compatibility-retirement-manifest.json and legacy-manifest.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:938cff7d56c4c89b91069e258523526727d1d03ab7f52fdf8bb90260d130077c",
+          "section": "Verify Steps 2"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "summary": "The focused manifest tests do not exercise the required malformed semver, stale-path, or unknown-probe negative fixtures.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a.patch",
+          "sha256": "sha256:2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a",
+          "section": "legacy-probes.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:938cff7d56c4c89b91069e258523526727d1d03ab7f52fdf8bb90260d130077c",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-191257032-recovery-context/evaluator-result.json"
+}

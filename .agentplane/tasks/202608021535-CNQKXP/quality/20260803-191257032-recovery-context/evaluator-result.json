@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Three registered adapters emit null migration_command values, so doctor legacy findings do not all name a migration command as required.",
+      "broken_invariant": "Verify Step 2 requires every doctor legacy finding to name exact evidence and a migration command, but runner.agent_work_context_v1, runner.result_manifest_v1, and commit.historical_forms declare migration_command as null; the manifest schema explicitly permits this.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a.patch",
+          "sha256": "sha256:2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a",
+          "section": "compatibility-retirement-manifest.json and legacy-manifest.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:938cff7d56c4c89b91069e258523526727d1d03ab7f52fdf8bb90260d130077c",
+          "section": "Verify Steps 2"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "severity": "medium",
+      "summary": "The focused manifest tests do not exercise the required malformed semver, stale-path, or unknown-probe negative fixtures.",
+      "broken_invariant": "Verify Step 1 and Plan Step 5 require deterministic negative coverage for malformed entries, invalid semver windows, stale source paths, and unknown probes; the added focused test covers only a duplicate identifier and validates the real manifest/source paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a.patch",
+          "sha256": "sha256:2bb730169b33ef9854f812504fe27240f1e22f4aa2e6e2b70321f725979fec8a",
+          "section": "legacy-probes.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:938cff7d56c4c89b91069e258523526727d1d03ab7f52fdf8bb90260d130077c",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A doctor legacy JSON and human-rendering assertion that every adapter finding contains a non-empty migration command.",
+    "Malformed manifest fixtures for invalid semver ordering, unknown usage_probe kinds, and stale or non-file source paths."
+  ],
+  "hidden_assumptions": [
+    "Adapters without an actionable automated migration may use null migration_command despite the explicit per-finding migration-command acceptance criterion.",
+    "Passing broad repository gates is assumed to substitute for the specifically required negative manifest fixtures, although the frozen verification record does not identify such cases."
+  ],
+  "recovery_context": "Define a non-empty operator guidance command for every adapter or revise the approved acceptance criterion, then add deterministic malformed-semver, unknown-probe, and stale-source-path fixtures and record their verification."
+}

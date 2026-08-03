@@ -115,10 +115,54 @@ describe("doctor legacy", () => {
     await expect(
       validateCompatibilityRetirementSourcePaths(process.cwd()),
     ).resolves.toBeUndefined();
+    expect(
+      COMPATIBILITY_RETIREMENT_MANIFEST.adapters.every(
+        (adapter) => adapter.migration_command.trim().length > 0,
+      ),
+    ).toBe(true);
 
     const duplicate = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
     duplicate.adapters.push(structuredClone(duplicate.adapters[0]!));
     expect(() => validateCompatibilityRetirementManifest(duplicate)).toThrow(/duplicate adapter/u);
+
+    const malformedSemver = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
+      adapters: { introduced_in: string }[];
+    };
+    malformedSemver.adapters[0]!.introduced_in = "v0.7";
+    expect(() => validateCompatibilityRetirementManifest(malformedSemver)).toThrow();
+
+    const invertedWindow = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
+      adapters: { introduced_in: string; deprecated_in: string | null }[];
+    };
+    invertedWindow.adapters[0]!.introduced_in = "0.7.1";
+    invertedWindow.adapters[0]!.deprecated_in = "0.7.0";
+    expect(() => validateCompatibilityRetirementManifest(invertedWindow)).toThrow(
+      /precedes introduced_in/u,
+    );
+
+    const unknownProbe = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
+      adapters: { usage_probe: { kind: string } }[];
+    };
+    unknownProbe.adapters[0]!.usage_probe.kind = "unknown_probe";
+    expect(() => validateCompatibilityRetirementManifest(unknownProbe)).toThrow();
+
+    const missingMigration = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
+      adapters: { migration_command: string | null }[];
+    };
+    missingMigration.adapters[0]!.migration_command = null;
+    expect(() => validateCompatibilityRetirementManifest(missingMigration)).toThrow();
+
+    const staleSource = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
+    staleSource.adapters[0]!.source_paths = ["packages/agentplane/src/missing-legacy-adapter.ts"];
+    await expect(
+      validateCompatibilityRetirementSourcePaths(process.cwd(), staleSource),
+    ).rejects.toThrow(/missing or not a file/u);
+
+    const directorySource = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
+    directorySource.adapters[0]!.source_paths = ["packages/agentplane/src/commands/doctor"];
+    await expect(
+      validateCompatibilityRetirementSourcePaths(process.cwd(), directorySource),
+    ).rejects.toThrow(/missing or not a file/u);
   });
 
   it("classifies unused and unobservable compatibility without changing the workspace", async () => {
@@ -244,7 +288,7 @@ describe("doctor legacy", () => {
       const report = JSON.parse(io.stdout) as {
         kind: string;
         summary: { total: number; blocked: number };
-        adapters: { id: string; status: string }[];
+        adapters: { id: string; status: string; migration_command: string }[];
       };
       expect(report.kind).toBe("agentplane.doctor.legacy");
       expect(report.summary.total).toBe(COMPATIBILITY_RETIREMENT_MANIFEST.adapters.length);
@@ -252,8 +296,26 @@ describe("doctor legacy", () => {
       expect(report.adapters.map((adapter) => adapter.id)).toEqual(
         COMPATIBILITY_RETIREMENT_MANIFEST.adapters.map((adapter) => adapter.id),
       );
+      expect(report.adapters.every((adapter) => adapter.migration_command.trim().length > 0)).toBe(
+        true,
+      );
     } finally {
       io.restore();
+    }
+
+    const humanIo = captureStdIO();
+    try {
+      const code = await runDoctorLegacy(
+        { cwd: root, rootOverride: root, outputMode: "human" },
+        { json: false },
+      );
+      expect(code).toBe(0);
+      expect(
+        humanIo.stdout.split("\n").filter((line) => line.startsWith("  migrate=")),
+      ).toHaveLength(COMPATIBILITY_RETIREMENT_MANIFEST.adapters.length);
+      expect(humanIo.stdout).not.toContain("manual policy decision required");
+    } finally {
+      humanIo.restore();
     }
   });
 });
