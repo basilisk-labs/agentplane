@@ -2,10 +2,10 @@
 id: "202608032336-A9H6WR"
 title: "Preflight the provider binary before release qualification"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -20,37 +20,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-03T23:51:53.477Z"
-  updated_by: "REVIEWER"
-  note: "Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-03T23:53:38.272Z"
+  updated_by: "TESTER"
+  note: "Review rework verified: exact provider selection still fails fast on runtime mismatch, while --provider combined with a selected local-only scenario skips the Codex binary preflight."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T23:43:21.495Z"
+  updated_at: "2026-08-03T23:54:08.955Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "ede5a60b4c83a76c667a68524849c8644202ecc4"
+  evaluated_sha: "5acfd380510dda719cb7b53058eeb2f300095b6c"
   blueprint_digest: "1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0"
   evidence_refs:
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-234321089-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-234321089-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/6a0bde30caffda7fba508e367678837561e20112c68d6847e11513c58a1683b6.md"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-234321089-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-234321089-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-234321089-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-235408446-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-235408446-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/c6e5202721fedc0178bcffee1b0490ab83d0c6707a9b39049023dce4978ff175.md"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-235408446-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-235408446-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/20260803-235408446-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608032336-A9H6WR/README.md"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/e6e57ad2cefb45e821ebe4fcd2e93d9c9beed5a68ccc5398299c0b9fb0ccc14d.patch"
-    - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/b819489e316d0f7115013c9766bb5368572c75a7f65382ab7a7cde5837d5c13e.json"
-    - ".agentplane/tasks/202608032336-A9H6WR/verification/20260803234226420-e36d38620f50bf3b.json"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/704d2ad9384ec938311c52a2aef8b75ead58ec69f9187299a0cd04831249f5bd.patch"
+    - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/f28b0b8320dba334b2820e2a4cd5eb2f5b1429f7553488cf021c81994e4243b1.json"
+    - ".agentplane/tasks/202608032336-A9H6WR/verification/20260803235338272-81f8d5fe839135fa.json"
     - ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/e2f0e5310272c06a1a7dac308c9aea342ebe60b4b33760a4c268ecfaee192ea9.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The runner delegates exact-version validation to the existing trusted ChatGPT Codex binary assertion, skips non-provider and dry-run paths, and invokes the check before evidence creation or scenario execution; focused tests and the recorded mismatch probe cover the relevant positive and negative paths."
+    - "The runner now derives preflight necessity from the actual selected scenarios, so --provider with an explicit local-only scenario remains portable while provider-matrix execution still validates the trusted ChatGPT Codex binary before evidence creation or scenario output; the focused regression test covers both branches and mismatch propagation."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -64,10 +64,10 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
-  updated_at: "2026-08-03T23:43:50.108Z"
+  updated_at: "2026-08-03T23:54:40.874Z"
 commit:
-  hash: "5acfd380510dda719cb7b53058eeb2f300095b6c"
-  message: "🛠️ A9H6WR task: scope preflight to provider scenarios"
+  hash: "8838d74d9a42926da6aa3ef02568588def6d0958"
+  message: "🧩 A9H6WR task: record review rework handoff"
 comments:
   -
     author: "CODER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework committed: provider runtime preflight is now gated by the selected scenario tiers, so explicit local-only selections remain portable."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -128,8 +131,21 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: provider runtime preflight is now gated by the selected scenario tiers, so explicit local-only selections remain portable."
+  -
+    type: "verify"
+    at: "2026-08-03T23:53:38.272Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Review rework verified: exact provider selection still fails fast on runtime mismatch, while --provider combined with a selected local-only scenario skips the Codex binary preflight."
+  -
+    type: "status"
+    at: "2026-08-03T23:54:40.874Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T23:53:17.377Z"
+doc_updated_at: "2026-08-03T23:54:40.899Z"
 doc_updated_by: "CODER"
 description: "Fail provider-enabled v0.7.1 qualification before running local scenarios when the exact requested Codex version does not match the trusted ChatGPT.app replay binary, preventing wasted deterministic work and zero-episode gate failures."
 sections:
@@ -268,6 +284,61 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T23:53:38.272Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Review rework verified: exact provider selection still fails fast on runtime mismatch, while --provider combined with a selected local-only scenario skips the Codex binary preflight.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T23:53:17.377Z, excerpt_hash=sha256:db777fef3e6c2c1ad78f686d5452ddccccc20617511be19de3bd369db49d9d60
+
+    Details:
+
+    Command: bun run e2e:v0.7.1:check
+    Result: pass
+    Evidence: release qualification contract passed 20/20 and printed the full non-provider dry-run matrix
+    Scope: qualification selection and provider preflight contract
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: scripts/checks/run-typescript-build.mjs exited 0
+    Scope: repository TypeScript contracts
+
+    Command: bunx eslint scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+    Result: pass
+    Evidence: ESLint exited 0 with no findings
+    Scope: touched qualification runner and test
+
+    Command: bunx prettier scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs --check
+    Result: pass
+    Evidence: all matched files use Prettier code style
+    Scope: touched qualification runner and test
+
+    Command: selected-scenario provider binary probes
+    Result: pass
+    Evidence: selected provider tier accepted bundled 0.146.0-alpha.3.1; selected local-only tier did not invoke verifier despite --provider; selected provider mismatch failed before scenario output or evidence creation
+    Scope: GitHub review regression and exact trusted Codex binary fail-fast boundary
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032336-A9H6WR-preflight-the-provider-binary-before-release-qua/.agentplane/tasks/202608032336-A9H6WR/blueprint/resolved-snapshot.json
+    - old_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+    - current_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608032336-A9H6WR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -278,8 +349,8 @@ sections:
       Resolution: The runner now validates the exact trusted ChatGPT Codex binary before any provider-enabled scenario execution while leaving dry-run and non-provider modes side-effect free.
 extensions:
   implementation_commit:
-    hash: "ede5a60b4c83a76c667a68524849c8644202ecc4"
-    message: "🛡️ A9H6WR task: fail fast on provider runtime drift"
+    hash: "5acfd380510dda719cb7b53058eeb2f300095b6c"
+    message: "🛠️ A9H6WR task: scope preflight to provider scenarios"
   workflow_route_baseline:
     start_head_sha: "11d4d73a0c693b71adde9e54880c411153214b37"
     version: 1
@@ -430,6 +501,61 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T23:53:38.272Z — VERIFY — ok
+
+By: TESTER
+
+Note: Review rework verified: exact provider selection still fails fast on runtime mismatch, while --provider combined with a selected local-only scenario skips the Codex binary preflight.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T23:53:17.377Z, excerpt_hash=sha256:db777fef3e6c2c1ad78f686d5452ddccccc20617511be19de3bd369db49d9d60
+
+Details:
+
+Command: bun run e2e:v0.7.1:check
+Result: pass
+Evidence: release qualification contract passed 20/20 and printed the full non-provider dry-run matrix
+Scope: qualification selection and provider preflight contract
+
+Command: bun run typecheck
+Result: pass
+Evidence: scripts/checks/run-typescript-build.mjs exited 0
+Scope: repository TypeScript contracts
+
+Command: bunx eslint scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs
+Result: pass
+Evidence: ESLint exited 0 with no findings
+Scope: touched qualification runner and test
+
+Command: bunx prettier scripts/qualification/run-v0.7.1-release-qualification.mjs scripts/qualification/release-qualification.test.mjs --check
+Result: pass
+Evidence: all matched files use Prettier code style
+Scope: touched qualification runner and test
+
+Command: selected-scenario provider binary probes
+Result: pass
+Evidence: selected provider tier accepted bundled 0.146.0-alpha.3.1; selected local-only tier did not invoke verifier despite --provider; selected provider mismatch failed before scenario output or evidence creation
+Scope: GitHub review regression and exact trusted Codex binary fail-fast boundary
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032336-A9H6WR-preflight-the-provider-binary-before-release-qua/.agentplane/tasks/202608032336-A9H6WR/blueprint/resolved-snapshot.json
+- old_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+- current_digest: 1dd07951ea30c6888990bf8472eeaee4a3baad38bf43db6b941a926e594684a0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608032336-A9H6WR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -454,4 +580,4 @@ DecisionContextRef:
 - Provenance: `unavailable/agentplane`
 - Journal digest: `unavailable`
 - Unavailable reason: `supervisor_journal_missing`
-- Updated at: `2026-08-03T23:43:50.108Z`
+- Updated at: `2026-08-03T23:54:40.874Z`

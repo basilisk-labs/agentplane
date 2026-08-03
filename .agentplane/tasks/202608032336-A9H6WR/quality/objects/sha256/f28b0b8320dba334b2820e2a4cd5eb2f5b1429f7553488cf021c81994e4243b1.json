@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T23:53:38.272Z",
+    "updated_by": "TESTER",
+    "note": "Review rework verified: exact provider selection still fails fast on runtime mismatch, while --provider combined with a selected local-only scenario skips the Codex binary preflight."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608032336-A9H6WR/verification/20260803235338272-81f8d5fe839135fa.json",
+      "sha256": "sha256:a1af4ad911c11c5ffbd31db872e7fde6bff12fd31bd1a478a0d9e1be759bfdab"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

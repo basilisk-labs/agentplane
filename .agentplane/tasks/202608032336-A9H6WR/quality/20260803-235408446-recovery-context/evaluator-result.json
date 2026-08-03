@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The runner now derives preflight necessity from the actual selected scenarios, so --provider with an explicit local-only scenario remains portable while provider-matrix execution still validates the trusted ChatGPT Codex binary before evidence creation or scenario output; the focused regression test covers both branches and mismatch propagation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/704d2ad9384ec938311c52a2aef8b75ead58ec69f9187299a0cd04831249f5bd.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
