@@ -6,7 +6,7 @@ Created: 2026-08-03T11:03:33.843Z
 
 - Task: `202608021231-BPMM04`
 - Title: Record token usage on every completed task
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021231-BPMM04/record-token-usage-on-every-completed-task`
 - Canonical task record: `.agentplane/tasks/202608021231-BPMM04/README.md`
 
