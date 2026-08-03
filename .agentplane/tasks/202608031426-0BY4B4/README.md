@@ -4,7 +4,7 @@ title: "Make integration handoff and hosted-close finalization converge"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -33,31 +33,30 @@ verification:
   note: "Verified with structured command evidence: focused route and queue suite, full local CI, and live PR 4756 terminal convergence all passed."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T14:47:30.763Z"
+  updated_at: "2026-08-03T14:53:18.978Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "cd4b21269e0a274142560a755ff235f99c9a40e8"
   blueprint_digest: "d0446cd16c1a55460e73253958b70aa078d944122d23c6b37691a6dd27a7ba10"
   evidence_refs:
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202608031426-0BY4B4/README.md"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-144642797-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608031426-0BY4B4/verification/20260803145137304-3c458177a907290f.json"
+    - ".agentplane/tasks/202608031426-0BY4B4/quality/20260803-145223366-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen packet contains only a self-reported verification note; it contains no verification records, runner history, or runtime evidence from which the declared passing checks can be independently established."
-  recovery_reason: "deterministic_evidence_gap"
+    - "The implementation matches the approved convergence contract: unresolved review gates remain non-terminal and retryable, ambiguous failures remain handoff fail-closed, finalized cleanup normalizes terminal queue entries, and hosted-close routing reaches terminal only after targeted cleanup is complete and the local base matches its remote-tracking branch."
 commit: null
 comments:
   -

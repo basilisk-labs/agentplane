@@ -1,0 +1,597 @@
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.ts b/packages/agentplane/src/commands/branch/cleanup-merged.ts
+index 3f40963ea..1b313b330 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.ts
+@@ -16,6 +16,7 @@ import {
+ } from "../shared/merged-branch-cleanup.js";
+ import { isPathWithin, resolvePathFallback } from "../shared/path.js";
+ import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import { normalizeTerminalQueueEntries } from "../integrate-queue-lane.js";
+ 
+ import { archivePrArtifacts } from "./internal/archive-pr.js";
+ import {
+@@ -73,6 +74,24 @@ function normalizeRequestedTaskIds(taskIds: readonly string[] | undefined): stri
+   ].toSorted((a, b) => a.localeCompare(b));
+ }
+ 
++async function normalizeQueueAfterFinalize(opts: {
++  ctx: CommandContext;
++  cwd: string;
++  rootOverride?: string;
++  gitRoot: string;
++  finalize: boolean;
++  quiet: boolean;
++}): Promise<void> {
++  if (!opts.finalize) return;
++  await normalizeTerminalQueueEntries({
++    ctx: opts.ctx,
++    cwd: opts.cwd,
++    rootOverride: opts.rootOverride ?? null,
++    gitRoot: opts.gitRoot,
++    quiet: opts.quiet,
++  });
++}
++
+ async function worktreeIsDirty(worktreePath: string): Promise<boolean> {
+   const { stdout } = await execFileAsync(
+     "git",
+@@ -225,6 +244,14 @@ export async function cmdCleanupMerged(opts: {
+         report: opts.report,
+         rows: reportRows,
+       });
++      await normalizeQueueAfterFinalize({
++        ctx,
++        cwd: opts.cwd,
++        rootOverride: opts.rootOverride,
++        gitRoot: resolved.gitRoot,
++        finalize: opts.finalize === true,
++        quiet: opts.quiet,
++      });
+       if (!opts.quiet) {
+         output.line(
+           targeted ? `already clean: task=${requestedTaskIds.join(",")}` : "no candidates",
+@@ -367,6 +394,15 @@ export async function cmdCleanupMerged(opts: {
+       });
+     }
+ 
++    await normalizeQueueAfterFinalize({
++      ctx,
++      cwd: opts.cwd,
++      rootOverride: opts.rootOverride,
++      gitRoot: resolved.gitRoot,
++      finalize: opts.finalize === true,
++      quiet: opts.quiet,
++    });
++
+     if (!opts.quiet) {
+       const remoteDetail = opts.deleteRemoteBranches
+         ? ` remote_deleted=${deletedRemoteBranches}`
+diff --git a/packages/agentplane/src/commands/integrate-queue-reservation.ts b/packages/agentplane/src/commands/integrate-queue-reservation.ts
+index dcdac583a..a064eec4f 100644
+--- a/packages/agentplane/src/commands/integrate-queue-reservation.ts
++++ b/packages/agentplane/src/commands/integrate-queue-reservation.ts
+@@ -13,6 +13,14 @@ import {
+ } from "./pr/integrate/queue-state.js";
+ import { isExternalStateUnavailableError } from "./shared/external-unavailability.js";
+ 
++export function isRetryableIntegrationGateError(error: unknown): boolean {
++  return (
++    error instanceof CliError &&
++    error.code === "E_VALIDATION" &&
++    error.context?.reason_code === "github_review_threads_unresolved"
++  );
++}
++
+ function queueEntryMatchesClaimIdentity(
+   current: IntegrationQueueEntry | undefined,
+   expected: IntegrationQueueEntry,
+@@ -191,12 +199,13 @@ export async function runReservedIntegrationCriticalSection(opts: {
+     try {
+       result = await opts.run();
+     } catch (err) {
++      const retryableGate = isRetryableIntegrationGateError(err);
+       await writeIntegrationQueue(
+         opts.gitRoot,
+         markQueueEntry(
+           queue,
+           opts.entry.task_id,
+-          "handoff",
++          retryableGate ? "queued" : "handoff",
+           err instanceof Error ? err.message : String(err),
+         ),
+       ).catch(() => null);
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.test.ts b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+index 957dc4e72..f1e65569f 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.test.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.test.ts
+@@ -834,4 +834,47 @@ describe("integrate queue claim publication guard", () => {
+     expect(queueEntry?.status).toBe("handoff");
+     expect(queueEntry?.reason).toContain("terminal queue state could not be persisted");
+   });
++
++  it("requeues an unresolved review gate instead of requiring manual handoff release", async () => {
++    const reviewGate = new CliError({
++      code: "E_VALIDATION",
++      message: "GitHub PR #101 has 1 unresolved review thread(s).",
++      context: { reason_code: "github_review_threads_unresolved" },
++    });
++    mocks.cmdIntegrate.mockRejectedValue(reviewGate);
++    const handler = makeRunIntegrateQueueRunNextHandler(commandContext);
++
++    await expect(
++      handler({ cwd: "/repo", rootOverride: null } as never, runNextParsed()),
++    ).rejects.toBe(reviewGate);
++
++    expect(
++      (mocks.queueState as { entries: { status: string; reason?: string }[] }).entries[0],
++    ).toMatchObject({
++      status: "queued",
++      reason: reviewGate.message,
++    });
++  });
++
++  it("waits and retries an unresolved review gate without manual queue release", async () => {
++    const reviewGate = new CliError({
++      code: "E_VALIDATION",
++      message: "GitHub PR #101 has 1 unresolved review thread(s).",
++      context: { reason_code: "github_review_threads_unresolved" },
++    });
++    mocks.cmdIntegrate.mockRejectedValueOnce(reviewGate).mockResolvedValueOnce(0);
++    const handler = makeRunIntegrateQueueRunNextHandler(commandContext);
++
++    await expect(
++      handler(
++        { cwd: "/repo", rootOverride: null } as never,
++        runNextParsed({ wait: true, pollIntervalMs: 1, timeoutMs: 1000 }),
++      ),
++    ).resolves.toBe(0);
++
++    expect(mocks.cmdIntegrate).toHaveBeenCalledTimes(2);
++    expect((mocks.queueState as { entries: { status: string }[] }).entries[0]).toMatchObject({
++      status: "done",
++    });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 88ca29a34..8155b2285 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -33,6 +33,7 @@ import {
+ import {
+   assertIntegrationReservationStillFresh,
+   completeIntegrationReservation,
++  isRetryableIntegrationGateError,
+   reserveClaimedEntryForIntegration,
+   runReservedIntegrationCriticalSection,
+   validateClaimedEntryPublication,
+@@ -436,11 +437,13 @@ export function makeRunIntegrateQueueRunNextHandler(
+     const gitRoot = commandCtx.resolvedProject.gitRoot;
+     let lastResult = 0;
+     let ranEntry = false;
++    let retryAfterGate = false;
+     const startedAt = Date.now();
+     const pollIntervalMs = p.pollIntervalMs ?? DEFAULT_QUEUE_POLL_INTERVAL_MS;
+     const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
+ 
+     do {
++      retryAfterGate = false;
+       const claimed = await claimFreshIntegrationQueueEntry({
+         gitRoot,
+         worker: p.worker ?? defaultIntegrationQueueWorker(),
+@@ -483,6 +486,7 @@ export function makeRunIntegrateQueueRunNextHandler(
+               `integration queue waiting: lane=${lane} retry_in_ms=${pollIntervalMs}`,
+             );
+           }
++          retryAfterGate = true;
+           await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - elapsedMs)));
+           continue;
+         }
+@@ -535,7 +539,19 @@ export function makeRunIntegrateQueueRunNextHandler(
+             }),
+         });
+       } catch (err) {
+-        if (criticalSectionStarted) throw err;
++        if (criticalSectionStarted) {
++          if (!p.wait || !isRetryableIntegrationGateError(err)) throw err;
++          const elapsedMs = Date.now() - startedAt;
++          if (elapsedMs >= timeoutMs) throw err;
++          if (!p.quiet) {
++            createCliEmitter().line(
++              `integration queue waiting: task=${integrationEntry.task_id} gate=review_threads retry_in_ms=${pollIntervalMs}`,
++            );
++          }
++          retryAfterGate = true;
++          await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - elapsedMs)));
++          continue;
++        }
+         const handoff =
+           (err instanceof CliError && err.code === "E_HANDOFF") ||
+           isExternalStateUnavailableError(err);
+@@ -547,7 +563,7 @@ export function makeRunIntegrateQueueRunNextHandler(
+         });
+         throw err;
+       }
+-    } while (p.drain && !p.dryRun);
++    } while (retryAfterGate || (p.drain && !p.dryRun));
+ 
+     return ranEntry ? lastResult : 0;
+   };
+diff --git a/packages/agentplane/src/commands/pr/internal/github-review-threads.test.ts b/packages/agentplane/src/commands/pr/internal/github-review-threads.test.ts
+index ad4dcbb9c..fbe41bcac 100644
+--- a/packages/agentplane/src/commands/pr/internal/github-review-threads.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/github-review-threads.test.ts
+@@ -1,5 +1,7 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
++import { CliError } from "../../../shared/errors.js";
++
+ const mocks = vi.hoisted(() => ({
+   resolveDefaultGithubRepo: vi.fn(),
+   runGhApiJson: vi.fn(),
+@@ -10,7 +12,10 @@ vi.mock("./gh-api.js", () => ({
+   runGhApiJson: mocks.runGhApiJson,
+ }));
+ 
+-import { checkGithubUnresolvedReviewThreads } from "./github-review-threads.js";
++import {
++  checkGithubUnresolvedReviewThreads,
++  throwIfGithubReviewThreadsUnresolved,
++} from "./github-review-threads.js";
+ 
+ function thread(index: number) {
+   return {
+@@ -110,4 +115,30 @@ describe("GitHub review thread checks", () => {
+     const secondArgs = mocks.runGhApiJson.mock.calls[1]?.[1] as string[] | undefined;
+     expect(secondArgs).toContain("cursor=cursor-100");
+   });
++
++  it("classifies unresolved threads as a retryable pre-merge gate", () => {
++    let caught: unknown;
++    try {
++      throwIfGithubReviewThreadsUnresolved({
++        prNumber: 123,
++        unresolved: [
++          {
++            path: "src/file.ts",
++            line: 7,
++            url: "https://github.com/example/repo/pull/123#discussion-1",
++          },
++        ],
++      });
++    } catch (error) {
++      caught = error;
++    }
++    expect(caught).toBeInstanceOf(CliError);
++    const error = caught as CliError;
++    expect(error.code).toBe("E_VALIDATION");
++    expect(error.context).toMatchObject({
++      reason_code: "github_review_threads_unresolved",
++      pr_number: 123,
++      unresolved_review_threads: 1,
++    });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/pr/internal/github-review-threads.ts b/packages/agentplane/src/commands/pr/internal/github-review-threads.ts
+index e5c668d08..7a5a25f6f 100644
+--- a/packages/agentplane/src/commands/pr/internal/github-review-threads.ts
++++ b/packages/agentplane/src/commands/pr/internal/github-review-threads.ts
+@@ -173,5 +173,10 @@ export function throwIfGithubReviewThreadsUnresolved(opts: {
+       `GitHub PR #${opts.prNumber} has ${opts.unresolved.length} unresolved review thread(s).\n` +
+       `${examples}\n` +
+       "Resolve or address review threads before merge/integration.",
++    context: {
++      reason_code: "github_review_threads_unresolved",
++      pr_number: opts.prNumber,
++      unresolved_review_threads: opts.unresolved.length,
++    },
+   });
+ }
+diff --git a/packages/agentplane/src/commands/shared/route-cleanup-probe.ts b/packages/agentplane/src/commands/shared/route-cleanup-probe.ts
+new file mode 100644
+index 000000000..fcb8d262a
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/route-cleanup-probe.ts
+@@ -0,0 +1,64 @@
++import { gitRevParse } from "@agentplaneorg/core/git";
++import type { TaskData } from "../../backends/task-backend.js";
++
++import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
++import type { TaskResumeContext } from "../task/handoff.shared.js";
++import type { RouteCleanupProbe } from "./route-decision-types.js";
++import type { CommandContext } from "./task-backend.js";
++
++export async function resolveDoneCleanupProbe(opts: {
++  ctx: CommandContext;
++  resume: TaskResumeContext;
++  task: TaskData;
++  remoteEnabled: boolean;
++  onDiagnostic?: (message: string) => void;
++}): Promise<RouteCleanupProbe> {
++  if (
++    opts.ctx.config.workflow_mode !== "branch_pr" ||
++    String(opts.task.status).toUpperCase() !== "DONE"
++  ) {
++    return { state: "not_requested" };
++  }
++  if (!opts.remoteEnabled) {
++    return { state: "unavailable", reason: "remote cleanup proof was not requested" };
++  }
++  const baseBranch = opts.resume.base_branch?.trim() ?? "";
++  if (!baseBranch) return { state: "unavailable", reason: "base branch is unavailable" };
++  try {
++    const resolution = await resolveCleanupPlan({
++      ctx: opts.ctx,
++      gitRoot: opts.ctx.resolvedProject.gitRoot,
++      workflowDir: opts.ctx.config.paths.workflow_dir,
++      baseBranch,
++      taskIds: [opts.task.id],
++    });
++    if (resolution.blocked.length > 0) {
++      return {
++        state: "blocked",
++        reasons: resolution.blocked.map((item) => `branch=${item.branch}: ${item.reason}`),
++      };
++    }
++    if (resolution.candidates.length > 0) {
++      return { state: "candidate", count: resolution.candidates.length };
++    }
++    if (!resolution.matchedTaskIds.has(opts.task.id)) {
++      const [localBaseSha, remoteBaseSha] = await Promise.all([
++        gitRevParse(opts.ctx.resolvedProject.gitRoot, [baseBranch]).catch(() => null),
++        gitRevParse(opts.ctx.resolvedProject.gitRoot, [`origin/${baseBranch}`]).catch(() => null),
++      ]);
++      return {
++        state: "already_clean",
++        baseSynchronized:
++          localBaseSha !== null && remoteBaseSha !== null && localBaseSha === remoteBaseSha,
++      };
++    }
++    return {
++      state: "unavailable",
++      reason: "cleanup proof returned a matched task without a candidate or blocker",
++    };
++  } catch (err) {
++    const message = err instanceof Error ? err.message : String(err);
++    opts.onDiagnostic?.(`cleanup candidate probe failed: ${message}`);
++    return { state: "unavailable", reason: message };
++  }
++}
+diff --git a/packages/agentplane/src/commands/shared/route-decision-types.ts b/packages/agentplane/src/commands/shared/route-decision-types.ts
+index 31d2f42f1..444050bad 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-types.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-types.ts
+@@ -11,7 +11,7 @@ export type RouteNextAction = RouteBatchNextAction;
+ export type RouteCleanupProbe =
+   | { state: "not_requested" }
+   | { state: "unavailable"; reason: string }
+-  | { state: "already_clean" }
++  | { state: "already_clean"; baseSynchronized?: boolean }
+   | { state: "candidate"; count: number }
+   | { state: "blocked"; reasons: string[] };
+ 
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index aa5a92cb8..5b5c49b94 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -9,8 +9,7 @@ import {
+   type ConflictReworkPreparation,
+ } from "../pr/conflict-rework.js";
+ import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
+-import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
+-import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
++import { buildTaskResumeContext } from "../task/handoff.shared.js";
+ import { resolveBatchOwnership } from "./route-batch-ownership.js";
+ import {
+   addTaskWorktreeCleanlinessBlocker,
+@@ -29,11 +28,7 @@ import {
+   type WorkflowRouteStateInput,
+ } from "./workflow-step-fingerprint.js";
+ import { reduceRouteState } from "./workflow-step-reducer.js";
+-import {
+-  taskSummary,
+-  type RouteCleanupProbe,
+-  type TaskRouteDecision,
+-} from "./route-decision-types.js";
++import { taskSummary, type TaskRouteDecision } from "./route-decision-types.js";
+ import { deriveRouteAmbiguities, deriveRouteRepairPlan } from "./route-decision-repair.js";
+ import {
+   deriveRouteCheckoutRole,
+@@ -48,6 +43,7 @@ import {
+   type CommandContext,
+ } from "./task-backend.js";
+ import { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
++import { resolveDoneCleanupProbe } from "./route-cleanup-probe.js";
+ import {
+   tracePolicyAuthorityDecision,
+   traceRemoteProviderState,
+@@ -285,53 +281,6 @@ async function resolveLocalTaskBranchFlow(opts: {
+   };
+ }
+ 
+-async function resolveDoneCleanupProbe(opts: {
+-  ctx: CommandContext;
+-  resume: TaskResumeContext;
+-  task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+-  remoteEnabled: boolean;
+-  onDiagnostic?: (message: string) => void;
+-}): Promise<RouteCleanupProbe> {
+-  if (
+-    opts.ctx.config.workflow_mode !== "branch_pr" ||
+-    String(opts.task.status).toUpperCase() !== "DONE"
+-  ) {
+-    return { state: "not_requested" };
+-  }
+-  if (!opts.remoteEnabled) {
+-    return { state: "unavailable", reason: "remote cleanup proof was not requested" };
+-  }
+-  const baseBranch = opts.resume.base_branch?.trim() ?? "";
+-  if (!baseBranch) return { state: "unavailable", reason: "base branch is unavailable" };
+-  try {
+-    const resolution = await resolveCleanupPlan({
+-      ctx: opts.ctx,
+-      gitRoot: opts.ctx.resolvedProject.gitRoot,
+-      workflowDir: opts.ctx.config.paths.workflow_dir,
+-      baseBranch,
+-      taskIds: [opts.task.id],
+-    });
+-    if (resolution.blocked.length > 0) {
+-      return {
+-        state: "blocked",
+-        reasons: resolution.blocked.map((item) => `branch=${item.branch}: ${item.reason}`),
+-      };
+-    }
+-    if (resolution.candidates.length > 0) {
+-      return { state: "candidate", count: resolution.candidates.length };
+-    }
+-    if (!resolution.matchedTaskIds.has(opts.task.id)) return { state: "already_clean" };
+-    return {
+-      state: "unavailable",
+-      reason: "cleanup proof returned a matched task without a candidate or blocker",
+-    };
+-  } catch (err) {
+-    const message = err instanceof Error ? err.message : String(err);
+-    opts.onDiagnostic?.(`cleanup candidate probe failed: ${message}`);
+-    return { state: "unavailable", reason: message };
+-  }
+-}
+-
+ export async function buildTaskRouteDecision(opts: {
+   ctx?: CommandContext;
+   cwd: string;
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 3e355d510..778ae3f63 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -80,6 +80,13 @@ function hostedCloseStep(state: WorkflowRouteState): WorkflowStep | null {
+     state.prFlow?.closeTail.state === "merged" ||
+     state.prFlow?.closeTail.state === "recorded_on_base"
+   ) {
++    if (
++      (state.cleanupProbe.state === "already_clean" &&
++        state.cleanupProbe.baseSynchronized === true) ||
++      state.cleanupProbe.state === "blocked"
++    ) {
++      return null;
++    }
+     const implementationBase = state.prFlow.pr.state === "not_found" ? null : state.prFlow.pr.base;
+     const base =
+       state.prFlow.closeTail.state === "recorded_on_base"
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts b/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts
+new file mode 100644
+index 000000000..67b1c6796
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts
+@@ -0,0 +1,113 @@
++import { describe, expect, it } from "vitest";
++import type { TaskData } from "../../backends/task-backend.js";
++import type { PrFlowStatusReport } from "../pr/flow-status.js";
++import type { TaskResumeContext } from "../task/handoff.shared.js";
++import type { RouteCleanupProbe } from "./route-decision-types.js";
++import { withBootstrapWorkflowFingerprint } from "./workflow-step-fingerprint.js";
++import { reduceRouteState } from "./workflow-step-reducer.js";
++
++const taskId = "202608031426-0BY4B4";
++const branch = `task/${taskId}/hosted-close`;
++const headSha = "2222222222222222222222222222222222222222";
++
++const task = {
++  id: taskId,
++  title: "Converge hosted close",
++  description: "Exercise terminal route convergence.",
++  status: "DONE",
++  priority: "high",
++  owner: "CODER",
++  revision: 1,
++  depends_on: [],
++  tags: ["code"],
++  verify: ["bun test"],
++  plan_approval: {
++    state: "approved",
++    approved_by: "ORCHESTRATOR",
++    approved_at: "2026-08-03T00:00:00.000Z",
++  },
++  verification: { state: "ok" },
++  commit: { hash: headSha, message: "feat: implementation" },
++} satisfies TaskData;
++
++const resume = {
++  task_id: taskId,
++  task_status: "DONE",
++  branch,
++  base_branch: "main",
++  head_sha: headSha,
++  workspace_root: "/repo",
++  pr_branch: branch,
++  latest_handoff: null,
++  runner: {
++    run_id: null,
++    status: null,
++    heartbeat_at: null,
++    state_path: null,
++    trace_path: null,
++    next_action: "run",
++    next_command: `agentplane task run ${taskId}`,
++    resume_command: `agentplane task run ${taskId}`,
++    retry_command: null,
++  },
++} satisfies TaskResumeContext;
++
++const prFlow = {
++  task: { id: taskId, status: "DONE", verification: "ok" },
++  branch: { name: branch, headSha, metaHeadSha: headSha },
++  pr: {
++    provider: "github",
++    state: "MERGED",
++    source: "lookup",
++    prNumber: 4756,
++    prUrl: "https://github.com/basilisk-labs/agentplane/pull/4756",
++    base: "main",
++    headSha,
++    mergeCommit: "3333333333333333333333333333333333333333",
++  },
++  closeTail: { state: "recorded_on_base", base: "main" },
++  hostedChecks: { checked: true, failing: 0, pending: 0, total: 21 },
++  reviewThreads: { checked: true, unresolved: 0 },
++  queue: { present: true, status: "done", reason: null, updatedAt: null },
++  handoff: { present: false },
++  nextAction: "pull main and run merged branch/worktree cleanup",
++} satisfies PrFlowStatusReport;
++
++function route(cleanupProbe: RouteCleanupProbe) {
++  return reduceRouteState(
++    withBootstrapWorkflowFingerprint({
++      task,
++      resume,
++      workflowMode: "branch_pr",
++      prFlow,
++      cleanupProbe,
++      blockers: [],
++      batchOwnership: { role: "none" },
++      taskWorktree: {
++        state: "not_present",
++        branch,
++        worktreePath: null,
++        changedPaths: [],
++      },
++    }),
++  );
++}
++
++describe("hosted-close route convergence", () => {
++  it("terminates when targeted cleanup is complete and base matches origin", () => {
++    expect(route({ state: "already_clean", baseSynchronized: true })).toMatchObject({
++      kind: "terminal",
++      id: "terminal.done",
++      phase: "done",
++      outcome: { type: "done" },
++    });
++  });
++
++  it("keeps finalization when cleanup is empty but base is not synchronized", () => {
++    expect(route({ state: "already_clean", baseSynchronized: false })).toMatchObject({
++      kind: "cli_operation",
++      operation: { id: "task.hosted_close.finalize" },
++      compatibility: { code: "sync_hosted_close" },
++    });
++  });
++});
