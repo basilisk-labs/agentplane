@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b6d50cc02c933e5b573f85ac2f00839044d81ca6b47b83e0eedb8b401976e157",
+  "implementation_sha": null,
+  "kind": "task_verification_record",
+  "note": "Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR.",
+  "recorded_at": "2026-08-03T12:51:48.983Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run gh issue list --state open --limit 200. Expected: only confirmed release issues #4663 and #4641 remain open.\n2. Run gh pr list --state open --limit 200. Expected: only deferred dependency PR #4752 remains open and is explicitly excluded from v0.7.1.\n3. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts. Expected: 29 current-main init tests pass while the audit records the missing .agentplane/tmp assertion as the #4663 gap.\n4. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: 4 current-main integration tests pass, including the reproduced unauthenticated-receipt behavior for #4641.\n5. Run the focused provider, receipt, foreign-artifact, branch-snapshot, and active-task suites plus bun run guards:check and bun run release:incidents:check. Expected: current main passes and supports closure of superseded task PRs.\n6. Review Findings. Expected: each original open issue and PR has one explicit disposition, release blockers are bounded, and TypeScript 7 is excluded from v0.7.1.",
+  "scope_digest": "sha256:6454590c7ac0bb58ae945d3165b6adf0b30cf77e35a0c6ec1c74092e4de864ae",
+  "task_id": "202608021232-53WJMN",
+  "verification_command": "agentplane verify 202608021232-53WJMN --rework --by TESTER",
+  "verifier": "TESTER"
+}

@@ -15,14 +15,19 @@ Triage all open GitHub issues and pull requests against the exact main candidate
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752
+to be the only open PR.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T12:39:16.407Z
+- Updated: 2026-08-03T12:47:59.487Z
 - Branch: task/202608021232-53WJMN/audit-github-issues-and-pull-requests-for-v0-7-1
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
