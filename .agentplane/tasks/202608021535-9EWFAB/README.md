@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 33
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T18:03:27.845Z"
+  updated_at: "2026-08-03T18:11:08.227Z"
   updated_by: "TESTER"
-  note: "Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9."
+  note: "Final code and evidence rework verification passed at 812ccf994d14."
   attempts: 0
 quality_review:
   state: "rework"
@@ -58,8 +58,8 @@ quality_review:
   findings:
     - "The final verification evidence does not show that the task evidence bundle was generated and verified offline."
 commit:
-  hash: "adfda14890a67fac94f38a338d95f472de234ffd"
-  message: "🧪 9EWFAB evidence: record offline bundle proof"
+  hash: "812ccf994d14557aa7e43a008eed53e73dfbd20c"
+  message: "🔁 9EWFAB code: reopen verified evidence rework"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Rework complete: generated deterministic 65-file evidence bundle, verified every hash offline, and confirmed compact evaluator manifests plus referenced content-addressed objects are included."
+  -
+    author: "CODER"
+    body: "Implementation rework complete: newer verified evidence now reopens semantic quality review without bypassing the quality gate."
 events:
   -
     type: "status"
@@ -220,8 +223,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9."
+  -
+    type: "status"
+    at: "2026-08-03T18:11:06.877Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework complete: newer verified evidence now reopens semantic quality review without bypassing the quality gate."
+  -
+    type: "verify"
+    at: "2026-08-03T18:11:08.227Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final code and evidence rework verification passed at 812ccf994d14."
 doc_version: 3
-doc_updated_at: "2026-08-03T18:03:28.875Z"
+doc_updated_at: "2026-08-03T18:11:09.524Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -735,6 +751,46 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T18:11:08.227Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final code and evidence rework verification passed at 812ccf994d14.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T18:11:06.877Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts; bun run ci:contract; bun run test:critical; bun run test:fast; bun run typecheck
+    Result: pass
+    Evidence: route quality-review suite 8/8 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, and 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3782 tests in 167.43s; type, formatting, lint, architecture, clone, dead-code, and coverage gates passed
+    Scope: final task implementation commit 812ccf994d14557aa7e43a008eed53e73dfbd20c
+
+    Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 202608021535-9EWFAB --json; inspect manifest quality object entries
+    Result: pass
+    Evidence: deterministic task bundle generation and offline SHA-256 verification completed with ok=true and errors=[]; compact evaluator files and all referenced quality/objects/sha256 inputs were present
+    Scope: evaluator-requested task evidence bundle proof
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1294,6 +1350,46 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T18:11:08.227Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final code and evidence rework verification passed at 812ccf994d14.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T18:11:06.877Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts; bun run ci:contract; bun run test:critical; bun run test:fast; bun run typecheck
+Result: pass
+Evidence: route quality-review suite 8/8 tests; RF-04 replay 50 runs with 70/70 outcomes, 27/27 provider cells, and 170/170 scalars; trust ratchet 0; critical 12/12 chunks; fast 535 files and 3782 tests in 167.43s; type, formatting, lint, architecture, clone, dead-code, and coverage gates passed
+Scope: final task implementation commit 812ccf994d14557aa7e43a008eed53e73dfbd20c
+
+Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 202608021535-9EWFAB --json; inspect manifest quality object entries
+Result: pass
+Evidence: deterministic task bundle generation and offline SHA-256 verification completed with ok=true and errors=[]; compact evaluator files and all referenced quality/objects/sha256 inputs were present
+Scope: evaluator-requested task evidence bundle proof
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
