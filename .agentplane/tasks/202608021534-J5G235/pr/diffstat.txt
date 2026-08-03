@@ -1,4 +1,4 @@
- knip.json                                          |    4 +
+ knip.json                                          |    5 +
  packages/agentplane/src/backends/task-backend.ts   |   20 -
  .../agentplane/src/backends/task-backend/shared.ts |   20 -
  .../src/backends/task-backend/shared/constants.ts  |    1 -
@@ -16,7 +16,6 @@
  packages/agentplane/src/cli/bootstrap-guide.ts     |    4 +-
  .../src/cli/check-knip-baseline-script.test.ts     |   20 +
  packages/agentplane/src/cli/command-invocations.ts |    2 +-
- packages/agentplane/src/cli/critical/cli-runner.ts |   14 -
  packages/agentplane/src/cli/critical/harness.ts    |    7 +-
  packages/agentplane/src/cli/error-map.ts           |    2 +-
  packages/agentplane/src/cli/output.ts              |    4 +-
@@ -142,4 +141,4 @@
  .../src/workflow-runtime/validation-helpers.ts     |    2 +-
  scripts/baselines/knip-baseline.json               | 3313 +-------------------
  scripts/checks/check-knip-baseline.mjs             |   53 +-
- 144 files changed, 292 insertions(+), 4323 deletions(-)
+ 143 files changed, 293 insertions(+), 4309 deletions(-)
