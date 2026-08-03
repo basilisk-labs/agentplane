@@ -1,0 +1,2477 @@
+diff --git a/docs/user/breaking-changes.mdx b/docs/user/breaking-changes.mdx
+index e3131a85c..2c77f87a7 100644
+--- a/docs/user/breaking-changes.mdx
++++ b/docs/user/breaking-changes.mdx
+@@ -30,13 +30,18 @@ For the complete 0.6.24/0.6.26 migration and rollback procedure, see
+    supervisor-owned storage and do not reuse the legacy write location.
+ 10. `evaluator execute` is the model-backed review path. `evaluator run` remains an explicit
+     compatibility recorder and requires supplied provenance.
++11. `agentplane doctor legacy --json` is the machine-readable retirement inventory for supported
++    compatibility adapters. It reports current workspace usage without changing files.
++12. Legacy protected-conflict adoption moved to
++    `agentplane repair adopt-legacy-conflict`; the former integration-queue command remains a hidden
++    compatibility alias during the retirement window.
+ 
+ ## Upgrade checklist
+ 
+ 1. Install the exact intended CLI version and confirm it with `agentplane runtime explain`.
+ 2. Run `agentplane upgrade --dry-run`, then `agentplane upgrade --yes --migrate-task-docs`.
+ 3. Re-run the dry run and require `0 add, 0 update, 0 remove`.
+-4. Run `agentplane doctor`.
++4. Run `agentplane doctor` and inspect `agentplane doctor legacy --json`.
+ 5. Resume active branch work with `agentplane work resume <task-id>` instead of creating a new
+    worktree.
+ 6. Regenerate generated docs only when command specs changed.
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 7fae3123c..a4dd73c19 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -93,7 +93,6 @@ Field names and casing are exact. Optional fields are omitted when no value is a
+   - [work start](#work-start)
+ - PR
+   - [integrate](#integrate)
+-  - [integrate queue adopt-legacy-protected-conflict](#integrate-queue-adopt-legacy-protected-conflict)
+   - [integrate queue claim](#integrate-queue-claim)
+   - [integrate queue doctor](#integrate-queue-doctor)
+   - [integrate queue enqueue](#integrate-queue-enqueue)
+@@ -1402,20 +1401,6 @@ agentplane integrate 202602030608-F1Q8AB --run-verify
+ 
+ - Integrate with verify.
+ 
+-### integrate queue adopt-legacy-protected-conflict
+-
+-Record an explicit recovery receipt for a verified legacy protected-PR conflict.
+-
+-Usage:
+-
+-```text
+-agentplane integrate queue adopt-legacy-protected-conflict <task-id> [options]
+-```
+-
+-Options:
+-
+-- `--expect-adoption-token <sha256:...>`: Exact token from task next-action or pr conflict-rework.
+-
+ ### integrate queue claim
+ 
+ Claim the next queued integration candidate without running integrate.
+diff --git a/docs/user/commands.mdx b/docs/user/commands.mdx
+index e1c810f84..4387a0ac5 100644
+--- a/docs/user/commands.mdx
++++ b/docs/user/commands.mdx
+@@ -89,8 +89,21 @@ Workflow diagnostics and repair:
+ 
+ ```bash
+ agentplane doctor --fix
++agentplane doctor legacy --json
+ ```
+ 
++`doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
++workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
++introduction and deprecation versions, retirement target or blocker, and migration command.
++
++Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
++
++```bash
++agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>
++```
++
++Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
++
+ ## Config
+ 
+ ```bash
+diff --git a/packages/agentplane/README.md b/packages/agentplane/README.md
+index df5880402..87cc49a34 100644
+--- a/packages/agentplane/README.md
++++ b/packages/agentplane/README.md
+@@ -67,17 +67,15 @@ AgentPlane records the task trail inside the repository you already review.
+ 
+ ```bash
+ agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner <agent-id> --tag code
+-agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by <agent-id>
+-agentplane task plan approve <task-id> --by <reviewer-id>
+-agentplane task start-ready <task-id> --author <agent-id> --body "Start: implementing parser validation with focused tests."
+-# Run Claude Code, Codex, Cursor, Aider, or edit manually.
+-agentplane task verify-show <task-id>
+-agentplane verify <task-id> --ok --by <agent-id> --note "Focused tests passed."
+-agentplane finish <task-id> --author <agent-id> --result "Parser rejects empty labels." --commit <git-rev>
++agentplane task advance <task-id> --agent-json
++# Give the returned WorkOrder to Claude Code, Codex, Cursor, Aider, or another agent.
++agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+ ```
+ 
+-The visible output is the point: a reviewer can inspect task intent, plan, verification, closure,
+-and ACR from Git-visible files.
++`task advance` owns deterministic lifecycle transitions and returns one compact semantic action at a
++time. Use `agentplane task run <task-id>` when AgentPlane should invoke the configured managed
++runner itself. In both modes the visible record keeps task intent, plan, observed verification,
++evaluator result, token usage, closure, and ACR reviewable from Git-visible files.
+ 
+ Agent IDs are configurable profiles. See
+ [Agents](https://agentplane.org/docs/user/agents).
+diff --git a/packages/agentplane/assets/compatibility-retirement-manifest.json b/packages/agentplane/assets/compatibility-retirement-manifest.json
+new file mode 100644
+index 000000000..89bbd0486
+--- /dev/null
++++ b/packages/agentplane/assets/compatibility-retirement-manifest.json
+@@ -0,0 +1,152 @@
++{
++  "schema_version": 1,
++  "kind": "agentplane.compatibility_retirement_manifest",
++  "adapters": [
++    {
++      "id": "config.legacy_json",
++      "owner": "@agentplaneorg/core/config",
++      "source_paths": ["packages/core/src/config/io.ts", "packages/core/src/config/validation.ts"],
++      "introduced_in": "0.3.18",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "The published workspace upgrade promise needs a defined support window after observed usage reaches zero.",
++      "migration_command": "agentplane upgrade",
++      "usage_probe": { "kind": "legacy_config_json" }
++    },
++    {
++      "id": "workflow.contract_v1",
++      "owner": "agentplane/workflow-runtime",
++      "source_paths": ["packages/agentplane/src/workflow-runtime/migration.ts"],
++      "introduced_in": "0.7.0",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Existing WORKFLOW.md v1 installations remain covered by the published v0.7 migration contract.",
++      "migration_command": "agentplane workflow migrate",
++      "usage_probe": { "kind": "workflow_contract_v1" }
++    },
++    {
++      "id": "task.readme_pre_v3",
++      "owner": "@agentplaneorg/core/tasks",
++      "source_paths": [
++        "packages/core/src/tasks/task-doc-contract.ts",
++        "packages/agentplane/src/commands/task/migrate-doc.ts"
++      ],
++      "introduced_in": "0.3.8",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Historical task archives can still contain README v2 records and need an explicit archive support policy.",
++      "migration_command": "agentplane task migrate-doc --all",
++      "usage_probe": { "kind": "task_readme_pre_v3" }
++    },
++    {
++      "id": "runner.agent_work_context_v1",
++      "owner": "@agentplaneorg/core/runner",
++      "source_paths": ["packages/core/src/runner/agent-work-order-compat.ts"],
++      "introduced_in": "0.7.0",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Legacy v1 packets are caller-supplied and local workspace inspection cannot prove that external producers have stopped sending them.",
++      "migration_command": "agentplane task advance <task-id> --agent-json",
++      "usage_probe": { "kind": "runtime_input_unobservable" }
++    },
++    {
++      "id": "supervisor.execution_episode_v0",
++      "owner": "@agentplaneorg/core/runner",
++      "source_paths": ["packages/core/src/runner/supervisor-execution-episode-migration.ts"],
++      "introduced_in": "0.7.0",
++      "deprecated_in": "0.7.1",
++      "remove_in": "0.8.0",
++      "removal_blocker": null,
++      "migration_command": "agentplane task advance <task-id>",
++      "usage_probe": { "kind": "supervisor_episode_v0" }
++    },
++    {
++      "id": "runner.task_local_storage",
++      "owner": "agentplane/runner",
++      "source_paths": [
++        "packages/agentplane/src/runner/run-record-profile.ts",
++        "packages/agentplane/src/runner/run-repository-compat.ts"
++      ],
++      "introduced_in": "0.7.0",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Historical task-local runs remain readable until upgrade migration and retention behavior are specified.",
++      "migration_command": "agentplane upgrade",
++      "usage_probe": { "kind": "task_local_runner_storage" }
++    },
++    {
++      "id": "runner.result_manifest_v1",
++      "owner": "agentplane/runner",
++      "source_paths": ["packages/agentplane/src/runner/result-manifest.ts"],
++      "introduced_in": "0.3.8",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Historical runner result artifacts are immutable evidence and need a retention-aware reader policy before removal.",
++      "migration_command": "agentplane upgrade",
++      "usage_probe": { "kind": "runner_result_manifest_v1" }
++    },
++    {
++      "id": "context.profile_aliases",
++      "owner": "agentplane/context",
++      "source_paths": [
++        "packages/agentplane/src/commands/context/context.spec.ts",
++        "packages/agentplane/src/context/ingest-task.ts"
++      ],
++      "introduced_in": "0.6.0",
++      "deprecated_in": "0.7.1",
++      "remove_in": "0.8.0",
++      "removal_blocker": null,
++      "migration_command": "agentplane context init --profile maximum-assimilation",
++      "usage_probe": { "kind": "runtime_input_unobservable" }
++    },
++    {
++      "id": "context.workspace_pre_maximum_assimilation_v2",
++      "owner": "agentplane/context",
++      "source_paths": ["packages/agentplane/src/commands/context/migrate.ts"],
++      "introduced_in": "0.6.22",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Existing context workspaces can preserve legacy knowledge artifacts whose semantic re-verification is not automatic.",
++      "migration_command": "agentplane context migrate maximum-assimilation-v2",
++      "usage_probe": { "kind": "context_workspace_legacy" }
++    },
++    {
++      "id": "pr.legacy_protected_conflict",
++      "owner": "agentplane/pr",
++      "source_paths": [
++        "packages/agentplane/src/commands/pr/conflict-rework-legacy.ts",
++        "packages/agentplane/src/commands/pr/integrate/queue-state-legacy-adoption.ts"
++      ],
++      "introduced_in": "0.7.0",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Active pre-v0.7 protected-conflict handoffs need an explicit support horizon and a zero-usage qualification window.",
++      "migration_command": "agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>",
++      "usage_probe": { "kind": "legacy_protected_conflict_queue" }
++    },
++    {
++      "id": "cleanup.git_replacement_refs",
++      "owner": "agentplane/branch",
++      "source_paths": [
++        "packages/agentplane/src/commands/branch/cleanup-merged-provider-compatibility.ts"
++      ],
++      "introduced_in": "0.7.1",
++      "deprecated_in": null,
++      "remove_in": null,
++      "removal_blocker": "Repositories with refs/replace need explicit operator cleanup before replacement-ref compatibility can be removed.",
++      "migration_command": "git replace -d <object>",
++      "usage_probe": { "kind": "git_replacement_refs" }
++    },
++    {
++      "id": "commit.historical_forms",
++      "owner": "@agentplaneorg/core/commit",
++      "source_paths": ["packages/core/src/commit/commit-policy.ts"],
++      "introduced_in": "0.1.1",
++      "deprecated_in": "0.7.1",
++      "remove_in": null,
++      "removal_blocker": "Historical commit subjects are immutable and the compatibility reader needs a bounded history policy before retirement.",
++      "migration_command": "agentplane doctor legacy --json",
++      "usage_probe": { "kind": "runtime_input_unobservable" }
++    }
++  ]
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+index c32fa0781..6563430d1 100644
+--- a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+@@ -228,6 +228,44 @@ describe("cli help contract", () => {
+     }
+   });
+ 
++  it("keeps compatibility inventory and repair out of default help but directly discoverable", async () => {
++    const doctorIo = captureStdIO();
++    try {
++      const code = await runCli(["help", "doctor", "legacy", "--compact"]);
++      expect(code).toBe(0);
++      expect(doctorIo.stdout).toContain("doctor legacy - Inspect compatibility adapters");
++      expect(doctorIo.stdout).toContain("agentplane doctor legacy [options]");
++      expect(doctorIo.stdout).toContain("--json");
++    } finally {
++      doctorIo.restore();
++    }
++
++    const repairIo = captureStdIO();
++    try {
++      const code = await runCli(["help", "repair", "adopt-legacy-conflict", "--compact"]);
++      expect(code).toBe(0);
++      expect(repairIo.stdout).toContain("repair adopt-legacy-conflict - Record a verified legacy");
++      expect(repairIo.stdout).toContain("--expect-adoption-token");
++    } finally {
++      repairIo.restore();
++    }
++
++    const oldAliasIo = captureStdIO();
++    try {
++      const code = await runCli([
++        "help",
++        "integrate",
++        "queue",
++        "adopt-legacy-protected-conflict",
++        "--compact",
++      ]);
++      expect(code).toBe(2);
++      expect(oldAliasIo.stderr).toContain("Unknown command");
++    } finally {
++      oldAliasIo.restore();
++    }
++  });
++
+   it("normal project help rejects explicit framework-maintainer command help", async () => {
+     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
+     const io = captureStdIO();
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+index 3ef9a83ad..a95f1741a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+@@ -697,8 +697,8 @@ describe("provider conflict rework CLI", () => {
+           expect(route.conflict_rework, providerState).toBeNull();
+           expect(route.workflow_step, providerState).toMatchObject({
+             kind: "agent_episode",
+-            id: "agent.quality_review",
+-            compatibility: { code: "quality_review_required", command: null },
++            id: "agent.verification",
++            compatibility: { code: "verification_required", command: null },
+           });
+           expect(route.execution_packet, providerState).toMatchObject({
+             actionKind: "stop",
+@@ -847,9 +847,8 @@ describe("provider conflict rework CLI", () => {
+           safeToMutate: true,
+           exactArgv: [
+             "agentplane",
+-            "integrate",
+-            "queue",
+-            "adopt-legacy-protected-conflict",
++            "repair",
++            "adopt-legacy-conflict",
+             taskId,
+             "--expect-adoption-token",
+             conflictRework.adoption.token,
+@@ -868,6 +867,23 @@ describe("provider conflict rework CLI", () => {
+         }
+ 
+         const adoptionIo = captureStdIO();
++        try {
++          const code = await runCli([
++            "repair",
++            "adopt-legacy-conflict",
++            taskId,
++            "--expect-adoption-token",
++            conflictRework.adoption.token,
++            "--root",
++            root,
++          ]);
++          if (code !== 0) process.stderr.write(adoptionIo.stderr);
++          expect(code).toBe(0);
++        } finally {
++          adoptionIo.restore();
++        }
++
++        const compatibilityAliasIo = captureStdIO();
+         try {
+           const code = await runCli([
+             "integrate",
+@@ -879,10 +895,9 @@ describe("provider conflict rework CLI", () => {
+             "--root",
+             root,
+           ]);
+-          if (code !== 0) process.stderr.write(adoptionIo.stderr);
+           expect(code).toBe(0);
+         } finally {
+-          adoptionIo.restore();
++          compatibilityAliasIo.restore();
+         }
+ 
+         const adoptedRoute = await readRemoteRoute(root, taskId);
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 6db1588df..4b1ce534a 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("256commands/177args/826options");
++      expect(compatibility.stdout).toContain("259commands/179args/828options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -192,17 +192,18 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608021231-SHYJGK",
+           "202608021534-YN84E1",
+           "202608022324-9VCYWG",
++          "202608021535-CNQKXP",
+         ],
+         candidate: {
+-          surface_sha256: "0c933ab071ec74c75d25ac6d3466ecf9555eb9737623ed574c2b5063a2c03206",
++          surface_sha256: "5fe979c4175ec9d8059079384632c52cce90340697675f8eba66f8fbc808ea27",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "c0f84f6ab60f3f82f964d8a4072f0b41544ac9f19accb23c9a5382018b8e4797",
++            cli_topology: "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-            tarball_policy: "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752",
++            tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+           },
+         },
+         pre_release_package_delta: {
+@@ -228,7 +229,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           section: "package_manifests",
+           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+           to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+-          surface_sha256: "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
++          surface_sha256: "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
+           allowed_json_paths: [
+             "$.package_manifests[0].dependencies.@agentplaneorg/core",
+             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -567,7 +568,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(JSON.parse(result.stdout)).toEqual({
+         packageManifestDigest: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+-        surfaceDigest: "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
++        surfaceDigest: "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
+         changedPaths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index 0d1fa5a69..bfebf63ab 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -425,6 +425,7 @@ describe("command catalog graph", () => {
+       ["integrate", "queue", "enqueue"],
+       ["integrate", "queue", "doctor"],
+       ["integrate", "queue", "adopt-legacy-protected-conflict"],
++      ["repair", "adopt-legacy-conflict"],
+     ]) {
+       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
+         INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+@@ -613,6 +614,12 @@ describe("command catalog graph", () => {
+     expect(findCommandEntry(["task", "next-action"])?.surface).toBe("advanced");
+     expect(findCommandEntry(["task", "begin"])?.surface).toBe("advanced");
+     expect(findCommandEntry(["task", "complete"])?.surface).toBe("advanced");
++    expect(findCommandEntry(["doctor", "legacy"])?.surface).toBe("advanced");
++    expect(findCommandEntry(["repair"])?.surface).toBe("advanced");
++    expect(findCommandEntry(["repair", "adopt-legacy-conflict"])?.surface).toBe("advanced");
++    expect(
++      findCommandEntry(["integrate", "queue", "adopt-legacy-protected-conflict"])?.surface,
++    ).toBe("internal");
+     expect(findCommandEntry(["task", "run", "tool"])?.surface).toBe("internal");
+     expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
+     expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
+@@ -625,6 +632,9 @@ describe("command catalog graph", () => {
+     expect(normalHelpIds).not.toContain("task next-action");
+     expect(normalHelpIds).not.toContain("task begin");
+     expect(normalHelpIds).not.toContain("task complete");
++    expect(normalHelpIds).not.toContain("doctor legacy");
++    expect(normalHelpIds).not.toContain("repair");
++    expect(normalHelpIds).not.toContain("integrate queue adopt-legacy-protected-conflict");
+     expect(normalHelpIds).not.toContain("task run status");
+     expect(normalHelpIds).not.toContain("task run tool");
+     expect(normalHelpIds).not.toContain("context harvest tasks");
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+index 4e06bf202..a1ed29e44 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/core.ts
+@@ -1,5 +1,6 @@
+ import { doctorSpec } from "../../../commands/doctor.spec.js";
+ import { doctorGitLocksSpec } from "../../../commands/doctor-git-locks.spec.js";
++import { doctorLegacySpec } from "../../../commands/doctor-legacy.spec.js";
+ import { runtimeExplainSpec, runtimeSpec } from "../../../commands/runtime.spec.js";
+ import {
+   insightsIssueSpec,
+@@ -88,6 +89,7 @@ import {
+   loadPlatformDoctorSpec,
+   fromCommandsDoctorRun,
+   fromCommandsDoctorGitLocksCommand,
++  fromCommandsDoctorLegacyCommand,
+   fromCommandsWorkflowCommand,
+   fromCommandsWorkflowBuildCommand,
+   fromCommandsWorkflowRestoreCommand,
+@@ -222,6 +224,10 @@ export const CORE_COMMANDS = [
+   fromCommandsDoctorGitLocksCommand(doctorGitLocksSpec, "runDoctorGitLocks", {
+     requirements: PROJECT_REQUIREMENTS,
+   }),
++  fromCommandsDoctorLegacyCommand(doctorLegacySpec, "runDoctorLegacy", {
++    requirements: PROJECT_REQUIREMENTS,
++    surface: "advanced",
++  }),
+   fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts b/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts
+index fad21e35a..04dab39f1 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/integration-queue.ts
+@@ -8,7 +8,9 @@ import {
+   integrateQueueRunNextSpec,
+   integrateQueueSpec,
+ } from "../../../commands/integrate-queue.spec.js";
++import { repairAdoptLegacyConflictSpec, repairSpec } from "../../../commands/repair.command.js";
+ import {
++  fromCommandsRepairCommand,
+   loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
+   loadIntegrateQueueClaimSpec,
+   loadIntegrateQueueDoctorSpec,
+@@ -19,6 +21,7 @@ import {
+   loadIntegrateQueueRunNextPreparationSpec,
+   loadIntegrateQueueRunNextSpec,
+   loadIntegrateQueueSpec,
++  loadRepairAdoptLegacyConflictSpec,
+ } from "../command-loaders/project.js";
+ import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
+ import {
+@@ -34,6 +37,15 @@ import {
+ } from "./kernel.js";
+ 
+ export const INTEGRATION_QUEUE_COMMANDS = [
++  fromCommandsRepairCommand(repairSpec, "runRepair", {
++    requirements: NO_CONTEXT_REQUIREMENTS,
++    surface: "advanced",
++  }),
++  declareSessionCommand(repairAdoptLegacyConflictSpec, {
++    load: loadRepairAdoptLegacyConflictSpec,
++    requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    surface: "advanced",
++  }),
+   declareSessionCommand(integrateQueueSpec, {
+     load: loadIntegrateQueueSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+@@ -68,6 +80,7 @@ export const INTEGRATION_QUEUE_COMMANDS = [
+   declareSessionCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
+     load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
+     requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
++    surface: "internal",
+   }),
+   declareConditionalSessionCommand(integrateQueueRunNextSpec, {
+     default: {
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+index 251614140..047b24e95 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/core.ts
+@@ -108,6 +108,9 @@ export const fromCommandsDoctorRun = commandModule(() => import("../../../comman
+ export const fromCommandsDoctorGitLocksCommand = commandModule(
+   () => import("../../../commands/doctor-git-locks.run.js"),
+ );
++export const fromCommandsDoctorLegacyCommand = commandModule(
++  () => import("../../../commands/doctor-legacy.run.js"),
++);
+ export const fromCommandsWorkflowCommand = commandModule(
+   () => import("../../../commands/workflow.command.js"),
+ );
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+index 27e0a69f7..2d8d655a5 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/project.ts
+@@ -496,6 +496,9 @@ export const loadPrNoteSpec = (session: ProviderWriteSession) =>
+ export const fromCommandsFlowCommand = commandModule(
+   () => import("../../../commands/flow/flow.command.js"),
+ );
++export const fromCommandsRepairCommand = commandModule(
++  () => import("../../../commands/repair.command.js"),
++);
+ export const loadFlowRepairSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/flow/repair.command.js").then((m) =>
+     m.makeRunFlowRepairHandler((command) => getProviderWriteContext(session, command)),
+@@ -556,6 +559,15 @@ export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (
+       getProviderReadContext(session, command),
+     ),
+   );
++export const loadRepairAdoptLegacyConflictSpec = (
++  session: IntegrationQueueTaskProviderReadSession,
++) =>
++  import("../../../commands/integrate-queue.command.js").then((m) =>
++    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(
++      (command) => getProviderReadContext(session, command),
++      "repair adopt-legacy-conflict",
++    ),
++  );
+ export const loadIntegrateQueueRunNextPreparationSpec = (
+   session: IntegrationQueueTaskProviderReadSession,
+ ) =>
+diff --git a/packages/agentplane/src/commands/doctor-legacy.run.ts b/packages/agentplane/src/commands/doctor-legacy.run.ts
+new file mode 100644
+index 000000000..0b7f512f6
+--- /dev/null
++++ b/packages/agentplane/src/commands/doctor-legacy.run.ts
+@@ -0,0 +1,32 @@
++import { resolveProject } from "@agentplaneorg/core/project";
++
++import type { CommandHandler } from "../cli/spec/spec.js";
++import type { DoctorLegacyParsed } from "./doctor-legacy.spec.js";
++import { COMPATIBILITY_RETIREMENT_MANIFEST } from "./doctor/legacy-manifest.js";
++import { inspectLegacyCompatibilityUsage } from "./doctor/legacy-probes.js";
++
++export const runDoctorLegacy: CommandHandler<DoctorLegacyParsed> = async (ctx, parsed) => {
++  const project = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
++  const report = await inspectLegacyCompatibilityUsage({
++    repoRoot: project.gitRoot,
++    manifest: COMPATIBILITY_RETIREMENT_MANIFEST,
++  });
++  if (parsed.json || ctx.outputMode === "json") {
++    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
++    return 0;
++  }
++  process.stdout.write(
++    `Compatibility adapters: total=${report.summary.total} used=${report.summary.used} ` +
++      `unused=${report.summary.unused} unknown=${report.summary.unknown} ` +
++      `blocked=${report.summary.blocked}\n`,
++  );
++  for (const adapter of report.adapters) {
++    const retirement = adapter.remove_in ?? `blocked: ${adapter.removal_blocker}`;
++    process.stdout.write(
++      `${adapter.status.toUpperCase()} ${adapter.id} remove_in=${retirement}\n` +
++        `  probe=${adapter.usage_probe.kind} evidence=${adapter.evidence.join("; ")}\n` +
++        `  migrate=${adapter.migration_command}\n`,
++    );
++  }
++  return 0;
++};
+diff --git a/packages/agentplane/src/commands/doctor-legacy.spec.ts b/packages/agentplane/src/commands/doctor-legacy.spec.ts
+new file mode 100644
+index 000000000..ed8134d56
+--- /dev/null
++++ b/packages/agentplane/src/commands/doctor-legacy.spec.ts
+@@ -0,0 +1,18 @@
++import type { CommandSpec } from "../cli/spec/spec.js";
++
++export type DoctorLegacyParsed = { json: boolean };
++
++export const doctorLegacySpec: CommandSpec<DoctorLegacyParsed> = {
++  id: ["doctor", "legacy"],
++  group: "Quality",
++  summary: "Inspect compatibility adapters, retirement targets, and current workspace usage.",
++  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
++  examples: [
++    {
++      cmd: "agentplane doctor legacy --json",
++      why: "Emit the packaged retirement manifest with deterministic workspace usage evidence.",
++    },
++  ],
++  notes: ["Read-only: this command never applies migrations or removes compatibility data."],
++  parse: (raw) => ({ json: raw.opts.json === true }),
++};
+diff --git a/packages/agentplane/src/commands/doctor/legacy-manifest.ts b/packages/agentplane/src/commands/doctor/legacy-manifest.ts
+new file mode 100644
+index 000000000..5d41ae4aa
+--- /dev/null
++++ b/packages/agentplane/src/commands/doctor/legacy-manifest.ts
+@@ -0,0 +1,144 @@
++import { readFileSync } from "node:fs";
++import { lstat } from "node:fs/promises";
++import path from "node:path";
++
++import { z } from "zod";
++
++const LEGACY_USAGE_PROBE_KINDS = [
++  "context_workspace_legacy",
++  "git_replacement_refs",
++  "legacy_config_json",
++  "legacy_protected_conflict_queue",
++  "runner_result_manifest_v1",
++  "runtime_input_unobservable",
++  "supervisor_episode_v0",
++  "task_local_runner_storage",
++  "task_readme_pre_v3",
++  "workflow_contract_v1",
++] as const;
++
++const VERSION_SCHEMA = z.string().regex(/^\d+\.\d+\.\d+$/u);
++const SOURCE_PATH_SCHEMA = z
++  .string()
++  .min(1)
++  .refine((value) => !path.isAbsolute(value) && !value.split("/").includes(".."), {
++    message: "source path must stay inside the repository",
++  });
++
++const AdapterSchema = z
++  .object({
++    id: z.string().regex(/^[a-z0-9]+(?:[._-][a-z0-9]+)*$/u),
++    owner: z.string().trim().min(1),
++    source_paths: z.array(SOURCE_PATH_SCHEMA).min(1),
++    introduced_in: VERSION_SCHEMA,
++    deprecated_in: VERSION_SCHEMA.nullable(),
++    remove_in: VERSION_SCHEMA.nullable(),
++    removal_blocker: z.string().trim().min(1).nullable(),
++    migration_command: z.string().trim().min(1),
++    usage_probe: z.object({ kind: z.enum(LEGACY_USAGE_PROBE_KINDS) }).strict(),
++  })
++  .strict()
++  .superRefine((adapter, ctx) => {
++    const introduced = versionTuple(adapter.introduced_in);
++    const deprecated = adapter.deprecated_in ? versionTuple(adapter.deprecated_in) : null;
++    const remove = adapter.remove_in ? versionTuple(adapter.remove_in) : null;
++    if (deprecated && compareVersions(deprecated, introduced) < 0) {
++      ctx.addIssue({ code: "custom", path: ["deprecated_in"], message: "precedes introduced_in" });
++    }
++    if (remove && compareVersions(remove, deprecated ?? introduced) <= 0) {
++      ctx.addIssue({
++        code: "custom",
++        path: ["remove_in"],
++        message: "must be later than the introduction/deprecation version",
++      });
++    }
++    if (adapter.remove_in === null && adapter.removal_blocker === null) {
++      ctx.addIssue({
++        code: "custom",
++        path: ["removal_blocker"],
++        message: "is required while remove_in is unset",
++      });
++    }
++  });
++
++const ManifestSchema = z
++  .object({
++    schema_version: z.literal(1),
++    kind: z.literal("agentplane.compatibility_retirement_manifest"),
++    adapters: z.array(AdapterSchema).min(1),
++  })
++  .strict()
++  .superRefine((manifest, ctx) => {
++    const ids = new Set<string>();
++    for (const [index, adapter] of manifest.adapters.entries()) {
++      if (ids.has(adapter.id)) {
++        ctx.addIssue({
++          code: "custom",
++          path: ["adapters", index, "id"],
++          message: `duplicate adapter id ${adapter.id}`,
++        });
++      }
++      ids.add(adapter.id);
++    }
++  });
++
++function versionTuple(value: string): [number, number, number] {
++  const [major = 0, minor = 0, patch = 0] = value.split(".").map(Number);
++  return [major, minor, patch];
++}
++
++function compareVersions(left: [number, number, number], right: [number, number, number]): number {
++  for (const [index, value] of left.entries()) {
++    const difference = value - right[index]!;
++    if (difference !== 0) return difference;
++  }
++  return 0;
++}
++
++export type CompatibilityRetirementManifest = z.infer<typeof ManifestSchema>;
++export type CompatibilityRetirementAdapter = CompatibilityRetirementManifest["adapters"][number];
++export type LegacyUsageProbeKind = CompatibilityRetirementAdapter["usage_probe"]["kind"];
++
++function loadPackagedManifest(): unknown {
++  const candidates = [
++    new URL("../../../assets/compatibility-retirement-manifest.json", import.meta.url),
++    new URL("../assets/compatibility-retirement-manifest.json", import.meta.url),
++  ];
++  const errors: string[] = [];
++  for (const candidate of candidates) {
++    try {
++      return JSON.parse(readFileSync(candidate, "utf8")) as unknown;
++    } catch (error) {
++      errors.push(error instanceof Error ? error.message : String(error));
++    }
++  }
++  throw new Error(`Compatibility retirement manifest is unavailable: ${errors.join("; ")}`);
++}
++
++export function validateCompatibilityRetirementManifest(
++  value: unknown,
++): CompatibilityRetirementManifest {
++  return ManifestSchema.parse(value);
++}
++
++export const COMPATIBILITY_RETIREMENT_MANIFEST =
++  validateCompatibilityRetirementManifest(loadPackagedManifest());
++
++export async function validateCompatibilityRetirementSourcePaths(
++  repoRoot: string,
++  manifest: CompatibilityRetirementManifest = COMPATIBILITY_RETIREMENT_MANIFEST,
++): Promise<void> {
++  for (const adapter of manifest.adapters) {
++    for (const sourcePath of adapter.source_paths) {
++      const absolute = path.resolve(repoRoot, sourcePath);
++      const relative = path.relative(path.resolve(repoRoot), absolute);
++      if (relative.startsWith("..") || path.isAbsolute(relative)) {
++        throw new Error(`${adapter.id}: source path escapes repository: ${sourcePath}`);
++      }
++      const entry = await lstat(absolute).catch(() => null);
++      if (!entry?.isFile()) {
++        throw new Error(`${adapter.id}: source path is missing or not a file: ${sourcePath}`);
++      }
++    }
++  }
++}
+diff --git a/packages/agentplane/src/commands/doctor/legacy-probes.test.ts b/packages/agentplane/src/commands/doctor/legacy-probes.test.ts
+new file mode 100644
+index 000000000..47e9225a6
+--- /dev/null
++++ b/packages/agentplane/src/commands/doctor/legacy-probes.test.ts
+@@ -0,0 +1,321 @@
++import { execFile } from "node:child_process";
++import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { renderTaskReadme } from "@agentplaneorg/core/tasks";
++import { captureStdIO } from "@agentplane/testkit";
++import { afterEach, describe, expect, it } from "vitest";
++
++import { runDoctorLegacy } from "../doctor-legacy.run.js";
++import {
++  COMPATIBILITY_RETIREMENT_MANIFEST,
++  validateCompatibilityRetirementManifest,
++  validateCompatibilityRetirementSourcePaths,
++} from "./legacy-manifest.js";
++import { inspectLegacyCompatibilityUsage } from "./legacy-probes.js";
++
++const execFileAsync = promisify(execFile);
++const roots: string[] = [];
++
++const WORKFLOW_V2 = `---
++version: 2
++mode: direct
++owners:
++  orchestrator: CODER
++approvals:
++  require_plan: false
++  require_verify: false
++  require_network: true
++retry_policy:
++  normal_exit_continuation: true
++  abnormal_backoff: exponential
++  max_attempts: 5
++timeouts:
++  stall_seconds: 900
++in_scope_paths:
++  - "**"
++---
++
++## Prompt Template
++Repository: {{ runtime.repo_name }}
++Workflow mode: {{ workflow.mode }}
++
++## Checks
++- preflight
++
++## Fallback
++last_known_good: .agentplane/workflows/last-known-good.md
++`;
++
++async function fixture(): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-doctor-legacy-"));
++  roots.push(root);
++  await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: root });
++  await execFileAsync("git", ["config", "user.name", "Doctor Legacy Test"], { cwd: root });
++  await execFileAsync("git", ["config", "user.email", "doctor-legacy@example.com"], { cwd: root });
++  await mkdir(path.join(root, ".agentplane", "tasks"), { recursive: true });
++  await writeFile(path.join(root, ".agentplane", "WORKFLOW.md"), WORKFLOW_V2, "utf8");
++  await execFileAsync("git", ["add", ".agentplane/WORKFLOW.md"], { cwd: root });
++  await execFileAsync("git", ["commit", "-q", "-m", "test: seed doctor legacy fixture"], {
++    cwd: root,
++  });
++  return root;
++}
++
++function taskReadme(id: string, docVersion: 2 | 3): string {
++  return renderTaskReadme(
++    {
++      id,
++      title: `Task ${id}`,
++      description: "Legacy probe fixture.",
++      status: "TODO",
++      priority: "med",
++      owner: "CODER",
++      depends_on: [],
++      tags: ["code"],
++      verify: [],
++      plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
++      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
++      commit: null,
++      comments: [],
++      events: [],
++      revision: 1,
++      doc_version: docVersion,
++      doc_updated_at: "2026-08-03T00:00:00.000Z",
++      doc_updated_by: "CODER",
++      sections: {
++        Summary: "Fixture.",
++        Scope: "Fixture.",
++        Plan: "Fixture.",
++        "Verify Steps": "Fixture.",
++        Verification: "",
++        "Rollback Plan": "Fixture.",
++        Findings: "",
++      },
++    },
++    "",
++  );
++}
++
++function statusMap(report: Awaited<ReturnType<typeof inspectLegacyCompatibilityUsage>>) {
++  return Object.fromEntries(report.adapters.map((adapter) => [adapter.id, adapter.status]));
++}
++
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++
++describe("doctor legacy", () => {
++  it("validates the packaged manifest and every registered source path", async () => {
++    expect(validateCompatibilityRetirementManifest(COMPATIBILITY_RETIREMENT_MANIFEST)).toEqual(
++      COMPATIBILITY_RETIREMENT_MANIFEST,
++    );
++    await expect(
++      validateCompatibilityRetirementSourcePaths(process.cwd()),
++    ).resolves.toBeUndefined();
++    expect(
++      COMPATIBILITY_RETIREMENT_MANIFEST.adapters.every(
++        (adapter) => adapter.migration_command.trim().length > 0,
++      ),
++    ).toBe(true);
++
++    const duplicate = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
++    duplicate.adapters.push(structuredClone(duplicate.adapters[0]!));
++    expect(() => validateCompatibilityRetirementManifest(duplicate)).toThrow(/duplicate adapter/u);
++
++    const malformedSemver = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
++      adapters: { introduced_in: string }[];
++    };
++    malformedSemver.adapters[0]!.introduced_in = "v0.7";
++    expect(() => validateCompatibilityRetirementManifest(malformedSemver)).toThrow();
++
++    const invertedWindow = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
++      adapters: { introduced_in: string; deprecated_in: string | null }[];
++    };
++    invertedWindow.adapters[0]!.introduced_in = "0.7.1";
++    invertedWindow.adapters[0]!.deprecated_in = "0.7.0";
++    expect(() => validateCompatibilityRetirementManifest(invertedWindow)).toThrow(
++      /precedes introduced_in/u,
++    );
++
++    const unknownProbe = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
++      adapters: { usage_probe: { kind: string } }[];
++    };
++    unknownProbe.adapters[0]!.usage_probe.kind = "unknown_probe";
++    expect(() => validateCompatibilityRetirementManifest(unknownProbe)).toThrow();
++
++    const missingMigration = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST) as unknown as {
++      adapters: { migration_command: string | null }[];
++    };
++    missingMigration.adapters[0]!.migration_command = null;
++    expect(() => validateCompatibilityRetirementManifest(missingMigration)).toThrow();
++
++    const staleSource = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
++    staleSource.adapters[0]!.source_paths = ["packages/agentplane/src/missing-legacy-adapter.ts"];
++    await expect(
++      validateCompatibilityRetirementSourcePaths(process.cwd(), staleSource),
++    ).rejects.toThrow(/missing or not a file/u);
++
++    const directorySource = structuredClone(COMPATIBILITY_RETIREMENT_MANIFEST);
++    directorySource.adapters[0]!.source_paths = ["packages/agentplane/src/commands/doctor"];
++    await expect(
++      validateCompatibilityRetirementSourcePaths(process.cwd(), directorySource),
++    ).rejects.toThrow(/missing or not a file/u);
++  });
++
++  it("classifies unused and unobservable compatibility without changing the workspace", async () => {
++    const root = await fixture();
++    const before = await execFileAsync(
++      "git",
++      ["status", "--porcelain=v1", "--untracked-files=all"],
++      {
++        cwd: root,
++      },
++    );
++    const report = await inspectLegacyCompatibilityUsage({
++      repoRoot: root,
++      manifest: COMPATIBILITY_RETIREMENT_MANIFEST,
++    });
++    const after = await execFileAsync(
++      "git",
++      ["status", "--porcelain=v1", "--untracked-files=all"],
++      {
++        cwd: root,
++      },
++    );
++
++    expect(statusMap(report)).toMatchObject({
++      "config.legacy_json": "unused",
++      "workflow.contract_v1": "unused",
++      "task.readme_pre_v3": "unused",
++      "runner.agent_work_context_v1": "unknown",
++      "supervisor.execution_episode_v0": "unused",
++      "runner.task_local_storage": "unused",
++      "runner.result_manifest_v1": "unused",
++      "context.profile_aliases": "unknown",
++      "context.workspace_pre_maximum_assimilation_v2": "unused",
++      "pr.legacy_protected_conflict": "unused",
++      "cleanup.git_replacement_refs": "unused",
++      "commit.historical_forms": "unknown",
++    });
++    expect(after.stdout).toBe(before.stdout);
++  });
++
++  it("reports mixed current and legacy workspace evidence", async () => {
++    const root = await fixture();
++    await writeFile(path.join(root, ".agentplane", "config.json"), "{}\n", "utf8");
++    await writeFile(
++      path.join(root, ".agentplane", "WORKFLOW.md"),
++      WORKFLOW_V2.replace("version: 2", "version: 1"),
++      "utf8",
++    );
++    const taskId = "202608030000-LEGACY";
++    const taskRoot = path.join(root, ".agentplane", "tasks", taskId);
++    const runRoot = path.join(taskRoot, "runs", "legacy-run");
++    await mkdir(runRoot, { recursive: true });
++    await writeFile(path.join(taskRoot, "README.md"), taskReadme(taskId, 2), "utf8");
++    await writeFile(path.join(runRoot, "result.json"), '{"schema_version":1}\n', "utf8");
++    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
++    await writeFile(path.join(root, "context", "wiki", "legacy.md"), "# Legacy\n", "utf8");
++    await mkdir(path.join(root, ".agentplane", "cache"), { recursive: true });
++    await writeFile(
++      path.join(root, ".agentplane", "cache", "integration-queue.json"),
++      JSON.stringify({
++        schema_version: 1,
++        entries: [{ task_id: taskId, legacy_protected_conflict_adoption: {} }],
++      }),
++      "utf8",
++    );
++    const gitDirResult = await execFileAsync("git", ["rev-parse", "--git-common-dir"], {
++      cwd: root,
++    });
++    const gitDir = gitDirResult.stdout.trim();
++    const episodePath = path.resolve(
++      root,
++      gitDir,
++      "agentplane",
++      "supervisor",
++      "episodes",
++      taskId,
++      "journal.json",
++    );
++    await mkdir(path.dirname(episodePath), { recursive: true });
++    await writeFile(episodePath, '{"schema_version":0}\n', "utf8");
++    const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++    const head = headResult.stdout.trim();
++    await execFileAsync("git", ["update-ref", `refs/replace/${"1".repeat(40)}`, head], {
++      cwd: root,
++    });
++
++    const report = await inspectLegacyCompatibilityUsage({
++      repoRoot: root,
++      manifest: COMPATIBILITY_RETIREMENT_MANIFEST,
++    });
++
++    expect(statusMap(report)).toMatchObject({
++      "config.legacy_json": "used",
++      "workflow.contract_v1": "used",
++      "task.readme_pre_v3": "used",
++      "supervisor.execution_episode_v0": "used",
++      "runner.task_local_storage": "used",
++      "runner.result_manifest_v1": "used",
++      "context.workspace_pre_maximum_assimilation_v2": "used",
++      "pr.legacy_protected_conflict": "used",
++      "cleanup.git_replacement_refs": "used",
++    });
++    expect(report.summary.used).toBe(9);
++    expect(report.summary.unknown).toBe(3);
++  });
++
++  it("reports blocked probes and emits the stable JSON command contract", async () => {
++    const root = await fixture();
++    await writeFile(path.join(root, ".agentplane", "WORKFLOW.md"), "not front matter\n", "utf8");
++    const direct = await inspectLegacyCompatibilityUsage({
++      repoRoot: root,
++      manifest: COMPATIBILITY_RETIREMENT_MANIFEST,
++    });
++    expect(statusMap(direct)["workflow.contract_v1"]).toBe("blocked");
++
++    const io = captureStdIO();
++    try {
++      const code = await runDoctorLegacy(
++        { cwd: root, rootOverride: root, outputMode: "json" },
++        { json: true },
++      );
++      expect(code).toBe(0);
++      const report = JSON.parse(io.stdout) as {
++        kind: string;
++        summary: { total: number; blocked: number };
++        adapters: { id: string; status: string; migration_command: string }[];
++      };
++      expect(report.kind).toBe("agentplane.doctor.legacy");
++      expect(report.summary.total).toBe(COMPATIBILITY_RETIREMENT_MANIFEST.adapters.length);
++      expect(report.summary.blocked).toBeGreaterThan(0);
++      expect(report.adapters.map((adapter) => adapter.id)).toEqual(
++        COMPATIBILITY_RETIREMENT_MANIFEST.adapters.map((adapter) => adapter.id),
++      );
++      expect(report.adapters.every((adapter) => adapter.migration_command.trim().length > 0)).toBe(
++        true,
++      );
++    } finally {
++      io.restore();
++    }
++
++    const humanIo = captureStdIO();
++    try {
++      const code = await runDoctorLegacy(
++        { cwd: root, rootOverride: root, outputMode: "human" },
++        { json: false },
++      );
++      expect(code).toBe(0);
++      expect(
++        humanIo.stdout.split("\n").filter((line) => line.startsWith("  migrate=")),
++      ).toHaveLength(COMPATIBILITY_RETIREMENT_MANIFEST.adapters.length);
++      expect(humanIo.stdout).not.toContain("manual policy decision required");
++    } finally {
++      humanIo.restore();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/doctor/legacy-probes.ts b/packages/agentplane/src/commands/doctor/legacy-probes.ts
+new file mode 100644
+index 000000000..2a12b9f4b
+--- /dev/null
++++ b/packages/agentplane/src/commands/doctor/legacy-probes.ts
+@@ -0,0 +1,395 @@
++import { execFile } from "node:child_process";
++import { lstat, readFile, readdir } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { gitRevParse } from "@agentplaneorg/core/git";
++import { parseTaskReadme } from "@agentplaneorg/core/tasks";
++import { parse as parseYaml } from "yaml";
++
++import type {
++  CompatibilityRetirementAdapter,
++  CompatibilityRetirementManifest,
++  LegacyUsageProbeKind,
++} from "./legacy-manifest.js";
++
++type LegacyUsageStatus = "used" | "unused" | "unknown" | "blocked";
++
++type LegacyAdapterUsage = CompatibilityRetirementAdapter & {
++  status: LegacyUsageStatus;
++  evidence: string[];
++};
++
++export type LegacyDoctorReport = {
++  schema_version: 1;
++  kind: "agentplane.doctor.legacy";
++  manifest_schema_version: 1;
++  summary: Record<LegacyUsageStatus | "total", number>;
++  adapters: LegacyAdapterUsage[];
++};
++
++type ProbeResult = Pick<LegacyAdapterUsage, "status" | "evidence">;
++
++const EVIDENCE_LIMIT = 5;
++const execFileAsync = promisify(execFile);
++
++function errnoCode(error: unknown): string {
++  return typeof error === "object" && error !== null && "code" in error
++    ? String((error as NodeJS.ErrnoException).code)
++    : "UNKNOWN";
++}
++
++function blocked(label: string, error: unknown): ProbeResult {
++  return {
++    status: "blocked",
++    evidence: [
++      `${label}: ${errnoCode(error)} ${error instanceof Error ? error.message : String(error)}`,
++    ],
++  };
++}
++
++async function pathKind(
++  absolutePath: string,
++): Promise<"absent" | "file" | "directory" | "blocked"> {
++  try {
++    const entry = await lstat(absolutePath);
++    if (entry.isSymbolicLink()) return "blocked";
++    if (entry.isFile()) return "file";
++    if (entry.isDirectory()) return "directory";
++    return "blocked";
++  } catch (error) {
++    if (errnoCode(error) === "ENOENT") return "absent";
++    throw error;
++  }
++}
++
++async function sortedDirectoryNames(absolutePath: string): Promise<string[]> {
++  const entries = await readdir(absolutePath, { withFileTypes: true });
++  return entries
++    .filter((entry) => entry.isDirectory() && !entry.isSymbolicLink())
++    .map((entry) => entry.name)
++    .toSorted();
++}
++
++async function readRegularText(absolutePath: string): Promise<string> {
++  if ((await pathKind(absolutePath)) !== "file") {
++    throw new Error(`refusing non-regular file ${absolutePath}`);
++  }
++  return await readFile(absolutePath, "utf8");
++}
++
++async function commonGitDir(repoRoot: string): Promise<string> {
++  const raw = await gitRevParse(repoRoot, ["--git-common-dir"]);
++  return path.resolve(repoRoot, raw);
++}
++
++function frontMatter(text: string): Record<string, unknown> {
++  const normalized = text.replaceAll("\r\n", "\n");
++  if (!normalized.startsWith("---\n")) throw new Error("missing YAML front matter");
++  const end = normalized.indexOf("\n---\n", 4);
++  if (end === -1) throw new Error("unterminated YAML front matter");
++  const parsed = parseYaml(normalized.slice(4, end)) as unknown;
++  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
++    throw new Error("YAML front matter is not an object");
++  }
++  return parsed as Record<string, unknown>;
++}
++
++async function probeLegacyConfig(repoRoot: string): Promise<ProbeResult> {
++  const relative = ".agentplane/config.json";
++  try {
++    const kind = await pathKind(path.join(repoRoot, relative));
++    if (kind === "absent") return { status: "unused", evidence: [`absent:${relative}`] };
++    if (kind !== "file") return { status: "blocked", evidence: [`unsafe_path:${relative}`] };
++    return { status: "used", evidence: [`present:${relative}`] };
++  } catch (error) {
++    return blocked(relative, error);
++  }
++}
++
++async function probeWorkflowV1(repoRoot: string): Promise<ProbeResult> {
++  const relative = ".agentplane/WORKFLOW.md";
++  try {
++    const absolute = path.join(repoRoot, relative);
++    if ((await pathKind(absolute)) === "absent") {
++      return { status: "unknown", evidence: [`absent:${relative}`] };
++    }
++    const version = frontMatter(await readRegularText(absolute)).version;
++    if (version === 1) return { status: "used", evidence: [`${relative}:version=1`] };
++    if (version === 2) return { status: "unused", evidence: [`${relative}:version=2`] };
++    return { status: "blocked", evidence: [`${relative}:unsupported_version=${String(version)}`] };
++  } catch (error) {
++    return blocked(relative, error);
++  }
++}
++
++async function probeTaskReadmes(repoRoot: string): Promise<ProbeResult> {
++  const tasksRoot = path.join(repoRoot, ".agentplane", "tasks");
++  try {
++    const kind = await pathKind(tasksRoot);
++    if (kind === "absent") return { status: "unused", evidence: ["tasks_directory_absent"] };
++    if (kind !== "directory") return { status: "blocked", evidence: ["tasks_directory_unsafe"] };
++    const legacy: string[] = [];
++    let scanned = 0;
++    for (const taskId of await sortedDirectoryNames(tasksRoot)) {
++      const readmePath = path.join(tasksRoot, taskId, "README.md");
++      if ((await pathKind(readmePath)) === "absent") continue;
++      const parsed = parseTaskReadme(await readRegularText(readmePath));
++      scanned += 1;
++      if (parsed.frontmatter.doc_version !== 3 && legacy.length < EVIDENCE_LIMIT) {
++        legacy.push(taskId);
++      }
++    }
++    return legacy.length > 0
++      ? { status: "used", evidence: [`legacy_tasks:${legacy.join(",")}`, `scanned:${scanned}`] }
++      : { status: "unused", evidence: [`legacy_tasks:0`, `scanned:${scanned}`] };
++  } catch (error) {
++    return blocked("task_readme_scan", error);
++  }
++}
++
++async function probeTaskLocalRunnerStorage(repoRoot: string): Promise<ProbeResult> {
++  const tasksRoot = path.join(repoRoot, ".agentplane", "tasks");
++  try {
++    if ((await pathKind(tasksRoot)) === "absent") {
++      return { status: "unused", evidence: ["task_local_runs:0"] };
++    }
++    const examples: string[] = [];
++    let count = 0;
++    for (const taskId of await sortedDirectoryNames(tasksRoot)) {
++      const runsRoot = path.join(tasksRoot, taskId, "runs");
++      const kind = await pathKind(runsRoot);
++      if (kind === "blocked" || kind === "file") {
++        return { status: "blocked", evidence: [`unsafe_path:.agentplane/tasks/${taskId}/runs`] };
++      }
++      if (kind !== "directory") continue;
++      const runs = await sortedDirectoryNames(runsRoot);
++      count += runs.length;
++      for (const runId of runs) {
++        if (examples.length < EVIDENCE_LIMIT) examples.push(`${taskId}/${runId}`);
++      }
++    }
++    return count > 0
++      ? { status: "used", evidence: [`task_local_runs:${count}`, `examples:${examples.join(",")}`] }
++      : { status: "unused", evidence: ["task_local_runs:0"] };
++  } catch (error) {
++    return blocked("task_local_runner_scan", error);
++  }
++}
++
++async function probeSupervisorEpisodeV0(repoRoot: string): Promise<ProbeResult> {
++  try {
++    const episodesRoot = path.join(
++      await commonGitDir(repoRoot),
++      "agentplane",
++      "supervisor",
++      "episodes",
++    );
++    if ((await pathKind(episodesRoot)) === "absent") {
++      return { status: "unused", evidence: ["legacy_episode_v0:0"] };
++    }
++    const examples: string[] = [];
++    let scanned = 0;
++    for (const taskId of await sortedDirectoryNames(episodesRoot)) {
++      const journalPath = path.join(episodesRoot, taskId, "journal.json");
++      if ((await pathKind(journalPath)) === "absent") continue;
++      const journal = JSON.parse(await readRegularText(journalPath)) as {
++        schema_version?: unknown;
++      };
++      scanned += 1;
++      if (journal.schema_version === 0 && examples.length < EVIDENCE_LIMIT) examples.push(taskId);
++    }
++    return examples.length > 0
++      ? {
++          status: "used",
++          evidence: [`legacy_episode_v0:${examples.join(",")}`, `scanned:${scanned}`],
++        }
++      : { status: "unused", evidence: ["legacy_episode_v0:0", `scanned:${scanned}`] };
++  } catch (error) {
++    return blocked("supervisor_episode_scan", error);
++  }
++}
++
++async function collectResultFiles(runsRoot: string): Promise<string[]> {
++  if ((await pathKind(runsRoot)) !== "directory") return [];
++  const files: string[] = [];
++  for (const runId of await sortedDirectoryNames(runsRoot)) {
++    const resultPath = path.join(runsRoot, runId, "result.json");
++    if ((await pathKind(resultPath)) === "file") files.push(resultPath);
++  }
++  return files;
++}
++
++async function probeRunnerResultManifestV1(repoRoot: string): Promise<ProbeResult> {
++  try {
++    const candidates: string[] = [];
++    const taskRoot = path.join(repoRoot, ".agentplane", "tasks");
++    if ((await pathKind(taskRoot)) === "directory") {
++      for (const taskId of await sortedDirectoryNames(taskRoot)) {
++        candidates.push(...(await collectResultFiles(path.join(taskRoot, taskId, "runs"))));
++      }
++    }
++    const supervisorRoot = path.join(await commonGitDir(repoRoot), "agentplane", "runner", "tasks");
++    if ((await pathKind(supervisorRoot)) === "directory") {
++      for (const taskId of await sortedDirectoryNames(supervisorRoot)) {
++        candidates.push(...(await collectResultFiles(path.join(supervisorRoot, taskId, "runs"))));
++      }
++    }
++    const legacy: string[] = [];
++    for (const resultPath of candidates.toSorted()) {
++      const result = JSON.parse(await readRegularText(resultPath)) as { schema_version?: unknown };
++      if (result.schema_version === 1 && legacy.length < EVIDENCE_LIMIT) {
++        legacy.push(path.relative(repoRoot, resultPath).replaceAll(path.sep, "/"));
++      }
++    }
++    return legacy.length > 0
++      ? {
++          status: "used",
++          evidence: [`legacy_result_v1:${legacy.join(",")}`, `scanned:${candidates.length}`],
++        }
++      : { status: "unused", evidence: ["legacy_result_v1:0", `scanned:${candidates.length}`] };
++  } catch (error) {
++    return blocked("runner_result_manifest_scan", error);
++  }
++}
++
++async function probeLegacyProtectedConflictQueue(repoRoot: string): Promise<ProbeResult> {
++  const relative = ".agentplane/cache/integration-queue.json";
++  try {
++    const absolute = path.join(repoRoot, relative);
++    if ((await pathKind(absolute)) === "absent") {
++      return { status: "unused", evidence: ["legacy_conflict_adoptions:0"] };
++    }
++    const queue = JSON.parse(await readRegularText(absolute)) as { entries?: unknown };
++    if (!Array.isArray(queue.entries)) {
++      return { status: "blocked", evidence: [`${relative}:entries_not_array`] };
++    }
++    const taskIds = queue.entries
++      .filter(
++        (entry): entry is { task_id?: unknown; legacy_protected_conflict_adoption: unknown } =>
++          typeof entry === "object" &&
++          entry !== null &&
++          "legacy_protected_conflict_adoption" in entry,
++      )
++      .map((entry) => (typeof entry.task_id === "string" ? entry.task_id : "unknown"))
++      .toSorted();
++    return taskIds.length > 0
++      ? { status: "used", evidence: [`legacy_conflict_adoptions:${taskIds.join(",")}`] }
++      : { status: "unused", evidence: ["legacy_conflict_adoptions:0"] };
++  } catch (error) {
++    return blocked(relative, error);
++  }
++}
++
++async function probeLegacyContextWorkspace(repoRoot: string): Promise<ProbeResult> {
++  try {
++    const wikiRoot = path.join(repoRoot, "context", "wiki");
++    const topology = path.join(
++      repoRoot,
++      ".agentplane",
++      "context",
++      "derived",
++      "wiki",
++      "topology.plan.json",
++    );
++    const wikiKind = await pathKind(wikiRoot);
++    if (wikiKind === "absent") return { status: "unused", evidence: ["legacy_context_absent"] };
++    if (wikiKind !== "directory") return { status: "blocked", evidence: ["context/wiki:unsafe"] };
++    const topologyKind = await pathKind(topology);
++    if (topologyKind === "absent") {
++      return {
++        status: "used",
++        evidence: ["context/wiki:present", "maximum_assimilation_v2:absent"],
++      };
++    }
++    if (topologyKind !== "file") {
++      return { status: "blocked", evidence: ["topology.plan.json:unsafe"] };
++    }
++    return { status: "unused", evidence: ["maximum_assimilation_v2:present"] };
++  } catch (error) {
++    return blocked("context_workspace_scan", error);
++  }
++}
++
++async function probeGitReplacementRefs(repoRoot: string): Promise<ProbeResult> {
++  try {
++    const { stdout } = await execFileAsync(
++      "git",
++      ["for-each-ref", "--format=%(refname)", "refs/replace"],
++      { cwd: repoRoot },
++    );
++    const refs = stdout
++      .split("\n")
++      .map((value) => value.trim())
++      .filter(Boolean)
++      .toSorted();
++    return refs.length > 0
++      ? { status: "used", evidence: [`replacement_refs:${refs.join(",")}`] }
++      : { status: "unused", evidence: ["replacement_refs:0"] };
++  } catch (error) {
++    return blocked("git_replacement_refs", error);
++  }
++}
++
++async function runProbe(kind: LegacyUsageProbeKind, repoRoot: string): Promise<ProbeResult> {
++  switch (kind) {
++    case "legacy_config_json": {
++      return await probeLegacyConfig(repoRoot);
++    }
++    case "workflow_contract_v1": {
++      return await probeWorkflowV1(repoRoot);
++    }
++    case "task_readme_pre_v3": {
++      return await probeTaskReadmes(repoRoot);
++    }
++    case "task_local_runner_storage": {
++      return await probeTaskLocalRunnerStorage(repoRoot);
++    }
++    case "supervisor_episode_v0": {
++      return await probeSupervisorEpisodeV0(repoRoot);
++    }
++    case "runner_result_manifest_v1": {
++      return await probeRunnerResultManifestV1(repoRoot);
++    }
++    case "legacy_protected_conflict_queue": {
++      return await probeLegacyProtectedConflictQueue(repoRoot);
++    }
++    case "context_workspace_legacy": {
++      return await probeLegacyContextWorkspace(repoRoot);
++    }
++    case "git_replacement_refs": {
++      return await probeGitReplacementRefs(repoRoot);
++    }
++    case "runtime_input_unobservable": {
++      return {
++        status: "unknown",
++        evidence: ["usage_is_not_persisted_in_workspace_state"],
++      };
++    }
++  }
++}
++
++export async function inspectLegacyCompatibilityUsage(opts: {
++  repoRoot: string;
++  manifest: CompatibilityRetirementManifest;
++}): Promise<LegacyDoctorReport> {
++  const adapters: LegacyAdapterUsage[] = [];
++  for (const adapter of opts.manifest.adapters) {
++    adapters.push({ ...adapter, ...(await runProbe(adapter.usage_probe.kind, opts.repoRoot)) });
++  }
++  const summary: LegacyDoctorReport["summary"] = {
++    total: adapters.length,
++    used: 0,
++    unused: 0,
++    unknown: 0,
++    blocked: 0,
++  };
++  for (const adapter of adapters) summary[adapter.status] += 1;
++  return {
++    schema_version: 1,
++    kind: "agentplane.doctor.legacy",
++    manifest_schema_version: opts.manifest.schema_version,
++    summary,
++    adapters,
++  };
++}
+diff --git a/packages/agentplane/src/commands/integrate-queue.command.ts b/packages/agentplane/src/commands/integrate-queue.command.ts
+index 8155b2285..297034da2 100644
+--- a/packages/agentplane/src/commands/integrate-queue.command.ts
++++ b/packages/agentplane/src/commands/integrate-queue.command.ts
+@@ -347,12 +347,13 @@ export function makeRunIntegrateQueueReleaseHandler(deps: {
+ 
+ export function makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(
+   getCtx: (cmd: string) => Promise<CommandContext>,
++  command = "integrate queue adopt-legacy-protected-conflict",
+ ) {
+   return async (
+     ctx: CommandCtx,
+     p: IntegrateQueueAdoptLegacyProtectedConflictParsed,
+   ): Promise<number> => {
+-    const commandCtx = await getCtx("integrate queue adopt-legacy-protected-conflict");
++    const commandCtx = await getCtx(command);
+     const gitRoot = commandCtx.resolvedProject.gitRoot;
+     const result = await withIntegrationQueueMutex(gitRoot, async () => {
+       const report = await resolvePrFlowStatus({
+diff --git a/packages/agentplane/src/commands/integrate-queue.spec.ts b/packages/agentplane/src/commands/integrate-queue.spec.ts
+index befea8a8d..bcec0abd5 100644
+--- a/packages/agentplane/src/commands/integrate-queue.spec.ts
++++ b/packages/agentplane/src/commands/integrate-queue.spec.ts
+@@ -21,7 +21,7 @@ export const integrateQueueSpec: CommandSpec<IntegrateQueueGroupParsed> = {
+   group: "PR",
+   summary: "Serialize branch_pr integration into one merge lane.",
+   synopsis: [
+-    "agentplane integrate queue <enqueue|list|doctor|claim|release|adopt-legacy-protected-conflict|run-next> [args] [options]",
++    "agentplane integrate queue <enqueue|list|doctor|claim|release|run-next> [args] [options]",
+   ],
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+   examples: [
+@@ -218,6 +218,7 @@ export const integrateQueueAdoptLegacyProtectedConflictSpec: CommandSpec<Integra
+     id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
+     group: "PR",
+     summary: "Record an explicit recovery receipt for a verified legacy protected-PR conflict.",
++    notes: ["Deprecated compatibility alias. Use agentplane repair adopt-legacy-conflict instead."],
+     args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+     options: [
+       {
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.command.ts b/packages/agentplane/src/commands/pr/conflict-rework.command.ts
+index 12e73f2e1..97c63a004 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.command.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.command.ts
+@@ -35,7 +35,7 @@ function packetFailure(
+   }
+   if (preparation.state === "adoption_required") {
+     const command =
+-      `agentplane integrate queue adopt-legacy-protected-conflict ${taskId} ` +
++      `agentplane repair adopt-legacy-conflict ${taskId} ` +
+       `--expect-adoption-token ${preparation.adoption.token}`;
+     return new CliError({
+       exitCode: exitCodeForError("E_VALIDATION"),
+diff --git a/packages/agentplane/src/commands/repair.command.ts b/packages/agentplane/src/commands/repair.command.ts
+new file mode 100644
+index 000000000..36b0834b1
+--- /dev/null
++++ b/packages/agentplane/src/commands/repair.command.ts
+@@ -0,0 +1,83 @@
++import {
++  loadDirectSubcommandNames,
++  parseGroupCommand,
++  throwGroupCommandUsage,
++  type GroupCommandParsed,
++} from "../cli/group-command.js";
++import { usageError } from "../cli/spec/errors.js";
++import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
++
++export const repairSpec: CommandSpec<GroupCommandParsed> = {
++  id: ["repair"],
++  group: "Maintenance",
++  summary: "Run explicit compatibility and recovery operations.",
++  synopsis: ["agentplane repair <adopt-legacy-conflict> [args] [options]"],
++  args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
++  examples: [
++    {
++      cmd: "agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>",
++      why: "Record a verified legacy protected-conflict recovery receipt.",
++    },
++  ],
++  parse: (raw) => parseGroupCommand(raw),
++};
++
++export type RepairAdoptLegacyConflictParsed = {
++  taskId: string;
++  expectedAdoptionToken: string;
++};
++
++export const repairAdoptLegacyConflictSpec: CommandSpec<RepairAdoptLegacyConflictParsed> = {
++  id: ["repair", "adopt-legacy-conflict"],
++  group: "Maintenance",
++  summary: "Record a verified legacy protected-PR conflict recovery receipt.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "expect-adoption-token",
++      valueHint: "<sha256:...>",
++      description: "Exact token from task next-action or pr conflict-rework.",
++    },
++  ],
++  examples: [
++    {
++      cmd: "agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>",
++      why: "Adopt only the exact legacy recovery context emitted by the route oracle.",
++    },
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    expectedAdoptionToken:
++      typeof raw.opts["expect-adoption-token"] === "string"
++        ? raw.opts["expect-adoption-token"].trim()
++        : "",
++  }),
++  validateRaw: (raw) => {
++    const token =
++      typeof raw.opts["expect-adoption-token"] === "string"
++        ? raw.opts["expect-adoption-token"].trim()
++        : "";
++    if (!token) {
++      throw usageError({
++        spec: repairAdoptLegacyConflictSpec,
++        message: "Missing required --expect-adoption-token.",
++      });
++    }
++    if (!/^sha256:[a-f0-9]{64}$/.test(token)) {
++      throw usageError({
++        spec: repairAdoptLegacyConflictSpec,
++        message: "Invalid --expect-adoption-token: expected sha256:<64 lowercase hex characters>.",
++      });
++    }
++  },
++};
++
++export const runRepair: CommandHandler<GroupCommandParsed> = async (_ctx, parsed) => {
++  throwGroupCommandUsage({
++    spec: repairSpec,
++    cmd: parsed.cmd,
++    subcommands: await loadDirectSubcommandNames(["repair"]),
++    command: "repair",
++  });
++};
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+index fa4eb39ab..cd2c589df 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+@@ -4,12 +4,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+   "batch.collect_included": ["agentplane", "task", "brief"],
+   "batch.follow_primary": ["agentplane", "task", "brief"],
+   "batch.reconcile_included": ["agentplane", "release", "tasks", "reconcile"],
+-  "integration.adopt_legacy_protected_conflict": [
+-    "agentplane",
+-    "integrate",
+-    "queue",
+-    "adopt-legacy-protected-conflict",
+-  ],
++  "integration.adopt_legacy_protected_conflict": ["agentplane", "repair", "adopt-legacy-conflict"],
+   "integration.enqueue": ["agentplane", "integrate", "queue", "enqueue"],
+   "pr.artifacts.update": ["agentplane", "pr", "update"],
+   "pr.head.publish": ["agentplane", "pr", "open"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+index 2f620bc75..99b9506b3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+@@ -75,9 +75,8 @@ describe("Workflow operation projection registry", () => {
+         params: { taskId, expectedAdoptionToken: adoptionToken },
+         argv: [
+           "agentplane",
+-          "integrate",
+-          "queue",
+-          "adopt-legacy-protected-conflict",
++          "repair",
++          "adopt-legacy-conflict",
+           taskId,
+           "--expect-adoption-token",
+           adoptionToken,
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index b588581ee..df87aa0d3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -19,9 +19,8 @@ function operationArgv(operation: WorkflowOperation): string[] {
+     case "integration.adopt_legacy_protected_conflict": {
+       return [
+         "agentplane",
+-        "integrate",
+-        "queue",
+-        "adopt-legacy-protected-conflict",
++        "repair",
++        "adopt-legacy-conflict",
+         operation.params.taskId,
+         "--expect-adoption-token",
+         operation.params.expectedAdoptionToken,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts
+index 2a4aea154..4437933fb 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts
+@@ -979,9 +979,8 @@ describe("WorkflowStep execution projections", () => {
+       safeToMutate: true,
+       exactArgv: [
+         "agentplane",
+-        "integrate",
+-        "queue",
+-        "adopt-legacy-protected-conflict",
++        "repair",
++        "adopt-legacy-conflict",
+         task.id,
+         "--expect-adoption-token",
+         token,
+diff --git a/packages/agentplane/src/runner/effect-operation-contract.ts b/packages/agentplane/src/runner/effect-operation-contract.ts
+index c5658c955..116cb7c76 100644
+--- a/packages/agentplane/src/runner/effect-operation-contract.ts
++++ b/packages/agentplane/src/runner/effect-operation-contract.ts
+@@ -28,6 +28,21 @@ export function runnerEffectRuntimeError(
+   });
+ }
+ 
++export function runnerEffectClaimedError(
++  operation: RunnerEffectOperation,
++  observedClaimDigest: string | null,
++): CliError {
++  return runnerEffectRuntimeError(
++    "Runner effect start authority is already claimed by another supervisor.",
++    {
++      reason: "runner_effect_operation_claimed",
++      operation_key: operation.operation_key,
++      claim_generation: operation.claim_generation,
++      observed_claim_digest: observedClaimDigest,
++    },
++  );
++}
++
+ function taskIdFromRunnerEffectBundle(bundle: RunnerContextBundle): string {
+   const taskId = bundle.task?.metadata?.task_id ?? bundle.target.task_id;
+   if (!taskId) throw new Error("Runner effect operation requires a task-bound invocation.");
+diff --git a/packages/agentplane/src/runner/effect-operation.test.ts b/packages/agentplane/src/runner/effect-operation.test.ts
+index 2f1af225d..fa9f6154f 100644
+--- a/packages/agentplane/src/runner/effect-operation.test.ts
++++ b/packages/agentplane/src/runner/effect-operation.test.ts
+@@ -177,7 +177,7 @@ describe("runner effect operation journal", () => {
+         invocation: first,
+         state_fingerprint: fingerprint,
+       }),
+-    ).rejects.toMatchObject({ context: { reason: "runner_effect_operation_not_spawnable" } });
++    ).rejects.toMatchObject({ context: { reason: "runner_effect_operation_claimed" } });
+   });
+ 
+   it("elects one adapter spawn across independent supervisor processes", async () => {
+@@ -206,33 +206,39 @@ describe("runner effect operation journal", () => {
+         `const fingerprint = buildStateFingerprint({ task_id: taskId, task_revision: 1, git_head: "0123456789abcdef0123456789abcdef01234567", worktree: "/workspace", components: { task: { state: "present", source: "test", value: { revision: 1 } }, git: { state: "present", source: "test", value: { head: "01234567" } }, backend_projection: { state: "present", source: "test", value: { revision: 1 } }, policy: { state: "present", source: "test", value: { version: 1 } }, blueprint: { state: "present", source: "test", value: { id: "code.branch_pr" } }, knowledge: { state: "present", source: "test", value: { refs: [] } }, provider: { state: "present", source: "test", value: { state: "local" } }, authority: { state: "present", source: "test", value: { scope: "task" } } } });\n` +
+         `const state = { schema_version: 1, kind: "runner_state_fingerprint_record", outcome: "prepared", precondition_fingerprint: fingerprint, precondition_policy: { required_components: [], provider: { required: false, unavailable: "allow_if_unchanged" } }, state_before: null, state_after: null, precondition: null, effect_applied: null, post_state_reason_code: null };\n` +
+         `const invocation = { adapter_id: "custom", run_id: runId, work_order_id: "work-order-effect-operation", repository_root: root, artifact_root: root, run_dir: runDir, bundle_path: path.join(runDir, "bundle.json"), state_path: path.join(runDir, "run-state.json"), events_path: path.join(runDir, "events.jsonl"), result_path: path.join(runDir, "result.json"), receipt_path: path.join(runDir, "execution-receipt.json"), trace_path: path.join(runDir, "agent-trace.jsonl"), stderr_path: path.join(runDir, "stderr.log"), trace_policy: { mode: "off", max_tail_bytes: 0, capture_stderr: false }, timeout_policy: { wall_clock_ms: 0, idle_ms: 0, terminate_grace_ms: 0 }, argv: ["custom-runner", "--task", taskId], env: {}, dry_run: false };\n` +
+-        `try { const started = await startRunnerEffectOperation({ bundle: { target: { kind: "task", task_id: taskId }, task: { task_id: taskId } }, invocation, state_fingerprint: state }); await writeFile(path.join(barrier, "adapter-spawns.jsonl"), JSON.stringify({ runId, operation_key: started.operation.operation_key }) + "\\n", { flag: "a" }); console.log(JSON.stringify({ status: "winner", operation_key: started.operation.operation_key })); } catch (error) { console.log(JSON.stringify({ status: "loser", reason: error instanceof Error ? error.message : String(error) })); }\n`,
++        `try { const started = await startRunnerEffectOperation({ bundle: { target: { kind: "task", task_id: taskId }, task: { task_id: taskId } }, invocation, state_fingerprint: state }); await writeFile(path.join(barrier, "adapter-spawns.jsonl"), JSON.stringify({ runId, operation_key: started.operation.operation_key }) + "\\n", { flag: "a" }); console.log(JSON.stringify({ status: "winner", operation_key: started.operation.operation_key })); } catch (error) { const context = error && typeof error === "object" && "context" in error && error.context && typeof error.context === "object" ? error.context : null; console.log(JSON.stringify({ status: "loser", reason: error instanceof Error ? error.message : String(error), reason_code: context && "reason" in context ? context.reason : null })); }\n`,
+       "utf8",
+     );
+-    const first = execFileAsync("bun", [workerPath, root, taskId, "run-first", barrier], {
+-      cwd: root,
+-      encoding: "utf8",
+-    });
+-    const second = execFileAsync("bun", [workerPath, root, taskId, "run-second", barrier], {
+-      cwd: root,
+-      encoding: "utf8",
+-    });
+-    await waitForBarrier(barrier, 2);
++    const runIds = Array.from({ length: 8 }, (_, index) => `run-${index + 1}`);
++    const workers = runIds.map((runId) =>
++      execFileAsync("bun", [workerPath, root, taskId, runId, barrier], {
++        cwd: root,
++        encoding: "utf8",
++      }),
++    );
++    await waitForBarrier(barrier, runIds.length);
+     await writeFile(path.join(barrier, "go"), "\n");
+-    const [firstResult, secondResult] = await Promise.all([first, second]);
+-    const outcomes = [firstResult.stdout, secondResult.stdout].map(
+-      (output) =>
+-        JSON.parse(output.trim()) as { status: string; operation_key?: string; reason?: string },
++    const workerResults = await Promise.all(workers);
++    const outcomes = workerResults.map(
++      ({ stdout }) =>
++        JSON.parse(stdout.trim()) as {
++          status: string;
++          operation_key?: string;
++          reason?: string;
++          reason_code?: string | null;
++        },
+     );
+     const outcomeSummary = JSON.stringify(outcomes);
+     expect(
+       outcomes.filter((outcome) => outcome.status === "winner"),
+       outcomeSummary,
+     ).toHaveLength(1);
++    const losers = outcomes.filter((outcome) => outcome.status === "loser");
++    expect(losers, outcomeSummary).toHaveLength(runIds.length - 1);
+     expect(
+-      outcomes.filter((outcome) => outcome.status === "loser"),
++      losers.map((outcome) => outcome.reason_code),
+       outcomeSummary,
+-    ).toHaveLength(1);
++    ).toEqual(Array.from({ length: runIds.length - 1 }, () => "runner_effect_operation_claimed"));
+     const spawnLog = await readFile(path.join(barrier, "adapter-spawns.jsonl"), "utf8");
+     const spawns = spawnLog
+       .trim()
+diff --git a/packages/agentplane/src/runner/effect-operation.ts b/packages/agentplane/src/runner/effect-operation.ts
+index c66057603..77fe44236 100644
+--- a/packages/agentplane/src/runner/effect-operation.ts
++++ b/packages/agentplane/src/runner/effect-operation.ts
+@@ -17,12 +17,17 @@ import {
+ import {
+   applyForwardedRunnerEffectIdempotencyKey,
+   buildFreshRunnerEffectOperation,
++  runnerEffectClaimedError,
+   runnerEffectOperationMatchesIdentity,
+   runnerEffectRuntimeError,
+ } from "./effect-operation-contract.js";
+ export { RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV } from "./effect-operation-contract.js";
+ import { ensureStableRunnerArtifactDirectoryChain } from "./run-directory-boundary.js";
+-import { readStableRegularTextNoFollow, writeNewStableRegularFileNoFollow } from "./stable-file.js";
++import {
++  isStableFileReadCollision,
++  publishNewStableRegularFileNoFollow,
++  readStableRegularTextNoFollow,
++} from "./stable-file.js";
+ import { assertSafeRunnerRunId } from "./task-run-paths.js";
+ import type {
+   RunnerContextBundle,
+@@ -140,18 +145,22 @@ async function readOptional<T>(opts: {
+   label: string;
+   parse: (value: unknown) => T;
+ }): Promise<T | null> {
+-  try {
+-    return opts.parse(
+-      JSON.parse(
+-        await readStableRegularTextNoFollow(opts.file_path, opts.label, {
+-          max_bytes: EFFECT_ARTIFACT_MAX_BYTES,
+-        }),
+-      ),
+-    );
+-  } catch (error) {
+-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+-    throw error;
++  for (let attempt = 0; attempt < 3; attempt += 1) {
++    try {
++      return opts.parse(
++        JSON.parse(
++          await readStableRegularTextNoFollow(opts.file_path, opts.label, {
++            max_bytes: EFFECT_ARTIFACT_MAX_BYTES,
++          }),
++        ),
++      );
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
++      if (attempt < 2 && isStableFileReadCollision(error, opts.label)) continue;
++      throw error;
++    }
+   }
++  return null;
+ }
+ 
+ async function readRunnerEffectOperation(filePath: string): Promise<RunnerEffectOperation | null> {
+@@ -204,17 +213,11 @@ async function writeImmutableJson(opts: {
+   label: string;
+   value: unknown;
+ }): Promise<boolean> {
+-  try {
+-    await writeNewStableRegularFileNoFollow(
+-      opts.file_path,
+-      `${JSON.stringify(opts.value, null, 2)}\n`,
+-      opts.label,
+-    );
+-    return true;
+-  } catch (error) {
+-    if (error instanceof Error && error.message.includes("Refusing pre-existing")) return false;
+-    throw error;
+-  }
++  return await publishNewStableRegularFileNoFollow(
++    opts.file_path,
++    `${JSON.stringify(opts.value, null, 2)}\n`,
++    opts.label,
++  );
+ }
+ 
+ async function writeJournal(opts: {
+@@ -456,13 +459,17 @@ export async function prepareRunnerEffectOperation(opts: {
+       previous_digest: null,
+       observed_evidence: { code: "runner_effect_operation_prepared", digest: operation.digest },
+     });
+-    await writeJournal({ paths, journal: prepared });
+-    journal = prepared;
++    await writeImmutableJson({
++      file_path: paths.journal_path,
++      label: "runner effect journal",
++      value: prepared,
++    });
++    journal = await readRunnerEffectJournal(paths.journal_path);
+   }
+   if (
+-    journal.operation_key !== operation.operation_key ||
+-    journal.operation_digest !== operation.digest ||
+-    journal.claim_generation !== operation.claim_generation
++    journal?.operation_key !== operation.operation_key ||
++    journal?.operation_digest !== operation.digest ||
++    journal?.claim_generation !== operation.claim_generation
+   ) {
+     throw runnerEffectRuntimeError(
+       "Runner effect journal is not bound to the immutable operation authority.",
+@@ -488,6 +495,10 @@ export async function startRunnerEffectOperation(opts: {
+   resolved_not_applied_source?: boolean;
+ }): Promise<StartedRunnerEffectOperation> {
+   const prepared = await prepareRunnerEffectOperation(opts);
++  const existingClaim = await readRunnerEffectClaim(prepared.paths.claim_path);
++  if (existingClaim) {
++    throw runnerEffectClaimedError(prepared.operation, existingClaim.digest);
++  }
+   if (prepared.journal.phase !== "prepared") {
+     throw runnerEffectRuntimeError(
+       "Runner refuses a second adapter spawn for an existing effect operation.",
+@@ -507,15 +518,7 @@ export async function startRunnerEffectOperation(opts: {
+   });
+   const observedClaim = await readRunnerEffectClaim(prepared.paths.claim_path);
+   if (observedClaim?.digest !== claim.digest || !won) {
+-    throw runnerEffectRuntimeError(
+-      "Runner effect start authority is already claimed by another supervisor.",
+-      {
+-        reason: "runner_effect_operation_claimed",
+-        operation_key: prepared.operation.operation_key,
+-        claim_generation: prepared.operation.claim_generation,
+-        observed_claim_digest: observedClaim?.digest ?? null,
+-      },
+-    );
++    throw runnerEffectClaimedError(prepared.operation, observedClaim?.digest ?? null);
+   }
+   const started = createRunnerEffectJournal({
+     operation: prepared.operation,
+diff --git a/packages/agentplane/src/shared/stable-file.ts b/packages/agentplane/src/shared/stable-file.ts
+index 02f170513..cdb2054ed 100644
+--- a/packages/agentplane/src/shared/stable-file.ts
++++ b/packages/agentplane/src/shared/stable-file.ts
+@@ -1,5 +1,6 @@
++import { randomUUID } from "node:crypto";
+ import { constants, type BigIntStats } from "node:fs";
+-import { lstat, open, type FileHandle } from "node:fs/promises";
++import { link, lstat, open, unlink, type FileHandle } from "node:fs/promises";
+ import path from "node:path";
+ import { syncDirectory } from "@agentplaneorg/core/fs";
+ 
+@@ -245,3 +246,37 @@ export async function writeNewStableRegularFileNoFollow(
+     await handle.close();
+   }
+ }
++
++export async function publishNewStableRegularFileNoFollow(
++  filePath: string,
++  contents: string | Buffer,
++  label: string,
++): Promise<boolean> {
++  const directory = path.dirname(filePath);
++  const temporaryPath = path.join(
++    directory,
++    `.${path.basename(filePath)}.${process.pid}.${randomUUID()}.tmp`,
++  );
++  await writeNewStableRegularFileNoFollow(temporaryPath, contents, `${label} staging file`);
++  let published = false;
++  let cleanupError: Error | null = null;
++  try {
++    try {
++      await link(temporaryPath, filePath);
++      published = true;
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
++    }
++  } finally {
++    try {
++      await unlink(temporaryPath);
++    } catch (error) {
++      if (!published && (error as NodeJS.ErrnoException | null)?.code !== "ENOENT") {
++        cleanupError = error instanceof Error ? error : new Error(String(error));
++      }
++    }
++    await syncDirectory(directory);
++  }
++  if (cleanupError) throw cleanupError;
++  return published;
++}
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 1fdd4e603..dec9a7626 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -28,7 +28,8 @@
+     "202608021231-PZGG3V",
+     "202608021231-SHYJGK",
+     "202608021534-YN84E1",
+-    "202608022324-9VCYWG"
++    "202608022324-9VCYWG",
++    "202608021535-CNQKXP"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -37,15 +38,15 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "0c933ab071ec74c75d25ac6d3466ecf9555eb9737623ed574c2b5063a2c03206",
++    "surface_sha256": "5fe979c4175ec9d8059079384632c52cce90340697675f8eba66f8fbc808ea27",
+     "section_digests": {
+-      "cli_topology": "c0f84f6ab60f3f82f964d8a4072f0b41544ac9f19accb23c9a5382018b8e4797",
++      "cli_topology": "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+       "package_manifests": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+-      "tarball_policy": "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752"
++      "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd"
+     }
+   },
+   "pre_release_package_delta": {
+@@ -82,7 +83,7 @@
+     "section": "package_manifests",
+     "from_sha256": "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+     "to_sha256": "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+-    "surface_sha256": "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
++    "surface_sha256": "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
+     "allowed_json_paths": [
+       "$.package_manifests[0].dependencies.@agentplaneorg/core",
+       "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -427,23 +428,27 @@
+         "202607221852-ECBY56",
+         "202608021231-PZGG3V",
+         "202608021534-YN84E1",
+-        "202608022324-9VCYWG"
++        "202608022324-9VCYWG",
++        "202608021535-CNQKXP"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "c0f84f6ab60f3f82f964d8a4072f0b41544ac9f19accb23c9a5382018b8e4797",
++      "to_sha256": "013285a7eb1fce7e1b0138cec6da0c94c4c1c3647937f6b0d49f872b57abed0b",
+       "classification": "additive_with_visibility_simplification",
+-      "summary": "Adds the compact external task advance packet, promotes the managed task runner, and demotes legacy manual lifecycle choreography to compatibility help without removing commands or options.",
++      "summary": "Adds the compact external task advance packet and compatibility retirement diagnostics, promotes the managed task runner, and moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces without removing commands or options.",
+       "evidence": {
+-        "command_count": { "from": 243, "to": 256 },
+-        "positional_count": { "from": 165, "to": 177 },
+-        "option_count": { "from": 767, "to": 826 },
++        "command_count": { "from": 243, "to": 259 },
++        "positional_count": { "from": 165, "to": 179 },
++        "option_count": { "from": 767, "to": 828 },
+         "added_commands": [
+           "context supervise-task",
++          "doctor legacy",
+           "evaluator apply",
+           "evaluator execute",
+           "evaluator prepare",
+           "integrate queue adopt-legacy-protected-conflict",
+           "pr conflict-rework",
++          "repair",
++          "repair adopt-legacy-conflict",
+           "task advance",
+           "task authority grant",
+           "task run reconcile",
+@@ -492,6 +497,20 @@
+               }
+             ]
+           },
++          {
++            "id": ["doctor", "legacy"],
++            "visibility": "advanced",
++            "group": "Quality",
++            "args": [],
++            "options": [
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
+           {
+             "id": ["evaluator", "apply"],
+             "visibility": "user",
+@@ -577,7 +596,7 @@
+           },
+           {
+             "id": ["integrate", "queue", "adopt-legacy-protected-conflict"],
+-            "visibility": "user",
++            "visibility": "internal",
+             "group": "PR",
+             "args": [
+               {
+@@ -637,6 +656,40 @@
+               }
+             ]
+           },
++          {
++            "id": ["repair"],
++            "visibility": "advanced",
++            "group": "Maintenance",
++            "args": [
++              {
++                "name": "cmd",
++                "required": false,
++                "variadic": true,
++                "valueHint": "<cmd>"
++              }
++            ],
++            "options": []
++          },
++          {
++            "id": ["repair", "adopt-legacy-conflict"],
++            "visibility": "advanced",
++            "group": "Maintenance",
++            "args": [
++              {
++                "name": "task-id",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<task-id>"
++              }
++            ],
++            "options": [
++              {
++                "name": "expect-adoption-token",
++                "kind": "string",
++                "valueHint": "<sha256:...>"
++              }
++            ]
++          },
+           {
+             "id": ["task", "advance"],
+             "visibility": "user",
+@@ -1074,6 +1127,13 @@
+             "kind": "string",
+             "valueHint": "<query>"
+           },
++          {
++            "command": "doctor legacy",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "evaluator apply",
+             "name": "json",
+@@ -1186,6 +1246,12 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "repair adopt-legacy-conflict",
++            "name": "expect-adoption-token",
++            "kind": "string",
++            "valueHint": "<sha256:...>"
++          },
+           {
+             "command": "sync",
+             "name": "adopt-projection-identity",
+@@ -1457,6 +1523,11 @@
+             "command": "context supervise-task",
+             "source_task": "202607221850-8HBF4J"
+           },
++          {
++            "kind": "command",
++            "command": "doctor legacy",
++            "source_task": "202608021535-CNQKXP"
++          },
+           {
+             "kind": "command",
+             "command": "evaluator apply",
+@@ -1482,6 +1553,16 @@
+             "command": "pr conflict-rework",
+             "source_task": "202607260007-DQM6AW"
+           },
++          {
++            "kind": "command",
++            "command": "repair",
++            "source_task": "202608021535-CNQKXP"
++          },
++          {
++            "kind": "command",
++            "command": "repair adopt-legacy-conflict",
++            "source_task": "202608021535-CNQKXP"
++          },
+           {
+             "kind": "command",
+             "command": "task advance",
+@@ -1559,6 +1640,12 @@
+             "name": "smoke-query",
+             "source_task": "202607221850-8HBF4J"
+           },
++          {
++            "kind": "option",
++            "command": "doctor legacy",
++            "name": "json",
++            "source_task": "202608021535-CNQKXP"
++          },
+           {
+             "kind": "option",
+             "command": "evaluator apply",
+@@ -1661,6 +1748,12 @@
+             "name": "recover-diverged-head",
+             "source_task": "202607300150-MGCHE6"
+           },
++          {
++            "kind": "option",
++            "command": "repair adopt-legacy-conflict",
++            "name": "expect-adoption-token",
++            "source_task": "202608021535-CNQKXP"
++          },
+           {
+             "kind": "option",
+             "command": "sync",
+@@ -1982,12 +2075,13 @@
+         "202607221848-ER5H6N",
+         "202607221848-T9B3PS",
+         "202607221849-8YYZ9X",
+-        "202608021231-SHYJGK"
++        "202608021231-SHYJGK",
++        "202608021535-CNQKXP"
+       ],
+       "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
+-      "to_sha256": "ee569c2039903862cabb80a4490509edd8bb8ecba75b692911aac097a27b5752",
++      "to_sha256": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+       "classification": "additive",
+-      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
++      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package, requires the compatibility retirement manifest, and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
+       "evidence": {
+         "core_package": {
+           "package": "@agentplaneorg/core",
+@@ -2008,6 +2102,7 @@
+             "dist/deferred-runtime.js"
+           ],
+           "required_files": [
++            "assets/compatibility-retirement-manifest.json",
+             "dist/cli.js",
+             "dist/command-catalog.js",
+             "dist/command-catalog/core-fast.js",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index e017d2312..94a9d84f5 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -338,6 +338,7 @@ function validateReviewedCandidate({
+     "202608021231-PZGG3V",
+     "202608021534-YN84E1",
+     "202608022324-9VCYWG",
++    "202608021535-CNQKXP",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -367,6 +368,7 @@ function validateReviewedCandidate({
+     "202608021231-SHYJGK",
+     "202608021534-YN84E1",
+     "202608022324-9VCYWG",
++    "202608021535-CNQKXP",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -498,7 +500,7 @@ function validateReviewedCandidate({
+         section: "package_manifests",
+         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
+         to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
+-        surface_sha256: "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
++        surface_sha256: "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
+         allowed_json_paths: [
+           "$.package_manifests[0].dependencies.@agentplaneorg/core",
+           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
+@@ -830,6 +832,7 @@ function validateReviewedCandidate({
+       "202607221848-T9B3PS",
+       "202607221849-8YYZ9X",
+       "202608021231-SHYJGK",
++      "202608021535-CNQKXP",
+     ],
+   };
+   for (const delta of candidate.deltas) {
+@@ -1238,6 +1241,13 @@ function validateReviewedCandidate({
+         { name: "json", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
++    {
++      id: ["doctor", "legacy"],
++      visibility: "advanced",
++      group: "Quality",
++      args: [],
++      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
++    },
+     {
+       id: ["evaluator", "apply"],
+       visibility: "user",
+@@ -1272,7 +1282,7 @@ function validateReviewedCandidate({
+     },
+     {
+       id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
+-      visibility: "user",
++      visibility: "internal",
+       group: "PR",
+       args: [
+         {
+@@ -1310,6 +1320,20 @@ function validateReviewedCandidate({
+         { name: "json", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
++    {
++      id: ["repair"],
++      visibility: "advanced",
++      group: "Maintenance",
++      args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
++      options: [],
++    },
++    {
++      id: ["repair", "adopt-legacy-conflict"],
++      visibility: "advanced",
++      group: "Maintenance",
++      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [{ name: "expect-adoption-token", kind: "string", valueHint: "<sha256:...>" }],
++    },
+     {
+       id: ["task", "advance"],
+       visibility: "user",
+@@ -1425,6 +1449,13 @@ function validateReviewedCandidate({
+       kind: "string",
+       valueHint: "<query>",
+     },
++    {
++      command: "doctor legacy",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "evaluator apply",
+       name: "json",
+@@ -1532,6 +1563,12 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "repair adopt-legacy-conflict",
++      name: "expect-adoption-token",
++      kind: "string",
++      valueHint: "<sha256:...>",
++    },
+     {
+       command: "sync",
+       name: "adopt-projection-identity",
+@@ -1666,6 +1703,7 @@ function validateReviewedCandidate({
+   ];
+   const expectedAdditionSources = [
+     { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
++    { kind: "command", command: "doctor legacy", source_task: "202608021535-CNQKXP" },
+     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
+     { kind: "command", command: "evaluator execute", source_task: "202607221849-8YYZ9X" },
+     { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
+@@ -1679,6 +1717,12 @@ function validateReviewedCandidate({
+       command: "pr conflict-rework",
+       source_task: "202607260007-DQM6AW",
+     },
++    { kind: "command", command: "repair", source_task: "202608021535-CNQKXP" },
++    {
++      kind: "command",
++      command: "repair adopt-legacy-conflict",
++      source_task: "202608021535-CNQKXP",
++    },
+     {
+       kind: "command",
+       command: "task advance",
+@@ -1743,6 +1787,12 @@ function validateReviewedCandidate({
+       name: "smoke-query",
+       source_task: "202607221850-8HBF4J",
+     },
++    {
++      kind: "option",
++      command: "doctor legacy",
++      name: "json",
++      source_task: "202608021535-CNQKXP",
++    },
+     {
+       kind: "option",
+       command: "evaluator apply",
+@@ -1845,6 +1895,12 @@ function validateReviewedCandidate({
+       name: "recover-diverged-head",
+       source_task: "202607300150-MGCHE6",
+     },
++    {
++      kind: "option",
++      command: "repair adopt-legacy-conflict",
++      name: "expect-adoption-token",
++      source_task: "202608021535-CNQKXP",
++    },
+     {
+       kind: "option",
+       command: "sync",
+@@ -2016,11 +2072,14 @@ function validateReviewedCandidate({
+     hashJson(addedCommands) ===
+       hashJson([
+         "context supervise-task",
++        "doctor legacy",
+         "evaluator apply",
+         "evaluator execute",
+         "evaluator prepare",
+         "integrate queue adopt-legacy-protected-conflict",
+         "pr conflict-rework",
++        "repair",
++        "repair adopt-legacy-conflict",
+         "task advance",
+         "task authority grant",
+         "task run reconcile",
+diff --git a/scripts/lib/package-tarball-policy.mjs b/scripts/lib/package-tarball-policy.mjs
+index 86201b850..5366c02e7 100644
+--- a/scripts/lib/package-tarball-policy.mjs
++++ b/scripts/lib/package-tarball-policy.mjs
+@@ -11,6 +11,7 @@ export const REQUIRED_TARBALL_FILES = Object.freeze([
+   "dist/.build-manifest.json",
+ ]);
+ export const REQUIRED_AGENTPLANE_TARBALL_FILES = Object.freeze([
++  "assets/compatibility-retirement-manifest.json",
+   "dist/cli.js",
+   "dist/command-catalog.js",
+   "dist/command-catalog/core-fast.js",
+diff --git a/scripts/release/check-local-tarball-install-smoke.mjs b/scripts/release/check-local-tarball-install-smoke.mjs
+index bcd8a21e5..f5325693e 100644
+--- a/scripts/release/check-local-tarball-install-smoke.mjs
++++ b/scripts/release/check-local-tarball-install-smoke.mjs
+@@ -226,6 +226,22 @@ const main = defineScript({
+       });
+       run(agentplane, ["context", "reindex", "--include-raw"], { cwd: repo });
+       run(agentplane, ["context", "search", "Packaged", "--format", "json"], { cwd: repo });
++      const legacyReport = JSON.parse(
++        run(agentplane, ["doctor", "legacy", "--json"], { cwd: repo }),
++      );
++      assert.equal(legacyReport.kind, "agentplane.doctor.legacy");
++      assert.equal(legacyReport.summary?.total, 12);
++      assert.equal(legacyReport.adapters?.length, 12);
++      assert.ok(
++        legacyReport.adapters.every(
++          (adapter) =>
++            typeof adapter.id === "string" &&
++            typeof adapter.introduced_in === "string" &&
++            Object.prototype.hasOwnProperty.call(adapter, "remove_in") &&
++            typeof adapter.usage_probe?.kind === "string" &&
++            typeof adapter.status === "string",
++        ),
++      );
+ 
+       assertJsonFailure(
+         runFailure(agentplane, ["--json-errors", "task", "show"], { cwd: repo }),

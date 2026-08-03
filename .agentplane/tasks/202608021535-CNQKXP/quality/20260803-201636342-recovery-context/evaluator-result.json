@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "medium",
+      "summary": "Verification at the evaluated SHA does not record all mandatory maintained gates.",
+      "broken_invariant": "The approved Verify Steps and DoD require every listed check to run or have an approved skip recorded. The verification record bound to 76c2607a560e5110f88abbce99930002e228761d omits bun run typecheck, bun run knip:check, and bun run hotspots:check, with no skip reason, risk, or approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/README.md",
+          "sha256": "sha256:f99b7f0e9d8564e53ddf9d986e3b1fc49b89d4082bc0a9e0f2b99747e4f0b2db",
+          "line": 198,
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803201612666-c8ba4caab0e4ac7d.json",
+          "sha256": "sha256:db9f4805b13df9c6d7519835495848857f67c6f37f37a6630901bb8ed2406018",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and record bun run typecheck, bun run knip:check, and bun run hotspots:check against evaluated SHA 76c2607a560e5110f88abbce99930002e228761d, or record policy-compliant approved skips."
+  ],
+  "hidden_assumptions": [
+    "Earlier verification on predecessor SHAs is assumed to cover the evaluated SHA even though the final change modified shared stable-file and runner-effect code."
+  ],
+  "recovery_context": "Preserve the implementation; complete the three omitted mandatory gates at the evaluated SHA and freeze a verification record that explicitly names their results before requesting reevaluation."
+}
