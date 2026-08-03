@@ -4,7 +4,7 @@ title: "Audit GitHub issues and pull requests for v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "REVIEWER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +26,19 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-03T12:51:48.983Z"
+  updated_by: "TESTER"
+  note: "Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR."
+  attempts: 1
 commit: null
 comments:
   -
     author: "REVIEWER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: recorded complete hosted inventory, reproducible issue evidence, PR dispositions, release blockers, and the coordinated post-release TypeScript 7 decision."
 events:
   -
     type: "status"
@@ -44,9 +47,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T12:49:32.684Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: recorded complete hosted inventory, reproducible issue evidence, PR dispositions, release blockers, and the coordinated post-release TypeScript 7 decision."
+  -
+    type: "verify"
+    at: "2026-08-03T12:51:48.983Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T12:48:47.744Z"
-doc_updated_by: "REVIEWER"
+doc_updated_at: "2026-08-03T12:52:14.872Z"
+doc_updated_by: "CODER"
 description: "Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision."
 sections:
   Summary: |-
@@ -59,13 +75,43 @@ sections:
   Plan: "Audit GitHub truth against current main acf9af541: reproduce issues #4663 and #4641 with isolated fixtures and focused current-main tests; classify every open PR by hosted state, unique commits, conflict/check status, release relevance, and whether main already supersedes it; close or disposition only items with direct evidence; create bounded code follow-up tasks for confirmed release-relevant defects instead of editing implementation in this REVIEWER task; record all commands, results, residual risks, and release recommendations in the task artifact; finish only when the open issue/PR inventory is refreshed and every item has an explicit disposition."
   Verify Steps: |-
     1. Run gh issue list --state open --limit 200. Expected: only confirmed release issues #4663 and #4641 remain open.
-    2. Run gh pr list --state open --limit 200. Expected: only deferred dependency PR #4752 remains open and is explicitly excluded from v0.7.1.
+    2. Run gh pr list --state open --limit 200. Expected: the external backlog contains only deferred dependency PR #4752; the active audit task PR #4754 may also be open until integration.
     3. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts. Expected: 29 current-main init tests pass while the audit records the missing .agentplane/tmp assertion as the #4663 gap.
     4. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: 4 current-main integration tests pass, including the reproduced unauthenticated-receipt behavior for #4641.
     5. Run the focused provider, receipt, foreign-artifact, branch-snapshot, and active-task suites plus bun run guards:check and bun run release:incidents:check. Expected: current main passes and supports closure of superseded task PRs.
     6. Review Findings. Expected: each original open issue and PR has one explicit disposition, release blockers are bounded, and TypeScript 7 is excluded from v0.7.1.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-03T12:51:48.983Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:49:32.684Z, excerpt_hash=sha256:6454590c7ac0bb58ae945d3165b6adf0b30cf77e35a0c6ec1c74092e4de864ae
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-53WJMN-audit-github-issues-and-pull-requests-for-v0-7-1/.agentplane/tasks/202608021232-53WJMN/blueprint/resolved-snapshot.json
+    - old_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+    - current_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-53WJMN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021232-53WJMN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -98,6 +144,10 @@ sections:
     - Observation: Hosted inventory after disposition contains exactly issues #4663 and #4641 plus PR #4752.
       Impact: Every remaining hosted item now has an explicit release disposition, but three confirmed local defects must be fixed before provider qualification.
       Resolution: Create three bounded release-blocking repository tasks after this audit is integrated; keep TypeScript 7 and dependency modernization outside the v0.7.1 dependency graph.
+
+    - Observation: Open PR inventory now contains the expected deferred PR #4752 and this audit task PR #4754.
+      Impact: The literal acceptance text would fail even though the external backlog disposition is correct.
+      Resolution: Amend Step 2 to exclude the active task PR from backlog inventory, commit the task artifact, republish, and rerun the inventory check.
 extensions:
   workflow_route_baseline:
     start_head_sha: "acf9af541b44c6b7af8dd8c680927b1b0b736382"
@@ -122,7 +172,7 @@ Audit GitHub truth against current main acf9af541: reproduce issues #4663 and #4
 ## Verify Steps
 
 1. Run gh issue list --state open --limit 200. Expected: only confirmed release issues #4663 and #4641 remain open.
-2. Run gh pr list --state open --limit 200. Expected: only deferred dependency PR #4752 remains open and is explicitly excluded from v0.7.1.
+2. Run gh pr list --state open --limit 200. Expected: the external backlog contains only deferred dependency PR #4752; the active audit task PR #4754 may also be open until integration.
 3. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts. Expected: 29 current-main init tests pass while the audit records the missing .agentplane/tmp assertion as the #4663 gap.
 4. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: 4 current-main integration tests pass, including the reproduced unauthenticated-receipt behavior for #4641.
 5. Run the focused provider, receipt, foreign-artifact, branch-snapshot, and active-task suites plus bun run guards:check and bun run release:incidents:check. Expected: current main passes and supports closure of superseded task PRs.
@@ -131,6 +181,36 @@ Audit GitHub truth against current main acf9af541: reproduce issues #4663 and #4
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-03T12:51:48.983Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:49:32.684Z, excerpt_hash=sha256:6454590c7ac0bb58ae945d3165b6adf0b30cf77e35a0c6ec1c74092e4de864ae
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-53WJMN-audit-github-issues-and-pull-requests-for-v0-7-1/.agentplane/tasks/202608021232-53WJMN/blueprint/resolved-snapshot.json
+- old_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+- current_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-53WJMN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021232-53WJMN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -167,3 +247,7 @@ Audit GitHub truth against current main acf9af541: reproduce issues #4663 and #4
 - Observation: Hosted inventory after disposition contains exactly issues #4663 and #4641 plus PR #4752.
   Impact: Every remaining hosted item now has an explicit release disposition, but three confirmed local defects must be fixed before provider qualification.
   Resolution: Create three bounded release-blocking repository tasks after this audit is integrated; keep TypeScript 7 and dependency modernization outside the v0.7.1 dependency graph.
+
+- Observation: Open PR inventory now contains the expected deferred PR #4752 and this audit task PR #4754.
+  Impact: The literal acceptance text would fail even though the external backlog disposition is correct.
+  Resolution: Amend Step 2 to exclude the active task PR from backlog inventory, commit the task artifact, republish, and rerun the inventory check.
