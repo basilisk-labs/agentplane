@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T11:45:31.314Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "e92e7b4b1ea4fe9cca60d2ebb5a305f3e65fba42",
+  "blueprint_digest": "d2470dfd273c68b5608d8dad367c27ea191d7026086c22031b520352a14c4183",
+  "findings": [
+    "A completed task can be marked with fully observed token usage even when output/reasoning breakdown telemetry was absent from one or more agent runs."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202608021231-BPMM04/README.md"
+  ],
+  "missing_tests": [
+    "Add a deterministic completion test where every agent run has input/output/total telemetry but at least one run omits visible_output_tokens and reasoning_tokens; the task projection must be partial and must not expose fabricated zero breakdown counts.",
+    "Add the equivalent mixed executor/evaluator test using an evaluator receipt that lacks the optional output/reasoning breakdown fields."
+  ],
+  "hidden_assumptions": [
+    "Numeric visible_output_tokens and reasoning_tokens fields in the aggregate are assumed to prove that every observed agent run supplied those fields, although they are initialized to zero independently of provider evidence.",
+    "All evaluator/provider receipts are assumed to include the newly optional breakdown fields."
+  ],
+  "residual_risks": [
+    "Track breakdown-observed provenance separately from primary token-observed runs, or otherwise ensure projection can distinguish genuine zero breakdown counts from absent breakdown telemetry; then cover mixed executor/evaluator and replay paths."
+  ]
+}

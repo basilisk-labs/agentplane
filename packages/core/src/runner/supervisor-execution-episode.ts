@@ -74,6 +74,7 @@ export const SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA = z
     visible_output_tokens: NON_NEGATIVE_INTEGER.optional(),
     reasoning_tokens: NON_NEGATIVE_INTEGER.optional(),
     token_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
+    output_breakdown_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
     wall_time_ms: NON_NEGATIVE_INTEGER,
     changed_files: NON_NEGATIVE_INTEGER,
     diff_lines: NON_NEGATIVE_INTEGER,
@@ -88,6 +89,34 @@ export const SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA = z
       ctx.addIssue({
         code: "custom",
         message: "Observed token-usage runs cannot exceed supervisor agent runs.",
+      });
+    }
+    if (
+      usage.output_breakdown_observed_agent_runs !== undefined &&
+      usage.output_breakdown_observed_agent_runs > usage.agent_runs
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Observed output-breakdown runs cannot exceed supervisor agent runs.",
+      });
+    }
+    if (
+      usage.output_breakdown_observed_agent_runs !== undefined &&
+      usage.token_observed_agent_runs !== undefined &&
+      usage.output_breakdown_observed_agent_runs > usage.token_observed_agent_runs
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Observed output-breakdown runs cannot exceed observed token-usage runs.",
+      });
+    }
+    if (
+      (usage.output_breakdown_observed_agent_runs ?? 0) > 0 &&
+      (usage.visible_output_tokens === undefined || usage.reasoning_tokens === undefined)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Observed output-breakdown runs require visible and reasoning token totals.",
       });
     }
     if (
@@ -199,6 +228,7 @@ const ZERO_USAGE: SupervisorExecutionUsage = {
   visible_output_tokens: 0,
   reasoning_tokens: 0,
   token_observed_agent_runs: 0,
+  output_breakdown_observed_agent_runs: 0,
   wall_time_ms: 0,
   changed_files: 0,
   diff_lines: 0,
@@ -567,6 +597,12 @@ export function completeSupervisorExecutionEpisode(opts: {
     Number(usageInput.input_tokens) >= 0 &&
     Number(usageInput.output_tokens) >= 0 &&
     Number(usageInput.total_tokens) >= 0;
+  const outputBreakdownObserved =
+    tokenUsageObserved &&
+    Number.isSafeInteger(usageInput.visible_output_tokens) &&
+    Number.isSafeInteger(usageInput.reasoning_tokens) &&
+    Number(usageInput.visible_output_tokens) >= 0 &&
+    Number(usageInput.reasoning_tokens) >= 0;
   const previousProgress = journal.operations.findLast(
     (operation) => operation.progress_digest !== null,
   )?.progress_digest;
@@ -591,6 +627,8 @@ export function completeSupervisorExecutionEpisode(opts: {
       (journal.usage.reasoning_tokens ?? 0) + Math.max(0, usageInput.reasoning_tokens ?? 0),
     token_observed_agent_runs:
       (journal.usage.token_observed_agent_runs ?? 0) + (tokenUsageObserved ? 1 : 0),
+    output_breakdown_observed_agent_runs:
+      (journal.usage.output_breakdown_observed_agent_runs ?? 0) + (outputBreakdownObserved ? 1 : 0),
     wall_time_ms: journal.usage.wall_time_ms + Math.max(0, usageInput.wall_time_ms ?? 0),
     changed_files: Math.max(
       journal.usage.changed_files,

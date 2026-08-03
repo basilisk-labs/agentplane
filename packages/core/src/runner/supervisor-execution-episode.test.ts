@@ -132,6 +132,53 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
   });
 
+  it("tracks output-breakdown provenance independently from primary token telemetry", () => {
+    const primaryOnly = start({ journal: journal() });
+    if (primaryOnly.status !== "started") throw new Error("expected primary-only episode");
+    const firstCompleted = completeSupervisorExecutionEpisode({
+      journal: primaryOnly.journal,
+      operation_key: primaryOnly.operation_key,
+      result: { status: "ok" },
+      usage: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    expect(firstCompleted.usage).toMatchObject({
+      token_observed_agent_runs: 1,
+      output_breakdown_observed_agent_runs: 0,
+      visible_output_tokens: 0,
+      reasoning_tokens: 0,
+    });
+
+    const advanced = advanceSupervisorExecutionEpisodeState({
+      journal: firstCompleted,
+      state_fingerprint_digest: FINGERPRINT,
+      route_observation: { phase: "evaluator" },
+      now: "2026-07-28T00:00:02.000Z",
+    });
+    const evaluator = start({ journal: advanced, kind: "evaluator_episode" });
+    if (evaluator.status !== "started") throw new Error("expected evaluator episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: evaluator.journal,
+      operation_key: evaluator.operation_key,
+      result: { status: "ok" },
+      usage: {
+        input_tokens: 8,
+        output_tokens: 4,
+        visible_output_tokens: 3,
+        reasoning_tokens: 1,
+        total_tokens: 12,
+      },
+      now: "2026-07-28T00:00:03.000Z",
+    });
+
+    expect(completed.usage).toMatchObject({
+      token_observed_agent_runs: 2,
+      output_breakdown_observed_agent_runs: 1,
+      visible_output_tokens: 3,
+      reasoning_tokens: 1,
+    });
+  });
+
   it("charges wall-time budget only from observed execution, not inactive journal age", () => {
     const first = start({ journal: journal({ max_wall_time_ms: 10 }) });
     if (first.status !== "started") throw new Error("expected first agent episode");

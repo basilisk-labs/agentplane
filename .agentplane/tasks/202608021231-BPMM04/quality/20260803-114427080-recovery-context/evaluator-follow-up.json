@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021231-BPMM04-2ee210f98b31199bf7219f75",
+  "task_id": "202608021231-BPMM04",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Track breakdown-observed provenance separately from primary token-observed runs, or otherwise ensure projection can distinguish genuine zero breakdown counts from absent breakdown telemetry; then cover mixed executor/evaluator and replay paths.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "A completed task can be marked with fully observed token usage even when output/reasoning breakdown telemetry was absent from one or more agent runs.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:9e11383f36c013287b2cc75831ec9a5d0d7f4703c2d06adefdde7452c2963857",
+          "section": "Changes to ZERO_USAGE, completeSupervisorExecutionEpisode, evaluator usage, and projectTaskTokenUsage"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:43faa43ab4203edc6c7c8edb478d1e9b9362aefd6bc435860941b4d58c05796d",
+          "section": "Verify Steps 1–2"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-114427080-recovery-context/evaluator-result.json"
+}
