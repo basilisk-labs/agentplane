@@ -29,6 +29,7 @@ Created: 2026-08-02T23:28:27.052Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |   8 +
  .../src/cli/run-cli.core.task-advance.test.ts      | 587 +++++++++++++++++++--
  .../src/cli/run-cli.core.task-advance.testkit.ts   |  59 +++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
@@ -56,7 +57,7 @@ Created: 2026-08-02T23:28:27.052Z
  schemas/agent-semantic-result.schema.json          |  99 ++++
  .../baselines/v0.7-compatibility-candidate.json    |  33 +-
  .../check-compatibility-contract-baseline.mjs      |  17 +-
- 27 files changed, 2628 insertions(+), 69 deletions(-)
+ 28 files changed, 2636 insertions(+), 69 deletions(-)
 ```
 
 </details>
