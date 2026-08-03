@@ -16,13 +16,7 @@ Persist provider and evaluator token usage through task execution and closeout, 
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified final rework SHA 9a9f6a1a3bc3e8f202518ab196ebd1813938502a: token and output-breakdown
-observation provenance are independent, incomplete breakdown is partial with null counts, and all
-completion paths remain covered.
-```
+- Note: Verified bf22bcd37: completed-task token usage is consistent and all required gates pass.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,21 +34,26 @@ completion paths remain covered.
  .../src/backends/task-backend/shared/normalize.ts  |  88 ++++++
  .../src/backends/task-backend/shared/record.ts     |   3 +
  .../src/backends/task-backend/shared/types.ts      |   3 +
+ .../run-cli.core.task-status-token-usage.test.ts   |  89 ++++++
  packages/agentplane/src/commands/acr/generate.ts   |   1 +
  .../evaluator/evaluator-execute-supervisor.ts      |   7 +-
  .../commands/release/tasks-reconcile.command.ts    |   9 +-
+ .../commands/shared/route-decision-types.test.ts   |  27 ++
+ .../src/commands/shared/route-decision-types.ts    |   2 +
  .../shared/supervisor-execution-episode.ts         |  14 +-
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../agentplane/src/commands/task/brief-model.ts    |   3 +
- .../agentplane/src/commands/task/brief-render.ts   |  13 +
+ .../agentplane/src/commands/task/brief-render.ts   |   9 +
  .../agentplane/src/commands/task/close-shared.ts   |   7 +
  .../src/commands/task/close-shared.unit.test.ts    |  15 +
  .../agentplane/src/commands/task/finish-shared.ts  |   7 +
  .../task/hosted-merge-sync.token-usage.test.ts     | 330 +++++++++++++++++++++
  .../src/commands/task/hosted-merge-sync.ts         |  44 ++-
  .../commands/task/hosted-merge-sync/builders.ts    |  18 +-
+ .../agentplane/src/commands/task/status.command.ts |   9 +
  .../src/commands/task/task-token-usage.test.ts     | 239 +++++++++++++++
  .../src/commands/task/task-token-usage.ts          | 132 +++++++++
+ .../src/commands/task/token-usage-format.ts        |  17 ++
  .../runner/adapters/codex-result-transport.test.ts |   2 +
  .../src/runner/adapters/codex-result-transport.ts  |   5 +
  .../agentplane/src/runner/adapters/codex.test.ts   |   2 +
@@ -75,7 +74,7 @@ completion paths remain covered.
  packages/spec/schemas/tasks-export.schema.json     | 122 ++++++++
  schemas/task-readme-frontmatter.schema.json        | 122 ++++++++
  schemas/tasks-export.schema.json                   | 122 ++++++++
- 42 files changed, 1987 insertions(+), 16 deletions(-)
+ 47 files changed, 2127 insertions(+), 16 deletions(-)
 ```
 
 </details>
