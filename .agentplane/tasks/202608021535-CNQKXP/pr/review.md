@@ -13,7 +13,7 @@ Created: 2026-08-03T18:26:18.371Z
 ## Verification
 
 - State: ok
-- Note: PASS at 7b5ee7a8e: evaluator findings RCI-001 and RCI-002 resolved with complete check evidence.
+- Note: PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

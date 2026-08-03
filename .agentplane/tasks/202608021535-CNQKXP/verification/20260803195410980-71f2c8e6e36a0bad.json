@@ -1,0 +1,15 @@
+{
+  "details": "Command: focused runner effect-operation stress (20 cycles x 8 independent Bun processes), focused doctor legacy suite, typecheck, lint:core, build, ci:contract, test:critical, test:fast, package:tarball:check, package:install-smoke, policy routing, git diff --check.\n\nResult: PASS. Concurrent journal test produced exactly one winner per cycle across 160 starts; focused runner file 10/10; critical suite 12/12 chunks; fast suite 536/536 files and 3786/3786 tests; tarball inventories core=103 recipes=21 agentplane=59; clean-install migration matrix 8/8.\n\nEvidence: implementation 1cb422dd89bf6f38993264b6f0fe3efb369a235e; compatibility digest unchanged; dependency, clone, Knip, coverage, hotspot, trust-boundary and routing ratchets passed.\n\nScope: compatibility retirement manifest, doctor legacy and recovery surface, plus the hosted-check concurrency regression in initial runner effect journal publication. Independent evaluator and hosted checks remain separate quality gates.",
+  "digest": "sha256:71f2c8e6e36a0bad875b867492982b835656612f74314212decf88ed4f42f6dc",
+  "implementation_sha": "1cb422dd89bf6f38993264b6f0fe3efb369a235e",
+  "kind": "task_verification_record",
+  "note": "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.",
+  "recorded_at": "2026-08-03T19:54:10.980Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the compatibility-manifest schema and inventory tests. Expected: every registered production adapter has one unique manifest entry; semver windows, source paths, migration commands, and usage probes validate; malformed or stale entries fail closed.\n2. Run focused doctor legacy fixtures in human and JSON modes. Expected: current, used legacy, unused legacy, unavailable probe, and mixed states produce stable typed output without mutation; every finding names evidence and a migration command.\n3. Run command catalog/help and legacy conflict recovery tests. Expected: the default 11-operation help remains unchanged, repair exposes the advanced legacy-adoption path, the old command is hidden/deprecated, and authority plus recovery receipts remain byte-compatible.\n4. Build and inspect the publishable AgentPlane package. Expected: the manifest and required runtime files are shipped and doctor legacy works from the packed CLI fixture.\n5. Run bun run typecheck, bun run ci:contract, bun run test:critical, bun run test:fast, bun run knip:check, bun run hotspots:check, and node .agentplane/policy/check-routing.mjs. Expected: all maintained gates pass with no compatibility-baseline or trust-boundary growth.\n6. Generate and verify task evidence, then obtain an independent EVALUATOR pass against the exact implementation SHA.",
+  "scope_digest": "sha256:d18bd9c61c280e2386e9923416e2bb2a66f1e09a6114e13f536b58c38cb675ad",
+  "task_id": "202608021535-CNQKXP",
+  "verification_command": "agentplane verify 202608021535-CNQKXP --ok --by TESTER",
+  "verifier": "TESTER"
+}
