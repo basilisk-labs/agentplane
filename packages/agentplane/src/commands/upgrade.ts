@@ -15,7 +15,7 @@ import { checkTaskReadmeMigrationState } from "./doctor/workspace.js";
 import { runOperatorPipeline } from "./shared/operator-pipeline.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
-import { ensureRuntimeSqliteGitignore } from "../runtime/shared/runtime-gitignore.js";
+import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { migrateTaskDocsInWorkspace } from "./task/migrate-doc.js";
 import {
   applyManagedFiles,
@@ -288,7 +288,7 @@ export async function cmdUpgradeParsed(opts: {
           migratedTaskDocs.changed > 0 ? `changed=${migratedTaskDocs.changed}` : "already current";
         process.stdout.write(`Task README migration: ${details}\n`);
       }
-      await ensureRuntimeSqliteGitignore({ gitRoot: resolved.gitRoot });
+      await ensureRuntimeGitignore({ gitRoot: resolved.gitRoot });
 
       const hasManagedMutations = additions.length > 0 || updates.length > 0 || removals.length > 0;
       const legacyConfigWasTracked = await isTrackedFile(resolved.gitRoot, CONFIG_REL_PATH);
