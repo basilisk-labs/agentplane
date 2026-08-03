@@ -4,7 +4,7 @@ title: "Audit GitHub issues and pull requests for v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "REVIEWER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -79,7 +79,7 @@ events:
     state: "ok"
     note: "Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass."
 doc_version: 3
-doc_updated_at: "2026-08-03T12:53:07.355Z"
+doc_updated_at: "2026-08-03T12:55:35.428Z"
 doc_updated_by: "CODER"
 description: "Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision."
 sections:
@@ -196,6 +196,10 @@ sections:
     - Observation: Open PR inventory now contains the expected deferred PR #4752 and this audit task PR #4754.
       Impact: The literal acceptance text would fail even though the external backlog disposition is correct.
       Resolution: Amend Step 2 to exclude the active task PR from backlog inventory, commit the task artifact, republish, and rerun the inventory check.
+
+    - Observation: A branch_pr task whose semantic result lives in README produced implementation_sha=null when README and derived PR or verification artifacts were committed together; task next-action then rejected a passing verification as not covering HEAD.
+      Impact: Documentation, audit, and policy tasks can enter an impossible verification loop even after correct evidence is recorded.
+      Resolution: Create a release-blocking code task that preserves the latest semantic task-artifact commit as the quality target when a commit also contains derived artifacts, with route and verification-record regression coverage.
 extensions:
   workflow_route_baseline:
     start_head_sha: "acf9af541b44c6b7af8dd8c680927b1b0b736382"
@@ -329,3 +333,7 @@ DecisionContextRef:
 - Observation: Open PR inventory now contains the expected deferred PR #4752 and this audit task PR #4754.
   Impact: The literal acceptance text would fail even though the external backlog disposition is correct.
   Resolution: Amend Step 2 to exclude the active task PR from backlog inventory, commit the task artifact, republish, and rerun the inventory check.
+
+- Observation: A branch_pr task whose semantic result lives in README produced implementation_sha=null when README and derived PR or verification artifacts were committed together; task next-action then rejected a passing verification as not covering HEAD.
+  Impact: Documentation, audit, and policy tasks can enter an impossible verification loop even after correct evidence is recorded.
+  Resolution: Create a release-blocking code task that preserves the latest semantic task-artifact commit as the quality target when a commit also contains derived artifacts, with route and verification-record regression coverage.
