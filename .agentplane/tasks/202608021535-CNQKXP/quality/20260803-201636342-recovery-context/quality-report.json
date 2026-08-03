@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-CNQKXP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T20:17:27.878Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "76c2607a560e5110f88abbce99930002e228761d",
+  "blueprint_digest": "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a",
+  "findings": [
+    "Verification at the evaluated SHA does not record all mandatory maintained gates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-CNQKXP/README.md",
+    ".agentplane/tasks/202608021535-CNQKXP/verification/20260803201612666-c8ba4caab0e4ac7d.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "Run and record bun run typecheck, bun run knip:check, and bun run hotspots:check against evaluated SHA 76c2607a560e5110f88abbce99930002e228761d, or record policy-compliant approved skips."
+  ],
+  "hidden_assumptions": [
+    "Earlier verification on predecessor SHAs is assumed to cover the evaluated SHA even though the final change modified shared stable-file and runner-effect code."
+  ],
+  "residual_risks": [
+    "Preserve the implementation; complete the three omitted mandatory gates at the evaluated SHA and freeze a verification record that explicitly names their results before requesting reevaluation."
+  ]
+}
