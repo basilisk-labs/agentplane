@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c86a4c7fcf67c80b3008044dc4886fe8affb4cee5d11b060a83d9d37d2f1b139",
+  "implementation_sha": "8b77ddcf25053f5382eba05a251e90ba05cb47d8",
+  "kind": "task_verification_record",
+  "note": "Implementation commit 8b77ddcf2505 passed all declared verification gates; task metadata now records that exact implementation SHA.",
+  "recorded_at": "2026-08-03T17:44:44.113Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-compaction.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-prepare.command.test.ts packages/agentplane/src/cli/run-cli/registry.run.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts`. Expected: immutable objects are reused by SHA-256, tamper/collision is rejected, current and legacy work orders remain readable, and evaluator execution consumes the referenced prompt/schema.\n2. Inspect the repeated-preparation acceptance test. Expected: two review directories retain only compact manifests/work orders, unchanged diff/checks/blueprint/schema resolve to one object each, and newly stored immutable-input bytes are reduced by at least 80%.\n3. Run `bun run typecheck`, `bun run ci:contract`, `bun run test:critical`, and `bun run test:fast`. Expected: all checks pass without evaluator, evidence-bundle, task-routing, hook, or lifecycle regressions.\n4. Run `bun run format:changed`, `bun run lint`, `bun run knip:check`, and the changed-file hotspot check. Expected: formatting, lint, dead-code, and size budgets pass or record a task-scoped exemption.\n5. Generate and verify the task evidence bundle, then run an independent evaluator against the committed implementation. Expected: the bundle includes compact manifests and task-local content objects, hashes verify offline, the evaluator cites frozen object paths, and the verdict is pass with no unresolved high-severity finding.",
+  "scope_digest": "sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0",
+  "task_id": "202608021535-9EWFAB",
+  "verification_command": "agentplane verify 202608021535-9EWFAB --ok --by TESTER",
+  "verifier": "TESTER"
+}

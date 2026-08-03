@@ -12,8 +12,8 @@ Created: 2026-08-03T16:19:36.596Z
 
 ## Verification
 
-- State: ok
-- Note: Portable trust-boundary rework passed focused evaluator coverage and every repository release gate at 8b77ddcf2.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run test:critical
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

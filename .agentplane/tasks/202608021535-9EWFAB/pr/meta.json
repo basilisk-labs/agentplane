@@ -3,7 +3,7 @@
   "branch": "task/202608021535-9EWFAB/compact-and-deduplicate-v0-7-1-task-evidence",
   "created_at": "2026-08-03T16:19:36.596Z",
   "diffstat_sha256": "sha256:e94f5b76289b1da16210eadb2a74bd1256ee4f8c9afe63b64bbedc349898c905",
-  "last_verified_at": "2026-08-03T17:42:58.017Z",
+  "last_verified_at": "2026-08-03T17:45:49.900Z",
   "last_verified_diffstat_sha256": "sha256:e94f5b76289b1da16210eadb2a74bd1256ee4f8c9afe63b64bbedc349898c905",
   "pr_number": 4759,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4759",
@@ -12,6 +12,6 @@
   "task_id": "202608021535-9EWFAB",
   "updated_at": "2026-08-03T16:20:00.808Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
