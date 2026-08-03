@@ -6,7 +6,7 @@ Created: 2026-08-03T21:17:30.470Z
 
 - Task: `202608032116-QFBVB5`
 - Title: Keep frozen qualification subject clean while writing evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608032116-QFBVB5/keep-frozen-qualification-subject-clean-while-wr`
 - Canonical task record: `.agentplane/tasks/202608032116-QFBVB5/README.md`
 
