@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:1e04586f65054110ae2ec9c5ba05b29b868d3e874327e144d06cdd705cd596a9",
+  "implementation_sha": "cd4b21269e0a274142560a755ff235f99c9a40e8",
+  "kind": "task_verification_record",
+  "note": "Command: bun run ci:local:fast; focused Vitest route/queue suite; built CLI next-action against PR 4756 state.\nResult: PASS. 533 files / 3767 tests passed; 12/12 critical CLI chunks passed; focused 7 files / 99 tests passed; typecheck, lint, format, policy routing, diff, hotspot, and build gates passed.\nEvidence: implementation commit cd4b21269; actual PR 4756 route returned terminal.done with evidence_missing=none; retry tests prove unresolved review becomes queued and --wait retries without manual release.\nScope: integration queue retry classification, finalize-time queue normalization, base synchronization proof, hosted-close terminal route, and regression tests only.",
+  "recorded_at": "2026-08-03T14:45:26.565Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused integration queue and route reconciliation tests. Expected: handoff recovery, hosted-close finalization, idempotent cleanup, and fail-closed review cases pass.\n2. Exercise a branch_pr fixture where review resolution is followed by merge, hosted-close, and cleanup. Expected: run-next reclaims eligible handoff automatically, queue becomes done, and next-action returns terminal without manual queue release.\n3. Exercise unresolved, failed, and ambiguous hosted states. Expected: no automatic completion or unsafe replay occurs.\n4. Run typecheck, lint, policy routing, diff, hotspot, and task trust-ratchet guards for the touched code.\n5. Record verification with Command, Result, Evidence, and Scope; run an independent evaluator against the implementation commit.",
+  "scope_digest": "sha256:29e54a205d4ec1284808f0a739882be15fcd1b76de6f45d4844f995dc4619439",
+  "task_id": "202608031426-0BY4B4",
+  "verification_command": "agentplane verify 202608031426-0BY4B4 --ok --by CODER",
+  "verifier": "CODER"
+}
