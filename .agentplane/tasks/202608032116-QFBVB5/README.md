@@ -1,10 +1,11 @@
 ---
 id: "202608032116-QFBVB5"
 title: "Keep frozen qualification subject clean while writing evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +61,23 @@ quality_review:
     - "PASS: the exclusion is derived from a validated repo-relative nested path and uses a top-level Git exclude pathspec, so it cannot widen beyond the selected evidence subtree."
     - "PASS: the real Git repository test proves evidence writes are ignored, an unrelated untracked file still blocks qualification, and repository-root or outside paths are rejected."
     - "PASS: matched CLI and supervisor latency scenarios both completed against the exact frozen implementation commit with 2/2 scenarios passing, demonstrating that qualification output no longer invalidates its own subject."
+token_usage:
+  agent_runs: 0
+  input_tokens: null
+  journal_digest: null
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "unavailable"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "supervisor_journal_missing"
+  updated_at: "2026-08-03T21:26:21.704Z"
 commit:
-  hash: "3e51eeac9196a048955c7e56633bacd76fe317bb"
-  message: "🧪 QFBVB5 task: isolate qualification evidence writes"
+  hash: "6a15089bc86b90b2787cdadb4246b9ede8b8c96d"
+  message: "🔍 QFBVB5 task: record quality review"
 comments:
   -
     author: "CODER"
@@ -70,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: nested qualification evidence is excluded from subprocess cleanliness checks without ignoring any unrelated repository change; both matched latency scenarios executed and passed from a task-local evidence directory."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -91,8 +109,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS. Qualification subprocesses keep the frozen subject strict while allowing only their active evidence directory; matched CLI and supervisor latency both executed and passed."
+  -
+    type: "status"
+    at: "2026-08-03T21:26:21.704Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T21:23:27.802Z"
+doc_updated_at: "2026-08-03T21:26:21.714Z"
 doc_updated_by: "CODER"
 description: "Allow qualification subprocesses to exclude only the active in-repository evidence output directory from frozen-subject cleanliness checks, while still failing on every other tracked or untracked change."
 sections:
@@ -168,6 +193,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "3e51eeac9196a048955c7e56633bacd76fe317bb"
+    message: "🧪 QFBVB5 task: isolate qualification evidence writes"
   workflow_route_baseline:
     start_head_sha: "50d6dcfd838dfad3268fb45b652e08f640955343"
     version: 1
@@ -257,3 +285,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `unavailable/agentplane`
+- Journal digest: `unavailable`
+- Unavailable reason: `supervisor_journal_missing`
+- Updated at: `2026-08-03T21:26:21.704Z`
