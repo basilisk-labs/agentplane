@@ -12,8 +12,8 @@ Created: 2026-08-03T22:08:23.232Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Regression test must not depend on the cleanliness of the developer checkout.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-03T22:08:23.232Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T22:08:23.232Z
+- Updated: 2026-08-03T22:10:16.335Z
 - Branch: task/202608032207-V8HMV8/qualification-evidence-rerun
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
