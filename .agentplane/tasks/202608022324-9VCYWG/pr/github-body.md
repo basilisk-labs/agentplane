@@ -16,13 +16,7 @@ Extend the compact external-agent protocol so task advance accepts a typed Seman
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified external-agent round trip: 12 task-advance E2E tests and 97 focused contract/supervisor
-tests passed; typecheck, lint:core, knip:check (539 baseline, no growth), hotspots:check, schema
-sync, compatibility contract, policy routing, formatting, and all 12 critical chunks passed.
-```
+- Note: Verified the external-agent SemanticResult round trip and fail-closed recovery contract.
 - Canonical workflow state lives in the task README.
 
 <details>
