@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608031321-5GK3DD/make-built-in-task-run-context-verifiable",
+  "created_at": "2026-08-03T13:22:52.236Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608031321-5GK3DD",
+  "updated_at": "2026-08-03T13:22:52.236Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
