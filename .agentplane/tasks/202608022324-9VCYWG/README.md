@@ -4,7 +4,7 @@ title: "Complete the task advance semantic-result round trip"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c"
+  message: "🚧 9VCYWG task: complete semantic result round trip"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: completed the typed external-agent SemanticResult round trip with CLI-owned verification, evaluator routing, crash recovery, and fail-closed exchange binding."
 events:
   -
     type: "status"
@@ -43,8 +48,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T00:53:34.301Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: completed the typed external-agent SemanticResult round trip with CLI-owned verification, evaluator routing, crash recovery, and fail-closed exchange binding."
 doc_version: 3
-doc_updated_at: "2026-08-02T23:28:26.953Z"
+doc_updated_at: "2026-08-03T00:53:34.301Z"
 doc_updated_by: "CODER"
 description: "Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics."
 sections:
