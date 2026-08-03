@@ -15,8 +15,13 @@ Increase the mandatory cold supervisor latency sample from 10 to 20 while preser
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused contracts, static checks, policy checks, and exact-commit supervisor latency evidence pass
+with unchanged regression budgets.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

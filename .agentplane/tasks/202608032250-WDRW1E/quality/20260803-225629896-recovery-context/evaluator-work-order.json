@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608032250-WDRW1E-bf78ef926fa7ddba20ceff86",
+  "prepared_at": "2026-08-03T22:56:29.896Z",
+  "task": {
+    "id": "202608032250-WDRW1E",
+    "revision": 6,
+    "objective": "Stabilize supervisor latency p95 qualification sampling\n\nIncrease the mandatory cold supervisor latency sample from 10 to 20 while preserving the existing 10 percent regression budget, so release qualification uses a meaningful p95 estimate instead of treating one maximum outlier as p95.",
+    "acceptance_criteria": [
+      "- In scope: Increase the mandatory cold supervisor latency sample from 10 to 20 while preserving the existing 10 percent regression budget, so release qualification uses a meaningful p95 estimate instead of treating one maximum outlier as p95.\n- Out of scope: unrelated refactors not required for \"Stabilize supervisor latency p95 qualification sampling\".",
+      "1. Raise the supervisor cold-run minimum and default from 10 to 20 without changing the existing 10 percent median or p95 regression budget. 2. Update qualification contract tests so 20 cold and 30 warm samples are required for both managed-run and external-advance frontends, including explicit rejection of the former 10-sample shape. 3. Run focused qualification tests, type checking, linting, formatting, the supervisor benchmark, and hosted PR verification before integration.",
+      "1. Run the focused release qualification contract tests. Expected: reports with 20 cold and 30 warm samples for both public frontends validate; a report with only 10 cold samples is rejected.\n2. Run TypeScript type checking, ESLint, and Prettier checks for the touched qualification files. Expected: all pass without unrelated changes.\n3. Run the supervisor latency benchmark against the exact task commit. Expected: both managed-run and external-advance cold and warm surfaces satisfy the unchanged 10 percent median and p95 budgets with the new 20/30 sample contract.\n4. Complete independent evaluator review and hosted PR verification. Expected: no blocking findings and all required checks pass."
+    ]
+  },
+  "evaluated_sha": "6a7485ce21995a1114899d406946b4ebcb65f69b",
+  "diff_base_sha": "0b15f5b7ad169169dec9c46ba02d4e59307d8553",
+  "blueprint_digest": "e90054ca2323f28a9c48691a3968c31561ad6d5b45df941747961758f2205c6d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608032250-WDRW1E/quality/20260803-225629896-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:152939ed8457c2d16cbfa31020088a7bed3c2a0e35d36a483381bd8ff7fd45b0",
+    "prompt_path": ".agentplane/tasks/202608032250-WDRW1E/quality/objects/sha256/bda993901fde4d00ddafcaa0f764e7647f176960146f35593b88571853ef4eda.md",
+    "result_schema_path": ".agentplane/tasks/202608032250-WDRW1E/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608032250-WDRW1E/README.md",
+      "sha256": "sha256:eed7e5b5c0b95fea2cd77baef4f79f91e67d2c0fd433f50580f498e81b32a281",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608032250-WDRW1E/quality/objects/sha256/6a1a52e67c03572d455ab8a7c0f772fb700cb38290c80e2cfab3cc21fc6a55c3.patch",
+      "sha256": "sha256:6a1a52e67c03572d455ab8a7c0f772fb700cb38290c80e2cfab3cc21fc6a55c3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608032250-WDRW1E/quality/objects/sha256/9b859b02483015ccc016fa00987f0bfc0bc9176fd1d782214e6aa75b2a126808.json",
+      "sha256": "sha256:9b859b02483015ccc016fa00987f0bfc0bc9176fd1d782214e6aa75b2a126808",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608032250-WDRW1E/quality/objects/sha256/dac599932dfda8b9224d90f8ee0259627888182a4aaa2c473246d171d0c5b7ae.json",
+      "sha256": "sha256:dac599932dfda8b9224d90f8ee0259627888182a4aaa2c473246d171d0c5b7ae",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
