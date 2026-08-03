@@ -1,12 +1,6 @@
 import type { WorkflowV2FrontMatter } from "@agentplaneorg/core/config";
 
-export type WorkflowMode = WorkflowV2FrontMatter["workflow"]["mode"];
-export type WorkflowApprovals = WorkflowV2FrontMatter["approvals"];
-export type WorkflowRetryPolicy = WorkflowV2FrontMatter["retry_policy"];
-export type WorkflowTimeouts = WorkflowV2FrontMatter["timeouts"];
 export type WorkflowFrontMatter = WorkflowV2FrontMatter;
-
-export type WorkflowSectionName = "Prompt Template" | "Checks" | "Fallback";
 
 export type WorkflowSections = Record<string, string>;
 
@@ -19,7 +13,7 @@ export type WorkflowDocument = {
   sourcePath?: string;
 };
 
-export type WorkflowSeverity = "ERROR" | "WARN" | "INFO";
+type WorkflowSeverity = "ERROR" | "WARN" | "INFO";
 
 export type WorkflowErrorCode =
   | "WF_MISSING_FILE"

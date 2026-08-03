@@ -19,7 +19,7 @@ function previousStepIds(
   return previous ? [previous.id] : [];
 }
 
-export function blueprintExecutionPlanStep(
+function blueprintExecutionPlanStep(
   state: BlueprintPlanArtifact["states"][number],
   dependsOn: readonly string[] = [],
 ): BlueprintExecutionPlanStep {
@@ -164,7 +164,7 @@ export function checkBlueprintExecutionResume(opts: {
   return { ok: false, problems };
 }
 
-export function blueprintNodeExecutionContract(opts: {
+function blueprintNodeExecutionContract(opts: {
   plan: BlueprintPlanArtifact;
   step: BlueprintExecutionPlanStep;
   runId?: string;

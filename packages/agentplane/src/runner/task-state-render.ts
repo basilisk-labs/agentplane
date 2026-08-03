@@ -28,7 +28,7 @@ function formatRunnerTarget(target: RunnerTarget | TaskRunnerTarget): string {
   return target.task_id ? `${base} -> task ${target.task_id}` : base;
 }
 
-export function normalizeRunnerOutcomeSection(sectionText: string | null): string {
+function normalizeRunnerOutcomeSection(sectionText: string | null): string {
   const normalized = (sectionText ?? "").replaceAll("\r\n", "\n").trimEnd();
   if (!normalized) return [RUNNER_OUTCOME_BEGIN, RUNNER_OUTCOME_END].join("\n");
 
@@ -134,7 +134,7 @@ function renderTaskRunnerSummary(opts: {
   return `${adapter} runner failed; inspect run artifacts for details.`;
 }
 
-export function stripRunnerHistory(
+function stripRunnerHistory(
   outcome: NonNullable<TaskData["runner"]> | TaskRunnerHistoryEntry,
   taskId = outcome.target.task_id,
 ): TaskRunnerHistoryEntry {

@@ -13,7 +13,7 @@ export type TaskPolicyState = {
   workflowMode?: AgentplaneConfig["workflow_mode"];
 };
 
-export type PolicyProblemCode = "E_USAGE" | "E_GIT" | "E_PHASE_POLICY" | "E_INTERNAL";
+type PolicyProblemCode = "E_USAGE" | "E_GIT" | "E_PHASE_POLICY" | "E_INTERNAL";
 
 export type PolicyProblem = {
   code: PolicyProblemCode;

@@ -19,14 +19,14 @@ export type PolicyDecision = {
   violations: PolicyViolation[];
 };
 
-export type PolicyViolation = {
+type PolicyViolation = {
   level: "error" | "warning";
   code: PolicyProblem["code"];
   exitCode: number;
   message: string;
 };
 
-export type ActionId = PolicyAction | (string & {});
+type ActionId = PolicyAction | (string & {});
 
 export type PolicyEngineContext = Omit<PolicyContext, "action"> & {
   action: ActionId;

@@ -40,7 +40,7 @@ export type RunnerWriteScopePolicy = {
   protected_paths: string[];
 };
 
-export type RunnerPolicyFieldStatus = "not_requested" | "enforced" | "advisory" | "unsupported";
+type RunnerPolicyFieldStatus = "not_requested" | "enforced" | "advisory" | "unsupported";
 
 export type RunnerPolicyFieldDecision = {
   requested?: unknown;

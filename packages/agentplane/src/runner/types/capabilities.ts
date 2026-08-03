@@ -4,7 +4,7 @@ export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsuppo
 
 export type RunnerCapabilityChannel = "argv" | "env" | "result" | "none";
 
-export type RunnerCapabilityDescriptor = {
+type RunnerCapabilityDescriptor = {
   level: RunnerCapabilityLevel;
   channel: RunnerCapabilityChannel;
   supported_values?: string[];

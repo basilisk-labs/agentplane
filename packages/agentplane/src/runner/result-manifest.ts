@@ -9,7 +9,7 @@ import type {
 } from "./types.js";
 import { readStableRegularTextNoFollow } from "./stable-file.js";
 
-export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 2 as const;
+const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 2 as const;
 const LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
 
 /**

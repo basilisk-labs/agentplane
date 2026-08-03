@@ -21,7 +21,7 @@ export type ReconcileConfig = {
   stallTimeoutMs: number;
 };
 
-export type ReconcileAction =
+type ReconcileAction =
   | { type: "stop_running"; issueId: string; reason: "terminal" | "non_active" | "not_routed" }
   | { type: "restart_stalled"; issueId: string; elapsedMs: number }
   | { type: "keep_running"; issueId: string };

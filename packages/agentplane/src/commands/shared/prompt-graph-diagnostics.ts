@@ -13,7 +13,7 @@ import { resolveProjectPromptGraphPath } from "../recipes/impl/paths.js";
 import { readActiveRecipeIdsFromRegistry } from "../recipes/impl/overlay-compile.js";
 import { readProjectRecipesRegistry } from "../recipes/impl/project-registry.js";
 
-export type PromptGraphArtifactState =
+type PromptGraphArtifactState =
   | "unavailable"
   | "not_configured"
   | "missing"
@@ -22,7 +22,7 @@ export type PromptGraphArtifactState =
   | "invalid"
   | "compile_error";
 
-export type PromptGraphModuleSummary = {
+type PromptGraphModuleSummary = {
   address: string;
   title: string;
   ownerKind: PromptModule["owner"]["kind"];
@@ -33,7 +33,7 @@ export type PromptGraphModuleSummary = {
   recipeId: string | null;
 };
 
-export type PromptGraphSummary = {
+type PromptGraphSummary = {
   moduleCount: number;
   bindingCount: number;
   validatorCount: number;

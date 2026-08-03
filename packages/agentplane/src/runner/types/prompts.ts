@@ -4,7 +4,7 @@ import type { BehaviorResolutionTrace } from "../../runtime/behavior/index.js";
 
 export type RunnerPromptRole = "system" | "policy" | "profile" | "task" | "context";
 
-export type RunnerPromptSurface = "base" | OverlaySurface;
+type RunnerPromptSurface = "base" | OverlaySurface;
 
 export type RunnerPromptBlock = {
   id: string;

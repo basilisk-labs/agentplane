@@ -1,6 +1,6 @@
 import type { TaskSummary } from "../../backends/task-backend.js";
 
-export type ObsidianProjectionFile = {
+type ObsidianProjectionFile = {
   path: string;
   content: string;
 };

@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 import { CliError } from "../../shared/errors.js";
 
-export type ParsedArgs = {
+type ParsedArgs = {
   help: boolean;
   version: boolean;
   noUpdateCheck: boolean;

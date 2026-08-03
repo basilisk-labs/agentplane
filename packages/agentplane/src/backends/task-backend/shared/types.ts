@@ -17,7 +17,6 @@ export {
   TaskEventType,
   TaskOrigin,
   TaskRunnerEvidence,
-  TaskRunnerExecutionReceiptRef,
   TaskRunnerExecutionMetrics,
   TaskRunnerHistoryEntry,
   TaskRunnerOutcome,
@@ -25,7 +24,6 @@ export {
   TaskRunnerTarget,
   TaskTokenUsage,
   QualityReviewResult,
-  VerificationState,
   VerificationResult,
 } from "@agentplaneorg/core/tasks";
 
@@ -96,7 +94,7 @@ export type TaskWriteOptions = {
   expectedSection?: string;
 };
 
-export type TaskBackendProjectionReadMode = "native" | "fallback";
+type TaskBackendProjectionReadMode = "native" | "fallback";
 
 export type TaskBackendProjectionObservation = {
   projection_revision: string | null;
@@ -140,7 +138,7 @@ export type TaskBackendCapabilities = {
   supports_snapshot_export: boolean;
 };
 
-export type TaskProjectionRefreshOptions = {
+type TaskProjectionRefreshOptions = {
   allowNetwork: boolean;
   quiet?: boolean;
   conflict?: "diff" | "prefer-local" | "prefer-remote" | "fail";
@@ -154,13 +152,13 @@ type TaskCanonicalStateMigrationResult = {
   failed: { taskId: string; reason: string }[];
 };
 
-export type TaskBackendVisibleField = {
+type TaskBackendVisibleField = {
   id: number;
   name: string;
   nonEmptyCount: number;
 };
 
-export type TaskBackendFieldNameDrift = {
+type TaskBackendFieldNameDrift = {
   key: string;
   configuredId: number;
   visibleName: string;
@@ -221,25 +219,25 @@ export type TaskBackendInspectionResult = {
   };
 };
 
-export type TaskBackendBase = {
+type TaskBackendBase = {
   id: string;
   capabilities: TaskBackendCapabilities;
 };
 
-export type TaskBackendQueryPort = {
+type TaskBackendQueryPort = {
   listTasks(): Promise<TaskData[]>;
   getTask(taskId: string): Promise<TaskData | null>;
   getTasks?(taskIds: string[]): Promise<(TaskData | null)[]>;
 };
 
-export type TaskBackendProjectionPort = {
+type TaskBackendProjectionPort = {
   listProjectionTasks?(opts?: { status?: readonly string[] }): Promise<TaskSummary[]>;
   getLastListWarnings?(): string[];
   /** Observe local projection state without network access or mutation. */
   observeProjection?(): Promise<TaskBackendProjectionObservation>;
 };
 
-export type TaskBackendMutationPort = {
+type TaskBackendMutationPort = {
   assertLocalMutationReady?(): Promise<void>;
   writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
   /**
@@ -256,7 +254,7 @@ export type TaskBackendMutationPort = {
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
 };
 
-export type TaskBackendSyncPort = {
+type TaskBackendSyncPort = {
   refreshProjection?(opts: TaskProjectionRefreshOptions): Promise<void>;
   refreshProjectionBeforeTaskStart?(): Promise<void>;
   migrateCanonicalState?(): Promise<TaskCanonicalStateMigrationResult>;
@@ -270,11 +268,11 @@ export type TaskBackendSyncPort = {
   }): Promise<void>;
 };
 
-export type TaskBackendInspectionPort = {
+type TaskBackendInspectionPort = {
   inspectConfiguration?(): Promise<TaskBackendInspectionResult>;
 };
 
-export type TaskBackendDocPort = {
+type TaskBackendDocPort = {
   getTaskDoc?(taskId: string): Promise<string>;
   setTaskDoc?(
     taskId: string,
@@ -285,7 +283,7 @@ export type TaskBackendDocPort = {
   touchTaskDocMetadata?(taskId: string, updatedBy?: string, opts?: TaskWriteOptions): Promise<void>;
 };
 
-export type TaskBackendIdentityPort = {
+type TaskBackendIdentityPort = {
   generateTaskId?(opts: { length: number; attempts: number }): Promise<string>;
 };
 

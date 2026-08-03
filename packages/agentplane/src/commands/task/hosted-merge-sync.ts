@@ -18,14 +18,7 @@ import { readPrMetaIfPresent, resolveLocalMergedPrMeta } from "./hosted-merge-sy
 import type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/model.js";
 import { resolveReconciliationTaskTokenUsage } from "./task-token-usage.js";
 
-export type {
-  HostedMergedPr,
-  HostedMergeSyncResult,
-  HostedMergeTarget,
-  LocalBranchPrSyncCandidate,
-  LocalDoneBranchPrDrift,
-  LocalMergedPrMeta,
-} from "./hosted-merge-sync/model.js";
+export type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/model.js";
 export {
   findDoneBranchPrTasksWithOpenPrArtifacts,
   findLocallyShippedBranchPrTasks,
@@ -36,7 +29,7 @@ export {
 } from "./hosted-merge-sync/github.js";
 export { resolveLocalMergedPrMeta } from "./hosted-merge-sync/pr-meta.js";
 
-export async function syncHostedMergedTask(opts: {
+async function syncHostedMergedTask(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
   target: HostedMergeTarget;

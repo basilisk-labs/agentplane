@@ -7,16 +7,13 @@ import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 import { CliError } from "./errors.js";
 
-export const GIT_MUTATION_KINDS = [
-  "implementation_commit",
-  "lifecycle_commit",
-  "pr_artifact_update",
-  "close_tail",
-  "integration",
-  "hook_check",
-] as const;
-
-export type GitMutationKind = (typeof GIT_MUTATION_KINDS)[number];
+export type GitMutationKind =
+  | "implementation_commit"
+  | "lifecycle_commit"
+  | "pr_artifact_update"
+  | "close_tail"
+  | "integration"
+  | "hook_check";
 
 export function gitMutationDiagnosticContext(opts: {
   command: string;

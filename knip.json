@@ -24,5 +24,9 @@
     "packages/*/node_modules/**",
     "packages/agentplane/bin/*.d.ts"
   ],
+  "ignoreIssues": {
+    "packages/agentplane/src/runtime/sgr/contract-types.ts": ["exports", "types"]
+  },
+  "tags": ["-dynamic"],
   "lefthook": false
 }

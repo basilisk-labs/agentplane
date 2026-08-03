@@ -7,7 +7,7 @@ export type RunnerExecutionBlueprintStateId =
   | "source_retired"
   | "policy_decision_recorded";
 
-export type RunnerPlaybookStepId =
+type RunnerPlaybookStepId =
   | "read_policy"
   | "read_source"
   | "write_capture"
@@ -28,14 +28,14 @@ export type RunnerRuntimeCapabilityId =
 
 export type RunnerRuntimeCapabilityState = "available" | "unavailable" | "unknown";
 
-export type RunnerOutcomeName =
+type RunnerOutcomeName =
   | "OUTCOME_OK"
   | "OUTCOME_DENIED_SECURITY"
   | "OUTCOME_NONE_CLARIFICATION"
   | "OUTCOME_NONE_UNSUPPORTED"
   | "OUTCOME_ERR_INTERNAL";
 
-export type RunnerExecutionBlueprintContract = {
+type RunnerExecutionBlueprintContract = {
   id: string;
   source_blueprint_id?: BlueprintId;
   required_state: readonly RunnerExecutionBlueprintStateId[];
@@ -53,7 +53,7 @@ export type RunnerFinalVerifierCheck = {
   description: string;
 };
 
-export type RunnerFinalVerifierContract = {
+type RunnerFinalVerifierContract = {
   mode: "pre_success_guard";
   blocks_success_when_missing: boolean;
   checks: readonly RunnerFinalVerifierCheck[];

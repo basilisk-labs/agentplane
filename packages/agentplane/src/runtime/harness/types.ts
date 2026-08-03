@@ -5,7 +5,7 @@ import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
 import type { ProtectedPathKind } from "../../shared/protected-paths.js";
 import type { PolicyGatewayResolution } from "../../shared/policy-gateway.js";
 
-export type HarnessSourceId =
+type HarnessSourceId =
   | "builtin"
   | "project"
   | "config"
@@ -18,7 +18,7 @@ export type HarnessSourceRef = {
   detail: string;
 };
 
-export type HarnessTraceField =
+type HarnessTraceField =
   | "repo"
   | "workflow"
   | "task_contract"

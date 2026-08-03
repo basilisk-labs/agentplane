@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, readdir, realpath, stat, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, realpath, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -38,11 +38,6 @@ export async function writeText(filePath: string, content: string): Promise<void
   await ensureDir(path.dirname(filePath));
   await writeFile(filePath, content, "utf8");
 }
-
-export async function readText(filePath: string): Promise<string> {
-  return await readFile(filePath, "utf8");
-}
-
 export async function real(p: string): Promise<string> {
   return await realpath(p);
 }

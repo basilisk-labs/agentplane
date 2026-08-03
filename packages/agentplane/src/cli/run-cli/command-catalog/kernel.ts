@@ -16,13 +16,13 @@ export type {
   CommandSessionResolvers,
 } from "./command-session.js";
 
-export type DispatchNeeds = {
+type DispatchNeeds = {
   project: boolean;
   loadedConfig: boolean;
   taskContext: boolean;
 };
 
-export type CommandSurface = "user" | "advanced" | "framework" | "internal";
+type CommandSurface = "user" | "advanced" | "framework" | "internal";
 
 export type CommandEntry = {
   spec: CommandSpec<unknown>;

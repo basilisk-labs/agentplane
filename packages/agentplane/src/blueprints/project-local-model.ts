@@ -2,7 +2,7 @@ import path from "node:path";
 
 import type { Blueprint, BlueprintId, BlueprintValidationProblem } from "./model.js";
 
-export const PROJECT_BLUEPRINTS_DIR = ".agentplane/blueprints";
+const PROJECT_BLUEPRINTS_DIR = ".agentplane/blueprints";
 export const PROJECT_BLUEPRINTS_CONFIG_NAME = "config.json";
 
 export type ProjectBlueprintProblemCode =

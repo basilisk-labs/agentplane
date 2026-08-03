@@ -12,10 +12,7 @@ import {
   checkTaskReadmeMigrationState,
 } from "./workspace-task-state.js";
 
-export {
-  buildTaskReadmeMigrationFindings,
-  checkTaskReadmeMigrationState,
-} from "./workspace-task-state.js";
+export { checkTaskReadmeMigrationState } from "./workspace-task-state.js";
 
 async function pathExists(absPath: string): Promise<boolean> {
   try {

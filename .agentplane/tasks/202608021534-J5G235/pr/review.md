@@ -1,0 +1,180 @@
+# PR Review
+
+Created: 2026-08-03T15:09:30.904Z
+
+## Task
+
+- Task: `202608021534-J5G235`
+- Title: Reduce the v0.7.1 CLI dead-code and barrel baseline
+- Status: DOING
+- Branch: `task/202608021534-J5G235/reduce-the-v0-7-1-cli-dead-code-and-barrel-basel`
+- Canonical task record: `.agentplane/tasks/202608021534-J5G235/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-08-03T15:09:30.904Z
+- Branch: task/202608021534-J5G235/reduce-the-v0-7-1-cli-dead-code-and-barrel-basel
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ knip.json                                          |    4 +
+ packages/agentplane/src/backends/task-backend.ts   |   20 -
+ .../agentplane/src/backends/task-backend/shared.ts |   20 -
+ .../src/backends/task-backend/shared/constants.ts  |    1 -
+ .../src/backends/task-backend/shared/types.ts      |   26 +-
+ packages/agentplane/src/backends/task-index.ts     |    2 -
+ packages/agentplane/src/blueprints/execution.ts    |    4 +-
+ packages/agentplane/src/blueprints/index.ts        |   98 +-
+ packages/agentplane/src/blueprints/model-core.ts   |    7 +-
+ .../agentplane/src/blueprints/model-execution.ts   |   12 +-
+ packages/agentplane/src/blueprints/plan.ts         |    4 +-
+ .../src/blueprints/project-local-files.ts          |    2 +-
+ .../src/blueprints/project-local-model.ts          |    2 +-
+ .../agentplane/src/blueprints/project-local.ts     |   17 +-
+ packages/agentplane/src/cli/archive.ts             |    2 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |    4 +-
+ .../src/cli/check-knip-baseline-script.test.ts     |   20 +
+ packages/agentplane/src/cli/command-invocations.ts |    2 +-
+ packages/agentplane/src/cli/critical/cli-runner.ts |   14 -
+ packages/agentplane/src/cli/critical/harness.ts    |    7 +-
+ packages/agentplane/src/cli/error-map.ts           |    2 +-
+ packages/agentplane/src/cli/output.ts              |    4 +-
+ packages/agentplane/src/cli/reason-codes.ts        |    2 +-
+ .../src/cli/run-cli/command-catalog/kernel.ts      |    4 +-
+ .../src/cli/run-cli/commands/init/model.ts         |    4 +-
+ packages/agentplane/src/cli/run-cli/globals.ts     |    2 +-
+ packages/agentplane/src/cli/spec/parse-utils.ts    |   25 +-
+ packages/agentplane/src/cli/spec/registry.ts       |    2 +-
+ packages/agentplane/src/cli/spec/spec.ts           |   12 +-
+ packages/agentplane/src/cli/update-check.ts        |    2 +-
+ .../src/commands/blueprint/snapshot-artifact.ts    |    4 +-
+ .../src/commands/blueprint/task-input.ts           |    2 +-
+ .../src/commands/codex/plugin-install.ts           |    4 +-
+ .../src/commands/doctor/workspace-task-state.ts    |    2 +-
+ .../agentplane/src/commands/doctor/workspace.ts    |    5 +-
+ packages/agentplane/src/commands/guard/index.ts    |    2 +-
+ .../agentplane/src/commands/hooks/capabilities.ts  |    6 +-
+ packages/agentplane/src/commands/pr/flow-status.ts |    4 +-
+ .../agentplane/src/commands/recipes/impl/apply.ts  |  110 +-
+ .../src/commands/recipes/impl/overlay-project.ts   |   27 +-
+ .../agentplane/src/commands/recipes/impl/paths.ts  |    5 -
+ .../src/commands/recipes/impl/project-registry.ts  |   34 +-
+ .../agentplane/src/commands/recipes/impl/types.ts  |   50 +-
+ .../src/commands/release/apply.pipeline.ts         |   11 -
+ .../commands/release/apply.pipeline/finalize.ts    |    2 +-
+ .../commands/release/apply.pipeline/mutation.ts    |    2 +-
+ .../commands/release/apply.pipeline/preflight.ts   |    4 +-
+ .../src/commands/release/apply.pipeline/state.ts   |    5 +-
+ .../commands/release/apply.preflight.package.ts    |    5 -
+ .../src/commands/release/apply.preflight.plan.ts   |    4 +-
+ .../agentplane/src/commands/release/apply.types.ts |    4 +-
+ .../src/commands/scenario/info.command.ts          |   11 +-
+ .../src/commands/scenario/list.command.ts          |    6 +-
+ .../src/commands/scenario/run.command.ts           |   11 +-
+ .../src/commands/shared/approval-requirements.ts   |    5 +-
+ packages/agentplane/src/commands/shared/git-ops.ts |    4 -
+ packages/agentplane/src/commands/shared/pr-meta.ts |    2 +-
+ .../commands/shared/prompt-graph-diagnostics.ts    |    6 +-
+ .../agentplane/src/commands/shared/task-handoff.ts |    9 -
+ .../agentplane/src/commands/shared/task-store.ts   |    6 -
+ .../src/commands/shared/task-store/intents.ts      |    6 +-
+ .../src/commands/shared/task-store/readme.ts       |    2 +-
+ .../src/commands/shared/task-store/types.ts        |    7 +-
+ .../agentplane/src/commands/shared/text-payload.ts |    2 +-
+ packages/agentplane/src/commands/task/findings.ts  |    2 +-
+ .../agentplane/src/commands/task/finish-shared.ts  |    2 +-
+ .../src/commands/task/hosted-merge-sync.ts         |   11 +-
+ packages/agentplane/src/commands/task/index.ts     |   19 +-
+ .../src/commands/task/obsidian.render.ts           |    2 +-
+ packages/agentplane/src/commands/task/obsidian.ts  |    3 +-
+ packages/agentplane/src/commands/task/shared.ts    |   23 -
+ .../src/commands/task/shared/direct-work-lock.ts   |    2 +-
+ .../agentplane/src/commands/task/shared/tags.ts    |    2 +-
+ .../src/commands/task/shared/transitions.ts        |   28 +-
+ .../task/shared/workflow-transition-service.ts     |    4 +-
+ packages/agentplane/src/commands/upgrade/policy.ts |    2 +-
+ packages/agentplane/src/commands/upgrade/types.ts  |    2 +-
+ packages/agentplane/src/evaluators/catalog.ts      |    2 +-
+ .../src/harness/dynamic-tool-contract.ts           |    4 +-
+ packages/agentplane/src/harness/reconcile.ts       |    2 +-
+ packages/agentplane/src/harness/state-machine.ts   |   11 -
+ .../agentplane/src/harness/token-accounting.ts     |    2 +-
+ packages/agentplane/src/policy/engine.ts           |    4 +-
+ packages/agentplane/src/policy/model.ts            |    2 +-
+ packages/agentplane/src/policy/taxonomy.ts         |    6 +-
+ packages/agentplane/src/ports/git-port.ts          |    2 +-
+ .../agentplane/src/runner/codex-approval-probe.ts  |    2 +-
+ packages/agentplane/src/runner/codex-smoke.ts      |    2 +-
+ packages/agentplane/src/runner/config.ts           |    2 -
+ .../src/runner/context/base-prompt-sources.ts      |    2 -
+ .../agentplane/src/runner/context/base-prompts.ts  |    2 -
+ .../src/runner/context/prompt-block-shared.ts      |    4 +-
+ .../src/runner/context/prompt-module-bridge.ts     |    6 +-
+ .../runner/process-supervision/trace-session.ts    |    1 -
+ packages/agentplane/src/runner/result-manifest.ts  |    2 +-
+ packages/agentplane/src/runner/run-repository.ts   |    2 -
+ .../agentplane/src/runner/task-state-render.ts     |    4 +-
+ .../agentplane/src/runner/types/capabilities.ts    |    2 +-
+ packages/agentplane/src/runner/types/context.ts    |    2 +-
+ packages/agentplane/src/runner/types/playbooks.ts  |    8 +-
+ packages/agentplane/src/runner/types/policy.ts     |    2 +-
+ packages/agentplane/src/runner/types/prompts.ts    |    2 +-
+ packages/agentplane/src/runner/types/trace.ts      |    2 +-
+ .../src/runner/usecases/task-run-lifecycle.ts      |    5 -
+ packages/agentplane/src/runtime/approvals/index.ts |   15 +-
+ packages/agentplane/src/runtime/approvals/model.ts |    2 +-
+ packages/agentplane/src/runtime/behavior/index.ts  |    1 -
+ .../agentplane/src/runtime/capabilities/index.ts   |   10 +-
+ .../agentplane/src/runtime/capabilities/model.ts   |    8 +-
+ .../agentplane/src/runtime/execution-context.ts    |   24 +-
+ .../src/runtime/execution-profile/index.ts         |    6 +-
+ packages/agentplane/src/runtime/explain/index.ts   |    6 +-
+ packages/agentplane/src/runtime/explain/model.ts   |    2 +-
+ packages/agentplane/src/runtime/harness/index.ts   |   10 +-
+ packages/agentplane/src/runtime/harness/types.ts   |    4 +-
+ .../src/runtime/prompt-fragments/index.ts          |   25 +-
+ .../src/runtime/prompt-fragments/model.ts          |   12 +-
+ .../src/runtime/prompt-fragments/validation.ts     |    2 +-
+ .../src/runtime/prompt-modules/compiler.ts         |   24 +-
+ .../agentplane/src/runtime/prompt-modules/index.ts |   40 +-
+ .../agentplane/src/runtime/prompt-modules/model.ts |    9 +-
+ .../src/runtime/prompt-modules/mutations-engine.ts |    6 +-
+ .../src/runtime/prompt-modules/mutations.ts        |   16 +-
+ .../src/runtime/prompt-modules/registry.ts         |    2 +-
+ .../src/runtime/prompt-modules/schema.ts           |    4 +-
+ .../src/runtime/prompt-modules/validation.ts       |    3 -
+ packages/agentplane/src/runtime/protocol/index.ts  |   16 +-
+ packages/agentplane/src/runtime/protocol/model.ts  |   10 +-
+ .../agentplane/src/runtime/protocol/resolve.ts     |    2 +-
+ packages/agentplane/src/runtime/sgr/contracts.ts   |   15 -
+ .../src/runtime/shared/repo-cli-version.ts         |    4 +-
+ .../src/runtime/shared/runtime-source.ts           |    2 +-
+ .../src/runtime/shared/version-compare.ts          |    4 +-
+ .../agentplane/src/runtime/task-intake/index.ts    |   17 +-
+ .../agentplane/src/runtime/task-intake/types.ts    |   18 +-
+ packages/agentplane/src/shared/errors.ts           |    6 -
+ packages/agentplane/src/shared/git-mutation.ts     |   17 +-
+ packages/agentplane/src/shared/policy-gateway.ts   |    2 +-
+ .../agentplane/src/workflow-lifecycle/contract.ts  |    8 +-
+ .../agentplane/src/workflow-runtime/file-ops.ts    |    2 +-
+ packages/agentplane/src/workflow-runtime/types.ts  |    8 +-
+ .../src/workflow-runtime/validation-helpers.ts     |    2 +-
+ scripts/baselines/knip-baseline.json               | 3313 +-------------------
+ scripts/checks/check-knip-baseline.mjs             |   53 +-
+ 144 files changed, 292 insertions(+), 4323 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

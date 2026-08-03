@@ -9,7 +9,7 @@ export function pushDiagnostic(diags: WorkflowDiagnostic[], diagnostic: Workflow
   });
 }
 
-export function remediationForWorkflowDiagnostic(
+function remediationForWorkflowDiagnostic(
   diagnostic: Pick<WorkflowDiagnostic, "code" | "path" | "message">,
 ): NonNullable<WorkflowDiagnostic["remediation"]> {
   const safePath = diagnostic.path || ".agentplane/WORKFLOW.md";

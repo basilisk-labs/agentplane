@@ -162,7 +162,7 @@ export type RunnerArtifactPaths = {
 };
 
 export type RunnerTracePolicy = RunnerTraceConfig;
-export type RunnerTimeoutPolicy = RunnerTimeoutConfig;
+type RunnerTimeoutPolicy = RunnerTimeoutConfig;
 
 export type RunnerExecutionContract = {
   adapter_id: string;

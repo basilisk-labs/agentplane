@@ -42,7 +42,7 @@ function requiredArrayFieldErrors(
   return errors;
 }
 
-export function parseProjectBlueprintJsonInternal(
+function parseProjectBlueprintJsonInternal(
   raw: string,
   filePath: string,
 ): ProjectBlueprintFileResult {

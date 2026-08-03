@@ -4,7 +4,7 @@ import type { ResolvedExecutionProfileRuntime } from "../execution-profile/index
 import type { ResolvedHarnessContract } from "../harness/index.js";
 import type { TaskIntakeRuntime } from "../task-intake/index.js";
 
-export type ExplainBehaviorInputCategory = "prompt" | "behavior";
+type ExplainBehaviorInputCategory = "prompt" | "behavior";
 
 export type ExplainBehaviorInput = {
   id: string;

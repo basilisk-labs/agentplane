@@ -1,5 +1,6 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
 
+/** @dynamic Imported by scripts/checks/check-agent-bootstrap-fresh.mjs. */
 export const AGENT_BOOTSTRAP_DOC_PATH = "docs/user/agent-bootstrap.generated.mdx";
 export const BRANCH_PR_HOSTED_GATE_GUIDANCE =
   "confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`";
@@ -32,11 +33,12 @@ export const BOOTSTRAP_TASK_PREP_COMMANDS = [
   COMMAND_SNIPPETS.core.taskPlanApprove,
 ];
 
-export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
+const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   ...BOOTSTRAP_TASK_PREP_COMMANDS,
   "agentplane task run <task-id>",
 ] as const;
 
+/** @dynamic Imported by scripts/checks/check-agent-bootstrap-fresh.mjs. */
 export const BOOTSTRAP_VERIFICATION_COMMANDS = [
   COMMAND_SNIPPETS.core.taskVerifyShow,
   COMMAND_SNIPPETS.core.verifyTask,

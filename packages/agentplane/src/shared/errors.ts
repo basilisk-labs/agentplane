@@ -194,12 +194,6 @@ export class GitError extends CliError {
   }
 }
 
-export class HandoffError extends CliError {
-  constructor(opts: AgentplaneErrorOptions) {
-    super({ ...opts, code: "E_HANDOFF" });
-  }
-}
-
 export class BackendCliError extends CliError {
   constructor(opts: AgentplaneErrorOptions) {
     super({ ...opts, code: "E_BACKEND" });

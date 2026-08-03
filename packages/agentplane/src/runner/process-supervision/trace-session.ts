@@ -6,7 +6,6 @@ import { appendTail, splitCompletedLines } from "./streams.js";
 import { BufferedFileWriter } from "./buffered-file-writer.js";
 import { createSupervisionClock } from "./clock.js";
 
-export type TraceSession = ReturnType<typeof createTraceSession>;
 const MAX_PENDING_STREAM_LINE_CHARACTERS = 32 * 1024 * 1024;
 const DEFAULT_MAX_SUPERVISED_OUTPUT_BYTES = 64 * 1024 * 1024;
 

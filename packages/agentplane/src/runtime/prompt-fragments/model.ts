@@ -1,17 +1,17 @@
 import type { PromptModuleMutability, PromptModuleSlot } from "../prompt-modules/model.js";
 
-export type PromptFragmentId = string;
+type PromptFragmentId = string;
 
-export type PromptFragmentIdSource = "declared" | "generated";
+type PromptFragmentIdSource = "declared" | "generated";
 
-export type PromptFragmentSourceKind =
+type PromptFragmentSourceKind =
   | "markdown_marker"
   | "markdown_whole_file"
   | "json_object"
   | "json_keyed_object"
   | "json_string_compat";
 
-export type PromptFragmentSource = {
+type PromptFragmentSource = {
   kind: PromptFragmentSourceKind;
   source_ref?: string;
   index?: number;
@@ -37,12 +37,12 @@ export type PromptJsonTextFragment = PromptFragment & {
   };
 };
 
-export type PromptMarkdownTextSegment = {
+type PromptMarkdownTextSegment = {
   kind: "text";
   text: string;
 };
 
-export type PromptMarkdownFragmentSegment = {
+type PromptMarkdownFragmentSegment = {
   kind: "fragment";
   fragment: PromptMarkdownFragment;
 };

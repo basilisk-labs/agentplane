@@ -151,15 +151,6 @@ export async function currentGitBranch(gitRoot: string): Promise<string | null> 
     return null;
   }
 }
-
-export async function readTaskPrBranch(opts: {
-  ctx: CommandContext;
-  task_id: string;
-}): Promise<string | null> {
-  const summary = await readTaskPrMetaSummary(opts);
-  return summary.branch;
-}
-
 export async function readTaskPrMetaSummary(opts: {
   ctx: CommandContext;
   task_id: string;

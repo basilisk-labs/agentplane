@@ -7,7 +7,7 @@ import type {
 } from "./model-core.js";
 import type { AcceptedRecipeExtension, StopReason } from "./model-resolution.js";
 
-export type BlueprintExecutionNodeStatus =
+type BlueprintExecutionNodeStatus =
   | "pending"
   | "ready"
   | "running"
@@ -16,7 +16,7 @@ export type BlueprintExecutionNodeStatus =
   | "blocked"
   | "failed";
 
-export type BlueprintExecutionEventType =
+type BlueprintExecutionEventType =
   | "planned"
   | "ready"
   | "started"
@@ -28,7 +28,7 @@ export type BlueprintExecutionEventType =
   | "resume_checked"
   | "replay_checked";
 
-export type BlueprintExecutionEvidenceRef = {
+type BlueprintExecutionEvidenceRef = {
   id: string;
   kind: EvidenceKind;
   nodeId: string;
@@ -73,7 +73,7 @@ export type BlueprintExecutionPlanArtifact = {
   nodeContracts: readonly BlueprintNodeExecutionContract[];
 };
 
-export type BlueprintExecutionStateNode = {
+type BlueprintExecutionStateNode = {
   nodeId: string;
   status: BlueprintExecutionNodeStatus;
   evidenceRefs: readonly BlueprintExecutionEvidenceRef[];
@@ -81,7 +81,7 @@ export type BlueprintExecutionStateNode = {
   message?: string;
 };
 
-export type BlueprintExecutionStateEvent = {
+type BlueprintExecutionStateEvent = {
   schemaVersion: 1;
   at: string;
   type: BlueprintExecutionEventType;
@@ -102,7 +102,7 @@ export type BlueprintExecutionStateArtifact = {
   history: readonly BlueprintExecutionStateEvent[];
 };
 
-export type BlueprintExecutionCheckProblemCode =
+type BlueprintExecutionCheckProblemCode =
   | "execution_blueprint_mismatch"
   | "execution_version_mismatch"
   | "execution_run_mismatch"

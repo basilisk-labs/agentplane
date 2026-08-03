@@ -1,5 +1,4 @@
-import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { cmdScenarioListParsed } from "../scenario.js";
+import type { CommandSpec } from "../../cli/spec/spec.js";
 
 export type ScenarioListParsed = Record<string, never>;
 
@@ -10,6 +9,3 @@ export const scenarioListSpec: CommandSpec<ScenarioListParsed> = {
   parse: () => ({}),
   examples: [{ cmd: "agentplane recipes scenario list", why: "List available recipe scenarios." }],
 };
-
-export const runScenarioList: CommandHandler<ScenarioListParsed> = (ctx) =>
-  cmdScenarioListParsed({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });

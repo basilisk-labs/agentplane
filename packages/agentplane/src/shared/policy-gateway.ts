@@ -4,7 +4,7 @@ import path from "node:path";
 export type PolicyGatewayFlavor = "codex" | "claude";
 export type PolicyGatewayFileName = "AGENTS.md" | "CLAUDE.md";
 
-export const POLICY_GATEWAY_FILE_BY_FLAVOR: Record<PolicyGatewayFlavor, PolicyGatewayFileName> = {
+const POLICY_GATEWAY_FILE_BY_FLAVOR: Record<PolicyGatewayFlavor, PolicyGatewayFileName> = {
   codex: "AGENTS.md",
   claude: "CLAUDE.md",
 };

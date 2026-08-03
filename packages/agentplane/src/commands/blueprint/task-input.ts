@@ -30,7 +30,7 @@ export function workflowModeFromConfig(config: AgentplaneConfig): WorkflowMode |
     : undefined;
 }
 
-export function inferMutationFromTask(task: Pick<TaskData, "tags" | "verify">): MutationKind {
+function inferMutationFromTask(task: Pick<TaskData, "tags" | "verify">): MutationKind {
   const tags = new Set((task.tags ?? []).map((tag) => tag.trim().toLowerCase()).filter(Boolean));
   if (hasAny(tags, ["release", "publish"])) return "release";
   if (hasAny(tags, OPS_TAGS)) return "ops";

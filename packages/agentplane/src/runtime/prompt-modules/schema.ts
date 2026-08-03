@@ -4,9 +4,7 @@ export const PROMPT_MODULE_CONTRACT_SCHEMA_VERSION = 1 as const;
 
 export type PromptModuleContractSchemaVersion = typeof PROMPT_MODULE_CONTRACT_SCHEMA_VERSION;
 
-export const SUPPORTED_PROMPT_MODULE_SCHEMA_VERSIONS = [
-  PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
-] as const;
+const SUPPORTED_PROMPT_MODULE_SCHEMA_VERSIONS = [PROMPT_MODULE_CONTRACT_SCHEMA_VERSION] as const;
 
 function invalid(field: string, expected: string): Error {
   return new Error(`Invalid field ${field}: expected ${expected}`);

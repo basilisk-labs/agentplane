@@ -1,4 +1,4 @@
-export type ReasonCodeCategory =
+type ReasonCodeCategory =
   | "usage"
   | "reconcile"
   | "git"

@@ -16,7 +16,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 
 import { blueprintResolveInputFromTask } from "./task-input.js";
 
-export const BLUEPRINT_SNAPSHOT_ARTIFACT_PATH = "blueprint/resolved-snapshot.json";
+const BLUEPRINT_SNAPSHOT_ARTIFACT_PATH = "blueprint/resolved-snapshot.json";
 
 export function taskBlueprintSnapshotPath(opts: { ctx: CommandContext; taskId: string }): string {
   return path.join(
@@ -66,7 +66,7 @@ export async function writeTaskBlueprintResolvedSnapshot(opts: {
   return { path: artifactPath, snapshot };
 }
 
-export async function readTaskBlueprintResolvedSnapshot(opts: {
+async function readTaskBlueprintResolvedSnapshot(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<{

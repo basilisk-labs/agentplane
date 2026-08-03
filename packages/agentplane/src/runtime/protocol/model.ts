@@ -2,9 +2,7 @@ import type { FrameworkExplainPayload } from "../explain/index.js";
 
 export const AGENTPLANE_PROTOCOL_SCHEMA_VERSION = 1 as const;
 
-export type AgentplaneProtocolSchemaVersion = typeof AGENTPLANE_PROTOCOL_SCHEMA_VERSION;
-
-export type AgentplaneProtocolStatus = "ok" | "error";
+type AgentplaneProtocolSchemaVersion = typeof AGENTPLANE_PROTOCOL_SCHEMA_VERSION;
 
 export type AgentplaneProtocolKind = string;
 
@@ -15,7 +13,7 @@ export type AgentplaneProtocolCompatibility = {
   new_result_kinds_allowed: true;
 };
 
-export type AgentplaneProtocolBase<TKind extends AgentplaneProtocolKind> = {
+type AgentplaneProtocolBase<TKind extends AgentplaneProtocolKind> = {
   schema_version: AgentplaneProtocolSchemaVersion;
   kind: TKind;
   compatibility: AgentplaneProtocolCompatibility;
@@ -41,10 +39,6 @@ export type AgentplaneProtocolErrorResult<TKind extends AgentplaneProtocolKind> 
     status: "error";
     error: AgentplaneProtocolError;
   };
-
-export type AgentplaneProtocolResult<TKind extends AgentplaneProtocolKind, TData> =
-  | AgentplaneProtocolSuccessResult<TKind, TData>
-  | AgentplaneProtocolErrorResult<TKind>;
 
 export type FrameworkExplainProtocolResult = AgentplaneProtocolSuccessResult<
   "framework.explain",

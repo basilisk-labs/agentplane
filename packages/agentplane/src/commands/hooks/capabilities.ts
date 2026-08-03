@@ -1,9 +1,9 @@
 import type { GitMutationKind } from "../../shared/git-mutation.js";
 import type { HookName } from "./shared.js";
 
-export type HookCapabilityMode = "read_only" | "write_capable";
-export type HookGitIndexWriteIntent = "forbidden" | "worktree_mutex_required";
-export type HookLockContext = "git_optional_locks_disabled" | "outside_git_index";
+type HookCapabilityMode = "read_only" | "write_capable";
+type HookGitIndexWriteIntent = "forbidden" | "worktree_mutex_required";
+type HookLockContext = "git_optional_locks_disabled" | "outside_git_index";
 
 export type HookCapability = {
   hook: HookName;

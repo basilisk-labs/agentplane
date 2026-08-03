@@ -68,7 +68,7 @@ export type InitDefaults = {
   runnerProfile: InitRunnerProfile;
 };
 
-export type InitEffectKind =
+type InitEffectKind =
   | "create_dir"
   | "write_file"
   | "update_file"
@@ -81,7 +81,7 @@ export type InitEffectKind =
   | "vendor_recipe"
   | "install_blueprint";
 
-export type InitEffectRisk = "none" | "low" | "medium" | "high";
+type InitEffectRisk = "none" | "low" | "medium" | "high";
 
 export type InitEffect = {
   kind: InitEffectKind;

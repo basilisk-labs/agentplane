@@ -6,7 +6,7 @@ export const UPDATE_CHECK_SCHEMA_VERSION = 1 as const;
 export const UPDATE_CHECK_TTL_MS = 24 * 60 * 60 * 1000;
 export const UPDATE_CHECK_TIMEOUT_MS = 1500;
 
-export type UpdateCheckStatus = "ok" | "error" | "not_modified";
+type UpdateCheckStatus = "ok" | "error" | "not_modified";
 
 export type UpdateCheckCache = {
   schema_version: typeof UPDATE_CHECK_SCHEMA_VERSION;

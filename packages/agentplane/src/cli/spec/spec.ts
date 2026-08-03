@@ -13,7 +13,7 @@ export type ArgSpec = {
   description?: string;
 };
 
-export type OptionBase = {
+type OptionBase = {
   name: string; // long name without leading dashes
   short?: string; // single letter, e.g. "m"
   description: string;
@@ -21,7 +21,7 @@ export type OptionBase = {
   deprecated?: string; // message to show in help/errors
 };
 
-export type BooleanOptionSpec = OptionBase & {
+type BooleanOptionSpec = OptionBase & {
   kind: "boolean";
   default?: boolean;
 };
@@ -92,11 +92,3 @@ export type MatchResult<TParsed = unknown> = {
   handler: CommandHandler<TParsed>;
   consumed: number; // number of tokens consumed from argv for command id
 };
-
-// A narrow type used by cli2 callers when they want to rethrow as E_USAGE.
-export type UsageErrorFactory = (opts: {
-  message: string;
-  spec?: CommandSpec;
-  context?: Record<string, unknown>;
-  cause?: unknown;
-}) => unknown;

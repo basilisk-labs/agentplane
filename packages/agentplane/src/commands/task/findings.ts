@@ -150,7 +150,7 @@ export function buildStructuredFindingMutationPlan(opts: {
   return { targetSection, expectedCurrentText, intents };
 }
 
-export function renderFindingsAddRegistryNote(opts: {
+function renderFindingsAddRegistryNote(opts: {
   promote: boolean;
   external: boolean;
   taskId: string;

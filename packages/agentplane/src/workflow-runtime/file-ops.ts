@@ -53,7 +53,7 @@ async function readUnsupportedActiveVersion(
   }
 }
 
-export async function readWorkflowDocument(
+async function readWorkflowDocument(
   repoRoot: string,
   absPath?: string,
 ): Promise<{ document: WorkflowDocument | null; diagnostics: WorkflowDiagnostic[]; path: string }> {

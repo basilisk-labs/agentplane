@@ -19,11 +19,9 @@ export {
   resolvePolicyGatewayPromptSource,
 } from "./base-prompt-sources.js";
 export {
-  compileRunnerPromptBlocksThroughModules,
   compileRunnerPromptModuleGraph,
   RunnerPromptModuleCompilationError,
   runnerPromptBlocksToModuleGraph,
-  runnerPromptBlockToModule,
 } from "./prompt-module-bridge.js";
 
 export async function collectRunnerBasePrompts(opts: {

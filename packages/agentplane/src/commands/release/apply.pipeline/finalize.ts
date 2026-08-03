@@ -16,7 +16,7 @@ import type {
 } from "../apply.types.js";
 import { emitReleaseLine } from "./shared.js";
 
-export async function finalizeReleaseApply(opts: {
+async function finalizeReleaseApply(opts: {
   gitRoot: string;
   planDir: string;
   notesPath: string;

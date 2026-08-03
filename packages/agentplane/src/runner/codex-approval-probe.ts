@@ -1,6 +1,6 @@
 export type CodexApprovalMode = "never" | "untrusted" | "on-request";
 export type CodexApprovalProbeAction = "write_probe" | "delete_probe";
-export type CodexApprovalProbeVerdict = "permissive" | "restrictive" | "unknown";
+type CodexApprovalProbeVerdict = "permissive" | "restrictive" | "unknown";
 
 export type CodexApprovalProbeObservation = {
   mode: CodexApprovalMode;

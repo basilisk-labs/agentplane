@@ -11,7 +11,7 @@ import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
 import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 export { isRecord } from "../../shared/guards.js";
 
-export const FRAMEWORK_RUNNER_PROMPT_URL = resolveAgentplaneAssetUrl("RUNNER.md");
+const FRAMEWORK_RUNNER_PROMPT_URL = resolveAgentplaneAssetUrl("RUNNER.md");
 
 let frameworkRunnerPromptCache: Promise<RunnerPromptBlock> | null = null;
 
@@ -38,7 +38,7 @@ export const OVERLAY_PROMPT_PRIORITIES = {
   finish: 480,
 } as const;
 
-export function ensureTrailingNewline(text: string): string {
+function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
 }
 

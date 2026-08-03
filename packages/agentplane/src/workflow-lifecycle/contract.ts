@@ -1,8 +1,8 @@
 import type { BlueprintNodeKind, EvidenceKind, WorkflowMode } from "../blueprints/model.js";
 
-export type LifecycleRole = "ORCHESTRATOR" | "PLANNER" | "CODER" | "EVALUATOR" | "INTEGRATOR";
-export type LifecycleCwd = "base_checkout" | "task_worktree" | "current_checkout";
-export type LifecycleSideEffect = "none" | "task_state" | "git_local" | "git_remote";
+type LifecycleRole = "ORCHESTRATOR" | "PLANNER" | "CODER" | "EVALUATOR" | "INTEGRATOR";
+type LifecycleCwd = "base_checkout" | "task_worktree" | "current_checkout";
+type LifecycleSideEffect = "none" | "task_state" | "git_local" | "git_remote";
 
 export type LifecycleBlueprintNodeSpec = {
   kind: BlueprintNodeKind;
@@ -12,7 +12,7 @@ export type LifecycleBlueprintNodeSpec = {
   policyModules?: readonly string[];
 };
 
-export type LifecycleCommandStep = {
+type LifecycleCommandStep = {
   id: string;
   command: string;
   role: LifecycleRole;

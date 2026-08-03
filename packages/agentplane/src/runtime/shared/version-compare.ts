@@ -1,9 +1,9 @@
-export type ParsedVersionParts = {
+type ParsedVersionParts = {
   main: number[];
   prerelease: string | null;
 };
 
-export function parseVersionParts(version: string): ParsedVersionParts {
+function parseVersionParts(version: string): ParsedVersionParts {
   const cleaned = version.trim().replace(/^v/i, "").split("+")[0] ?? "";
   const [mainRaw, prereleaseRaw] = cleaned.split("-", 2);
   const main = (mainRaw ?? "")

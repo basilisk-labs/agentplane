@@ -1,6 +1,6 @@
 import type { RunnerPolicyRefusal, RunnerRunState, RunnerTarget } from "./types.js";
 
-export type CodexSmokeOutcome = "success" | "timeout" | "policy_refusal" | "runner_failure";
+type CodexSmokeOutcome = "success" | "timeout" | "policy_refusal" | "runner_failure";
 
 export type CodexSmokeClassification = {
   outcome: CodexSmokeOutcome;

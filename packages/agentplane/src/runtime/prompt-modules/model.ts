@@ -1,11 +1,8 @@
 import type { PromptModuleContractSchemaVersion } from "./schema.js";
 
-export {
-  PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
-  type PromptModuleContractSchemaVersion,
-} from "./schema.js";
+export { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
 
-export type PromptModuleNamespace = "framework" | "project" | "runtime" | `recipe.${string}`;
+type PromptModuleNamespace = "framework" | "project" | "runtime" | `recipe.${string}`;
 
 export type PromptModuleSurface =
   | "gateway"
@@ -150,8 +147,6 @@ export type PromptModule<TContent = string | Record<string, unknown>> = {
   dependencies?: PromptModuleDependency[];
   provenance: PromptModuleProvenance;
 };
-
-export type PromptModuleReference = Pick<PromptModule, "address" | "owner" | "provenance">;
 
 export type PromptModuleGraphNode = {
   module: PromptModule;
