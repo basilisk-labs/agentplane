@@ -4,7 +4,7 @@ title: "Make built-in task run context-verifiable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,33 @@ verification:
   updated_by: "TESTER"
   note: "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-03T14:08:53.765Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "632033f8efcedf146aac5e263d85175087a3c7f3"
+  blueprint_digest: "64352f9d629976866e671e93239d37f10dbcc44c58d015a01537c75801a88001"
+  evidence_refs:
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608031321-5GK3DD/README.md"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608031321-5GK3DD/verification/20260803140749715-06c516287b30ab36.json"
+    - ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The generic task runner rejects context work before any provider invocation and returns the exact semantic-result path plus dedicated supervisor command."
+    - "The dedicated supervisor captures and validates its live Git delta, then records task verification; copied, stale, tampered, and standalone persisted receipts remain rejected."
+    - "The verified route converges from one CURATOR artifact to deterministic CLI post-processing and then to task closeout instead of repeating task run."
 commit:
   hash: "632033f8efcedf146aac5e263d85175087a3c7f3"
   message: "♻️ 5GK3DD code: isolate context verification recording"

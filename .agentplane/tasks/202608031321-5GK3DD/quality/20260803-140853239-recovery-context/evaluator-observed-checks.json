@@ -1,0 +1,26 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T14:07:49.715Z",
+    "updated_by": "TESTER",
+    "note": "Verified: live context supervision, fail-closed receipt handling, formal task verification, module-size guard, and the full local CI matrix all pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608031321-5GK3DD/verification/20260803140749715-06c516287b30ab36.json",
+      "sha256": "sha256:3e5d33b544f04515577a60412b5376811deeb55658f9dbef0ed082e9e00f39bf"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

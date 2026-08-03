@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The generic task runner rejects context work before any provider invocation and returns the exact semantic-result path plus dedicated supervisor command.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The dedicated supervisor captures and validates its live Git delta, then records task verification; copied, stale, tampered, and standalone persisted receipts remain rejected.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "The verified route converges from one CURATOR artifact to deterministic CLI post-processing and then to task closeout instead of repeating task run.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608031321-5GK3DD/quality/20260803-140853239-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The live supervisor boundary prevents trust from being derived from detached receipt bytes; it does not claim cryptographic attribution against an unrelated malicious same-UID process racing valid allowed-path writes."
+  ]
+}
