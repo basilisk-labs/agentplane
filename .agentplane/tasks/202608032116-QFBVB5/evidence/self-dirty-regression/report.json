@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.release_qualification_report",
+  "release": "0.7.1",
+  "mode": "audit",
+  "profile": "full",
+  "subject": "3e51eeac9196a048955c7e56633bacd76fe317bb",
+  "source_identity": {
+    "commit": "3e51eeac9196a048955c7e56633bacd76fe317bb",
+    "tree": "95029f77cb9b8010836113a01cd49eb67c9ce675",
+    "clean": true
+  },
+  "manifest": {
+    "path": "scripts/qualification/v0.7.1-release-qualification.json",
+    "sha256": "sha256:20015a6d97aae1c407aadc96e399e080f9d0a2daa3a1fa055b6a7925bec69e32"
+  },
+  "started_at": "2026-08-03T21:19:28.656Z",
+  "finished_at": "2026-08-03T21:22:37.368Z",
+  "duration_ms": 188712,
+  "verdict": "incomplete",
+  "release_ready": false,
+  "local_ready": false,
+  "provider": {
+    "requested": false,
+    "status": "not_run"
+  },
+  "coverage": {
+    "workflow_modes": [
+      "direct",
+      "branch_pr"
+    ],
+    "supervisor_frontends": [
+      "managed_run",
+      "external_advance"
+    ],
+    "lifecycle_states": [
+      "planned",
+      "ready",
+      "doing",
+      "verify_rework",
+      "verified",
+      "integrated",
+      "done",
+      "blocked"
+    ],
+    "context_conditions": [
+      "fresh",
+      "warm",
+      "stale",
+      "missing",
+      "conflicting",
+      "provenance_restricted",
+      "token_budgeted"
+    ],
+    "semantic_stops": [
+      "approval_required",
+      "human_review",
+      "scope_drift",
+      "missing_knowledge"
+    ],
+    "recovery_states": [
+      "interruption",
+      "process_loss",
+      "provider_ambiguity",
+      "effect_in_doubt",
+      "replay",
+      "duplicate_side_effect",
+      "stale_fingerprint",
+      "evaluator_rework",
+      "approval_expiry",
+      "hosted_wait",
+      "cleanup_race"
+    ],
+    "hosted_boundaries": [
+      "pr_publish",
+      "checks",
+      "merge",
+      "hosted_close",
+      "release_publish"
+    ]
+  },
+  "summary": {
+    "selected": 2,
+    "declared": 19,
+    "passed": 2,
+    "failed": 0,
+    "blocking": 0,
+    "local_selection_complete": false,
+    "provider_selection_complete": false
+  },
+  "scenarios": [
+    {
+      "id": "matched-cli-latency",
+      "title": "Interleaved v0.6.26 versus packed-candidate CLI latency",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 107957,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/qualification/measure-v0.7.1-matched-cli-latency.mjs",
+        "--subject",
+        "3e51eeac9196a048955c7e56633bacd76fe317bb",
+        "--out",
+        ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/matched-cli-latency.json"
+      ],
+      "log": ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/logs/matched-cli-latency.log",
+      "output_tail": "matched CLI latency: pass; baseline=0.6.26; candidate=0.7.0; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032116-QFBVB5-keep-frozen-qualification-subject-clean-while-wr/.agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/matched-cli-latency.json\n"
+    },
+    {
+      "id": "supervisor-latency",
+      "title": "Packed public supervisor latency versus published v0.6.26",
+      "tier": "full",
+      "status": "passed",
+      "duration_ms": 80753,
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "command": [
+        "node",
+        "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs",
+        "--subject",
+        "3e51eeac9196a048955c7e56633bacd76fe317bb",
+        "--out",
+        ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/supervisor-latency.json"
+      ],
+      "log": ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/logs/supervisor-latency.log",
+      "output_tail": "supervisor latency: pass; baseline=0.6.26; candidate=0.7.0; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608032116-QFBVB5-keep-frozen-qualification-subject-clean-while-wr/.agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/supervisor-latency.json\n"
+    }
+  ],
+  "defects": []
+}
