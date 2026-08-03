@@ -209,20 +209,19 @@ describe("runner effect operation journal", () => {
         `try { const started = await startRunnerEffectOperation({ bundle: { target: { kind: "task", task_id: taskId }, task: { task_id: taskId } }, invocation, state_fingerprint: state }); await writeFile(path.join(barrier, "adapter-spawns.jsonl"), JSON.stringify({ runId, operation_key: started.operation.operation_key }) + "\\n", { flag: "a" }); console.log(JSON.stringify({ status: "winner", operation_key: started.operation.operation_key })); } catch (error) { console.log(JSON.stringify({ status: "loser", reason: error instanceof Error ? error.message : String(error) })); }\n`,
       "utf8",
     );
-    const first = execFileAsync("bun", [workerPath, root, taskId, "run-first", barrier], {
-      cwd: root,
-      encoding: "utf8",
-    });
-    const second = execFileAsync("bun", [workerPath, root, taskId, "run-second", barrier], {
-      cwd: root,
-      encoding: "utf8",
-    });
-    await waitForBarrier(barrier, 2);
+    const runIds = Array.from({ length: 8 }, (_, index) => `run-${index + 1}`);
+    const workers = runIds.map((runId) =>
+      execFileAsync("bun", [workerPath, root, taskId, runId, barrier], {
+        cwd: root,
+        encoding: "utf8",
+      }),
+    );
+    await waitForBarrier(barrier, runIds.length);
     await writeFile(path.join(barrier, "go"), "\n");
-    const [firstResult, secondResult] = await Promise.all([first, second]);
-    const outcomes = [firstResult.stdout, secondResult.stdout].map(
-      (output) =>
-        JSON.parse(output.trim()) as { status: string; operation_key?: string; reason?: string },
+    const workerResults = await Promise.all(workers);
+    const outcomes = workerResults.map(
+      ({ stdout }) =>
+        JSON.parse(stdout.trim()) as { status: string; operation_key?: string; reason?: string },
     );
     const outcomeSummary = JSON.stringify(outcomes);
     expect(
@@ -232,7 +231,7 @@ describe("runner effect operation journal", () => {
     expect(
       outcomes.filter((outcome) => outcome.status === "loser"),
       outcomeSummary,
-    ).toHaveLength(1);
+    ).toHaveLength(runIds.length - 1);
     const spawnLog = await readFile(path.join(barrier, "adapter-spawns.jsonl"), "utf8");
     const spawns = spawnLog
       .trim()

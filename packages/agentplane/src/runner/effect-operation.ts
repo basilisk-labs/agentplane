@@ -456,13 +456,17 @@ export async function prepareRunnerEffectOperation(opts: {
       previous_digest: null,
       observed_evidence: { code: "runner_effect_operation_prepared", digest: operation.digest },
     });
-    await writeJournal({ paths, journal: prepared });
-    journal = prepared;
+    await writeImmutableJson({
+      file_path: paths.journal_path,
+      label: "runner effect journal",
+      value: prepared,
+    });
+    journal = await readRunnerEffectJournal(paths.journal_path);
   }
   if (
-    journal.operation_key !== operation.operation_key ||
-    journal.operation_digest !== operation.digest ||
-    journal.claim_generation !== operation.claim_generation
+    journal?.operation_key !== operation.operation_key ||
+    journal?.operation_digest !== operation.digest ||
+    journal?.claim_generation !== operation.claim_generation
   ) {
     throw runnerEffectRuntimeError(
       "Runner effect journal is not bound to the immutable operation authority.",

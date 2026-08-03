@@ -55,11 +55,13 @@ Created: 2026-08-03T18:26:18.371Z
  .../workflow-operation-projection.registry.test.ts |   5 +-
  .../shared/workflow-operation-projection.ts        |   5 +-
  .../shared/workflow-step-projections.test.ts       |   5 +-
+ .../agentplane/src/runner/effect-operation.test.ts |  27 +-
+ packages/agentplane/src/runner/effect-operation.ts |  14 +-
  .../baselines/v0.7-compatibility-candidate.json    | 125 ++++++-
  .../check-compatibility-contract-baseline.mjs      |  63 +++-
  scripts/lib/package-tarball-policy.mjs             |   1 +
  .../release/check-local-tarball-install-smoke.mjs  |  16 +
- 30 files changed, 1482 insertions(+), 73 deletions(-)
+ 32 files changed, 1504 insertions(+), 92 deletions(-)
 ```
 
 </details>
