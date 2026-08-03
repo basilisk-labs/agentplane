@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +27,9 @@ plan_approval:
   note: "Scope expanded under the user's standing release authorization to include the hosted-check runner concurrency defect discovered during verification."
 verification:
   state: "ok"
-  updated_at: "2026-08-03T19:56:10.048Z"
+  updated_at: "2026-08-03T19:59:42.162Z"
   updated_by: "TESTER"
-  note: "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf."
+  note: "PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval."
   attempts: 0
 quality_review:
   state: "rework"
@@ -147,8 +147,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf."
+  -
+    type: "verify"
+    at: "2026-08-03T19:59:42.162Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval."
 doc_version: 3
-doc_updated_at: "2026-08-03T19:58:53.339Z"
+doc_updated_at: "2026-08-03T19:59:43.540Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:
@@ -380,6 +386,41 @@ sections:
     Result: pass
     Evidence: implementation 1cb422dd89bf6f38993264b6f0fe3efb369a235e; concurrency 160/160 starts with one winner per cycle; runner 10/10; critical 12/12 chunks; fast 536/536 files and 3786/3786 tests; package inventories 103/21/59; migration matrix 8/8
     Scope: compatibility retirement manifest, doctor legacy and recovery surface, plus initial runner effect journal publication under independent-process contention
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+    - old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T19:59:42.162Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T19:58:53.339Z, excerpt_hash=sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade
+
+    Details:
+
+    Command: focused runner effect-operation test; 20-cycle contention stress; focused doctor legacy; typecheck; lint:core; build; ci:contract; test:critical; test:fast; package:tarball:check; package:install-smoke; policy routing
+    Result: pass
+    Evidence: re-approved scope commit 4ad2bc326f1060064f7ee11a5eb3d73f96dc7602; runner file 10/10 now and 160/160 prior concurrent starts with exactly one winner per cycle; fast 536/536 files and 3786/3786 tests; critical 12/12 chunks; package inventories 103/21/59; migration matrix 8/8
+    Scope: approved compatibility-retirement and doctor-legacy work plus the bounded release-blocking create-only initial runner effect-journal publication fix
 
     BlueprintSnapshotRef:
     - state: current
@@ -651,6 +692,41 @@ Command: focused runner effect-operation stress (20 cycles x 8 independent Bun p
 Result: pass
 Evidence: implementation 1cb422dd89bf6f38993264b6f0fe3efb369a235e; concurrency 160/160 starts with one winner per cycle; runner 10/10; critical 12/12 chunks; fast 536/536 files and 3786/3786 tests; package inventories 103/21/59; migration matrix 8/8
 Scope: compatibility retirement manifest, doctor legacy and recovery surface, plus initial runner effect journal publication under independent-process contention
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-CNQKXP-add-compatibility-retirement-inventory-and-docto/.agentplane/tasks/202608021535-CNQKXP/blueprint/resolved-snapshot.json
+- old_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- current_digest: 68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-CNQKXP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T19:59:42.162Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T19:58:53.339Z, excerpt_hash=sha256:630b565d1b5f0eee6811961fba6f3b5a2d3b63246e1c71501be6cd5f7bf0bade
+
+Details:
+
+Command: focused runner effect-operation test; 20-cycle contention stress; focused doctor legacy; typecheck; lint:core; build; ci:contract; test:critical; test:fast; package:tarball:check; package:install-smoke; policy routing
+Result: pass
+Evidence: re-approved scope commit 4ad2bc326f1060064f7ee11a5eb3d73f96dc7602; runner file 10/10 now and 160/160 prior concurrent starts with exactly one winner per cycle; fast 536/536 files and 3786/3786 tests; critical 12/12 chunks; package inventories 103/21/59; migration matrix 8/8
+Scope: approved compatibility-retirement and doctor-legacy work plus the bounded release-blocking create-only initial runner effect-journal publication fix
 
 BlueprintSnapshotRef:
 - state: current
