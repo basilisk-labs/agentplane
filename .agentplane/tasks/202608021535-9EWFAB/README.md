@@ -1,10 +1,11 @@
 ---
 id: "202608021535-9EWFAB"
 title: "Compact and deduplicate v0.7.1 task evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 35
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -31,35 +32,48 @@ verification:
   note: "Final code and evidence rework verification passed at 812ccf994d14."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T18:01:20.545Z"
+  updated_at: "2026-08-03T18:12:10.465Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "0d1463b04bc9688d69b64847d0aa6be0de080246"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "812ccf994d14557aa7e43a008eed53e73dfbd20c"
   blueprint_digest: "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85"
   evidence_refs:
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/6a4ea8786beb06cdb8a4cd143820d4ca76cf2fd150bd4e4091c2ab8ed8dc3617.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-181135189-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-181135189-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/9789a624755b0a33ef5e433a78a4dfce36aa0b1faf4d1218391717e14ad95312.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-181135189-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-181135189-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-181135189-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608021535-9EWFAB/README.md"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/aaa8c7677210e8ba7e81c1012e962195805b943790f24dfbaff56eb7f069f0ca.patch"
-    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/a103e6f3e8cb50fe627f7329c856a7b477cb85ca9c45da630a03bfe0c19e2ae1.json"
-    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803175944499-94b08a2360bed567.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/2822930457e0031746bc3410d953e3ad5690c113bcc06d027fe987cbdd19f0b8.patch"
+    - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/eb6addb0a20d4031e66d5ab91c0cb7370a51bbca7a0d520842bf060d7a449ccf.json"
+    - ".agentplane/tasks/202608021535-9EWFAB/verification/20260803181108227-a3a366fe4310b9f1.json"
     - ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/1d10aae86985eacf7c0cd07bea467527500d74414682917460f3861f465afac2.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The final verification evidence does not show that the task evidence bundle was generated and verified offline."
+    - "No contract divergence was found: the frozen verification covers content-addressed reuse, tamper and symlink rejection, observable directory-replacement races, legacy compatibility, compaction, exact-key recovery routing, and offline evidence-bundle verification at the evaluated SHA."
+token_usage:
+  agent_runs: 5
+  input_tokens: 1198550
+  journal_digest: "sha256:23943ac709581889b7ab87fada067c62d133886b88ff3f2511939a92710574e3"
+  observed_agent_runs: 5
+  observed_by: "agentplane"
+  output_tokens: 11596
+  reasoning_tokens: 2687
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 1212833
+  unavailable_reason: null
+  updated_at: "2026-08-03T18:12:49.189Z"
 commit:
-  hash: "812ccf994d14557aa7e43a008eed53e73dfbd20c"
-  message: "🔁 9EWFAB code: reopen verified evidence rework"
+  hash: "7a1b547177826eedc6f7b8e94b04d039082aff38"
+  message: "🧪 9EWFAB evidence: preserve final verification"
 comments:
   -
     author: "CODER"
@@ -91,6 +105,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework complete: newer verified evidence now reopens semantic quality review without bypassing the quality gate."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -236,8 +253,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Final code and evidence rework verification passed at 812ccf994d14."
+  -
+    type: "status"
+    at: "2026-08-03T18:12:49.189Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T18:11:09.524Z"
+doc_updated_at: "2026-08-03T18:12:49.200Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -826,6 +850,9 @@ sections:
       Impact: The content-addressed evidence implementation and explicit trusted-workspace contract are verified against the recorded implementation commit.
       Resolution: Proceed to a fresh independent EVALUATOR review without another implementation or metadata commit.
 extensions:
+  implementation_commit:
+    hash: "812ccf994d14557aa7e43a008eed53e73dfbd20c"
+    message: "🔁 9EWFAB code: reopen verified evidence rework"
   workflow_route_baseline:
     start_head_sha: "42d25ee59e3cf08909f91dd4dce761250029bf23"
     version: 1
@@ -1428,3 +1455,16 @@ DecisionContextRef:
 - Observation: Focused 68 tests, ci:contract, 12 critical chunks, typecheck, formatting, lint:core, Knip, hotspots, and all 3,780 fast tests passed.
   Impact: The content-addressed evidence implementation and explicit trusted-workspace contract are verified against the recorded implementation commit.
   Resolution: Proceed to a fresh independent EVALUATOR review without another implementation or metadata commit.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `5/5` agent runs
+- Input tokens: `1198550`
+- Output tokens: `11596`
+- Reasoning tokens: `2687`
+- Total tokens: `1212833`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:23943ac709581889b7ab87fada067c62d133886b88ff3f2511939a92710574e3`
+- Unavailable reason: `none`
+- Updated at: `2026-08-03T18:12:49.189Z`

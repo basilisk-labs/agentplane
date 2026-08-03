@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202608021535-9EWFAB",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T18:12:10.465Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "812ccf994d14557aa7e43a008eed53e73dfbd20c",
+  "blueprint_digest": "9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85",
+  "findings": [
+    "No contract divergence was found: the frozen verification covers content-addressed reuse, tamper and symlink rejection, observable directory-replacement races, legacy compatibility, compaction, exact-key recovery routing, and offline evidence-bundle verification at the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608021535-9EWFAB/README.md",
+    ".agentplane/tasks/202608021535-9EWFAB/quality/objects/sha256/2822930457e0031746bc3410d953e3ad5690c113bcc06d027fe987cbdd19f0b8.patch",
+    ".agentplane/tasks/202608021535-9EWFAB/verification/20260803181108227-a3a366fe4310b9f1.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
