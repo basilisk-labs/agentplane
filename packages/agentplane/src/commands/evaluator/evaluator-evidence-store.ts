@@ -1,6 +1,7 @@
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import { createHash, randomUUID } from "node:crypto";
-import { link, lstat, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import { constants } from "node:fs";
+import { link, lstat, mkdir, open, realpath, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 
@@ -83,6 +84,92 @@ function resolveRepositoryPath(root: string, value: string, label: string): stri
   return resolved;
 }
 
+function assertAbsolutePathWithinRepository(root: string, target: string, label: string): void {
+  const resolvedRoot = path.resolve(root);
+  const resolvedTarget = path.resolve(target);
+  if (resolvedTarget !== resolvedRoot && !resolvedTarget.startsWith(`${resolvedRoot}${path.sep}`)) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `${label} is outside the repository root: ${target}`,
+    });
+  }
+}
+
+async function assertNoSymlinkSegments(opts: {
+  gitRoot: string;
+  targetPath: string;
+  label: string;
+  allowMissing: boolean;
+}): Promise<void> {
+  assertAbsolutePathWithinRepository(opts.gitRoot, opts.targetPath, opts.label);
+  const resolvedRoot = path.resolve(opts.gitRoot);
+  const resolvedTarget = path.resolve(opts.targetPath);
+  const segments = path.relative(resolvedRoot, resolvedTarget).split(path.sep).filter(Boolean);
+  let current = resolvedRoot;
+  for (const [index, segment] of segments.entries()) {
+    current = path.join(current, segment);
+    let stats;
+    try {
+      stats = await lstat(current);
+    } catch (error) {
+      if (opts.allowMissing && (error as NodeJS.ErrnoException | null)?.code === "ENOENT") return;
+      throw error;
+    }
+    if (stats.isSymbolicLink()) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `${opts.label} traverses a symbolic link: ${relative(opts.gitRoot, current)}`,
+      });
+    }
+    if (index < segments.length - 1 && !stats.isDirectory()) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `${opts.label} traverses a non-directory path: ${relative(opts.gitRoot, current)}`,
+      });
+    }
+  }
+}
+
+async function assertRealDirectoryWithinRepository(
+  gitRoot: string,
+  directoryPath: string,
+  label: string,
+): Promise<void> {
+  await assertNoSymlinkSegments({
+    gitRoot,
+    targetPath: directoryPath,
+    label,
+    allowMissing: false,
+  });
+  const stats = await lstat(directoryPath);
+  if (!stats.isDirectory()) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `${label} is not a directory: ${relative(gitRoot, directoryPath)}`,
+    });
+  }
+  const [repositoryRealPath, directoryRealPath] = await Promise.all([
+    realpath(gitRoot),
+    realpath(directoryPath),
+  ]);
+  assertAbsolutePathWithinRepository(repositoryRealPath, directoryRealPath, label);
+}
+
+async function ensureRepositoryDirectory(
+  gitRoot: string,
+  directoryPath: string,
+  label: string,
+): Promise<void> {
+  await assertNoSymlinkSegments({
+    gitRoot,
+    targetPath: directoryPath,
+    label,
+    allowMissing: true,
+  });
+  await mkdir(directoryPath, { recursive: true });
+  await assertRealDirectoryWithinRepository(gitRoot, directoryPath, label);
+}
+
 function manifestDigest(manifest: EvaluatorPacketManifest): `sha256:${string}` {
   const canonical = JSON.stringify(
     canonicalizeJson({
@@ -93,15 +180,80 @@ function manifestDigest(manifest: EvaluatorPacketManifest): `sha256:${string}` {
   return sha256(canonical);
 }
 
-async function readRegularEvaluatorArtifact(filePath: string, label: string): Promise<Buffer> {
-  const stats = await lstat(filePath);
-  if (stats.isSymbolicLink() || !stats.isFile()) {
+async function readRegularEvaluatorArtifact(
+  gitRoot: string,
+  filePath: string,
+  label: string,
+): Promise<Buffer> {
+  await assertRealDirectoryWithinRepository(gitRoot, path.dirname(filePath), `${label} parent`);
+  await assertNoSymlinkSegments({
+    gitRoot,
+    targetPath: filePath,
+    label,
+    allowMissing: false,
+  });
+  const handle = await open(filePath, constants.O_RDONLY | constants.O_NOFOLLOW);
+  try {
+    const stats = await handle.stat();
+    if (!stats.isFile()) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `${label} is not a regular file: ${relative(gitRoot, filePath)}`,
+      });
+    }
+    return await handle.readFile();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ELOOP") {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `${label} is a symbolic link: ${relative(gitRoot, filePath)}`,
+      });
+    }
+    throw error;
+  } finally {
+    await handle.close();
+  }
+}
+
+async function writeRepositoryFileAtomically(opts: {
+  gitRoot: string;
+  filePath: string;
+  label: string;
+  contents: string;
+}): Promise<void> {
+  const directoryPath = path.dirname(opts.filePath);
+  await ensureRepositoryDirectory(opts.gitRoot, directoryPath, `${opts.label} directory`);
+  const temporaryPath = path.join(
+    directoryPath,
+    `.${path.basename(opts.filePath)}.${String(process.pid)}.${randomUUID()}.tmp`,
+  );
+  const handle = await open(
+    temporaryPath,
+    constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW,
+    0o600,
+  );
+  try {
+    await handle.writeFile(opts.contents, { encoding: "utf8" });
+  } finally {
+    await handle.close();
+  }
+  try {
+    await assertRealDirectoryWithinRepository(
+      opts.gitRoot,
+      directoryPath,
+      `${opts.label} directory`,
+    );
+    await rename(temporaryPath, opts.filePath);
+  } finally {
+    await removeStagingFile(temporaryPath);
+  }
+  const stored = await readRegularEvaluatorArtifact(opts.gitRoot, opts.filePath, opts.label);
+  if (!stored.equals(Buffer.from(opts.contents, "utf8"))) {
     throw new CliError({
       code: "E_VALIDATION",
-      message: `${label} is not a regular file: ${filePath}`,
+      message: `${opts.label} changed while it was written: ${relative(opts.gitRoot, opts.filePath)}`,
     });
   }
-  return await readFile(filePath);
 }
 
 async function removeStagingFile(filePath: string): Promise<void> {
@@ -136,16 +288,38 @@ export async function putEvaluatorEvidenceObject(opts: {
     stagingRoot,
     `${digestHex}.${String(process.pid)}.${randomUUID()}.tmp`,
   );
-  await Promise.all([
-    mkdir(objectRoot, { recursive: true }),
-    mkdir(stagingRoot, { recursive: true }),
-  ]);
-  await writeFile(stagingPath, opts.contents, { encoding: "utf8", flag: "wx" });
+  assertAbsolutePathWithinRepository(opts.gitRoot, opts.taskQualityRoot, "Task quality root");
+  await ensureRepositoryDirectory(opts.gitRoot, objectRoot, "Evaluator object directory");
+  await ensureRepositoryDirectory(opts.gitRoot, stagingRoot, "Evaluator staging directory");
+  const stagingHandle = await open(
+    stagingPath,
+    constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW,
+    0o600,
+  );
   try {
+    await stagingHandle.writeFile(opts.contents, { encoding: "utf8" });
+  } finally {
+    await stagingHandle.close();
+  }
+  try {
+    await assertRealDirectoryWithinRepository(
+      opts.gitRoot,
+      path.dirname(stagingPath),
+      "Evaluator staging directory",
+    );
+    await assertRealDirectoryWithinRepository(
+      opts.gitRoot,
+      path.dirname(objectPath),
+      "Evaluator object directory",
+    );
     await link(stagingPath, objectPath);
   } catch (error) {
     if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
-    const existing = await readRegularEvaluatorArtifact(objectPath, "Evaluator evidence object");
+    const existing = await readRegularEvaluatorArtifact(
+      opts.gitRoot,
+      objectPath,
+      "Evaluator evidence object",
+    );
     if (sha256(existing) !== digest || !existing.equals(Buffer.from(opts.contents, "utf8"))) {
       throw new CliError({
         code: "E_VALIDATION",
@@ -154,6 +328,17 @@ export async function putEvaluatorEvidenceObject(opts: {
     }
   } finally {
     await removeStagingFile(stagingPath);
+  }
+  const stored = await readRegularEvaluatorArtifact(
+    opts.gitRoot,
+    objectPath,
+    "Evaluator evidence object",
+  );
+  if (sha256(stored) !== digest || !stored.equals(Buffer.from(opts.contents, "utf8"))) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Evaluator evidence object collision or tamper detected: ${relative(opts.gitRoot, objectPath)}`,
+    });
   }
   return {
     logical_name: opts.logicalName,
@@ -195,8 +380,12 @@ export async function writeEvaluatorPacketManifest(opts: {
     integrity: { ...withoutDigest.integrity, manifest_digest: manifestDigest(withoutDigest) },
   });
   const contents = `${JSON.stringify(canonicalizeJson(manifest), null, 2)}\n`;
-  await mkdir(path.dirname(opts.manifestPath), { recursive: true });
-  await writeFile(opts.manifestPath, contents, "utf8");
+  await writeRepositoryFileAtomically({
+    gitRoot: opts.gitRoot,
+    filePath: opts.manifestPath,
+    label: "Evaluator packet manifest",
+    contents,
+  });
   return { manifest, sha256: sha256(contents) };
 }
 
@@ -213,7 +402,11 @@ export async function assertEvaluatorPacketCurrent(opts: {
     opts.manifestPath,
     "Evaluator packet manifest",
   );
-  const raw = await readRegularEvaluatorArtifact(manifestAbsolutePath, "Evaluator packet manifest");
+  const raw = await readRegularEvaluatorArtifact(
+    opts.gitRoot,
+    manifestAbsolutePath,
+    "Evaluator packet manifest",
+  );
   if (sha256(raw) !== opts.manifestSha256) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -267,6 +460,7 @@ export async function assertEvaluatorPacketCurrent(opts: {
       `Evaluator packet artifact ${artifact.logical_name}`,
     );
     const bytes = await readRegularEvaluatorArtifact(
+      opts.gitRoot,
       artifactPath,
       `Evaluator packet artifact ${artifact.logical_name}`,
     );
