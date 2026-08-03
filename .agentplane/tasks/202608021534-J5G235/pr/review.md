@@ -6,7 +6,7 @@ Created: 2026-08-03T15:09:30.904Z
 
 - Task: `202608021534-J5G235`
 - Title: Reduce the v0.7.1 CLI dead-code and barrel baseline
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608021534-J5G235/reduce-the-v0-7-1-cli-dead-code-and-barrel-basel`
 - Canonical task record: `.agentplane/tasks/202608021534-J5G235/README.md`
 
