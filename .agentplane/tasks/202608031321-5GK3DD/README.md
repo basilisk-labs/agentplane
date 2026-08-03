@@ -4,7 +4,7 @@ title: "Make built-in task run context-verifiable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -31,8 +31,8 @@ verification:
   note: "Verified: the default context path is deterministic, live-observed, fail-closed for persisted receipts, and formally records task verification."
   attempts: 0
 commit:
-  hash: "3c5b1044eafc2bb50de30d385af46f7054af3130"
-  message: "🐛 5GK3DD code: verify context through live supervisor"
+  hash: "632033f8efcedf146aac5e263d85175087a3c7f3"
+  message: "♻️ 5GK3DD code: isolate context verification recording"
 comments:
   -
     author: "CODER"
@@ -40,6 +40,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: context tasks now stop before the generic runner, route one CURATOR semantic result to the dedicated supervisor, verify the supervisor's live Git delta, and record formal verification without trusting persisted receipt claims."
+  -
+    author: "CODER"
+    body: "Implemented: extracted formal context-verification recording into a bounded module so the supervisor remains under the enforced hotspot limit."
 events:
   -
     type: "status"
@@ -61,8 +64,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: the default context path is deterministic, live-observed, fail-closed for persisted receipts, and formally records task verification."
+  -
+    type: "status"
+    at: "2026-08-03T13:59:59.221Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: extracted formal context-verification recording into a bounded module so the supervisor remains under the enforced hotspot limit."
 doc_version: 3
-doc_updated_at: "2026-08-03T13:55:49.173Z"
+doc_updated_at: "2026-08-03T13:59:59.221Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #4641 by ensuring the default built-in runner completes through a live authenticated context-verification boundary or stops with an executable supervisor route; never accept persisted receipt bytes, path hashes, or self-claims as authentication."
 sections:
