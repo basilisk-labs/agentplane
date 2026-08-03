@@ -234,6 +234,90 @@ describe("typed WorkflowStep reducer", () => {
     });
   });
 
+  it("routes direct context work to one bounded CURATOR result and the dedicated supervisor", () => {
+    const contextTaskId = "202607250100-CTX001";
+    const step = reduceRouteState(
+      routeState({
+        workflowMode: "direct",
+        prFlow: null,
+        blockers: [],
+        taskWorktree: undefined,
+        task: {
+          ...task,
+          id: contextTaskId,
+          owner: "CURATOR",
+          task_kind: "context",
+          mutation_scope: "context",
+          blueprint_request: "context.maximum_assimilation",
+          tags: ["context", "assimilation"],
+        },
+        resume: {
+          ...resume,
+          task_id: contextTaskId,
+          runner: {
+            ...resume.runner,
+            run_id: null,
+            status: null,
+            next_action: "run",
+            next_command: `agentplane task run ${contextTaskId}`,
+          },
+        },
+      }),
+    );
+
+    const extractionPath = `.agentplane/tasks/${contextTaskId}/semantic-results/context-extraction.json`;
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      id: "agent.context_semantic_result",
+      phase: "context_semantic_result_required",
+      episode: { role: "CURATOR", purpose: "implementation", taskId: contextTaskId },
+      compatibility: {
+        code: "context_semantic_result_required",
+        command: `agentplane context supervise-task ${contextTaskId} --extraction ${extractionPath}`,
+      },
+      execution: {
+        actionKind: "stop",
+        semanticMutationAllowed: true,
+      },
+    });
+    expect(step.summary).not.toContain("task run");
+
+    const verified = reduceRouteState(
+      routeState({
+        workflowMode: "direct",
+        prFlow: null,
+        blockers: [],
+        taskWorktree: undefined,
+        task: {
+          ...task,
+          id: contextTaskId,
+          owner: "CURATOR",
+          task_kind: "context",
+          mutation_scope: "context",
+          blueprint_request: "context.maximum_assimilation",
+          tags: ["context", "assimilation"],
+          verification: { state: "ok" },
+          quality_review: {
+            state: "pass",
+            reviewed_by: "EVALUATOR",
+            reviewed_at: "2026-07-25T00:10:00.000Z",
+            summary: "Context output passed independent semantic review.",
+            evidence_refs: [".agentplane/context/ingest-runs/run.json#evaluated"],
+          },
+        },
+        resume: { ...resume, task_id: contextTaskId },
+      }),
+    );
+    expect(verified).toMatchObject({
+      kind: "terminal",
+      id: "task.complete.input",
+      phase: "direct_verified_pending_closeout",
+      compatibility: {
+        command: `agentplane task complete ${contextTaskId} --result "<result>" --commit <hash>`,
+      },
+    });
+  });
+
   it("covers cli operation, agent episode, approval, human input, wait, and terminal variants", () => {
     const cli = reduceRouteState(routeState());
     const agent = reduceRouteState(

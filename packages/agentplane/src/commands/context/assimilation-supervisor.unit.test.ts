@@ -263,6 +263,69 @@ describe("context assimilation supervisor", () => {
     expect(calls).toEqual([]);
   });
 
+  it("verifies deterministic context writes from its live Git observation", async () => {
+    const root = await fixtureRoot();
+    const calls: string[] = [];
+    const profileTask = {
+      ...task("pass"),
+      task_kind: "context" as const,
+      mutation_scope: "context" as const,
+      blueprint_request: "context.assimilation" as const,
+      extensions: {
+        "agentplane.context": {
+          task_type: "context_profile_switch",
+          allowed_outputs: ["context/wiki/profile.md"],
+        },
+      },
+    };
+    const operations = overriddenOperations(calls);
+    const recordVerification = vi.fn((changedPaths: string[]) => Promise.resolve({ changedPaths }));
+    delete operations.task_verify;
+    operations.apply = async () => {
+      calls.push("apply");
+      await mkdir(path.join(root, "context/wiki"), { recursive: true });
+      await writeFile(
+        path.join(root, "context/wiki/profile.md"),
+        [
+          "---",
+          "agentplane_context:",
+          '  no_source: "generated profile-switch fixture"',
+          "---",
+          "# Profile",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+      return { changed_paths: ["context/wiki/profile.md"] };
+    };
+    const command = {
+      ...input(root).command,
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { getTask: () => Promise.resolve(profileTask) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as CommandContext;
+
+    const result = await runContextAssimilationSupervisor(
+      { ...input(root), command },
+      {
+        operations,
+        getEpisodeState: fixedEpisodeState,
+        loadTask: () => Promise.resolve(profileTask),
+        recordVerification,
+        runEvaluator: () => Promise.resolve(),
+      },
+    );
+
+    expect(result.status).toBe("finalized");
+    expect(calls).not.toContain("task_verify");
+    expect(recordVerification).toHaveBeenCalledExactlyOnceWith(["context/wiki/profile.md"]);
+    expect(await readFile(path.join(root, "context/wiki/profile.md"), "utf8")).toContain(
+      "generated profile-switch fixture",
+    );
+  });
+
   it("retries only the failed mechanical operation and preserves the CURATOR result", async () => {
     const root = await fixtureRoot();
     const calls: string[] = [];

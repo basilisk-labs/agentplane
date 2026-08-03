@@ -145,34 +145,29 @@ export async function validateContextTaskArtifacts(opts: {
   return 0;
 }
 
-export async function cmdContextVerifyTask(opts: {
-  ctx?: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  parsed: { taskId: string };
-}): Promise<number> {
-  const ctx =
-    opts.ctx ??
-    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const task = await loadTaskFromContext({ ctx, taskId: opts.parsed.taskId });
+async function loadContextTaskForVerification(opts: {
+  ctx: CommandContext;
+  taskId: string;
+}): Promise<VerificationInput | null> {
+  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (!task) {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message: `Task not found: ${opts.parsed.taskId}`,
+      message: `Task not found: ${opts.taskId}`,
     });
   }
   if (task.task_kind !== "context") {
     process.stdout.write(
-      `context verify-task ${opts.parsed.taskId}: skipped_not_applicable (task_kind=${task.task_kind ?? "unknown"}; expected context)\n`,
+      `context verify-task ${opts.taskId}: skipped_not_applicable (task_kind=${task.task_kind ?? "unknown"}; expected context)\n`,
     );
-    return 0;
+    return null;
   }
   if (task.mutation_scope !== "context") {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message: `Task ${opts.parsed.taskId} has invalid mutation scope: ${task.mutation_scope ?? "unknown"}`,
+      message: `Task ${opts.taskId} has invalid mutation scope: ${task.mutation_scope ?? "unknown"}`,
     });
   }
   if (
@@ -182,11 +177,48 @@ export async function cmdContextVerifyTask(opts: {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
-      message: `Task ${opts.parsed.taskId} has unexpected blueprint request: ${task.blueprint_request ?? "unknown"}`,
+      message: `Task ${opts.taskId} has unexpected blueprint request: ${task.blueprint_request ?? "unknown"}`,
     });
   }
+  return task as VerificationInput;
+}
 
-  const normalizedTask = task as VerificationInput;
+/**
+ * Verify context artifacts from the still-live CLI supervisor observation.
+ *
+ * This boundary intentionally accepts changed paths only from the in-process
+ * context assimilation supervisor. The public command continues to reject a
+ * persisted receipt because a repository-local path and digest do not
+ * authenticate an observation against a detached same-UID process.
+ */
+export async function verifyContextTaskFromSupervisor(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  changedPaths: readonly string[];
+}): Promise<number> {
+  const task = await loadContextTaskForVerification({ ctx: opts.ctx, taskId: opts.taskId });
+  if (!task) return 0;
+  return await validateContextTaskArtifacts({
+    ctx: opts.ctx,
+    task,
+    changedPaths: opts.changedPaths,
+  });
+}
+
+export async function cmdContextVerifyTask(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  parsed: { taskId: string };
+}): Promise<number> {
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const normalizedTask = await loadContextTaskForVerification({
+    ctx,
+    taskId: opts.parsed.taskId,
+  });
+  if (!normalizedTask) return 0;
   const executionReceipt = rejectUnauthenticatedExecutionReceipt({
     task: normalizedTask,
   });

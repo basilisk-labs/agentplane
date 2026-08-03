@@ -156,12 +156,32 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   const task = bundle.task;
   if (!task) return;
   const status = normalizeTaskStatus(task.metadata.status);
-  if (status === "DOING") return;
+  if (status !== "DOING") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        `${task.metadata.task_id}: runner execution requires task status DOING ` +
+        `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.metadata.task_id} --author <ROLE> --body "Start: ..."\` first).`,
+    });
+  }
+  if (task.metadata.task_kind !== "context" && task.metadata.mutation_scope !== "context") return;
+  const extractionPath = `.agentplane/tasks/${task.metadata.task_id}/semantic-results/context-extraction.json`;
+  const superviseCommand = `agentplane context supervise-task ${task.metadata.task_id} --extraction ${extractionPath}`;
   throw new CliError({
     exitCode: 2,
     code: "E_USAGE",
     message:
-      `${task.metadata.task_id}: runner execution requires task status DOING ` +
-      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.metadata.task_id} --author <ROLE> --body "Start: ..."\` first).`,
+      `${task.metadata.task_id}: generic task run is not admitted for context work because ` +
+      `workspace-write execution cannot authenticate detached descendant mutations.\n` +
+      `Next semantic action: CURATOR writes one schema-valid context_extraction SGR to ${extractionPath}.\n` +
+      `Then run: ${superviseCommand}`,
+    context: {
+      reason_code: "context_requires_dedicated_supervisor",
+      task_id: task.metadata.task_id,
+      required_role: "CURATOR",
+      semantic_output_path: extractionPath,
+      safe_command: superviseCommand,
+    },
   });
 }

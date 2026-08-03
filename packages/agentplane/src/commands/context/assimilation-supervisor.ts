@@ -33,9 +33,11 @@ import { cmdContextGraphValidate } from "./graph.js";
 import { writeContextSemanticReworkWorkOrder } from "./assimilation-rework.js";
 import { cmdContextReindex } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
-import { cmdContextVerifyTask } from "./verify-task.js";
+import { verifyContextTaskFromSupervisor } from "./verify-task.js";
 import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
 import { cmdContextWikiReport } from "./wiki-reports.js";
+import { captureGitSnapshot, compareGitSnapshots } from "../../runner/observation/git-snapshot.js";
+import { cmdVerifyParsed } from "../task/verify-record.js";
 
 export const CONTEXT_ASSIMILATION_OPERATION_IDS = [
   "semantic_result",
@@ -73,6 +75,7 @@ export type ContextAssimilationSupervisorDependencies = {
   checkAcr?: () => Promise<unknown>;
   getEpisodeState?: () => Promise<EpisodeState>;
   loadTask?: () => Promise<TaskData>;
+  recordVerification?: (changedPaths: string[]) => Promise<unknown>;
   runEvaluator?: () => Promise<unknown>;
   operations?: Partial<Record<ContextAssimilationOperationId, () => Promise<unknown>>>;
 };
@@ -175,10 +178,55 @@ export async function runContextAssimilationSupervisor(
 ): Promise<ContextAssimilationSupervisorResult> {
   const root = path.resolve(input.command.resolvedProject.gitRoot);
   const semantic = await readSemanticResult(root, input.extractionFile);
+  const observationExcludedRoots = [path.join(root, ".agentplane/context/ingest-runs")];
+  const observationBefore = await captureGitSnapshot({
+    repository_root: root,
+    excluded_roots: observationExcludedRoots,
+    trusted_repository_root: true,
+  });
   const getEpisodeState = dependencies.getEpisodeState ?? (() => defaultEpisodeState(input));
   const loadTask =
     dependencies.loadTask ??
     (() => loadTaskFromContext({ ctx: input.command, taskId: input.taskId }));
+  const recordVerification =
+    dependencies.recordVerification ??
+    (async (changedPaths: string[]) => {
+      const ingestRun = await findContextIngestRunForTask(root, input.taskId);
+      if (ingestRun === null) {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message: `Context ingest journal disappeared before recording verification for ${input.taskId}.`,
+        });
+      }
+      const evidencePath = `.agentplane/context/ingest-runs/${ingestRun.run_id}.json#task_verified`;
+      const exitCode = await cmdVerifyParsed({
+        ctx: input.command,
+        cwd: input.ctx.cwd,
+        rootOverride: root,
+        taskId: input.taskId,
+        state: "ok",
+        by: "SUPERVISOR",
+        note: "Verified: the context assimilation supervisor observed the live Git delta and all task-bound artifact checks passed.",
+        details: [
+          `Command: agentplane context supervise-task ${input.taskId} --extraction ${input.extractionFile}`,
+          "Result: pass",
+          `Evidence: ${evidencePath}`,
+          `Scope: live context assimilation Git delta (${String(changedPaths.length)} changed paths) and task-bound artifact validation`,
+        ].join("\n"),
+        localOnly: false,
+        repoFixable: false,
+        incidentTags: [],
+        incidentMatch: [],
+        quiet: true,
+      });
+      if (exitCode !== 0) {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message: `Context supervisor could not record formal verification for task ${input.taskId}.`,
+        });
+      }
+      return { changed_paths: changedPaths, evidence: evidencePath };
+    });
   let reworkWorkOrder: string | null = null;
 
   const operation = async (
@@ -402,17 +450,39 @@ export async function runContextAssimilationSupervisor(
     async () =>
       await cmdContextGraphValidate({ cwd: input.ctx.cwd, rootOverride: root, parsed: {} }),
   );
-  await run(
-    "task_verify",
-    "cli_operation",
-    "task_verified",
-    async () =>
-      await cmdContextVerifyTask({
-        cwd: input.ctx.cwd,
-        rootOverride: root,
-        parsed: { taskId: input.taskId },
-      }),
-  );
+  await run("task_verify", "cli_operation", "task_verified", async () => {
+    const observationAfter = await captureGitSnapshot({
+      repository_root: root,
+      excluded_roots: observationExcludedRoots,
+      trusted_repository_root: true,
+    });
+    const delta = await compareGitSnapshots({
+      repository_root: root,
+      before: observationBefore,
+      after: observationAfter,
+      excluded_roots: observationExcludedRoots,
+    });
+    if (delta.state !== "available") {
+      throw new CliError({
+        code: "E_RUNTIME",
+        message:
+          `Context assimilation supervisor could not authenticate its live Git observation ` +
+          `before verifying task ${input.taskId}.`,
+        context: {
+          reason_code: "context_supervisor_observation_unavailable",
+          task_id: input.taskId,
+          observation_errors: delta.errors.map((error) => error.operation),
+        },
+      });
+    }
+    const verification = await verifyContextTaskFromSupervisor({
+      ctx: input.command,
+      taskId: input.taskId,
+      changedPaths: delta.changed_paths,
+    });
+    const record = await recordVerification(delta.changed_paths);
+    return { verification, record };
+  });
   await run(
     "doctor",
     "cli_operation",

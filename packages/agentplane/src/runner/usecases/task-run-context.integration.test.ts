@@ -1,9 +1,7 @@
-import { createHash } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
+import { access } from "node:fs/promises";
 import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { EXECUTION_RECEIPT_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
@@ -18,7 +16,7 @@ import { runCli } from "../../cli/run-cli.js";
 import { cmdContextVerifyTask } from "../../commands/context/verify-task.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend.js";
-import { resolveSupervisorExecutionReceiptLocator } from "../task-run-paths.js";
+import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
 import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
@@ -191,258 +189,90 @@ async function configureFakeCodex(root: string): Promise<void> {
   process.env.TEST_REPOSITORY_ROOT = root;
 }
 
-async function readPersistedReceipt(
-  root: string,
-  receiptPath: string,
-): Promise<{
-  observed_by?: string;
-  success_policy?: { outcome?: string; reasons?: string[] };
-  scope_evaluation?: {
-    state?: string;
-    mutation_scope?: string | null;
-    writable_roots?: string[];
-    violations?: unknown[];
-  };
-  checks?: { id?: string; required?: boolean; status?: string; details?: string }[];
-  process?: {
-    process_tree?: {
-      containment_state?: string;
-      containment_limitation?: string | null;
-    };
-  };
-}> {
-  const resolvedReceiptPath = receiptPath.startsWith("agentplane-run:")
-    ? await resolveSupervisorExecutionReceiptLocator({
-        git_root: root,
-        workflow_dir: ".agentplane/tasks",
-        locator: receiptPath,
-      })
-    : path.isAbsolute(receiptPath)
-      ? receiptPath
-      : path.join(root, receiptPath);
-  return JSON.parse(await readFile(resolvedReceiptPath, "utf8")) as {
-    observed_by?: string;
-    success_policy?: { outcome?: string; reasons?: string[] };
-    scope_evaluation?: {
-      state?: string;
-      mutation_scope?: string | null;
-      writable_roots?: string[];
-      violations?: unknown[];
-    };
-    checks?: { id?: string; required?: boolean; status?: string; details?: string }[];
-    process?: {
-      process_tree?: {
-        containment_state?: string;
-        containment_limitation?: string | null;
-      };
-    };
-  };
-}
-
 describe("context task runner integration", () => {
-  it("keeps trust unverified when a custom adapter only carries workspace-write as advisory", async () => {
+  it("refuses a custom workspace-write adapter before context mutation", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-custom-advisory";
     await configureCustomRunner(root);
     const taskId = await createContextTask(root, "Custom context advisory receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
-    const executed = await executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-
-    expect(executed.bundle.execution.sandbox_policy).toMatchObject({
-      requested: "workspace-write",
-      source: "role_default",
-      role: "CURATOR",
-    });
-    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
-    expect(executed.bundle.execution.write_scope).toMatchObject({
-      mutation_scope: "context",
-      writable_roots: [".agentplane/context", "context"],
-    });
-    expect(executed.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
-      requested: "workspace-write",
-      status: "advisory",
-      capability_level: "advisory",
-      channel: "env",
-    });
-    expect(executed.result).toMatchObject({
-      status: "success",
-      exit_code: 0,
-      execution_receipt: {
-        verification_state: "unverified",
-        observed_by: "agentplane",
+    await expect(
+      executeTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: runId,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_USAGE",
+      context: {
+        reason_code: "context_requires_dedicated_supervisor",
+        required_role: "CURATOR",
+        semantic_output_path: `.agentplane/tasks/${taskId}/semantic-results/context-extraction.json`,
       },
     });
 
     const persistedTask = await ctx.taskBackend.getTask(taskId);
-    expect(persistedTask?.runner).toMatchObject({
-      run_id: runId,
-      status: "success",
-      execution_receipt: {
-        verification_state: "unverified",
-        observed_by: "agentplane",
-      },
+    expect(persistedTask?.runner).toBeUndefined();
+    expect(persistedTask?.status).toBe("DOING");
+    await expect(access(path.join(root, "context/wiki/profile.md"))).rejects.toMatchObject({
+      code: "ENOENT",
     });
-    await expect(
-      cmdContextVerifyTask({
-        ctx,
-        cwd: root,
-        parsed: { taskId },
-      }),
-    ).rejects.toThrow(/persisted execution receipt is unauthenticated/u);
   });
 
-  it("keeps trust unverified when native Codex lacks bounded descendant lifetime", async () => {
+  it("returns the exact context supervisor path before native Codex starts", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-codex-unverified";
     await configureFakeCodex(root);
     const taskId = await createContextTask(root, "Native Codex context receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
-    const executed = await executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-
-    expect(executed.bundle.execution.sandbox_policy).toMatchObject({
-      requested: "workspace-write",
-      source: "role_default",
-      role: "CURATOR",
-    });
-    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
-    expect(executed.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
-      requested: "workspace-write",
-      effective: "workspace-write",
-      status: "enforced",
-      capability_level: "native",
-      channel: "argv",
-    });
-    expect(executed.invocation.argv).toEqual(
-      expect.arrayContaining(["--ignore-user-config", "--strict-config", "-s", "workspace-write"]),
-    );
-    expect(executed.result).toMatchObject({
-      status: "success",
-      exit_code: 0,
-      execution_receipt: {
-        verification_state: "unverified",
-        observed_by: "agentplane",
-      },
-    });
-
-    const receiptRef = executed.result.execution_receipt;
-    expect(receiptRef).toBeTruthy();
-    const receipt = await readPersistedReceipt(root, receiptRef!.path);
-    expect(receipt).toMatchObject({
-      observed_by: "agentplane",
-      success_policy: {
-        outcome: "unverified",
-      },
-      scope_evaluation: {
-        state: "passed",
-        mutation_scope: "context",
-        writable_roots: [".agentplane/context", "context"],
-        violations: [],
-      },
-    });
-    expect(receipt.success_policy?.reasons).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining("cannot observe or terminate descendants"),
-        "required observed check was not run: runner.process_containment",
-      ]),
-    );
-    expect(receipt.process?.process_tree?.containment_state).toBe("limited");
-    expect(receipt.process?.process_tree?.containment_limitation).toContain(
-      "POSIX process-group cleanup cannot observe or terminate descendants",
-    );
-    expect(receipt.checks).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: "runner.sandbox.filesystem_effects_enforced",
-          required: false,
-          status: "not_run",
-        }),
-        expect.objectContaining({
-          id: "runner.process_containment",
-          required: true,
-          status: "not_run",
-        }),
-      ]),
+    const extractionPath = `.agentplane/tasks/${taskId}/semantic-results/context-extraction.json`;
+    await expect(
+      executeTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: runId,
+      }),
+    ).rejects.toThrow(
+      `Then run: agentplane context supervise-task ${taskId} --extraction ${extractionPath}`,
     );
 
     const persistedTask = await ctx.taskBackend.getTask(taskId);
-    expect(persistedTask?.runner).toMatchObject({
-      run_id: runId,
-      status: "success",
-      execution_receipt: {
-        path: receiptRef!.path,
-        sha256: receiptRef!.sha256,
-        verification_state: "unverified",
-        observed_by: "agentplane",
-      },
+    expect(persistedTask?.runner).toBeUndefined();
+    await expect(access(path.join(root, "context/wiki/profile.md"))).rejects.toMatchObject({
+      code: "ENOENT",
     });
-    await expect(
-      cmdContextVerifyTask({
-        ctx,
-        cwd: root,
-        parsed: { taskId },
-      }),
-    ).rejects.toThrow(/persisted execution receipt is unauthenticated/u);
   });
 
-  it("rejects a forged observed-success receipt and matching task reference", async () => {
+  it("still rejects a self-consistent persisted observed-success receipt", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-forged-receipt";
-    await configureFakeCodex(root);
     const taskId = await createContextTask(root, "Forged context receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-
-    const executed = await executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-    expect(executed.result.execution_receipt?.verification_state).toBe("unverified");
-
-    const forgedReceipt = structuredClone(EXECUTION_RECEIPT_V2_VALID_FIXTURE);
-    forgedReceipt.run_id = runId;
-    forgedReceipt.work_order_id = runId;
-    const forgedText = `${JSON.stringify(forgedReceipt, null, 2)}\n`;
-    const receiptReference = executed.result.execution_receipt!.path;
-    const receiptPath = receiptReference.startsWith("agentplane-run:")
-      ? await resolveSupervisorExecutionReceiptLocator({
-          git_root: root,
-          workflow_dir: ".agentplane/tasks",
-          locator: receiptReference,
-        })
-      : path.isAbsolute(receiptReference)
-        ? receiptReference
-        : path.resolve(root, ...receiptReference.split("/"));
-    await writeFile(receiptPath, forgedText, "utf8");
-
     const task = await ctx.taskBackend.getTask(taskId);
     expect(task).toBeTruthy();
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task: task!,
+      changedPaths: [],
+      runId,
+    });
     await ctx.taskBackend.writeTask({
       ...task!,
       runner: {
-        ...task!.runner,
         run_id: runId,
-        execution_receipt: {
-          path: executed.result.execution_receipt!.path,
-          sha256: `sha256:${createHash("sha256").update(forgedText).digest("hex")}`,
-          verification_state: "observed_success",
-          observed_by: "agentplane",
-        },
+        status: "success",
+        adapter_id: "codex",
+        mode: "execute",
+        updated_at: "2026-08-03T00:00:00.000Z",
+        exit_code: 0,
+        target: { kind: "task", task_id: taskId },
+        execution_receipt: task!.runner!.execution_receipt,
       },
     });
 
