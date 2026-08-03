@@ -1,0 +1,27 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "Run focused task advance, SemanticResult, supervisor, replay, and stale-fingerprint suites.",
+    "Run typecheck, lint:core, knip:check, hotspots:check, policy routing, test:critical, and a two-call external-agent E2E fixture."
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T00:56:22.552Z",
+    "updated_by": "TESTER",
+    "note": "Verified the external-agent SemanticResult round trip and fail-closed recovery contract."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608022324-9VCYWG/verification/20260803005622552-d603d9be08ea58d1.json",
+      "sha256": "sha256:a185320a866bc3230a7707a47d6034f6930b4d49573a5bb39c220c0b04fe44a5"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

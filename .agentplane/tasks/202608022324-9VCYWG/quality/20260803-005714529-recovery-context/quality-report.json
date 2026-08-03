@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202608022324-9VCYWG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T00:58:02.223Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c",
+  "blueprint_digest": "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84",
+  "findings": [
+    "A crash after the supervisor journal is completed but before the exchange is marked consumed leaves the accepted result permanently unrecoverable."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Inject a crash after completeSupervisorExecutionEpisode/advanceSupervisorExecutionEpisodeState is persisted but before exchange.status is written as consumed, then retry the same result and assert terminal convergence without reapplying its effect."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes no interruption can occur between persisting supervisor completion and persisting the consumed exchange state."
+  ],
+  "residual_risks": [
+    "Make accepted-result recovery recognize and finalize the journal-completed/exchange-accepted state, preserving digest binding and proving that retry neither reapplies the semantic effect nor remains blocked."
+  ]
+}

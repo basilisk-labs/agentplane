@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608022324-9VCYWG-ed38a53b026677a9e01e6ac1",
+  "prepared_at": "2026-08-03T00:57:14.529Z",
+  "task": {
+    "id": "202608022324-9VCYWG",
+    "revision": 9,
+    "objective": "Complete the task advance semantic-result round trip\n\nExtend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics.",
+    "acceptance_criteria": [
+      "Run focused task advance, SemanticResult, supervisor, replay, and stale-fingerprint suites.",
+      "Run typecheck, lint:core, knip:check, hotspots:check, policy routing, test:critical, and a two-call external-agent E2E fixture.",
+      "- In scope: Extend the compact external-agent protocol so task advance accepts a typed SemanticResult bound to the issued transition and state fingerprint, validates and persists it through the same supervisor engine used by task run, executes subsequent deterministic transitions, and returns the next bounded packet without exposing lifecycle choreography. Keep each packet at or below 2 KiB and preserve fail-closed replay and authority semantics.\n- Out of scope: unrelated refactors not required for \"Complete the task advance semantic-result round trip\".",
+      "1. Reuse the canonical AgentSemanticResult contract and add a task advance result input envelope bound to task_id, transition_id, role, and state_fingerprint; reject stale, mismatched, malformed, or replayed results before mutation. 2. Expose only compact work-order and result-schema references plus one deterministic return invocation in the agent packet, keeping the serialized packet at or below 2 KiB and free of Git/PR/verify/finish/integrate choreography. 3. Feed accepted results into the same persisted supervisor episode and lifecycle operation registry used by task run, execute all newly eligible deterministic operations within the existing bound, and emit the next semantic/approval/wait/terminal packet. 4. Add direct and branch_pr E2E fixtures for planning, implementation, evaluator, stale fingerprint, duplicate result, crash recovery, and terminal convergence; prove task run and task advance do not fork lifecycle behavior. 5. Run focused suites and the full critical/static/size/policy gates, then record structured verification and evaluator evidence.",
+      "1. Run focused task advance packet, result-ingestion, AgentSemanticResult validation, supervisor episode, stale-fingerprint, replay, and recovery tests. Expected: a valid result advances the same state machine as task run; malformed, stale, mismatched, or replayed results fail closed without duplicate effects. 2. Run direct and branch_pr external-agent E2E fixtures from task creation through terminal state. Expected: after task creation the external agent uses only task advance plus semantic-result files; Agentplane owns all Git, worktree, PR, verification, evaluator, integration, and cleanup transitions; every emitted packet is at most 2048 bytes and has one representation per field. 3. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without Knip or hotspot baseline growth."
+    ]
+  },
+  "evaluated_sha": "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c",
+  "diff_base_sha": "d7b766b9c4f7c8df771e06f3c8a1a60129035087",
+  "blueprint_digest": "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608022324-9VCYWG/README.md",
+      "sha256": "sha256:ab731fe8a758d3ec4d943e743dd3c4aebcd79aa163b2ec4e61600ca25d0e55d3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:2c24a1e8134bf1aec4a1040a8e64dddefe2e2cd05b001539950aca8b78d7b0a7",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:259b615c9f01c2c7e76a4c4a4e48bf49bf06e613e1ce210038e5411268932152",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608022324-9VCYWG/verification/20260803005622552-d603d9be08ea58d1.json",
+      "sha256": "sha256:a185320a866bc3230a7707a47d6034f6930b4d49573a5bb39c220c0b04fe44a5",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:8da3fc61ff901805c65e5d6b10f99a4245572ad8a0d1a45beb1dc71f27212b71",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

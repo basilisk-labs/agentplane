@@ -4,9 +4,12 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import {
+  advanceSupervisorExecutionEpisodeState,
+  completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  validateSupervisorExecutionEpisodeJournal,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 
@@ -329,7 +332,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(readme).not.toContain("This plan must not be applied.");
   });
 
-  it("finalizes a durably accepted planning result after its task effect was applied", async () => {
+  it("finalizes an accepted result after its effect and supervisor completion were persisted", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createTask(root, "Accepted external result recovery");
     const packet = await readAgentPacket(root, taskId);
@@ -348,13 +351,14 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       exchange,
       work_order: workOrder,
     });
+    const resultDigest = externalAgentResultDigest(validatedEnvelope);
     await writeFile(
       exchangePath,
       `${JSON.stringify(
         {
           ...exchange,
           status: "accepted",
-          result_digest: externalAgentResultDigest(validatedEnvelope),
+          result_digest: resultDigest,
           result: validatedEnvelope,
           updated_at: new Date().toISOString(),
         },
@@ -375,6 +379,39 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       "--root",
       root,
     ]);
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    const decision = await buildTaskRouteDecision({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      includeRemote: false,
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const issued = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const operation = issued.operations.at(-1);
+    if (!operation) throw new Error("expected issued external-agent operation");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: issued,
+      operation_key: operation.operation_key,
+      result: { work_order_id: exchange.work_order_id, result_digest: resultDigest },
+      progress: decision.workflowStep.preconditionFingerprint,
+    });
+    await store.write(
+      advanceSupervisorExecutionEpisodeState({
+        journal: completed,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        route_observation: { step_id: decision.workflowStep.id, surface: "test crash recovery" },
+      }),
+    );
+    const readmeBeforeRecovery = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
 
     const recovered = await returnAgentResult(root, taskId, resultPath);
     expect(recovered.code, recovered.stderr).toBe(0);
@@ -384,6 +421,8 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       "utf8",
     );
     expect(taskReadme).toContain(recoveredPlan);
+    expect(taskReadme).toBe(readmeBeforeRecovery);
+    expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({ status: "consumed" });
   });
 
   it("rejects a stale planning result before applying semantic task state", async () => {

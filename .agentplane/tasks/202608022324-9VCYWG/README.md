@@ -4,7 +4,7 @@ title: "Complete the task advance semantic-result round trip"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,32 @@ verification:
   updated_by: "TESTER"
   note: "Verified the external-agent SemanticResult round trip and fail-closed recovery contract."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-03T00:58:02.223Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c"
+  blueprint_digest: "cbe774b992ba26e5f5785208fc292347cd98d7813c67deda927fd3e545eeef84"
+  evidence_refs:
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/README.md"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/verification/20260803005622552-d603d9be08ea58d1.json"
+    - ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-005714529-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "A crash after the supervisor journal is completed but before the exchange is marked consumed leaves the accepted result permanently unrecoverable."
 commit:
   hash: "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c"
   message: "🚧 9VCYWG task: complete semantic result round trip"

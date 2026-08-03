@@ -37,7 +37,11 @@ import {
   type ExternalAgentExchangePaths,
   type ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
-import { assertExternalAgentSupervisorIntent } from "./external-agent-exchange-authority.js";
+import {
+  assertExternalAgentExchangeIdentity,
+  assertExternalAgentSupervisorIntent,
+  finalizeCompletedExternalAgentExchange,
+} from "./external-agent-exchange-authority.js";
 import {
   applyExternalEvaluatorResult,
   isExternalEvaluatorResultApplied,
@@ -125,40 +129,6 @@ async function prepareEvaluatorInput(opts: {
     }),
     evaluator_work_order_ref: prepared.work_order_path,
   };
-}
-
-function samePath(left: string, right: string): boolean {
-  return path.resolve(left) === path.resolve(right);
-}
-
-function assertExchangeIdentity(opts: {
-  exchange: ExternalAgentExchange;
-  paths: ExternalAgentExchangePaths;
-  task_id: string;
-  transition_id: string;
-  state_fingerprint: string;
-  work_order_id: string;
-  role: AgentWorkOrderV2["role"];
-  purpose: ExternalSemanticPurpose;
-  checkout: string;
-}): void {
-  if (
-    opts.exchange.task_id !== opts.task_id ||
-    opts.exchange.transition_id !== opts.transition_id ||
-    opts.exchange.state_fingerprint !== opts.state_fingerprint ||
-    opts.exchange.work_order_id !== opts.work_order_id ||
-    opts.exchange.role !== opts.role ||
-    opts.exchange.purpose !== opts.purpose ||
-    !samePath(opts.exchange.checkout, opts.checkout) ||
-    !samePath(opts.exchange.work_order_ref, opts.paths.work_order) ||
-    !samePath(opts.exchange.result_schema_ref, opts.paths.result_schema) ||
-    !samePath(opts.exchange.result_ref, opts.paths.result)
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Persisted external-agent exchange does not match the current semantic boundary.",
-    });
-  }
 }
 
 async function recordIssuedEpisode(opts: {
@@ -268,7 +238,7 @@ export async function issueExternalAgentExchange(opts: {
     opts.decision.executionPacket.mustRunFrom ?? opts.command.resolvedProject.gitRoot;
   if (existing) {
     const workOrder = await readExternalAgentWorkOrder(paths.work_order);
-    assertExchangeIdentity({
+    assertExternalAgentExchangeIdentity({
       exchange: existing,
       paths,
       task_id: opts.decision.task.id,
@@ -479,7 +449,7 @@ export async function acceptExternalAgentResult(opts: {
     let exchange = (await readExternalAgentExchange(paths.exchange)) ?? initial;
     const workOrder = await readExternalAgentWorkOrder(paths.work_order);
     const store = createSupervisorEpisodeStore(journalPath);
-    const { journal: issuedJournal, operation } = assertExternalAgentSupervisorIntent({
+    const intent = assertExternalAgentSupervisorIntent({
       journal: await store.read(),
       exchange,
       paths,
@@ -487,6 +457,7 @@ export async function acceptExternalAgentResult(opts: {
       task_id: opts.task_id,
       state_fingerprint: identity.state_fingerprint,
     });
+    const { journal: issuedJournal, operation } = intent;
     const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
     const resultDigest = externalAgentResultDigest(envelope);
     if (exchange.status === "accepted" && exchange.result_digest !== resultDigest) {
@@ -514,6 +485,18 @@ export async function acceptExternalAgentResult(opts: {
       task_id: opts.task_id,
       include_remote: opts.include_remote,
     });
+    if (
+      await finalizeCompletedExternalAgentExchange({
+        intent,
+        store,
+        exchange,
+        paths,
+        postcondition_fingerprint: current.workflowStep.preconditionFingerprint.digest,
+        route_step_id: current.workflowStep.id,
+      })
+    ) {
+      return current;
+    }
     const alreadyApplied =
       exchange.status === "accepted" &&
       (await isReadOnlyResultAlreadyApplied({
