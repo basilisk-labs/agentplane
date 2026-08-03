@@ -13,7 +13,7 @@ Created: 2026-08-03T18:26:18.371Z
 ## Verification
 
 - State: ok
-- Note: PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.
+- Note: PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

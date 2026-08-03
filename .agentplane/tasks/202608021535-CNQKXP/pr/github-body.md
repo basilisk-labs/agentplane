@@ -10,13 +10,13 @@ Introduce a machine-readable compatibility-adapter manifest with introduced_in, 
 
 ## Scope
 
-- In scope: Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations.
-- Out of scope: unrelated refactors not required for "Add compatibility retirement inventory and doctor legacy".
+- In scope: introduce a packaged compatibility-retirement manifest; add read-only doctor legacy human and JSON reports; move legacy conflict recovery under the advanced repair namespace while preserving the hidden alias; fix the release-blocking independent-supervisor race discovered by hosted verification by making initial runner effect-journal publication create-only and adding deterministic contention coverage.
+- Out of scope: broader runner scheduling, journal redesign, adapter removal, automatic migration, and unrelated refactors.
 
 ## Verification
 
 - State: ok
-- Note: PASS: doctor legacy contract and runner-effect concurrency regression verified at 1cb422dd89bf.
+- Note: PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval.
 - Canonical workflow state lives in the task README.
 
 <details>
