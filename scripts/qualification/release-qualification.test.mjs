@@ -26,7 +26,11 @@ import {
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
 import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
-import { readQualificationRunSubjectIdentity } from "./run-v0.7.1-release-qualification.mjs";
+import {
+  preflightQualificationProviderRuntime,
+  readQualificationRunSubjectIdentity,
+} from "./run-v0.7.1-release-qualification.mjs";
+import { CODEX_REPLAY_CLI_VERSION_ENV } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -119,6 +123,37 @@ function supervisorLatencySurfaces(count) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("preflights the exact provider runtime only before provider execution", () => {
+    const calls = [];
+    const verify = (source) => {
+      calls.push(source);
+      return "0.146.0-alpha.3.1";
+    };
+    const base = { codexVersion: "0.146.0-alpha.3.1", dryRun: false, provider: false };
+
+    assert.equal(preflightQualificationProviderRuntime(base, verify), null);
+    assert.equal(
+      preflightQualificationProviderRuntime({ ...base, dryRun: true, provider: true }, verify),
+      null,
+    );
+    assert.equal(
+      preflightQualificationProviderRuntime({ ...base, provider: true }, verify),
+      "0.146.0-alpha.3.1",
+    );
+    assert.deepEqual(calls, [{ [CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1" }]);
+
+    const mismatch = Object.assign(new Error("CODEX_VERSION_MISMATCH"), {
+      code: "CODEX_VERSION_MISMATCH",
+    });
+    assert.throws(
+      () =>
+        preflightQualificationProviderRuntime({ ...base, provider: true }, () => {
+          throw mismatch;
+        }),
+      (error) => error === mismatch,
+    );
+  });
+
   it("maps every required dimension to an executable scenario", () => {
     const manifest = readQualificationManifest(manifestPath);
     assert.equal(validateQualificationManifest(manifest, { repoRoot }), manifest);

@@ -12,6 +12,10 @@ import {
   selectQualificationScenarios,
   substituteQualificationCommand,
 } from "./release-qualification.mjs";
+import {
+  assertCodexBinary,
+  CODEX_REPLAY_CLI_VERSION_ENV,
+} from "../bench/internal/agent-efficiency-codex-runtime.mjs";
 import { isDirectRun, parseScriptArgs } from "../lib/script-runtime.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -202,6 +206,11 @@ function printDryRun(scenarios, variables) {
   }
 }
 
+export function preflightQualificationProviderRuntime(options, verify = assertCodexBinary) {
+  if (!options.provider || options.dryRun) return null;
+  return verify({ [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexVersion });
+}
+
 async function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   if (options.help) {
@@ -234,6 +243,8 @@ async function main(argv = process.argv.slice(2)) {
     printDryRun(scenarios, variables);
     return;
   }
+
+  preflightQualificationProviderRuntime(options);
 
   mkdirSync(outputDirectory, { recursive: true });
   const startedAt = new Date().toISOString();

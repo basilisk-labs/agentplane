@@ -24,12 +24,14 @@ Created: 2026-08-03T23:37:55.605Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T23:37:55.605Z
+- Updated: 2026-08-03T23:38:16.998Z
 - Branch: task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../qualification/release-qualification.test.mjs   | 37 +++++++++++++++++++++-
+ .../run-v0.7.1-release-qualification.mjs           | 11 +++++++
+ 2 files changed, 47 insertions(+), 1 deletion(-)
 ```
 
 </details>
