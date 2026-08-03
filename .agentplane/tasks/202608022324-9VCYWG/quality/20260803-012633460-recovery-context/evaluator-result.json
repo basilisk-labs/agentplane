@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "recovery-invariant-covered",
+      "severity": "low",
+      "summary": "The implementation binds recovered completed results to the accepted semantic result and the current postcondition fingerprint before consuming the exchange; focused recovery, mismatch, stale-state, replay, concurrency-sensitive, static, policy, size, and critical checks passed.",
+      "broken_invariant": "No broken invariant identified; recovery and fail-closed authority invariants are covered by the frozen implementation and verification evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:085f61e71746369c321c95ff859923cc876999408de88216e3dc6b73f89272e5",
+          "section": "external-agent-exchange-authority and task-advance recovery tests"
+        },
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/verification/20260803012547342-9cde180b3b2ac71d.json",
+          "sha256": "sha256:6672ceaa0f1babeb0c5b2ef04c89a583d9188e485690fe3363c83afc29e95d3b",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-012633460-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d05b124116184d5da33e6e7c679ec96f04786c60ab14d5c46b73fef3bdc4e876",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
