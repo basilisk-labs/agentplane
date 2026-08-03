@@ -6,14 +6,14 @@ Created: 2026-08-03T22:51:23.070Z
 
 - Task: `202608032250-WDRW1E`
 - Title: Stabilize supervisor latency p95 qualification sampling
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608032250-WDRW1E/stabilize-supervisor-latency-p95-qualification-s`
 - Canonical task record: `.agentplane/tasks/202608032250-WDRW1E/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Current implementation target remains verified after PR publication; hosted checks are tracked separately by the integration gate.
+- Note: Current implementation target passes the complete local verification contract; hosted checks remain enforced independently by integration.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
