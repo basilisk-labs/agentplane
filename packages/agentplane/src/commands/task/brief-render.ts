@@ -29,6 +29,19 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
       { label: "task", value: `${brief.task.id} ${brief.task.status}` },
       { label: "title", value: brief.task.title },
       { label: "owner", value: brief.task.owner },
+      ...(brief.task.token_usage
+        ? [
+            {
+              label: "token_usage",
+              value:
+                `state=${brief.task.token_usage.state} ` +
+                `input=${brief.task.token_usage.input_tokens ?? "unavailable"} ` +
+                `output=${brief.task.token_usage.output_tokens ?? "unavailable"} ` +
+                `reasoning=${brief.task.token_usage.reasoning_tokens ?? "unavailable"} ` +
+                `total=${brief.task.token_usage.total_tokens ?? "unavailable"}`,
+            },
+          ]
+        : []),
       { label: "workflow", value: brief.workflow.mode },
       { label: "phase", value: brief.route.phase },
       { label: "step_kind", value: brief.workflow_step.kind },

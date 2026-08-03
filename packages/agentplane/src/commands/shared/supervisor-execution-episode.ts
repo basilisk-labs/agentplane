@@ -327,9 +327,19 @@ function observedRunnerUsage(opts: {
   const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
   const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
   const missing: string[] = [];
-  for (const field of ["input_tokens", "output_tokens", "total_tokens"] as const) {
+  for (const field of [
+    "input_tokens",
+    "output_tokens",
+    "total_tokens",
+    "visible_output_tokens",
+    "reasoning_tokens",
+  ] as const) {
     if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
-    else if (opts.budget[`max_${field}`] !== null) missing.push(`${field}_telemetry`);
+    else if (
+      (field === "input_tokens" || field === "output_tokens" || field === "total_tokens") &&
+      opts.budget[`max_${field}`] !== null
+    )
+      missing.push(`${field}_telemetry`);
   }
   if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
   else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");

@@ -204,7 +204,10 @@ agentplane acr schema --version 0.1
 These commands derive `.agentplane/tasks/<task-id>/acr.json` from existing
 task lifecycle evidence. `finish` refreshes the task-local ACR automatically when
 `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
-derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
+derived projection, not a second source of truth. Completed tasks expose provider token usage as
+`token_usage` in the task README, task JSON/brief projections, and
+`extensions["agentplane.token_usage"]` in the ACR. The state is `observed`, `partial`, or
+`unavailable`; an unavailable provider signal is never serialized as zero. `acr validate --mode schema` checks only JSON
 shape; `acr check --mode ci` enforces merge-ready semantics. See
 [Agent Change Records](../reference/acr).
 

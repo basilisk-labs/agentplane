@@ -748,6 +748,59 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
+  it("accepts observed task token usage and rejects fabricated unavailable zeroes", () => {
+    const frontmatter = withTaskReadmeFrontmatterDefaults({
+      id: "202608030000-TOKENS",
+      title: "Completed task token usage fixture",
+      status: "DONE",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["tokens"],
+      verify: ["bun run typecheck"],
+      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+      verification: { state: "ok", attempts: 1, updated_at: null, updated_by: null, note: null },
+      token_usage: {
+        schema_version: 1,
+        state: "observed",
+        input_tokens: 100,
+        output_tokens: 30,
+        reasoning_tokens: 20,
+        total_tokens: 150,
+        agent_runs: 1,
+        observed_agent_runs: 1,
+        source: "supervisor_journal",
+        observed_by: "agentplane",
+        journal_digest: `sha256:${"a".repeat(64)}`,
+        unavailable_reason: null,
+        updated_at: "2026-08-03T00:00:00.000Z",
+      },
+      comments: [],
+      events: [],
+      doc_version: 3,
+      doc_updated_at: "2026-08-03T00:00:00.000Z",
+      doc_updated_by: "CODER",
+      description: "Fixture",
+      id_source: "generated",
+    });
+
+    expect(() => validateTaskReadmeFrontmatter(frontmatter)).not.toThrow();
+    const fabricated = structuredClone(frontmatter);
+    fabricated.token_usage = {
+      ...fabricated.token_usage,
+      state: "unavailable",
+      input_tokens: 0,
+      output_tokens: 0,
+      reasoning_tokens: 0,
+      total_tokens: 0,
+      observed_agent_runs: 0,
+      unavailable_reason: "provider_token_telemetry_unavailable",
+    };
+    expect(() => validateTaskReadmeFrontmatter(fabricated)).toThrow(
+      /Unavailable token usage must not fabricate token counts/u,
+    );
+  });
+
   it("accepts specialized blueprint requests in task artifact schemas", () => {
     const task = withTaskReadmeFrontmatterDefaults({
       id: "202603251535-DPZ4NN",

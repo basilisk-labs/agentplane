@@ -16,6 +16,7 @@ import {
   normalizeQualityReviewResult,
   normalizeTaskOrigin,
   normalizeTaskRunnerOutcome,
+  normalizeTaskTokenUsage,
   normalizeVerificationResult,
 } from "./normalize.js";
 import { toStringArray } from "./strings.js";
@@ -92,6 +93,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
   const qualityReview = normalizeQualityReviewResult(fm.quality_review);
   const origin = normalizeTaskOrigin(fm.origin);
   const runner = normalizeTaskRunnerOutcome(fm.runner);
+  const tokenUsage = normalizeTaskTokenUsage(fm.token_usage);
   const sections = mergeTaskDocSections({
     frontmatterSections: normalizeCanonicalSections(fm.sections),
     body: record.body,
@@ -134,6 +136,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     verification: verification ?? undefined,
     quality_review: qualityReview ?? undefined,
     runner: runner ?? undefined,
+    token_usage: tokenUsage ?? undefined,
     sync: isRecord(fm.sync) ? (fm.sync as TaskData["sync"]) : undefined,
     commit,
     comments,

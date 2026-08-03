@@ -397,6 +397,8 @@ export {
   type TaskRunnerOutcome,
   type TaskRunnerOutcomeStatus,
   type TaskRunnerTarget,
+  type TaskTokenUsage,
+  type TaskTokenUsageState,
   type TaskSyncConflict,
   type TaskSyncConflictPolicy,
   type TaskSyncEnvelope,

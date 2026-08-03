@@ -123,6 +123,29 @@ describe("buildProviderSafeTaskProjection", () => {
     expect(JSON.stringify(projection)).not.toContain("private/log.txt");
   });
 
+  it("projects the CLI-observed completed-task token aggregate", () => {
+    const tokenUsage = {
+      schema_version: 1 as const,
+      state: "observed" as const,
+      input_tokens: 100,
+      output_tokens: 30,
+      reasoning_tokens: 20,
+      total_tokens: 150,
+      agent_runs: 1,
+      observed_agent_runs: 1,
+      source: "supervisor_journal" as const,
+      observed_by: "agentplane" as const,
+      journal_digest: `sha256:${"a".repeat(64)}`,
+      unavailable_reason: null,
+      updated_at: "2026-08-03T00:00:00.000Z",
+    };
+
+    const projection = buildProviderSafeTaskProjection(task({ token_usage: tokenUsage }));
+
+    expect(projection.token_usage).toEqual(tokenUsage);
+    expect(projection.token_usage).not.toBe(tokenUsage);
+  });
+
   it("marks stale ACR metadata and handles missing sections conservatively", () => {
     const projection = buildProviderSafeTaskProjection(
       task({

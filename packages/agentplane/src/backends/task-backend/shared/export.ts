@@ -8,7 +8,11 @@ import { validateTasksExportSnapshot } from "@agentplaneorg/core/schemas";
 
 import { DEFAULT_DOC_UPDATED_BY } from "./constants.js";
 import { normalizeDocVersion, resolveDocUpdatedByFromTask } from "./doc.js";
-import { normalizeTaskOrigin, normalizeTaskRunnerOutcome } from "./normalize.js";
+import {
+  normalizeTaskOrigin,
+  normalizeTaskRunnerOutcome,
+  normalizeTaskTokenUsage,
+} from "./normalize.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData, TaskEvent } from "./types.js";
 
@@ -68,6 +72,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
         : undefined,
     origin: normalizeTaskOrigin(task.origin) ?? undefined,
     runner: normalizeTaskRunnerOutcome(task.runner) ?? undefined,
+    token_usage: normalizeTaskTokenUsage(task.token_usage) ?? undefined,
     depends_on: toStringArray(task.depends_on),
     tags: toStringArray(task.tags),
     verify: toStringArray(task.verify),

@@ -294,6 +294,8 @@ describe("CodexRunnerAdapter", () => {
       input_tokens: 100,
       output_tokens: 50,
       total_tokens: 150,
+      visible_output_tokens: 30,
+      reasoning_tokens: 20,
     });
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;

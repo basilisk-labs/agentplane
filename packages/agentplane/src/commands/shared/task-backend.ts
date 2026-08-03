@@ -118,6 +118,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     verification,
     quality_review: task.quality_review ?? undefined,
     runner: task.runner ?? undefined,
+    token_usage: task.token_usage ?? undefined,
     commit: task.commit ?? null,
     comments: task.comments ?? [],
     events: task.events ?? [],

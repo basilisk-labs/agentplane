@@ -10,9 +10,97 @@ import type {
   TaskRunnerHistoryEntry,
   TaskRunnerOutcome,
   TaskRunnerTarget,
+  TaskTokenUsage,
   QualityReviewResult,
   VerificationResult,
 } from "./types.js";
+
+function nonNegativeInteger(value: unknown): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function nullableNonNegativeInteger(value: unknown): number | null | undefined {
+  if (value === null) return null;
+  const normalized = nonNegativeInteger(value);
+  return normalized ?? undefined;
+}
+
+export function normalizeTaskTokenUsage(value: unknown): TaskTokenUsage | null {
+  if (!isRecord(value) || value.schema_version !== 1) return null;
+  const state =
+    value.state === "observed" || value.state === "partial" || value.state === "unavailable"
+      ? value.state
+      : null;
+  const source =
+    value.source === "supervisor_journal" || value.source === "unavailable" ? value.source : null;
+  const inputTokens = nullableNonNegativeInteger(value.input_tokens);
+  const outputTokens = nullableNonNegativeInteger(value.output_tokens);
+  const reasoningTokens = nullableNonNegativeInteger(value.reasoning_tokens);
+  const totalTokens = nullableNonNegativeInteger(value.total_tokens);
+  const agentRuns = nonNegativeInteger(value.agent_runs);
+  const observedAgentRuns = nonNegativeInteger(value.observed_agent_runs);
+  const journalDigest =
+    value.journal_digest === null ||
+    (typeof value.journal_digest === "string" &&
+      /^sha256:[0-9a-f]{64}$/u.test(value.journal_digest))
+      ? value.journal_digest
+      : undefined;
+  const unavailableReason =
+    value.unavailable_reason === null ||
+    (typeof value.unavailable_reason === "string" && value.unavailable_reason.trim())
+      ? value.unavailable_reason
+      : undefined;
+  if (
+    !state ||
+    !source ||
+    value.observed_by !== "agentplane" ||
+    typeof value.updated_at !== "string" ||
+    Number.isNaN(Date.parse(value.updated_at)) ||
+    inputTokens === undefined ||
+    outputTokens === undefined ||
+    reasoningTokens === undefined ||
+    totalTokens === undefined ||
+    agentRuns === null ||
+    observedAgentRuns === null ||
+    observedAgentRuns > agentRuns ||
+    journalDigest === undefined ||
+    unavailableReason === undefined
+  ) {
+    return null;
+  }
+  const tokenFields = [inputTokens, outputTokens, reasoningTokens, totalTokens];
+  if (
+    (state === "observed" &&
+      (agentRuns === 0 ||
+        observedAgentRuns !== agentRuns ||
+        tokenFields.includes(null) ||
+        source !== "supervisor_journal" ||
+        unavailableReason !== null)) ||
+    (state === "partial" &&
+      (observedAgentRuns === 0 || source !== "supervisor_journal" || unavailableReason === null)) ||
+    (state === "unavailable" &&
+      (observedAgentRuns !== 0 ||
+        tokenFields.some((entry) => entry !== null) ||
+        unavailableReason === null))
+  ) {
+    return null;
+  }
+  return {
+    schema_version: 1,
+    state,
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    reasoning_tokens: reasoningTokens,
+    total_tokens: totalTokens,
+    agent_runs: agentRuns,
+    observed_agent_runs: observedAgentRuns,
+    source,
+    observed_by: "agentplane",
+    journal_digest: journalDigest,
+    unavailable_reason: unavailableReason,
+    updated_at: value.updated_at,
+  };
+}
 
 export function normalizeDependsOn(value: unknown): string[] {
   if (Array.isArray(value)) {

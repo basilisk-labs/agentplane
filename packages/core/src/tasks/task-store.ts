@@ -149,6 +149,24 @@ export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {
   history?: TaskRunnerHistoryEntry[];
 };
 
+export type TaskTokenUsageState = "observed" | "partial" | "unavailable";
+
+export type TaskTokenUsage = {
+  schema_version: 1;
+  state: TaskTokenUsageState;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  reasoning_tokens: number | null;
+  total_tokens: number | null;
+  agent_runs: number;
+  observed_agent_runs: number;
+  source: "supervisor_journal" | "unavailable";
+  observed_by: "agentplane";
+  journal_digest: string | null;
+  unavailable_reason: string | null;
+  updated_at: string;
+};
+
 export type TaskSyncExternalRef = {
   provider: string;
   connector_kind?: string;
@@ -229,6 +247,7 @@ export type TaskFrontmatter = {
   verification?: VerificationResult;
   quality_review?: QualityReviewResult;
   runner?: TaskRunnerOutcome;
+  token_usage?: TaskTokenUsage;
   sync?: TaskSyncEnvelope;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];

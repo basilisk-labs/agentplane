@@ -12,6 +12,7 @@ import {
   type CommandContext,
 } from "../shared/task-backend.js";
 import { applyTaskStatusTransitionCommand, nowIso, requireStructuredComment } from "./shared.js";
+import { resolveTaskTokenUsageOnFinish } from "./task-token-usage.js";
 
 export async function ensureLocalTaskReadmeHydrated(opts: {
   ctx: CommandContext;
@@ -71,6 +72,11 @@ export async function recordVerifiedNoopClosure(opts: {
   requireStructuredComment(opts.body, verifiedCfg.prefix, verifiedCfg.min_chars);
 
   const at = nowIso();
+  const tokenUsage = await resolveTaskTokenUsageOnFinish({
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    task_id: opts.taskId,
+    updated_at: at,
+  });
   await applyTaskStatusTransitionCommand({
     ctx: opts.ctx,
     taskId: opts.taskId,
@@ -96,6 +102,7 @@ export async function recordVerifiedNoopClosure(opts: {
           result_summary: opts.resultSummary,
           risk_level: "low",
           breaking: false,
+          token_usage: tokenUsage,
         },
         force: true,
         dependencyPolicy: { kind: "none" },

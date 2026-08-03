@@ -190,6 +190,75 @@ const RUNNER_OUTCOME_SCHEMA = RUNNER_HISTORY_ENTRY_SCHEMA.extend({
   history: z.array(RUNNER_HISTORY_ENTRY_SCHEMA).optional(),
 });
 
+const TASK_TOKEN_USAGE_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    state: z.enum(["observed", "partial", "unavailable"]),
+    input_tokens: z.number().int().min(0).nullable(),
+    output_tokens: z.number().int().min(0).nullable(),
+    reasoning_tokens: z.number().int().min(0).nullable(),
+    total_tokens: z.number().int().min(0).nullable(),
+    agent_runs: z.number().int().min(0),
+    observed_agent_runs: z.number().int().min(0),
+    source: z.enum(["supervisor_journal", "unavailable"]),
+    observed_by: z.literal("agentplane"),
+    journal_digest: z
+      .string()
+      .regex(/^sha256:[0-9a-f]{64}$/u)
+      .nullable(),
+    unavailable_reason: z.string().min(1).nullable(),
+    updated_at: ISO_UTC_TIMESTAMP,
+  })
+  .strict()
+  .superRefine((usage, ctx) => {
+    if (usage.observed_agent_runs > usage.agent_runs) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Observed token-usage runs cannot exceed total agent runs.",
+      });
+    }
+    const tokenFields = [
+      usage.input_tokens,
+      usage.output_tokens,
+      usage.reasoning_tokens,
+      usage.total_tokens,
+    ];
+    if (usage.state === "observed") {
+      if (
+        usage.agent_runs === 0 ||
+        usage.observed_agent_runs !== usage.agent_runs ||
+        tokenFields.includes(null) ||
+        usage.source !== "supervisor_journal" ||
+        usage.unavailable_reason !== null
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Observed token usage requires complete supervisor-observed telemetry.",
+        });
+      }
+    } else if (usage.state === "partial") {
+      if (
+        usage.observed_agent_runs === 0 ||
+        usage.source !== "supervisor_journal" ||
+        usage.unavailable_reason === null
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Partial token usage requires some observed telemetry and a gap reason.",
+        });
+      }
+    } else if (
+      usage.observed_agent_runs !== 0 ||
+      tokenFields.some((value) => value !== null) ||
+      usage.unavailable_reason === null
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Unavailable token usage must not fabricate token counts.",
+      });
+    }
+  });
+
 const TASK_SYNC_EXTERNAL_REF_SCHEMA = z
   .object({
     provider: NON_EMPTY_STRING,
@@ -276,6 +345,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     verification: TASK_VERIFICATION_SCHEMA,
     quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+    token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
     sync: TASK_SYNC_ENVELOPE_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
@@ -304,6 +374,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     revision: z.number().int().min(1).optional(),
     origin: TASK_ORIGIN_SCHEMA.optional(),
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
+    token_usage: TASK_TOKEN_USAGE_SCHEMA.optional(),
     depends_on: z.array(NON_EMPTY_STRING),
     tags: z.array(NON_EMPTY_STRING),
     task_kind: TASK_KIND_SCHEMA.optional(),

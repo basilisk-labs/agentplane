@@ -118,6 +118,10 @@ agentplane task advance <task-id> --agent-json
 agentplane task run <task-id>
 ```
 
+When the task reaches `DONE`, Agentplane records the supervisor-observed input, visible output,
+reasoning, and total token aggregate in the task README and ACR. If provider telemetry was not
+observable, the record says `partial` or `unavailable` instead of inventing a zero.
+
 ## Agentplane is not
 
 - a model provider;

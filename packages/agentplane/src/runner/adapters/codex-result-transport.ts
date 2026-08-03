@@ -240,8 +240,11 @@ export type CodexResultEventCollector = {
 
 export type CodexProviderUsage = {
   input_tokens: number;
+  /** Budget-charged output, including reasoning tokens. */
   output_tokens: number;
   total_tokens: number;
+  visible_output_tokens?: number;
+  reasoning_tokens?: number;
 };
 
 // Provider usage is process-local supervisor evidence. It deliberately stays
@@ -292,6 +295,8 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
     input_tokens: input,
     output_tokens: chargedOutput,
     total_tokens: reportedTotal ?? minimumTotal,
+    visible_output_tokens: output,
+    reasoning_tokens: reasoning,
   };
 }
 
