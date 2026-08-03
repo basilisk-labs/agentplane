@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608021535-9EWFAB/compact-and-deduplicate-v0-7-1-task-evidence",
+  "created_at": "2026-08-03T16:19:36.596Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608021535-9EWFAB",
+  "updated_at": "2026-08-03T16:19:36.596Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
