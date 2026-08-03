@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua",
+  "created_at": "2026-08-03T23:37:55.605Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608032336-A9H6WR",
+  "updated_at": "2026-08-03T23:37:55.605Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
