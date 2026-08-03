@@ -15,8 +15,13 @@ Fix GitHub issue #4641 by ensuring the default built-in runner completes through
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: the default context path is deterministic, live-observed, fail-closed for persisted
+receipts, and formally records task verification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
