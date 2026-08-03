@@ -16,7 +16,7 @@ Introduce a machine-readable compatibility-adapter manifest with introduced_in, 
 ## Verification
 
 - State: ok
-- Note: PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval.
+- Note: PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e.
 - Canonical workflow state lives in the task README.
 
 <details>

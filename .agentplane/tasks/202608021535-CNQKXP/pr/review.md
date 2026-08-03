@@ -6,14 +6,14 @@ Created: 2026-08-03T18:26:18.371Z
 
 - Task: `202608021535-CNQKXP`
 - Title: Add compatibility retirement inventory and doctor legacy
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608021535-CNQKXP/add-compatibility-retirement-inventory-and-docto`
 - Canonical task record: `.agentplane/tasks/202608021535-CNQKXP/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS: expanded doctor-legacy and bounded runner-concurrency scope verified after re-approval.
+- Note: PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
