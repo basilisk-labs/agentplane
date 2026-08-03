@@ -127,6 +127,7 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
   store: SupervisorEpisodeStore;
   exchange: ExternalAgentExchange;
   paths: ExternalAgentExchangePaths;
+  postcondition: unknown;
   postcondition_fingerprint: string;
   route_step_id: string;
   work_order_id: string;
@@ -146,7 +147,17 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
     });
   }
   let journal = opts.intent.journal;
-  if (journal.cursor.phase === "completed") {
+  const stoppedAfterBudget =
+    journal.cursor.phase === "stopped" && journal.stop?.reason === "budget_exhausted";
+  if (journal.cursor.phase === "completed" || stoppedAfterBudget) {
+    if (
+      opts.intent.operation.progress_digest !== digestSupervisorEpisodeValue(opts.postcondition)
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Completed external-agent result no longer matches the current task state.",
+      });
+    }
     const advanced = advanceSupervisorExecutionEpisodeState({
       journal,
       state_fingerprint_digest: opts.postcondition_fingerprint,
@@ -160,10 +171,11 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
     }
     journal = advanced;
   }
+  const completedOperation = journal.operations.at(-1);
   if (
-    journal.cursor.phase === "ready" &&
+    (journal.cursor.phase === "ready" || stoppedAfterBudget) &&
     (journal.state_fingerprint_digest !== opts.postcondition_fingerprint ||
-      opts.intent.operation.postcondition_fingerprint_digest !== opts.postcondition_fingerprint)
+      completedOperation?.postcondition_fingerprint_digest !== opts.postcondition_fingerprint)
   ) {
     throw new CliError({
       code: "E_VALIDATION",

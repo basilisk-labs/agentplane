@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Budget-exhausted recovery can consume an accepted result without binding the completed operation to the current postcondition fingerprint.",
+      "broken_invariant": "Recovery must fail closed on stale state and preserve the supervisor's state-fingerprint authority. The code classifies a completed, accepted operation in a budget_exhausted stopped journal as recoverable, but finalization advances and validates postcondition fingerprints only for completed and ready phases; the stopped branch falls through and marks the exchange consumed without either check.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:1d97678ca17f2cd1119928f63882a39bab54c3015b54475f70afacaf01802768",
+          "line": 1271,
+          "lines": "1271-1349",
+          "section": "external-agent-exchange-authority.ts: completed_pending_exchange classification and finalization"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a crash-recovery test where completion exhausts the supervisor budget, the exchange remains accepted, and the current route fingerprint differs; recovery must reject the stale result and leave the exchange unconsumed.",
+    "Add the corresponding budget-exhausted recovery success case proving the stopped journal records and validates the matching postcondition before consumption."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes a completed external-agent operation cannot enter the budget_exhausted stopped phase before exchange consumption, although that phase is explicitly accepted by the recovery classifier."
+  ],
+  "recovery_context": "Update budget-exhausted completed-operation recovery to advance or otherwise validate the stopped journal's operation and journal postcondition fingerprints before marking the exchange consumed, then cover matching and stale fingerprints with focused tests."
+}

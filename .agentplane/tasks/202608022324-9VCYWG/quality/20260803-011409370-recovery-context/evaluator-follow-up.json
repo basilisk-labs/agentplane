@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608022324-9VCYWG-9f0eaee14c5746dd7bdae76f",
+  "task_id": "202608022324-9VCYWG",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Update budget-exhausted completed-operation recovery to advance or otherwise validate the stopped journal's operation and journal postcondition fingerprints before marking the exchange consumed, then cover matching and stale fingerprints with focused tests.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Budget-exhausted recovery can consume an accepted result without binding the completed operation to the current postcondition fingerprint.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:1d97678ca17f2cd1119928f63882a39bab54c3015b54475f70afacaf01802768",
+          "line": 1271,
+          "lines": "1271-1349",
+          "section": "external-agent-exchange-authority.ts: completed_pending_exchange classification and finalization"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608022324-9VCYWG/quality/20260803-011409370-recovery-context/evaluator-result.json"
+}
