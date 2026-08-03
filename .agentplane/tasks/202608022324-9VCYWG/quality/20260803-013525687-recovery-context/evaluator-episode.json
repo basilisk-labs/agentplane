@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202608022324-9VCYWG-c2e5e8676fa5eb06bdd7db3d",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608022324-9VCYWG-complete-the-task-advance-semantic-result-round/.agentplane/tasks/202608022324-9VCYWG/quality/20260803-013525687-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-08-03T01:35:26.080Z",
+  "ended_at": "2026-08-03T01:36:02.552Z",
+  "stdout_bytes": 37391,
+  "stderr_bytes": 1072,
+  "provider_usage": {
+    "input_tokens": 113045,
+    "output_tokens": 1835,
+    "total_tokens": 114880
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:8a50a5322099351a0555c3878f9a30ef3fa8cd0a5c8f4a625c9e69a108cd45ac"
+}
