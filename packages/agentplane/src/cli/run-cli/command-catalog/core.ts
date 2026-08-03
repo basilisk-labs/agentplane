@@ -1,5 +1,6 @@
 import { doctorSpec } from "../../../commands/doctor.spec.js";
 import { doctorGitLocksSpec } from "../../../commands/doctor-git-locks.spec.js";
+import { doctorLegacySpec } from "../../../commands/doctor-legacy.spec.js";
 import { runtimeExplainSpec, runtimeSpec } from "../../../commands/runtime.spec.js";
 import {
   insightsIssueSpec,
@@ -88,6 +89,7 @@ import {
   loadPlatformDoctorSpec,
   fromCommandsDoctorRun,
   fromCommandsDoctorGitLocksCommand,
+  fromCommandsDoctorLegacyCommand,
   fromCommandsWorkflowCommand,
   fromCommandsWorkflowBuildCommand,
   fromCommandsWorkflowRestoreCommand,
@@ -221,6 +223,10 @@ export const CORE_COMMANDS = [
   }),
   fromCommandsDoctorGitLocksCommand(doctorGitLocksSpec, "runDoctorGitLocks", {
     requirements: PROJECT_REQUIREMENTS,
+  }),
+  fromCommandsDoctorLegacyCommand(doctorLegacySpec, "runDoctorLegacy", {
+    requirements: PROJECT_REQUIREMENTS,
+    surface: "advanced",
   }),
   fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", {
     requirements: NO_CONTEXT_REQUIREMENTS,

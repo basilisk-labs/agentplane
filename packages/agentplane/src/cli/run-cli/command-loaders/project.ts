@@ -496,6 +496,9 @@ export const loadPrNoteSpec = (session: ProviderWriteSession) =>
 export const fromCommandsFlowCommand = commandModule(
   () => import("../../../commands/flow/flow.command.js"),
 );
+export const fromCommandsRepairCommand = commandModule(
+  () => import("../../../commands/repair.command.js"),
+);
 export const loadFlowRepairSpec = (session: ProviderWriteSession) =>
   import("../../../commands/flow/repair.command.js").then((m) =>
     m.makeRunFlowRepairHandler((command) => getProviderWriteContext(session, command)),
@@ -554,6 +557,15 @@ export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler((command) =>
       getProviderReadContext(session, command),
+    ),
+  );
+export const loadRepairAdoptLegacyConflictSpec = (
+  session: IntegrationQueueTaskProviderReadSession,
+) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(
+      (command) => getProviderReadContext(session, command),
+      "repair adopt-legacy-conflict",
     ),
   );
 export const loadIntegrateQueueRunNextPreparationSpec = (

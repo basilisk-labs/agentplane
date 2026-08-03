@@ -425,6 +425,7 @@ describe("command catalog graph", () => {
       ["integrate", "queue", "enqueue"],
       ["integrate", "queue", "doctor"],
       ["integrate", "queue", "adopt-legacy-protected-conflict"],
+      ["repair", "adopt-legacy-conflict"],
     ]) {
       expect(findCommandEntry(id)?.requirements, id.join(" ")).toEqual(
         INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
@@ -613,6 +614,12 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["task", "next-action"])?.surface).toBe("advanced");
     expect(findCommandEntry(["task", "begin"])?.surface).toBe("advanced");
     expect(findCommandEntry(["task", "complete"])?.surface).toBe("advanced");
+    expect(findCommandEntry(["doctor", "legacy"])?.surface).toBe("advanced");
+    expect(findCommandEntry(["repair"])?.surface).toBe("advanced");
+    expect(findCommandEntry(["repair", "adopt-legacy-conflict"])?.surface).toBe("advanced");
+    expect(
+      findCommandEntry(["integrate", "queue", "adopt-legacy-protected-conflict"])?.surface,
+    ).toBe("internal");
     expect(findCommandEntry(["task", "run", "tool"])?.surface).toBe("internal");
     expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
     expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
@@ -625,6 +632,9 @@ describe("command catalog graph", () => {
     expect(normalHelpIds).not.toContain("task next-action");
     expect(normalHelpIds).not.toContain("task begin");
     expect(normalHelpIds).not.toContain("task complete");
+    expect(normalHelpIds).not.toContain("doctor legacy");
+    expect(normalHelpIds).not.toContain("repair");
+    expect(normalHelpIds).not.toContain("integrate queue adopt-legacy-protected-conflict");
     expect(normalHelpIds).not.toContain("task run status");
     expect(normalHelpIds).not.toContain("task run tool");
     expect(normalHelpIds).not.toContain("context harvest tasks");

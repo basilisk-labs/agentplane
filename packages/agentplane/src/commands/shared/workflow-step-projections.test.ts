@@ -979,9 +979,8 @@ describe("WorkflowStep execution projections", () => {
       safeToMutate: true,
       exactArgv: [
         "agentplane",
-        "integrate",
-        "queue",
-        "adopt-legacy-protected-conflict",
+        "repair",
+        "adopt-legacy-conflict",
         task.id,
         "--expect-adoption-token",
         token,

@@ -347,12 +347,13 @@ export function makeRunIntegrateQueueReleaseHandler(deps: {
 
 export function makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,
+  command = "integrate queue adopt-legacy-protected-conflict",
 ) {
   return async (
     ctx: CommandCtx,
     p: IntegrateQueueAdoptLegacyProtectedConflictParsed,
   ): Promise<number> => {
-    const commandCtx = await getCtx("integrate queue adopt-legacy-protected-conflict");
+    const commandCtx = await getCtx(command);
     const gitRoot = commandCtx.resolvedProject.gitRoot;
     const result = await withIntegrationQueueMutex(gitRoot, async () => {
       const report = await resolvePrFlowStatus({

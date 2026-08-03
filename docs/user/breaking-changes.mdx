@@ -30,13 +30,18 @@ For the complete 0.6.24/0.6.26 migration and rollback procedure, see
    supervisor-owned storage and do not reuse the legacy write location.
 10. `evaluator execute` is the model-backed review path. `evaluator run` remains an explicit
     compatibility recorder and requires supplied provenance.
+11. `agentplane doctor legacy --json` is the machine-readable retirement inventory for supported
+    compatibility adapters. It reports current workspace usage without changing files.
+12. Legacy protected-conflict adoption moved to
+    `agentplane repair adopt-legacy-conflict`; the former integration-queue command remains a hidden
+    compatibility alias during the retirement window.
 
 ## Upgrade checklist
 
 1. Install the exact intended CLI version and confirm it with `agentplane runtime explain`.
 2. Run `agentplane upgrade --dry-run`, then `agentplane upgrade --yes --migrate-task-docs`.
 3. Re-run the dry run and require `0 add, 0 update, 0 remove`.
-4. Run `agentplane doctor`.
+4. Run `agentplane doctor` and inspect `agentplane doctor legacy --json`.
 5. Resume active branch work with `agentplane work resume <task-id>` instead of creating a new
    worktree.
 6. Regenerate generated docs only when command specs changed.

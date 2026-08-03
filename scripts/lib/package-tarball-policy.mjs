@@ -11,6 +11,7 @@ export const REQUIRED_TARBALL_FILES = Object.freeze([
   "dist/.build-manifest.json",
 ]);
 export const REQUIRED_AGENTPLANE_TARBALL_FILES = Object.freeze([
+  "assets/compatibility-retirement-manifest.json",
   "dist/cli.js",
   "dist/command-catalog.js",
   "dist/command-catalog/core-fast.js",

@@ -67,17 +67,15 @@ AgentPlane records the task trail inside the repository you already review.
 
 ```bash
 agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner <agent-id> --tag code
-agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by <agent-id>
-agentplane task plan approve <task-id> --by <reviewer-id>
-agentplane task start-ready <task-id> --author <agent-id> --body "Start: implementing parser validation with focused tests."
-# Run Claude Code, Codex, Cursor, Aider, or edit manually.
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by <agent-id> --note "Focused tests passed."
-agentplane finish <task-id> --author <agent-id> --result "Parser rejects empty labels." --commit <git-rev>
+agentplane task advance <task-id> --agent-json
+# Give the returned WorkOrder to Claude Code, Codex, Cursor, Aider, or another agent.
+agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
 ```
 
-The visible output is the point: a reviewer can inspect task intent, plan, verification, closure,
-and ACR from Git-visible files.
+`task advance` owns deterministic lifecycle transitions and returns one compact semantic action at a
+time. Use `agentplane task run <task-id>` when AgentPlane should invoke the configured managed
+runner itself. In both modes the visible record keeps task intent, plan, observed verification,
+evaluator result, token usage, closure, and ACR reviewable from Git-visible files.
 
 Agent IDs are configurable profiles. See
 [Agents](https://agentplane.org/docs/user/agents).

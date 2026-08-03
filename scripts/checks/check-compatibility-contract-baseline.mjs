@@ -338,6 +338,7 @@ function validateReviewedCandidate({
     "202608021231-PZGG3V",
     "202608021534-YN84E1",
     "202608022324-9VCYWG",
+    "202608021535-CNQKXP",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -367,6 +368,7 @@ function validateReviewedCandidate({
     "202608021231-SHYJGK",
     "202608021534-YN84E1",
     "202608022324-9VCYWG",
+    "202608021535-CNQKXP",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -498,7 +500,7 @@ function validateReviewedCandidate({
         section: "package_manifests",
         from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
         to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
-        surface_sha256: "f277606a556f067fc9385de2a5a4f2457208af6295ccf2076a7b0925a070c704",
+        surface_sha256: "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -830,6 +832,7 @@ function validateReviewedCandidate({
       "202607221848-T9B3PS",
       "202607221849-8YYZ9X",
       "202608021231-SHYJGK",
+      "202608021535-CNQKXP",
     ],
   };
   for (const delta of candidate.deltas) {
@@ -1239,6 +1242,13 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["doctor", "legacy"],
+      visibility: "advanced",
+      group: "Quality",
+      args: [],
+      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
+    },
+    {
       id: ["evaluator", "apply"],
       visibility: "user",
       group: "Evaluators",
@@ -1272,7 +1282,7 @@ function validateReviewedCandidate({
     },
     {
       id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
-      visibility: "user",
+      visibility: "internal",
       group: "PR",
       args: [
         {
@@ -1309,6 +1319,20 @@ function validateReviewedCandidate({
         { name: "expected-provider-head", kind: "string", valueHint: "<full-sha>" },
         { name: "json", kind: "boolean", valueHint: null, default: false },
       ],
+    },
+    {
+      id: ["repair"],
+      visibility: "advanced",
+      group: "Maintenance",
+      args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+      options: [],
+    },
+    {
+      id: ["repair", "adopt-legacy-conflict"],
+      visibility: "advanced",
+      group: "Maintenance",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [{ name: "expect-adoption-token", kind: "string", valueHint: "<sha256:...>" }],
     },
     {
       id: ["task", "advance"],
@@ -1426,6 +1450,13 @@ function validateReviewedCandidate({
       valueHint: "<query>",
     },
     {
+      command: "doctor legacy",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "evaluator apply",
       name: "json",
       kind: "boolean",
@@ -1531,6 +1562,12 @@ function validateReviewedCandidate({
       kind: "boolean",
       valueHint: null,
       default: false,
+    },
+    {
+      command: "repair adopt-legacy-conflict",
+      name: "expect-adoption-token",
+      kind: "string",
+      valueHint: "<sha256:...>",
     },
     {
       command: "sync",
@@ -1666,6 +1703,7 @@ function validateReviewedCandidate({
   ];
   const expectedAdditionSources = [
     { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
+    { kind: "command", command: "doctor legacy", source_task: "202608021535-CNQKXP" },
     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
     { kind: "command", command: "evaluator execute", source_task: "202607221849-8YYZ9X" },
     { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
@@ -1678,6 +1716,12 @@ function validateReviewedCandidate({
       kind: "command",
       command: "pr conflict-rework",
       source_task: "202607260007-DQM6AW",
+    },
+    { kind: "command", command: "repair", source_task: "202608021535-CNQKXP" },
+    {
+      kind: "command",
+      command: "repair adopt-legacy-conflict",
+      source_task: "202608021535-CNQKXP",
     },
     {
       kind: "command",
@@ -1742,6 +1786,12 @@ function validateReviewedCandidate({
       command: "context supervise-task",
       name: "smoke-query",
       source_task: "202607221850-8HBF4J",
+    },
+    {
+      kind: "option",
+      command: "doctor legacy",
+      name: "json",
+      source_task: "202608021535-CNQKXP",
     },
     {
       kind: "option",
@@ -1844,6 +1894,12 @@ function validateReviewedCandidate({
       command: "pr conflict-rework",
       name: "recover-diverged-head",
       source_task: "202607300150-MGCHE6",
+    },
+    {
+      kind: "option",
+      command: "repair adopt-legacy-conflict",
+      name: "expect-adoption-token",
+      source_task: "202608021535-CNQKXP",
     },
     {
       kind: "option",
@@ -2016,11 +2072,14 @@ function validateReviewedCandidate({
     hashJson(addedCommands) ===
       hashJson([
         "context supervise-task",
+        "doctor legacy",
         "evaluator apply",
         "evaluator execute",
         "evaluator prepare",
         "integrate queue adopt-legacy-protected-conflict",
         "pr conflict-rework",
+        "repair",
+        "repair adopt-legacy-conflict",
         "task advance",
         "task authority grant",
         "task run reconcile",
