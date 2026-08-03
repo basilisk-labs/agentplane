@@ -1,10 +1,10 @@
 ---
 id: "202608021231-BPMM04"
 title: "Record token usage on every completed task"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-08-03T11:03:07.108Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -28,10 +28,21 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-08-03T11:03:33.709Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-02T12:31:32.269Z"
+doc_updated_at: "2026-08-03T11:03:33.709Z"
 doc_updated_by: "CODER"
 description: "Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage."
 sections:
@@ -42,16 +53,12 @@ sections:
   Scope: |-
     - In scope: Persist provider and evaluator token usage through task execution and closeout, expose the aggregate and provenance in completed task JSON and human-readable output, preserve compatibility when usage is unavailable, and add deterministic lifecycle regression coverage.
     - Out of scope: unrelated refactors not required for "Record token usage on every completed task".
-  Plan: |-
-    1. Implement the change for "Record token usage on every completed task".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "1. Trace the canonical supervisor episode journal, provider adapter usage collectors, execution receipts, task projections, ACR generation, and every DONE/finish/hosted-close path to identify the one authoritative token source and all completion surfaces. 2. Define a backward-compatible observed token-usage projection that preserves input, output, reasoning, and total counts when provider evidence exists, marks unavailable or partial usage explicitly, never trusts agent-reported metrics as observed facts, and aggregates executor plus evaluator episodes exactly once. 3. Persist the final aggregate on completed TaskData and render it in task README frontmatter/body, human task status/brief output, machine JSON, and ACR without rewriting historical tasks or fabricating zero usage. 4. Update managed-run, external-advance, direct, branch_pr, rework, recovery, hosted-close, legacy/no-provider, and idempotent-replay fixtures so completion records stable totals and duplicate close/reconcile operations cannot double-count. 5. Add focused schema/projection/closure tests and run v0.7 supervisor, lifecycle, recovery, critical CLI, schema, typecheck, Knip, policy routing, and ci:contract gates; independently verify the exact implementation SHA before integration."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Record token usage on every completed task". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Record token usage on every completed task". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run focused managed-run fixtures with multiple executor and evaluator episodes carrying known Codex provider usage. Expected: the completed task persists exact input, output, reasoning, and total tokens from supervisor-owned evidence; each episode is counted once; README, task status/brief human output, machine JSON, and ACR expose the same aggregate and provenance/completeness state.
+    2. Run external-advance, manual/direct, legacy task, adapter-without-usage, malformed-usage, and partial-usage fixtures. Expected: AgentPlane never treats agent-reported metrics as observed provider usage, never fabricates zero for unavailable usage, and preserves an explicit unavailable or partial state without blocking otherwise valid completion.
+    3. Run branch_pr rework, retry, stale fingerprint, crash recovery, reconcile, repeated finish, GitHub rebase merge, hosted close, and cleanup fixtures. Expected: token aggregates survive state transitions and task-artifact commits, remain bound to the correct task/run, and cannot be lost or double-counted by replay or idempotent closure.
+    4. Validate schema compatibility and historical task reads, then run the v0.7 supervisor, lifecycle, and recovery suites, bun run test:critical, bun run schemas:check, bun run typecheck, bun run lint:core, bun run knip:check, node .agentplane/policy/check-routing.mjs, and bun run ci:contract. Expected: all gates pass without baseline growth, and an independent EVALUATOR accepts the exact implementation SHA.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -59,6 +66,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "a447a78e85d0d520b7bb16074d6720ae3c3bc152"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
@@ -74,17 +85,14 @@ Persist provider and evaluator token usage through task execution and closeout, 
 
 ## Plan
 
-1. Implement the change for "Record token usage on every completed task".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Trace the canonical supervisor episode journal, provider adapter usage collectors, execution receipts, task projections, ACR generation, and every DONE/finish/hosted-close path to identify the one authoritative token source and all completion surfaces. 2. Define a backward-compatible observed token-usage projection that preserves input, output, reasoning, and total counts when provider evidence exists, marks unavailable or partial usage explicitly, never trusts agent-reported metrics as observed facts, and aggregates executor plus evaluator episodes exactly once. 3. Persist the final aggregate on completed TaskData and render it in task README frontmatter/body, human task status/brief output, machine JSON, and ACR without rewriting historical tasks or fabricating zero usage. 4. Update managed-run, external-advance, direct, branch_pr, rework, recovery, hosted-close, legacy/no-provider, and idempotent-replay fixtures so completion records stable totals and duplicate close/reconcile operations cannot double-count. 5. Add focused schema/projection/closure tests and run v0.7 supervisor, lifecycle, recovery, critical CLI, schema, typecheck, Knip, policy routing, and ci:contract gates; independently verify the exact implementation SHA before integration.
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Record token usage on every completed task". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Record token usage on every completed task". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run focused managed-run fixtures with multiple executor and evaluator episodes carrying known Codex provider usage. Expected: the completed task persists exact input, output, reasoning, and total tokens from supervisor-owned evidence; each episode is counted once; README, task status/brief human output, machine JSON, and ACR expose the same aggregate and provenance/completeness state.
+2. Run external-advance, manual/direct, legacy task, adapter-without-usage, malformed-usage, and partial-usage fixtures. Expected: AgentPlane never treats agent-reported metrics as observed provider usage, never fabricates zero for unavailable usage, and preserves an explicit unavailable or partial state without blocking otherwise valid completion.
+3. Run branch_pr rework, retry, stale fingerprint, crash recovery, reconcile, repeated finish, GitHub rebase merge, hosted close, and cleanup fixtures. Expected: token aggregates survive state transitions and task-artifact commits, remain bound to the correct task/run, and cannot be lost or double-counted by replay or idempotent closure.
+4. Validate schema compatibility and historical task reads, then run the v0.7 supervisor, lifecycle, and recovery suites, bun run test:critical, bun run schemas:check, bun run typecheck, bun run lint:core, bun run knip:check, node .agentplane/policy/check-routing.mjs, and bun run ci:contract. Expected: all gates pass without baseline growth, and an independent EVALUATOR accepts the exact implementation SHA.
 
 ## Verification
 

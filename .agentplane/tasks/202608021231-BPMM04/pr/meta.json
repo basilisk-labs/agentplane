@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202608021231-BPMM04/record-token-usage-on-every-completed-task",
+  "created_at": "2026-08-03T11:03:33.843Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202608021231-BPMM04",
+  "updated_at": "2026-08-03T11:03:33.843Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
