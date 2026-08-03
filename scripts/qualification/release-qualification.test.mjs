@@ -20,6 +20,7 @@ import {
   compareMatchedLatencySamples,
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
+import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -97,6 +98,18 @@ function matchedPhase(sampleCount = 20, offset = 0) {
       }),
     },
   };
+}
+
+function supervisorLatencySide(count) {
+  return { sample_count: count, samples: Array.from({ length: count }, () => 100) };
+}
+
+function supervisorLatencySurfaces(count) {
+  return ["external_advance", "managed_run_preparation"].map((id) => ({
+    id,
+    baseline: supervisorLatencySide(count),
+    candidate: supervisorLatencySide(count),
+  }));
 }
 
 describe("v0.7.1 release qualification contract", () => {
@@ -397,5 +410,21 @@ describe("v0.7.1 release qualification contract", () => {
     assert.equal(failing.verdict, "fail");
     assert.equal(failingP95.verdict, "fail");
     assert.equal(failing.delta_ms, 4);
+  });
+
+  it("requires 10 cold and 30 warm supervisor samples for both public frontends", () => {
+    const report = {
+      schema_version: 1,
+      kind: "agentplane.v0.7.1_supervisor_latency",
+      phases: { cold: supervisorLatencySurfaces(10), warm: supervisorLatencySurfaces(30) },
+    };
+
+    assert.equal(validateSupervisorLatencyReport(report), report);
+    const insufficient = structuredClone(report);
+    insufficient.phases.warm[0].candidate.sample_count = 29;
+    assert.throws(
+      () => validateSupervisorLatencyReport(insufficient),
+      /warm\.external_advance\.candidate requires 30 samples/u,
+    );
   });
 });

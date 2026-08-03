@@ -83,6 +83,15 @@ function digestText(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
 }
 
+async function commandContextForCheckout(opts: {
+  command: CommandContext;
+  checkout: string;
+}): Promise<CommandContext> {
+  return path.resolve(opts.checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
+    ? opts.command
+    : await loadCommandContext({ cwd: opts.checkout, rootOverride: null });
+}
+
 function evaluatorInput(opts: {
   work_order: AgentWorkOrderV2;
   git_root: string;
@@ -249,7 +258,7 @@ export async function issueExternalAgentExchange(opts: {
       purpose,
       checkout,
     });
-    const checkoutCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+    const checkoutCommand = await commandContextForCheckout({ command: opts.command, checkout });
     await recordIssuedEpisode({
       command: checkoutCommand,
       decision: opts.decision,
@@ -264,7 +273,7 @@ export async function issueExternalAgentExchange(opts: {
       work_order: workOrder,
     };
   }
-  const checkoutCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+  const checkoutCommand = await commandContextForCheckout({ command: opts.command, checkout });
   let workOrder = opts.work_order;
   let evaluatorWorkOrderRef: string | null = null;
   if (purpose === "quality_review") {

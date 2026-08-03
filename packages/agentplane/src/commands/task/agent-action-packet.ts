@@ -260,7 +260,11 @@ export function buildAgentActionPacket(opts: {
 }
 
 export function assertAgentActionPacketHasNoChoreography(packet: AgentActionPacket): void {
-  if (CHOREOGRAPHY_PATTERN.test(JSON.stringify(packet))) {
+  const agentVisibleSemanticSurface = [
+    packet.action.instruction,
+    ...packet.context_refs.map((input) => input.ref),
+  ].join("\n");
+  if (CHOREOGRAPHY_PATTERN.test(agentVisibleSemanticSurface)) {
     throw new Error("Agent action packet leaked formal lifecycle choreography.");
   }
 }
