@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -34,30 +34,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-03T20:17:27.878Z"
+  updated_at: "2026-08-03T20:19:20.023Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
   evaluated_sha: "76c2607a560e5110f88abbce99930002e228761d"
   blueprint_digest: "68f0d871b479bb466fce69bd630fb80919ee850312ddbb465b15108b1ae8801a"
   evidence_refs:
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201636342-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201636342-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/b2a4a0288b008e6cf5530d93c90345fd2af5bfce4edbce152b9e700672958bff.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201636342-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201636342-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201636342-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201636342-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201828378-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201828378-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/73672b2371d98c31f0751f6448b9d0d90dfaa131e0fe20324c9ff3b67728b4b8.md"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201828378-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201828378-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201828378-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/20260803-201828378-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608021535-CNQKXP/README.md"
     - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/431630dedd34fd5dbb94e4aeecba22a07bc75f3c822fa3171d034b4d2914d929.patch"
-    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/db93d5553b4cf94eb81ad8c775d542f94f044cc784353aec327808c95889eb32.json"
-    - ".agentplane/tasks/202608021535-CNQKXP/verification/20260803201612666-c8ba4caab0e4ac7d.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/5cd66dcbc20a36cdac5449cfb8da1254729a697adfa533b8d208f3f91ce53642.json"
+    - ".agentplane/tasks/202608021535-CNQKXP/verification/20260803201808767-23301d903c1bf74c.json"
     - ".agentplane/tasks/202608021535-CNQKXP/quality/objects/sha256/a678349924d6de7236f3762033ddde35c1bf310b5d2d2fb99c386bbd378fe344.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Verification at the evaluated SHA does not record all mandatory maintained gates."
+    - "Verification at the evaluated SHA still omits mandatory routing validation and final repository-state evidence."
 token_usage:
   agent_runs: 2
   input_tokens: 314134
@@ -176,7 +176,7 @@ events:
     state: "ok"
     note: "PASS: all mandatory gates and typed eight-process contention outcomes recorded explicitly at 76c2607a560e."
 doc_version: 3
-doc_updated_at: "2026-08-03T20:18:09.885Z"
+doc_updated_at: "2026-08-03T20:19:20.050Z"
 doc_updated_by: "CODER"
 description: "Introduce a machine-readable compatibility-adapter manifest with introduced_in, deprecated_in, remove_in, migration_command, and usage_probe fields; add agentplane doctor legacy --json; move legacy conflict recovery toward an advanced repair namespace without breaking 0.7 migrations."
 sections:
