@@ -4,7 +4,7 @@ title: "Capture exact v0.7.1 semantic efficiency evidence"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -37,7 +37,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "b371c1a118907b2cdd5823764500fdcb71169149"
+  message: "🧪 6BTB6D task: anchor qualification plan"
 comments:
   -
     author: "TESTER"
@@ -50,8 +52,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-03T23:13:46.578Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DOING"
 doc_version: 3
-doc_updated_at: "2026-08-03T20:39:56.002Z"
+doc_updated_at: "2026-08-03T23:13:46.578Z"
 doc_updated_by: "TESTER"
 description: "After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation."
 sections:
