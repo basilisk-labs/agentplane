@@ -4,7 +4,7 @@ title: "Keep frozen qualification subject clean while writing evidence"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -30,6 +30,36 @@ verification:
   updated_by: "TESTER"
   note: "PASS. Qualification subprocesses keep the frozen subject strict while allowing only their active evidence directory; matched CLI and supervisor latency both executed and passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-08-03T21:25:37.839Z"
+  updated_by: "HUMAN"
+  note: "The qualification harness now excludes only its active nested evidence directory from frozen-subject cleanliness checks while preserving strict detection of all unrelated changes."
+  evaluated_sha: "3e51eeac9196a048955c7e56633bacd76fe317bb"
+  blueprint_digest: "19a2968207983ae5a07c5d9f450f91ee64635b2a108d4333c70d93086efaf5d9"
+  evidence_refs:
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/20260803-212537408-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/20260803-212537408-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/5dc558898e415d576ab3bd94e3ee6348fff205e75b8163d3351284248b1af7b4.md"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/20260803-212537408-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/20260803-212537408-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608032116-QFBVB5/README.md"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/55c87056643c1dea31814dd1a7b96c81a92b1419d7925859865b4866feec977e.patch"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/45025e434ee5f05de62e9ab1c015530e9a72d8327ef2f0b62eda8d52b8541781.json"
+    - ".agentplane/tasks/202608032116-QFBVB5/verification/20260803212326932-eafa88c37183750f.json"
+    - ".agentplane/tasks/202608032116-QFBVB5/quality/objects/sha256/fd70cb2be8b79ab946d76cec2f0a8d9eebccd3a284b8457afc5c1ea16c07b035.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "scripts/qualification/release-qualification.mjs"
+    - "scripts/qualification/release-qualification.test.mjs"
+    - ".agentplane/tasks/202608032116-QFBVB5/evidence/self-dirty-regression/report.json"
+  findings:
+    - "PASS: the exclusion is derived from a validated repo-relative nested path and uses a top-level Git exclude pathspec, so it cannot widen beyond the selected evidence subtree."
+    - "PASS: the real Git repository test proves evidence writes are ignored, an unrelated untracked file still blocks qualification, and repository-root or outside paths are rejected."
+    - "PASS: matched CLI and supervisor latency scenarios both completed against the exact frozen implementation commit with 2/2 scenarios passing, demonstrating that qualification output no longer invalidates its own subject."
 commit:
   hash: "3e51eeac9196a048955c7e56633bacd76fe317bb"
   message: "🧪 QFBVB5 task: isolate qualification evidence writes"
