@@ -32,8 +32,9 @@ receipts, and formally records task verification.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/context/assimilation-supervisor.ts    |  94 ++++++-
+ .../commands/context/assimilation-supervisor.ts    |  67 ++++-
  .../context/assimilation-supervisor.unit.test.ts   |  63 +++++
+ .../commands/context/assimilation-verification.ts  |  49 ++++
  .../verify-task.maximum-assimilation.unit.test.ts  |  37 ++-
  .../agentplane/src/commands/context/verify-task.ts |   5 +-
  .../src/commands/shared/route-execution-packet.ts  |   1 +
@@ -43,7 +44,7 @@ receipts, and formally records task verification.
  packages/agentplane/src/context/verify-task.ts     |  64 +++--
  .../src/runner/usecases/task-run-authority.ts      |  26 +-
  .../usecases/task-run-context.integration.test.ts  | 270 ++++-----------------
- 11 files changed, 423 insertions(+), 254 deletions(-)
+ 12 files changed, 445 insertions(+), 254 deletions(-)
 ```
 
 </details>

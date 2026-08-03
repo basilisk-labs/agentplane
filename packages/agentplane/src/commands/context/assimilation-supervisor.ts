@@ -37,7 +37,8 @@ import { verifyContextTaskFromSupervisor } from "./verify-task.js";
 import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
 import { cmdContextWikiReport } from "./wiki-reports.js";
 import { captureGitSnapshot, compareGitSnapshots } from "../../runner/observation/git-snapshot.js";
-import { cmdVerifyParsed } from "../task/verify-record.js";
+
+import { recordContextSupervisorVerification } from "./assimilation-verification.js";
 
 export const CONTEXT_ASSIMILATION_OPERATION_IDS = [
   "semantic_result",
@@ -190,43 +191,15 @@ export async function runContextAssimilationSupervisor(
     (() => loadTaskFromContext({ ctx: input.command, taskId: input.taskId }));
   const recordVerification =
     dependencies.recordVerification ??
-    (async (changedPaths: string[]) => {
-      const ingestRun = await findContextIngestRunForTask(root, input.taskId);
-      if (ingestRun === null) {
-        throw new CliError({
-          code: "E_RUNTIME",
-          message: `Context ingest journal disappeared before recording verification for ${input.taskId}.`,
-        });
-      }
-      const evidencePath = `.agentplane/context/ingest-runs/${ingestRun.run_id}.json#task_verified`;
-      const exitCode = await cmdVerifyParsed({
-        ctx: input.command,
+    ((changedPaths: string[]) =>
+      recordContextSupervisorVerification({
+        changedPaths,
+        command: input.command,
         cwd: input.ctx.cwd,
-        rootOverride: root,
+        extractionFile: input.extractionFile,
+        root,
         taskId: input.taskId,
-        state: "ok",
-        by: "SUPERVISOR",
-        note: "Verified: the context assimilation supervisor observed the live Git delta and all task-bound artifact checks passed.",
-        details: [
-          `Command: agentplane context supervise-task ${input.taskId} --extraction ${input.extractionFile}`,
-          "Result: pass",
-          `Evidence: ${evidencePath}`,
-          `Scope: live context assimilation Git delta (${String(changedPaths.length)} changed paths) and task-bound artifact validation`,
-        ].join("\n"),
-        localOnly: false,
-        repoFixable: false,
-        incidentTags: [],
-        incidentMatch: [],
-        quiet: true,
-      });
-      if (exitCode !== 0) {
-        throw new CliError({
-          code: "E_RUNTIME",
-          message: `Context supervisor could not record formal verification for task ${input.taskId}.`,
-        });
-      }
-      return { changed_paths: changedPaths, evidence: evidencePath };
-    });
+      }));
   let reworkWorkOrder: string | null = null;
 
   const operation = async (
