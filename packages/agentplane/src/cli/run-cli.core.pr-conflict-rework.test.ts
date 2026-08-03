@@ -697,8 +697,8 @@ describe("provider conflict rework CLI", () => {
           expect(route.conflict_rework, providerState).toBeNull();
           expect(route.workflow_step, providerState).toMatchObject({
             kind: "agent_episode",
-            id: "agent.quality_review",
-            compatibility: { code: "quality_review_required", command: null },
+            id: "agent.verification",
+            compatibility: { code: "verification_required", command: null },
           });
           expect(route.execution_packet, providerState).toMatchObject({
             actionKind: "stop",
@@ -847,9 +847,8 @@ describe("provider conflict rework CLI", () => {
           safeToMutate: true,
           exactArgv: [
             "agentplane",
-            "integrate",
-            "queue",
-            "adopt-legacy-protected-conflict",
+            "repair",
+            "adopt-legacy-conflict",
             taskId,
             "--expect-adoption-token",
             conflictRework.adoption.token,
@@ -870,9 +869,8 @@ describe("provider conflict rework CLI", () => {
         const adoptionIo = captureStdIO();
         try {
           const code = await runCli([
-            "integrate",
-            "queue",
-            "adopt-legacy-protected-conflict",
+            "repair",
+            "adopt-legacy-conflict",
             taskId,
             "--expect-adoption-token",
             conflictRework.adoption.token,
@@ -883,6 +881,23 @@ describe("provider conflict rework CLI", () => {
           expect(code).toBe(0);
         } finally {
           adoptionIo.restore();
+        }
+
+        const compatibilityAliasIo = captureStdIO();
+        try {
+          const code = await runCli([
+            "integrate",
+            "queue",
+            "adopt-legacy-protected-conflict",
+            taskId,
+            "--expect-adoption-token",
+            conflictRework.adoption.token,
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+        } finally {
+          compatibilityAliasIo.restore();
         }
 
         const adoptedRoute = await readRemoteRoute(root, taskId);

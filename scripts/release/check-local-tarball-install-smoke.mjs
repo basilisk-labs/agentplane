@@ -226,6 +226,22 @@ const main = defineScript({
       });
       run(agentplane, ["context", "reindex", "--include-raw"], { cwd: repo });
       run(agentplane, ["context", "search", "Packaged", "--format", "json"], { cwd: repo });
+      const legacyReport = JSON.parse(
+        run(agentplane, ["doctor", "legacy", "--json"], { cwd: repo }),
+      );
+      assert.equal(legacyReport.kind, "agentplane.doctor.legacy");
+      assert.equal(legacyReport.summary?.total, 12);
+      assert.equal(legacyReport.adapters?.length, 12);
+      assert.ok(
+        legacyReport.adapters.every(
+          (adapter) =>
+            typeof adapter.id === "string" &&
+            typeof adapter.introduced_in === "string" &&
+            Object.prototype.hasOwnProperty.call(adapter, "remove_in") &&
+            typeof adapter.usage_probe?.kind === "string" &&
+            typeof adapter.status === "string",
+        ),
+      );
 
       assertJsonFailure(
         runFailure(agentplane, ["--json-errors", "task", "show"], { cwd: repo }),

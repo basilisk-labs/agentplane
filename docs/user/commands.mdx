@@ -89,7 +89,20 @@ Workflow diagnostics and repair:
 
 ```bash
 agentplane doctor --fix
+agentplane doctor legacy --json
 ```
+
+`doctor legacy` is read-only. It returns the packaged compatibility retirement manifest plus
+workspace probes classified as `used`, `unused`, `unknown`, or `blocked`. Each adapter names its
+introduction and deprecation versions, retirement target or blocker, and migration command.
+
+Exceptional legacy protected-conflict recovery lives outside the normal lifecycle surface:
+
+```bash
+agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>
+```
+
+Run it only with the exact token emitted by `task next-action` or `pr conflict-rework`.
 
 ## Config
 

@@ -21,7 +21,7 @@ export const integrateQueueSpec: CommandSpec<IntegrateQueueGroupParsed> = {
   group: "PR",
   summary: "Serialize branch_pr integration into one merge lane.",
   synopsis: [
-    "agentplane integrate queue <enqueue|list|doctor|claim|release|adopt-legacy-protected-conflict|run-next> [args] [options]",
+    "agentplane integrate queue <enqueue|list|doctor|claim|release|run-next> [args] [options]",
   ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
@@ -218,6 +218,7 @@ export const integrateQueueAdoptLegacyProtectedConflictSpec: CommandSpec<Integra
     id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
     group: "PR",
     summary: "Record an explicit recovery receipt for a verified legacy protected-PR conflict.",
+    notes: ["Deprecated compatibility alias. Use agentplane repair adopt-legacy-conflict instead."],
     args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
     options: [
       {

@@ -8,7 +8,9 @@ import {
   integrateQueueRunNextSpec,
   integrateQueueSpec,
 } from "../../../commands/integrate-queue.spec.js";
+import { repairAdoptLegacyConflictSpec, repairSpec } from "../../../commands/repair.command.js";
 import {
+  fromCommandsRepairCommand,
   loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
   loadIntegrateQueueClaimSpec,
   loadIntegrateQueueDoctorSpec,
@@ -19,6 +21,7 @@ import {
   loadIntegrateQueueRunNextPreparationSpec,
   loadIntegrateQueueRunNextSpec,
   loadIntegrateQueueSpec,
+  loadRepairAdoptLegacyConflictSpec,
 } from "../command-loaders/project.js";
 import { NO_CONTEXT_REQUIREMENTS } from "./project-capability-profiles.js";
 import {
@@ -34,6 +37,15 @@ import {
 } from "./kernel.js";
 
 export const INTEGRATION_QUEUE_COMMANDS = [
+  fromCommandsRepairCommand(repairSpec, "runRepair", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+    surface: "advanced",
+  }),
+  declareSessionCommand(repairAdoptLegacyConflictSpec, {
+    load: loadRepairAdoptLegacyConflictSpec,
+    requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+    surface: "advanced",
+  }),
   declareSessionCommand(integrateQueueSpec, {
     load: loadIntegrateQueueSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -68,6 +80,7 @@ export const INTEGRATION_QUEUE_COMMANDS = [
   declareSessionCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
     load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
     requirements: INTEGRATION_QUEUE_TASK_PROVIDER_READ_REQUIREMENTS,
+    surface: "internal",
   }),
   declareConditionalSessionCommand(integrateQueueRunNextSpec, {
     default: {

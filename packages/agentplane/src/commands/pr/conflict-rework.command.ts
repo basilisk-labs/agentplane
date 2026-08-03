@@ -35,7 +35,7 @@ function packetFailure(
   }
   if (preparation.state === "adoption_required") {
     const command =
-      `agentplane integrate queue adopt-legacy-protected-conflict ${taskId} ` +
+      `agentplane repair adopt-legacy-conflict ${taskId} ` +
       `--expect-adoption-token ${preparation.adoption.token}`;
     return new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),

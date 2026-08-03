@@ -19,9 +19,8 @@ function operationArgv(operation: WorkflowOperation): string[] {
     case "integration.adopt_legacy_protected_conflict": {
       return [
         "agentplane",
-        "integrate",
-        "queue",
-        "adopt-legacy-protected-conflict",
+        "repair",
+        "adopt-legacy-conflict",
         operation.params.taskId,
         "--expect-adoption-token",
         operation.params.expectedAdoptionToken,

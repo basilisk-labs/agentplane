@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.compatibility_retirement_manifest",
+  "adapters": [
+    {
+      "id": "config.legacy_json",
+      "owner": "@agentplaneorg/core/config",
+      "source_paths": ["packages/core/src/config/io.ts", "packages/core/src/config/validation.ts"],
+      "introduced_in": "0.3.18",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "The published workspace upgrade promise needs a defined support window after observed usage reaches zero.",
+      "migration_command": "agentplane upgrade",
+      "usage_probe": { "kind": "legacy_config_json" }
+    },
+    {
+      "id": "workflow.contract_v1",
+      "owner": "agentplane/workflow-runtime",
+      "source_paths": ["packages/agentplane/src/workflow-runtime/migration.ts"],
+      "introduced_in": "0.7.0",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Existing WORKFLOW.md v1 installations remain covered by the published v0.7 migration contract.",
+      "migration_command": "agentplane workflow migrate",
+      "usage_probe": { "kind": "workflow_contract_v1" }
+    },
+    {
+      "id": "task.readme_pre_v3",
+      "owner": "@agentplaneorg/core/tasks",
+      "source_paths": [
+        "packages/core/src/tasks/task-doc-contract.ts",
+        "packages/agentplane/src/commands/task/migrate-doc.ts"
+      ],
+      "introduced_in": "0.3.8",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Historical task archives can still contain README v2 records and need an explicit archive support policy.",
+      "migration_command": "agentplane task migrate-doc --all",
+      "usage_probe": { "kind": "task_readme_pre_v3" }
+    },
+    {
+      "id": "runner.agent_work_context_v1",
+      "owner": "@agentplaneorg/core/runner",
+      "source_paths": ["packages/core/src/runner/agent-work-order-compat.ts"],
+      "introduced_in": "0.7.0",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Legacy v1 packets are caller-supplied and local workspace inspection cannot prove that external producers have stopped sending them.",
+      "migration_command": null,
+      "usage_probe": { "kind": "runtime_input_unobservable" }
+    },
+    {
+      "id": "supervisor.execution_episode_v0",
+      "owner": "@agentplaneorg/core/runner",
+      "source_paths": ["packages/core/src/runner/supervisor-execution-episode-migration.ts"],
+      "introduced_in": "0.7.0",
+      "deprecated_in": "0.7.1",
+      "remove_in": "0.8.0",
+      "removal_blocker": null,
+      "migration_command": "agentplane task advance <task-id>",
+      "usage_probe": { "kind": "supervisor_episode_v0" }
+    },
+    {
+      "id": "runner.task_local_storage",
+      "owner": "agentplane/runner",
+      "source_paths": [
+        "packages/agentplane/src/runner/run-record-profile.ts",
+        "packages/agentplane/src/runner/run-repository-compat.ts"
+      ],
+      "introduced_in": "0.7.0",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Historical task-local runs remain readable until upgrade migration and retention behavior are specified.",
+      "migration_command": "agentplane upgrade",
+      "usage_probe": { "kind": "task_local_runner_storage" }
+    },
+    {
+      "id": "runner.result_manifest_v1",
+      "owner": "agentplane/runner",
+      "source_paths": ["packages/agentplane/src/runner/result-manifest.ts"],
+      "introduced_in": "0.3.8",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Historical runner result artifacts are immutable evidence and need a retention-aware reader policy before removal.",
+      "migration_command": null,
+      "usage_probe": { "kind": "runner_result_manifest_v1" }
+    },
+    {
+      "id": "context.profile_aliases",
+      "owner": "agentplane/context",
+      "source_paths": [
+        "packages/agentplane/src/commands/context/context.spec.ts",
+        "packages/agentplane/src/context/ingest-task.ts"
+      ],
+      "introduced_in": "0.6.0",
+      "deprecated_in": "0.7.1",
+      "remove_in": "0.8.0",
+      "removal_blocker": null,
+      "migration_command": "agentplane context init --profile maximum-assimilation",
+      "usage_probe": { "kind": "runtime_input_unobservable" }
+    },
+    {
+      "id": "context.workspace_pre_maximum_assimilation_v2",
+      "owner": "agentplane/context",
+      "source_paths": ["packages/agentplane/src/commands/context/migrate.ts"],
+      "introduced_in": "0.6.22",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Existing context workspaces can preserve legacy knowledge artifacts whose semantic re-verification is not automatic.",
+      "migration_command": "agentplane context migrate maximum-assimilation-v2",
+      "usage_probe": { "kind": "context_workspace_legacy" }
+    },
+    {
+      "id": "pr.legacy_protected_conflict",
+      "owner": "agentplane/pr",
+      "source_paths": [
+        "packages/agentplane/src/commands/pr/conflict-rework-legacy.ts",
+        "packages/agentplane/src/commands/pr/integrate/queue-state-legacy-adoption.ts"
+      ],
+      "introduced_in": "0.7.0",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Active pre-v0.7 protected-conflict handoffs need an explicit support horizon and a zero-usage qualification window.",
+      "migration_command": "agentplane repair adopt-legacy-conflict <task-id> --expect-adoption-token <sha256:...>",
+      "usage_probe": { "kind": "legacy_protected_conflict_queue" }
+    },
+    {
+      "id": "cleanup.git_replacement_refs",
+      "owner": "agentplane/branch",
+      "source_paths": [
+        "packages/agentplane/src/commands/branch/cleanup-merged-provider-compatibility.ts"
+      ],
+      "introduced_in": "0.7.1",
+      "deprecated_in": null,
+      "remove_in": null,
+      "removal_blocker": "Repositories with refs/replace need explicit operator cleanup before replacement-ref compatibility can be removed.",
+      "migration_command": null,
+      "usage_probe": { "kind": "git_replacement_refs" }
+    },
+    {
+      "id": "commit.historical_forms",
+      "owner": "@agentplaneorg/core/commit",
+      "source_paths": ["packages/core/src/commit/commit-policy.ts"],
+      "introduced_in": "0.1.1",
+      "deprecated_in": "0.7.1",
+      "remove_in": null,
+      "removal_blocker": "Historical commit subjects are immutable and the compatibility reader needs a bounded history policy before retirement.",
+      "migration_command": null,
+      "usage_probe": { "kind": "runtime_input_unobservable" }
+    }
+  ]
+}

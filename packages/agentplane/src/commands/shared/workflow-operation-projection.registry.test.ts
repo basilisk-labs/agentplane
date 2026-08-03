@@ -75,9 +75,8 @@ describe("Workflow operation projection registry", () => {
         params: { taskId, expectedAdoptionToken: adoptionToken },
         argv: [
           "agentplane",
-          "integrate",
-          "queue",
-          "adopt-legacy-protected-conflict",
+          "repair",
+          "adopt-legacy-conflict",
           taskId,
           "--expect-adoption-token",
           adoptionToken,

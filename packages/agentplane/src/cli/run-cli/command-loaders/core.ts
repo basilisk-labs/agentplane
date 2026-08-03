@@ -108,6 +108,9 @@ export const fromCommandsDoctorRun = commandModule(() => import("../../../comman
 export const fromCommandsDoctorGitLocksCommand = commandModule(
   () => import("../../../commands/doctor-git-locks.run.js"),
 );
+export const fromCommandsDoctorLegacyCommand = commandModule(
+  () => import("../../../commands/doctor-legacy.run.js"),
+);
 export const fromCommandsWorkflowCommand = commandModule(
   () => import("../../../commands/workflow.command.js"),
 );

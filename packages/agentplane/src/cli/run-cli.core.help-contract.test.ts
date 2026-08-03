@@ -228,6 +228,44 @@ describe("cli help contract", () => {
     }
   });
 
+  it("keeps compatibility inventory and repair out of default help but directly discoverable", async () => {
+    const doctorIo = captureStdIO();
+    try {
+      const code = await runCli(["help", "doctor", "legacy", "--compact"]);
+      expect(code).toBe(0);
+      expect(doctorIo.stdout).toContain("doctor legacy - Inspect compatibility adapters");
+      expect(doctorIo.stdout).toContain("agentplane doctor legacy [options]");
+      expect(doctorIo.stdout).toContain("--json");
+    } finally {
+      doctorIo.restore();
+    }
+
+    const repairIo = captureStdIO();
+    try {
+      const code = await runCli(["help", "repair", "adopt-legacy-conflict", "--compact"]);
+      expect(code).toBe(0);
+      expect(repairIo.stdout).toContain("repair adopt-legacy-conflict - Record a verified legacy");
+      expect(repairIo.stdout).toContain("--expect-adoption-token");
+    } finally {
+      repairIo.restore();
+    }
+
+    const oldAliasIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "help",
+        "integrate",
+        "queue",
+        "adopt-legacy-protected-conflict",
+        "--compact",
+      ]);
+      expect(code).toBe(2);
+      expect(oldAliasIo.stderr).toContain("Unknown command");
+    } finally {
+      oldAliasIo.restore();
+    }
+  });
+
   it("normal project help rejects explicit framework-maintainer command help", async () => {
     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
     const io = captureStdIO();
