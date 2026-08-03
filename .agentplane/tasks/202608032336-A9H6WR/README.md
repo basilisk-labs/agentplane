@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -65,7 +65,9 @@ token_usage:
   total_tokens: null
   unavailable_reason: "supervisor_journal_missing"
   updated_at: "2026-08-03T23:43:50.108Z"
-commit: null
+commit:
+  hash: "5acfd380510dda719cb7b53058eeb2f300095b6c"
+  message: "🛠️ A9H6WR task: scope preflight to provider scenarios"
 comments:
   -
     author: "CODER"
@@ -76,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: provider runtime preflight is now gated by the selected scenario tiers, so explicit local-only selections remain portable."
 events:
   -
     type: "status"
@@ -116,8 +121,15 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Codex review found that --provider with an explicit local-only --scenario still invoked the trusted binary preflight; gate the check on the selected provider scenario set."
+  -
+    type: "status"
+    at: "2026-08-03T23:53:17.337Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: provider runtime preflight is now gated by the selected scenario tiers, so explicit local-only selections remain portable."
 doc_version: 3
-doc_updated_at: "2026-08-03T23:51:54.822Z"
+doc_updated_at: "2026-08-03T23:53:17.377Z"
 doc_updated_by: "CODER"
 description: "Fail provider-enabled v0.7.1 qualification before running local scenarios when the exact requested Codex version does not match the trusted ChatGPT.app replay binary, preventing wasted deterministic work and zero-episode gate failures."
 sections:
