@@ -1,5 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
-import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import {
   normalizeRecipeId,
@@ -11,7 +10,6 @@ import {
 
 import { invalidFieldMessage } from "../../../cli/output.js";
 import { isRecord } from "../../../shared/guards.js";
-import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 import { resolveProjectRecipesRegistryPath } from "./paths.js";
 
 function validateMaterialization(raw: unknown): ProjectRecipeMaterialization {
@@ -141,34 +139,4 @@ export async function readProjectRecipesRegistry(opts: {
     }
     throw err;
   }
-}
-
-export async function writeProjectRecipesRegistry(
-  opts: { agentplaneDir: string },
-  file: ProjectRecipesRegistryFile,
-): Promise<void> {
-  const sorted = stampProjectRecipesRegistry(file);
-  const filePath = resolveProjectRecipesRegistryPath(opts);
-  await mkdir(path.dirname(filePath), { recursive: true });
-  await writeJsonStableIfChanged(filePath, sorted);
-}
-
-export async function upsertProjectRecipeRegistryEntry(opts: {
-  project: { agentplaneDir: string };
-  entry: ProjectRecipeRegistryEntry;
-}): Promise<ProjectRecipesRegistryFile> {
-  const registry = await readProjectRecipesRegistry(opts.project);
-  const next = replaceProjectRecipeRegistryEntry(registry, opts.entry);
-  await writeProjectRecipesRegistry(opts.project, next);
-  return readProjectRecipesRegistry(opts.project);
-}
-
-export async function removeProjectRecipeRegistryEntry(opts: {
-  project: { agentplaneDir: string };
-  recipeId: string;
-}): Promise<ProjectRecipesRegistryFile> {
-  const registry = await readProjectRecipesRegistry(opts.project);
-  const next = removeProjectRecipeRegistryEntryFromFile(registry, opts.recipeId);
-  await writeProjectRecipesRegistry(opts.project, next);
-  return readProjectRecipesRegistry(opts.project);
 }

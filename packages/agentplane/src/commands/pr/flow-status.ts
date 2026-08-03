@@ -43,7 +43,7 @@ import {
 
 type ProviderName = "github";
 
-export type RemotePrStatus =
+type RemotePrStatus =
   | { provider: ProviderName; state: "not_found"; source: "lookup" | "metadata" }
   | {
       provider: ProviderName;
@@ -56,7 +56,7 @@ export type RemotePrStatus =
       mergeCommit: string | null;
     };
 
-export type CloseTailStatus =
+type CloseTailStatus =
   | { state: "not_applicable"; reason: string }
   | { state: "recorded_on_base"; base: string }
   | { state: "unavailable"; provider: ProviderName; branch: string; reason: string }

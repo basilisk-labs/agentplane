@@ -29,7 +29,7 @@ export type PromptModuleMutationWhen = PromptModuleLoadCondition & {
   module_absent?: string[];
 };
 
-export type PromptModuleMutationSource = {
+type PromptModuleMutationSource = {
   owner: PromptModuleOwner;
   provenance: PromptModuleProvenance;
 };
@@ -85,42 +85,42 @@ export type PromptModuleValidator =
       when?: PromptModuleMutationWhen;
     };
 
-export type PromptModuleMutationBase = {
+type PromptModuleMutationBase = {
   id: string;
   source: PromptModuleMutationSource;
   when?: PromptModuleMutationWhen;
   reason?: string;
 };
 
-export type PromptModuleAddMutation = PromptModuleMutationBase & {
+type PromptModuleAddMutation = PromptModuleMutationBase & {
   op: "add_module";
   module: PromptModule;
 };
 
-export type PromptModuleReplaceMutation = PromptModuleMutationBase & {
+type PromptModuleReplaceMutation = PromptModuleMutationBase & {
   op: "replace_module";
   target: PromptModuleSelector;
   module: PromptModule;
 };
 
-export type PromptModulePatchMutation<TContent = string | Record<string, unknown>> =
+type PromptModulePatchMutation<TContent = string | Record<string, unknown>> =
   PromptModuleMutationBase & {
     op: "patch_module";
     target: PromptModuleSelector;
     patch: PromptModuleStructuredPatch<TContent>;
   };
 
-export type PromptModuleDisableMutation = PromptModuleMutationBase & {
+type PromptModuleDisableMutation = PromptModuleMutationBase & {
   op: "disable_module";
   target: PromptModuleSelector;
 };
 
-export type PromptModuleBindMutation = PromptModuleMutationBase & {
+type PromptModuleBindMutation = PromptModuleMutationBase & {
   op: "bind_module";
   binding: PromptModuleBinding;
 };
 
-export type PromptModuleValidatorMutation = PromptModuleMutationBase &
+type PromptModuleValidatorMutation = PromptModuleMutationBase &
   (
     | {
         op: "add_validator";

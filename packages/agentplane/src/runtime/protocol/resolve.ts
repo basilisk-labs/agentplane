@@ -44,7 +44,7 @@ export function buildProtocolErrorResult<TKind extends AgentplaneProtocolKind>(o
   };
 }
 
-export function buildFrameworkExplainProtocolResult(
+function buildFrameworkExplainProtocolResult(
   explain: FrameworkExplainPayload,
 ): FrameworkExplainProtocolResult {
   return buildProtocolSuccessResult({

@@ -1,7 +1,7 @@
 import type { FrameworkManifestEntry } from "./types.js";
 
 export const INCIDENTS_POLICY_PATH = ".agentplane/policy/incidents.md";
-export const INCIDENTS_APPEND_MARKER = "<!-- AGENTPLANE:UPGRADE-APPEND incidents.md -->";
+const INCIDENTS_APPEND_MARKER = "<!-- AGENTPLANE:UPGRADE-APPEND incidents.md -->";
 export const CONFIG_REL_PATH = ".agentplane/config.json";
 export const WORKFLOW_REL_PATH = ".agentplane/WORKFLOW.md";
 

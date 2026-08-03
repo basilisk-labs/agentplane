@@ -1,8 +1,8 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 
-export type BumpKind = "patch" | "minor" | "major";
+type BumpKind = "patch" | "minor" | "major";
 
-export type ReleaseApplyFlags = {
+type ReleaseApplyFlags = {
   plan?: string;
   yes: boolean;
   push: boolean;

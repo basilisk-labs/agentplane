@@ -7,8 +7,6 @@ export {
   taskObservationSectionName,
   extractTaskObservationSection,
   VERIFY_STEPS_PLACEHOLDER,
-  VERIFICATION_RESULTS_BEGIN,
-  VERIFICATION_RESULTS_END,
   extractDocSection,
   assertVerifyStepsFilled,
   isVerifyStepsFilled,
@@ -22,18 +20,12 @@ export {
   normalizeTaskStatus,
   toStringArray,
   requiresVerify,
-  type PrimaryTagResolution,
-  type TaskTagPolicy,
   readTaskTagPolicy,
-  resolvePrimaryTagFromConfig,
   requiresVerifyStepsByPrimary,
-  requiresVerificationByPrimary,
   resolvePrimaryTag,
   warnIfUnknownOwner,
 } from "./shared/tags.js";
 export {
-  type DependencyState,
-  dependencyWarningMessages,
   ensureTaskDependsOnGraphIsAcyclic,
   resolveTaskDependencyState,
   buildDependencyState,
@@ -47,33 +39,19 @@ export {
 export {
   ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired,
-  ensureCommentCommitAllowed,
   ensureLifecycleCommentCommitLocation,
-  emitTransitionWarnings,
   requireStructuredComment,
   type TaskTransitionCommentCommandOptions,
   prepareTaskTransitionComment,
-  resolveTaskTransitionExecutorAgent,
   runTaskTransitionCommentCommit,
   runOptionalTaskTransitionCommentCommit,
   enforceStatusCommitPolicy,
-  readHeadCommit,
   readCommitInfo,
   defaultCommitEmojiForStatus,
 } from "./shared/transitions.js";
 export {
-  buildTaskStatusTransition,
   executeTaskStatusTransitionRequest,
-  buildTaskVerificationTransition,
   executeTaskVerificationTransitionRequest,
-  readDeferredTaskTransitionWarnings,
-  type TaskTransitionWrite,
-  type TaskStatusTransitionDependencyPolicy,
-  type TaskStatusTransitionCommentCommitPolicy,
-  type ExecuteTaskStatusTransitionRequest,
-  type TaskStatusTransitionExecution,
-  type ExecuteTaskVerificationTransitionRequest,
-  type TaskVerificationTransitionExecution,
 } from "./shared/workflow-transition-service.js";
 export { applyTaskStatusTransitionCommand } from "./shared/transition-command.js";
 export {
@@ -81,6 +59,5 @@ export {
   parseTaskListFilters,
   handleTaskListWarnings,
   queryTaskProjection,
-  type QueryTaskProjectionResult,
   taskTextBlob,
 } from "./shared/listing.js";

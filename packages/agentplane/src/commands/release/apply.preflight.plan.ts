@@ -28,7 +28,7 @@ function assertNonEmptyString(value: unknown, label: string): string {
   return value.trim();
 }
 
-export function parseVersionPlan(raw: unknown): ReleaseVersionPlan {
+function parseVersionPlan(raw: unknown): ReleaseVersionPlan {
   if (!raw || typeof raw !== "object") {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -54,7 +54,7 @@ export function parseVersionPlan(raw: unknown): ReleaseVersionPlan {
   return { prevTag, prevVersion, nextTag, nextVersion, bump: bumpRaw, baseSha };
 }
 
-export async function findLatestPlanDir(gitRoot: string): Promise<string> {
+async function findLatestPlanDir(gitRoot: string): Promise<string> {
   const base = path.join(gitRoot, ".agentplane", ".release", "plan");
   let runNames: string[];
   try {

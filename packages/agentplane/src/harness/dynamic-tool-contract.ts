@@ -1,10 +1,10 @@
-export type DynamicToolInputSchema = {
+type DynamicToolInputSchema = {
   required?: string[];
   properties?: Record<string, { type: "string" | "number" | "boolean" | "object" | "array" }>;
   additionalProperties?: boolean;
 };
 
-export type DynamicToolSpec = {
+type DynamicToolSpec = {
   name: string;
   description: string;
   inputSchema: DynamicToolInputSchema;

@@ -32,7 +32,7 @@ const PROMPT_FRAGMENT_MUTABILITIES = new Set<PromptModuleMutability>([
 
 const FRAGMENT_ID_RE = /^[a-z][a-z0-9_-]*(?:\.[a-z0-9][a-z0-9_-]*)+$/;
 
-export function isPromptFragmentId(value: string): boolean {
+function isPromptFragmentId(value: string): boolean {
   return FRAGMENT_ID_RE.test(value);
 }
 

@@ -5,8 +5,6 @@ import { readJsonFile } from "../shared/json-io.js";
 import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 
 import type { TaskData, TaskSummary } from "./task-backend.js";
-
-export const TASK_INDEX_SCHEMA_VERSION = 2;
 const TASK_INDEX_FILENAME = "tasks-index.v2.json";
 
 export type TaskIndexReadmeFingerprintEntry = {

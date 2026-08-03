@@ -10,7 +10,6 @@ import type {
 import type { PromptModuleCompiledGraph } from "./compiler.js";
 import { migratePromptModuleSchemaVersion } from "./schema.js";
 import type {
-  PromptModuleMutation,
   PromptModuleMutationSet,
   PromptModuleMutationWhen,
   PromptModuleSelector,
@@ -338,5 +337,3 @@ export function validatePromptModuleCompiledGraph(
   if (typeof graph.ok !== "boolean") throw invalid(`${field}.ok`, "boolean");
   return graph as PromptModuleCompiledGraph;
 }
-
-export type ValidatedPromptModuleMutation = PromptModuleMutation;

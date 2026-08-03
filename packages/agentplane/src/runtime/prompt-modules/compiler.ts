@@ -1,9 +1,4 @@
-import type {
-  PromptModule,
-  PromptModuleAddress,
-  PromptModuleGraph,
-  PromptModuleLoadCondition,
-} from "./model.js";
+import type { PromptModule, PromptModuleAddress, PromptModuleGraph } from "./model.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
 import { mergeDuplicateNodes } from "./compiler.merge.js";
 import { copyModule, moduleAddress, type WorkingPromptModuleNode } from "./compiler.shared.js";
@@ -23,20 +18,9 @@ import type {
   PromptModuleValidatorPhase,
 } from "./mutations.js";
 
-export {
-  matchesPromptModuleLoadCondition,
-  normalizePromptModuleCompilerContext,
-} from "./compiler.context.js";
 export type { PromptModuleCompilerContext } from "./compiler.context.js";
 
-export type PromptModulePolicyGateway = NonNullable<
-  PromptModuleLoadCondition["policy_gateways"]
->[number];
-export type PromptModuleWorkflowMode = NonNullable<
-  PromptModuleLoadCondition["workflow_modes"]
->[number];
-
-export type PromptModuleDiagnosticSeverity = "error" | "warning";
+type PromptModuleDiagnosticSeverity = "error" | "warning";
 
 export type PromptModuleDiagnostic = {
   severity: PromptModuleDiagnosticSeverity;
@@ -69,7 +53,7 @@ function moduleRecipeId(module: PromptModule): string | undefined {
   return module.provenance.recipe_id;
 }
 
-export function matchesPromptModuleSelector(
+function matchesPromptModuleSelector(
   module: PromptModule,
   selector: PromptModuleSelector,
 ): boolean {
@@ -87,7 +71,7 @@ export function matchesPromptModuleSelector(
   );
 }
 
-export function matchesPromptModuleMutationWhen(
+function matchesPromptModuleMutationWhen(
   when: PromptModuleMutationWhen | undefined,
   context: PromptModuleCompilerContext,
   modules: readonly PromptModule[],

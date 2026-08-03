@@ -97,4 +97,24 @@ describe("check-knip-baseline script", () => {
     expect(result.stderr).toContain("Stale baseline entries");
     expect(result.stderr).toContain("allowedExport");
   });
+
+  it("does not let baseline refresh reintroduce AgentPlane CLI debt", async () => {
+    const { root, baselinePath } = await setupKnipFixture({
+      issues: [
+        {
+          file: "packages/agentplane/src/example.ts",
+          exports: [{ name: "unusedCliExport", line: 3, col: 17 }],
+        },
+      ],
+    });
+
+    const result = await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--baseline", baselinePath, "--update-baseline"],
+      { cwd: root },
+    ).catch((err: unknown) => err as { stderr: string });
+
+    expect(result.stderr).toContain("Knip package budget guard failed");
+    expect(result.stderr).toContain("agentplane CLI: files=0/0, total=1/0");
+  });
 });

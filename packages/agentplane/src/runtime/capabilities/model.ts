@@ -1,4 +1,4 @@
-export type AgentplaneCapabilityKind =
+type AgentplaneCapabilityKind =
   | "backend_field"
   | "command"
   | "scenario"
@@ -9,9 +9,9 @@ export type AgentplaneCapabilityKind =
   | "runner_policy_field"
   | "policy";
 
-export type AgentplaneCapabilityAvailability = "available" | "blocked" | "unavailable";
+type AgentplaneCapabilityAvailability = "available" | "blocked" | "unavailable";
 
-export type AgentplaneCapabilitySourceId =
+type AgentplaneCapabilitySourceId =
   | "backend"
   | "builtin"
   | "command_catalog"
@@ -20,7 +20,7 @@ export type AgentplaneCapabilitySourceId =
   | "recipe_manifest"
   | "runner_adapter";
 
-export type AgentplaneCapabilitySourceRef = {
+type AgentplaneCapabilitySourceRef = {
   id: AgentplaneCapabilitySourceId;
   detail: string;
 };

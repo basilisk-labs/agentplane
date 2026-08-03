@@ -83,11 +83,11 @@ export type TaskTransitionWrite = {
   nextTask: TaskData;
 };
 
-export type TaskStatusTransitionDependencyPolicy =
+type TaskStatusTransitionDependencyPolicy =
   | { kind: "none" }
   | { kind: "require-ready"; failureMessage?: string };
 
-export type TaskStatusTransitionCommentCommitPolicy = {
+type TaskStatusTransitionCommentCommitPolicy = {
   enabled: boolean;
   action: string;
   confirmed: boolean;

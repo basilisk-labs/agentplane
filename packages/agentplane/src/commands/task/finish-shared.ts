@@ -79,7 +79,7 @@ export function existingCommitInfo(task: TaskData): ResolvedCommitInfo | null {
   return { hash, message };
 }
 
-export function assertTaskCanFinish(opts: {
+function assertTaskCanFinish(opts: {
   task: TaskData;
   config: CommandContext["config"];
   taskCount: number;

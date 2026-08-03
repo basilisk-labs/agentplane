@@ -163,7 +163,7 @@ function renderExecutionProfilePromptContent(runtime: ResolvedExecutionProfileRu
   );
 }
 
-export function buildFrameworkExecutionProfilePromptModule(
+function buildFrameworkExecutionProfilePromptModule(
   runtime: ResolvedExecutionProfileRuntime,
 ): PromptModule {
   return frameworkPromptModule({

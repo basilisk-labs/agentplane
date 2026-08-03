@@ -161,7 +161,7 @@ function readVerifyPrimaryPolicy(config: AgentplaneConfig): {
   return { requireStepsForPrimary, requireVerificationForPrimary };
 }
 
-export function resolvePrimaryTagFromConfig(
+function resolvePrimaryTagFromConfig(
   tags: string[],
   config: AgentplaneConfig,
 ): PrimaryTagResolution {

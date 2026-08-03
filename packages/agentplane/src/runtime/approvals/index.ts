@@ -1,13 +1,2 @@
-export type {
-  ApprovalDecisionSource,
-  ApprovalRequest,
-  ApprovalRequirement,
-  ApprovalResolveOptions,
-  ApprovalRuntimeOptions,
-  EffectiveApprovalSettings,
-} from "./model.js";
-export {
-  ApprovalRuntime,
-  createApprovalRuntime,
-  resolveEffectiveApprovalSettings,
-} from "./runtime.js";
+export type { ApprovalRequirement } from "./model.js";
+export { ApprovalRuntime, createApprovalRuntime } from "./runtime.js";

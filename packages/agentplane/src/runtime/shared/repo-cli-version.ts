@@ -9,7 +9,7 @@ import {
 import type { RuntimeSourceInfo } from "./runtime-source.js";
 import { compareVersions } from "./version-compare.js";
 
-export type RepoCliVersionState =
+type RepoCliVersionState =
   | "unconfigured"
   | "satisfied"
   | "older_than_expected"
@@ -23,7 +23,7 @@ export type RepoCliVersionExpectation = {
   recovery: string | null;
 };
 
-export function getRepoExpectedCliVersion(config: AgentplaneConfig): string | null {
+function getRepoExpectedCliVersion(config: AgentplaneConfig): string | null {
   const raw = config.framework.cli.expected_version;
   if (typeof raw !== "string") return null;
   const trimmed = raw.trim();

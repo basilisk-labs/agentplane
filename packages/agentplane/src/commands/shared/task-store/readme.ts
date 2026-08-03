@@ -24,7 +24,7 @@ export function normalizeTaskRevision(value: unknown, fallback = 1): number {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : fallback;
 }
 
-export function readStoredTaskRevision(value: unknown): number | null {
+function readStoredTaskRevision(value: unknown): number | null {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : null;
 }
 

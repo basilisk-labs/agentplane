@@ -1,6 +1,5 @@
-import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import type { CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
-import { cmdScenarioInfoParsed } from "../scenario.js";
 
 export type ScenarioInfoParsed = { recipeId: string; scenarioId: string };
 
@@ -28,11 +27,3 @@ export const scenarioInfoSpec: CommandSpec<ScenarioInfoParsed> = {
     return { recipeId, scenarioId };
   },
 };
-
-export const runScenarioInfo: CommandHandler<ScenarioInfoParsed> = (ctx, p) =>
-  cmdScenarioInfoParsed({
-    cwd: ctx.cwd,
-    rootOverride: ctx.rootOverride,
-    recipeId: p.recipeId,
-    scenarioId: p.scenarioId,
-  });

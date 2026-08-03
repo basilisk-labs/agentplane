@@ -24,7 +24,7 @@ import { emitReleaseLine } from "./shared.js";
 
 const RELEASE_CANDIDATE_BLUEPRINT_SNAPSHOT_PATH = "blueprint/resolved-snapshot.json";
 
-export async function applyReleaseMutation(opts: {
+async function applyReleaseMutation(opts: {
   agentplaneDir: string;
   gitRoot: string;
   git: GitContext;

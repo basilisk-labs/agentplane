@@ -1,4 +1,4 @@
-export type BuiltinBlueprintId =
+type BuiltinBlueprintId =
   | "analysis.light"
   | "content.light"
   | "docs.change"
@@ -97,9 +97,6 @@ export type BlueprintContextBudget = {
   rationale: string;
 };
 
-export type BlueprintDefinition = Blueprint;
-export type BlueprintState = BlueprintNode;
-
 export type Blueprint = {
   id: BlueprintId;
   version: 1;
@@ -151,7 +148,7 @@ export type StopRule = {
   severity: StopRuleSeverity;
 };
 
-export type RecipeExtensionPoint = {
+type RecipeExtensionPoint = {
   nodeKind: BlueprintNodeKind;
   allowed: readonly RecipeExtensionKind[];
   rejected: readonly string[];

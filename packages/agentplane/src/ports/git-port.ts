@@ -1,4 +1,4 @@
-export type GitHead = { hash: string; subject: string };
+type GitHead = { hash: string; subject: string };
 
 export type GitPort = {
   statusChangedPaths(): Promise<string[]>;

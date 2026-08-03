@@ -6,7 +6,7 @@ export type CliOutputWriter = {
   write: (chunk: string) => unknown;
 };
 
-export type CliEmitterStream = "stdout" | "stderr";
+type CliEmitterStream = "stdout" | "stderr";
 
 export type CliReportEntry =
   | string
@@ -15,7 +15,7 @@ export type CliReportEntry =
       value?: string | number | boolean | null;
     };
 
-export type CliReportOptions = {
+type CliReportOptions = {
   header?: string;
   stream?: CliEmitterStream;
 };

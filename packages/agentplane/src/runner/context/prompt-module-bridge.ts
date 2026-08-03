@@ -18,7 +18,7 @@ import {
 } from "../../runtime/prompt-modules/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
 
-export type RunnerPromptBlockModuleContent = {
+type RunnerPromptBlockModuleContent = {
   id: string;
   role: RunnerPromptRole;
   content: string;
@@ -30,7 +30,7 @@ export type RunnerPromptBlockModuleContent = {
   resolution?: RunnerPromptBlock["resolution"];
 };
 
-export type RunnerPromptModule = PromptModule<RunnerPromptBlockModuleContent>;
+type RunnerPromptModule = PromptModule<RunnerPromptBlockModuleContent>;
 
 /**
  * A runner episode may not proceed with a prompt graph that the canonical
@@ -145,7 +145,7 @@ function promptBlockContent(block: RunnerPromptBlock): RunnerPromptBlockModuleCo
   };
 }
 
-export function runnerPromptBlockToModule(block: RunnerPromptBlock): RunnerPromptModule {
+function runnerPromptBlockToModule(block: RunnerPromptBlock): RunnerPromptModule {
   const content = promptBlockContent(block);
   const owner = inferModuleOwner(block);
   const namespace = inferModuleNamespace(owner);

@@ -4,8 +4,3 @@ export {
   resumeTaskRunnerEffectExecution,
   retryTaskRunnerExecution,
 } from "./task-run-lifecycle-replay.js";
-export type {
-  CancelledTaskRunnerExecution,
-  ResumedTaskRunnerExecution,
-  RetriedTaskRunnerExecution,
-} from "./task-run-lifecycle-shared.js";

@@ -9,7 +9,7 @@ export type DirectWorkLock = {
   started_at: string;
 };
 
-export function directWorkLockPath(agentplaneDir: string): string {
+function directWorkLockPath(agentplaneDir: string): string {
   return path.join(agentplaneDir, "cache", "direct-work.json");
 }
 

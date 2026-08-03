@@ -207,11 +207,11 @@ export function resolveCodexInstallRoot(opts: {
   return os.homedir();
 }
 
-export function resolveCodexPluginRoot(installRoot: string): string {
+function resolveCodexPluginRoot(installRoot: string): string {
   return path.join(installRoot, "plugins", PLUGIN_NAME);
 }
 
-export function resolveCodexMarketplacePath(installRoot: string): string {
+function resolveCodexMarketplacePath(installRoot: string): string {
   return path.join(installRoot, ".agents", "plugins", "marketplace.json");
 }
 

@@ -87,14 +87,3 @@ export function transitionOrchestrationState(
   const next = TRANSITIONS[current][event];
   return { ok: true, next };
 }
-
-export function assertTransitionOrThrow(
-  current: OrchestrationState,
-  event: OrchestrationEvent,
-): OrchestrationState {
-  const result = transitionOrchestrationState(current, event, { strict: true });
-  if (!result.ok) {
-    throw new Error(`${result.code}: ${result.message}`);
-  }
-  return result.next;
-}

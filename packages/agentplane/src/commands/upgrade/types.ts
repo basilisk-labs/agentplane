@@ -18,7 +18,7 @@ export type FrameworkManifestEntry = {
   required?: boolean;
 };
 
-export type FrameworkManifestRemoval = {
+type FrameworkManifestRemoval = {
   path: string;
   type: FrameworkManifestEntry["type"];
 };

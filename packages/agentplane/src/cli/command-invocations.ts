@@ -43,7 +43,7 @@ function formatCommandId(id: CommandId): string {
   return id.join(" ");
 }
 
-export function getCanonicalCommandInvocation(id: CommandId): string | null {
+function getCanonicalCommandInvocation(id: CommandId): string | null {
   return COMMAND_INVOCATIONS.get(formatCommandId(id)) ?? null;
 }
 

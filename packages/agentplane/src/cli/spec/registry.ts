@@ -150,6 +150,6 @@ export class CommandRegistry {
   }
 }
 
-export function formatCommandId(id: CommandId): string {
+function formatCommandId(id: CommandId): string {
   return id.join(" ");
 }

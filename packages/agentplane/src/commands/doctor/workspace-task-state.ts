@@ -66,7 +66,7 @@ async function readTaskDocSnapshotsFromReadmes(
   return tasks;
 }
 
-export function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
+function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
   if (tasks.length === 0) return [];
 
   const legacy = tasks.filter((task) => task.doc_version !== 3);

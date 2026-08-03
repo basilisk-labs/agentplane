@@ -7,24 +7,14 @@ import type { AgentplaneCapabilityRegistry } from "../capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../execution-profile/index.js";
 import type { ResolvedHarnessContract } from "../harness/index.js";
 
-export type TaskIntakeSourceId =
-  | "task_new"
-  | "task_create"
-  | "recipe_scenario"
-  | "import"
-  | "system";
+type TaskIntakeSourceId = "task_new" | "task_create" | "recipe_scenario" | "import" | "system";
 
-export type TaskIntakeSourceRef = {
+type TaskIntakeSourceRef = {
   id: TaskIntakeSourceId;
   detail: string;
 };
 
-export type TaskIntakeInputKind =
-  | "text"
-  | "constraint"
-  | "task_reference"
-  | "recipe_reference"
-  | "output";
+type TaskIntakeInputKind = "text" | "constraint" | "task_reference" | "recipe_reference" | "output";
 
 export type TaskIntakeInput = {
   kind: TaskIntakeInputKind;
@@ -33,7 +23,7 @@ export type TaskIntakeInput = {
   required?: boolean;
 };
 
-export type TaskIntakePrecedence = {
+type TaskIntakePrecedence = {
   behavior_order: BehaviorLayer[];
   extension_layer: "recipes";
 };

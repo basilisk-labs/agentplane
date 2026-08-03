@@ -20,7 +20,7 @@ export type RuntimeMode =
   | "repo-local"
   | "repo-local-handoff";
 
-export type ResolvedPackageInfo = {
+type ResolvedPackageInfo = {
   name: string;
   version: string | null;
   packageRoot: string | null;

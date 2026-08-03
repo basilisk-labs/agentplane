@@ -1,5 +1,3 @@
-import type { ResolvedProject } from "@agentplaneorg/core/project";
-
 import type { CommandSpec } from "../../cli/spec/spec.js";
 import { runOperatorPipeline } from "../shared/operator-pipeline.js";
 import type { ReleaseApplyParsed, ReleaseCommandRouteResolver } from "./apply.types.js";
@@ -43,14 +41,5 @@ export async function runReleaseCommandPipeline(opts: {
       }),
   });
 }
-
-export type ReleaseApplyRouteResolverArgs = {
-  cwd: string;
-  rootOverride?: string | null;
-  gitRoot: string;
-  agentplaneDir: string;
-};
-
-export type ReleaseApplyResolvedProject = ResolvedProject;
 
 export { pushReleaseCandidateBranch, pushReleaseRefs } from "./apply.reporting.js";

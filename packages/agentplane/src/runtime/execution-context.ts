@@ -20,13 +20,13 @@ import { resolveHarnessFromCommandContext, type ResolvedHarnessContract } from "
 import { buildFrameworkProtocolSurface, type FrameworkProtocolSurface } from "./protocol/index.js";
 import { createTaskIntakeRuntime, type TaskIntakeRuntime } from "./task-intake/index.js";
 
-export type AgentplaneRepositoryContext = {
+type AgentplaneRepositoryContext = {
   git_root: string;
   agentplane_dir: string;
   workflow_dir: string;
 };
 
-export type AgentplaneBackendContext = {
+type AgentplaneBackendContext = {
   id: string;
   config_path: string;
   capabilities: CommandContext["taskBackend"]["capabilities"] | null;
@@ -72,26 +72,6 @@ export async function resolveCommandContext(opts: {
     config: opts.config,
     preparationTrace: opts.preparationTrace ?? null,
   });
-}
-
-export async function resolveReadOnlyExecutionContext(opts: {
-  cwd: string;
-  rootOverride?: string | null;
-  resolvedProject?: ResolvedProject;
-  config?: AgentplaneConfig;
-}): Promise<ReadOnlyExecutionContext> {
-  const command = await resolveCommandContext(opts);
-  return await makeReadOnlyExecutionContext(command);
-}
-
-export async function resolveExecutionContext(opts: {
-  cwd: string;
-  rootOverride?: string | null;
-  resolvedProject?: ResolvedProject;
-  config?: AgentplaneConfig;
-}): Promise<ExecutionContext> {
-  const command = await resolveCommandContext(opts);
-  return await makeExecutionContext(command);
 }
 
 export async function makeReadOnlyExecutionContext(

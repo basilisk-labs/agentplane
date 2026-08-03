@@ -15,17 +15,17 @@ import type {
 } from "./mutations.js";
 import type { PromptModuleCompilerContext, PromptModuleDiagnostic } from "./compiler.js";
 
-export type PromptModuleLoadMatcher = (
+type PromptModuleLoadMatcher = (
   condition: PromptModuleLoadCondition | undefined,
   context: PromptModuleCompilerContext,
 ) => boolean;
 
-export type PromptModuleSelectorMatcher = (
+type PromptModuleSelectorMatcher = (
   module: PromptModule,
   selector: PromptModuleSelector,
 ) => boolean;
 
-export type PromptModuleMutationWhenMatcher = (
+type PromptModuleMutationWhenMatcher = (
   when: PromptModuleMutationWhen | undefined,
   context: PromptModuleCompilerContext,
   modules: readonly PromptModule[],

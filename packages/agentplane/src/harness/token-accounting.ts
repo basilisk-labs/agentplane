@@ -1,4 +1,4 @@
-export type TokenTotals = {
+type TokenTotals = {
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;

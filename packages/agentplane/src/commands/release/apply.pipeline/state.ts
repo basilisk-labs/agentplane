@@ -24,10 +24,7 @@ import type {
   ReleaseVersionPlan,
 } from "../apply.types.js";
 
-export async function resolveReleasePlanInputs(opts: {
-  gitRoot: string;
-  planOverride?: string;
-}): Promise<{
+async function resolveReleasePlanInputs(opts: { gitRoot: string; planOverride?: string }): Promise<{
   planDir: string;
   plan: ReleaseVersionPlan;
   notesPath: string;

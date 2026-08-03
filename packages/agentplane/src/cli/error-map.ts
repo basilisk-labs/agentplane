@@ -14,7 +14,7 @@ import { BackendError } from "../backends/task-backend.js";
 import { getReasonCodeMeta } from "./reason-codes.js";
 import { renderRemediationLines } from "../shared/diagnostic-remediation.js";
 
-export type NextAction = {
+type NextAction = {
   command: string;
   reason: string;
   reasonCode?: string;

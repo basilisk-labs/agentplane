@@ -29,7 +29,7 @@ export type TaskStoreTaskPatch = Partial<
   >
 >;
 
-export type TaskStoreDocPatch =
+type TaskStoreDocPatch =
   | {
       kind: "replace-doc";
       doc: string;
@@ -95,11 +95,6 @@ export type TaskStoreMutationOptions = {
 export type TaskStoreLike = Pick<TaskStore, "patch"> & {
   mutate?: TaskStore["mutate"];
 };
-
-export type TaskStoreReader = {
-  get(taskId: string): Promise<TaskData>;
-};
-
 export interface TaskStore {
   get(taskId: string): Promise<TaskData>;
   update(

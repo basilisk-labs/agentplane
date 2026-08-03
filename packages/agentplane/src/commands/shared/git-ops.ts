@@ -19,12 +19,8 @@ export {
   gitBranchUpstream,
   gitCurrentBranch,
   gitProofIsAncestor,
-  gitListBranches,
   gitRevParse,
-  gitAddPaths,
-  gitCommit,
   gitInitRepo,
-  gitStagedPaths,
   resolveInitBaseBranch,
 } from "@agentplaneorg/core/git";
 

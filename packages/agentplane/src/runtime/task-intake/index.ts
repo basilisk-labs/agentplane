@@ -5,19 +5,4 @@ export {
   createTaskIntakeRuntime,
   materializeTaskGraphDraft,
 } from "./resolve.js";
-export type {
-  ClarificationContract,
-  ClarificationQuestion,
-  TaskGraphDependency,
-  TaskGraphDraft,
-  TaskGraphDraftTask,
-  TaskIntakeContext,
-  TaskIntakeInput,
-  TaskIntakeInputKind,
-  TaskIntakePrecedence,
-  TaskIntakeRuntime,
-  TaskIntakeSourceId,
-  TaskIntakeSourceRef,
-  TaskMaterializationEntry,
-  TaskMaterializationPlan,
-} from "./types.js";
+export type { TaskIntakeRuntime } from "./types.js";

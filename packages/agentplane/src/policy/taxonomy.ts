@@ -1,10 +1,8 @@
 import type { KnownPolicyActionId } from "./taxonomy-types.js";
 
-export type { KnownPolicyActionId } from "./taxonomy-types.js";
-
 export type PolicyActionId = KnownPolicyActionId | (string & {});
 
-export type PolicyActionFamily =
+type PolicyActionFamily =
   | "git"
   | "task"
   | "runner"
@@ -20,7 +18,7 @@ export type PolicyActionFamily =
   | "diagnostics"
   | "custom";
 
-export type PolicyApprovalKind =
+type PolicyApprovalKind =
   | "network_access"
   | "force_action"
   | "policy_write"

@@ -18,7 +18,7 @@ const SHELL_RISK_PATTERNS: readonly { pattern: RegExp; label: string }[] = [
   { pattern: /\$\{[^}]+}/, label: "shell variable expansion" },
 ];
 
-export function riskyInlineTextReason(value: string): string | null {
+function riskyInlineTextReason(value: string): string | null {
   for (const risk of SHELL_RISK_PATTERNS) {
     if (risk.pattern.test(value)) return risk.label;
   }

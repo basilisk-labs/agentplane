@@ -42,11 +42,6 @@ export async function readCoreDependencyVersion(pkgJsonPath: string): Promise<st
 export async function readRecipesDependencyVersion(pkgJsonPath: string): Promise<string> {
   return await readDependencyVersion(pkgJsonPath, "@agentplaneorg/recipes");
 }
-
-export async function readAgentplaneDependencyVersion(pkgJsonPath: string): Promise<string> {
-  return await readDependencyVersion(pkgJsonPath, "agentplane");
-}
-
 export async function readOptionalAgentplaneDependencyVersion(
   pkgJsonPath: string,
 ): Promise<string | null> {

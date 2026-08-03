@@ -18,22 +18,11 @@ import {
   type TrustedProjectBlueprintRegistryResult,
 } from "./project-local-model.js";
 import { loadProjectBlueprintTrustConfig } from "./project-local-trust.js";
-import {
-  parseProjectBlueprintJsonInternal,
-  validateProjectBlueprintDirectory,
-} from "./project-local-files.js";
+import { validateProjectBlueprintDirectory } from "./project-local-files.js";
 
 export {
-  PROJECT_BLUEPRINTS_CONFIG_NAME,
-  PROJECT_BLUEPRINTS_DIR,
   projectBlueprintsDirectory,
   type ProjectBlueprintCompatibilityReport,
-  type ProjectBlueprintDirectoryResult,
-  type ProjectBlueprintFileResult,
-  type ProjectBlueprintProblem,
-  type ProjectBlueprintProblemCode,
-  type ProjectBlueprintTrustConfig,
-  type ProjectBlueprintTrustConfigResult,
   type ScaffoldProjectBlueprintOptions,
   type TrustedProjectBlueprintRegistryResult,
 } from "./project-local-model.js";
@@ -45,10 +34,6 @@ export {
   loadProjectBlueprintTrustConfig,
   projectBlueprintsConfigPath,
 } from "./project-local-trust.js";
-
-// Keep the public name on the compatibility surface without exporting the internal helper module API.
-// eslint-disable-next-line unicorn/prefer-export-from
-export const parseProjectBlueprintJson = parseProjectBlueprintJsonInternal;
 
 function duplicateIds(ids: readonly BlueprintId[]): BlueprintId[] {
   const seen = new Set<string>();

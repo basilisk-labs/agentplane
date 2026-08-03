@@ -17,7 +17,7 @@ import type {
 } from "../apply.types.js";
 import { ensureReleasePlanMatchesRepoState } from "./state.js";
 
-export async function runPushPreflight(opts: {
+async function runPushPreflight(opts: {
   agentplaneDir: string;
   gitRoot: string;
   remote: string;
@@ -69,7 +69,7 @@ export async function runPushPreflight(opts: {
   return true;
 }
 
-export function assertReleaseBumpApproved(opts: {
+function assertReleaseBumpApproved(opts: {
   flags: ReleaseApplyParsed;
   plan: ReleaseVersionPlan;
   spec: CommandSpec<ReleaseApplyParsed>;

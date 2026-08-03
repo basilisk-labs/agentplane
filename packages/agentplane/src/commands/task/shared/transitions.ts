@@ -14,10 +14,7 @@ import { gitCurrentBranch } from "../../shared/git-ops.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
-import {
-  resolveCommentCommitWarning,
-  resolveStatusCommitPolicyWarning,
-} from "./transition-rules.js";
+import { resolveStatusCommitPolicyWarning } from "./transition-rules.js";
 
 export function ensurePlanApprovedIfRequired(task: TaskData, config: AgentplaneConfig): void {
   if (config.agents?.approvals?.require_plan !== true) return;
@@ -57,21 +54,6 @@ export function ensureVerificationSatisfiedIfRequired(
       `${task.id}: verification result is required before integration/closure can proceed ` +
       `(verification.state=${JSON.stringify(state)}; ${hint} or set agents.approvals.require_verify=false).`,
   });
-}
-
-export function ensureCommentCommitAllowed(opts: {
-  enabled: boolean;
-  config: AgentplaneConfig;
-  action: string;
-  confirmed: boolean;
-  quiet: boolean;
-  statusFrom: string;
-  statusTo: string;
-}): void {
-  const warning = resolveCommentCommitWarning(opts);
-  if (warning) {
-    process.stderr.write(`${warnMessage(warning)}\n`);
-  }
 }
 
 export async function ensureLifecycleCommentCommitLocation(opts: {
@@ -198,7 +180,7 @@ export type TaskTransitionCommentCommandOptions = {
   quiet: boolean;
 };
 
-export async function resolveTaskTransitionExecutorAgent(opts: {
+async function resolveTaskTransitionExecutorAgent(opts: {
   ctx: Pick<CommandContext, "config" | "resolvedProject">;
   taskId: string;
   author?: string;
@@ -314,12 +296,6 @@ export async function runOptionalTaskTransitionCommentCommit(opts: {
     progressMessage: opts.progressMessage,
     resolveExecutorAgent: opts.resolveExecutorAgent,
   });
-}
-
-export async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {
-  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], { cwd });
-  const { hash, subject } = parseGitLogHashSubject(stdout);
-  return { hash, message: subject };
 }
 
 export function enforceStatusCommitPolicy(opts: {

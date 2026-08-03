@@ -1,10 +1,7 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
-import type { PolicyActionId, PolicyApprovalKind } from "../../policy/taxonomy.js";
+import type { PolicyActionId } from "../../policy/taxonomy.js";
 import { createApprovalRuntime, type ApprovalRequirement } from "../../runtime/approvals/index.js";
-
-export type ApprovalAction = PolicyApprovalKind;
-
 export function getApprovalRequirements(opts: {
   config: AgentplaneConfig;
   action: PolicyActionId;

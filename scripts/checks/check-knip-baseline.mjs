@@ -9,6 +9,20 @@ const DEFAULT_CONFIG_PATH = "knip.json";
 const DEFAULT_BASELINE_PATH = "scripts/baselines/knip-baseline.json";
 const KNIP_NODE_HEAP_OPTION = "--max-old-space-size=4096";
 const ISSUE_KEYS = ["files", "exports", "types", "enumMembers", "namespaceMembers"];
+const PACKAGE_BUDGETS = [
+  {
+    label: "agentplane CLI",
+    pathPrefix: "packages/agentplane/",
+    maxFiles: 0,
+    maxTotal: 0,
+  },
+  {
+    label: "core compatibility",
+    pathPrefix: "packages/core/",
+    maxFiles: 0,
+    maxTotal: 21,
+  },
+];
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
@@ -172,6 +186,38 @@ function countEntries(entries) {
   return counts;
 }
 
+function countEntriesForPrefix(entries, pathPrefix) {
+  return countEntries(entries.filter((entry) => entry.file.startsWith(pathPrefix)));
+}
+
+function assertPackageBudgets(entries) {
+  const failures = [];
+  for (const budget of PACKAGE_BUDGETS) {
+    const counts = countEntriesForPrefix(entries, budget.pathPrefix);
+    if (counts.files > budget.maxFiles || counts.total > budget.maxTotal) {
+      failures.push(
+        `${budget.label}: files=${counts.files}/${budget.maxFiles}, total=${counts.total}/${budget.maxTotal}`,
+      );
+    }
+  }
+  if (failures.length > 0) {
+    throw new Error(
+      [
+        "Knip package budget guard failed.",
+        ...failures.map((failure) => `- ${failure}`),
+        "Remove unused CLI code or preserve the reviewed core compatibility surface; --update-baseline cannot widen these budgets.",
+      ].join("\n"),
+    );
+  }
+}
+
+function formatPackageBudgets(entries) {
+  return PACKAGE_BUDGETS.map((budget) => {
+    const counts = countEntriesForPrefix(entries, budget.pathPrefix);
+    return `${budget.label}: files=${counts.files}/${budget.maxFiles} total=${counts.total}/${budget.maxTotal}`;
+  }).join(", ");
+}
+
 function itemKey(file, key, item) {
   return `${file}\0${key}\0${item.name}`;
 }
@@ -248,10 +294,13 @@ const main = defineCheck({
   async check({ options, stdout }) {
     const report = runKnipJson(options.configPath);
     const currentEntries = normalizeIssueEntries(report);
+    assertPackageBudgets(currentEntries);
     if (options.updateBaseline) {
       writeBaseline(options.baselinePath, currentEntries);
       const counts = countEntries(currentEntries);
-      stdout.write(`Knip unused-code baseline updated (${formatCounts(counts, counts)})\n`);
+      stdout.write(
+        `Knip unused-code baseline updated (${formatCounts(counts, counts)}; ${formatPackageBudgets(currentEntries)})\n`,
+      );
       return;
     }
 
@@ -261,7 +310,7 @@ const main = defineCheck({
       `Knip unused-code baseline OK (${formatCounts(
         countEntries(currentEntries),
         countEntries(baseline.entries),
-      )})\n`,
+      )}; ${formatPackageBudgets(currentEntries)})\n`,
     );
   },
 });

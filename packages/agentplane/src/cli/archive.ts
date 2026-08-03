@@ -19,7 +19,7 @@ export type ArchiveEntryIssue = {
   reason: string;
 };
 
-export async function validateArchive(
+async function validateArchive(
   archivePath: string,
   type: ArchiveType,
 ): Promise<ArchiveEntryIssue[]> {

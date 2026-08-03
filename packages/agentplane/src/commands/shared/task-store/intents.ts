@@ -22,7 +22,7 @@ export function setTaskFieldsIntent(task: TaskStoreTaskPatch): TaskStoreIntent {
   return { kind: "set-task-fields", task };
 }
 
-export function appendTaskCommentsIntent(comments: TaskComment[]): TaskStoreIntent {
+function appendTaskCommentsIntent(comments: TaskComment[]): TaskStoreIntent {
   return { kind: "append-comments", comments };
 }
 
@@ -30,7 +30,7 @@ export function appendTaskCommentIntent(comment: TaskComment): TaskStoreIntent {
   return appendTaskCommentsIntent([comment]);
 }
 
-export function appendTaskEventsIntent(events: TaskEvent[]): TaskStoreIntent {
+function appendTaskEventsIntent(events: TaskEvent[]): TaskStoreIntent {
   return { kind: "append-events", events };
 }
 
@@ -148,7 +148,7 @@ function patchToIntents(patch: TaskStorePatch | null | undefined): TaskStoreInte
   return intents;
 }
 
-export function taskStorePatchFromIntents(
+function taskStorePatchFromIntents(
   intents: TaskStoreIntentResult,
 ): TaskStorePatch | null | undefined {
   const normalized = normalizeTaskStoreIntents(intents);

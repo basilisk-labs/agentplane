@@ -225,5 +225,3 @@ export function loadExecutionProfilePrompt(opts: {
     resolved,
   });
 }
-
-export { loadFrameworkRunnerPrompt } from "./prompt-block-shared.js";

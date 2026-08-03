@@ -50,8 +50,6 @@ import { readStableRegularTextNoFollow } from "./stable-file.js";
 
 export type RunnerRunStorage = "task" | "supervisor";
 
-export { parseRunnerEventsText } from "./run-repository-contract.js";
-
 function parseTimestamp(value: string | null | undefined): number {
   const parsed = typeof value === "string" ? Date.parse(value) : Number.NaN;
   return Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;

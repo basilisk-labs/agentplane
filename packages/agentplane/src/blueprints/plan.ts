@@ -55,9 +55,7 @@ export function workflowGitCapabilitiesForMode(
   return undefined;
 }
 
-export function blueprintPlanState(
-  node: ResolvedBlueprint["activeNodes"][number],
-): BlueprintPlanState {
+function blueprintPlanState(node: ResolvedBlueprint["activeNodes"][number]): BlueprintPlanState {
   return {
     id: node.id,
     kind: node.kind,

@@ -1,21 +1,10 @@
-import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  readScenarioDefinition,
-  type RecipeConflictMode,
-  type RecipeManifest,
-} from "@agentplaneorg/recipes";
-import * as recipes from "@agentplaneorg/recipes";
+import { readScenarioDefinition, type RecipeManifest } from "@agentplaneorg/recipes";
 
-import { exitCodeForError } from "../../../cli/exit-codes.js";
-import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
+import { fileExists } from "../../../cli/fs-utils.js";
 import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js";
-import { CliError } from "../../../shared/errors.js";
-import { isRecord } from "../../../shared/guards.js";
-import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
-
-import { RECIPES_SCENARIOS_DIR_NAME, RECIPES_SCENARIOS_INDEX_NAME } from "./constants.js";
 import { readRecipePromptModuleAsset, readRecipePromptMutationSetAsset } from "./prompt-assets.js";
 
 export async function moveRecipeDir(opts: { from: string; to: string }): Promise<void> {
@@ -110,97 +99,4 @@ export async function validateRecipeAssets(opts: {
       );
     }
   }
-}
-
-export async function applyRecipeAgents(opts: {
-  manifest: RecipeManifest;
-  recipeDir: string;
-  agentplaneDir: string;
-  onConflict: RecipeConflictMode;
-}): Promise<void> {
-  const agents = opts.manifest.agents ?? [];
-  if (agents.length === 0) return;
-
-  const agentsDir = path.join(opts.agentplaneDir, "agents");
-  await mkdir(agentsDir, { recursive: true });
-
-  for (const agent of agents) {
-    const rawId = typeof agent?.id === "string" ? agent.id : "";
-    const rawFile = typeof agent?.file === "string" ? agent.file : "";
-    if (!rawId.trim() || !rawFile.trim()) {
-      throw new Error("manifest.agents entries must include id and file");
-    }
-    const agentId = recipes.normalizeAgentId(rawId);
-    const sourcePath = path.join(opts.recipeDir, rawFile);
-    if (!(await fileExists(sourcePath))) {
-      throw new Error(missingFileMessage("recipe agent file", rawFile));
-    }
-    if (!isMarkdownAssetPath(rawFile)) {
-      throw new Error(invalidFieldMessage("recipe agent file", "markdown file (*.md)", rawFile));
-    }
-    const rawAgent = await readFile(sourcePath, "utf8");
-    if (!rawAgent.trim()) {
-      throw new Error(
-        invalidFieldMessage("recipe agent file", "non-empty markdown document", rawFile),
-      );
-    }
-
-    const baseId = `${opts.manifest.id}__${agentId}`;
-    let targetId = baseId;
-    let targetPath = path.join(agentsDir, `${targetId}.md`);
-    if (await getPathKind(targetPath)) {
-      if (opts.onConflict === "fail") {
-        throw new CliError({
-          exitCode: exitCodeForError("E_IO"),
-          code: "E_IO",
-          message: `Agent already exists: ${targetId}`,
-        });
-      }
-      if (opts.onConflict === "rename") {
-        let counter = 1;
-        while (await getPathKind(targetPath)) {
-          targetId = `${baseId}__${counter}`;
-          targetPath = path.join(agentsDir, `${targetId}.md`);
-          counter += 1;
-        }
-      }
-    }
-
-    const namespacedHeader = `# Agent: ${targetId}\n\n`;
-    const content = rawAgent.startsWith("# Agent:")
-      ? rawAgent
-      : `${namespacedHeader}${rawAgent.trimStart()}`;
-    await writeFile(targetPath, content, "utf8");
-  }
-}
-
-export async function applyRecipeScenarios(opts: {
-  manifest: RecipeManifest;
-  recipeDir: string;
-}): Promise<void> {
-  const scenariosDir = path.join(opts.recipeDir, RECIPES_SCENARIOS_DIR_NAME);
-  const scenariosIndexPath = path.join(opts.recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
-  const payload = { schema_version: 1, scenarios: [] as { id: string; summary?: string }[] };
-
-  if ((await getPathKind(scenariosDir)) === "dir") {
-    const entries = await readdir(scenariosDir);
-    const jsonEntries = entries.filter((entry) => entry.toLowerCase().endsWith(".json")).toSorted();
-    for (const entry of jsonEntries) {
-      const scenarioPath = path.join(scenariosDir, entry);
-      const scenario = await readScenarioDefinition(scenarioPath);
-      payload.scenarios.push({ id: scenario.id, summary: scenario.summary });
-    }
-  } else {
-    const scenarios = opts.manifest.scenarios ?? [];
-    payload.scenarios = scenarios
-      .filter((scenario) => isRecord(scenario))
-      .map((scenario) => ({
-        id: typeof scenario.id === "string" ? scenario.id : "",
-        summary: typeof scenario.summary === "string" ? scenario.summary : "",
-      }))
-      .filter((scenario) => scenario.id);
-  }
-
-  if (payload.scenarios.length === 0) return;
-  await writeJsonStableIfChanged(scenariosIndexPath, payload);
 }

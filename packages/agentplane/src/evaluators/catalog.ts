@@ -6,7 +6,7 @@ import { SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
 import { resolveAgentplaneAssetPath } from "../shared/package-paths.js";
 import { validateEvaluatorSgrResult, type EvaluatorSgrResult } from "./sgr-result.js";
 
-export type EvaluatorSource = "project" | "builtin";
+type EvaluatorSource = "project" | "builtin";
 
 export type EvaluatorModule = {
   id: string;
