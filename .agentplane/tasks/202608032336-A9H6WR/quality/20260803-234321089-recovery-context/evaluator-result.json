@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The runner delegates exact-version validation to the existing trusted ChatGPT Codex binary assertion, skips non-provider and dry-run paths, and invokes the check before evidence creation or scenario execution; focused tests and the recorded mismatch probe cover the relevant positive and negative paths.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608032336-A9H6WR/quality/objects/sha256/e6e57ad2cefb45e821ebe4fcd2e93d9c9beed5a68ccc5398299c0b9fb0ccc14d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

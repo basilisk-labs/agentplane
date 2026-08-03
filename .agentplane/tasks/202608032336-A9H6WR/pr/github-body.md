@@ -15,8 +15,13 @@ Fail provider-enabled v0.7.1 qualification before running local scenarios when t
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Local verification passed for the provider-runtime fail-fast change; evaluator and hosted checks
+remain separate downstream gates.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -3,14 +3,22 @@
   "branch": "task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua",
   "created_at": "2026-08-03T23:37:55.605Z",
   "diffstat_sha256": "sha256:ba9928221dad4cdb6dd4bcbcceb5a0559c74c32c0d4e3482c4f1642086660c80",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-03T23:42:26.420Z",
+  "last_verified_diffstat_sha256": "sha256:ba9928221dad4cdb6dd4bcbcceb5a0559c74c32c0d4e3482c4f1642086660c80",
   "pr_number": 4767,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4767",
+  "pre_merge_closure": {
+    "basis_commit": "a1ddd5ad94771832f1ffc59593113ac64b19b21a",
+    "branch": "task/202608032336-A9H6WR/preflight-the-provider-binary-before-release-qua",
+    "pr_number": 4767,
+    "recorded_at": "2026-08-03T23:43:50.169Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608032336-A9H6WR",
   "updated_at": "2026-08-03T23:38:16.998Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

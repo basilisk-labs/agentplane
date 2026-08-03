@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:9c1bbfd977e40b849d0cc0f0494855c9c2130ed35f10695d7e30699132d8c8a7",
+  "implementation_sha": "ede5a60b4c83a76c667a68524849c8644202ecc4",
+  "kind": "task_verification_record",
+  "note": "Local verification passed: qualification contract 20/20; full dry-run selected the expected non-provider matrix; TypeScript, ESLint, and Prettier passed; the bundled Codex 0.146.0-alpha.3.1 matched; a deliberate mismatch exited before scenario output and evidence creation.",
+  "recorded_at": "2026-08-03T23:41:19.508Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the focused release qualification contract tests. Expected: provider execution invokes the exact-binary preflight before scenario work; non-provider and dry-run paths do not invoke it; a version mismatch fails without starting a scenario.\n2. Run TypeScript type checking, ESLint, and Prettier checks for the touched qualification files. Expected: all pass.\n3. Run a no-provider dry-run and a provider preflight probe with the actual bundled version. Expected: dry-run remains side-effect free; the matching bundled version passes; a deliberately wrong version fails before any qualification scenario log is created.\n4. Complete independent evaluator review and hosted PR verification. Expected: no blocking findings and all required checks pass.",
+  "scope_digest": "sha256:db777fef3e6c2c1ad78f686d5452ddccccc20617511be19de3bd369db49d9d60",
+  "task_id": "202608032336-A9H6WR",
+  "verification_command": "agentplane verify 202608032336-A9H6WR --ok --by TESTER",
+  "verifier": "TESTER"
+}
