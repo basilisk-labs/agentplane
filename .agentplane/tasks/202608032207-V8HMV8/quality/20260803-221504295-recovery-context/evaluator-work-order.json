@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608032207-V8HMV8-3eea75a9ed675a87903a5153",
+  "prepared_at": "2026-08-03T22:15:04.295Z",
+  "task": {
+    "id": "202608032207-V8HMV8",
+    "revision": 11,
+    "objective": "Make qualification reruns ignore their active evidence directory\n\nFix the v0.7.1 qualification runner so its top-level exact-subject cleanliness check excludes only the explicitly selected nested evidence directory, allowing audit-to-gate reruns without hiding unrelated repository changes.",
+    "acceptance_criteria": [
+      "- In scope: Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness check excludes only the explicitly selected nested evidence directory, allowing audit-to-gate reruns without hiding unrelated repository changes.\n- Out of scope: unrelated refactors not required for \"Make qualification reruns ignore their active evidence directory\".",
+      "1. Pass the resolved nested qualification output directory into the runner's initial exact-subject identity check. 2. Add regression coverage proving existing active evidence is excluded while unrelated dirty paths still fail. 3. Run focused qualification contract tests, typecheck, lint/format checks, semantic evaluator, and hosted PR checks. 4. Merge through the integration queue, then rebase the exact-evidence task and rerun the full deterministic audit before the one-shot provider gate.",
+      "- A rerun using an existing nested --out-dir reaches scenario execution/dry-run when HEAD and all non-evidence paths are clean.\n- An unrelated tracked or untracked change still fails the exact-subject cleanliness gate.\n- Root-level and outside-repository evidence directories remain rejected.\n- node --test scripts/qualification/release-qualification.test.mjs passes.\n- bun run typecheck, focused lint/format checks, semantic evaluator, and all hosted PR checks pass."
+    ]
+  },
+  "evaluated_sha": "13f3d8101d2b31224497089325b4a1c2a0bbb239",
+  "diff_base_sha": "15c0d5808aa64bb6ad3f15666ccac58b1648cec1",
+  "blueprint_digest": "8966cc876517ec134af75fddcf98f9fdba7987db0976208be0491a86f3b3493b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608032207-V8HMV8/quality/20260803-221504295-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:03ef0ed0ee2ce5f22236c8b088e5f7b2f6bf27db98021d496e20706afc55b0a5",
+    "prompt_path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/8488a7cc33aae29a931039a1de7f8ab89189a7e0a85b2d0cfee2f935c8a5a011.md",
+    "result_schema_path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608032207-V8HMV8/README.md",
+      "sha256": "sha256:f5bc5e792f63f2dc53b11007fadbf6d81a45e8d4bab3d6ff9e51c90e17a7de9b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/b74f294b807a0a286a16be75b4f2bcedd501995ac4b3c96eb18aac25839ef409.patch",
+      "sha256": "sha256:b74f294b807a0a286a16be75b4f2bcedd501995ac4b3c96eb18aac25839ef409",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/68d1c9d1c92e895228f42292fe1754081e6beda96ddcd2dfe816d49cdfd731b1.json",
+      "sha256": "sha256:68d1c9d1c92e895228f42292fe1754081e6beda96ddcd2dfe816d49cdfd731b1",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608032207-V8HMV8/verification/20260803221445752-ba13a07622260bf4.json",
+      "sha256": "sha256:4a3ac60541305bae2c46706af9069b3e47c78dac6b4b1d026510cc92fe931c8c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608032207-V8HMV8/quality/objects/sha256/36721cc7e9f0ca58821114f51ebf0f87fdac49b5557462688b63b3b59071c03c.json",
+      "sha256": "sha256:36721cc7e9f0ca58821114f51ebf0f87fdac49b5557462688b63b3b59071c03c",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
