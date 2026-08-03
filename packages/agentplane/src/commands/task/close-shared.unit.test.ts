@@ -92,6 +92,21 @@ describe("task close-shared helper (unit)", () => {
         result_summary: "No-op verified",
         risk_level: "low",
         breaking: false,
+        token_usage: {
+          schema_version: 1,
+          state: "unavailable",
+          input_tokens: null,
+          output_tokens: null,
+          reasoning_tokens: null,
+          total_tokens: null,
+          agent_runs: 0,
+          observed_agent_runs: 0,
+          source: "unavailable",
+          observed_by: "agentplane",
+          journal_digest: null,
+          unavailable_reason: "supervisor_journal_unreadable_or_invalid",
+          updated_at: "2026-03-13T16:10:00.000Z",
+        },
         comments: [
           {
             author: "CODER",

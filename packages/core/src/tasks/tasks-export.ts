@@ -13,6 +13,7 @@ import {
   type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,
   type TaskRunnerTarget,
+  type TaskTokenUsage,
   type TaskSyncEnvelope,
 } from "./task-store.js";
 
@@ -483,6 +484,7 @@ export type TasksExportTask = {
     note: string | null;
   };
   runner?: TaskRunnerOutcome;
+  token_usage?: TaskTokenUsage;
   sync?: TaskSyncEnvelope;
   depends_on: string[];
   tags: string[];
@@ -634,6 +636,7 @@ export async function buildTasksExportSnapshot(opts: {
           : { state: "pending", updated_at: null, updated_by: null, note: null },
       verification: normalizeTaskVerification(fm.verification),
       runner: normalizeTaskRunnerOutcome(fm.runner),
+      token_usage: t.frontmatter.token_usage,
       sync: normalizeTaskSyncEnvelope(fm.sync),
       depends_on: dependsOn,
       tags,

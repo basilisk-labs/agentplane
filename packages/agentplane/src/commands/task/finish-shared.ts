@@ -20,6 +20,7 @@ import {
   resolvePrimaryTag,
   toStringArray,
 } from "./shared.js";
+import { resolveTaskTokenUsageOnFinish } from "./task-token-usage.js";
 
 export type ResolvedCommitInfo = {
   hash: string;
@@ -220,6 +221,11 @@ export async function writeFinishedTasks(opts: {
   for (const loaded of opts.loadedTasks) {
     const { taskId, task } = loaded;
     const at = nowIso();
+    const tokenUsage = await resolveTaskTokenUsageOnFinish({
+      git_root: opts.ctx.resolvedProject.gitRoot,
+      task_id: taskId,
+      updated_at: at,
+    });
     const applyTransition = async (currentTask: TaskData) => {
       assertTaskCanFinish({
         task: currentTask,
@@ -260,6 +266,7 @@ export async function writeFinishedTasks(opts: {
           ? { hash: opts.taskCommitInfo.hash, message: opts.taskCommitInfo.message }
           : undefined,
         extraFields: {
+          token_usage: tokenUsage,
           ...(taskId === opts.metaTaskId && opts.resultSummary
             ? { result_summary: opts.resultSummary }
             : {}),

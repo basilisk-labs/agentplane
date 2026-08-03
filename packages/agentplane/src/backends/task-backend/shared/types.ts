@@ -5,6 +5,7 @@ import type {
   TaskEvent,
   TaskOrigin,
   TaskRunnerOutcome,
+  TaskTokenUsage,
   TaskSyncEnvelope,
   QualityReviewResult,
   VerificationResult,
@@ -22,6 +23,7 @@ export {
   TaskRunnerOutcome,
   TaskRunnerOutcomeStatus,
   TaskRunnerTarget,
+  TaskTokenUsage,
   QualityReviewResult,
   VerificationState,
   VerificationResult,
@@ -70,6 +72,7 @@ export type TaskData = {
   verification?: VerificationResult;
   quality_review?: QualityReviewResult;
   runner?: TaskRunnerOutcome;
+  token_usage?: TaskTokenUsage;
   sync?: TaskSyncEnvelope;
   commit?: { hash: string; message: string } | null;
   comments?: { author: string; body: string }[];

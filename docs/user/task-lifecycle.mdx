@@ -35,6 +35,11 @@ outputs, prepared knowledge evidence, verification intent, and stop rules. The a
 semantic result; Agentplane separately records process, Git, filesystem, artifact, and check facts.
 An agent-reported check is not accepted as an observed check without supervisor evidence.
 
+On completion, the same trust boundary produces a task-level token aggregate. Managed provider
+episodes contribute observed input, visible output, reasoning, and total tokens exactly once.
+External, malformed, legacy, or partially observed episodes remain explicitly `partial` or
+`unavailable`; the CLI does not accept agent-supplied usage and does not fabricate zeroes.
+
 ## Canonical branch_pr lifecycle
 
 After task creation and semantic plan approval, the default managed path is one command:

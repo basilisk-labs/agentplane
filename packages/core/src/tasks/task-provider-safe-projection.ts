@@ -5,6 +5,7 @@ import type {
   QualityReviewState,
   TaskFrontmatter,
   TaskRunnerOutcomeStatus,
+  TaskTokenUsage,
   VerificationState,
 } from "./task-store.js";
 
@@ -38,6 +39,7 @@ export type ProviderSafeTaskProjection = {
   verification_attempts: number;
   quality_review_state?: QualityReviewState;
   runner_status?: TaskRunnerOutcomeStatus;
+  token_usage?: TaskTokenUsage;
   commit_hash?: string;
   doc_version?: TaskDocVersion;
   doc_updated_at?: string;
@@ -83,6 +85,7 @@ export type ProviderSafeTaskProjectionInput = Pick<
   | "verification"
   | "quality_review"
   | "runner"
+  | "token_usage"
   | "sync"
   | "sections"
   | "doc_version"
@@ -131,6 +134,7 @@ export function buildProviderSafeTaskProjection(
     verification_attempts: task.verification?.attempts ?? 0,
     ...(task.quality_review?.state ? { quality_review_state: task.quality_review.state } : {}),
     ...(task.runner?.status ? { runner_status: task.runner.status } : {}),
+    ...(task.token_usage ? { token_usage: structuredClone(task.token_usage) } : {}),
     ...(task.commit?.hash ? { commit_hash: task.commit.hash } : {}),
     ...(task.doc_version ? { doc_version: task.doc_version } : {}),
     ...(task.doc_updated_at ? { doc_updated_at: task.doc_updated_at } : {}),

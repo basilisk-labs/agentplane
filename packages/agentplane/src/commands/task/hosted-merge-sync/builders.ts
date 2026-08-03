@@ -4,6 +4,17 @@ import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { appendTaskEvent } from "../shared.js";
 import type { HostedMergedPr, LocalBranchPrSyncCandidate, LocalMergedPrMeta } from "./model.js";
+import { unavailableTaskTokenUsage } from "../task-token-usage.js";
+
+function reconciliationTokenUsage(task: TaskData, at: string): TaskData["token_usage"] {
+  return (
+    task.token_usage ??
+    unavailableTaskTokenUsage({
+      reason: "completed_by_merge_reconciliation_without_supervisor_token_projection",
+      updated_at: at,
+    })
+  );
+}
 
 export function buildSyncedPrMeta(opts: {
   meta: TaskPrMeta;
@@ -35,6 +46,7 @@ export function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr
   return {
     ...opts.task,
     status: "DONE",
+    token_usage: reconciliationTokenUsage(opts.task, at),
     result_summary: opts.task.result_summary ?? `Merged via PR #${opts.mergedPr.number}.`,
     commit: opts.task.commit?.hash?.trim()
       ? opts.task.commit
@@ -82,6 +94,7 @@ export function buildLocallyMergedSyncedTask(opts: {
   return {
     ...opts.task,
     status: "DONE",
+    token_usage: reconciliationTokenUsage(opts.task, at),
     result_summary: opts.task.result_summary ?? "Merged and reconciled from local PR metadata.",
     commit: opts.task.commit?.hash?.trim()
       ? opts.task.commit
@@ -115,6 +128,7 @@ export function buildLocallySyncedTask(opts: {
   return {
     ...opts.task,
     status: "DONE",
+    token_usage: reconciliationTokenUsage(opts.task, at),
     result_summary:
       opts.task.result_summary ??
       `Shipped on ${opts.candidate.base} and reconciled from local branch_pr state.`,

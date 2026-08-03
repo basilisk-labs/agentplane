@@ -79,7 +79,10 @@ function assertPersistedEvaluatorReceipt(opts: {
       usage !== null &&
       isNonNegativeInteger(usage.input_tokens) &&
       isNonNegativeInteger(usage.output_tokens) &&
-      isNonNegativeInteger(usage.total_tokens));
+      isNonNegativeInteger(usage.total_tokens) &&
+      (usage.visible_output_tokens === undefined ||
+        isNonNegativeInteger(usage.visible_output_tokens)) &&
+      (usage.reasoning_tokens === undefined || isNonNegativeInteger(usage.reasoning_tokens)));
   if (
     value.schema_version !== 1 ||
     value.kind !== "evaluator_episode_receipt" ||
@@ -155,6 +158,8 @@ function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
   input_tokens?: number;
   output_tokens?: number;
   total_tokens?: number;
+  visible_output_tokens?: number;
+  reasoning_tokens?: number;
   wall_time_ms: number;
   changed_files: number;
 } {

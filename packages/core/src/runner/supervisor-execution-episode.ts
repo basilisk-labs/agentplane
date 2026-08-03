@@ -71,12 +71,36 @@ export const SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA = z
     input_tokens: NON_NEGATIVE_INTEGER,
     output_tokens: NON_NEGATIVE_INTEGER,
     total_tokens: NON_NEGATIVE_INTEGER,
+    visible_output_tokens: NON_NEGATIVE_INTEGER.optional(),
+    reasoning_tokens: NON_NEGATIVE_INTEGER.optional(),
+    token_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
     wall_time_ms: NON_NEGATIVE_INTEGER,
     changed_files: NON_NEGATIVE_INTEGER,
     diff_lines: NON_NEGATIVE_INTEGER,
     no_progress_episodes: NON_NEGATIVE_INTEGER,
   })
-  .strict();
+  .strict()
+  .superRefine((usage, ctx) => {
+    if (
+      usage.token_observed_agent_runs !== undefined &&
+      usage.token_observed_agent_runs > usage.agent_runs
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Observed token-usage runs cannot exceed supervisor agent runs.",
+      });
+    }
+    if (
+      usage.visible_output_tokens !== undefined &&
+      usage.reasoning_tokens !== undefined &&
+      usage.visible_output_tokens + usage.reasoning_tokens > usage.output_tokens
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Visible and reasoning output cannot exceed charged output tokens.",
+      });
+    }
+  });
 
 const SUPERVISOR_EPISODE_CURSOR_ZOD_SCHEMA = z
   .object({
@@ -172,6 +196,9 @@ const ZERO_USAGE: SupervisorExecutionUsage = {
   input_tokens: 0,
   output_tokens: 0,
   total_tokens: 0,
+  visible_output_tokens: 0,
+  reasoning_tokens: 0,
+  token_observed_agent_runs: 0,
   wall_time_ms: 0,
   changed_files: 0,
   diff_lines: 0,
@@ -532,6 +559,14 @@ export function completeSupervisorExecutionEpisode(opts: {
     throw new Error("Supervisor episode completion requires the latest operation intent.");
   }
   const usageInput = opts.usage ?? {};
+  const tokenUsageObserved =
+    isAgentOperation(last.kind) &&
+    Number.isSafeInteger(usageInput.input_tokens) &&
+    Number.isSafeInteger(usageInput.output_tokens) &&
+    Number.isSafeInteger(usageInput.total_tokens) &&
+    Number(usageInput.input_tokens) >= 0 &&
+    Number(usageInput.output_tokens) >= 0 &&
+    Number(usageInput.total_tokens) >= 0;
   const previousProgress = journal.operations.findLast(
     (operation) => operation.progress_digest !== null,
   )?.progress_digest;
@@ -549,6 +584,13 @@ export function completeSupervisorExecutionEpisode(opts: {
     input_tokens: journal.usage.input_tokens + Math.max(0, usageInput.input_tokens ?? 0),
     output_tokens: journal.usage.output_tokens + Math.max(0, usageInput.output_tokens ?? 0),
     total_tokens: journal.usage.total_tokens + Math.max(0, usageInput.total_tokens ?? 0),
+    visible_output_tokens:
+      (journal.usage.visible_output_tokens ?? 0) +
+      Math.max(0, usageInput.visible_output_tokens ?? 0),
+    reasoning_tokens:
+      (journal.usage.reasoning_tokens ?? 0) + Math.max(0, usageInput.reasoning_tokens ?? 0),
+    token_observed_agent_runs:
+      (journal.usage.token_observed_agent_runs ?? 0) + (tokenUsageObserved ? 1 : 0),
     wall_time_ms: journal.usage.wall_time_ms + Math.max(0, usageInput.wall_time_ms ?? 0),
     changed_files: Math.max(
       journal.usage.changed_files,

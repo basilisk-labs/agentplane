@@ -165,6 +165,7 @@ export async function generateAcr(opts: {
   const mergeReady = residualRisks.length === 0;
   const extensions = {
     "agentplane.blueprint": blueprint,
+    ...(task.token_usage ? { "agentplane.token_usage": task.token_usage } : {}),
     ...buildAcrContextExtension(task),
   };
   if (trust) Object.assign(extensions, trust);
