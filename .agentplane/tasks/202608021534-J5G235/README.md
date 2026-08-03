@@ -1,10 +1,11 @@
 ---
 id: "202608021534-J5G235"
 title: "Reduce the v0.7.1 CLI dead-code and barrel baseline"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -54,9 +55,23 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "No contract divergence was found in the frozen implementation diff or verification evidence."
+token_usage:
+  agent_runs: 1
+  input_tokens: 268211
+  journal_digest: "sha256:426cf4accdbe720153689c3d26fe3622f406f99c3e3a61fd666e70b709b6c8b8"
+  observed_agent_runs: 1
+  observed_by: "agentplane"
+  output_tokens: 2237
+  reasoning_tokens: 459
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 270907
+  unavailable_reason: null
+  updated_at: "2026-08-03T15:47:04.492Z"
 commit:
-  hash: "c76ac407e7e16aa697a1d029df6cde3538329d85"
-  message: "♻️ J5G235 task: remove dead CLI surface"
+  hash: "73eea8a5719ac3af87ccbe2ca962580018bcbc6a"
+  message: "🔎 J5G235 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -64,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: reduced AgentPlane CLI Knip debt from 517 symbols plus one unused file to zero while preserving compatibility contracts; full contract and 3768-test suite pass."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -91,8 +109,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified CLI dead-code ratchet and compatibility preservation with structured check evidence."
+  -
+    type: "status"
+    at: "2026-08-03T15:47:04.492Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T15:43:43.843Z"
+doc_updated_at: "2026-08-03T15:47:04.502Z"
 doc_updated_by: "CODER"
 description: "Audit dynamic entrypoints, remove declaration-only AgentPlane CLI exports and unnecessary internal barrel re-exports, reduce the CLI-package Knip baseline by 60-80 percent where evidence permits, preserve @agentplaneorg/core compatibility, and ratchet against future growth."
 sections:
@@ -237,6 +262,9 @@ sections:
       Impact: The route correctly rejected it as non-durable evidence and withheld quality-review progression.
       Resolution: Re-recorded every executed check with explicit Command, Result, Evidence, and Scope fields so verification can be validated deterministically.
 extensions:
+  implementation_commit:
+    hash: "c76ac407e7e16aa697a1d029df6cde3538329d85"
+    message: "♻️ J5G235 task: remove dead CLI surface"
   workflow_route_baseline:
     start_head_sha: "f44bc0c51c13652b21d61b5e314ca1d4f624c465"
     version: 1
@@ -395,3 +423,16 @@ DecisionContextRef:
 - Observation: The first verification note contained complete evidence but not the CLI-required structured check grammar.
   Impact: The route correctly rejected it as non-durable evidence and withheld quality-review progression.
   Resolution: Re-recorded every executed check with explicit Command, Result, Evidence, and Scope fields so verification can be validated deterministically.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `1/1` agent runs
+- Input tokens: `268211`
+- Output tokens: `2237`
+- Reasoning tokens: `459`
+- Total tokens: `270907`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:426cf4accdbe720153689c3d26fe3622f406f99c3e3a61fd666e70b709b6c8b8`
+- Unavailable reason: `none`
+- Updated at: `2026-08-03T15:47:04.492Z`
