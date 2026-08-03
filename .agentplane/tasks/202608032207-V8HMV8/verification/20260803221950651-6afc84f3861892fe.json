@@ -1,0 +1,15 @@
+{
+  "details": "Command: GitHub PR #4765 review thread PRRT_kwDORCLmJM6WIyeH\nResult: fail\nEvidence: --out-dir packages/agentplane/src is currently accepted and excluded from git status\nScope: exact-candidate qualification trust boundary",
+  "digest": "sha256:6afc84f3861892fedc042a669ab32fb07cfd020b2b69a8a94a7f2e1e8e06a0e9",
+  "implementation_sha": "13f3d8101d2b31224497089325b4a1c2a0bbb239",
+  "kind": "task_verification_record",
+  "note": "GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate.",
+  "recorded_at": "2026-08-03T22:19:50.651Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "- A rerun using an existing nested --out-dir reaches scenario execution/dry-run when HEAD and all non-evidence paths are clean.\n- An unrelated tracked or untracked change still fails the exact-subject cleanliness gate.\n- Root-level and outside-repository evidence directories remain rejected.\n- node --test scripts/qualification/release-qualification.test.mjs passes.\n- bun run typecheck, focused lint/format checks, semantic evaluator, and all hosted PR checks pass.",
+  "scope_digest": "sha256:23b5b9451e6fedfbe082e491d9c4ca243dc6e174e949b8e6724478176b772a00",
+  "task_id": "202608032207-V8HMV8",
+  "verification_command": "agentplane verify 202608032207-V8HMV8 --rework --by TESTER",
+  "verifier": "TESTER"
+}

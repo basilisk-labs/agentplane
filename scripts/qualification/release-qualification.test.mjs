@@ -185,8 +185,11 @@ describe("v0.7.1 release qualification contract", () => {
       }).trim();
     try {
       git("init", "--quiet");
+      const sourceDirectory = path.join(root, "packages", "agentplane", "src");
+      mkdirSync(sourceDirectory, { recursive: true });
       writeFileSync(path.join(root, "candidate.txt"), "candidate\n", "utf8");
-      git("add", "candidate.txt");
+      writeFileSync(path.join(sourceDirectory, "index.ts"), "export {};\n", "utf8");
+      git("add", "candidate.txt", "packages/agentplane/src/index.ts");
       git(
         "-c",
         "user.name=AgentPlane",
@@ -215,6 +218,29 @@ describe("v0.7.1 release qualification contract", () => {
       assert.throws(
         () => readQualificationRunSubjectIdentity(root, subject, evidenceDirectory),
         /candidate repository must be clean/u,
+      );
+      rmSync(path.join(root, "unrelated.txt"), { force: true });
+      rmSync(evidenceDirectory, { recursive: true, force: true });
+
+      const taskEvidenceDirectory = path.join(
+        root,
+        ".agentplane",
+        "tasks",
+        "202608032207-V8HMV8",
+        "evidence",
+      );
+      mkdirSync(taskEvidenceDirectory, { recursive: true });
+      writeFileSync(path.join(taskEvidenceDirectory, "scenario.log"), "evidence\n", "utf8");
+      assert.deepEqual(
+        readQualificationRunSubjectIdentity(root, subject, taskEvidenceDirectory),
+        expected,
+      );
+      rmSync(taskEvidenceDirectory, { recursive: true, force: true });
+
+      writeFileSync(path.join(sourceDirectory, "index.ts"), "export const dirty = true;\n", "utf8");
+      assert.throws(
+        () => readQualificationRunSubjectIdentity(root, subject, sourceDirectory),
+        /out-dir must use \.agentplane\/reports/u,
       );
       assert.throws(
         () => qualificationEvidenceStatusPathspec(root, root),

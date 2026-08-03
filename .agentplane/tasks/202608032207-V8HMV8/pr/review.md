@@ -6,14 +6,14 @@ Created: 2026-08-03T22:08:23.232Z
 
 - Task: `202608032207-V8HMV8`
 - Title: Make qualification reruns ignore their active evidence directory
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608032207-V8HMV8/qualification-evidence-rerun`
 - Canonical task record: `.agentplane/tasks/202608032207-V8HMV8/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Isolated qualification rerun regression and static checks pass.
+- State: needs_rework
+- Note: GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

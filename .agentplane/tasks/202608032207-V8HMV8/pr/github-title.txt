@@ -1,1 +1,1 @@
-✅ V8HMV8 task: Make qualification reruns ignore their active evidence directory [202608032207-V8HMV8]
+🚧 V8HMV8 task: Make qualification reruns ignore their active evidence directory [202608032207-V8HMV8]

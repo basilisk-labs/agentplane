@@ -15,8 +15,8 @@ Fix the v0.7.1 qualification runner so its top-level exact-subject cleanliness c
 
 ## Verification
 
-- State: ok
-- Note: Isolated qualification rerun regression and static checks pass.
+- State: needs_rework
+- Note: GitHub review found that an arbitrary nested --out-dir can hide source changes from the exact-subject gate.
 - Canonical workflow state lives in the task README.
 
 <details>
