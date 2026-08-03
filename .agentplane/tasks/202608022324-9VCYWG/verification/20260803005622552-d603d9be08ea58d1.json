@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun x vitest run focused external-agent, WorkOrder, supervisor, route, direct, branch_pr, and task-advance suites\nResult: pass\nEvidence: 12 test files passed; 97 tests passed, including 12 task-advance E2E scenarios\nScope: SemanticResult validation, packet size, stale and replay rejection, tamper resistance, direct and branch_pr convergence, crash recovery\n\nCommand: bun run typecheck and bun run lint:core\nResult: pass\nEvidence: TypeScript build completed and ESLint exited cleanly\nScope: Changed core and CLI production paths\n\nCommand: bun run knip:check and bun run hotspots:check\nResult: pass\nEvidence: Knip baseline 539 of 539 with no growth; runtime and test size thresholds passed\nScope: Unused-code and module-size regressions\n\nCommand: bun run schemas:check, bun run bench:compatibility:check, node .agentplane/policy/check-routing.mjs, and bun run format:changed\nResult: pass\nEvidence: Schema sync, compatibility contract, policy routing, and changed-file formatting all passed\nScope: Generated contracts, public CLI surface, policy graph, and formatting\n\nCommand: bun run test:critical\nResult: pass\nEvidence: All 12 critical-cli chunks passed\nScope: Agent efficiency, replay hardening, exit codes, Git edges, protected paths, scope leaks, symlink roots, and trust-boundary ratchets",
+  "digest": "sha256:d603d9be08ea58d195314f27894db6a153a780fe19ffe00b94fad7e2c91eac6f",
+  "implementation_sha": "146ff7f11d22b4fe58e198b087f6ea1756ec7b0c",
+  "kind": "task_verification_record",
+  "note": "Verified the external-agent SemanticResult round trip and fail-closed recovery contract.",
+  "recorded_at": "2026-08-03T00:56:22.552Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run focused task advance packet, result-ingestion, AgentSemanticResult validation, supervisor episode, stale-fingerprint, replay, and recovery tests. Expected: a valid result advances the same state machine as task run; malformed, stale, mismatched, or replayed results fail closed without duplicate effects. 2. Run direct and branch_pr external-agent E2E fixtures from task creation through terminal state. Expected: after task creation the external agent uses only task advance plus semantic-result files; Agentplane owns all Git, worktree, PR, verification, evaluator, integration, and cleanup transitions; every emitted packet is at most 2048 bytes and has one representation per field. 3. Run bun run typecheck, bun run lint:core, bun run knip:check, bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and bun run test:critical. Expected: all gates pass without Knip or hotspot baseline growth.",
+  "scope_digest": "sha256:36f96cfdec205a481215a21fa5d778959c18c4de7da763b3fe738b4032ef8378",
+  "task_id": "202608022324-9VCYWG",
+  "verification_command": "agentplane verify 202608022324-9VCYWG --ok --by TESTER",
+  "verifier": "TESTER"
+}
