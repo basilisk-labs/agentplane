@@ -9,7 +9,7 @@ import {
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 
-export function unavailableTaskTokenUsage(opts: {
+function unavailableTaskTokenUsage(opts: {
   reason: string;
   updated_at: string;
   journal?: SupervisorExecutionEpisodeJournal;
@@ -109,4 +109,19 @@ export async function resolveTaskTokenUsageOnFinish(opts: {
       updated_at: updatedAt,
     });
   }
+}
+
+export async function resolveReconciliationTaskTokenUsage(opts: {
+  task: { id: string; token_usage?: TaskTokenUsage };
+  git_root: string;
+  updated_at: string;
+}): Promise<TaskTokenUsage> {
+  return (
+    opts.task.token_usage ??
+    (await resolveTaskTokenUsageOnFinish({
+      git_root: opts.git_root,
+      task_id: opts.task.id,
+      updated_at: opts.updated_at,
+    }))
+  );
 }

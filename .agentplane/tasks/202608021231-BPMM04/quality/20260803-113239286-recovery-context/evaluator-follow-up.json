@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021231-BPMM04-ee7715f6a6704671e9f2b94c",
+  "task_id": "202608021231-BPMM04",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Route all hosted and local reconciliation completion paths through the same supervisor-journal projection used by finish/no-op closure, while preserving an existing stable projection for idempotent replay; add journal-present reconciliation tests for exact aggregation and repeated sync.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Hosted merge reconciliation completes tasks without projecting available supervisor token usage.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-113239286-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0b1f52682508119b9b5597a40e446ea58363d50ebee385c8fd0ac59b855b2495",
+          "section": "packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608021231-BPMM04/README.md",
+          "sha256": "sha256:44b1676730b2a46316b368e739c7b040731e183c75329899e1cd06f1a2c40838",
+          "section": "Verify Steps 3"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021231-BPMM04/quality/20260803-113239286-recovery-context/evaluator-result.json"
+}

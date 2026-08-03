@@ -16,6 +16,7 @@ import {
   resolveLocalMergedPrMeta,
 } from "../task/hosted-merge-sync/pr-meta.js";
 import type { LocalBranchPrSyncCandidate } from "../task/hosted-merge-sync/model.js";
+import { resolveReconciliationTaskTokenUsage } from "../task/task-token-usage.js";
 
 export type ReleaseTasksReconcileParsed = {
   taskIds: string[];
@@ -199,8 +200,14 @@ async function reconcileIncludedBatchTasks(opts: {
             meta: null,
             taskStatus: normalizeTaskStatus(task.status),
           };
+          const at = new Date().toISOString();
+          const tokenUsage = await resolveReconciliationTaskTokenUsage({
+            task,
+            git_root: cwd,
+            updated_at: at,
+          });
           synced += 1;
-          return buildLocallySyncedTask({ task, candidate });
+          return buildLocallySyncedTask({ task, candidate, tokenUsage, at });
         }),
       );
       return {
