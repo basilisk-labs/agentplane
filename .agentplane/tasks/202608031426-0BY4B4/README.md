@@ -1,10 +1,11 @@
 ---
 id: "202608031426-0BY4B4"
 title: "Make integration handoff and hosted-close finalization converge"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -57,11 +58,30 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The implementation matches the approved convergence contract: unresolved review gates remain non-terminal and retryable, ambiguous failures remain handoff fail-closed, finalized cleanup normalizes terminal queue entries, and hosted-close routing reaches terminal only after targeted cleanup is complete and the local base matches its remote-tracking branch."
-commit: null
+token_usage:
+  agent_runs: 2
+  input_tokens: 459781
+  journal_digest: "sha256:e520e8a0da6f7bfd59e6f571d0cdef2c89ecbd54daa33bacd0c6a86c28d3ab44"
+  observed_agent_runs: 2
+  observed_by: "agentplane"
+  output_tokens: 4285
+  reasoning_tokens: 939
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "observed"
+  total_tokens: 465005
+  unavailable_reason: null
+  updated_at: "2026-08-03T14:55:34.914Z"
+commit:
+  hash: "8e1af8fa105f4525105ca0904685b5f1276e449a"
+  message: "🔗 0BY4B4 task: link pull request"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -86,8 +106,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified with structured command evidence: focused route and queue suite, full local CI, and live PR 4756 terminal convergence all passed."
+  -
+    type: "status"
+    at: "2026-08-03T14:55:34.914Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-03T14:51:38.432Z"
+doc_updated_at: "2026-08-03T14:55:34.926Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr queue and route reconciliation so a merged PR with successful hosted-close and completed cleanup reaches terminal done automatically. Reproduce from PR 4756/run 30822322247: queue remained handoff, run-next would not reclaim it, and next-action repeated cleanup merged --finalize after cleanup was already clean. Preserve fail-closed behavior for unresolved reviews, failed checks, and ambiguous remote state."
 sections:
@@ -204,6 +231,9 @@ sections:
       Impact: Operators had to release queue entries manually and could receive an infinite cleanup-finalize route after successful hosted close.
       Resolution: Classify only the pre-merge unresolved-review gate as retryable queued state, keep unknown failures fail-closed, normalize terminal queue entries during finalize, and require synchronized base before terminal routing.
 extensions:
+  implementation_commit:
+    hash: "cd4b21269e0a274142560a755ff235f99c9a40e8"
+    message: "🚧 0BY4B4 task: converge hosted close"
   workflow_route_baseline:
     start_head_sha: "60557e837460d1855f0865983e4d4dbdc5caef2a"
     version: 1
@@ -334,3 +364,16 @@ DecisionContextRef:
 - Observation: Retryable unresolved review gates were persisted as ambiguous handoff, while hosted-close routing ignored already-clean synchronized state.
   Impact: Operators had to release queue entries manually and could receive an infinite cleanup-finalize route after successful hosted close.
   Resolution: Classify only the pre-merge unresolved-review gate as retryable queued state, keep unknown failures fail-closed, normalize terminal queue entries during finalize, and require synchronized base before terminal routing.
+
+## Token Usage
+
+- State: `observed`
+- Completeness: `2/2` agent runs
+- Input tokens: `459781`
+- Output tokens: `4285`
+- Reasoning tokens: `939`
+- Total tokens: `465005`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e520e8a0da6f7bfd59e6f571d0cdef2c89ecbd54daa33bacd0c6a86c28d3ab44`
+- Unavailable reason: `none`
+- Updated at: `2026-08-03T14:55:34.914Z`

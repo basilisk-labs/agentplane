@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f6724944e608f2b7f05fc691fea35997d768dc48609f21214a4969c80238540b",
   "pr_number": 4757,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4757",
+  "pre_merge_closure": {
+    "basis_commit": "8e1af8fa105f4525105ca0904685b5f1276e449a",
+    "branch": "task/202608031426-0BY4B4/make-integration-handoff-and-hosted-close-finali",
+    "pr_number": 4757,
+    "recorded_at": "2026-08-03T14:55:34.977Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202608031426-0BY4B4",
