@@ -1,1 +1,1 @@
-🚧 DAMQDM task: Skip provider-dependent qualification checks before provider capture [202608032042-DAMQDM]
+✅ DAMQDM task: Skip provider-dependent qualification checks before provider capture [202608032042-DAMQDM]
