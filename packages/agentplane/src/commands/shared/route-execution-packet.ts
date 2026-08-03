@@ -8,6 +8,7 @@ export type RouteExecutionPacket = {
   recommendedRole:
     | "ORCHESTRATOR"
     | "PLANNER"
+    | "CURATOR"
     | "CODER"
     | "TESTER"
     | "INTEGRATOR"

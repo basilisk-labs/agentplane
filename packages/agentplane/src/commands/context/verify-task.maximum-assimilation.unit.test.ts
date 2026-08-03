@@ -6,7 +6,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CommandContext } from "../shared/task-backend.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
-import { validateContextTaskArtifacts } from "../../context/verify-task.js";
+import {
+  validateContextTaskArtifacts,
+  verifyContextTaskFromSupervisor,
+} from "../../context/verify-task.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 
 let tempRoots: string[] = [];
@@ -219,6 +222,38 @@ describe("maximum-assimilation task verification", () => {
         parsed: { taskId: task.id },
       }),
     ).rejects.toThrow(/compatibility_unverified: persisted execution receipt is unauthenticated/u);
+  });
+
+  it("accepts the same task only through a live context-supervisor observation", async () => {
+    const root = await tempRoot();
+    const task = receiptBindingTask("202605281326-CTXLIVE");
+    const ctx = contextForReceiptBinding(root, task);
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await expect(
+      verifyContextTaskFromSupervisor({
+        ctx,
+        taskId: task.id,
+        changedPaths: [],
+      }),
+    ).resolves.toBe(0);
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      `context verify-task ${task.id}: ok`,
+    );
+  });
+
+  it("applies mutation policy to the live context-supervisor Git delta", async () => {
+    const root = await tempRoot();
+    const task = receiptBindingTask("202605281326-CTXSCOPE");
+
+    await expect(
+      verifyContextTaskFromSupervisor({
+        ctx: contextForReceiptBinding(root, task),
+        taskId: task.id,
+        changedPaths: ["context/raw/provider-mutated.md"],
+      }),
+    ).rejects.toThrow(/context\/raw\/provider-mutated\.md: raw mutation is forbidden/u);
   });
 
   it("does not read persisted receipt bytes after authentication fails", async () => {

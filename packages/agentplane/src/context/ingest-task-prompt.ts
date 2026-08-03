@@ -66,7 +66,7 @@ export function buildContextAssimilationPromptModule(
       "",
       "## Output and stop rules",
       "",
-      "- Output: one schema-valid `context_extraction` SGR under the task-owned `semantic-results/` directory. Include all required entity-resolution evidence, source refs, topology/page decisions, graph relations, conflicts, open questions, and coverage rows.",
+      "- Output: one schema-valid `context_extraction` SGR at `semantic-results/context-extraction.json` under the task directory. Include all required entity-resolution evidence, source refs, topology/page decisions, graph relations, conflicts, open questions, and coverage rows.",
       "- Evidence: preserve modality, validity, status, scope, supersession, confidence, visibility, and contradictions; never overwrite conflicting knowledge silently.",
       "- Stop: do not apply artifacts, rebuild indexes, run checks, invoke evaluators, write ACR, or finalize. Those are CLI-owned mechanical operations.",
       "- Budget: one CURATOR semantic result per work order. A semantic rework is a new bounded work order with only the relevant evaluator feedback.",

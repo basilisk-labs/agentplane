@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202608031321-5GK3DD/make-built-in-task-run-context-verifiable",
   "created_at": "2026-08-03T13:22:52.236Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:c1be285e32e5f0eb13237541b0309c1615f2fb199536d369f246bbb9b6d95d3b",
   "last_verified_at": null,
+  "pr_number": 4756,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4756",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202608031321-5GK3DD",
-  "updated_at": "2026-08-03T13:22:52.236Z",
+  "updated_at": "2026-08-03T13:23:15.671Z",
   "verify": {
     "status": "skipped"
   }

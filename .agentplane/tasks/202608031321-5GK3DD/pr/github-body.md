@@ -22,12 +22,23 @@ Fix GitHub issue #4641 by ensuring the default built-in runner completes through
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T13:22:52.236Z
+- Updated: 2026-08-03T13:23:15.671Z
 - Branch: task/202608031321-5GK3DD/make-built-in-task-run-context-verifiable
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/context/assimilation-supervisor.ts    |  94 ++++++-
+ .../context/assimilation-supervisor.unit.test.ts   |  63 +++++
+ .../verify-task.maximum-assimilation.unit.test.ts  |  37 ++-
+ .../agentplane/src/commands/context/verify-task.ts |   5 +-
+ .../src/commands/shared/route-execution-packet.ts  |   1 +
+ .../src/commands/shared/workflow-step-factory.ts   |  31 +++
+ .../src/commands/shared/workflow-step.test.ts      |  84 +++++++
+ .../agentplane/src/context/ingest-task-prompt.ts   |   2 +-
+ packages/agentplane/src/context/verify-task.ts     |  64 +++--
+ .../src/runner/usecases/task-run-authority.ts      |  26 +-
+ .../usecases/task-run-context.integration.test.ts  | 270 ++++-----------------
+ 11 files changed, 423 insertions(+), 254 deletions(-)
 ```
 
 </details>

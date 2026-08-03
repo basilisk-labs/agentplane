@@ -218,6 +218,37 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
         "task is already verified in direct workflow; close it with task complete instead of rerunning execution",
     });
   }
+  if (String(state.task.status).toUpperCase() === "DOING") {
+    const contextTask =
+      state.task.task_kind === "context" || state.task.mutation_scope === "context";
+    if (contextTask) {
+      const extractionPath = `.agentplane/tasks/${id}/semantic-results/context-extraction.json`;
+      const superviseCommand = `agentplane context supervise-task ${id} --extraction ${extractionPath}`;
+      return agentEpisodeStep({
+        state,
+        id: "agent.context_semantic_result",
+        code: "context_semantic_result_required",
+        phase: "context_semantic_result_required",
+        checkout: "current_checkout",
+        role: "CURATOR",
+        purpose: "implementation",
+        summary:
+          "produce one bounded context_extraction SGR, then return deterministic post-processing to the context supervisor",
+        objective:
+          `Write one schema-valid context_extraction SGR to ${extractionPath}; ` +
+          `do not materialize context outputs or mutate lifecycle state.`,
+        semanticMutationAllowed: true,
+        mustNot: [
+          "do not run the generic task runner for context work",
+          "do not apply context artifacts, rebuild indexes, verify, evaluate, or finalize the task",
+          "do not write outside the task-owned semantic-results directory",
+        ],
+        returnControlWhen: `after CURATOR writes ${extractionPath}; then run ${superviseCommand}`,
+        compatibilityCommand: superviseCommand,
+        selectedBlocker: null,
+      });
+    }
+  }
   const externalImplementationRecorded = Boolean(state.task.commit?.hash);
   if (externalImplementationRecorded || state.resume.runner.run_id || state.resume.runner.status) {
     if (externalImplementationRecorded || state.resume.runner.next_action === "none") {

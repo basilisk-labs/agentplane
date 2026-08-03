@@ -1,1 +1,4 @@
-export { cmdContextVerifyTask } from "../../context/verify-task.js";
+export {
+  cmdContextVerifyTask,
+  verifyContextTaskFromSupervisor,
+} from "../../context/verify-task.js";
