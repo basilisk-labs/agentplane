@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b8bb9abf0a7f976a1dc8b22b11da07c9010fb9e505c110bd3a853f1984e6834f",
+  "implementation_sha": null,
+  "kind": "task_verification_record",
+  "note": "Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass.",
+  "recorded_at": "2026-08-03T12:53:06.415Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run gh issue list --state open --limit 200. Expected: only confirmed release issues #4663 and #4641 remain open.\n2. Run gh pr list --state open --limit 200. Expected: the external backlog contains only deferred dependency PR #4752; the active audit task PR #4754 may also be open until integration.\n3. Run bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts. Expected: 29 current-main init tests pass while the audit records the missing .agentplane/tmp assertion as the #4663 gap.\n4. Run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts. Expected: 4 current-main integration tests pass, including the reproduced unauthenticated-receipt behavior for #4641.\n5. Run the focused provider, receipt, foreign-artifact, branch-snapshot, and active-task suites plus bun run guards:check and bun run release:incidents:check. Expected: current main passes and supports closure of superseded task PRs.\n6. Review Findings. Expected: each original open issue and PR has one explicit disposition, release blockers are bounded, and TypeScript 7 is excluded from v0.7.1.",
+  "scope_digest": "sha256:8ec800e5aa8c013d8458b917a878d87c4d6064e913707af9d8d9c38e463e4012",
+  "task_id": "202608021232-53WJMN",
+  "verification_command": "agentplane verify 202608021232-53WJMN --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -12,8 +12,8 @@ Created: 2026-08-03T12:39:16.407Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR.
+- State: ok
+- Note: Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

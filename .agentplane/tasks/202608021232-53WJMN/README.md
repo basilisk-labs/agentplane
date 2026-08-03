@@ -4,7 +4,7 @@ title: "Audit GitHub issues and pull requests for v0.7.1"
 status: "DOING"
 priority: "high"
 owner: "REVIEWER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -26,12 +26,14 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-03T12:51:48.983Z"
+  state: "ok"
+  updated_at: "2026-08-03T12:53:06.415Z"
   updated_by: "TESTER"
-  note: "Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR."
-  attempts: 1
-commit: null
+  note: "Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass."
+  attempts: 0
+commit:
+  hash: "eae94f01fba02cebe9bbe146519fdf14aad7f104"
+  message: "🚧 53WJMN task: align hosted inventory verification"
 comments:
   -
     author: "REVIEWER"
@@ -39,6 +41,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: recorded complete hosted inventory, reproducible issue evidence, PR dispositions, release blockers, and the coordinated post-release TypeScript 7 decision."
+  -
+    author: "CODER"
+    body: "Rework: adjusted hosted PR acceptance to distinguish the external backlog from the active audit task PR."
 events:
   -
     type: "status"
@@ -60,8 +65,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Behavioral evidence passed, but Verify Step 2 is stale after opening task PR #4754: it expects #4752 to be the only open PR."
+  -
+    type: "status"
+    at: "2026-08-03T12:52:31.472Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: adjusted hosted PR acceptance to distinguish the external backlog from the active audit task PR."
+  -
+    type: "verify"
+    at: "2026-08-03T12:53:06.415Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass."
 doc_version: 3
-doc_updated_at: "2026-08-03T12:52:14.872Z"
+doc_updated_at: "2026-08-03T12:53:07.355Z"
 doc_updated_by: "CODER"
 description: "Triage all open GitHub issues and pull requests against the exact main candidate, reproduce release-relevant reports, implement or create bounded follow-up tasks for confirmed blockers, close or disposition stale duplicates with evidence, and preserve hosted truth for the release decision."
 sections:
@@ -106,6 +124,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608021232-53WJMN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T12:53:06.415Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:52:31.472Z, excerpt_hash=sha256:8ec800e5aa8c013d8458b917a878d87c4d6064e913707af9d8d9c38e463e4012
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-53WJMN-audit-github-issues-and-pull-requests-for-v0-7-1/.agentplane/tasks/202608021232-53WJMN/blueprint/resolved-snapshot.json
+    - old_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+    - current_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-53WJMN
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -205,6 +253,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608021232-53WJMN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T12:53:06.415Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified corrected hosted inventory: only issues #4663/#4641 and external backlog PR #4752 remain, plus active audit PR #4754. Init 29/29, focused agentplane 86/86, CLI active 5/5, shared guards, trust ratchet, and release incident gate all pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T12:52:31.472Z, excerpt_hash=sha256:8ec800e5aa8c013d8458b917a878d87c4d6064e913707af9d8d9c38e463e4012
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-53WJMN-audit-github-issues-and-pull-requests-for-v0-7-1/.agentplane/tasks/202608021232-53WJMN/blueprint/resolved-snapshot.json
+- old_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+- current_digest: eee8fdb94a23b9f8b71d78fb33609825512b7a4bf70d2c4fca919eada7b3da92
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-53WJMN
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
