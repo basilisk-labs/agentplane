@@ -13,7 +13,7 @@ Created: 2026-08-03T18:26:18.371Z
 ## Verification
 
 - State: ok
-- Note: PASS: atomic effect authority publication and seven typed loser outcomes verified at 76c2607a560e.
+- Note: PASS: all mandatory gates and typed eight-process contention outcomes recorded explicitly at 76c2607a560e.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
