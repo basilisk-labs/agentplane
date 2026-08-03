@@ -189,14 +189,16 @@ async function main(argv = process.argv.slice(2)) {
     return;
   }
   const manifest = readQualificationManifest(options.manifestPath);
-  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject);
+  const outputDirectory = options.outputDirectory ?? defaultOutputDirectory();
+  assertOutputInsideRepository(outputDirectory);
+  const sourceIdentity = readQualificationSubjectIdentity(repoRoot, options.subject, {
+    evidenceDirectory: outputDirectory,
+  });
   const scenarios = selectQualificationScenarios(manifest, {
     profile: options.profile,
     provider: options.provider,
     scenarioIds: options.scenarioIds,
   });
-  const outputDirectory = options.outputDirectory ?? defaultOutputDirectory();
-  assertOutputInsideRepository(outputDirectory);
   const relativeOutputDirectory = path.relative(repoRoot, outputDirectory);
   const variables = {
     candidateEvidence: options.provider
