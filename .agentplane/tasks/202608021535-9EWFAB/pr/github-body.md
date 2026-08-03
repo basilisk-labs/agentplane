@@ -18,8 +18,8 @@ Replace repeated evaluator diffs, prompts, and raw logs with content-addressed r
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run test:critical
+- State: ok
+- Note: All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9.
 - Canonical workflow state lives in the task README.
 
 <details>

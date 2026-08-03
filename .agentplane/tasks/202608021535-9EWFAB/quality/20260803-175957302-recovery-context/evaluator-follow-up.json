@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608021535-9EWFAB-91c027d4f13941ed7c0cef49",
+  "task_id": "202608021535-9EWFAB",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Run and record the declared evidence-bundle generation and offline verification at the evaluated commit, proving that compact manifests and all referenced content-addressed objects are included; then repeat the independent evaluator review.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The final verification evidence does not show that the task evidence bundle was generated and verified offline.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/README.md",
+          "sha256": "sha256:bdc1d3b2e3c72bb3cd424e5781918b438971afac62b1e5715b5da5a64d9009ef",
+          "line": 709,
+          "lines": "5. Generate and verify the task evidence bundle, then run an independent evaluator against the committed implementation.",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202608021535-9EWFAB/verification/20260803175944499-94b08a2360bed567.json",
+          "sha256": "sha256:ffbe4288386b5e56f6bb5384aa5acfeaa399750f53b336633eac547ed1076080",
+          "line": 2,
+          "lines": "The recorded command and evidence summarize test, type, formatting, lint, dead-code, architecture, clone, and coverage checks, but contain no evidence-bundle generation or offline verification result.",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608021535-9EWFAB/quality/20260803-175957302-recovery-context/evaluator-result.json"
+}
