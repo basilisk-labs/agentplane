@@ -6,14 +6,14 @@ Created: 2026-08-03T13:04:59.802Z
 
 - Task: `202608031303-B5Q5NM`
 - Title: Ignore AgentPlane runtime tmp artifacts by default
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608031303-B5Q5NM/ignore-agentplane-runtime-tmp-artifacts`
 - Canonical task record: `.agentplane/tasks/202608031303-B5Q5NM/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified implementation 1f789618ad71: init 29/29, upgrade 14/14, targeted lint, diff check, and isolated tmp-ignore smoke all pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

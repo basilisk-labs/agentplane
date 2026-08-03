@@ -1,0 +1,26 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T13:11:38.871Z",
+    "updated_by": "TESTER",
+    "note": "Verified implementation 1f789618ad71: init 29/29, upgrade 14/14, targeted lint, diff check, and isolated tmp-ignore smoke all pass."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608031303-B5Q5NM/verification/20260803131138871-2b17cd78c797b30b.json",
+      "sha256": "sha256:64d998df9714d62fe868d2e0c032a1f0f316da596b41592f3a787892a5be438a"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

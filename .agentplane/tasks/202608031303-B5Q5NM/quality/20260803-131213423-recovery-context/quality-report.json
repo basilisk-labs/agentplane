@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202608031303-B5Q5NM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-03T13:12:13.586Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "1f789618ad7113dd3d9888d85c5b038cbfd25b68",
+  "blueprint_digest": "6ed1d97c82374dd2d28dcac21bb796c12d708b3a3fb1680b78bf91a263ebf0d8",
+  "findings": [
+    "The canonical runtime ignore set now includes .agentplane/tmp, so every caller receives the same policy.",
+    "Upgrade now repairs the complete canonical runtime ignore contract rather than the SQLite-only subset; the regression test proves idempotence and user-rule preservation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608031303-B5Q5NM/quality/20260803-131213423-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
