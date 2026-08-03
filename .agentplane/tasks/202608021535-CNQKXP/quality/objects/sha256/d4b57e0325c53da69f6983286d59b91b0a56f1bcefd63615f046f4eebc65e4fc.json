@@ -1,0 +1,28 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-03T19:12:26.883Z",
+    "updated_by": "TESTER",
+    "note": "PASS at bc76eb0c6: compatibility retirement inventory, doctor legacy, advanced repair migration, package contract, and legacy alias compatibility verified."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608021535-CNQKXP/verification/20260803191226883-b87ac1f8fe31fddd.json",
+      "sha256": "sha256:618e1a128938c8b1f37d5a83c255b5d45a301db1049cb00a32e33db4ede5d9a9"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

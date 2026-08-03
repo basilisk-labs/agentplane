@@ -25,7 +25,7 @@ export const runDoctorLegacy: CommandHandler<DoctorLegacyParsed> = async (ctx, p
     process.stdout.write(
       `${adapter.status.toUpperCase()} ${adapter.id} remove_in=${retirement}\n` +
         `  probe=${adapter.usage_probe.kind} evidence=${adapter.evidence.join("; ")}\n` +
-        `  migrate=${adapter.migration_command ?? "manual policy decision required"}\n`,
+        `  migrate=${adapter.migration_command}\n`,
     );
   }
   return 0;

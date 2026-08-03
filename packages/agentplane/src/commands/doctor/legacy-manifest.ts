@@ -34,7 +34,7 @@ const AdapterSchema = z
     deprecated_in: VERSION_SCHEMA.nullable(),
     remove_in: VERSION_SCHEMA.nullable(),
     removal_blocker: z.string().trim().min(1).nullable(),
-    migration_command: z.string().trim().min(1).nullable(),
+    migration_command: z.string().trim().min(1),
     usage_probe: z.object({ kind: z.enum(LEGACY_USAGE_PROBE_KINDS) }).strict(),
   })
   .strict()
@@ -124,8 +124,11 @@ export function validateCompatibilityRetirementManifest(
 export const COMPATIBILITY_RETIREMENT_MANIFEST =
   validateCompatibilityRetirementManifest(loadPackagedManifest());
 
-export async function validateCompatibilityRetirementSourcePaths(repoRoot: string): Promise<void> {
-  for (const adapter of COMPATIBILITY_RETIREMENT_MANIFEST.adapters) {
+export async function validateCompatibilityRetirementSourcePaths(
+  repoRoot: string,
+  manifest: CompatibilityRetirementManifest = COMPATIBILITY_RETIREMENT_MANIFEST,
+): Promise<void> {
+  for (const adapter of manifest.adapters) {
     for (const sourcePath of adapter.source_paths) {
       const absolute = path.resolve(repoRoot, sourcePath);
       const relative = path.relative(path.resolve(repoRoot), absolute);
