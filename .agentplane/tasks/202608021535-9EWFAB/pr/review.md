@@ -13,7 +13,7 @@ Created: 2026-08-03T16:19:36.596Z
 ## Verification
 
 - State: ok
-- Note: Directory-swap hardening passed deterministic adversarial coverage and all repository release gates.
+- Note: Portable trust-boundary rework passed focused evaluator coverage and every repository release gate at 8b77ddcf2.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

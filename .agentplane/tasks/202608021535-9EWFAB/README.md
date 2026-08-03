@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T17:28:55.264Z"
+  updated_at: "2026-08-03T17:42:58.017Z"
   updated_by: "TESTER"
-  note: "Directory-swap hardening passed deterministic adversarial coverage and all repository release gates."
+  note: "Portable trust-boundary rework passed focused evaluator coverage and every repository release gate at 8b77ddcf2."
   attempts: 0
 quality_review:
   state: "rework"
@@ -128,8 +128,14 @@ events:
     at: "2026-08-03T17:36:40.903Z"
     author: "CODER"
     body: "Rework: declare the portable trusted-workspace boundary in task acceptance, require EVALUATOR to respect explicit task and policy trust models, and escalate missing or contradictory security boundaries to human_review."
+  -
+    type: "verify"
+    at: "2026-08-03T17:42:58.017Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Portable trust-boundary rework passed focused evaluator coverage and every repository release gate at 8b77ddcf2."
 doc_version: 3
-doc_updated_at: "2026-08-03T17:36:40.903Z"
+doc_updated_at: "2026-08-03T17:42:59.431Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -321,6 +327,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-03T17:42:58.017Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Portable trust-boundary rework passed focused evaluator coverage and every repository release gate at 8b77ddcf2.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:36:40.903Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -337,6 +373,10 @@ sections:
     - Observation: Portable Node exposes no openat/linkat/renameat API, so a malicious same-user process could theoretically target the remaining syscall-sized interval after the final identity check; the implementation now matches the repository runner boundary model and fails closed on every observable swap checkpoint.
       Impact: Static symlinks and deterministic swaps before open, read, link, rename, or unlink cannot redirect evaluator evidence outside the repository; the narrower native-syscall race remains a platform threat-model limitation rather than an unobserved implementation path.
       Resolution: Keep directory and file dev/ino plus realpath checks around every operation, O_NOFOLLOW on opened files, and deterministic race regression tests; a future native openat helper would be a separate cross-platform security deliverable.
+
+    - Observation: The task now declares the same trusted-workspace boundary as the runner, and the evaluator prompt forbids silently widening an explicit task or policy trust model.
+      Impact: Static symlinks, tampered objects, and observable directory swaps fail closed; malicious same-user mutation inside the final portable pathname-to-syscall interval remains an explicitly accepted platform limitation for v0.7.1.
+      Resolution: Keep the portable checks and regression coverage in this release; route a native handle-relative filesystem helper as a separate cross-platform security deliverable.
 extensions:
   workflow_route_baseline:
     start_head_sha: "42d25ee59e3cf08909f91dd4dce761250029bf23"
@@ -540,6 +580,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-03T17:42:58.017Z — VERIFY — ok
+
+By: TESTER
+
+Note: Portable trust-boundary rework passed focused evaluator coverage and every repository release gate at 8b77ddcf2.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T17:36:40.903Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021535-9EWFAB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -560,3 +630,7 @@ DecisionContextRef:
 - Observation: Portable Node exposes no openat/linkat/renameat API, so a malicious same-user process could theoretically target the remaining syscall-sized interval after the final identity check; the implementation now matches the repository runner boundary model and fails closed on every observable swap checkpoint.
   Impact: Static symlinks and deterministic swaps before open, read, link, rename, or unlink cannot redirect evaluator evidence outside the repository; the narrower native-syscall race remains a platform threat-model limitation rather than an unobserved implementation path.
   Resolution: Keep directory and file dev/ino plus realpath checks around every operation, O_NOFOLLOW on opened files, and deterministic race regression tests; a future native openat helper would be a separate cross-platform security deliverable.
+
+- Observation: The task now declares the same trusted-workspace boundary as the runner, and the evaluator prompt forbids silently widening an explicit task or policy trust model.
+  Impact: Static symlinks, tampered objects, and observable directory swaps fail closed; malicious same-user mutation inside the final portable pathname-to-syscall interval remains an explicitly accepted platform limitation for v0.7.1.
+  Resolution: Keep the portable checks and regression coverage in this release; route a native handle-relative filesystem helper as a separate cross-platform security deliverable.
