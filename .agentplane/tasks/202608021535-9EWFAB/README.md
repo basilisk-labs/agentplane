@@ -4,7 +4,7 @@ title: "Compact and deduplicate v0.7.1 task evidence"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 31
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-03T18:02:28.538Z"
+  updated_at: "2026-08-03T18:03:27.845Z"
   updated_by: "TESTER"
-  note: "All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9."
+  note: "Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9."
   attempts: 0
 quality_review:
   state: "rework"
@@ -58,8 +58,8 @@ quality_review:
   findings:
     - "The final verification evidence does not show that the task evidence bundle was generated and verified offline."
 commit:
-  hash: "0d1463b04bc9688d69b64847d0aa6be0de080246"
-  message: "🔁 9EWFAB evidence: refresh replacement route"
+  hash: "adfda14890a67fac94f38a338d95f472de234ffd"
+  message: "🧪 9EWFAB evidence: record offline bundle proof"
 comments:
   -
     author: "CODER"
@@ -85,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation complete: content-addressed evaluator evidence, declared trusted-workspace boundary, and resumable shared-supervisor replacement routing verified at 0d1463b04bc9."
+  -
+    author: "CODER"
+    body: "Rework complete: generated deterministic 65-file evidence bundle, verified every hash offline, and confirmed compact evaluator manifests plus referenced content-addressed objects are included."
 events:
   -
     type: "status"
@@ -204,8 +207,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9."
+  -
+    type: "status"
+    at: "2026-08-03T18:03:26.694Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework complete: generated deterministic 65-file evidence bundle, verified every hash offline, and confirmed compact evaluator manifests plus referenced content-addressed objects are included."
+  -
+    type: "verify"
+    at: "2026-08-03T18:03:27.845Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9."
 doc_version: 3
-doc_updated_at: "2026-08-03T18:02:29.422Z"
+doc_updated_at: "2026-08-03T18:03:28.875Z"
 doc_updated_by: "CODER"
 description: "Replace repeated evaluator diffs, prompts, and raw logs with content-addressed references and compact Git-tracked manifests while preserving local-first auditability, exact hashes, ACR receipts, offline recovery, and optional access to raw objects."
 sections:
@@ -670,6 +686,41 @@ sections:
     Result: pass
     Evidence: manifest sha256:4f185ea56b2456fd0a349be18f21456418466ac2d14d2f793ec88237c1746032 contains 65 files; offline verification returned ok=true and errors=[]; manifest includes the compact evaluator review files and every referenced quality/objects/sha256 content object
     Scope: deterministic task evidence bundle and content-addressed evaluator inputs for task 202608021535-9EWFAB
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+    - old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-03T18:03:27.845Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T18:03:26.694Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+    Details:
+
+    Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 202608021535-9EWFAB --json; inspect manifest quality object entries
+    Result: pass
+    Evidence: committed manifest sha256:4f185ea56b2456fd0a349be18f21456418466ac2d14d2f793ec88237c1746032 contains 65 files; offline verification returned ok=true and errors=[]; manifest includes compact evaluator files and all referenced quality/objects/sha256 content objects
+    Scope: evaluator-requested evidence rework commit adfda14890a67fac94f38a338d95f472de234ffd over implementation 0d1463b04bc9688d69b64847d0aa6be0de080246
 
     BlueprintSnapshotRef:
     - state: current
@@ -1194,6 +1245,41 @@ Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 20260
 Result: pass
 Evidence: manifest sha256:4f185ea56b2456fd0a349be18f21456418466ac2d14d2f793ec88237c1746032 contains 65 files; offline verification returned ok=true and errors=[]; manifest includes the compact evaluator review files and every referenced quality/objects/sha256 content object
 Scope: deterministic task evidence bundle and content-addressed evaluator inputs for task 202608021535-9EWFAB
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021535-9EWFAB-compact-and-deduplicate-v0-7-1-task-evidence/.agentplane/tasks/202608021535-9EWFAB/blueprint/resolved-snapshot.json
+- old_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- current_digest: 9f18277ac6ecd4ab07e5c8a0dbb85c3df0b3599250cad56dec4387f73fbcfe85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021535-9EWFAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-03T18:03:27.845Z — VERIFY — ok
+
+By: TESTER
+
+Note: Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-03T18:03:26.694Z, excerpt_hash=sha256:09d2c9b2b464aff8a6e47861fe870f2873b10b27c93e36b17138ac92353043a0
+
+Details:
+
+Command: ap evidence bundle 202608021535-9EWFAB --json; ap evidence verify 202608021535-9EWFAB --json; inspect manifest quality object entries
+Result: pass
+Evidence: committed manifest sha256:4f185ea56b2456fd0a349be18f21456418466ac2d14d2f793ec88237c1746032 contains 65 files; offline verification returned ok=true and errors=[]; manifest includes compact evaluator files and all referenced quality/objects/sha256 content objects
+Scope: evaluator-requested evidence rework commit adfda14890a67fac94f38a338d95f472de234ffd over implementation 0d1463b04bc9688d69b64847d0aa6be0de080246
 
 BlueprintSnapshotRef:
 - state: current

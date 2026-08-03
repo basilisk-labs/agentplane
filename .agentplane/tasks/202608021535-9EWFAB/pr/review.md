@@ -13,7 +13,7 @@ Created: 2026-08-03T16:19:36.596Z
 ## Verification
 
 - State: ok
-- Note: All declared verification steps, including offline evidence-bundle verification, passed at 0d1463b04bc9.
+- Note: Evaluator-requested evidence rework passed at adfda14890a6; implementation code remains 0d1463b04bc9.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
