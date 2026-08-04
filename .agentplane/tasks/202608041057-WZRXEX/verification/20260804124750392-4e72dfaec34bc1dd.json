@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; bun run ci:contract; agentplane blueprint snapshot 202608041057-WZRXEX\nResult: pass\nEvidence: release-evidence suite 10/10; full contract pass; release.strict snapshot current with digest 6c6523eb8d4d48fa222e00cecb201f045f2edb5b88176ba91e3c60253c688fa6 and unchanged route\nScope: implementation head 797de1454",
+  "digest": "sha256:4e72dfaec34bc1ddab1ea45e522f4adc6a34942e3f0f229319ea7f5c281f1443",
+  "implementation_sha": "797de145457d7ef41951b3e6dd13360177ed8ffa",
+  "kind": "task_verification_record",
+  "note": "P1 fix verified against refreshed release blueprint snapshot",
+  "recorded_at": "2026-08-04T12:47:50.392Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts`. Expected: exact-commit task selection, version fallback, and genuine ambiguity cases pass.\n2. Run the `prepare` command against the archived v0.7.1 `publish-result.json`. Expected: task `202608021232-YCNM1S` is selected despite other DONE v0.7.1 release tasks.\n3. Run `bun run ci:contract` and `bun run release:prepublish`. Expected: all blocking contracts and release gates pass on the final v0.7.2 candidate.\n4. Verify task `202608021232-YCNM1S` contains hosted publish evidence for SHA `f519d9518c34226075a61d2b01b936127a77e587` and retains explicit unavailable token provenance.\n5. After merge and publish, verify npm `latest` for all three packages is `0.7.2`, tag and GitHub Release `v0.7.2` point to the exact merged SHA, a clean install reports `0.7.2`, postpublish audit passes from the workflow artifact, release evidence follow-up succeeds, main is clean and matches origin, and merged branches/worktrees are removed.",
+  "scope_digest": "sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452",
+  "task_id": "202608041057-WZRXEX",
+  "verification_command": "agentplane verify 202608041057-WZRXEX --ok --by TESTER",
+  "verifier": "TESTER"
+}
