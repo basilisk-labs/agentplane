@@ -315,6 +315,18 @@ describe("runCli", () => {
       await runCliSilent([
         "task",
         "plan",
+        "set",
+        taskId,
+        "--text",
+        "1. Exercise the commit-from-comment closeout path.\n2. Confirm a generated implementation commit invalidates the earlier quality review.",
+        "--updated-by",
+        "PLANNER",
+        "--root",
+        root,
+      ]);
+      await runCliSilent([
+        "task",
+        "plan",
         "approve",
         taskId,
         "--by",
