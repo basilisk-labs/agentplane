@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The product diff reuses an authoritative dirty-path observation, reduces managed Git observations from 8 to 7, and preserves invalidation and side-effect-safety coverage.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The only hosted failure was an independent UTC calendar-date test flake now fixed and merged on main; the synchronized head passes the focused token-usage test, release qualification contract, critical CLI 79/79, TS7 typecheck, lint, format, routing policy, and doctor.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

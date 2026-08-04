@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608040031-4XD57R-e592899268e8103365da0261",
+  "prepared_at": "2026-08-04T01:26:00.410Z",
+  "task": {
+    "id": "202608040031-4XD57R",
+    "revision": 19,
+    "objective": "Attribute and remove redundant Git observations from direct supervisor preparation\n\nExtend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling.",
+    "acceptance_criteria": [
+      "The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.",
+      "The candidate must reduce the measured direct managed-preparation observation count, preserve all route and recovery invariants, and pass the unchanged 20-cold/30-warm +10% median and p95 gate.",
+      "- In scope: Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling.\n- Out of scope: unrelated refactors not required for \"Attribute and remove redundant Git observations from direct supervisor preparation\".",
+      "1. Extend the supervisor latency report with bounded exact Git-command histograms aggregated outside the measured interval, and add contract tests for deterministic ordering and sample accounting. 2. Run the instrumented packed v0.6.26 versus current-main comparison to identify the exact two extra managed-preparation commands and any external-path asymmetry; preserve the raw report as task evidence. 3. Remove only observations that duplicate values already proven fresh in the same immutable command context or route snapshot; keep direct and branch_pr checkout identity, HEAD refresh after mutations, fingerprints, approvals, policy, provider, and effect-safety checks unchanged. 4. Add focused invalidation and parity tests, freeze a clean SHA, and require all four 20-cold/30-warm median and p95 surfaces to pass the unchanged +10% gate with a reduced candidate Git-command count. 5. Run critical/static/policy checks, independent evaluation, exact-head hosted review, and integrate through the queue before rebasing release qualification.",
+      "1. Run the qualification contract tests for the supervisor latency report. Expected: each baseline/candidate surface contains a deterministic, bounded Git command histogram whose total equals the summed per-sample Git subprocess count; instrumentation occurs after the timed command sequence.\n2. Run the instrumented packed benchmark against v0.6.26 on a clean SHA with at least 20 cold and 30 warm samples. Expected: the report identifies exact repeated command families and preserves raw evidence; no provider call occurs.\n3. Run focused route, task-run-path, supervisor, recovery, stale task/Git/policy/approval, concurrency, crash, and effect-in-doubt suites. Expected: the chosen observation reuse invalidates on every covered state change and no protected side effect can replay.\n4. Re-run node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject <clean-implementation-sha> --out <task-evidence>. Expected: every cold/warm median and p95 is <=10% above v0.6.26; managed candidate Git observations are lower than the blocked 2da557536 count of 8 and external preparation does not regress.\n5. Run bun run typecheck, touched ESLint/Prettier, bun run test:critical, ap doctor, node .agentplane/policy/check-routing.mjs, independent EVALUATOR, exact-head hosted checks, and review-thread audit. Expected: all pass before queue integration and hosted close."
+    ]
+  },
+  "evaluated_sha": "7a08766d8aa805b7995d2ea9bf1b794a7f8797fa",
+  "diff_base_sha": "d3caab895e83b7a50217b832fcd06c1c2f846e45",
+  "blueprint_digest": "5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4934da96b4e9846110669ac870ec44a5d5e3711a3048fb87a39d87ee1cbcb4e3",
+    "prompt_path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/5041c711308cbcc1d1cd049407db86540517d1e318c71cdd481697e8f8f74d46.md",
+    "result_schema_path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608040031-4XD57R/README.md",
+      "sha256": "sha256:05c7f7c5dcd655ebfb8b6d0dc7a0d0d8fbb2da11393558f53bab44cf33f19781",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738.patch",
+      "sha256": "sha256:aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/19e25dd2d25e4dbc3eed1d002ab7e832d81b0af6b2721700fc62a5a1bb24578b.json",
+      "sha256": "sha256:19e25dd2d25e4dbc3eed1d002ab7e832d81b0af6b2721700fc62a5a1bb24578b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/db30dd99829741a38a1a36a49b04dbba810d52219e13c1d30bb78b397f0c2044.json",
+      "sha256": "sha256:db30dd99829741a38a1a36a49b04dbba810d52219e13c1d30bb78b397f0c2044",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

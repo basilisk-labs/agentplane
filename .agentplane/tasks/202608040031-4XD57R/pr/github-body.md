@@ -19,10 +19,8 @@ Extend the packed supervisor benchmark with deterministic per-command Git histog
 - Note:
 
 ```text
-Verified committed sync head a53d59cbb: current-main flake fix plus unchanged measured performance
-implementation pass focused token-usage, qualification contract, critical CLI 79/79, TS7 typecheck,
-lint/format, policy routing, and doctor. Preserved 20-cold/30-warm evidence remains bound to exact
-product SHA 3a526415.
+Verified frozen head 158fd2432: current-main CI fix and unchanged exact supervisor optimization pass
+the rerun matrix; strict 20-cold/30-warm benchmark evidence remains valid for product SHA 3a526415.
 ```
 - Canonical workflow state lives in the task README.
 
