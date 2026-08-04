@@ -222,14 +222,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           ],
         },
         release_version_delta: {
-          source_task: "202607221854-XV67TD",
+          source_task: "202608021232-YCNM1S",
           classification: "planned_version_parity",
           from_version: "0.6.24",
-          to_version: "0.7.0",
+          to_version: "0.7.1",
           section: "package_manifests",
           from_sha256: "1a3f80e534f28b976a303dcc796275944d940b96fbeef20b8f3d19425288595a",
-          to_sha256: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
-          surface_sha256: "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
+          to_sha256: "866563384fc3752d3e118c0e7a8af16228b129bbb0aba68e3154e50b769e830a",
+          surface_sha256: "d7f336298d745546bb8bd50db8c3a13876ce42d63fe386c4d3574e363a47e060",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -524,7 +524,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
   });
 
   it(
-    "reconstructs the exact planned v0.7.0 manifest surface from the reviewed candidate",
+    "reconstructs the exact planned v0.7.1 manifest surface from the reviewed candidate",
     async () => {
       const source = `
         import {
@@ -556,7 +556,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
         });
         const before = collectCompatibilitySurface(versionedSource("0.6.24"));
-        const after = collectCompatibilitySurface(versionedSource("0.7.0"));
+        const after = collectCompatibilitySurface(versionedSource("0.7.1"));
         const sectionDigests = surfaceSectionDigests(after);
         process.stdout.write(JSON.stringify({
           packageManifestDigest: sectionDigests.package_manifests,
@@ -567,8 +567,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       expect(JSON.parse(result.stdout)).toEqual({
-        packageManifestDigest: "6eab5e774561f26e43ff5f97c266cdf67942f6d61f2f379e13bb93913dd98d80",
-        surfaceDigest: "891de739c29c79a19e98678bbff4854e3bd4e39cf2a58c33b08a085a827e0a6b",
+        packageManifestDigest: "866563384fc3752d3e118c0e7a8af16228b129bbb0aba68e3154e50b769e830a",
+        surfaceDigest: "d7f336298d745546bb8bd50db8c3a13876ce42d63fe386c4d3574e363a47e060",
         changedPaths: [
           "$.package_manifests[0].dependencies.@agentplaneorg/core",
           "$.package_manifests[0].dependencies.@agentplaneorg/recipes",

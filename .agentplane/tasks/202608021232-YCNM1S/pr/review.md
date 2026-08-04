@@ -109,6 +109,7 @@ Created: 2026-08-04T08:36:16.971Z
  ...-cli.core.lifecycle.finish-close-commit.test.ts |  12 +
  .../run-cli.core.tasks.close-noop-readme.test.ts   |  14 +-
  .../src/cli/run-cli.core.tasks.lifecycle.test.ts   |  14 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  16 +-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
@@ -118,7 +119,7 @@ Created: 2026-08-04T08:36:16.971Z
  .../check-compatibility-contract-baseline.mjs      |   8 +-
  website/static/img/social/docs/releases/v0.7.1.png | Bin 0 -> 52228 bytes
  website/static/img/social/manifest.json            |   8 +
- 89 files changed, 440 insertions(+), 1775 deletions(-)
+ 90 files changed, 448 insertions(+), 1783 deletions(-)
 ```
 
 </details>
