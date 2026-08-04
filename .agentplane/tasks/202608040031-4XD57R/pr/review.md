@@ -12,8 +12,8 @@ Created: 2026-08-04T00:32:15.684Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval.
+- State: ok
+- Note: Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

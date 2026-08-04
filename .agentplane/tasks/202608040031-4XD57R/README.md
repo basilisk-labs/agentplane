@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -24,37 +24,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-04T01:26:59.394Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-08-04T01:27:52.318Z"
+  updated_by: "TESTER"
+  note: "Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-04T01:26:00.848Z"
+  updated_at: "2026-08-04T01:27:56.104Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
   evaluated_sha: "7a08766d8aa805b7995d2ea9bf1b794a7f8797fa"
   blueprint_digest: "5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd"
   evidence_refs:
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/5041c711308cbcc1d1cd049407db86540517d1e318c71cdd481697e8f8f74d46.md"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012600410-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012755600-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012755600-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/2e7c77e3394d6b2c40a8089f2d20df7df3d6c013a1e45dfbbb103a753b62e0e9.md"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012755600-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012755600-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-012755600-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608040031-4XD57R/README.md"
     - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738.patch"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/19e25dd2d25e4dbc3eed1d002ab7e832d81b0af6b2721700fc62a5a1bb24578b.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/85cac9e03cad442ba7b1aa94b3bc449b9631d0a56eda3406fc17d196628493a7.json"
+    - ".agentplane/tasks/202608040031-4XD57R/verification/20260804012752318-eb86fbe721914dcb.json"
     - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/db30dd99829741a38a1a36a49b04dbba810d52219e13c1d30bb78b397f0c2044.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The product diff reuses an authoritative dirty-path observation, reduces managed Git observations from 8 to 7, and preserves invalidation and side-effect-safety coverage."
-    - "The only hosted failure was an independent UTC calendar-date test flake now fixed and merged on main; the synchronized head passes the focused token-usage test, release qualification contract, critical CLI 79/79, TS7 typecheck, lint, format, routing policy, and doctor."
+    - "Exact product SHA 3a526415 reduces managed Git observations from 8 to 7 while all cold and warm median and p95 comparisons remain within the unchanged +10% ceiling."
+    - "The current branch includes the merged deterministic UTC-date test fix and passes the focused token-usage, qualification-contract, critical CLI, TS7 typecheck, lint, format, routing, and doctor checks."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -168,8 +169,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Unsupported declared check: The benchmark report must expose bounded deterministic Git command histograms for baseline and candidate samples without adding work inside the timed interval."
+  -
+    type: "verify"
+    at: "2026-08-04T01:27:52.318Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass."
 doc_version: 3
-doc_updated_at: "2026-08-04T01:27:00.702Z"
+doc_updated_at: "2026-08-04T01:27:56.126Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
@@ -359,6 +366,51 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:26:00.871Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+    - old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T01:27:52.318Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:27:00.702Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+    Details:
+
+    Command: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject 3a526415de4ea9034687446e68f7115a97353402 --out .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+    Result: pass
+    Evidence: .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+    Scope: exact 20-cold and 30-warm v0.6.26 comparison; all four unchanged +10 percent median and p95 gates pass and managed Git observations decrease from 8 to 7
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts scripts/qualification/release-qualification.test.mjs && bun run test:critical && bun run typecheck
+    Result: pass
+    Evidence: focused token usage 3 of 3; qualification contract; critical CLI 79 of 79; TS7 typecheck
+    Scope: synchronized head regression and release-critical coverage
+
+    Command: bunx eslint touched-files && bun run format:changed && node .agentplane/policy/check-routing.mjs && ap doctor
+    Result: pass
+    Evidence: lint clean; formatting clean; policy routing OK; doctor OK with historical warnings only
+    Scope: static, policy, and repository health gates
 
     BlueprintSnapshotRef:
     - state: current
@@ -612,6 +664,51 @@ Attempts: 1
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:26:00.871Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608040031-4XD57R-attribute-and-remove-redundant-git-observations/.agentplane/tasks/202608040031-4XD57R/blueprint/resolved-snapshot.json
+- old_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- current_digest: 5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608040031-4XD57R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T01:27:52.318Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified synchronized performance implementation after the main CI-fix merge; strict latency evidence and all rerun safety checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T01:27:00.702Z, excerpt_hash=sha256:0a4dba5b8db43ca54d48c31317328093974e7f8e699af60823f96fb638134d9d
+
+Details:
+
+Command: node scripts/qualification/measure-v0.7.1-supervisor-latency.mjs --subject 3a526415de4ea9034687446e68f7115a97353402 --out .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+Result: pass
+Evidence: .agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json
+Scope: exact 20-cold and 30-warm v0.6.26 comparison; all four unchanged +10 percent median and p95 gates pass and managed Git observations decrease from 8 to 7
+
+Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts scripts/qualification/release-qualification.test.mjs && bun run test:critical && bun run typecheck
+Result: pass
+Evidence: focused token usage 3 of 3; qualification contract; critical CLI 79 of 79; TS7 typecheck
+Scope: synchronized head regression and release-critical coverage
+
+Command: bunx eslint touched-files && bun run format:changed && node .agentplane/policy/check-routing.mjs && ap doctor
+Result: pass
+Evidence: lint clean; formatting clean; policy routing OK; doctor OK with historical warnings only
+Scope: static, policy, and repository health gates
 
 BlueprintSnapshotRef:
 - state: current
