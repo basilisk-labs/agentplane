@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-08-04T12:04:12.205Z"
+  updated_at: "2026-08-04T12:28:47.188Z"
   updated_by: "TESTER"
-  note: "v0.7.2 release-evidence selection and release candidate verified."
+  note: "Final v0.7.2 candidate verification passed"
   attempts: 0
 quality_review:
   state: "pass"
@@ -112,8 +112,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-08-04T12:28:47.188Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Final v0.7.2 candidate verification passed"
 doc_version: 3
-doc_updated_at: "2026-08-04T12:05:26.821Z"
+doc_updated_at: "2026-08-04T12:28:48.570Z"
 doc_updated_by: "CODER"
 description: "Make post-publish evidence select the unique release task touched by the exact release commit before falling back to version-wide registry matching; add regression coverage for multiple DONE release tasks sharing one version, record v0.7.1 publication evidence, and ship the corrective patch release."
 sections:
@@ -197,6 +203,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608041057-WZRXEX
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-04T12:28:47.188Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Final v0.7.2 candidate verification passed
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T12:05:26.821Z, excerpt_hash=sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; archived v0.7.1 publish-result prepare replay; bun run ci:contract; bun run release:prepublish
+    Result: pass
+    Evidence: release evidence regression 9/9; real v0.7.1 replay selected 202608021232-YCNM1S; active release incident gate passed with resolved incident archived; final prepublish passed 101/101 release-ci chunks, 50/50 workflow tests, 204/204 significant tests, 16/16 release-critical tests, and 8/8 install migration scenarios
+    Scope: final implementation head f3000de59d32d425f4dda4eeea91cb8882e1872e
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
+    - old_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+    - current_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -309,6 +350,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608041057-WZRXEX
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-04T12:28:47.188Z — VERIFY — ok
+
+By: TESTER
+
+Note: Final v0.7.2 candidate verification passed
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T12:05:26.821Z, excerpt_hash=sha256:e86b3757a66971cef08f3b690d4b91196253d5eccc3a044a9eb9a1b21ec16452
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; archived v0.7.1 publish-result prepare replay; bun run ci:contract; bun run release:prepublish
+Result: pass
+Evidence: release evidence regression 9/9; real v0.7.1 replay selected 202608021232-YCNM1S; active release incident gate passed with resolved incident archived; final prepublish passed 101/101 release-ci chunks, 50/50 workflow tests, 204/204 significant tests, 16/16 release-critical tests, and 8/8 install migration scenarios
+Scope: final implementation head f3000de59d32d425f4dda4eeea91cb8882e1872e
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608041057-WZRXEX-disambiguate-hosted-release-evidence-task-select/.agentplane/tasks/202608041057-WZRXEX/blueprint/resolved-snapshot.json
+- old_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+- current_digest: aeb49d43a5ae3d93afd65fe4b524d5d0cc0c6971cd12c8db68df52ad369db54e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608041057-WZRXEX
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
