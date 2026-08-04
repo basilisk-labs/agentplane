@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -64,10 +64,10 @@ token_usage:
   state: "observed"
   total_tokens: 289945
   unavailable_reason: null
-  updated_at: "2026-08-04T22:45:13.677Z"
+  updated_at: "2026-08-04T22:50:26.298Z"
 commit:
-  hash: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
-  message: "🧪 M26FS0 release: preserve provider evidence provenance"
+  hash: "000625e8f7e2caf6560f2b896502cfc6c7bb07d2"
+  message: "🧪 M26FS0 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -84,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -168,8 +171,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Structured release verification covers implementation target 77e66477"
+  -
+    type: "status"
+    at: "2026-08-04T22:50:26.298Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-08-04T22:49:06.590Z"
+doc_updated_at: "2026-08-04T22:50:26.324Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.7.2 live release-tail regressions: ensure a GitHub Actions-created release-evidence PR obtains a real pull_request-scoped required PR verification without operator repair, and keep an already DONE release task terminal after its evidence-only task README commit lands on main. Add exact regression coverage and ship the corrective patch release."
 sections:
@@ -494,6 +504,9 @@ sections:
       Impact: The release gate cannot complete and the affected integration scenarios do not reach their intended behavior checks.
       Resolution: Diagnose the fixture and freshness source, preserve the production safety gate, add or adjust regression coverage, then rerun the complete release gate.
 extensions:
+  implementation_commit:
+    hash: "77e66477692a3ff42cc6321d49b87b0c6d35bf9f"
+    message: "🧪 M26FS0 release: preserve provider evidence provenance"
   workflow_route_baseline:
     start_head_sha: "9d0e0089dd83487defa8950d787a5fa67f53db10"
     version: 1
@@ -845,4 +858,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:33d6077a5cf9056191edd50681e89ded6d5cdfbe981eeec4d652f0398f535780`
 - Unavailable reason: `none`
-- Updated at: `2026-08-04T22:45:13.677Z`
+- Updated at: `2026-08-04T22:50:26.298Z`
