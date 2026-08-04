@@ -1,4 +1,0 @@
-$ "bun" "run" "typecheck"
-exit_code=0 signal=none duration_ms=173
-
-$ node scripts/checks/run-typescript-build.mjs
