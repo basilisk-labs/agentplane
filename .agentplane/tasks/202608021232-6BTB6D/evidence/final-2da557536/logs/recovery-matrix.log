@@ -1,7 +1,0 @@
-$ "node" "scripts/checks/run-vitest-suite.mjs" "v0.7-recovery"
-exit_code=0 signal=none duration_ms=51821
-
-Vitest suite v0.7-recovery: chunk 1/2 (6 files): packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts, packages/agentplane/src/runner/usecases/task-run-active-claim-reconciliation.test.ts
-Vitest suite v0.7-recovery: chunk 1/2 passed in 35056ms (Test Files  6 passed (6); Tests  49 passed (49); Duration  34.81s (transform 3.11s, setup 0ms, import 3.53s, tests 65.32s, environment 0ms))
-Vitest suite v0.7-recovery: chunk 2/2 (5 files): packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts, packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts, packages/agentplane/src/runner/usecases/task-run-state-fingerprint-post-state.integration.test.ts, packages/agentplane/src/commands/integrate-queue-recovery.test.ts, packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
-Vitest suite v0.7-recovery: chunk 2/2 passed in 16698ms (Test Files  5 passed (5); Tests  37 passed (37); Duration  16.46s (transform 2.64s, setup 0ms, import 2.66s, tests 26.72s, environment 0ms))

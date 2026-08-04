@@ -1,9 +1,0 @@
-$ "node" "scripts/checks/run-vitest-suite.mjs" "v0.7-supervisor"
-exit_code=0 signal=none duration_ms=29975
-
-Vitest suite v0.7-supervisor: chunk 1/3 (6 files): packages/core/src/runner/supervisor-execution-episode.test.ts, packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts, packages/agentplane/src/commands/shared/workflow-supervisor.test.ts, packages/agentplane/src/commands/shared/workflow-step.test.ts, packages/agentplane/src/commands/shared/workflow-step-projections.test.ts, packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
-Vitest suite v0.7-supervisor: chunk 1/3 passed in 3090ms (Test Files  6 passed (6); Tests  79 passed (79); Duration  2.86s (transform 1.77s, setup 0ms, import 2.84s, tests 2.29s, environment 0ms))
-Vitest suite v0.7-supervisor: chunk 2/3 (6 files): packages/agentplane/src/commands/task/direct-task-supervisor.test.ts, packages/agentplane/src/commands/task/branch-task-supervisor.test.ts, packages/agentplane/src/commands/task/agent-action-packet.test.ts, packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts, packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
-Vitest suite v0.7-supervisor: chunk 2/3 passed in 22633ms (Test Files  6 passed (6); Tests  71 passed (71); Duration  22.35s (transform 4.64s, setup 0ms, import 4.38s, tests 30.62s, environment 0ms))
-Vitest suite v0.7-supervisor: chunk 3/3 (1 files): packages/agentplane/src/cli/run-cli.core.task-run.test.ts
-Vitest suite v0.7-supervisor: chunk 3/3 passed in 4186ms (Test Files  1 passed (1); Tests  4 passed (4); Duration  3.96s (transform 1.66s, setup 0ms, import 1.39s, tests 2.51s, environment 0ms))
