@@ -4,7 +4,7 @@ title: "Capture exact v0.7.1 semantic efficiency evidence"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -32,14 +32,12 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
-commit:
-  hash: "63ce3ebca9063117f4c042ba05bac6399bc1df93"
-  message: "🧩 6BTB6D task: refresh candidate after latency fix"
+  state: "needs_rework"
+  updated_at: "2026-08-04T00:20:14.708Z"
+  updated_by: "TESTER"
+  note: "Exact candidate 2da557536 failed deterministic release qualification: cold managed task run p95 exceeded the matched v0.6.26 ceiling by 2.655 ms; provider gate was not run."
+  attempts: 1
+commit: null
 comments:
   -
     author: "TESTER"
@@ -68,8 +66,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Candidate refreshed after provider-preflight fixes; the exact gate now pins the trusted bundled Codex CLI 0.146.0-alpha.3.1."
+  -
+    type: "verify"
+    at: "2026-08-04T00:20:14.708Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Exact candidate 2da557536 failed deterministic release qualification: cold managed task run p95 exceeded the matched v0.6.26 ceiling by 2.655 ms; provider gate was not run."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:06:25.292Z"
+doc_updated_at: "2026-08-04T00:20:15.868Z"
 doc_updated_by: "TESTER"
 description: "After all candidate fixes land, execute exactly one no-retry 50-run and 55-provider-episode qualification generation against the exact candidate SHA, verify quality parity, context correctness, token savings, lifecycle latency, and provenance, and classify every failed episode before any replacement generation."
 sections:
@@ -97,11 +101,44 @@ sections:
     7. Verify the task evidence bundle, run node .agentplane/policy/check-routing.mjs, obtain an independent EVALUATOR pass against the frozen implementation subject and approved scope, and record git status --short --untracked-files=all. Expected: evidence is complete and immutable, routing passes, only the known preserved integration-worktrees directory remains untracked in the base checkout, and the evidence-only task PR passes hosted checks.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-04T00:20:14.708Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Exact candidate 2da557536 failed deterministic release qualification: cold managed task run p95 exceeded the matched v0.6.26 ceiling by 2.655 ms; provider gate was not run.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T00:06:25.292Z, excerpt_hash=sha256:8e1803b01fe6916cc554542ffdbf0ba26df87c1a21174b96dd399b47f5173897
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/.agentplane/tasks/202608021232-6BTB6D/blueprint/resolved-snapshot.json
+    - old_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+    - current_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608021232-6BTB6D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608021232-6BTB6D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Full audit passed 15/17 scenarios. cli-latency is advisory. supervisor-latency blocked only cold.managed_run_preparation: median +7.33% passed, p95 +10.66% exceeded the +10% contract; warm managed preparation passed at +6.34% median and +2.44% p95. Provider episodes remain zero.
+      Impact: The candidate cannot enter the one-shot provider gate or release while the deterministic blocker remains.
+      Resolution: Preserve the exact failed evidence, optimize the deterministic managed preparation path or its proven duplicate observations in a separate task without weakening stale-state protection, then freeze a new candidate and rerun the full deterministic audit.
 extensions:
   workflow_route_baseline:
     start_head_sha: "c0a1a703a165740ef01e1c5524fcc5bd69020ecf"
@@ -142,6 +179,36 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-04T00:20:14.708Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Exact candidate 2da557536 failed deterministic release qualification: cold managed task run p95 exceeded the matched v0.6.26 ceiling by 2.655 ms; provider gate was not run.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-08-04T00:06:25.292Z, excerpt_hash=sha256:8e1803b01fe6916cc554542ffdbf0ba26df87c1a21174b96dd399b47f5173897
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/.agentplane/tasks/202608021232-6BTB6D/blueprint/resolved-snapshot.json
+- old_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+- current_digest: 79a3a7060573c39cbae559717f887b6001d04e0b422a548ecc9478bef4d6d9f0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608021232-6BTB6D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608021232-6BTB6D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -150,3 +217,7 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Full audit passed 15/17 scenarios. cli-latency is advisory. supervisor-latency blocked only cold.managed_run_preparation: median +7.33% passed, p95 +10.66% exceeded the +10% contract; warm managed preparation passed at +6.34% median and +2.44% p95. Provider episodes remain zero.
+  Impact: The candidate cannot enter the one-shot provider gate or release while the deterministic blocker remains.
+  Resolution: Preserve the exact failed evidence, optimize the deterministic managed preparation path or its proven duplicate observations in a separate task without weakening stale-state protection, then freeze a new candidate and rerun the full deterministic audit.

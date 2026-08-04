@@ -1,0 +1,10 @@
+$ "node" "scripts/checks/check-cli-walltime-baseline.mjs" "--warmups" "1" "--attempts" "1"
+exit_code=1 signal=none duration_ms=7666
+
+error: CLI wall-time baseline guard failed after 1 attempt.
+- task_next: median_ms=265.639 exceeds max_median_ms=240
+- task_next: p95_ms=270.043 exceeds max_p95_ms=260
+- preflight_quick: median_ms=404.66 exceeds max_median_ms=330
+- preflight_quick: p95_ms=432.717 exceeds max_p95_ms=430
+
+Last measurement: quickstart median=208.664ms (threshold=220ms, p95=213.163ms); task_list median=274.202ms (threshold=280ms, p95=275.728ms); task_search median=276.367ms (threshold=290ms, p95=277.122ms); task_next median=265.639ms (threshold=240ms, p95=270.043ms); preflight_quick median=404.66ms (threshold=330ms, p95=432.717ms); help median=203.404ms (threshold=220ms, p95=204.133ms); version median=196.956ms (threshold=220ms, p95=197.689ms)
