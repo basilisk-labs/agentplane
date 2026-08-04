@@ -15,19 +15,27 @@ Add a non-persisting one-run pilot to the v0.7.1 candidate provider capture so t
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract
+21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all
+passed without provider execution.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-04T02:16:21.720Z
+- Updated: 2026-08-04T02:16:59.152Z
 - Branch: task/202608040215-0Z0C92/add-exact-candidate-rf-04-pilot-mode
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...cli.critical.agent-efficiency-candidate.test.ts | 109 ++++++++++++++++
+ .../bench/capture-agent-efficiency-candidate.mjs   | 140 +++++++++++++++++----
+ 2 files changed, 227 insertions(+), 22 deletions(-)
 ```
 
 </details>
