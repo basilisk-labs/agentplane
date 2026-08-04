@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Both changed tests now establish task-specific semantic plans before asserting approval or closeout behavior; expectations match the current CLI-authoritative planning contract without weakening runtime guards.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/b9887540f626607c031161ee8ee01fd52b872683a75d7d2e2c195a6a7ab9305d.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The external audit assessment is grounded in executable product, Knip, legacy inventory, provider-efficiency, and latency evidence and separates patch blockers from non-blocking 0.8 architecture work.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608021232-YCNM1S/quality/objects/sha256/b9887540f626607c031161ee8ee01fd52b872683a75d7d2e2c195a6a7ab9305d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
