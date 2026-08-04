@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -69,7 +69,10 @@ function validateReport() {
     "provider-matrix pass is missing",
   );
   for (const scenario of report.scenarios) {
-    assert(existsSync(path.join(repositoryRoot, scenario.log)), `missing scenario log: ${scenario.log}`);
+    assert(
+      typeof scenario.output_tail === "string" && scenario.output_tail.trim().length > 0,
+      `missing compact scenario output: ${scenario.id}`,
+    );
   }
 
   const manifestPath = path.join(repositoryRoot, report.manifest.path);
