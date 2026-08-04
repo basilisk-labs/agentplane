@@ -120,7 +120,7 @@ describe("runCli route decision verification freshness", () => {
     });
   });
 
-  it("invalidates a passing verification record after a semantic branch commit", async () => {
+  it("keeps the hosted-evidence companion strict by marking a semantic branch advance stale", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";

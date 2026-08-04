@@ -115,7 +115,8 @@ async function resolveLocalRecordedCloseFlow(opts: {
     const { content } = await readTaskPrMetaArtifact({
       ctx: opts.ctx,
       taskId: opts.task.id,
-      preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
+      preferBranchSnapshot:
+        opts.ctx.config.workflow_mode === "branch_pr" && opts.task.status !== "DONE",
     });
     if (content === null) return null;
     const meta = parsePrMeta(content, opts.task.id);

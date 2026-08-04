@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The declared terminal-routing regression was not implemented or executed. The patch tests preservation of verification metadata during evidence application, but does not close a branch_pr task, advance main with an evidence-only README commit, query next-action for terminal.done, or prove that a real implementation commit still makes verification stale.",
+      "broken_invariant": "Acceptance criterion 1 and the evaluator pass rule require exact positive, negative, and concurrency-sensitive route coverage; recorded verification must cover every task Verify Step.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/21f9f0e7d834a7229ec6244e8178eaa2816c3b5379e206b6eeae77026ab2f5ca.patch",
+          "sha256": "sha256:21f9f0e7d834a7229ec6244e8178eaa2816c3b5379e206b6eeae77026ab2f5ca",
+          "section": "release-task-evidence-script.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/verification/20260804143934380-b5263d23d37a83fe.json",
+          "sha256": "sha256:7eacbbeb2f79e6fbb4afa6efa8f2be2d4fff88524516f812e69d5015f5746db6",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:8b43d2eb1237406089abe447512359d56662890e918356ad04af3e80b6542fb9",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An end-to-end route regression that closes a branch_pr task, commits only hosted release evidence to its README on main, and asserts next-action remains terminal.done.",
+    "A negative companion case that advances main with a real implementation change and asserts verification becomes stale rather than terminal.done."
+  ],
+  "hidden_assumptions": [
+    "Preserving the existing verification frontmatter during hosted-evidence application is assumed to be sufficient for next-action routing to classify the later README-only commit as non-semantic.",
+    "The broad local CI run is assumed to cover the exact route transition even though the recorded focused command names only release-task-evidence and publish-workflow contract tests."
+  ],
+  "recovery_context": "Add and record the exact terminal.done and stale-verification route regressions required by Verify Step 1, then rerun the declared verification gates."
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608041322-M26FS0-6d7dae56a374247655f12877",
+  "task_id": "202608041322-M26FS0",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add and record the exact terminal.done and stale-verification route regressions required by Verify Step 1, then rerun the declared verification gates.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The declared terminal-routing regression was not implemented or executed. The patch tests preservation of verification metadata during evidence application, but does not close a branch_pr task, advance main with an evidence-only README commit, query next-action for terminal.done, or prove that a real implementation commit still makes verification stale.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/21f9f0e7d834a7229ec6244e8178eaa2816c3b5379e206b6eeae77026ab2f5ca.patch",
+          "sha256": "sha256:21f9f0e7d834a7229ec6244e8178eaa2816c3b5379e206b6eeae77026ab2f5ca",
+          "section": "release-task-evidence-script.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/verification/20260804143934380-b5263d23d37a83fe.json",
+          "sha256": "sha256:7eacbbeb2f79e6fbb4afa6efa8f2be2d4fff88524516f812e69d5015f5746db6",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202608041322-M26FS0/README.md",
+          "sha256": "sha256:8b43d2eb1237406089abe447512359d56662890e918356ad04af3e80b6542fb9",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608041322-M26FS0/quality/20260804-144157108-recovery-context/evaluator-result.json"
+}
