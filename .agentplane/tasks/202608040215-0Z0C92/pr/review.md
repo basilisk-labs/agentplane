@@ -6,14 +6,14 @@ Created: 2026-08-04T02:16:21.720Z
 
 - Task: `202608040215-0Z0C92`
 - Title: Add exact candidate RF-04 pilot mode
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608040215-0Z0C92/add-exact-candidate-rf-04-pilot-mode`
 - Canonical task record: `.agentplane/tasks/202608040215-0Z0C92/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract 21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all passed without provider execution.
+- Note: Candidate RF-04 pilot verified on implementation 3ceafe0ab with structured local evidence and no provider execution.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

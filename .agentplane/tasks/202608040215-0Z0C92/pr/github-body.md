@@ -19,9 +19,8 @@ Add a non-persisting one-run pilot to the v0.7.1 candidate provider capture so t
 - Note:
 
 ```text
-Candidate RF-04 pilot verified: focused 7/7 and critical CLI 82/82 passed; qualification contract
-21/21, typecheck, lint, format, routing, public help, fail-closed modes, and no-artifact cleanup all
-passed without provider execution.
+Candidate RF-04 pilot verified on implementation 3ceafe0ab with structured local evidence and no
+provider execution.
 ```
 - Canonical workflow state lives in the task README.
 

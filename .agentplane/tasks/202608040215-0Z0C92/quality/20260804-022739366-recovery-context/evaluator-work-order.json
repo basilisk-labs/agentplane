@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608040215-0Z0C92-31e973c78544a1b80b1ab0f1",
+  "prepared_at": "2026-08-04T02:27:39.366Z",
+  "task": {
+    "id": "202608040215-0Z0C92",
+    "revision": 9,
+    "objective": "Add exact candidate RF-04 pilot mode\n\nAdd a non-persisting one-run pilot to the v0.7.1 candidate provider capture so the pinned Codex runtime and exact candidate harness can be validated before the no-retry 50-run generation; cover precondition failures and prove no artifacts are published.",
+    "acceptance_criteria": [
+      "- In scope: Add a non-persisting one-run pilot to the v0.7.1 candidate provider capture so the pinned Codex runtime and exact candidate harness can be validated before the no-retry 50-run generation; cover precondition failures and prove no artifacts are published.\n- Out of scope: unrelated refactors not required for \"Add exact candidate RF-04 pilot mode\".",
+      "1. Extend the v0.7.1 candidate capture CLI with an explicit --pilot mode that selects only direct/run-01, validates the exact candidate subject and pinned Codex version, and never publishes candidate cache artifacts.\n2. Reuse the existing candidate driver, environment, envelope, and evidence validators so the pilot exercises the same runtime boundary as the 50-run gate.\n3. Add focused tests for one-run selection, success telemetry, cleanup after failure, refusal to combine pilot with check/runtime-bridge/replace, and unchanged full-capture behavior.\n4. Run focused RF-04 hardening tests, qualification contract, formatting, lint, typecheck, and critical CLI checks; preserve the failed historical-pilot diagnosis in task Findings.",
+      "1. Run the focused RF-04 candidate tests. Expected: --pilot selects only direct/run-01, validates one canonical envelope/evidence pair, reports exact subject/runtime/token telemetry, and leaves no candidate publication or failure artifact.\n2. Exercise invalid mode combinations. Expected: --pilot fails closed with --check, --runtime-bridge, or --replace, while the existing 10-scenario x 5-run capture contract remains unchanged.\n3. Run the v0.7.1 qualification contract, scoped lint/format/typecheck, critical CLI candidate chunk, and policy routing check. Expected: all pass and the provider driver is not invoked by tests.\n4. Inspect git diff and task Findings. Expected: only candidate pilot harness, focused tests, and task evidence changed; the failed historical-pilot mismatch is preserved and no provider retry is claimed."
+    ]
+  },
+  "evaluated_sha": "3ceafe0ab6891606d29c98a8d7530b27e6124036",
+  "diff_base_sha": "3055393dc99d5f1a781cb642502ceaa05d86f0a9",
+  "blueprint_digest": "04b5f37577050a6ede3a073b45ff64e15feab20963b8852439de720c1dd590ed",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608040215-0Z0C92/quality/20260804-022739366-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7b50ede6b7871abdd72bf3088329d09474cc610cb5936dbab6bb72c3556c1eb9",
+    "prompt_path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/46ba6dcbfbae884e863f1595c45e51568452da60ce7f1d09985d7a1ad8d4eed9.md",
+    "result_schema_path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608040215-0Z0C92/README.md",
+      "sha256": "sha256:778ba057a8d4d1eeead4b36e3972b75ab4aed09bb96832e70cd998393535b532",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/bbefcc79dbf747f696e791909470a202f98ca6a89ff2fff65cb636a7328eb1db.patch",
+      "sha256": "sha256:bbefcc79dbf747f696e791909470a202f98ca6a89ff2fff65cb636a7328eb1db",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/7dcc96a74f52be21500a1ecb9d9bd0b86b76b14c7a15c176a6f0537b015ea7ab.json",
+      "sha256": "sha256:7dcc96a74f52be21500a1ecb9d9bd0b86b76b14c7a15c176a6f0537b015ea7ab",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608040215-0Z0C92/verification/20260804022700314-f3df5206ae9c0990.json",
+      "sha256": "sha256:8ce1eacf9805046ea20f012df90556231485453c432875ec6e5253231d47a029",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608040215-0Z0C92/quality/objects/sha256/d79e631f7034cfd729306e6d44e7f658881fe2ed15a57e2a43183c2fa2a69fdf.json",
+      "sha256": "sha256:d79e631f7034cfd729306e6d44e7f658881fe2ed15a57e2a43183c2fa2a69fdf",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
