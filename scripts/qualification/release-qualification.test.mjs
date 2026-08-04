@@ -25,7 +25,10 @@ import {
   compareMatchedLatencySamples,
   validateMatchedLatencyReport,
 } from "./measure-v0.7.1-matched-cli-latency.mjs";
-import { validateSupervisorLatencyReport } from "./measure-v0.7.1-supervisor-latency.mjs";
+import {
+  summarizeGitCommandHistogram,
+  validateSupervisorLatencyReport,
+} from "./measure-v0.7.1-supervisor-latency.mjs";
 import {
   preflightQualificationProviderRuntime,
   readQualificationRunSubjectIdentity,
@@ -111,7 +114,19 @@ function matchedPhase(sampleCount = 20, offset = 0) {
 }
 
 function supervisorLatencySide(count) {
-  return { sample_count: count, samples: Array.from({ length: count }, () => 100) };
+  return {
+    sample_count: count,
+    samples: Array.from({ length: count }, () => 100),
+    git_subprocess_count: { samples: Array.from({ length: count }, () => 2) },
+    git_command_histogram: {
+      total_count: count * 2,
+      unique_count: 2,
+      commands: [
+        { command: "rev-parse HEAD", count },
+        { command: "status --porcelain", count },
+      ],
+    },
+  };
 }
 
 function supervisorLatencySurfaces(count) {
@@ -586,6 +601,34 @@ describe("v0.7.1 release qualification contract", () => {
     assert.throws(
       () => validateSupervisorLatencyReport(insufficient),
       /warm\.external_advance\.candidate requires 30 samples/u,
+    );
+  });
+
+  it("records deterministic Git command histograms outside duration samples", () => {
+    assert.deepEqual(
+      summarizeGitCommandHistogram([
+        { git_commands: ["status --porcelain", "rev-parse HEAD"] },
+        { git_commands: ["rev-parse HEAD", "status --porcelain"] },
+      ]),
+      {
+        total_count: 4,
+        unique_count: 2,
+        commands: [
+          { command: "rev-parse HEAD", count: 2 },
+          { command: "status --porcelain", count: 2 },
+        ],
+      },
+    );
+
+    const report = {
+      schema_version: 1,
+      kind: "agentplane.v0.7.1_supervisor_latency",
+      phases: { cold: supervisorLatencySurfaces(20), warm: supervisorLatencySurfaces(30) },
+    };
+    report.phases.cold[0].candidate.git_command_histogram.total_count -= 1;
+    assert.throws(
+      () => validateSupervisorLatencyReport(report),
+      /cold\.external_advance\.candidate has an inconsistent Git command histogram/u,
     );
   });
 });
