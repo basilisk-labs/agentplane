@@ -13,7 +13,7 @@ Created: 2026-08-04T00:32:15.684Z
 ## Verification
 
 - State: ok
-- Note: Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix.
+- Note: Revalidated synced head 7a08766d8: the calendar-date CI flake is fixed on main; focused token-usage 3/3, qualification contract, critical CLI 79/79, TS7 typecheck, touched lint/format, routing policy, and doctor all pass. The measured product diff remains exact 3a526415 with preserved 20-cold/30-warm evidence and all unchanged +10% gates passing.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
