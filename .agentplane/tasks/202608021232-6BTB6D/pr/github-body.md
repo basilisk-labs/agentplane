@@ -15,14 +15,19 @@ Produce a release-blocking, reproducible qualification record for the final v0.7
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Exact candidate 2da557536 failed deterministic release qualification: cold managed task run p95
+exceeded the matched v0.6.26 ceiling by 2.655 ms; provider gate was not run.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-03T20:39:56.146Z
+- Updated: 2026-08-03T20:40:27.237Z
 - Branch: task/202608021232-6BTB6D/capture-exact-v0-7-1-semantic-efficiency-evidenc
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
