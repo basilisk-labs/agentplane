@@ -13,7 +13,7 @@ Created: 2026-08-04T00:32:15.684Z
 ## Verification
 
 - State: ok
-- Note: Revalidated synced head 7a08766d8: the calendar-date CI flake is fixed on main; focused token-usage 3/3, qualification contract, critical CLI 79/79, TS7 typecheck, touched lint/format, routing policy, and doctor all pass. The measured product diff remains exact 3a526415 with preserved 20-cold/30-warm evidence and all unchanged +10% gates passing.
+- Note: Verified committed sync head a53d59cbb: current-main flake fix plus unchanged measured performance implementation pass focused token-usage, qualification contract, critical CLI 79/79, TS7 typecheck, lint/format, policy routing, and doctor. Preserved 20-cold/30-warm evidence remains bound to exact product SHA 3a526415.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
