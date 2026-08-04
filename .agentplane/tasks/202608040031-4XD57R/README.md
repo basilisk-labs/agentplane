@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -32,34 +32,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-08-04T00:48:43.862Z"
+  updated_at: "2026-08-04T00:56:32.424Z"
   updated_by: "HUMAN"
-  note: "Exact implementation 3a526415 removes one redundant direct-workflow status observation, preserves fail-closed fallback and state-fingerprint semantics, and passes the strict packed latency and regression gates."
-  evaluated_sha: "3a526415de4ea9034687446e68f7115a97353402"
+  note: "The exact 3a526415 semantic change and b80f2e98 lifecycle-repair target remain acceptable: one redundant managed Git observation is removed without weakening snapshot freshness or recovery invariants, and all unchanged latency gates pass."
+  evaluated_sha: "b80f2e98f136add92e2cd143da7d5731dae64519"
   blueprint_digest: "5e343ccc7db2e0c04fc0a4490ca851980d88eb8d2f60e124f2fbc19bd82b2bcd"
   evidence_refs:
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-004843594-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-004843594-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/83ccf85fefe05292c991ee8b196b124ffe12afe1c9b33bb087d08d44916aaea8.md"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-004843594-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-004843594-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/1dac1e2dcf07822e04b34dd9fe20e77bdebb3bcf690f832340540ddd71e0930e.md"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/20260804-005631358-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608040031-4XD57R/README.md"
     - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/aa173978d0fa68e8bbe130f183914fafa658d524efdf5757fb60fa5983267738.patch"
-    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/d27609f61af1b2d3fe5626b3a1a3ff7eab710bd82d40b44459f52342ea6f0589.json"
+    - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/edccf44fdbabd62a3fc5b0de2f7bf6eea79eaafb0e2d1a2c2954fbcab86b3cfe.json"
+    - ".agentplane/tasks/202608040031-4XD57R/verification/20260804005555151-9c2bc69f16cd56bd.json"
     - ".agentplane/tasks/202608040031-4XD57R/quality/objects/sha256/db30dd99829741a38a1a36a49b04dbba810d52219e13c1d30bb78b397f0c2044.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - ".agentplane/tasks/202608040031-4XD57R/evidence/attribution-a649936d4.json"
-    - ".agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-2a724df0b.json"
     - ".agentplane/tasks/202608040031-4XD57R/evidence/supervisor-latency-3a526415d.json"
-    - ".agentplane/tasks/202608040031-4XD57R/verification/20260804004800678-78383724249e0852.json"
+    - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+    - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
     - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
   findings:
-    - "Git command histograms are collected only after the measured interval, are deterministically sorted, and their totals are validated against per-sample subprocess counts."
-    - "Policy scope reuses dirty paths only from an available authoritative snapshot; unavailable snapshots retain the prior live status observation."
-    - "Sequential blueprint and snapshot observation avoids the measured cold-start I/O contention introduced by the rejected parallel experiment."
+    - "Authoritative snapshot dirty paths are reused only when available; the live Git status fallback remains fail-closed."
+    - "The final sequential observation order avoids the rejected cold-start I/O contention while preserving blueprint and fingerprint semantics."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -142,7 +141,7 @@ events:
     state: "ok"
     note: "Revalidated the exact semantic implementation and lifecycle-repair target: the accepted 3a526415 code diff and its b80f2e98 task handoff remain covered by the passing strict benchmark and regression matrix."
 doc_version: 3
-doc_updated_at: "2026-08-04T00:55:57.116Z"
+doc_updated_at: "2026-08-04T00:56:32.444Z"
 doc_updated_by: "CODER"
 description: "Extend the packed supervisor benchmark with deterministic per-command Git histograms, use those measurements to identify and remove only duplicated direct-workflow observations whose values are already covered by the same command context or route snapshot, preserve all stale-state and side-effect-safety invariants, and restore every cold and warm median and p95 surface below the unchanged +10% v0.6.26 ceiling."
 sections:
