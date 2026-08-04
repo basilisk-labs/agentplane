@@ -1,0 +1,27 @@
+$ "bun" "run" "coverage:workflow-suite"
+exit_code=0 signal=none duration_ms=1045
+
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc
+
+
+ Test Files  13 passed (13)
+      Tests  50 passed (50)
+   Start at  09:29:45
+   Duration  577ms (transform 281ms, setup 0ms, import 843ms, tests 509ms, environment 1ms)
+
+Workflow harness suite contract OK (5 source targets; matrix=docs/developer/workflow-harness-test-matrix.mdx).
+
+$ node scripts/workflow/run-workflow-coverage-suite.mjs
+{"ts":"2026-08-04T06:29:45.770Z","component":"workflow-runtime","event":"workflow_build_started"}
+{"ts":"2026-08-04T06:29:45.779Z","component":"workflow-runtime","event":"workflow_build_failed","details":{"diagnostics":1}}
+{"ts":"2026-08-04T06:29:45.779Z","component":"workflow-runtime","event":"workflow_build_started"}
+{"ts":"2026-08-04T06:29:45.782Z","component":"workflow-runtime","event":"workflow_build_failed","details":{"diagnostics":2}}
+{"ts":"2026-08-04T06:29:45.782Z","component":"workflow-runtime","event":"workflow_build_started"}
+{"ts":"2026-08-04T06:29:45.783Z","component":"workflow-runtime","event":"workflow_build_completed","details":{"diagnostics":0}}
+{"ts":"2026-08-04T06:29:45.853Z","component":"workflow-runtime","event":"workflow_publish_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-3ii0Sp/.agentplane/WORKFLOW.md","lastKnownGoodPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-3ii0Sp/.agentplane/workflows/last-known-good.md"}}
+{"ts":"2026-08-04T06:29:45.868Z","component":"workflow-runtime","event":"workflow_publish_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-CfDrrO/.agentplane/WORKFLOW.md","lastKnownGoodPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-CfDrrO/.agentplane/workflows/last-known-good.md"}}
+{"ts":"2026-08-04T06:29:45.871Z","component":"workflow-runtime","event":"workflow_restore_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-CfDrrO/.agentplane/WORKFLOW.md","from":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-CfDrrO/.agentplane/workflows/last-known-good.md"}}
+{"ts":"2026-08-04T06:29:45.876Z","component":"workflow-runtime","event":"workflow_publish_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-Vmu4LT/.agentplane/WORKFLOW.md","lastKnownGoodPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-Vmu4LT/.agentplane/workflows/last-known-good.md"}}
+{"ts":"2026-08-04T06:29:45.879Z","component":"workflow-runtime","event":"workflow_restore_failed","code":"WF_UNSUPPORTED_VERSION","details":{"reason":"Unsupported WORKFLOW version 3; supported versions: 1, 2."}}
+$ node scripts/checks/check-workflow-harness-coverage.mjs

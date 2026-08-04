@@ -1,0 +1,4 @@
+$ "node" "scripts/qualification/measure-v0.7.1-supervisor-latency.mjs" "--subject" "de94bf9d91de1a8a854ad358968e8193e9803342" "--out" ".agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/supervisor-latency.json"
+exit_code=0 signal=none duration_ms=207873
+
+supervisor latency: pass; baseline=0.6.26; candidate=0.7.0; failures=none; out=/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202608021232-6BTB6D-capture-exact-v0-7-1-semantic-efficiency-evidenc/.agentplane/tasks/202608021232-6BTB6D/evidence/final-de94bf9d9-gate/supervisor-latency.json
