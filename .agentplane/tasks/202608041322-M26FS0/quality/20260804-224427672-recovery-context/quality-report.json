@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202608041322-M26FS0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-04T22:44:28.001Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "77e66477692a3ff42cc6321d49b87b0c6d35bf9f",
+  "blueprint_digest": "3ac0407a870b976bbcde05604b483f400348a7d0cf6425853a8e72500a570045",
+  "findings": [
+    "No release-blocking defect remains: hosted evidence routing, forced pre-merge closure, exact publish checks, verification preservation, provider provenance, task token usage, and release packaging are covered by passing deterministic and end-to-end evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608041322-M26FS0/quality/objects/sha256/049842669c2ec9818accd9798bdbf8a6a3b3e92f5b0f725aa65321129f7608ac.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
