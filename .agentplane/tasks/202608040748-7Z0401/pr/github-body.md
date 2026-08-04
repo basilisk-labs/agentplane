@@ -23,8 +23,8 @@ Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-handoff.t
 typecheck; node .agentplane/policy/check-routing.mjs
 ```
 Result: pass
-Evidence: 4/4 focused tests, TypeScript 7 typecheck, and routing passed; the intervening commit contains only task-scoped verification/PR artifacts.
-Scope: current branch head including stale reclaim regression evidence.
+Evidence: 4/4 focused tests passed against implementation fea0506ca; both claimed and unclaimed nonexistent-PID paths explicitly reject E_INTERNAL; typecheck and routing passed.
+Scope: implementation fea0506ca and stale runner reclaim recovery contract.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -35,8 +35,8 @@ Scope: current branch head including stale reclaim regression evidence.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-handoff.test.ts      | 124 +++++++++++++--------
- 1 file changed, 78 insertions(+), 46 deletions(-)
+ .../src/cli/run-cli.core.task-handoff.test.ts      | 125 +++++++++++++--------
+ 1 file changed, 79 insertions(+), 46 deletions(-)
 ```
 
 </details>
