@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts\nResult: pass\nEvidence: packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts and GitHub Actions run 30867253711 job 91861754671\nScope: reproduce the 2026-08-03 hard-coded UTC boundary failure and verify the deterministic exact-time replacement\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/task-token-usage.test.ts\nResult: pass\nEvidence: 3 test files passed, 16 tests passed\nScope: hosted, local-merged, locally-shipped token projection and replay stability\n\nCommand: bun run typecheck && bunx eslint packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts && bunx prettier packages/agentplane/src/commands/task/hosted-merge-sync.token-usage.test.ts --check && git diff --check\nResult: pass\nEvidence: TypeScript 7 build, touched lint and formatting, and whitespace checks completed successfully\nScope: static and formatting validation for the test-only diff",
+  "digest": "sha256:6d2c58d0b6417c21a6d1b5b76543c26591d1f9ed27399bbf824a97c19c8250cb",
+  "implementation_sha": "c990de07359916f06cfd10aa916f3130bf1b8b10",
+  "kind": "task_verification_record",
+  "note": "Confirmed the CI failure was a UTC calendar-boundary assertion, then froze reconciliation time and proved exact timestamp semantics: focused 3/3 and nearby 16/16 tests plus TypeScript 7, ESLint, Prettier, and diff checks pass.",
+  "recorded_at": "2026-08-04T01:09:05.747Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Reproduce the exact pre-fix failure on current main. Expected: hosted-merge-sync.token-usage.test.ts fails only because the locally-shipped projection crosses the hard-coded 2026-08-03 UTC boundary.\n2. Run the focused hosted merge token-usage suite after the change. Expected: all three paths assert exact contract timestamps and pass independently of the wall-clock date.\n3. Run hosted merge reconciliation and token-usage unit suites. Expected: all nearby token aggregation, merge reconciliation, and replay-stability checks pass.\n4. Run TypeScript 7 typecheck plus touched ESLint, Prettier, and git diff checks. Expected: all pass with no production-code diff.",
+  "scope_digest": "sha256:501984ba1bf0744c56f3422cd1716988f077af6e36b9cb1e5e316b5452b59023",
+  "task_id": "202608040106-CC1TAP",
+  "verification_command": "agentplane verify 202608040106-CC1TAP --ok --by TESTER",
+  "verifier": "TESTER"
+}
